@@ -378,6 +378,9 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private Frame _loginUiContent;
 
+    [ObservableProperty]
+    private int _accountIndex;
+
     /// <summary>
     /// Switches the repos shown to the account selected.
     /// </summary>
@@ -546,6 +549,7 @@ public partial class AddRepoViewModel : ObservableObject
         UrlParsingError = string.Empty;
         ShouldShowUrlError = false;
         ShowErrorTextBox = false;
+        _accountIndex = -1;
     }
 
     /// <summary>
@@ -619,6 +623,8 @@ public partial class AddRepoViewModel : ObservableObject
 
     public void ChangeToAccountPage()
     {
+        AccountIndex = -1;
+
         // List of extensions needs to be refreshed before accessing
         GetExtensions();
         if (ProviderNames.Count == 1)

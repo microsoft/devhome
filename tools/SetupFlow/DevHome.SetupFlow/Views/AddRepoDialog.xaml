@@ -70,7 +70,7 @@
                       HorizontalAlignment="Stretch"
                       x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay"
                       ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}"
-                      SelectedItem="{x:Bind AddRepoViewModel.SelectedRepoProvider, Mode=TwoWay}"
+                      SelectedIndex="{x:Bind AddRepoViewModel.AccountIndex, Mode=TwoWay}"
                       Margin="0, 20, 0, 0" >
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="SelectionChanged">
