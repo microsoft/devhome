@@ -52,7 +52,7 @@ public partial class AddRepoViewModel : ObservableObject
 
     /// <summary>
     /// Because logic is split between the back-end and the view model, migrating code from the view
-    /// to the view model is impossible.
+    /// in one PR to the view model is too much work.
     /// This member is here to support this partial migration.  Once all the code-behind logic is out of the view
     /// _addRepoDialog can be removed.
     /// </summary>
