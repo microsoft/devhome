@@ -28,7 +28,6 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
     }
 
     /// <inheritdoc />
-    /// TODO: Consider using install options instead of 'version' parameter
     public async Task<InstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version = null)
     {
         if (catalog == null)
