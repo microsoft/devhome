@@ -604,7 +604,7 @@ public partial class AddRepoViewModel : ObservableObject
     public void GetExtensions()
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed extensions with Repository and DevId providers");
-        var extensionService = Application.Current.GetService<IExtensionService>();
+        var extensionService = _host.GetService<IExtensionService>();
         var extensionWrappers = extensionService.GetInstalledExtensionsAsync().Result;
 
         var extensions = extensionWrappers.Where(
