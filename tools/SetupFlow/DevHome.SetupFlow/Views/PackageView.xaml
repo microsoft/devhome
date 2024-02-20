@@ -104,6 +104,7 @@
                             Style="{ThemeResource BodyTextBlockStyle}"
                             Text="{Binding PackageTitle}"/>
 
+                        <!-- Package version list -->
                         <ComboBox
                             Grid.Row="1"
                             Visibility="{Binding ShowVersionList}"
@@ -111,16 +112,11 @@
                             FontSize="{ThemeResource CaptionTextBlockFontSize}"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             HorizontalAlignment="Left"
+                            IsTextSearchEnabled="True"
                             Background="Transparent"
                             Padding="0"
                             SelectedItem="{Binding SelectedVersion, Mode=TwoWay}"
-                            ItemsSource="{Binding AvailableVersions}">
-                            <ComboBox.ItemContainerStyle>
-                                <Style TargetType="ComboBoxItem">
-                                    <Setter Property="IsEnabled" Value="True" />
-                                </Style>
-                            </ComboBox.ItemContainerStyle>
-                        </ComboBox>
+                            ItemsSource="{Binding AvailableVersions}"/>
 
                         <!-- Package Version -->
                         <TextBlock

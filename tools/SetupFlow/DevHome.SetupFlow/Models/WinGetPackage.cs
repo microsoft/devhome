@@ -128,9 +128,9 @@ public class WinGetPackage : IWinGetPackage
                 }
             }
         }
-        catch
+        catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Unable to validate if the version {versionInfo.Version} is in the list of available versions");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Unable to validate if the version {versionInfo.Version} is in the list of available versions", e);
         }
 
         return versionInfo.Version;
