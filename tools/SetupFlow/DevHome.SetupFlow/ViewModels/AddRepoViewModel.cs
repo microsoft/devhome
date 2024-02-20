@@ -12,7 +12,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Collections;
 using CommunityToolkit.WinUI.Controls;
-using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
@@ -210,12 +209,20 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private bool _isCancelling;
 
+    /// <summary>
+    /// Used to figure out what button is pressed for the split button.
+    /// This determines the UI elements shown/hidden.
+    /// </summary>
     private enum SegmentedItemTag
     {
         Account,
         URL,
     }
 
+    /// <summary>
+    /// Hidex/Shows UI elements for the selected button.
+    /// </summary>
+    /// <param name="selectedItem">The button the user clicked on.</param>
     [RelayCommand]
     public void ChangePage(SegmentedItem selectedItem)
     {
@@ -375,9 +382,15 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private MenuFlyout _accountsToShow;
 
+    /// <summary>
+    /// Used to show the login UI.
+    /// </summary>
     [ObservableProperty]
     private Frame _loginUiContent;
 
+    /// <summary>
+    /// Soley used to reset the account drop down when the account page is navigated to.
+    /// </summary>
     [ObservableProperty]
     private int _accountIndex;
 

@@ -65,6 +65,8 @@
             <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.UrlParsingError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlError, Mode=OneWay}"/>
 
             <!-- Log into account -->
+            <!-- Please keep SelectedIndex bound to AccountIndex.  THis is used to reset the combobox to empty
+            when the user navigates to the account page.-->
             <ComboBox x:Name="RepositoryProviderComboBox" 
                       Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}"
                       HorizontalAlignment="Stretch"
