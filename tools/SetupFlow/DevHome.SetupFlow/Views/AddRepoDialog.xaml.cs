@@ -3,11 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
@@ -103,33 +101,6 @@ public partial class AddRepoDialog : ContentDialog
             // Remove the handler so multiple hooks aren't attached.
             devIdProvider.Changed -= DeveloperIdChangedEventHandler;
         }
-    }
-
-    /// <summary>
-    /// Sets up the UI for dev drives.
-    /// </summary>
-    public async Task SetupDevDrivesAsync()
-    {
-        await Task.Run(() =>
-        {
-            AddRepoViewModel.EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
-
-            if (AddRepoViewModel.EditDevDriveViewModel.DevDrive != null &&
-                AddRepoViewModel.EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
-            {
-                AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario = true;
-                AddRepoViewModel.EditDevDriveViewModel.ClonePathUpdated();
-            }
-        });
-    }
-
-    /// <summary>
-    /// Open up the folder picker for choosing a clone location.
-    /// </summary>
-    private async void ChooseCloneLocationButton_Click(object sender, RoutedEventArgs e)
-    {
-        await AddRepoViewModel.FolderPickerViewModel.ChooseCloneLocation();
-        AddRepoViewModel.ToggleCloneButton();
     }
 
     /// <summary>

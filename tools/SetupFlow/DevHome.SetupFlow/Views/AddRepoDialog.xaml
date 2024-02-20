@@ -65,7 +65,13 @@
             <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.UrlParsingError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlError, Mode=OneWay}"/>
 
             <!-- Log into account -->
-            <ComboBox x:Name="RepositoryProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}" Margin="0, 20, 0, 0" >
+            <ComboBox x:Name="RepositoryProviderComboBox" 
+                      Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}"
+                      HorizontalAlignment="Stretch"
+                      x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay"
+                      ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}"
+                      SelectedItem="{x:Bind AddRepoViewModel.SelectedRepoProvider, Mode=TwoWay}"
+                      Margin="0, 20, 0, 0" >
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="SelectionChanged">
                         <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.RepoProviderSelectedCommand}" CommandParameter="{x:Bind RepositoryProviderComboBox.SelectedItem, Mode=OneWay}"/>
@@ -183,7 +189,13 @@
                         <ToolTip x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClearCheckboxToBrowse" Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
                     </ToolTipService.ToolTip>
                     </TextBlock>
-                    <Button IsEnabled="{x:Bind AddRepoViewModel.FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click" Margin="5, 27, 0, 0"/>
+                    <Button IsEnabled="{x:Bind AddRepoViewModel.FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Margin="5, 27, 0, 0">
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="Click">
+                                <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.OpenFolderPickerCommand}"/>
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </Button>
                 </Grid>
             </Grid>
             <TextBlock Text="{x:Bind AddRepoViewModel.FolderPickerViewModel.FolderPickerErrorMessage, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.ShowFolderPickerError, Mode=OneWay}"/>

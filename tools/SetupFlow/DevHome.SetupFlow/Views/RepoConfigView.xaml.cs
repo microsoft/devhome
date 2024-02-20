@@ -68,7 +68,7 @@ public sealed partial class RepoConfigView : UserControl
 
         _addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), ActivityId, ViewModel.Host);
         var getExtensionsTask = _addRepoDialog.GetExtensionsAsync();
-        var setupDevDrivesTask = _addRepoDialog.SetupDevDrivesAsync();
+        var setupDevDrivesTask = _addRepoDialog.AddRepoViewModel.SetupDevDrivesAsync();
         _addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
         _addRepoDialog.RequestedTheme = ActualTheme;
 

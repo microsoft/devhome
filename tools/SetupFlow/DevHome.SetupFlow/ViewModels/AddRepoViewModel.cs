@@ -418,6 +418,13 @@ public partial class AddRepoViewModel : ObservableObject
         Repositories = new IncrementalLoadingCollection<IncrementalRepoViewItemViewModel, RepoViewListItem>(indexer);
     }
 
+    [RelayCommand]
+    private async Task OpenFolderPicker()
+    {
+        await FolderPickerViewModel.ChooseCloneLocation();
+        ToggleCloneButton();
+    }
+
     /// <summary>
     /// Makes the MenuFlyout object used to display multple accounts in the repo tool.
     /// </summary>
@@ -651,7 +658,6 @@ public partial class AddRepoViewModel : ObservableObject
         CurrentPage = PageKind.AddViaAccount;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoAccountPagePrimaryButtonText);
         ShouldShowLoginUi = false;
-
         ToggleCloneButton();
     }
 
@@ -1002,6 +1008,24 @@ public partial class AddRepoViewModel : ObservableObject
         IsLoggingIn = true;
         InitiateAddAccountUserExperienceAsync(provider, loginFrame);
         return null;
+    }
+
+    /// <summary>
+    /// Sets up the UI for dev drives.
+    /// </summary>
+    public async Task SetupDevDrivesAsync()
+    {
+        await Task.Run(() =>
+        {
+            EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
+
+            if (EditDevDriveViewModel.DevDrive != null &&
+                EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+            {
+                FolderPickerViewModel.InDevDriveScenario = true;
+                EditDevDriveViewModel.ClonePathUpdated();
+            }
+        });
     }
 
     /// <summary>
