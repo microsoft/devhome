@@ -8,16 +8,19 @@ Tools utilize data and functionality from out-of-process [extensions](./extensio
 
 1. Create a new directory with your tool's name under `tools` with three subdirectories `src`, `test`, and `uitest`
 1. Create a new `WinUI 3 Class Library` project in your `src` directory
-1. Create the `Strings\en-us` directories under `src`.  Add `Resources.resw` and include the following code:
+1. Create the `Strings\en-us` directories under `src`. Add `Resources.resw` and include the following code:
     ```xml
     <data name="NavigationPane.Content" xml:space="preserve">
       <value>[Name of your tool that will appear in navigation menu]</value>
+      <comment>[Extra information about the name of your tool that may help translation]</comment>
     </data>
     ```
 1. Add a project reference from `DevHome` to your project
-1. Add a project reference from your project to `DevHome.Common` project under [common](\common)
-1. Create your XAML view and viewmodel.  Your view class must inherit from `ToolPage` and implement requirements.  Specifications for the [Dev Home tools API](interface.md).
-1. Update [NavConfig.json](\src\NavConfig.json) with your tool.  Specifications for the [NavConfig.json schema](navconfig.md).
+1. Add a project reference from your project to `DevHome.Common.csproj` project under [/common/](/common)
+1. Create your XAML View and ViewModel. Your View class must inherit from `ToolPage` and implement [tool interface requirements](#tool-requirements).
+1. Update [NavConfig.jsonc](/src/NavConfig.jsonc) with your tool. Specifications for the [NavConfig.json schema](navconfig.md).
+
+### Tool requirements
 
 Each tool must define a custom page view extending from the [`ToolPage`](../common/ToolPage.cs) abstract class, and implement it like in this example:
 
@@ -59,7 +62,7 @@ Contains the interface definition for Dev Home tools.
 ## Dashboard Tool
 The Dashboard page hosts and displays Windows Widgets. Widgets are small UI containers that display text and graphics, associated with an app installed on the device. For information on creating widgets, see [Widgets Overview](https://learn.microsoft.com/en-us/windows/apps/design/widgets/) and [Widget providers](https://learn.microsoft.com/en-us/windows/apps/develop/widgets/widget-providers).
 
-Each widget is represented by a [`WidgetViewModel`](../tools/Dashboard/DevHome.Dashboard/ViewModels/WidgetViewModel.cs). The WidgetViewModel displays itself inside a [`WidgetControl`](../tools/Dashboard/DevHome.Dashboard/Views/WidgetControl.xaml), and the WidgetControls are grouped into a [`WidgetBoard`](../tools/Dashboard/DevHome.Dashboard/Views/WidgetBoard.cs).
+Each widget is represented by a [`WidgetViewModel`](../tools/Dashboard/DevHome.Dashboard/ViewModels/WidgetViewModel.cs). The WidgetViewModel displays itself inside a [`WidgetControl`](../tools/Dashboard/DevHome.Dashboard/Controls/WidgetControl.xaml), and the WidgetControls are grouped into a [`WidgetBoard`](../tools/Dashboard/DevHome.Dashboard/Controls/WidgetBoard.cs).
 
 ### Widget UI
 
@@ -69,4 +72,3 @@ Widgets are rendered by Adaptive Cards, and there are a few ways Dev Home custom
 * Dev Home widgets use the [Adaptive Card schema](https://adaptivecards.io/explorer/) version 1.5, which is the most recent schema supported by the WinUI 3 Adaptive Card renderer.
 * There are [HostConfig](https://learn.microsoft.com/en-us/adaptive-cards/sdk/rendering-cards/uwp/host-config) files that define common styles (e.g., font family, font sizes, default spacing) and behaviors (e.g., max number of actions) for all the widgets. There is one for [light mode](../tools/Dashboard/DevHome.Dashboard/Assets/HostConfigLight.json) and one for [dark mode](../tools/Dashboard/DevHome.Dashboard/Assets/HostConfigDark.json).
 * Dev Home supports a custom AdaptiveElement type called [`LabelGroup`](../common/Renderers/LabelGroup.cs). This allows a card author to render a set of labels, each with a specified background color. For an example of how to use this type, please see the [GitHub Issues widget](https://github.com/microsoft/devhomegithubextension/blob/main/src/GitHubExtension/Widgets/Templates/GitHubIssuesTemplate.json).
-* When a widget is added or customized, Dev Home will show the widget in a ContentDialog, allowing for more space in which to put configuration UI. To signify that your widget is in this "configuration" mode, Dev Home supports the JSON field `"configuring" = true`. For an example of this, see [GitHubWidget](https://github.com/microsoft/devhomegithubextension/blob/main/src/GitHubExtension/Widgets/GitHubWidget.cs).
