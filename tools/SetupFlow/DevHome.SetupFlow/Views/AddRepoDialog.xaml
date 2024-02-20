@@ -65,7 +65,7 @@
             <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.UrlParsingError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlError, Mode=OneWay}"/>
 
             <!-- Log into account -->
-            <!-- Please keep SelectedIndex bound to AccountIndex.  THis is used to reset the combobox to empty
+            <!-- Please keep SelectedIndex bound to AccountIndex.  This is used to reset the combobox to empty
             when the user navigates to the account page.-->
             <ComboBox x:Name="RepositoryProviderComboBox" 
                       Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}"
@@ -112,10 +112,10 @@
                     </Grid.RowDefinitions>
                     <SplitButton x:Name="AccountSplitButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Grid.Row="0" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}"/>
                     <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
-                    <ComboBox x:Name="SortMethodComboBox" PlaceholderText="Sort" Grid.Row="1" Grid.ColumnSpan="2">
+                    <ComboBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoSortOrder" x:Name="SortMethodComboBox" Grid.Row="1" Grid.ColumnSpan="2">
                         <ComboBox.Items>
-                            <x:String>Name asending</x:String>
-                            <x:String>Name desending</x:String>
+                            <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoSortOrderNameAscending" Tag="NameAscending"/>
+                            <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoSortOrderNameDescending" Tag="NameDescending"/>
                         </ComboBox.Items>
                         <i:Interaction.Behaviors>
                             <ic:EventTriggerBehavior EventName="SelectionChanged">

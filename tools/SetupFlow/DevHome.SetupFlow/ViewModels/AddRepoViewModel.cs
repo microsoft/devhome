@@ -28,6 +28,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 using WinUIEx;
@@ -217,6 +218,16 @@ public partial class AddRepoViewModel : ObservableObject
     {
         Account,
         URL,
+    }
+
+    /// <summary>
+    /// Compres against the tags in the sort order combo box.
+    /// Determines how to sort the repos.
+    /// </summary>
+    private enum SortMethod
+    {
+        NameAscending,
+        NameDescending,
     }
 
     /// <summary>
@@ -411,26 +422,26 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void SortRepos(string sortMethod)
+    public void SortRepos(ComboBox selectedItem)
     {
-        var repositories = new List<RepoViewListItem>();
-        if (sortMethod.Equals("Name asending", StringComparison.OrdinalIgnoreCase))
+        IEnumerable<IRepository> repositories = new List<IRepository>();
+        var sortMethod = Enum.Parse<SortMethod>(selectedItem.Tag.ToString());
+
+        if (sortMethod.Equals(SortMethod.NameAscending))
         {
             repositories = _repositoriesForAccount
-                .OrderBy(x => Path.Join(x.OwningAccountName, x.DisplayName))
-                .Select(x => new RepoViewListItem(x))
-                .ToList();
+                .OrderBy(x => Path.Join(x.OwningAccountName, x.DisplayName));
         }
 
-        if (sortMethod.Equals("Name desending", StringComparison.OrdinalIgnoreCase))
+        if (sortMethod.Equals(SortMethod.NameDescending))
         {
             repositories = _repositoriesForAccount
-                .OrderByDescending(x => Path.Join(x.OwningAccountName, x.DisplayName))
-                .Select(x => new RepoViewListItem(x))
-                .ToList();
+                .OrderByDescending(x => Path.Join(x.OwningAccountName, x.DisplayName));
         }
 
-        var indexer = new IncrementalRepoViewItemViewModel(repositories);
+        var reposToShow = repositories.Select(x => new RepoViewListItem(x)).ToList();
+
+        var indexer = new IncrementalRepoViewItemViewModel(reposToShow);
         Repositories = new IncrementalLoadingCollection<IncrementalRepoViewItemViewModel, RepoViewListItem>(indexer);
     }
 
@@ -660,12 +671,6 @@ public partial class AddRepoViewModel : ObservableObject
             ChangeToRepoPage().Wait();
             return;
         }
-
-        /*
-         *Don't know why this is here.  Remove if not needed.
-         * This was here in case they logged in.
-        SwitchViewsSegmentedView.IsEnabled = true;
-        */
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Account page");
         ShouldShowUrlError = false;
