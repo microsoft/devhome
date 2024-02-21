@@ -171,6 +171,8 @@ public partial class PackageViewModel : ObservableObject
 
     partial void OnSelectedVersionChanged(string value)
     {
+        // If the selected version changed to a version that cannot be selected
+        // (e.g. installed version) then unselect the package
         if (IsSelected && !IsSelectable())
         {
             IsSelected = false;
@@ -277,19 +279,19 @@ public partial class PackageViewModel : ObservableObject
     /// <remarks>Allow selecting a different version to install if the package is installed</remarks>
     private bool IsSelectable()
     {
-        if (IsInstalled)
+        if (!IsInstalled)
         {
-            if (!IsVersioningSupported())
-            {
-                return false;
-            }
-
-            var isValidSelectedVersion = AvailableVersions.Contains(SelectedVersion);
-            var isNotInstalledVersion = SelectedVersion != InstalledVersion;
-            return isValidSelectedVersion && isNotInstalledVersion;
+            return true;
         }
 
-        return true;
+        if (!IsVersioningSupported())
+        {
+            return false;
+        }
+
+        var isValidSelectedVersion = AvailableVersions.Contains(SelectedVersion);
+        var isNotInstalledVersion = SelectedVersion != InstalledVersion;
+        return isValidSelectedVersion && isNotInstalledVersion;
     }
 
     /// <summary>
