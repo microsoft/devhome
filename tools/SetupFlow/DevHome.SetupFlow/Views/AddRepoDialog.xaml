@@ -112,7 +112,7 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <SplitButton x:Name="AccountSplitButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Grid.Row="0" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource BoolToNegationConverter}}"/>
-                    <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
+                    <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource BoolToNegationConverter}}" />
                     <ComboBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoSortOrder" x:Name="SortMethodComboBox" Grid.Row="1" Grid.ColumnSpan="2" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource BoolToNegationConverter}}">
                         <ComboBox.Items>
                             <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoSortOrderNameAscending" Tag="NameAscending"/>
@@ -132,7 +132,7 @@
                 into the command.  I tried converting this to use a command on SelectionChanged and pass SelectedItems into the command.
                 I ran into issues because the viewmodel expects one repository at a time.  Not a list.
                 Another issue is .SelectRange() needs to be called to "select" repos when the dialog is opened more than once. -->
-                <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
+                <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="150" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
                     <ListView.Header>
                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoriesList" Margin="0, 0, 0, 8"/>
                     </ListView.Header>

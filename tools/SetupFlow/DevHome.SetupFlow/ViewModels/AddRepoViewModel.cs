@@ -220,7 +220,7 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Compres against the tags in the sort order combo box.
+    /// Compares against the tags in the sort order combo box.
     /// Determines how to sort the repos.
     /// </summary>
     private enum SortMethod
@@ -230,13 +230,21 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Hidex/Shows UI elements for the selected button.
+    /// Hides/Shows UI elements for the selected button.
     /// </summary>
     /// <param name="selectedItem">The button the user clicked on.</param>
     [RelayCommand]
     public void ChangePage(SegmentedItem selectedItem)
     {
-        var pageToGoTo = Enum.Parse<SegmentedItemTag>(selectedItem.Tag.ToString());
+        if (selectedItem.Tag == null)
+        {
+            return;
+        }
+
+        if (!Enum.TryParse<SegmentedItemTag>(selectedItem.Tag.ToString(), out var pageToGoTo))
+        {
+            return;
+        }
 
         if (pageToGoTo == SegmentedItemTag.Account)
         {
@@ -423,8 +431,16 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     public void SortRepos(TextBlock selectedItem)
     {
+        if (selectedItem.Tag == null)
+        {
+            return;
+        }
+
         IEnumerable<IRepository> repositories = new List<IRepository>();
-        var sortMethod = Enum.Parse<SortMethod>(selectedItem.Tag.ToString());
+        if (!Enum.TryParse<SortMethod>(selectedItem.Tag.ToString(), out var sortMethod))
+        {
+            return;
+        }
 
         if (sortMethod.Equals(SortMethod.NameAscending))
         {

@@ -29,21 +29,15 @@ public class IncrementalRepoViewItemViewModel : IIncrementalSource<RepoViewListI
     public async Task<IEnumerable<RepoViewListItem>> GetPagedItemsAsync(int pageIndex, int pageSize, CancellationToken cancellationToken = default)
     {
         // Gets items from the collection according to pageIndex and pageSize parameters.
-        var result = (from p in _items
-                      select p).Skip(pageIndex * pageSize).Take(pageSize);
-
-        // Simulates a longer request...
-        // Make sure the list is still in order after a refresh,
-        // even if the first page takes longer to load
-        if (pageIndex == 0)
+        IEnumerable<RepoViewListItem> reposToReturn = new List<RepoViewListItem>();
+        await Task.Run(
+            () =>
         {
-            await Task.Delay(200, cancellationToken);
-        }
-        else
-        {
-            await Task.Delay(100, cancellationToken);
-        }
+            reposToReturn = (from p in _items
+                          select p).Skip(pageIndex * pageSize).Take(pageSize);
+        },
+            cancellationToken);
 
-        return result;
+        return reposToReturn;
     }
 }
