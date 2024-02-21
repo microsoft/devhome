@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using DevHome.SetupFlow.Models;
 
@@ -12,17 +11,17 @@ namespace DevHome.SetupFlow.Services.WinGet;
 /// </summary>
 internal sealed class WinGetPackageCache : IWinGetPackageCache
 {
-    private readonly Dictionary<Uri, IWinGetPackage> _cache = new();
+    private readonly Dictionary<string, IWinGetPackage> _cache = new();
     private readonly object _lock = new();
 
     /// <inheritdoc />
-    public IList<IWinGetPackage> GetPackages(IEnumerable<Uri> packageUris, out IEnumerable<Uri> packageUrisNotFound)
+    public IList<IWinGetPackage> GetPackages(IEnumerable<WinGetPackageUri> packageUris, out IEnumerable<WinGetPackageUri> packageUrisNotFound)
     {
         // Lock to ensure all packages fetched are from the same cache state
         lock (_lock)
         {
             var foundPackages = new List<IWinGetPackage>();
-            var notFoundPackageUris = new List<Uri>();
+            var notFoundPackageUris = new List<WinGetPackageUri>();
 
             foreach (var packageUri in packageUris)
             {
@@ -42,11 +41,12 @@ internal sealed class WinGetPackageCache : IWinGetPackageCache
     }
 
     /// <inheritdoc />
-    public bool TryGetPackage(Uri packageUri, out IWinGetPackage package)
+    public bool TryGetPackage(WinGetPackageUri packageUri, out IWinGetPackage package)
     {
         lock (_lock)
         {
-            if (_cache.TryGetValue(packageUri, out package))
+            var key = CreateKey(packageUri);
+            if (_cache.TryGetValue(key, out package))
             {
                 return true;
             }
@@ -57,11 +57,12 @@ internal sealed class WinGetPackageCache : IWinGetPackageCache
     }
 
     /// <inheritdoc />
-    public bool TryAddPackage(Uri packageUri, IWinGetPackage package)
+    public bool TryAddPackage(WinGetPackageUri packageUri, IWinGetPackage package)
     {
         lock (_lock)
         {
-            return _cache.TryAdd(packageUri, package);
+            var key = CreateKey(packageUri);
+            return _cache.TryAdd(key, package);
         }
     }
 
@@ -72,5 +73,15 @@ internal sealed class WinGetPackageCache : IWinGetPackageCache
         {
             _cache.Clear();
         }
+    }
+
+    /// <summary>
+    /// Create a key from a package URI
+    /// </summary>
+    /// <param name="packageUri">Package URI</param>
+    /// <returns>Unique key from a package URI</returns>
+    private string CreateKey(WinGetPackageUri packageUri)
+    {
+        return packageUri.ToString(WinGetPackageUriParameters.None);
     }
 }

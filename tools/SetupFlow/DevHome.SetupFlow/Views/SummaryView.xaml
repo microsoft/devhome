@@ -385,7 +385,7 @@
                                                 <TextBlock Style="{ThemeResource AppManagementPackageTitleTextBlock}" Text="{x:Bind PackageTitle}" />
                                             </controls:PackageDetailsSettingsCard.Header>
                                             <controls:PackageDetailsSettingsCard.Description>
-                                                <TextBlock Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{x:Bind PackageDescription}" />
+                                                <TextBlock Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{x:Bind PackageFullDescription}" />
                                             </controls:PackageDetailsSettingsCard.Description>
                                             <controls:PackageDetailsSettingsCard.HeaderIcon>
                                                 <ImageIcon Source="{x:Bind Icon}"/>
