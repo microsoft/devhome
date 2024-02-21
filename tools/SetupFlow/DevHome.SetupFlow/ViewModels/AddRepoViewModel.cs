@@ -407,7 +407,7 @@ public partial class AddRepoViewModel : ObservableObject
     private Frame _loginUiContent;
 
     /// <summary>
-    /// Solely used to reset the account drop down when the account page is navigated to.
+    /// Soley used to reset the account drop down when the account page is navigated to.
     /// </summary>
     [ObservableProperty]
     private int _accountIndex;
@@ -700,7 +700,7 @@ public partial class AddRepoViewModel : ObservableObject
         ToggleCloneButton();
     }
 
-    public async Task ChangeToRepoPageAsync()
+    public async Task ChangeToRepoPage()
     {
         await GetAccountsAsync(_selectedRepoProvider, LoginUiContent);
         if (Accounts.Any())
