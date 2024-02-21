@@ -107,10 +107,11 @@
                     Message="{x:Bind ViewModel.ShellInfoBarModel.Description, Mode=TwoWay}" 
                     IsOpen="{x:Bind ViewModel.ShellInfoBarModel.IsOpen, Mode=TwoWay}" 
                     MaxWidth="{ThemeResource MaxPageContentWidth}" />
-                <Frame
+                <ScrollViewer
                     Grid.Row="1"
-                    x:Name="NavigationFrame"
-                    CornerRadius="{ThemeResource OverlayCornerRadius}" />
+                    CornerRadius="{ThemeResource OverlayCornerRadius}">
+                    <Frame x:Name="NavigationFrame" />
+                </ScrollViewer>
             </Grid>
         </NavigationView>
 
