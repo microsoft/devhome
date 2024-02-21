@@ -399,7 +399,7 @@ public partial class AddRepoViewModel : ObservableObject
     private Frame _loginUiContent;
 
     /// <summary>
-    /// Soley used to reset the account drop down when the account page is navigated to.
+    /// Solely used to reset the account drop down when the account page is navigated to.
     /// </summary>
     [ObservableProperty]
     private int _accountIndex;
