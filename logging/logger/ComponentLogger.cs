@@ -69,7 +69,6 @@ public class ComponentLogger : IDisposable
             LogStdoutFilter = SeverityLevel.Info,
             LogFileFilter = SeverityLevel.Info,
 #endif
-            FailFastSeverity = FailFastSeverityLevel.Critical,
         };
     }
 
