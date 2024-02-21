@@ -684,7 +684,7 @@ public partial class AddRepoViewModel : ObservableObject
         ToggleCloneButton();
     }
 
-    public async Task ChangeToRepoPage()
+    public async Task ChangeToRepoPageAsync()
     {
         await GetAccountsAsync(_selectedRepoProvider, LoginUiContent);
         if (Accounts.Any())
