@@ -71,7 +71,7 @@
             <ComboBox x:Name="RepositoryProviderComboBox" 
                       Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}"
                       HorizontalAlignment="Stretch"
-                      x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay"
+                      x:Uid="RepositoryDisplay"
                       ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}"
                       SelectedIndex="{x:Bind AddRepoViewModel.AccountIndex, Mode=TwoWay}"
                       Margin="0, 20, 0, 0" >
