@@ -14,7 +14,7 @@ public class Logging
     {
         try
         {
-            _logger ??= new Logger("HyperVExtension", GetLoggingOptions());
+            _logger ??= new DevHome.Logging.Logger("HyperVExtension", GetLoggingOptions());
         }
         catch
         {

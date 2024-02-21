@@ -8,11 +8,13 @@ using System.Management.Automation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
+using HyperVExtension.Common.Extensions;
 using HyperVExtension.CommunicationWithGuest;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Providers;
 using HyperVExtension.Services;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 using Windows.Storage;
@@ -24,6 +26,7 @@ namespace HyperVExtension.Models;
 /// <summary> Class that represents a Hyper-V virtual machine object. </summary>
 public class HyperVVirtualMachine : IComputeSystem
 {
+    private readonly IHost _host;
     private readonly IHyperVManager _hyperVManager;
 
     private readonly PsObjectHelper _psObjectHelper;
@@ -92,8 +95,9 @@ public class HyperVVirtualMachine : IComputeSystem
 
     public string AssociatedProviderId { get; set; } = HyperVStrings.HyperVProviderId;
 
-    public HyperVVirtualMachine(IHyperVManager hyperVManager, PSObject psObject)
+    public HyperVVirtualMachine(IHost host, IHyperVManager hyperVManager, PSObject psObject)
     {
+        _host = host;
         _hyperVManager = hyperVManager;
         _psObjectHelper = new(psObject);
     }
@@ -147,31 +151,36 @@ public class HyperVVirtualMachine : IComputeSystem
     {
         return Task.Run(() =>
         {
-            try
-            {
-                if (State == HyperVStrings.RunningState)
-                {
-                    // VM is already running.
-                    return new ComputeSystemOperationResult();
-                }
-
-                StateChanged(this, ComputeSystemState.Starting);
-                if (_hyperVManager.StartVirtualMachine(VmId))
-                {
-                    StateChanged(this, ComputeSystemState.Running);
-                    Logging.Logger()?.ReportInfo(OperationSuccessString(ComputeSystemOperations.Start));
-                    return new ComputeSystemOperationResult();
-                }
-
-                throw new ComputeSystemOperationException(ComputeSystemOperations.Start);
-            }
-            catch (Exception ex)
-            {
-                StateChanged(this, ComputeSystemState.Unknown);
-                Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.Start), ex);
-                return new ComputeSystemOperationResult(ex, ex.Message);
-            }
+            return Start(options);
         }).AsAsyncOperation();
+    }
+
+    private ComputeSystemOperationResult Start(string options)
+    {
+        try
+        {
+            if (State == HyperVStrings.RunningState)
+            {
+                // VM is already running.
+                return new ComputeSystemOperationResult();
+            }
+
+            StateChanged(this, ComputeSystemState.Starting);
+            if (_hyperVManager.StartVirtualMachine(VmId))
+            {
+                StateChanged(this, ComputeSystemState.Running);
+                Logging.Logger()?.ReportInfo(OperationSuccessString(ComputeSystemOperations.Start));
+                return new ComputeSystemOperationResult();
+            }
+
+            throw new ComputeSystemOperationException(ComputeSystemOperations.Start);
+        }
+        catch (Exception ex)
+        {
+            StateChanged(this, ComputeSystemState.Unknown);
+            Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.Start), ex);
+            return new ComputeSystemOperationResult(ex, ex.Message);
+        }
     }
 
     public IAsyncOperation<ComputeSystemOperationResult> ShutDownAsync(string options)
@@ -530,6 +539,7 @@ public class HyperVVirtualMachine : IComputeSystem
 
     public IApplyConfigurationOperation? ApplyConfiguration(string configuration)
     {
+        const int MaxRetryAttempts = 3;
         try
         {
             var operation = new ApplyConfigurationOperation(this);
@@ -537,10 +547,110 @@ public class HyperVVirtualMachine : IComputeSystem
             {
                 try
                 {
-                    // TODO: Make sure VM is running before applying configuration.
+                    // TODO: Check if VM is already running. Set progress to Starting VM if needed.
                     // Hyper-V KVP service can set succeed even if VM is not running and VM will receive
                     // registry key changes next time it starts.
+                    var startResult = Start(string.Empty);
+                    if (startResult.Result.Status == ProviderOperationStatus.Failure)
+                    {
+                        operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(startResult.Result.ExtendedError.HResult, startResult.Result.DisplayMessage), null);
+                        return;
+                    }
+
                     var guestSession = new GuestKvpSession(Guid.Parse(Id));
+
+                    // Query VM by sending a request to DevSetupAgent.
+                    var getVersionRequest = new GetVersionRequest();
+                    guestSession.SendRequest(getVersionRequest, CancellationToken.None);
+                    var getVersionResponses = guestSession.WaitForResponse(getVersionRequest.RequestId, TimeSpan.FromSeconds(15), true, CancellationToken.None);
+                    if (getVersionResponses.Count > 0)
+                    {
+                        var response = getVersionResponses[0];
+                        if (response is GetVersionResponse getVersionResponse)
+                        {
+                            // TODO: Check if VM can accept new Configure requests. Or if we need to update DevSetupAgent to a new version.
+                        }
+                        else
+                        {
+                            // TODO: Check if we can get any diagnostic from this unexpected response.
+                            Logging.Logger()?.ReportError($"Failed to apply configuration on {DateTime.Now}: VM details: {this}");
+                            operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_FAIL, $"Received unexpected response from the VM"), null);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        // No response from VM. Deploy DevSetupAgent to the VM.
+                        for (var i = 0; i < MaxRetryAttempts; i++)
+                        {
+                            try
+                            {
+                                if (!DeployDevSetupAgent(operation))
+                                {
+                                    // User canceled the operation.
+                                    operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_ABORT, "User canceled the operation"), null);
+                                    return;
+                                }
+
+                                break;
+                            }
+                            catch (DevSetupAgentDeploymentSessionException ex)
+                            {
+                                // We couldn't create PS remote session to the VM. Retry to ask for credentials
+                                if (i == (MaxRetryAttempts - 1))
+                                {
+                                    operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(ex.HResult, ex.Message), null);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+
+                    // Ask VM if there is a logged in user. If not, we need to wait for user to log in.
+                    for (var i = 0; i < MaxRetryAttempts; i++)
+                    {
+                        var userLoggedInRequest = new IsUserLoggedInRequest();
+                        guestSession.SendRequest(userLoggedInRequest, CancellationToken.None);
+                        var userLoggedInResponses = guestSession.WaitForResponse(userLoggedInRequest.RequestId, TimeSpan.FromSeconds(15), true, CancellationToken.None);
+                        if (userLoggedInResponses.Count > 0)
+                        {
+                            var response = userLoggedInResponses[0];
+                            if (response is IsUserLoggedInResponse userLoggedInResponse)
+                            {
+                                if (!userLoggedInResponse.IsUserLoggedIn)
+                                {
+                                    // User is not logged in. We need to wait for user to log in.
+                                    if (i == (MaxRetryAttempts - 1))
+                                    {
+                                        operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_ABORT, "No interactive user on the VM"), null);
+                                        return;
+                                    }
+
+                                    if (!WaitForUserToLogin(operation))
+                                    {
+                                        // User canceled the operation.
+                                        operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_ABORT, "User canceled the operation"), null);
+                                        return;
+                                    }
+
+                                    // Send request again to check if user is logged in if we didn't exceed maximum attempt number.
+                                }
+                                else
+                                {
+                                    // User is logged in. We can continue with configuration.
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                // TODO: Check if we can get any diagnostic from this unexpected response.
+                                Logging.Logger()?.ReportError($"Failed to apply configuration on {DateTime.Now}: VM details: {this}");
+                                operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_FAIL, $"Received unexpected response from the VM"), null);
+                                return;
+                            }
+                        }
+                    }
+
                     var configureRequest = new ConfigureRequest(configuration);
                     guestSession.SendRequest(configureRequest, CancellationToken.None);
 
@@ -566,7 +676,7 @@ public class HyperVVirtualMachine : IComputeSystem
                                 LogApplyConfigurationResult(configureResponse.ApplyConfigurationResult);
 
                                 // Create SDK's result. Set Completed status and event.
-                                operation.SetState(ConfigurationSetState.Completed, null, configureResponse.ApplyConfigurationResult);
+                                operation.SetState(ConfigurationSetState.Completed, null, configureResponse.ApplyConfigurationResult, null);
 
                                 // Receiving ConfigureResponse means operation has completed. We don't expect anymore responses.
                                 isCompleted = true;
@@ -577,7 +687,7 @@ public class HyperVVirtualMachine : IComputeSystem
                                 LogApplyConfigurationProgress(configureProgressResponse.ProgressData);
 
                                 // Create SDK's result. Set Completed status and event.
-                                operation.SetState(ConfigurationSetState.InProgress, configureProgressResponse.ProgressData, null);
+                                operation.SetState(ConfigurationSetState.InProgress, configureProgressResponse.ProgressData, null, null);
                             }
                             else
                             {
@@ -593,7 +703,7 @@ public class HyperVVirtualMachine : IComputeSystem
                 catch (Exception ex)
                 {
                     Logging.Logger()?.ReportError($"Failed to apply configuration on {DateTime.Now}: VM details: {this}", ex);
-                    operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(ex.HResult, ex.Message));
+                    operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(ex.HResult, ex.Message), null);
                 }
             });
 
@@ -604,6 +714,37 @@ public class HyperVVirtualMachine : IComputeSystem
             Logging.Logger()?.ReportError($"Failed to apply configuration on {DateTime.Now}: VM details: {this}", ex);
             return new ApplyConfigurationOperation(this, ex);
         }
+    }
+
+    private bool DeployDevSetupAgent(ApplyConfigurationOperation operation)
+    {
+        var powerShell = _host.GetService<IPowerShellService>();
+        var credentialsAdaptiveCardSession = new VmCredentialAdaptiveCardSession(operation);
+
+        operation.SetState(ConfigurationSetState.WaitingForAdminUserLogon, null, null, credentialsAdaptiveCardSession);
+
+        (var userName, var password) = credentialsAdaptiveCardSession.WaitForCredentials();
+
+        if ((userName != null) && (password != null))
+        {
+            var deploymentHelper = new DevSetupAgentDeploymentHelper(powerShell, Id);
+            deploymentHelper.DeployDevSetupAgent(userName, password);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private bool WaitForUserToLogin(ApplyConfigurationOperation operation)
+    {
+        // Ask user to login to the VM and wait for confirmation.
+        var waitForLoginAdaptiveCardSession = new WaitForLoginAdaptiveCardSession(operation);
+
+        operation.SetState(ConfigurationSetState.WaitingForUserLogon, null, null, waitForLoginAdaptiveCardSession);
+
+        return waitForLoginAdaptiveCardSession.WaitForUserResponse();
     }
 
     // TODO: This can be to noisy. We need "verbose" logging level for this.

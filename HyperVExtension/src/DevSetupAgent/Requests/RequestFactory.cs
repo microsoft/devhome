@@ -21,6 +21,7 @@ public class RequestFactory : IRequestFactory
         { "GetVersion", (requestContext) => new GetVersionRequest(requestContext) },
         { "Configure", (requestContext) => new ConfigureRequest(requestContext) },
         { "Ack", (requestContext) => new AckRequest(requestContext) },
+        { "IsUserLoggedIn", (requestContext) => new IsUserLoggedInRequest(requestContext) },
     };
 
     public RequestFactory()
