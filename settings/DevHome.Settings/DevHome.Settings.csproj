@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
+
   <ItemGroup>
     <Content Update="Assets\LightHostConfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -15,6 +16,7 @@
        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
   <ItemGroup>
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\AccountsPage.xaml" />
@@ -64,15 +66,16 @@
     <Page Update="Views\ExtensionSettingsPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+    <Page Update="Views\ExperimentalFeaturesPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="TelemetryEvents\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Page Update="Views\ExperimentalFeaturesPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
 </Project>
