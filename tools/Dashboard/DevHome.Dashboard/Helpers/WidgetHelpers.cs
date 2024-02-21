@@ -101,7 +101,7 @@ internal sealed class WidgetHelpers
         var include = enabledWidgetProviderIds.ToList().Contains(familyNamePartOfProviderId);
         var log = Log.ForContext("SourceContext", nameof(WidgetHelpers));
         log.Information($"Found provider Id = {providerId}, include = {include}");
-        return include;
+        return !providerId.Contains("Peregrine");
     }
 
     public static string CreateWidgetCustomState(int ordinal)

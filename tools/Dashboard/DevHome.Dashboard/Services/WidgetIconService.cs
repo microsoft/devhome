@@ -94,7 +94,15 @@ public class WidgetIconService : IWidgetIconService
         {
             using var bitmapStream = await iconStreamRef.OpenReadAsync();
             var itemImage = new BitmapImage();
-            await itemImage.SetSourceAsync(bitmapStream);
+            try
+            {
+                await itemImage.SetSourceAsync(bitmapStream);
+                completionSource.TrySetResult(itemImage);
+            }
+            catch (Exception)
+            {
+            }
+
             completionSource.TrySetResult(itemImage);
         });
 
