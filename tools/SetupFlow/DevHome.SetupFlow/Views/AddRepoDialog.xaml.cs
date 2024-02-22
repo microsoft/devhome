@@ -251,7 +251,7 @@ public partial class AddRepoDialog : ContentDialog
             if (!string.IsNullOrEmpty(repositoryProviderName))
             {
                 var deferral = args.GetDeferral();
-                await AddRepoViewModel.ChangeToRepoPage();
+                await AddRepoViewModel.ChangeToRepoPageAsync();
                 deferral.Complete();
             }
         }

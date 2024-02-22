@@ -238,7 +238,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         if (pageToGoTo == SegmentedItemTag.Account)
         {
-            await ChangeToAccountPage();
+            await ChangeToAccountPageAsync();
             return;
         }
 
@@ -617,7 +617,7 @@ public partial class AddRepoViewModel : ObservableObject
         ToggleCloneButton();
     }
 
-    public async Task ChangeToAccountPage()
+    public async Task ChangeToAccountPageAsync()
     {
         AccountIndex = -1;
 
@@ -641,7 +641,7 @@ public partial class AddRepoViewModel : ObservableObject
         // switch to the repo page.
         if (CanSkipAccountConnection)
         {
-            await ChangeToRepoPage();
+            await ChangeToRepoPageAsync();
             return;
         }
 
@@ -658,7 +658,7 @@ public partial class AddRepoViewModel : ObservableObject
         ToggleCloneButton();
     }
 
-    public async Task ChangeToRepoPage()
+    public async Task ChangeToRepoPageAsync()
     {
         await GetAccountsAsync(_selectedRepoProvider, LoginUiContent);
         if (Accounts.Any())

@@ -45,7 +45,7 @@ public class AddRepoDialogTests : BaseSetupFlowTest
     public async Task SwitchToAccountScreenTest()
     {
         var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), null, TestHost.GetService<IDevDriveManager>());
-        await addRepoViewModel.ChangeToAccountPage();
+        await addRepoViewModel.ChangeToAccountPageAsync();
         Assert.AreEqual(false, addRepoViewModel.ShowUrlPage);
         Assert.AreEqual(true, addRepoViewModel.ShowAccountPage);
         Assert.AreEqual(false, addRepoViewModel.ShowRepoPage);
