@@ -95,9 +95,7 @@
                                                            CornerRadius="0,0,3,3"
                                                            IsClickEnabled="{x:Bind HasSettingsProvider}"
                                                            Command="{x:Bind NavigateSettingsCommand}">
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                                <ToggleSwitch IsOn="{x:Bind IsExtensionEnabled, Mode=TwoWay}"/>
-                                            </StackPanel>
+                                            <ToggleSwitch IsOn="{x:Bind IsExtensionEnabled, Mode=TwoWay}"/>
                                         </ctControls:SettingsCard>
                                     </DataTemplate>
                                 </ctControls:SettingsExpander.ItemTemplate>
