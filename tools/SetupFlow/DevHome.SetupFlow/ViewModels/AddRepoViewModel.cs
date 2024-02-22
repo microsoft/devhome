@@ -139,7 +139,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// All repositories currently shown on the screen.
     /// </summary>
     [ObservableProperty]
-    private IncrementalLoadingCollection<IncrementalRepoViewItemViewModel, RepoViewListItem> _repositories = new();
+    private ObservableCollection<RepoViewListItem> _repositories = new();
 
     /// <summary>
     /// Should the URL page be visible?
@@ -220,16 +220,6 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Compares against the tags in the sort order combo box.
-    /// Determines how to sort the repos.
-    /// </summary>
-    private enum SortMethod
-    {
-        NameAscending,
-        NameDescending,
-    }
-
-    /// <summary>
     /// Hides/Shows UI elements for the selected button.
     /// </summary>
     /// <param name="selectedItem">The button the user clicked on.</param>
@@ -302,9 +292,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         _isFiltering = true;
-        var localRepositoires = OrderRepos(filteredRepositories).ToList();
-        var indexer = new IncrementalRepoViewItemViewModel(localRepositoires);
-        Repositories = new IncrementalLoadingCollection<IncrementalRepoViewItemViewModel, RepoViewListItem>(indexer);
+        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(filteredRepositories));
         _isFiltering = false;
     }
 
@@ -426,38 +414,6 @@ public partial class AddRepoViewModel : ObservableObject
             var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
             _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
         });
-    }
-
-    [RelayCommand]
-    public void SortRepos(TextBlock selectedItem)
-    {
-        if (selectedItem.Tag == null)
-        {
-            return;
-        }
-
-        IEnumerable<IRepository> repositories = new List<IRepository>();
-        if (!Enum.TryParse<SortMethod>(selectedItem.Tag.ToString(), out var sortMethod))
-        {
-            return;
-        }
-
-        if (sortMethod.Equals(SortMethod.NameAscending))
-        {
-            repositories = _repositoriesForAccount
-                .OrderBy(x => Path.Join(x.OwningAccountName, x.DisplayName));
-        }
-
-        if (sortMethod.Equals(SortMethod.NameDescending))
-        {
-            repositories = _repositoriesForAccount
-                .OrderByDescending(x => Path.Join(x.OwningAccountName, x.DisplayName));
-        }
-
-        var reposToShow = repositories.Select(x => new RepoViewListItem(x)).ToList();
-
-        var indexer = new IncrementalRepoViewItemViewModel(reposToShow);
-        Repositories = new IncrementalLoadingCollection<IncrementalRepoViewItemViewModel, RepoViewListItem>(indexer);
     }
 
     [RelayCommand]
@@ -1137,9 +1093,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <returns>All previously selected repos excluding any added via URL.</returns>
     public IEnumerable<RepoViewListItem> SetRepositories(string repositoryProvider, string loginId)
     {
-        var localRepositoires = OrderRepos(_repositoriesForAccount).ToList();
-        var indexer = new IncrementalRepoViewItemViewModel(localRepositoires);
-        Repositories = new IncrementalLoadingCollection<IncrementalRepoViewItemViewModel, RepoViewListItem>(indexer);
+        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
             .Where(x => x.ProviderName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)

@@ -107,23 +107,8 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="1.5*"/>
                     </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
                     <SplitButton x:Name="AccountSplitButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Grid.Row="0" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource BoolToNegationConverter}}"/>
                     <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="RepoTool_FilterTextBox" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource BoolToNegationConverter}}" />
-                    <ComboBox x:Uid="RepoSortOrder" x:Name="SortMethodComboBox" Grid.Row="1" Grid.ColumnSpan="2" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource BoolToNegationConverter}}">
-                        <ComboBox.Items>
-                            <TextBlock x:Uid="RepoSortOrderNameAscending" Tag="NameAscending"/>
-                            <TextBlock x:Uid="RepoSortOrderNameDescending" Tag="NameDescending"/>
-                        </ComboBox.Items>
-                        <i:Interaction.Behaviors>
-                            <ic:EventTriggerBehavior EventName="SelectionChanged">
-                                <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.SortReposCommand}" CommandParameter="{x:Bind SortMethodComboBox.SelectedItem, Mode=OneWay}"/>
-                            </ic:EventTriggerBehavior>
-                        </i:Interaction.Behaviors>
-                    </ComboBox>
                 </Grid>
                 <Grid Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay}" Height="300" Width="300">
                     <ProgressRing/>

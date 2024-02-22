@@ -1348,16 +1348,4 @@
   <data name="ConfigurationUnitNotRunDueToFailedAssert" xml:space="preserve">
     <value>This configuration unit was not run because an assert failed or was false.</value>
   </data>
-  <data name="RepoSortOrder.PlaceholderText" xml:space="preserve">
-    <value>Sort by</value>
-    <comment>Placeholder for the sort combo box</comment>
-  </data>
-  <data name="RepoSortOrderNameAscending.Text" xml:space="preserve">
-    <value>Name Ascending</value>
-    <comment>Shown as a repo sort option</comment>
-  </data>
-  <data name="RepoSortOrderNameDescending.Text" xml:space="preserve">
-    <value>Name Descending</value>
-    <comment>Shown as a repo sort option</comment>
-  </data>
 </root>
