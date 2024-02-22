@@ -15,7 +15,7 @@ using DevHome.Settings.Views;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace DevHome.Settings.ViewModels;
+namespace DevHome.ExtensionLibrary.ViewModels;
 
 public partial class ExtensionSettingsViewModel : ObservableObject
 {
