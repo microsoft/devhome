@@ -26,7 +26,8 @@ public class AddRepoDialogTests : BaseSetupFlowTest
         Assert.IsTrue(addRepoViewModel.ShouldEnablePrimaryButton);
     }
 
-    [TestMethod]
+    [UITestMethod]
+    [Ignore("Making a new frame throws a COM exception.  Running this as UITestMethod does not help")]
     public void SwitchToUrlScreenTest()
     {
         var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), null, TestHost.GetService<IDevDriveManager>());
@@ -41,7 +42,7 @@ public class AddRepoDialogTests : BaseSetupFlowTest
 
     [TestMethod]
     [Ignore("IextensionService uses Application.Current and tests break when Application.Current is used.  Ignore until fixed.")]
-    public async void SwitchToAccountScreenTest()
+    public async Task SwitchToAccountScreenTest()
     {
         var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), null, TestHost.GetService<IDevDriveManager>());
         await addRepoViewModel.ChangeToAccountPage();
