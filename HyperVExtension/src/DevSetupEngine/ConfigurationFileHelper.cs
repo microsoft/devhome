@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Buffers;
+using Microsoft.Management.Configuration;
 using Microsoft.Management.Configuration.Processor;
+using Microsoft.Management.Configuration.SetProcessorFactory;
 using Windows.Storage.Streams;
-
+using WinRT;
 using DevSetupEngineTypes = Microsoft.Windows.DevHome.DevSetupEngine;
 using WinGet = Microsoft.Management.Configuration;
 
@@ -49,15 +52,34 @@ public class ConfigurationFileHelper
     {
         try
         {
-            var modulesPath = Path.Combine(AppContext.BaseDirectory, @"runtimes\win\lib\net6.0\Modules");
+            var modulesPath = Path.Combine(AppContext.BaseDirectory, @"runtimes\win\lib\net8.0\Modules");
             var externalModulesPath = Path.Combine(AppContext.BaseDirectory, "ExternalModules");
-            var properties = new ConfigurationProcessorFactoryProperties();
-            properties.Policy = ConfigurationProcessorPolicy.Unrestricted;
-            properties.AdditionalModulePaths = new List<string>() { modulesPath, externalModulesPath };
-            Logging.Logger()?.ReportInfo($"Additional module paths: {string.Join(", ", properties.AdditionalModulePaths)}");
-            var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
 
-            _processor = new WinGet.ConfigurationProcessor(factory);
+            ////var properties = new ConfigurationProcessorFactoryProperties();
+            ////properties.Policy = ConfigurationProcessorPolicy.Unrestricted;
+            ////properties.AdditionalModulePaths = new List<string>() { modulesPath, externalModulesPath };
+            ////Logging.Logger()?.ReportInfo($"Additional module paths: {string.Join(", ", properties.AdditionalModulePaths)}");
+
+            ////PowerShellConfigurationSetProcessorFactory factory1 = new PowerShellConfigurationSetProcessorFactory();
+            ////var processor = new ConfigurationProcessor(factory1);
+
+            // IObjectReference factoryInterface = MarshalInterface<IConfigurationSetProcessorFactory>.CreateMarshaler(factory1);
+
+            // factory1.CreateSetProcessor()
+
+            // var f = WindowsPackageManagerConfigurationCompleteOutOfProcessFactoryInitialization(0, factoryInterface.ThisPtr, memoryHandle, initEventHandle, completionEventHandle, parentProcessHandle);
+
+            // ConfigurationStaticFunctions config = new();
+            ////var factory = await config.CreateConfigurationSetProcessorFactoryAsync("powershell").AsTask();
+
+            ////var pwshFactory = (IPwshConfigurationSetProcessorFactoryProperties)factory;
+            PowerShellConfigurationSetProcessorFactory pwshFactory = new PowerShellConfigurationSetProcessorFactory();
+            pwshFactory.Policy = PowerShellConfigurationProcessorPolicy.Unrestricted;
+            pwshFactory.AdditionalModulePaths = new List<string>() { modulesPath, externalModulesPath };
+            Logging.Logger()?.ReportInfo($"Additional module paths: {string.Join(", ", pwshFactory.AdditionalModulePaths)}");
+
+            ////_processor = config.CreateConfigurationProcessor(factory);
+            _processor = new ConfigurationProcessor(pwshFactory);
             _processor.MinimumLevel = WinGet.DiagnosticLevel.Verbose;
             _processor.Diagnostics += (sender, args) => LogConfigurationDiagnostics(args);
             _processor.Caller = nameof(DevSetupEngine);
@@ -111,7 +133,7 @@ public class ConfigurationFileHelper
         foreach (var unitResult in result.UnitResults)
         {
             var unit = new ConfigurationResultTypes.ConfigurationUnit(
-                unitResult.Unit.UnitName,
+                unitResult.Unit.Type,
                 unitResult.Unit.Identifier,
                 (DevSetupEngineTypes.ConfigurationUnitState)unitResult.Unit.State,
                 false,
@@ -150,7 +172,7 @@ public class ConfigurationFileHelper
         return new ConfigurationResultTypes.ApplyConfigurationResult(applyConfigurationSetResult.ResultCode, string.Empty, openConfigurationSetResult, applyConfigurationSetResult);
     }
 
-    private void LogConfigurationDiagnostics(WinGet.DiagnosticInformation diagnosticInformation)
+    private void LogConfigurationDiagnostics(WinGet.IDiagnosticInformation diagnosticInformation)
     {
         Logging.Logger()?.ReportInfo($"WinGet: {diagnosticInformation.Message}");
 
