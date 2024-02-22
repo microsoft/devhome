@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,7 +10,6 @@ using DevHome.Common.Services;
 using DevHome.Common.Views;
 using DevHome.Logging;
 using DevHome.Settings.Models;
-using DevHome.Settings.Views;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 
@@ -22,17 +20,14 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     private readonly IExtensionService _extensionService;
     private readonly INavigationService _navigationService;
 
+    public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
+
     public ExtensionSettingsViewModel(IExtensionService extensionService, INavigationService navigationService)
     {
         _extensionService = extensionService;
         _navigationService = navigationService;
 
-        Breadcrumbs = new ObservableCollection<Breadcrumb> { };
-    }
-
-    public ObservableCollection<Breadcrumb> Breadcrumbs
-    {
-        get; set;
+        Breadcrumbs = new ObservableCollection<Breadcrumb>();
     }
 
     [RelayCommand]
@@ -73,25 +68,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     public void FillBreadcrumbBar(string lastCrumbName)
     {
         var stringResource = new StringResource("DevHome.Settings/Resources");
-        var navigationHistory = _navigationService.Frame?.BackStack;
-        var lastPageType = navigationHistory?.Last().SourcePageType;
-
-        if (lastPageType == typeof(ExtensionsPage))
-        {
-            // If the last page we came from was Settings > Extensions, add those crumbs.
-            Breadcrumbs.Add(new Breadcrumb(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!));
-            Breadcrumbs.Add(new Breadcrumb(stringResource.GetLocalized("Settings_Extensions_Header"), typeof(ExtensionsViewModel).FullName!));
-        }
-        else
-        {
-            // If the last page we came from was the Extension page, add that crumb.
-            // The ViewModel name is referenced as a string because using the type directly would create a circular
-            // reference between Settings and ExtensionLibrary projects.
-            Breadcrumbs.Add(new Breadcrumb(
-                stringResource.GetLocalized("Settings_Extensions_Header"),
-                "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel"));
-        }
-
+        Breadcrumbs.Add(new(stringResource.GetLocalized("Settings_Extensions_Header"), typeof(ExtensionLibraryViewModel).FullName!));
         Breadcrumbs.Add(new Breadcrumb(lastCrumbName, typeof(ExtensionSettingsViewModel).FullName!));
     }
 
