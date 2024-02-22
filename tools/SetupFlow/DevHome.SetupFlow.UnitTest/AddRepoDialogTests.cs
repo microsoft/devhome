@@ -41,10 +41,10 @@ public class AddRepoDialogTests : BaseSetupFlowTest
 
     [TestMethod]
     [Ignore("IextensionService uses Application.Current and tests break when Application.Current is used.  Ignore until fixed.")]
-    public void SwitchToAccountScreenTest()
+    public async void SwitchToAccountScreenTest()
     {
         var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), null, TestHost.GetService<IDevDriveManager>());
-        addRepoViewModel.ChangeToAccountPage();
+        await addRepoViewModel.ChangeToAccountPage();
         Assert.AreEqual(false, addRepoViewModel.ShowUrlPage);
         Assert.AreEqual(true, addRepoViewModel.ShowAccountPage);
         Assert.AreEqual(false, addRepoViewModel.ShowRepoPage);

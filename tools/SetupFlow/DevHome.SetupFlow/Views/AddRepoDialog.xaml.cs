@@ -167,9 +167,8 @@ public partial class AddRepoDialog : ContentDialog
     private void RepositoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var loginId = AddRepoViewModel.SelectedAccount;
-        var providerName = (string)RepositoryProviderComboBox.SelectedValue;
 
-        AddRepoViewModel.AddOrRemoveRepository(providerName, loginId, e.AddedItems, e.RemovedItems);
+        AddRepoViewModel.AddOrRemoveRepository(loginId, e.AddedItems, e.RemovedItems);
         AddRepoViewModel.ToggleCloneButton();
     }
 
