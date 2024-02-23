@@ -51,16 +51,16 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         Console.WriteLine(value);
     }
 
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName)
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName, string version)
     {
-        var taskArguments = GetInstallPackageTaskArguments(packageId, catalogName);
+        var taskArguments = GetInstallPackageTaskArguments(packageId, catalogName, version);
         return ValidateAndExecuteAsync(
             taskArguments,
             async () =>
             {
                 Log.Logger?.ReportInfo(Log.Component.Elevated, $"Installing package elevated: '{packageId}' from '{catalogName}'");
                 var task = new ElevatedInstallTask();
-                return await task.InstallPackage(taskArguments.PackageId, taskArguments.CatalogName);
+                return await task.InstallPackage(taskArguments.PackageId, taskArguments.CatalogName, version);
             },
             result => result.TaskSucceeded).AsAsyncOperation();
     }
@@ -120,14 +120,14 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         }
     }
 
-    private InstallPackageTaskArguments GetInstallPackageTaskArguments(string packageId, string catalogName)
+    private InstallPackageTaskArguments GetInstallPackageTaskArguments(string packageId, string catalogName, string version)
     {
         // Ensure the package to install has been pre-approved by checking against the process tasks arguments
-        var taskArguments = _tasksArguments.InstallPackages?.FirstOrDefault(def => def.PackageId == packageId && def.CatalogName == catalogName);
+        var taskArguments = _tasksArguments.InstallPackages?.FirstOrDefault(def => def.PackageId == packageId && def.CatalogName == catalogName && def.Version == version);
         if (taskArguments == null)
         {
-            Log.Logger?.ReportError(Log.Component.Elevated, $"No match found for PackageId={packageId} and CatalogId={catalogName} in the process tasks arguments.");
-            throw new ArgumentException($"Failed to install '{packageId}' from '{catalogName}' because it was not in the pre-approved tasks arguments");
+            Log.Logger?.ReportError(Log.Component.Elevated, $"No match found for PackageId={packageId}, CatalogId={catalogName} and Version={version} in the process tasks arguments.");
+            throw new ArgumentException($"Failed to install '{packageId}' ({version}) from '{catalogName}' because it was not in the pre-approved tasks arguments");
         }
 
         return taskArguments;

@@ -17,7 +17,7 @@ public class PackageHelper
         package.Setup(p => p.Name).Returns("Mock Package Name");
         package.Setup(p => p.PackageUrl).Returns(new Uri("https://packageUrl"));
         package.Setup(p => p.PublisherUrl).Returns(new Uri("https://publisherUrl"));
-        package.Setup(p => p.Version).Returns("Mock Version");
+        package.Setup(p => p.InstalledVersion).Returns("Mock Version");
 
         // Allow icon properties to be set and get like regular properties
         package.SetupProperty(p => p.LightThemeIcon);

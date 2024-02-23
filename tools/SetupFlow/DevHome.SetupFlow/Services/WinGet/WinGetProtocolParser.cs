@@ -21,11 +21,6 @@ internal sealed class WinGetProtocolParser : IWinGetProtocolParser
     }
 
     /// <summary>
-    /// Windows package manager custom protocol scheme
-    /// </summary>
-    private const string Scheme = "x-ms-winget";
-
-    /// <summary>
     /// Reserved URI name for the WinGet catalog
     /// </summary>
     private const string ReservedWingetCatalogURIName = "winget";
@@ -36,22 +31,9 @@ internal sealed class WinGetProtocolParser : IWinGetProtocolParser
     private const string ReservedMsStoreCatalogURIName = "msstore";
 
     /// <inheritdoc/>
-    public WinGetProtocolParserResult ParsePackageUri(Uri packageUri)
+    public async Task<WinGetCatalog> ResolveCatalogAsync(WinGetPackageUri packageUri)
     {
-        if (packageUri.Scheme == Scheme && packageUri.Segments.Length == 2)
-        {
-            var packageId = packageUri.Segments[1];
-            var catalogUriName = packageUri.Host;
-            return new(packageId, catalogUriName);
-        }
-
-        return null;
-    }
-
-    /// <inheritdoc/>
-    public async Task<WinGetCatalog> ResolveCatalogAsync(WinGetProtocolParserResult result)
-    {
-        var catalogName = result.CatalogUriName;
+        var catalogName = packageUri.CatalogName;
 
         // 'winget' catalog
         if (catalogName == ReservedWingetCatalogURIName)
@@ -70,16 +52,16 @@ internal sealed class WinGetProtocolParser : IWinGetProtocolParser
     }
 
     /// <inheritdoc/>
-    public Uri CreateWinGetCatalogPackageUri(string packageId) => new($"{Scheme}://{ReservedWingetCatalogURIName}/{packageId}");
+    public WinGetPackageUri CreateWinGetCatalogPackageUri(string packageId) => new(ReservedWingetCatalogURIName, packageId);
 
     /// <inheritdoc/>
-    public Uri CreateMsStoreCatalogPackageUri(string packageId) => new($"{Scheme}://{ReservedMsStoreCatalogURIName}/{packageId}");
+    public WinGetPackageUri CreateMsStoreCatalogPackageUri(string packageId) => new(ReservedMsStoreCatalogURIName, packageId);
 
     /// <inheritdoc/>
-    public Uri CreateCustomCatalogPackageUri(string packageId, string catalogName) => new($"{Scheme}://{catalogName}/{packageId}");
+    public WinGetPackageUri CreateCustomCatalogPackageUri(string packageId, string catalogName) => new(catalogName, packageId);
 
     /// <inheritdoc/>
-    public Uri CreatePackageUri(string packageId, WinGetCatalog catalog)
+    public WinGetPackageUri CreatePackageUri(string packageId, WinGetCatalog catalog)
     {
         return catalog.Type switch
         {
@@ -91,10 +73,5 @@ internal sealed class WinGetProtocolParser : IWinGetProtocolParser
     }
 
     /// <inheritdoc/>
-    public Uri CreatePackageUri(IWinGetPackage package)
-    {
-        return CreateCustomCatalogPackageUri(package.Id, package.CatalogName);
-    }
+    public WinGetPackageUri CreatePackageUri(IWinGetPackage package) => CreateCustomCatalogPackageUri(package.Id, package.CatalogName);
 }
-
-public record class WinGetProtocolParserResult(string PackageId, string CatalogUriName);

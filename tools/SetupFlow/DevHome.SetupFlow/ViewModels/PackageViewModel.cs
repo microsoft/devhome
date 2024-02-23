@@ -2,13 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
@@ -45,7 +46,6 @@ public partial class PackageViewModel : ObservableObject
     private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
     private readonly IScreenReaderService _screenReaderService;
-    private readonly WindowsPackageManagerFactory _wingetFactory;
 
     /// <summary>
     /// Occurs after the package selection changes
@@ -59,13 +59,22 @@ public partial class PackageViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ButtonAutomationName))]
     private bool _isSelected;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TooltipVersion))]
+    [NotifyPropertyChangedFor(nameof(PackageFullDescription))]
+    [NotifyPropertyChangedFor(nameof(CanSelect))]
+    private string _selectedVersion;
+
+    public bool CanSelect => IsSelectable();
+
+    public bool ShowVersionList => IsVersioningSupported();
+
     public PackageViewModel(
         ISetupFlowStringResource stringResource,
         IWindowsPackageManager wpm,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
         IScreenReaderService screenReaderService,
-        WindowsPackageManagerFactory wingetFactory,
         IHost host)
     {
         _stringResource = stringResource;
@@ -73,12 +82,13 @@ public partial class PackageViewModel : ObservableObject
         _package = package;
         _themeSelector = themeSelector;
         _screenReaderService = screenReaderService;
-        _wingetFactory = wingetFactory;
 
         // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
-        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
+        _installPackageTask = new Lazy<InstallPackageTask>(() => CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
+
+        SelectedVersion = GetDefaultSelectedVersion();
     }
 
     public PackageUniqueKey UniqueKey => _package.UniqueKey;
@@ -89,23 +99,27 @@ public partial class PackageViewModel : ObservableObject
 
     public string Name => _package.Name;
 
-    public string Version => _package.Version;
+    public string InstalledVersion => _package.InstalledVersion;
+
+    public IReadOnlyList<string> AvailableVersions => _package.AvailableVersions;
 
     public bool IsInstalled => _package.IsInstalled;
 
     public string CatalogName => _package.CatalogName;
 
-    public string PublisherName => _package.PublisherName;
+    public string PublisherName => string.IsNullOrWhiteSpace(_package.PublisherName) ? PublisherNameNotAvailable : _package.PublisherName;
 
     public string InstallationNotes => _package.InstallationNotes;
 
-    public string PackageDescription => GetPackageDescription();
+    public string PackageFullDescription => GetPackageFullDescription();
+
+    public string PackageShortDescription => GetPackageShortDescription();
 
     public string PackageTitle => Name;
 
     public string TooltipName => _stringResource.GetLocalized(StringResourceKey.PackageNameTooltip, Name);
 
-    public string TooltipVersion => _stringResource.GetLocalized(StringResourceKey.PackageVersionTooltip, Version);
+    public string TooltipVersion => _stringResource.GetLocalized(StringResourceKey.PackageVersionTooltip, SelectedVersion);
 
     public string TooltipIsInstalled => IsInstalled ? _stringResource.GetLocalized(StringResourceKey.PackageInstalledTooltip) : string.Empty;
 
@@ -155,6 +169,16 @@ public partial class PackageViewModel : ObservableObject
 
     partial void OnIsSelectedChanged(bool value) => SelectionChanged?.Invoke(null, this);
 
+    partial void OnSelectedVersionChanged(string value)
+    {
+        // If the selected version changed to a version that cannot be selected
+        // (e.g. installed version) then unselect the package
+        if (IsSelected && !IsSelectable())
+        {
+            IsSelected = false;
+        }
+    }
+
     /// <summary>
     /// Toggle package selection
     /// </summary>
@@ -199,21 +223,33 @@ public partial class PackageViewModel : ObservableObject
 
     private InstallPackageTask CreateInstallTask(Guid activityId)
     {
-        return _package.CreateInstallTask(_wpm, _stringResource, _wingetFactory, activityId);
+        return _package.CreateInstallTask(_wpm, _stringResource, SelectedVersion, activityId);
     }
 
-    private string GetPackageDescription()
+    private string GetPackageShortDescription()
+    {
+        // Source | Publisher name
+        if (!string.IsNullOrEmpty(_package.PublisherName))
+        {
+            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, CatalogName, PublisherName);
+        }
+
+        // Source
+        return CatalogName;
+    }
+
+    private string GetPackageFullDescription()
     {
         // Version | Source | Publisher name
         if (!_wpm.IsMsStorePackage(_package) && !string.IsNullOrEmpty(_package.PublisherName))
         {
-            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, Version, CatalogName, PublisherName);
+            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, SelectedVersion, CatalogName, PublisherName);
         }
 
         // Version | Source
         if (!_wpm.IsMsStorePackage(_package))
         {
-            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, Version, CatalogName);
+            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, SelectedVersion, CatalogName);
         }
 
         // Source | Publisher name
@@ -224,6 +260,47 @@ public partial class PackageViewModel : ObservableObject
 
         // Source
         return CatalogName;
+    }
+
+    /// <summary>
+    /// Indicates if a specific version of the package can be selected to install
+    /// </summary>
+    /// <returns>True a package version can be specified to install</returns>
+    private bool IsVersioningSupported()
+    {
+        // Store packages have a single version
+        return !_wpm.IsMsStorePackage(_package);
+    }
+
+    /// <summary>
+    /// Checks if the package is selectable
+    /// </summary>
+    /// <returns>True if the package is selectable</returns>
+    /// <remarks>Allow selecting a different version to install if the package is installed</remarks>
+    private bool IsSelectable()
+    {
+        if (!IsInstalled)
+        {
+            return true;
+        }
+
+        if (!IsVersioningSupported())
+        {
+            return false;
+        }
+
+        var isValidSelectedVersion = AvailableVersions.Contains(SelectedVersion);
+        var isNotInstalledVersion = SelectedVersion != InstalledVersion;
+        return isValidSelectedVersion && isNotInstalledVersion;
+    }
+
+    /// <summary>
+    /// Get the default selected version
+    /// </summary>
+    /// <returns>Default selected version</returns>
+    private string GetDefaultSelectedVersion()
+    {
+        return _package.IsInstalled ? _package.InstalledVersion : _package.DefaultInstallVersion;
     }
 
     /// <summary>

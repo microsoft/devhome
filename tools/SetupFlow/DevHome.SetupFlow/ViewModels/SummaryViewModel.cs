@@ -224,8 +224,13 @@ public partial class SummaryViewModel : SetupPageViewModelBase
             FailedTasks.Add(summaryMessageViewModel);
         }
 
-        TelemetryFactory.Get<ITelemetry>().LogCritical("Summary_NavigatedTo_Event", false, Orchestrator.ActivityId);
-        _orchestrator.ReleaseRemoteOperationObject();
+        // If any tasks failed in the loading screen, the user has to click on the "Next" button
+        // If no tasks failed, the user is brought to the summary screen, no interaction required.
+        if (failedTasks.Count != 0)
+        {
+            TelemetryFactory.Get<ITelemetry>().LogCritical("Summary_NavigatedTo_Event", false, Orchestrator.ActivityId);
+        }
+
         await ReloadCatalogsAsync();
     }
 
