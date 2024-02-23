@@ -129,6 +129,7 @@ public static class ServiceExtensions
     {
         // View models
         services.AddTransient<LoadingViewModel>();
+        services.AddTransient<LoadingMessageViewModel>();
 
         return services;
     }
@@ -150,6 +151,7 @@ public static class ServiceExtensions
 
         // Services
         services.AddTransient<RepoConfigTaskGroup>();
+        services.AddTransient<CloneRepoViewModel>();
 
         return services;
     }
