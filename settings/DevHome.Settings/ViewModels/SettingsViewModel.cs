@@ -10,10 +10,12 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.ViewModels;
 
-public partial class SettingsViewModel : ObservableObject
+public partial class SettingsViewModel : BreadcrumbViewModel
 {
     [ObservableProperty]
     private ObservableCollection<SettingViewModel> _settingsList = new();
+
+    public override ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
     public SettingsViewModel()
     {
@@ -32,6 +34,11 @@ public partial class SettingsViewModel : ObservableObject
         {
             SettingsList.Add(new SettingViewModel(setting, this));
         }
+
+        Breadcrumbs = new ObservableCollection<Breadcrumb>
+        {
+            new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
+        };
     }
 
     public void Navigate(string path)

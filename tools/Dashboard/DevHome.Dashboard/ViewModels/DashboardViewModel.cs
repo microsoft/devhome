@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml;
 
@@ -30,5 +32,11 @@ public partial class DashboardViewModel : ObservableObject
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
     {
         return (widgetCount == 0 && !isLoading && HasWidgetService) ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    [RelayCommand]
+    public void AddWidgetClickAsync()
+    {
+        HasWidgetService = true;
     }
 }

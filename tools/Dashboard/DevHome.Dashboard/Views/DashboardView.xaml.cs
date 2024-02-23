@@ -18,7 +18,6 @@ using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.Widgets;
@@ -64,7 +63,7 @@ public partial class DashboardView : ToolPage
 
         Loaded += OnLoaded;
 
-#if DEBUG
+#if NDEBUG
         Loaded += AddResetButton;
 #endif
     }
@@ -627,7 +626,19 @@ public partial class DashboardView : ToolPage
         }
     }
 
-#if DEBUG
+    private async void AddWidgetButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new AddWidgetDialog(_dispatcher, ActualTheme)
+        {
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
+            XamlRoot = this.XamlRoot,
+            RequestedTheme = this.ActualTheme,
+        };
+
+        _ = await dialog.ShowAsync();
+    }
+
+#if NDEBUG
     private void AddResetButton(object sender, RoutedEventArgs e)
     {
         var resetButton = new Button

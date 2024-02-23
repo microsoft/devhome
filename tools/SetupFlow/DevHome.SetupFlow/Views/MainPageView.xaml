@@ -52,7 +52,7 @@
 
         <!-- App installer update notification -->
         <InfoBar
-            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_AppInstallerUpdateInfoBar"
+            x:Uid="MainPage_AppInstallerUpdateInfoBar"
             Visibility="{x:Bind ViewModel.ShowAppInstallerUpdateNotification, Mode=OneWay}"
             Severity="Warning"
             IsOpen="True"
@@ -60,139 +60,142 @@
             CloseButtonCommand="{x:Bind ViewModel.HideAppInstallerUpdateNotificationCommand}">
             <InfoBar.ActionButton>
                 <Button
-                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_AppInstallerUpdateButton"
+                    x:Uid="MainPage_AppInstallerUpdateButton"
                     Click="UpdateAppInstallerButton_Click"
                     HorizontalAlignment="Right"/>
             </InfoBar.ActionButton>
 
             <!-- Content dialog (visible when the InfoBar action button is clicked) -->
             <ContentDialog
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_AppInstallerUpdateContentDialog"
+                x:Uid="MainPage_AppInstallerUpdateContentDialog"
                 Name="UpdateAppInstallerContentDialog"
                 PrimaryButtonCommand="{x:Bind ViewModel.UpdateAppInstallerCommand}"
                 DefaultButton="Primary"/>
         </InfoBar>
 
         <!-- Main content -->
-        <controls:SetupShell Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel>
-                    <commonviews:Banner
+        <controls:SetupShell Grid.Row="1" x:Uid="MainPage">
+            <StackPanel>
+                <commonviews:Banner
                         TextWidth="345"
                         HideButtonVisibility="True"
                         HideButtonCommand="{x:Bind ViewModel.BannerViewModel.HideBannerCommand}"
                         Visibility="{x:Bind ViewModel.BannerViewModel.ShowBanner, Mode=OneWay}"
                         ButtonCommand="{x:Bind ViewModel.BannerViewModel.BannerButtonCommand, Mode=OneWay}"
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DefaultBanner"
+                        x:Uid="DefaultBanner"
                         BackgroundSource="{ThemeResource Setup_Banner_Back}"
                         OverlaySource="{ThemeResource Setup_Banner_Front}" />
 
-                    <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                        <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_EnvironmentSetup" />
-                        <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
-                        <Grid Background="Transparent">
-                            <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
-                                               AutomationProperties.AutomationId="EndToEndSetupButton"
-                                               IsClickEnabled="True"
-                                               Command="{x:Bind ViewModel.StartSetupCommand}"
-                                               CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
-                                               IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}"
-                                               ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
-                                               AutomationProperties.AccessibilityView="Control"
-                                               ActionIcon="{x:Null}" >
-                                <ctControls:SettingsCard.HeaderIcon>
-                                    <ImageIcon
-                                        Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}"
-                                        Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_EndToEnd.png" />
-                                </ctControls:SettingsCard.HeaderIcon>
-                            </ctControls:SettingsCard>
-
-                            <!-- Tooltip visible when the settings card is disabled -->
-                            <ToolTipService.ToolTip>
-                                <ToolTip
-                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_MainPage_AppInstallerRequiredTooltip"
-                                    IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" />
-                            </ToolTipService.ToolTip>
-                        </Grid>
-                        <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile"
-                                           AutomationProperties.AutomationId="DSCConfigurationButton"
-                                           IsClickEnabled="True"
-                                           Command="{x:Bind ViewModel.StartConfigurationFileCommand}"
-                                           CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
-                                           ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
-                                           AutomationProperties.AccessibilityView="Control"
-                                           IsEnabled="{x:Bind ViewModel.EnableConfigurationFileItem, Mode=OneWay}"
-                                           ActionIcon="{x:Null}" >
+                <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+                    <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="MainPage_EnvironmentSetup" />
+                    <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
+                    <Grid Background="Transparent">
+                        <ctControls:SettingsCard
+                                x:Uid="MainPage_SetupFlow"
+                                AutomationProperties.AutomationId="EndToEndSetupButton"
+                                IsClickEnabled="True"
+                                Command="{x:Bind ViewModel.StartSetupCommand}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                                IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}"
+                                ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                                AutomationProperties.AccessibilityView="Control"
+                                ActionIcon="{x:Null}" >
                             <ctControls:SettingsCard.HeaderIcon>
-                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_ConfigurationFile.png" />
-                            </ctControls:SettingsCard.HeaderIcon>
-                            <ctControls:SettingsCard.Description>
-                                <TextBlock>
-                                    <Run x:Uid="MainPage_ConfigurationFile_Description"/>
-                                    <Hyperlink NavigateUri="https://aka.ms/dsc.yaml">
-                                        <Run x:Uid="MainPage_ConfigurationFile_Description_Link" />
-                                    </Hyperlink>
-                                </TextBlock>
-                            </ctControls:SettingsCard.Description>
-                        </ctControls:SettingsCard>
-                    </StackPanel>
-
-                    <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                        <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
-                        <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos"
-                                           AutomationProperties.AutomationId="CloneRepoButton"
-                                           IsClickEnabled="True"
-                                           Command="{x:Bind ViewModel.StartRepoConfigCommand}"
-                                           CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
-                                           ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
-                                           AutomationProperties.AccessibilityView="Control"
-                                           ActionIcon="{x:Null}" >
-                            <ctControls:SettingsCard.HeaderIcon>
-                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_RepoConfig.png" />
+                                <ImageIcon
+                                    Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}"
+                                    Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_EndToEnd.png" />
                             </ctControls:SettingsCard.HeaderIcon>
                         </ctControls:SettingsCard>
-                        <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
-                        <Grid Background="Transparent">
-                            <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
-                                               IsClickEnabled="True"
-                                               AutomationProperties.AutomationId="InstallAppsButton"
-                                               Command="{x:Bind ViewModel.StartAppManagementCommand}"
-                                               CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
-                                               IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}"
-                                               ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
-                                               AutomationProperties.AccessibilityView="Control"
-                                               ActionIcon="{x:Null}" >
-                                <ctControls:SettingsCard.HeaderIcon>
-                                    <ImageIcon
+
+                        <!-- Tooltip visible when the settings card is disabled -->
+                        <ToolTipService.ToolTip>
+                            <ToolTip
+                                x:Uid="MainPage_MainPage_AppInstallerRequiredTooltip"
+                                IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" />
+                        </ToolTipService.ToolTip>
+                    </Grid>
+                    <ctControls:SettingsCard
+                            x:Uid="MainPage_ConfigurationFile"
+                            AutomationProperties.AutomationId="DSCConfigurationButton"
+                            IsClickEnabled="True"
+                            Command="{x:Bind ViewModel.StartConfigurationFileCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                            ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                            AutomationProperties.AccessibilityView="Control"
+                            IsEnabled="{x:Bind ViewModel.EnableConfigurationFileItem, Mode=OneWay}"
+                            ActionIcon="{x:Null}" >
+                        <ctControls:SettingsCard.HeaderIcon>
+                            <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_ConfigurationFile.png" />
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <ctControls:SettingsCard.Description>
+                            <TextBlock>
+                                <Run x:Uid="MainPage_ConfigurationFile_Description"/>
+                                <Hyperlink NavigateUri="https://aka.ms/dsc.yaml">
+                                    <Run x:Uid="MainPage_ConfigurationFile_Description_Link" />
+                                </Hyperlink>
+                            </TextBlock>
+                        </ctControls:SettingsCard.Description>
+                    </ctControls:SettingsCard>
+                </StackPanel>
+
+                <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+                    <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="MainPage_QuickConfiguration" />
+                    <ctControls:SettingsCard
+                            x:Uid="MainPage_CloneRepos"
+                            AutomationProperties.AutomationId="CloneRepoButton"
+                            IsClickEnabled="True"
+                            Command="{x:Bind ViewModel.StartRepoConfigCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                            ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                            AutomationProperties.AccessibilityView="Control"
+                            ActionIcon="{x:Null}" >
+                        <ctControls:SettingsCard.HeaderIcon>
+                            <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_RepoConfig.png" />
+                        </ctControls:SettingsCard.HeaderIcon>
+                    </ctControls:SettingsCard>
+                    <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
+                    <Grid Background="Transparent">
+                        <ctControls:SettingsCard
+                                x:Uid="MainPage_InstallApps"
+                                IsClickEnabled="True"
+                                AutomationProperties.AutomationId="InstallAppsButton"
+                                Command="{x:Bind ViewModel.StartAppManagementCommand}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                                IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}"
+                                ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                                AutomationProperties.AccessibilityView="Control"
+                                ActionIcon="{x:Null}" >
+                            <ctControls:SettingsCard.HeaderIcon>
+                                <ImageIcon
                                         Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}"
                                         Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_AppManagement.png" />
-                                </ctControls:SettingsCard.HeaderIcon>
-                            </ctControls:SettingsCard>
-
-                            <!-- Tooltip visible when the settings card is disabled -->
-                            <ToolTipService.ToolTip>
-                                <ToolTip
-                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_MainPage_AppInstallerRequiredTooltip"
-                                    IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" />
-                            </ToolTipService.ToolTip>
-                        </Grid>
-                        <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevDrive"
-                                           AutomationProperties.AutomationId="DevDriveButton"
-                                           IsClickEnabled="True" Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}" 
-                                           ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
-                                           AutomationProperties.AccessibilityView="Control"
-                                           Visibility="{x:Bind ViewModel.ShowDevDriveItem, Mode=OneWay}" >
-                            <ctControls:SettingsCard.ActionIcon>
-                                <!-- The open new window icon -->
-                                <FontIcon Glyph="&#xE8A7;" />
-                            </ctControls:SettingsCard.ActionIcon>
-                            <ctControls:SettingsCard.HeaderIcon>
-                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_DevDrive.png" />
                             </ctControls:SettingsCard.HeaderIcon>
                         </ctControls:SettingsCard>
-                    </StackPanel>
+
+                        <!-- Tooltip visible when the settings card is disabled -->
+                        <ToolTipService.ToolTip>
+                            <ToolTip
+                                    x:Uid="MainPage_MainPage_AppInstallerRequiredTooltip"
+                                    IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" />
+                        </ToolTipService.ToolTip>
+                    </Grid>
+                    <ctControls:SettingsCard
+                            x:Uid="MainPage_DevDrive"
+                            AutomationProperties.AutomationId="DevDriveButton"
+                            IsClickEnabled="True" Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}" 
+                            ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                            AutomationProperties.AccessibilityView="Control"
+                            Visibility="{x:Bind ViewModel.ShowDevDriveItem, Mode=OneWay}" >
+                        <ctControls:SettingsCard.ActionIcon>
+                            <!-- The open new window icon -->
+                            <FontIcon Glyph="&#xE8A7;" />
+                        </ctControls:SettingsCard.ActionIcon>
+                        <ctControls:SettingsCard.HeaderIcon>
+                            <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_DevDrive.png" />
+                        </ctControls:SettingsCard.HeaderIcon>
+                    </ctControls:SettingsCard>
                 </StackPanel>
-            </ScrollViewer>
+            </StackPanel>
         </controls:SetupShell>
     </Grid>
 </UserControl>

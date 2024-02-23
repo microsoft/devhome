@@ -70,7 +70,7 @@
             </NavigationView.FooterMenuItems>
             <NavigationView.HeaderTemplate>
                 <DataTemplate>
-                    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+                    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}"  BorderBrush="Blue" BorderThickness="1">
                         <TextBlock
                             Text="{Binding}"
                             Style="{ThemeResource SubtitleTextBlockStyle}" />
@@ -82,7 +82,7 @@
                     DefaultHeader="{x:Bind ((ContentControl)ViewModel.Selected).Content, Mode=OneWay}">
                     <behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
                         <DataTemplate>
-                            <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+                            <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}" BorderBrush="Green" BorderThickness="1">
                                 <TextBlock
                                     Text="{Binding}"
                                     Style="{ThemeResource SubtitleTextBlockStyle}" />
