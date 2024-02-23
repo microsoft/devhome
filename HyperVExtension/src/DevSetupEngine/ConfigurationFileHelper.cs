@@ -55,30 +55,11 @@ public class ConfigurationFileHelper
             var modulesPath = Path.Combine(AppContext.BaseDirectory, @"runtimes\win\lib\net8.0\Modules");
             var externalModulesPath = Path.Combine(AppContext.BaseDirectory, "ExternalModules");
 
-            ////var properties = new ConfigurationProcessorFactoryProperties();
-            ////properties.Policy = ConfigurationProcessorPolicy.Unrestricted;
-            ////properties.AdditionalModulePaths = new List<string>() { modulesPath, externalModulesPath };
-            ////Logging.Logger()?.ReportInfo($"Additional module paths: {string.Join(", ", properties.AdditionalModulePaths)}");
-
-            ////PowerShellConfigurationSetProcessorFactory factory1 = new PowerShellConfigurationSetProcessorFactory();
-            ////var processor = new ConfigurationProcessor(factory1);
-
-            // IObjectReference factoryInterface = MarshalInterface<IConfigurationSetProcessorFactory>.CreateMarshaler(factory1);
-
-            // factory1.CreateSetProcessor()
-
-            // var f = WindowsPackageManagerConfigurationCompleteOutOfProcessFactoryInitialization(0, factoryInterface.ThisPtr, memoryHandle, initEventHandle, completionEventHandle, parentProcessHandle);
-
-            // ConfigurationStaticFunctions config = new();
-            ////var factory = await config.CreateConfigurationSetProcessorFactoryAsync("powershell").AsTask();
-
-            ////var pwshFactory = (IPwshConfigurationSetProcessorFactoryProperties)factory;
             PowerShellConfigurationSetProcessorFactory pwshFactory = new PowerShellConfigurationSetProcessorFactory();
             pwshFactory.Policy = PowerShellConfigurationProcessorPolicy.Unrestricted;
             pwshFactory.AdditionalModulePaths = new List<string>() { modulesPath, externalModulesPath };
             Logging.Logger()?.ReportInfo($"Additional module paths: {string.Join(", ", pwshFactory.AdditionalModulePaths)}");
 
-            ////_processor = config.CreateConfigurationProcessor(factory);
             _processor = new ConfigurationProcessor(pwshFactory);
             _processor.MinimumLevel = WinGet.DiagnosticLevel.Verbose;
             _processor.Diagnostics += (sender, args) => LogConfigurationDiagnostics(args);
