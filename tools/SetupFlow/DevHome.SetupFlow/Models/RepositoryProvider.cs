@@ -51,11 +51,6 @@ internal sealed class RepositoryProvider
     /// </summary>
     private IRepositoryProvider _repositoryProvider;
 
-    /// <summary>
-    /// Used to enable searching for repos with a query.
-    /// </summary>
-    private IRepositoryProvider2 _repositoryProvider2;
-
     public RepositoryProvider(IExtensionWrapper extensionWrapper)
     {
         _extensionWrapper = extensionWrapper;
@@ -75,9 +70,6 @@ internal sealed class RepositoryProvider
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider extensions");
         _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
         _repositoryProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
-
-        // _repositoryProvider2 == null is used to modify behavior.
-        _repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
     }
 
     public IRepositoryProvider GetProvider()
@@ -91,6 +83,7 @@ internal sealed class RepositoryProvider
     /// <returns>The names of the search fields.</returns>
     public List<string> GetSearchTerms()
     {
+        _repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
         return _repositoryProvider2?.SearchFieldNames.ToList() ?? new List<string>();
     }
 
@@ -103,6 +96,7 @@ internal sealed class RepositoryProvider
     /// <returns>A list of names that can be used for the field.  An empty list is returned if the provider isn't found</returns>
     public List<string> GetValuesFor(IDeveloperId developerId, Dictionary<string, string> searchTerms, string fieldName)
     {
+        _repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
         return _repositoryProvider2?.GetValuesForSearchFieldAsync(fieldName, searchTerms, developerId).AsTask().Result.ToList() ?? new List<string>();
     }
 
@@ -280,6 +274,7 @@ internal sealed class RepositoryProvider
         {
             if (IsSearchingEnabled())
             {
+                _repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
                 result = _repositoryProvider2.GetRepositoriesAsync(searchInputs, developerId).AsTask().Result;
             }
             else
@@ -341,8 +336,13 @@ internal sealed class RepositoryProvider
         return GetAllRepositories(developerId, new());
     }
 
+    /// <summary>
+    /// If extensions implement IRepositoryProvider2 then it can accept search terms when fetching repos.
+    /// Specifically for DevHome, the RepoTool will modify its UI to enable users to supply search values.
+    /// </summary>
+    /// <returns>If the extension implements IRepositoryProvider2.</returns>
     public bool IsSearchingEnabled()
     {
-        return _repositoryProvider2 != null;
+        return (_repositoryProvider as IRepositoryProvider2) != null;
     }
 }
