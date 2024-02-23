@@ -49,7 +49,7 @@ public static class Resources
         return str;
     }
 
-    public static string[] GetWidgetResourceIdentifiers()
+    public static string[] GetHyperVResourceIdentifiers()
     {
         return
         [
