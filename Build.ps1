@@ -61,6 +61,12 @@ if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
   }
 }
 
+if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "DevSetupAgent")) {
+  foreach ($configuration in $env:Build_Configuration.Split(",")) {
+    HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform $Platform -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+  }
+}
+
 $msbuildPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
 if ($IsAzurePipelineBuild) {
   $nugetPath = "nuget.exe";
