@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <Import Project="$(SolutionDir)HyperVExtension\DevSetupAgent.props" />
   <PropertyGroup>
     <!-- Set Platform to AnyCPU to allow consumption of the projection assembly from any architecture. -->
     <!-- <Platform>AnyCPU</Platform> -->

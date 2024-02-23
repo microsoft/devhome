@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using HyperVExtension.DevSetupEngine.ConfigurationResultTypes;
-using Microsoft.CodeAnalysis.Emit;
 using Windows.Foundation;
 
 using DevSetupEngineTypes = Microsoft.Windows.DevHome.DevSetupEngine;
@@ -51,7 +50,7 @@ internal sealed class ApplyConfigurationProgressWatcher
         }
     }
 
-    private void HandleUnitProgress(WinGet.ConfigurationUnit unit, WinGet.ConfigurationUnitState unitState, WinGet.ConfigurationUnitResultInformation resultInformation)
+    private void HandleUnitProgress(WinGet.ConfigurationUnit unit, WinGet.ConfigurationUnitState unitState, WinGet.IConfigurationUnitResultInformation resultInformation)
     {
         switch (unitState)
         {
@@ -60,7 +59,7 @@ internal sealed class ApplyConfigurationProgressWatcher
             case WinGet.ConfigurationUnitState.InProgress:
             case WinGet.ConfigurationUnitState.Completed:
             case WinGet.ConfigurationUnitState.Skipped:
-                Logging.Logger()?.ReportInfo($"  - Unit: {unit.UnitName} [{unit.InstanceIdentifier}]");
+                Logging.Logger()?.ReportInfo($"  - Unit: {unit.Identifier} [{unit.InstanceIdentifier}]");
                 Logging.Logger()?.ReportInfo($"    Unit State: {unitState}");
                 if (resultInformation.ResultCode != null)
                 {
@@ -82,7 +81,7 @@ internal sealed class ApplyConfigurationProgressWatcher
                     (DevSetupEngineTypes.ConfigurationUnitResultSource)resultInformation.ResultSource);
 
             var configurationUnit = new ConfigurationResultTypes.ConfigurationUnit(
-                unit.UnitName,
+                unit.Type,
                 unit.Identifier,
                 (DevSetupEngineTypes.ConfigurationUnitState)unit.State,
                 false,
