@@ -99,8 +99,8 @@ This feature specification outlines the addition of a unified package management
 | No. | Requirement | Pri |
 | --- | ----------- | --- |
 | 1   |     The list of applications shown are winget or store applications (source: winget, msstore from winget list)      |  0   |
-| 2   |     The management experience allows updating, version management, and uninstallation of winget or msstore packages.          |  0   |
-| 3   |     Version selection allows a specific version to be installed from a drop-down menu.       |  0   |
+| 2   |     The management experience allows updating, version management, and uninstallation of winget or msstore packages. For store packages, we can only update to latest.           |  0   |
+| 3   |     Version selection allows a specific version to be installed from a drop-down menu. NA for store packages which only only latest update.       |  0   |
 | 4   |     A modification (version rollback, uninstall) to a package prompts for a confirmation.         |  0   |
 | 5   |     Multiselect is available to apply bulk actions of update, and uninstall.   |  0   |
 | 6   |     Packages can be sorted by name, size, update status, and source.      |  0   |
