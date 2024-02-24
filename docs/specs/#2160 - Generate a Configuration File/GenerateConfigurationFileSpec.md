@@ -107,8 +107,6 @@ On the review page of the end to end flow in machine configuration, the user can
 
 #### Detailed Functional Requirements
 
-# Priority definitions: P0 = must have for WIP (minimum initial experiment), P1 = must have for GA, P2 = nice to have for GA, P3 = GA+
-
 | No. | Requirement | Pri |
 | --- | ----------- | --- |
 | 1   |A configuration file can be generated from any flow except the ‘run a configuration file’ flow | 0 |
