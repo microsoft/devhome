@@ -119,10 +119,10 @@ On the review page of the end to end flow in machine configuration, the user can
 | 6   |User can select to generate a dsc.yaml and/or a .winget file (default .winget)        |   0  |
 | 7   |If the user selected private repos to clone, notify them that they will be commented out due to the authentication requirement and auth not being supported in DSC yet.          |   0  |
 | 8   |The summary page provides a link to the file location of the configuration file generated.          |   0  |
-| 9   |Configuration file generation follows best practices for creation How to author a WinGet Configuration file | Microsoft Learn       |   0  |
+| 9   |Configuration file generation follows best practices for creation |   0  |
 | 10   |The configuration file generated always uses the latest schema https://aka.ms/configuration-dsc-schema/          |   0  |
 | 11   |The default DSC module/resource for cloning repos is GitDSC/GitClone       |  0   |
 | 12   |The default DSC module/resource for creating dev drives is StorageDSC/Disk         |  0   |
 | 13   |The default DSC module/resource for installing applications is Microsoft.WinGet.DSC/WinGetPackage      |   0  |
-| 14   |   If there is a known dependency for a module/resource, ensure the dependency is included and tagged as such in the configuration file           |   0  |
+| 14   |If there is a known dependency for a module/resource, ensure the dependency is included and tagged as such in the configuration file  |   0  |
 | 15   |Installed applications added to a configuration file can include app settings |  3  |
