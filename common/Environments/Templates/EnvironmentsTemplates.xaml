@@ -167,7 +167,7 @@
     <!-- Shimmer template for cards that appear on environments management page. -->
     <DataTemplate x:Key="HorizontalCardRootShimmerTemplate">
         <Grid
-            Style="{StaticResource HorizontalCardRoot}">
+            Style="{StaticResource HorizontalCardRootForEnvironmentsPage}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -190,7 +190,7 @@
     <!-- Shimmer template for cards that appear in setup target flow in machine configuration page. -->
     <DataTemplate x:Key="HorizontalCardRootWithUniformedPaddingShimmerTemplate">
         <Grid
-            Style="{StaticResource HorizontalCardRootWithUniformedPadding}">
+            Style="{StaticResource HorizontalCardRootForSetupTargetFlow}">
             <ContentControl
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"

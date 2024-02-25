@@ -23,24 +23,37 @@ public class ConfigurationFileBuilder
     }
 
     /// <summary>
-    /// Builds the yaml string that is used by WinGet Configure to install the apps and clone the repositories.
-    /// This is already formatted as valid yaml and can be written directly to a file.
+    /// Builds an object that represents a config file that can be used by WinGet Configure to install
+    /// apps and clone repositories.This is already formatted as valid yaml and can be written
+    /// directly to a file.
     /// </summary>
-    /// <returns>The string representing the yaml file. This string is formatted as yaml.</returns>
-    public string BuildConfigStringFromTaskGroups()
+    /// <returns>The config file object representing the yaml file.</returns>
+    public WinGetConfigFile BuildConfigFileObjectFromTaskGroups(IList<ISetupTaskGroup> taskGroups)
     {
-        var appManagementGroup = _orchestrator.GetTaskGroup<AppManagementTaskGroup>();
-        var repoConfigGroup = _orchestrator.GetTaskGroup<RepoConfigTaskGroup>();
-        var wingetConfigProperties = new WinGetConfigProperties();
         var listOfResources = new List<WinGetConfigResource>();
 
-        // Add the GitDSC resource blocks to yaml
-        listOfResources.AddRange(GetResourcesForCloneTaskGroup(repoConfigGroup));
+        foreach (var taskGroup in taskGroups)
+        {
+            if (taskGroup is RepoConfigTaskGroup repoConfigGroup)
+            {
+                // Add the GitDSC resource blocks to yaml
+                listOfResources.AddRange(GetResourcesForCloneTaskGroup(repoConfigGroup));
+            }
+            else if (taskGroup is AppManagementTaskGroup appManagementGroup)
+            {
+                // Add the WinGetDsc resource blocks to yaml
+                listOfResources.AddRange(GetResourcesForAppManagementTaskGroup(appManagementGroup));
+            }
+        }
 
-        // Add the WinGetDsc resource blocks to yaml
-        listOfResources.AddRange(GetResourcesForAppManagementTaskGroup(appManagementGroup));
+        if (listOfResources.Count == 0)
+        {
+            return new WinGetConfigFile();
+        }
 
-        // Remove duplicate resources with the same Id but keep ordering.  This is needed because the
+        var wingetConfigProperties = new WinGetConfigProperties();
+
+        // Remove duplicate resources with the same Id but keep ordering. This is needed because the
         // Id of the resource should be unique as per winget configure requirements.
         listOfResources = listOfResources
             .GroupBy(resource => resource.Id)
@@ -52,15 +65,37 @@ public class ConfigurationFileBuilder
         wingetConfigProperties.ConfigurationVersion = DscHelpers.WinGetConfigureVersion;
 
         // Create the new WinGetConfigFile object and serialize it to yaml
-        var wingetConfigFile = new WinGetConfigFile() { Properties = wingetConfigProperties };
+        return new WinGetConfigFile() { Properties = wingetConfigProperties };
+    }
+
+    /// <summary>
+    /// Builds the yaml string that is used by WinGet Configure to install the apps and clone the repositories.
+    /// This is already formatted as valid yaml and can be written directly to a file.
+    /// </summary>
+    /// <returns>The string representing the yaml file. This string is formatted as yaml.</returns>
+    public string BuildConfigFileStringFromTaskGroups(IList<ISetupTaskGroup> taskGroups)
+    {
+        // Create the new WinGetConfigFile object and serialize it to yaml
+        var wingetConfigFile = BuildConfigFileObjectFromTaskGroups(taskGroups);
+        return SerializeWingetFileObjectToString(wingetConfigFile);
+    }
+
+    /// <summary>
+    /// Builds the yaml string that is used by WinGet Configure to install the apps and clone the repositories.
+    /// This is already formatted as valid yaml and can be written directly to a file.
+    /// </summary>
+    /// <returns>The string representing the yaml file. This string is formatted as yaml.</returns>
+    public string SerializeWingetFileObjectToString(WinGetConfigFile configFile)
+    {
+        // Create the new WinGetConfigFile object and serialize it to yaml
         var yamlSerializer = new SerializerBuilder()
-        .WithNamingConvention(CamelCaseNamingConvention.Instance)
-        .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull)
-        .Build();
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull)
+            .Build();
 
         // Add the header banner and add two new lines after the header.
         var configStringWithHeader = DscHelpers.DevHomeHeaderBanner + Environment.NewLine + Environment.NewLine;
-        var yaml = yamlSerializer.Serialize(wingetConfigFile);
+        var yaml = yamlSerializer.Serialize(configFile);
         configStringWithHeader += yaml;
         return configStringWithHeader;
     }

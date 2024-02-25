@@ -50,12 +50,15 @@ public partial class AddRepoDialog : ContentDialog
         get; set;
     }
 
+    public SetupFlowOrchestrator Orchestrator { get; set; }
+
     /// <summary>
     /// Hold the clone location in case the user decides not to add a dev drive.
     /// </summary>
     private string _oldCloneLocation;
 
     public AddRepoDialog(
+        SetupFlowOrchestrator setupFlowOrchestrator,
         IDevDriveManager devDriveManager,
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
@@ -64,18 +67,16 @@ public partial class AddRepoDialog : ContentDialog
     {
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
+        Orchestrator = setupFlowOrchestrator;
 
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId, this);
+        AddRepoViewModel = new AddRepoViewModel(setupFlowOrchestrator, stringResource, previouslySelectedRepos, host, activityId, this);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
 
-        if (AddRepoViewModel.IsSettingUpLocalMachine)
+        EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {
-            EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
-            {
-                AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-                AddRepoViewModel.FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
-            };
-        }
+            AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+            AddRepoViewModel.FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
+        };
 
         // Changing view to account so the selection changed event for Segment correctly shows URL.
         AddRepoViewModel.CurrentPage = PageKind.AddViaAccount;
@@ -128,6 +129,12 @@ public partial class AddRepoDialog : ContentDialog
     /// </summary>
     public async Task SetupDevDrivesAsync()
     {
+        // If we're not setting up a local machine don't show the dev drive UI.
+        if (!AddRepoViewModel.IsSettingUpLocalMachine)
+        {
+            return;
+        }
+
         await Task.Run(() =>
         {
             EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();

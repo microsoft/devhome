@@ -21,6 +21,8 @@ public partial class FolderPickerViewModel : ObservableObject
 {
     private readonly ISetupFlowStringResource _stringResource;
 
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+
     /// <summary>
     /// Some pages don't show a folder picker.
     /// </summary>
@@ -63,12 +65,13 @@ public partial class FolderPickerViewModel : ObservableObject
     [ObservableProperty]
     private bool _showFolderPickerError;
 
-    public FolderPickerViewModel(ISetupFlowStringResource stringResource)
+    public FolderPickerViewModel(ISetupFlowStringResource stringResource, SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _stringResource = stringResource;
         ShouldShowFolderPicker = Visibility.Visible;
-        CloneLocation = string.Empty;
         IsBrowseButtonEnabled = true;
+        _setupFlowOrchestrator = setupFlowOrchestrator;
+        SetDefaultCloneLocation();
     }
 
     public void ShowFolderPicker()
@@ -186,18 +189,17 @@ public partial class FolderPickerViewModel : ObservableObject
 
     /// <summary>
     /// Sets the clone location to the default location. For the local machine setup the default is the user's
-    /// profile. For the target machine setup the default is the common documents folder.
+    /// profile. For the target machine setup the default is the common documents folder, since we don't know
+    /// which folders exists on the target machine.
     /// </summary>
-    /// <param name="setupFlowKind">Enum used to decide which folder we should clone to.</param>
-    /// <returns>The full path of the default clone location</returns>
-    public string GetDefaultCloneLocation(SetupFlowKind setupFlowKind)
+    private void SetDefaultCloneLocation()
     {
         var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        if (setupFlowKind == SetupFlowKind.SetupTarget)
+        if (_setupFlowOrchestrator.CurrentSetupFlowKind == SetupFlowKind.SetupTarget)
         {
             userFolder = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments);
         }
 
-        return Path.Join(userFolder, "source", "repos");
+        CloneLocation = Path.Join(userFolder, "source", "repos");
     }
 }

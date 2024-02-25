@@ -677,8 +677,12 @@
     <value>Search for applications to install or select them below.</value>
     <comment>Description for the application management page</comment>
   </data>
-  <data name="SetupShell_RepoConfig.Description" xml:space="preserve">
+  <data name="SetupShellRepoConfigLocalMachine" xml:space="preserve">
     <value>Add private or public repositories to clone to your machine.</value>
+    <comment>Description for the repo config page</comment>
+  </data>
+  <data name="SetupShellRepoConfigTargetMachine" xml:space="preserve">
+    <value>Add public repositories to clone to your target machine.</value>
     <comment>Description for the repo config page</comment>
   </data>
   <data name="SetupShell_SetupTarget.Description" xml:space="preserve">
@@ -1427,5 +1431,50 @@
   <data name="SetupTargetReviewPageProviderName.Text" xml:space="preserve">
     <value>Provider name:</value>
     <comment>The name of the technology platform that the compute system belongs to.</comment>
+  </data>
+  <data name="SetupTargetConfigurationCompleted" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="SetupTargetConfigurationInProgress" xml:space="preserve">
+    <value>In progress</value>
+  </data>
+  <data name="SetupTargetConfigurationPending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="SetupTargetConfigurationProvisioningDevice" xml:space="preserve">
+    <value>Provisioning device</value>
+  </data>
+  <data name="SetupTargetConfigurationRestartingDevice" xml:space="preserve">
+    <value>Restarting device</value>
+  </data>
+  <data name="SetupTargetConfigurationShuttingDownDevice" xml:space="preserve">
+    <value>Shutting down device</value>
+  </data>
+  <data name="SetupTargetConfigurationStartingDevice" xml:space="preserve">
+    <value>Starting device</value>
+  </data>
+  <data name="SetupTargetConfigurationUnknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="SetupTargetConfigurationWaitingForAdminUserLogon" xml:space="preserve">
+    <value>Waiting for an admin to logon</value>
+  </data>
+  <data name="SetupTargetConfigurationWaitingForUserLogon" xml:space="preserve">
+    <value>Waiting for the user to logon</value>
+  </data>
+  <data name="SetupTargetConfigurationSkipped" xml:space="preserve">
+    <value>Skipped</value>
+  </data>
+  <data name="SetupTargetConfigurationOpenConfigFailed" xml:space="preserve">
+    <value>Failed opening the configuration file: Field: {0} missing/invalid with value {1} on line {2} and column {3}</value>
+  </data>
+  <data name="SetupTargetConfigurationSetProgressMessage" xml:space="preserve">
+    <value>Current configuration set status: {0}</value>
+  </data>
+  <data name="SetupTargetConfigurationUnitProgressError" xml:space="preserve">
+    <value>There was an issue applying part of the configuration. Error: {0}</value>
+  </data>
+  <data name="SetupTargetConfigurationUnitProgressMessage" xml:space="preserve">
+    <value>Current configuration unit status: {0}</value>
   </data>
 </root>

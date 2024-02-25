@@ -13,7 +13,8 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Loaded="RemoteLoadButton_Click">
     <!--
         ToDo List:
         - Add ComputeSystemProperties to Card
@@ -67,12 +68,12 @@
 
         <!-- Shimmer template from SetupFlow/SetupTargetView.xaml -->
         <DataTemplate x:Key="ComputeSystemLoadingTemplate">
-            <ListView
+                <ListView
                 SelectionMode="None"
                 ItemTemplate="{StaticResource HorizontalCardRootShimmerTemplate}"
-                Margin="12 0 8 0"
-                ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}">
-                <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
+                        Margin="12 0 8 0"
+                        ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}">
+                    <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
                 <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
             </ListView>
         </DataTemplate>
@@ -136,7 +137,7 @@
                 <ListView ItemsSource="{x:Bind ViewModel.ComputeSystemsView}" SelectionMode="None">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="vm:ComputeSystemViewModel">
-                            <Grid Style="{StaticResource HorizontalCardRoot}">
+                            <Grid Style="{StaticResource HorizontalCardRootForEnvironmentsPage}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />

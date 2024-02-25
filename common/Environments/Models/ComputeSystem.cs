@@ -264,6 +264,19 @@ public class ComputeSystem
         }
     }
 
+    public IApplyConfigurationOperation ApplyConfiguration(string configuration)
+    {
+        try
+        {
+            return _computeSystem.ApplyConfiguration(configuration);
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError(_componentName, $"ApplyConfiguration for: {this} failed due to exception", ex);
+            throw;
+        }
+    }
+
     public override string ToString()
     {
         StringBuilder builder = new();

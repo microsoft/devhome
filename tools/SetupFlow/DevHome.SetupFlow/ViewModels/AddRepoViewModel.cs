@@ -45,6 +45,8 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly ISetupFlowStringResource _stringResource;
 
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
     /// <summary>
@@ -293,9 +295,7 @@ public partial class AddRepoViewModel : ObservableObject
         get; set;
     }
 
-    public bool IsSettingUpLocalMachine { get; private set; }
-
-    public SetupFlowKind CurrentSetupFlowKind { get; private set; }
+    public bool IsSettingUpLocalMachine => _setupFlowOrchestrator.IsSettingUpLocalMachine;
 
     private TypedEventHandler<IDeveloperIdProvider, IDeveloperId> _developerIdChangedEvent;
 
@@ -441,6 +441,7 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     public AddRepoViewModel(
+        SetupFlowOrchestrator setupFlowOrchestrator,
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
         IHost host,
@@ -450,6 +451,7 @@ public partial class AddRepoViewModel : ObservableObject
         _addRepoDialog = addRepoDialog;
         _stringResource = stringResource;
         _host = host;
+        _setupFlowOrchestrator = setupFlowOrchestrator;
         ChangeToUrlPage();
 
         // override changes ChangeToUrlPage to correctly set the state.
@@ -460,11 +462,7 @@ public partial class AddRepoViewModel : ObservableObject
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
         _activityId = activityId;
-        FolderPickerViewModel = new FolderPickerViewModel(stringResource);
-
-        CurrentSetupFlowKind = _host.GetService<SetupFlowOrchestrator>().CurrentSetupFlowKind;
-        IsSettingUpLocalMachine = CurrentSetupFlowKind == SetupFlowKind.LocalMachine;
-        FolderPickerViewModel.CloneLocation = FolderPickerViewModel.GetDefaultCloneLocation(CurrentSetupFlowKind);
+        FolderPickerViewModel = new FolderPickerViewModel(stringResource, setupFlowOrchestrator);
     }
 
     /// <summary>
@@ -476,7 +474,7 @@ public partial class AddRepoViewModel : ObservableObject
     public void GetExtensions()
     {
         // Don't use the repository extensions if we are in the setup target flow.
-        if (_host.GetService<SetupFlowOrchestrator>().IsInSetupTargetFlow)
+        if (_setupFlowOrchestrator.IsSettingUpATargetMachine)
         {
             return;
         }

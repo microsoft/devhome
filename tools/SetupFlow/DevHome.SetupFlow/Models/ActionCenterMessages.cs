@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.Views;
+using Microsoft.Windows.DevHome.SDK;
+
 namespace DevHome.SetupFlow.Models;
 
 /// <summary>
@@ -15,4 +18,6 @@ public class ActionCenterMessages
     {
         get; set;
     }
+
+    public ExtensionAdaptiveCardPanel ExtensionAdaptiveCardPanel { get; set; }
 }

@@ -8,19 +8,26 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Renderers;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.Views;
 using DevHome.Contracts.Services;
+using DevHome.Logging;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskGroups;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Windows.DevHome.SDK;
+using Windows.Storage;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -32,6 +39,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private readonly ElementTheme _currentTheme;
 
     private readonly Guid _activityId;
+
+    private readonly ConfigurationFileBuilder _configurationFileBuilder;
 
     private static readonly BitmapImage DarkCaution = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
     private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
@@ -187,9 +196,18 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         });
     }
 
+    public void OnCorrectiveActionAdaptiveCard(IExtensionAdaptiveCardSession2 cardSession)
+    {
+    }
+
+    public void RemoveCorrectiveActionAdaptiveCard(IExtensionAdaptiveCardSession2 message)
+    {
+    }
+
     public LoadingViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
+        ConfigurationFileBuilder configurationFileBuilder,
         IHost host)
         : base(stringResource, orchestrator)
     {
@@ -207,7 +225,10 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ActionCenterItems = new();
         Messages = new();
         _activityId = orchestrator.ActivityId;
+        _configurationFileBuilder = configurationFileBuilder;
     }
+
+    // Remove all tasks except for the SetupTarget
 
     /// <summary>
     /// Reads from the orchestrator to get all the tasks to run.
@@ -217,6 +238,22 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     {
         Log.Logger?.ReportDebug(Log.Component.Loading, "Fetching task information");
         var taskIndex = 0;
+
+        if (Orchestrator.IsSettingUpATargetMachine)
+        {
+            var taskGroup = Orchestrator.GetTaskGroup<SetupTargetTaskGroup>();
+            var task = taskGroup.SetupTasks.First();
+            task.AddMessage += AddMessage;
+            TasksToRun.Add(new TaskInformation
+            {
+                TaskIndex = taskIndex++,
+                TaskToExecute = task,
+                MessageToShow = task.GetLoadingMessages().Executing,
+            });
+            SetExecutingTaskAndActionCenter();
+            return;
+        }
+
         foreach (var taskGroup in Orchestrator.TaskGroups)
         {
             foreach (var task in taskGroup.SetupTasks)

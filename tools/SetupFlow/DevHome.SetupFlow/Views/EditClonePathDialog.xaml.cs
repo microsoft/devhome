@@ -24,6 +24,8 @@ public sealed partial class EditClonePathDialog
 {
     private readonly ISetupFlowStringResource _stringResource;
 
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+
     /// <summary>
     /// Gets or sets the view model to handle clone paths.
     /// </summary>
@@ -67,9 +69,10 @@ public sealed partial class EditClonePathDialog
     public EditClonePathDialog(IDevDriveManager devDriveManager, CloningInformation cloningInfo, ISetupFlowStringResource stringResource)
     {
         this.InitializeComponent();
+        _setupFlowOrchestrator = Application.Current.GetService<SetupFlowOrchestrator>();
         EditClonePathViewModel = new EditClonePathViewModel();
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
-        FolderPickerViewModel = new FolderPickerViewModel(stringResource);
+        FolderPickerViewModel = new FolderPickerViewModel(stringResource, _setupFlowOrchestrator);
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {
             FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
@@ -289,7 +292,7 @@ public sealed partial class EditClonePathDialog
     /// </summary>
     public void ShowCheckboxIfPathNotAnExistingDevDrive()
     {
-        if (!DevDriveUtil.IsDevDriveFeatureEnabled)
+        if (!DevDriveUtil.IsDevDriveFeatureEnabled || _setupFlowOrchestrator.IsSettingUpATargetMachine)
         {
             EditDevDriveViewModel.HideDevDriveUI();
             return;
@@ -308,6 +311,6 @@ public sealed partial class EditClonePathDialog
             }
         }
 
-        EditDevDriveViewModel.ShowDevDriveInformation = Visibility.Visible;
+        EditDevDriveViewModel.ShowDevDriveInformation = true;
     }
 }

@@ -135,6 +135,8 @@ public static class StringResourceKey
     public static readonly string ClonePathNotFolder = nameof(ClonePathNotFolder);
     public static readonly string ClonePathDriveDoesNotExist = nameof(ClonePathDriveDoesNotExist);
     public static readonly string RepoToolAddAnotherAccount = nameof(RepoToolAddAnotherAccount);
+    public static readonly string SetupShellRepoConfigLocalMachine = nameof(SetupShellRepoConfigLocalMachine);
+    public static readonly string SetupShellRepoConfigTargetMachine = nameof(SetupShellRepoConfigTargetMachine);
 
     // Url Validation
     public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);
@@ -205,4 +207,19 @@ public static class StringResourceKey
     // Setup target page
     public static readonly string SetupTargetPageTitle = nameof(SetupTargetPageTitle);
     public static readonly string SetupTargetAllComboBoxOption = nameof(SetupTargetAllComboBoxOption);
+    public static readonly string SetupTargetConfigurationUnknown = nameof(SetupTargetConfigurationUnknown);
+    public static readonly string SetupTargetConfigurationPending = nameof(SetupTargetConfigurationPending);
+    public static readonly string SetupTargetConfigurationInProgress = nameof(SetupTargetConfigurationInProgress);
+    public static readonly string SetupTargetConfigurationCompleted = nameof(SetupTargetConfigurationCompleted);
+    public static readonly string SetupTargetConfigurationShuttingDownDevice = nameof(SetupTargetConfigurationShuttingDownDevice);
+    public static readonly string SetupTargetConfigurationStartingDevice = nameof(SetupTargetConfigurationStartingDevice);
+    public static readonly string SetupTargetConfigurationRestartingDevice = nameof(SetupTargetConfigurationRestartingDevice);
+    public static readonly string SetupTargetConfigurationProvisioningDevice = nameof(SetupTargetConfigurationProvisioningDevice);
+    public static readonly string SetupTargetConfigurationWaitingForAdminUserLogon = nameof(SetupTargetConfigurationWaitingForAdminUserLogon);
+    public static readonly string SetupTargetConfigurationWaitingForUserLogon = nameof(SetupTargetConfigurationWaitingForUserLogon);
+    public static readonly string SetupTargetConfigurationSkipped = nameof(SetupTargetConfigurationSkipped);
+    public static readonly string SetupTargetConfigurationOpenConfigFailed = nameof(SetupTargetConfigurationOpenConfigFailed);
+    public static readonly string SetupTargetConfigurationUnitProgressMessage = nameof(SetupTargetConfigurationUnitProgressMessage);
+    public static readonly string SetupTargetConfigurationSetProgressMessage = nameof(SetupTargetConfigurationSetProgressMessage);
+    public static readonly string SetupTargetConfigurationUnitProgressError = nameof(SetupTargetConfigurationUnitProgressError);
 }

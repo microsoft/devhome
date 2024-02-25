@@ -45,12 +45,7 @@
                     </Style>
                 </ResourceDictionary>
             </StackPanel.Resources>
-            
-            <!-- Only show the default clone repositories experience if we're setting up a local machine. -->
-            <StackPanel
-                Visibility="{x:Bind AddRepoViewModel.IsSettingUpLocalMachine, Mode=OneWay}">
-                
-            <ctControls:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single" SelectionChanged="Segmented_SelectionChanged">
+            <ctControls:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single" SelectionChanged="Segmented_SelectionChanged" Visibility="{x:Bind AddRepoViewModel.IsSettingUpLocalMachine, Mode=OneWay}">
                 <ctControls:SegmentedItem x:Name="AddViaAccountSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton" IsEnabled="{x:Bind AddRepoViewModel.IsAccountButtonEnabled, Mode=OneWay}" AutomationProperties.PositionInSet="1" AutomationProperties.SizeOfSet="2"/>
                 <ctControls:SegmentedItem x:Name="AddViaUrlSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" AutomationProperties.PositionInSet="2" AutomationProperties.SizeOfSet="2"/>
             </ctControls:Segmented>
@@ -212,40 +207,6 @@
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveDefaultDriveCheckBoxError"
                         Visibility="{x:Bind EditDevDriveViewModel.DevDriveValidationError, Mode=OneWay}"/>
             </Grid>
-        </StackPanel>
-            
-        <!-- Only show the setup target experience if we're not setting up a local machine. -->   
-        <StackPanel
-            Visibility="{x:Bind AddRepoViewModel.IsSettingUpLocalMachine, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
-                <!-- Adding a repo via URL -->
-                <TextBox 
-                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoUrl"
-                    Visibility="{x:Bind AddRepoViewModel.ShowUrlPage, Mode=OneWay}"
-                    TextChanged="RepoUrlTextBox_TextChanged"
-                    Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}"
-                    Margin="0, 20, 0, 0"/>
-                <TextBlock 
-                    Style="{ThemeResource BaseTextBlockStyle}" 
-                    Text="{x:Bind AddRepoViewModel.UrlParsingError, Mode=OneWay}" 
-                    Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlError, Mode=OneWay}"/>
-                <TextBlock 
-                    Style="{ThemeResource BodyStrongTextBlockStyle}" 
-                    Visibility="{x:Bind AddRepoViewModel.ShowErrorTextBox, Mode=OneWay}" 
-                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Repo_ToolClonePathError"/>
-                <!-- SetupTargetFlow only allows cloning via url-->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="5*"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBox 
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
-                        Margin="0 20 0 10"
-                        TextChanged="CloneLocation_TextChanged" Grid.Column="0" 
-                        Text="{x:Bind AddRepoViewModel.FolderPickerViewModel.CloneLocation, Mode=TwoWay}"/>
-                </Grid>
-            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </ContentDialog>
