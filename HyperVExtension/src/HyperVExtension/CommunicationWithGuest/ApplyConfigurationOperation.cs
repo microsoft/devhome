@@ -15,9 +15,11 @@ using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace HyperVExtension.CommunicationWithGuest;
 
-internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
+internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation, IDisposable
 {
     private readonly IComputeSystem _computeSystem;
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private bool _disposed;
 
     public ApplyConfigurationOperation(IComputeSystem computeSystem)
     {
@@ -33,6 +35,8 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
             null,
             null);
     }
+
+    public CancellationToken CancellationToken => _cancellationTokenSource.Token;
 
     public event TypedEventHandler<IComputeSystem, SDK.ApplyConfigurationResult>? Completed;
 
@@ -54,9 +58,10 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
     public void SetState(
         SDK.ConfigurationSetState state,
         HostGuestCommunication.ConfigurationSetChangeData? progressData,
-        HostGuestCommunication.ApplyConfigurationResult? completionStatus)
+        HostGuestCommunication.ApplyConfigurationResult? completionStatus,
+        SDK.IExtensionAdaptiveCardSession2? adaptiveCardSession)
     {
-        var sdkProgressData = GetSdkProgressData(state, progressData);
+        var sdkProgressData = GetSdkProgressData(state, progressData, adaptiveCardSession);
 
         if (sdkProgressData != null)
         {
@@ -80,7 +85,10 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
         }
     }
 
-    private SDK.ConfigurationSetChangeData GetSdkProgressData(SDK.ConfigurationSetState state, HostGuestCommunication.ConfigurationSetChangeData? progressData)
+    private SDK.ConfigurationSetChangeData GetSdkProgressData(
+        SDK.ConfigurationSetState state,
+        HostGuestCommunication.ConfigurationSetChangeData? progressData,
+        SDK.IExtensionAdaptiveCardSession2? adaptiveCardSession)
     {
         SDK.ConfigurationSetChangeData sdkProgressData;
         if (progressData != null)
@@ -107,7 +115,7 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
                 (SDK.ConfigurationUnitState)progressData.UnitState,
                 resultInfo,
                 sdkUnit,
-                null);
+                adaptiveCardSession);
         }
         else
         {
@@ -117,7 +125,7 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
                 SDK.ConfigurationUnitState.Unknown,
                 null,
                 null,
-                null);
+                adaptiveCardSession);
         }
 
         return sdkProgressData;
@@ -217,5 +225,24 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
         }
 
         return null;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _cancellationTokenSource?.Dispose();
+            }
+
+            _disposed = true;
+        }
     }
 }

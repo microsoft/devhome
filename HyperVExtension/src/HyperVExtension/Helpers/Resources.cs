@@ -48,4 +48,20 @@ public static class Resources
         log?.ReportDebug($"Replaced identifiers in {elapsed.TotalMilliseconds}ms");
         return str;
     }
+
+    public static string[] GetHyperVResourceIdentifiers()
+    {
+        return
+        [
+            "VmCredentialRequest/Title",
+            "VmCredentialRequest/Description1",
+            "VmCredentialRequest/Description2",
+            "VmCredentialRequest/UsernameErrorMsg",
+            "VmCredentialRequest/PasswordErrorMsg",
+            "VmCredentialRequest/UsernameLabel",
+            "VmCredentialRequest/PasswordLabel",
+            "VmCredentialRequest/OkText",
+            "VmCredentialRequest/CancelText",
+        ];
+    }
 }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="$(SolutionDir)ToolingVersions.props" />
-	<!-- Debug builds produce a console app; otherwise a Windows app -->
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <!-- Debug builds produce a console app; otherwise a Windows app -->
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputType>Exe</OutputType>
   </PropertyGroup>

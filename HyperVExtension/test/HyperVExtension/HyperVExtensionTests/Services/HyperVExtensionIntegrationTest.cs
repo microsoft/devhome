@@ -139,10 +139,45 @@ properties:
             operationData.Completed.Set();
         };
 
-        operation.Progress += (sender, progressData) =>
+        operation.Progress += async (sender, progressData) =>
         {
             operationData.ProgressData.Add(progressData);
             PrintProgressData(progressData);
+
+            if (progressData.CorrectiveActionCardSession != null)
+            {
+                if (progressData.SetState == ConfigurationSetState.WaitingForAdminUserLogon)
+                {
+                    var extensionAdaptiveCard = new Mock<IExtensionAdaptiveCard>();
+                    extensionAdaptiveCard
+                        .Setup(x => x.Update(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                        .Returns((string templateJson, string dataJson, string state) => new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null));
+
+                    extensionAdaptiveCard
+                        .Setup(x => x.State)
+                        .Returns("VmCredential");
+
+                    progressData.CorrectiveActionCardSession.Initialize(extensionAdaptiveCard.Object);
+                    var op = progressData.CorrectiveActionCardSession.OnAction(@"{ ""Type"": ""Action.Execute"", ""Id"": ""okAction"" }", @"{ ""id"": ""okAction"", ""UserVal"": """", ""PassVal"": """" }");
+                    await op.AsTask();
+                }
+                else if (progressData.SetState == ConfigurationSetState.WaitingForUserLogon)
+                {
+                    var extensionAdaptiveCard = new Mock<IExtensionAdaptiveCard>();
+                    extensionAdaptiveCard
+                        .Setup(x => x.Update(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                        .Returns((string templateJson, string dataJson, string state) => new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null));
+
+                    extensionAdaptiveCard
+                        .Setup(x => x.State)
+                        .Returns("WaitForVmUserLogin");
+
+                    // TODO: figure out how to wait for user's login
+                    progressData.CorrectiveActionCardSession.Initialize(extensionAdaptiveCard.Object);
+                    var op = progressData.CorrectiveActionCardSession.OnAction(@"{ ""Type"": ""Action.Execute"", ""Id"": ""okAction"" }", @"{ }");
+                    await op.AsTask();
+                }
+            }
         };
 
         var result = operation.CompletionStatus;
@@ -153,7 +188,7 @@ properties:
         }
         else
         {
-            operationData.Completed.WaitOne(TimeSpan.FromMinutes(4));
+            operationData.Completed.WaitOne(TimeSpan.FromMinutes(10));
         }
 
         Assert.IsNotNull(operationData.ConfigurationResult);

@@ -20,6 +20,7 @@ public class ResponseFactory : IResponseFactory
         { ("Completed", "GetVersion"), (message, json) => new GetVersionResponse(message, json) },
         { ("Completed", "Configure"), (message, json) => new ConfigureResponse(message, json) },
         { ("Progress", "Configure"), (message, json) => new ConfigureProgressResponse(message, json) },
+        { ("Completed", "IsUserLoggedIn"), (message, json) => new IsUserLoggedInResponse(message, json) },
     };
 
     public ResponseFactory()
