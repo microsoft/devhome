@@ -143,6 +143,27 @@
               ]
             }
           ]
+        },
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "items": [
+                {
+                  "text": "%Memory_Widget_Template/MemoryUsage%",
+                  "type": "TextBlock",
+                  "size": "small",
+                  "isSubtle": true
+                },
+                {
+                  "text": "${memUsage}",
+                  "type": "TextBlock",
+                  "size": "medium"
+                }
+              ]
+            }
+          ]
         }
       ]
     }
