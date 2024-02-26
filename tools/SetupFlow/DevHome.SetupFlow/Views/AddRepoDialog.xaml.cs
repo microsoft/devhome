@@ -397,7 +397,7 @@ public partial class AddRepoDialog : ContentDialog
         return;
     }
 
-    private async void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+    private async void ChangeToSearchInputViewAsync(object sender, RoutedEventArgs e)
     {
         SwitchToSelectSearchTermsPage();
         _searchFieldsAndValues.Clear();

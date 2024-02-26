@@ -264,6 +264,7 @@ internal sealed class RepositoryProvider
     /// Gets all the repositories an account has for this provider.
     /// </summary>
     /// <param name="developerId">The account to search in.</param>
+    /// <param name="searchInputs">The key/value pairs that the extension will use to search for repos.</param>
     /// <returns>A collection of repositories.  May be empty</returns>
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId, Dictionary<string, string> searchInputs)
     {
@@ -284,32 +285,21 @@ internal sealed class RepositoryProvider
         }
         catch (AggregateException aggregateException)
         {
-            // Because tasks can be cancled DevHome should emit different logs.
+            // Because tasks can be canceled DevHome should emit different logs.
             if (aggregateException.InnerException is OperationCanceledException)
             {
                 GlobalLog.Logger?.ReportInfo($"Get Repos operation was cancalled.");
             }
             else
             {
-                GlobalLog.Logger?.ReportInfo($"{aggregateException.ToString()}");
+                GlobalLog.Logger?.ReportError($"{aggregateException}");
             }
 
             _repositories[developerId] = new List<IRepository>();
             return _repositories[developerId];
         }
 
-        if (result.Result.Status != ProviderOperationStatus.Success)
-        {
-            if (_repositories.TryGetValue(developerId, out var _))
-            {
-                _repositories[developerId] = new List<IRepository>();
-            }
-            else
-            {
-                _repositories.Add(developerId, new List<IRepository>());
-            }
-        }
-        else
+        if (result.Result.Status == ProviderOperationStatus.Success)
         {
             if (_repositories.TryGetValue(developerId, out var _))
             {
@@ -319,6 +309,18 @@ internal sealed class RepositoryProvider
             {
                 _repositories.Add(developerId, result.Repositories);
             }
+        }
+        else
+        {
+            if (_repositories.TryGetValue(developerId, out var _))
+            {
+                _repositories[developerId] = new List<IRepository>();
+            }
+            else
+            {
+                _repositories.Add(developerId, new List<IRepository>());
+            }
+
         }
 
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
