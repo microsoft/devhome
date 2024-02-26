@@ -44,11 +44,11 @@ public class AddRepoDialogTests : BaseSetupFlowTest
     [Ignore("IextensionService uses Application.Current and tests break when Application.Current is used.  Ignore until fixed.")]
     public async Task SwitchToAccountScreenTest()
     {
-        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), null, TestHost.GetService<IDevDriveManager>());
-        await addRepoViewModel.ChangeToAccountPageAsync();
-        Assert.AreEqual(false, addRepoViewModel.ShowUrlPage);
-        Assert.AreEqual(true, addRepoViewModel.ShowAccountPage);
-        Assert.AreEqual(false, addRepoViewModel.ShowRepoPage);
+        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), string.Empty, null);
+        addRepoViewModel.ChangeToRepoPage(new());
+        Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowUrlPage);
+        Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowAccountPage);
+        Assert.AreEqual(Visibility.Visible, addRepoViewModel.ShowRepoPage);
         Assert.IsFalse(addRepoViewModel.ShouldShowLoginUi);
     }
 }
