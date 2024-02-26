@@ -24,7 +24,7 @@ internal sealed class ErrorResponse : IGuestResponse
 
     public string ResponseId { get; set; }
 
-    public string ResponseType { get; set; } = "ErrorNoDate";
+    public string ResponseType { get; set; } = "ErrorNoData";
 
     public uint Status { get; set; } = 0x80004005; // E_FAIL
 
