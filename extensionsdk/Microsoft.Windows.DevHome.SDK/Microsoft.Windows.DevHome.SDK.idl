@@ -80,7 +80,7 @@ namespace Microsoft.Windows.DevHome.SDK
             get;
         };
 
-        Windows.Foundation.IAsyncOperation<IVectorView<String> > GetValuesForSearchFieldAsync(String requestedSearchField, IMapView<String, String> fieldValues, IDeveloperId developerId);
+        Windows.Foundation.IAsyncOperation<IVectorView<String> > GetValuesForSearchFieldAsync(IMapView<String, String> fieldValues, String requestedSearchField, IDeveloperId developerId);
         Windows.Foundation.IAsyncOperation<RepositoriesResult> GetRepositoriesAsync(IMapView<String, String> fieldValues, IDeveloperId developerId);
     };
 
