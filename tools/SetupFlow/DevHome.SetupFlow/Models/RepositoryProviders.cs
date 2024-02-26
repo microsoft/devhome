@@ -201,6 +201,7 @@ internal sealed class RepositoryProviders
     /// </summary>
     /// <param name="providerName">The specific provider.  Must match the display name of a provider</param>
     /// <param name="developerId">The account to look for.  May not be logged in.</param>
+    /// <param name="searchInputs">The key/value pairs that the extension will use to search for repos.</param>
     /// <returns>All the repositories for an account and provider.</returns>
     public IEnumerable<IRepository> GetAllRepositories(string providerName, IDeveloperId developerId, Dictionary<string, string> searchInputs)
     {
