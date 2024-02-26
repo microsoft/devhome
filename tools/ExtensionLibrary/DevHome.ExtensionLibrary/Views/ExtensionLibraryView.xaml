@@ -39,7 +39,7 @@
     </Page.Resources>
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,22,0,0">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <commonviews:Banner x:Uid="ExtensionsBanner"
                                     TextWidth="350"
