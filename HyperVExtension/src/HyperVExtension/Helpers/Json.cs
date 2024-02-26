@@ -48,7 +48,7 @@ public static class Json
             return (T)(object)bool.Parse(value);
         }
 
-        return System.Text.Json.JsonSerializer.Deserialize<T>(value, _options);
+        return JsonSerializer.Deserialize<T>(value, _options);
     }
 
     public static string Stringify<T>(T value)
@@ -58,6 +58,6 @@ public static class Json
             return value!.ToString()!.ToLowerInvariant();
         }
 
-        return System.Text.Json.JsonSerializer.Serialize(value, _options);
+        return JsonSerializer.Serialize(value, _options);
     }
 }

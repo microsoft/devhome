@@ -32,12 +32,12 @@ internal sealed class IsUserLoggedInRequest : RequestBase
     private static List<string> EnumerateLogonSessions()
     {
         // We'll take interactive sessions where explorer is running to filter out stale sessions
-        var interractiveSessions = new List<string>();
+        var interactiveSessions = new List<string>();
 
         var explorers = Process.GetProcessesByName("explorer");
         if (explorers.Length == 0)
         {
-            return interractiveSessions;
+            return interactiveSessions;
         }
 
         unsafe
@@ -98,7 +98,7 @@ internal sealed class IsUserLoggedInRequest : RequestBase
                 {
                     // TODO: We get OS user names like "DWM-2" or "UMFD-2" into this list. We need to filter them out.
                     Logging.Logger()?.ReportDebug($"Logged on user: {session.Item2}, Session: {session.Item1}");
-                    interractiveSessions.Add(session.Item2);
+                    interactiveSessions.Add(session.Item2);
                 }
             }
             finally
@@ -115,6 +115,6 @@ internal sealed class IsUserLoggedInRequest : RequestBase
             }
         }
 
-        return interractiveSessions;
+        return interactiveSessions;
     }
 }

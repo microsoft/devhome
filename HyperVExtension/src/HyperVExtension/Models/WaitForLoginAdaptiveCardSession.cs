@@ -36,13 +36,11 @@ internal sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSe
 
     void IExtensionAdaptiveCardSession.Dispose()
     {
-        Logging.Logger()?.ReportDebug($"Dispose");
         ((IDisposable)this).Dispose();
     }
 
     public ProviderOperationResult Initialize(IExtensionAdaptiveCard extensionAdaptiveCard)
     {
-        Logging.Logger()?.ReportDebug($"Initialize");
         _extensionAdaptiveCard = extensionAdaptiveCard;
         var operationResult = _extensionAdaptiveCard.Update(GetTemplate(), null, "WaitForVmUserLogin");
         SessionStatusChanged?.Invoke(this, new ExtensionAdaptiveCardSessionData(ExtensionAdaptiveCardSessionEventKind.SessionStarted, operationResult));
@@ -54,34 +52,42 @@ internal sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSe
         return Task.Run(() =>
         {
             ProviderOperationResult operationResult;
-            Logging.Logger()?.ReportInfo($"OnAction() called with state:{_extensionAdaptiveCard?.State}");
-            Logging.Logger()?.ReportDebug($"action: {action}");
-
-            switch (_extensionAdaptiveCard?.State)
+            try
             {
-                case "WaitForVmUserLogin":
-                    {
-                        Logging.Logger()?.ReportDebug($"inputs: {inputs}");
-                        var actionPayload = Json.ToObject<AdaptiveCardActionPayload>(action) ?? throw new InvalidOperationException("Invalid action");
-                        if (actionPayload.IsOkAction())
+                Logging.Logger()?.ReportInfo($"OnAction() called with state:{_extensionAdaptiveCard?.State}");
+                Logging.Logger()?.ReportDebug($"action: {action}");
+
+                switch (_extensionAdaptiveCard?.State)
+                {
+                    case "WaitForVmUserLogin":
                         {
-                            _isUserLoggedIn = true;
+                            Logging.Logger()?.ReportDebug($"inputs: {inputs}");
+                            var actionPayload = Json.ToObject<AdaptiveCardActionPayload>(action) ?? throw new InvalidOperationException("Invalid action");
+                            if (actionPayload.IsOkAction())
+                            {
+                                _isUserLoggedIn = true;
+                            }
+
+                            operationResult = new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null);
+                            _sessionStatusChangedEvent.Set();
+                            break;
                         }
 
-                        operationResult = new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null);
-                        _sessionStatusChangedEvent.Set();
-                        break;
-                    }
-
-                default:
-                    {
-                        Logging.Logger()?.ReportError($"Unexpected state:{_extensionAdaptiveCard?.State}");
-                        operationResult = new ProviderOperationResult(ProviderOperationStatus.Failure, null, "Something went wrong", $"Unexpected state:{_extensionAdaptiveCard?.State}");
-                        break;
-                    }
+                    default:
+                        {
+                            Logging.Logger()?.ReportError($"Unexpected state:{_extensionAdaptiveCard?.State}");
+                            operationResult = new ProviderOperationResult(ProviderOperationStatus.Failure, null, "Something went wrong", $"Unexpected state:{_extensionAdaptiveCard?.State}");
+                            break;
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Logger()?.ReportError($"Exception in OnAction: {ex}");
+                operationResult = new ProviderOperationResult(ProviderOperationStatus.Failure, ex, "Something went wrong", ex.Message);
             }
 
-            SessionStatusChanged?.Invoke(this, new ExtensionAdaptiveCardSessionData(ExtensionAdaptiveCardSessionEventKind.SessionStarted, operationResult));
+            SessionStatusChanged?.Invoke(this, new ExtensionAdaptiveCardSessionData(ExtensionAdaptiveCardSessionEventKind.SessionEnded, operationResult));
             return operationResult;
         }).AsAsyncOperation();
     }
@@ -113,7 +119,7 @@ internal sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSe
 
     private string GetTemplate()
     {
-        return Resources.ReplaceIdentifers(_credentialUITemplate, Resources.GetWidgetResourceIdentifiers(), Logging.Logger());
+        return Resources.ReplaceIdentifers(_credentialUITemplate, Resources.GetHyperVResourceIdentifiers(), Logging.Logger());
     }
 
     private static readonly string _credentialUITemplate = @"

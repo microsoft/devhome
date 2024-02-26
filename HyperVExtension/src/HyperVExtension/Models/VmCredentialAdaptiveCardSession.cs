@@ -47,13 +47,11 @@ internal sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSe
 
     void IExtensionAdaptiveCardSession.Dispose()
     {
-        Logging.Logger()?.ReportDebug($"Dispose");
         ((IDisposable)this).Dispose();
     }
 
     public ProviderOperationResult Initialize(IExtensionAdaptiveCard extensionAdaptiveCard)
     {
-        Logging.Logger()?.ReportDebug($"Initialize");
         _extensionAdaptiveCard = extensionAdaptiveCard;
         var operationResult = _extensionAdaptiveCard.Update(GetTemplate(), null, "VmCredential");
         SessionStatusChanged?.Invoke(this, new ExtensionAdaptiveCardSessionData(ExtensionAdaptiveCardSessionEventKind.SessionStarted, operationResult));
@@ -65,43 +63,51 @@ internal sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSe
         return Task.Run(() =>
         {
             ProviderOperationResult operationResult;
-            Logging.Logger()?.ReportInfo($"OnAction() called with state:{_extensionAdaptiveCard?.State}");
-            Logging.Logger()?.ReportDebug($"action: {action}");
-
-            switch (_extensionAdaptiveCard?.State)
+            try
             {
-                case "VmCredential":
-                    {
-                        Logging.Logger()?.ReportDebug($"inputs: {inputs}");
-                        var actionPayload = Json.ToObject<AdaptiveCardActionPayload>(action) ?? throw new InvalidOperationException("Invalid action");
-                        if (actionPayload.IsOkAction())
+                Logging.Logger()?.ReportInfo($"OnAction() called with state:{_extensionAdaptiveCard?.State}");
+                Logging.Logger()?.ReportDebug($"action: {action}");
+
+                switch (_extensionAdaptiveCard?.State)
+                {
+                    case "VmCredential":
                         {
-                            var inputPayload = Json.ToObject<InputPayload>(inputs) ?? throw new InvalidOperationException("Invalid inputs");
-                            _usernameString = inputPayload.UserVal;
-                            _passwordString = new NetworkCredential(string.Empty, inputPayload.PassVal).SecurePassword;
+                            Logging.Logger()?.ReportDebug($"inputs: {inputs}");
+                            var actionPayload = Json.ToObject<AdaptiveCardActionPayload>(action) ?? throw new InvalidOperationException("Invalid action");
+                            if (actionPayload.IsOkAction())
+                            {
+                                var inputPayload = Json.ToObject<InputPayload>(inputs) ?? throw new InvalidOperationException("Invalid inputs");
+                                _usernameString = inputPayload.UserVal;
+                                _passwordString = new NetworkCredential(string.Empty, inputPayload.PassVal).SecurePassword;
+                            }
+
+                            operationResult = new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null);
+                            _sessionStatusChangedEvent.Set();
+                            break;
                         }
 
-                        operationResult = new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null);
-                        _sessionStatusChangedEvent.Set();
-                        break;
-                    }
-
-                default:
-                    {
-                        Logging.Logger()?.ReportError($"Unexpected state:{_extensionAdaptiveCard?.State}");
-                        operationResult = new ProviderOperationResult(ProviderOperationStatus.Failure, null, "Something went wrong", $"Unexpected state:{_extensionAdaptiveCard?.State}");
-                        break;
-                    }
+                    default:
+                        {
+                            Logging.Logger()?.ReportError($"Unexpected state:{_extensionAdaptiveCard?.State}");
+                            operationResult = new ProviderOperationResult(ProviderOperationStatus.Failure, null, "Something went wrong", $"Unexpected state:{_extensionAdaptiveCard?.State}");
+                            break;
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Logger()?.ReportError($"Exception in OnAction: {ex}");
+                operationResult = new ProviderOperationResult(ProviderOperationStatus.Failure, ex, "Something went wrong", ex.Message);
             }
 
-            SessionStatusChanged?.Invoke(this, new ExtensionAdaptiveCardSessionData(ExtensionAdaptiveCardSessionEventKind.SessionStarted, operationResult));
+            SessionStatusChanged?.Invoke(this, new ExtensionAdaptiveCardSessionData(ExtensionAdaptiveCardSessionEventKind.SessionEnded, operationResult));
             return operationResult;
         }).AsAsyncOperation();
     }
 
     public (string? userName, SecureString? password) WaitForCredentials()
     {
-        WaitHandle.WaitAny(new[] { _sessionStatusChangedEvent, _operation.CancellationToken.WaitHandle });
+        WaitHandle.WaitAny([_sessionStatusChangedEvent, _operation.CancellationToken.WaitHandle]);
         return (_usernameString, _passwordString);
     }
 
@@ -126,7 +132,7 @@ internal sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSe
 
     private string GetTemplate()
     {
-        return Resources.ReplaceIdentifers(_credentialUITemplate, Resources.GetWidgetResourceIdentifiers(), Logging.Logger());
+        return Resources.ReplaceIdentifers(_credentialUITemplate, Resources.GetHyperVResourceIdentifiers(), Logging.Logger());
     }
 
     private static readonly string _credentialUITemplate = @"
