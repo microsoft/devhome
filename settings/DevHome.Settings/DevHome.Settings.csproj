@@ -21,8 +21,6 @@
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\AccountsPage.xaml" />
     <None Remove="Views\ExperimentalFeaturesPage.xaml" />
-    <None Remove="Views\ExtensionSettingsPage.xaml" />
-    <None Remove="Views\ExtensionsPage.xaml" />
     <None Remove="Views\FeedbackPage.xaml" />
     <None Remove="Views\LoginUIDialog.xaml" />
     <None Remove="Views\PreferencesPage.xaml" />
@@ -58,12 +56,6 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\PreferencesPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Views\ExtensionsPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Views\ExtensionSettingsPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\ExperimentalFeaturesPage.xaml">
