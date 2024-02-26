@@ -60,38 +60,6 @@ internal sealed class RepositoryProviders
     }
 
     /// <summary>
-    /// Asks the provider for search terms for querying repositories.
-    /// </summary>
-    /// <param name="providerName">The provider to ask</param>
-    /// <returns>The names of the search fields.  An empty string is returned if the provider isn't found.</returns>
-    public List<string> GetSearchTerms(string providerName)
-    {
-        if (_providers.TryGetValue(providerName, out var repoProvider))
-        {
-            return repoProvider.GetSearchTerms();
-        }
-
-        return new();
-    }
-
-    /// <summary>
-    /// Asks the provider for a list of suggestions, given values of other search terms.
-    /// </summary>
-    /// <param name="providerName">The provider to ask</param>
-    /// <param name="searchTerms">All information found in the search grid</param>
-    /// <param name="fieldName">The field to request data for</param>
-    /// <returns>A list of names that can be used for the field.  An empty list is returned if the provider isn't found</returns>
-    public List<string> GetValuesFor(string providerName, IDeveloperId developerId, Dictionary<string, string> searchTerms, string fieldName)
-    {
-        if (_providers.TryGetValue(providerName, out var repoProvider))
-        {
-            return repoProvider.GetValuesFor(developerId, searchTerms, fieldName);
-        }
-
-        return new();
-    }
-
-    /// <summary>
     /// Goes through all providers to figure out if they can make a repo from a Uri.
     /// </summary>
     /// <param name="uri">The Uri to parse.</param>
@@ -202,14 +170,9 @@ internal sealed class RepositoryProviders
     /// <param name="providerName">The specific provider.  Must match the display name of a provider</param>
     /// <param name="developerId">The account to look for.  May not be logged in.</param>
     /// <returns>All the repositories for an account and provider.</returns>
-    public IEnumerable<IRepository> GetAllRepositories(string providerName, IDeveloperId developerId, Dictionary<string, string> searchInputs)
+    public IEnumerable<IRepository> GetAllRepositories(string providerName, IDeveloperId developerId)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all repositories for repository provider {providerName}");
-        return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId, searchInputs) ?? new List<IRepository>();
-    }
-
-    public bool IsSearchingEnabled(string providerName)
-    {
-        return _providers.GetValueOrDefault(providerName)?.IsSearchingEnabled() ?? false;
+        return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId) ?? new List<IRepository>();
     }
 }
