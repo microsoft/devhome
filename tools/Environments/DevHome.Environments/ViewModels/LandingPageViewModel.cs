@@ -9,15 +9,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Collections;
+using DevHome.Common.Environments.Helpers;
+using DevHome.Common.Environments.Models;
+using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Automation;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.Windows.DevHome.SDK;
 using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
@@ -27,68 +28,109 @@ namespace DevHome.Environments.ViewModels;
 /// </summary>
 public partial class LandingPageViewModel : ObservableObject
 {
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+
     private readonly EnvironmentsExtensionsService _extensionsService;
+
+    private readonly ToastNotificationService _notificationService;
+
+    private readonly IComputeSystemManager _computeSystemManager;
+
+    private readonly object _lock = new();
+
+    public bool IsLoading { get; set; }
 
     public ObservableCollection<ComputeSystemViewModel> ComputeSystems { get; set; } = new();
 
     public AdvancedCollectionView ComputeSystemsView { get; set; }
 
+    public bool HasPageLoadedForTheFirstTime { get; set; }
+
     [ObservableProperty]
     private bool _showLoadingShimmer = true;
 
-    public LandingPageViewModel(EnvironmentsExtensionsService extensionsService)
+    public LandingPageViewModel(IComputeSystemManager manager, EnvironmentsExtensionsService extensionsService, ToastNotificationService toastNotificationService)
     {
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _extensionsService = extensionsService;
+        _notificationService = toastNotificationService;
+        _computeSystemManager = manager;
 
-        // ToDo: Re-enable in production
-        // LoadModel();
         ComputeSystemsView = new AdvancedCollectionView(ComputeSystems);
+        _notificationService.CheckIfUserIsAHyperVAdmin();
     }
 
-    // ToDo: Sync button should clear the view model and reload it
-    public void SyncButton_Click(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    public async Task SyncButton()
     {
-        ComputeSystems.Clear();
-        LoadModel();
+        await LoadModelAsync();
     }
 
     /// <summary>
     /// Main entry point for loading the view model.
     /// </summary>
-    public async void LoadModel(bool useDebugValues = false)
+    public async Task LoadModelAsync(bool useDebugValues = false)
     {
-        ShowLoadingShimmer = true;
-        foreach (var system in await _extensionsService.GetComputeSystemsAsync(useDebugValues))
+        lock (_lock)
         {
-            ComputeSystems.Add(system);
-            SubscribeForStateChanges(system);
+            if (IsLoading)
+            {
+                return;
+            }
+
+            HasPageLoadedForTheFirstTime = true;
+            IsLoading = true;
         }
 
+        for (var i = ComputeSystems.Count - 1; i >= 0; i--)
+        {
+            ComputeSystems[i].RemoveStateChangedHandler();
+            ComputeSystems.RemoveAt(i);
+        }
+
+        ShowLoadingShimmer = true;
+        await _extensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
         ShowLoadingShimmer = false;
+
+        lock (_lock)
+        {
+            IsLoading = false;
+        }
     }
 
-    private void SubscribeForStateChanges(ComputeSystemViewModel system)
+    private async Task AddAllComputeSystemsFromAProvider(ComputeSystemsLoadedData data)
     {
-        system.ComputeSystem.StateChanged += (sender, args) =>
-        {
-            // ToDo: Is this the best way to update the UI?
-            Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
-            {
-                try
-                {
-                    system.State = args;
-                    var index = ComputeSystems.IndexOf(system);
-                    ComputeSystems[index] = system;
-                }
-                catch (Exception e)
-                {
-                    var err = e.Message;
+        var provider = data.ProviderDetails.ComputeSystemProvider;
 
-                    // ToDo: Remove this and add logging
-                    Debug.WriteLine(err);
+        await _dispatcher.EnqueueAsync(async () =>
+        {
+            try
+            {
+                var computeSystemList = data.DevIdToComputeSystemMap.Values.SelectMany(x => x.ComputeSystems).ToList();
+
+                // In the future when we support switching between accounts in the environments page, we will need to handle this differently.
+                // for now we'll show all the compute systems from a provider.
+                var computeSystemResult = data.DevIdToComputeSystemMap.Values.FirstOrDefault();
+
+                if (computeSystemList == null || computeSystemList.Count == 0)
+                {
+                    Log.Logger()?.ReportError($"No Compute systems found for provider: {provider.Id}");
+                    return;
                 }
-            });
-        };
+
+                for (var i = 0; i < computeSystemList.Count; i++)
+                {
+                    var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
+                    var computeSystemViewModel = new ComputeSystemViewModel(_computeSystemManager, computeSystemList.ElementAt(i), provider, packageFullName);
+                    await computeSystemViewModel.InitializeCardDataAsync();
+                    ComputeSystems.Add(computeSystemViewModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Logger()?.ReportError($"Error occurred while adding Compute systems to environments page for provider: {provider.Id}", ex);
+            }
+        });
     }
 
     /// <summary>

@@ -4,14 +4,16 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Environments.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
+
+using Dispatching = Microsoft.UI.Dispatching;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
@@ -20,9 +22,13 @@ namespace DevHome.SetupFlow.ViewModels.Environments;
 /// </summary>
 public partial class ComputeSystemCardViewModel : ObservableObject
 {
+    private readonly Dispatching.DispatcherQueue _dispatcher;
+
+    private readonly IComputeSystemManager _computeSystemManager;
+
     private const int _maxCardProperties = 6;
 
-    public ComputeSystem ComputeSystemWrapper { get; set; }
+    public ComputeSystem ComputeSystemWrapper { get; private set; }
 
     public BitmapImage ComputeSystemImage { get; set; }
 
@@ -41,14 +47,14 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     [ObservableProperty]
     private CardStateColor _stateColor;
 
-    public List<ICardProperty> ComputeSystemProperties { get; set; }
+    public List<CardProperty> ComputeSystemProperties { get; set; }
 
     // only display first 6 properties
-    public ObservableCollection<ICardProperty> ComputeSystemPropertiesForCardUI
+    public ObservableCollection<CardProperty> ComputeSystemPropertiesForCardUI
     {
         get
         {
-            var properties = new ObservableCollection<ICardProperty>();
+            var properties = new ObservableCollection<CardProperty>();
             for (var i = 0; i < Math.Min(ComputeSystemProperties.Count, _maxCardProperties); i++)
             {
                 properties.Add(ComputeSystemProperties[i]);
@@ -58,10 +64,26 @@ public partial class ComputeSystemCardViewModel : ObservableObject
         }
     }
 
-    public void OnComputeSystemStateChanged(object sender, ComputeSystemState state)
+    public ComputeSystemCardViewModel(ComputeSystem computeSystem, IComputeSystemManager manager)
     {
-        CardState = state;
-        UpdateStateColor(state);
+        _dispatcher = Dispatching.DispatcherQueue.GetForCurrentThread();
+        _computeSystemManager = manager;
+        ComputeSystemTitle = computeSystem.Name;
+        ComputeSystemWrapper = computeSystem;
+        ComputeSystemWrapper.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
+        _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;
+    }
+
+    public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
+    {
+        _dispatcher.TryEnqueue(() =>
+        {
+            if (sender.Id == ComputeSystemWrapper.Id)
+            {
+                CardState = state;
+                StateColor = ComputeSystemHelpers.GetColorBasedOnState(state);
+            }
+        });
     }
 
     public async Task<ComputeSystemState> GetCardStateAsync()
@@ -73,17 +95,13 @@ public partial class ComputeSystemCardViewModel : ObservableObject
             Log.Logger.ReportError(Log.Component.ComputeSystemCardViewModel, $"Failed to get state for compute system {ComputeSystemWrapper.Name} from provider {ComputeSystemWrapper.AssociatedProviderId}. Error: {result.Result.DiagnosticText}");
         }
 
-        UpdateStateColor(result.State);
+        StateColor = ComputeSystemHelpers.GetColorBasedOnState(result.State);
         return result.State;
     }
 
-    private void UpdateStateColor(ComputeSystemState state)
+    public void RemoveComputeSystemStateChangedHandler()
     {
-        StateColor = state switch
-        {
-            ComputeSystemState.Running => CardStateColor.Success,
-            ComputeSystemState.Stopped => CardStateColor.Neutral,
-            _ => CardStateColor.Caution,
-        };
+        ComputeSystemWrapper.StateChanged -= _computeSystemManager.OnComputeSystemStateChanged;
+        _computeSystemManager.ComputeSystemStateChanged -= OnComputeSystemStateChanged;
     }
 }

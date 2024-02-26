@@ -12,6 +12,8 @@ namespace DevHome.Environments.CustomControls;
 
 public sealed partial class CardFlyout : MenuFlyout
 {
+    private const double MinimumWidthOfItems = 200;
+
     public CardFlyout()
     {
         InitializeComponent();
@@ -41,8 +43,8 @@ public sealed partial class CardFlyout : MenuFlyout
                 {
                     Text = item.Name,
                     Icon = new FontIcon { Glyph = item.IconGlyph },
-                    Command = new RelayCommand(item.InvokeAction),
-                    Width = 200,
+                    Command = item.InvokeActionCommand,
+                    MinWidth = MinimumWidthOfItems,
                 };
                 Items.Add(flyoutItem);
             }

@@ -38,9 +38,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
     public AdvancedCollectionView ComputeSystemCardAdvancedCollectionView { get; private set; }
 
-    public List<DeveloperIdWrapper> DeveloperIdList { get; set; }
-
-    public List<ComputeSystemsResult> ComputeSystemsResults { get; set; }
+    public Dictionary<DeveloperIdWrapper, ComputeSystemsResult> DevIdToComputeSystemMap { get; set; }
 
     public ComputeSystemProvider Provider { get; set; }
 
@@ -87,17 +85,18 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
     public ComputeSystemsListViewModel(ComputeSystemsLoadedData loadedData)
     {
-        Provider = loadedData.ProviderToDevIdMap.Key;
-        ComputeSystemsResults = loadedData.ComputeSystemsResult;
-        CurrentResult = ComputeSystemsResults.FirstOrDefault();
-        DeveloperIdList = loadedData.ProviderToDevIdMap.Value;
-        CurrentDeveloperId = DeveloperIdList.FirstOrDefault();
+        Provider = loadedData.ProviderDetails.ComputeSystemProvider;
+        DevIdToComputeSystemMap = loadedData.DevIdToComputeSystemMap;
+
+        // Get the first developerId and compute system result.
+        var devIdToResultKeyValuePair = DevIdToComputeSystemMap.FirstOrDefault();
+        CurrentResult = devIdToResultKeyValuePair.Value;
+        CurrentDeveloperId = devIdToResultKeyValuePair.Key;
 
         DisplayName = Provider.DisplayName;
 
         if (CurrentResult != null && CurrentResult.ComputeSystems != null)
         {
-            CurrentResult = ComputeSystemsResults.FirstOrDefault();
             ComputeSystemWrappers = CurrentResult.ComputeSystems.Select(computeSystem => new ComputeSystem(computeSystem)).ToList();
         }
 
@@ -150,5 +149,13 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
         SelectedItem = viewModel;
         CardSelectionChanged(this, viewModel.ComputeSystemWrapper);
+    }
+
+    public void RemoveCardViewModelEventHandlers()
+    {
+        foreach (var cardViewModel in ComputeSystemCardCollection)
+        {
+            cardViewModel.RemoveComputeSystemStateChangedHandler();
+        }
     }
 }

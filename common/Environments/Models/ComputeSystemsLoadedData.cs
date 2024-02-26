@@ -13,13 +13,13 @@ namespace DevHome.Common.Environments.Models;
 /// </summary>
 public class ComputeSystemsLoadedData
 {
-    public KeyValuePair<ComputeSystemProvider, List<DeveloperIdWrapper>> ProviderToDevIdMap { get; set; }
+    public ComputeSystemProviderDetails ProviderDetails { get; set; }
 
-    public List<ComputeSystemsResult> ComputeSystemsResult { get; set; }
+    public Dictionary<DeveloperIdWrapper, ComputeSystemsResult> DevIdToComputeSystemMap { get; set; }
 
-    public ComputeSystemsLoadedData(KeyValuePair<ComputeSystemProvider, List<DeveloperIdWrapper>> providerToDevIdMap, List<ComputeSystemsResult> computeSystemsResult)
+    public ComputeSystemsLoadedData(ComputeSystemProviderDetails providerDetails, Dictionary<DeveloperIdWrapper, ComputeSystemsResult> devIdToComputeSystemMap)
     {
-        ProviderToDevIdMap = providerToDevIdMap;
-        ComputeSystemsResult = computeSystemsResult;
+        ProviderDetails = providerDetails;
+        DevIdToComputeSystemMap = devIdToComputeSystemMap;
     }
 }

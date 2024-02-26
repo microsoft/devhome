@@ -38,6 +38,8 @@
         </DataTemplate>
     -->
 
+    <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+
     <DataTemplate x:Key="CardHeaderShimmerTemplate">
         <Grid
             Style="{StaticResource CardHeaderContainerStyle}"
