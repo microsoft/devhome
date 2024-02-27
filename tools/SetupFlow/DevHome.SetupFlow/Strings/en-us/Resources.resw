@@ -1466,15 +1466,23 @@
     <value>Skipped</value>
   </data>
   <data name="SetupTargetConfigurationOpenConfigFailed" xml:space="preserve">
-    <value>Failed opening the configuration file: Field: {0} missing/invalid with value {1} on line {2} and column {3}</value>
+    <value>The extension failed to open the configuration file. View the logs for more information.</value>
   </data>
   <data name="SetupTargetConfigurationSetProgressMessage" xml:space="preserve">
-    <value>Current configuration set status: {0}</value>
+    <value>Configuration set status: {0}</value>
   </data>
   <data name="SetupTargetConfigurationUnitProgressError" xml:space="preserve">
     <value>There was an issue applying part of the configuration. Error: {0}</value>
   </data>
   <data name="SetupTargetConfigurationUnitProgressMessage" xml:space="preserve">
-    <value>Current configuration unit status: {0}</value>
+    <value>Configuration unit status: {0}</value>
+  </data>
+  <data name="ConfigureTargetApplyConfigurationActionNeeded" xml:space="preserve">
+    <value>Action required ({0}/{1}). Please view the action center.</value>
+    <comment>Locked={"0", "{1}"} Text to tell the user that their action is needed in order to complete the configuration. {0} is the amount of attempts  the user has done so far while {1} is the max amount attempts the user has.</comment>
+  </data>
+  <data name="ConfigureTargetApplyConfigurationStopped" xml:space="preserve">
+    <value>Apply configuration stoppped with status: {0}</value>
+    <comment>Locked={"0"} Info message that tells the user applying the configuration operation from the extension has stopped. {0} is the message from the extension who attempted to apply the configuration file.</comment>
   </data>
 </root>

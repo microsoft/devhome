@@ -4,11 +4,19 @@
 extern alias Projection;
 
 using System;
+using DevHome.Common.Views;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
+
+public enum ActionMessageRequestKind
+{
+    Add,
+    Remove,
+}
 
 /// <summary>
 /// A single atomic task to perform during the setup flow.
@@ -101,5 +109,10 @@ public interface ISetupTask
     /// </summary>
     public event ChangeMessageHandler AddMessage;
 
-    // public event EventHandler<IExtensionAdaptiveCardSession2> CorrectiveActionAdaptiveCardSessionChanged;
+    public delegate void ChangeActionCenterMessageHandler(ActionCenterMessages message, ActionMessageRequestKind requestKind);
+
+    /// <summary>
+    /// Use this event to insert a message into the action center of the loading screen.
+    /// </summary>
+    public event ChangeActionCenterMessageHandler UpdateActionCenterMessage;
 }

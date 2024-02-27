@@ -12,6 +12,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.ResultHelper;
 using DevHome.Common.Services;
+using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
@@ -32,6 +33,10 @@ internal sealed class CreateDevDriveTask : ISetupTask
     private readonly Guid _activityId;
 
     public event ISetupTask.ChangeMessageHandler AddMessage;
+
+#pragma warning disable 67
+    public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
+#pragma warning restore 67
 
     public bool RequiresAdmin => true;
 

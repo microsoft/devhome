@@ -25,11 +25,8 @@ public class SDKConfigurationSetChangeWrapper
         _configurationSetChangeData = configurationUnitState;
         _stringResource = setupFlowStringResource;
 
-        if (ResultInformation != null)
-        {
-            ShortFailureDescription = ResultInformation.Description?.Clone() as string;
-            DetailedFailureDescription = ResultInformation.Details?.Clone() as string;
-        }
+        ShortFailureDescription = ResultInformation?.Description;
+        DetailedFailureDescription = ResultInformation?.Details;
     }
 
     // The change event type that occurred.
@@ -120,13 +117,12 @@ public class SDKConfigurationSetChangeWrapper
         stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{configSetName} ");
         stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{configUnitName} ");
 
-        if (ResultInformation != null)
-        {
-            var errorInfo = _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnitProgressError, ShortFailureDescription);
-            stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{errorInfo} ");
-        }
-
         return stringBuilder.ToString();
+    }
+
+    public string GetErrorMessagesForDisplay()
+    {
+        return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnitProgressError, ShortFailureDescription);
     }
 
     public string GetErrorMessageForLogging()

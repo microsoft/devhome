@@ -67,6 +67,25 @@ public class HyperVManager : IHyperVManager, IDisposable
         return AreStringsTheSame(name, HyperVStrings.HyperVModuleName);
     }
 
+    public void ImportHyperVModule()
+    {
+        // Makes sure the Hyper-V module is loaded in the current PowerShell session.
+        // In PowerShell.SDK 7.4.* simply attempting to import the Hyper-V module will
+        // not work. We need to force the module to be installed by installing the default
+        // Windows PowerShell module path module path. If Hyper-V is enabled the Hyper-v module
+        // will be installed in the WindowsPSModulePath environment variable.
+        var commandLineStatements = new StatementBuilder()
+            .AddScript("Install-Module WindowsPSModulePath -Force", true)
+            .Build();
+
+        var result = _powerShellService.Execute(commandLineStatements, PipeType.None);
+
+        if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
+        {
+            Logging.Logger()?.ReportWarn($"Unable to WindowsPSModulePath for the Hyper-V module location, Error: {result.CommandOutputErrorMessage}");
+        }
+    }
+
     /// <inheritdoc cref="IHyperVManager.StartVirtualMachineManagementService"/>
     public void StartVirtualMachineManagementService()
     {

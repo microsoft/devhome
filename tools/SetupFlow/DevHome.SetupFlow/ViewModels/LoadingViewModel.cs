@@ -29,6 +29,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Storage;
 using WinUIEx;
+using WinUIEx.Messaging;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -196,12 +197,26 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         });
     }
 
-    public void OnCorrectiveActionAdaptiveCard(IExtensionAdaptiveCardSession2 cardSession)
+    public void UpdateActionCenterMessage(ActionCenterMessages message, ActionMessageRequestKind requestKind)
     {
-    }
+        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        {
+            // We need to add/remove the message in a temporary list and then re add the items to a new collection. This is because
+            // of the adaptive card panel and it receiving UI updates in the listview. There can be random crashes if we don't do this when
+            // the user switches between different Dev Home pages and then comes back to the loading screen when an adaptive card is
+            // loaded into the action center.
+            var items = ActionCenterItems.ToList();
+            if (requestKind == ActionMessageRequestKind.Add)
+            {
+                items.Add(message);
+            }
+            else
+            {
+                items.Remove(message);
+            }
 
-    public void RemoveCorrectiveActionAdaptiveCard(IExtensionAdaptiveCardSession2 message)
-    {
+            ActionCenterItems = new(items);
+        });
     }
 
     public LoadingViewModel(
@@ -244,6 +259,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             var taskGroup = Orchestrator.GetTaskGroup<SetupTargetTaskGroup>();
             var task = taskGroup.SetupTasks.First();
             task.AddMessage += AddMessage;
+            task.UpdateActionCenterMessage += UpdateActionCenterMessage;
             TasksToRun.Add(new TaskInformation
             {
                 TaskIndex = taskIndex++,
@@ -314,7 +330,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                     statusSymbolIcon = LightCaution;
                 }
 
-                ActionCenterItems.Add(information.TaskToExecute.GetRebootMessage());
+                ActionCenterItems.Insert(0, information.TaskToExecute.GetRebootMessage());
             }
             else
             {
@@ -346,7 +362,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 statusSymbolIcon = LightError;
             }
 
-            ActionCenterItems.Add(information.TaskToExecute.GetErrorMessages());
+            ActionCenterItems.Insert(0, information.TaskToExecute.GetErrorMessages());
             TasksFailed++;
 
             Log.Logger?.ReportDebug(Log.Component.Loading, "Adding task to list for retry");

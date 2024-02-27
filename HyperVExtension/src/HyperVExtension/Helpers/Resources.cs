@@ -62,6 +62,8 @@ public static class Resources
             "VmCredentialRequest/PasswordLabel",
             "VmCredentialRequest/OkText",
             "VmCredentialRequest/CancelText",
+            "WaitForLoginRequest/Title",
+            "WaitForLoginRequest/Description",
         ];
     }
 }

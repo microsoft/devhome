@@ -86,7 +86,9 @@ internal sealed class ApplyConfigurationProgressWatcher
                 unit.Identifier,
                 (DevSetupEngineTypes.ConfigurationUnitState)unit.State,
                 false,
-                null);
+                null,
+                unit.Settings,
+                (DevSetupEngineTypes.ConfigurationUnitIntent)unit.Intent);
 
             var configurationSetChangeData = new ConfigurationSetChangeData(
                 DevSetupEngineTypes.ConfigurationSetChangeEventType.UnitStateChanged,

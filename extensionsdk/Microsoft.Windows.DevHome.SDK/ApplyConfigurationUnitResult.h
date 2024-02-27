@@ -5,8 +5,9 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     struct ApplyConfigurationUnitResult : ApplyConfigurationUnitResultT<ApplyConfigurationUnitResult>
     {
-        ApplyConfigurationUnitResult(ConfigurationUnit const& unit, bool previouslyInDesiredState, bool rebootRequired, ConfigurationUnitResultInformation const& resultInformation);
+        ApplyConfigurationUnitResult(ConfigurationUnit const& unit, ConfigurationUnitState const& state, bool previouslyInDesiredState, bool rebootRequired, ConfigurationUnitResultInformation const& resultInformation);
         ConfigurationUnit Unit();
+        ConfigurationUnitState State();
         bool PreviouslyInDesiredState();
         bool RebootRequired();
         ConfigurationUnitResultInformation ResultInformation();

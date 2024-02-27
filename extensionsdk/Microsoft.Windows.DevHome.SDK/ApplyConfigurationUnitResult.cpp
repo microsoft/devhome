@@ -4,8 +4,8 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    ApplyConfigurationUnitResult::ApplyConfigurationUnitResult(ConfigurationUnit const& unit, bool previouslyInDesiredState, bool rebootRequired, ConfigurationUnitResultInformation const& resultInformation)
-        : m_unit(unit), m_previouslyInDesiredState(previouslyInDesiredState), m_rebootRequired(rebootRequired), m_resultInformation(resultInformation)
+    ApplyConfigurationUnitResult::ApplyConfigurationUnitResult(ConfigurationUnit const& unit, ConfigurationUnitState const& state, bool previouslyInDesiredState, bool rebootRequired, ConfigurationUnitResultInformation const& resultInformation)
+        : m_unit(unit), m_previouslyInDesiredState(previouslyInDesiredState), m_rebootRequired(rebootRequired), m_resultInformation(resultInformation), m_state(state)
     {
     }
     
@@ -27,5 +27,10 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
     ConfigurationUnitResultInformation ApplyConfigurationUnitResult::ResultInformation()
     {
         return m_resultInformation;
+    }
+
+    ConfigurationUnitState ApplyConfigurationUnitResult::State()
+    {
+        return m_state;
     }
 }

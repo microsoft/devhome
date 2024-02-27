@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
@@ -17,18 +19,31 @@ public class SDKOpenConfigurationSetResult
 
     public SDKOpenConfigurationSetResult(SDK.OpenConfigurationSetResult result, ISetupFlowStringResource setupFlowStringResource)
     {
-        Field = result.Field.Clone() as string;
-        Line = result.Line;
-        Column = result.Column;
-        Value = result.Value.Clone() as string;
+        Result = result;
         _setupFlowStringResource = setupFlowStringResource;
+
+        if (Result != null)
+        {
+            Field = result.Field.Clone() as string;
+            Line = result.Line;
+            Column = result.Column;
+            Value = result.Value.Clone() as string;
+            ResultCode = Result.ResultCode;
+            Succeeded = ResultCode != null && ResultCode.HResult == 0;
+        }
     }
 
+    public bool Succeeded { get; private set; }
+
+    public SDK.OpenConfigurationSetResult Result { get; private set; }
+
+    public Exception ResultCode { get; private set; }
+
     // The field that is missing/invalid, if appropriate for the specific ResultCode.
-    public string Field { get; }
+    public string Field { get; } = string.Empty;
 
     // The value of the field, if appropriate for the specific ResultCode.
-    public string Value { get; }
+    public string Value { get; } = string.Empty;
 
     // The line number for the failure reason, if determined.
     public uint Line { get; }
@@ -36,8 +51,13 @@ public class SDKOpenConfigurationSetResult
     // The column number for the failure reason, if determined.
     public uint Column { get; }
 
-    public override string ToString()
+    public string GetErrorMessage()
     {
-        return _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationOpenConfigFailed, Field, Value, Line, Column);
+        Log.Logger?.ReportError(
+            Log.Component.SDKOpenConfigurationSetResult,
+            $"Extension failed to open the configuration file provided by Dev Home: Field: {Field}, Value: {Value}, Line: {Line}, Column: {Column}",
+            ResultCode);
+
+        return _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationOpenConfigFailed);
     }
 }

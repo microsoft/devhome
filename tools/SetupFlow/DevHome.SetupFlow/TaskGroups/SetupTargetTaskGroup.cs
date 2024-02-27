@@ -48,6 +48,12 @@ public class SetupTargetTaskGroup : ISetupTaskGroup, IDisposable
             themeSelectorService);
     }
 
+    /// <summary>
+    /// Gets the task corresponding to the configuration file to apply
+    /// </summary>
+    /// <remarks>At most one configuration file can be applied at a time</remarks>
+    public ConfigureTargetTask ConfigureTask => _setupTargetTaskGroup;
+
     public IEnumerable<ISetupTask> SetupTasks => new List<ISetupTask>() { _setupTargetTaskGroup };
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _setupTargetViewModel;

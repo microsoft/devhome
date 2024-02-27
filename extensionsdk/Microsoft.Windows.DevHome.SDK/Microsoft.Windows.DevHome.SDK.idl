@@ -800,6 +800,22 @@ namespace Microsoft.Windows.DevHome.SDK
         Precondition,
     };
 
+    // Defines how the configuration unit is to be used within the configuration system.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    enum ConfigurationUnitIntent
+    {
+        // The configuration unit will only be used to Test the current system state.
+        Assert,
+        // The configuration unit will only be used to Get the current system state.
+        Inform,
+        // The configuration unit will be used to Apply the current system state.
+        // The configuration unit will be used to Test and Get the current system state as part of that process.
+        Apply,
+        // The configuration unit's intent is unknown. This maps to WinGets unknown type but is currently not
+        // not in use by WinGet.
+        Unknown,
+    }; 
+
     // Information on a result for a single unit of configuration.
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
     runtimeclass ConfigurationUnitResultInformation
@@ -872,7 +888,7 @@ namespace Microsoft.Windows.DevHome.SDK
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
     runtimeclass ConfigurationUnit
     {
-        ConfigurationUnit(String type, String identifier, ConfigurationUnitState state, Boolean isGroup, Windows.Foundation.Collections.IVector<ConfigurationUnit> units);
+        ConfigurationUnit(String type, String identifier, ConfigurationUnitState state, Boolean isGroup, Windows.Foundation.Collections.IVector<ConfigurationUnit> units, Windows.Foundation.Collections.ValueSet settings, ConfigurationUnitIntent intent);
 
         // The type of the unit being configured; not a name for this instance.
         String Type
@@ -901,6 +917,18 @@ namespace Microsoft.Windows.DevHome.SDK
 
         // The configuration units that are part of this unit (if IsGroup is true).
         Windows.Foundation.Collections.IVector<ConfigurationUnit> Units
+        {
+            get;
+        };
+
+        // Contains the values that are for use by the configuration unit itself.
+        Windows.Foundation.Collections.ValueSet Settings
+        {
+            get;
+        };
+
+        // Describes how this configuration unit will be used.
+        ConfigurationUnitIntent Intent
         {
             get;
         };
@@ -965,13 +993,19 @@ namespace Microsoft.Windows.DevHome.SDK
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
     runtimeclass ApplyConfigurationUnitResult
     {
-        ApplyConfigurationUnitResult(ConfigurationUnit unit, Boolean previouslyInDesiredState, Boolean rebootRequired, ConfigurationUnitResultInformation resultInformation);
+        ApplyConfigurationUnitResult(ConfigurationUnit unit, ConfigurationUnitState state, Boolean previouslyInDesiredState, Boolean rebootRequired, ConfigurationUnitResultInformation resultInformation);
 
         // The configuration unit that was applied.
         ConfigurationUnit Unit
         {
             get;
         };
+
+        // The state of the configuration unit with regards to the current execution of ApplySet.
+        ConfigurationUnitState State
+        {
+            get;
+        }; 
 
         // Will be true if the configuration unit was in the desired state (Test returns true) prior to the apply action.
         Boolean PreviouslyInDesiredState

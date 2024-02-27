@@ -222,4 +222,6 @@ public static class StringResourceKey
     public static readonly string SetupTargetConfigurationUnitProgressMessage = nameof(SetupTargetConfigurationUnitProgressMessage);
     public static readonly string SetupTargetConfigurationSetProgressMessage = nameof(SetupTargetConfigurationSetProgressMessage);
     public static readonly string SetupTargetConfigurationUnitProgressError = nameof(SetupTargetConfigurationUnitProgressError);
+    public static readonly string ConfigureTargetApplyConfigurationStopped = nameof(ConfigureTargetApplyConfigurationStopped);
+    public static readonly string ConfigureTargetApplyConfigurationActionNeeded = nameof(ConfigureTargetApplyConfigurationActionNeeded);
 }

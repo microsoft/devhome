@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.WinUI;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Renderers;
 using DevHome.Common.Views;
@@ -15,6 +16,7 @@ using DevHome.Contracts.Services;
 using DevHome.Logging;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.WingetConfigure;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
@@ -22,7 +24,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 using Windows.Storage;
-
+using Windows.Win32;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -30,6 +32,8 @@ namespace DevHome.SetupFlow.Models;
 public class ConfigureTargetTask : ISetupTask, IDisposable
 {
     private readonly AutoResetEvent _autoResetEvent = new(false);
+
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue;
 
     private readonly ISetupFlowStringResource _stringResource;
 
@@ -41,15 +45,19 @@ public class ConfigureTargetTask : ISetupTask, IDisposable
 
     private readonly IThemeSelectorService _themeSelectorService;
 
+    public Dictionary<ElementTheme, string> AdaptiveCardHostConfigs { get; set; } = new();
+
+    private readonly Dictionary<ElementTheme, string> _hostConfigFileNames = new()
+    {
+        { ElementTheme.Dark, "DarkHostConfig.json" },
+        { ElementTheme.Light, "LightHostConfig.json" },
+    };
+
     private bool _disposedValue;
 
-    public ExtensionAdaptiveCardPanel CorrectiveExtensionCardPanel { get; set; }
+    public ActionCenterMessages ActionCenterMessages { get; set; } = new();
 
     public SDK.IExtensionAdaptiveCardSession2 ExtensionAdaptiveCardSession { get; set; }
-
-    public event EventHandler<ExtensionAdaptiveCardPanel> CorrectiveExtensionAdaptiveCardPanelRemoved;
-
-    public event EventHandler<ExtensionAdaptiveCardPanel> CorrectiveExtensionAdaptiveCardPanelAdded;
 
     public bool RequiresAdmin => false;
 
@@ -59,7 +67,7 @@ public class ConfigureTargetTask : ISetupTask, IDisposable
 
     public event ISetupTask.ChangeMessageHandler AddMessage;
 
-    public bool IsExecuting { get; private set; }
+    public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
 
     public WinGetConfigFile WingetConfigFileObject { get; set; }
 
@@ -70,7 +78,11 @@ public class ConfigureTargetTask : ISetupTask, IDisposable
         get; private set;
     }
 
-    public SDK.ApplyConfigurationResult Result { get; private set; }
+    public uint UserNumberOfAttempts { get; private set; } = 1;
+
+    public uint UserMaxNumberOfAttempts { get; private set; } = 3;
+
+    public SDKApplyConfigurationResult Result { get; private set; }
 
     public ConfigureTargetTask(
         ISetupFlowStringResource stringResource,
@@ -84,6 +96,7 @@ public class ConfigureTargetTask : ISetupTask, IDisposable
         _configurationFileBuilder = configurationFileBuilder;
         _themeSelectorService = themeSelectorService;
         _setupFlowOrchestrator = setupFlowOrchestrator;
+        _dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
     }
 
     public void OnAdaptiveCardSessionChanged(IExtensionAdaptiveCardSession2 cardSession, SDK.ExtensionAdaptiveCardSessionData data)
@@ -96,59 +109,100 @@ public class ConfigureTargetTask : ISetupTask, IDisposable
         if (data.EventKind == SDK.ExtensionAdaptiveCardSessionEventKind.SessionEnded)
         {
             cardSession.SessionStatusChanged -= OnAdaptiveCardSessionChanged;
-            CorrectiveExtensionAdaptiveCardPanelRemoved?.Invoke(this, CorrectiveExtensionCardPanel);
+
             ExtensionAdaptiveCardSession = null;
         }
     }
 
     public void OnApplyConfigurationOperationProgress(object sender, SDK.ConfigurationSetChangeData progressData)
     {
-        if (progressData == null)
+        try
         {
-            return;
-        }
-
-        if (progressData.CorrectiveActionCardSession != null)
-        {
-            ExtensionAdaptiveCardSession.SessionStatusChanged -= OnAdaptiveCardSessionChanged;
-            CorrectiveExtensionAdaptiveCardPanelRemoved?.Invoke(this, CorrectiveExtensionCardPanel);
-            CorrectiveExtensionCardPanel = CreateCorrectiveActionPanel(progressData.CorrectiveActionCardSession).GetAwaiter().GetResult();
-            CorrectiveExtensionAdaptiveCardPanelAdded?.Invoke(this, CorrectiveExtensionCardPanel);
-        }
-        else
-        {
-            var wrapper = new SDKConfigurationSetChangeWrapper(progressData, _stringResource);
-            if (wrapper.IsErrorMessagePresent)
+            if (progressData == null)
             {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Target experienced an error while applying the configuration: {wrapper.GetErrorMessageForLogging()}");
+                Log.Logger?.ReportWarn(Log.Component.ConfigurationTarget, "Unable to get progress of the configuration");
+                return;
             }
 
-            AddMessage(wrapper.ToString());
+            if (progressData.CorrectiveActionCardSession != null)
+            {
+                ExtensionAdaptiveCardSession = progressData.CorrectiveActionCardSession;
+                ExtensionAdaptiveCardSession.SessionStatusChanged -= OnAdaptiveCardSessionChanged;
+
+                CreateCorrectiveActionPanel(ExtensionAdaptiveCardSession).GetAwaiter().GetResult();
+
+                AddMessage(_stringResource.GetLocalized(StringResourceKey.ConfigureTargetApplyConfigurationActionNeeded, UserNumberOfAttempts++, UserMaxNumberOfAttempts));
+                Log.Logger?.ReportWarn(Log.Component.ConfigurationTarget, $"adaptive card receieved from extension");
+            }
+            else
+            {
+                var wrapper = new SDKConfigurationSetChangeWrapper(progressData, _stringResource);
+                if (wrapper.IsErrorMessagePresent)
+                {
+                    Log.Logger?.ReportError(Log.Component.ConfigurationTarget, $"Target experienced an error while applying the configuration: {wrapper.GetErrorMessageForLogging()}");
+                }
+
+                // AddMessage(wrapper.ToString());
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Logger?.ReportError(Log.Component.ConfigurationTarget, $"Failed to process configuration progress on target machine.", ex);
         }
     }
 
     public void OnApplyConfigurationOperationCompleted(object sender, SDK.ApplyConfigurationResult applyConfigurationResult)
     {
-        if (applyConfigurationResult.OpenConfigurationSetResult != null && applyConfigurationResult.OpenConfigurationSetResult.ResultCode.HResult != 0)
-        {
-            var openConfigResult = applyConfigurationResult.OpenConfigurationSetResult;
-            var openConfigurationException = new OpenConfigurationSetException(openConfigResult.ResultCode, openConfigResult.Field, openConfigResult.Value);
-            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to open configuration set on target.", openConfigurationException);
+        // apply configuration set result is used to check if the configuration set was applied successfully, while open configuration
+        // set result is used to check if WinGet was able to open the configuration file successfully.
+        var applyConfigSetResult = applyConfigurationResult.ApplyConfigurationSetResult;
+        var openConfigResult = applyConfigurationResult.OpenConfigurationSetResult;
+        var resultCode = applyConfigurationResult.ResultCode;
+        var resultInformation = applyConfigurationResult.ResultDescription;
 
-            AddMessage(new SDKOpenConfigurationSetResult(openConfigResult, _stringResource).ToString());
+        try
+        {
+            Result = new SDKApplyConfigurationResult(
+                resultCode, resultInformation, new SDKApplyConfigurationSetResult(applyConfigSetResult), new SDKOpenConfigurationSetResult(openConfigResult, _stringResource));
+
+            // Check if there were errors while opening the configuration set.
+            if (!Result.OpenConfigSucceeded)
+            {
+                AddMessage(Result.OpenResult.GetErrorMessage());
+                throw new OpenConfigurationSetException(Result.OpenResult.ResultCode, Result.OpenResult.Field, Result.OpenResult.Value);
+            }
+
+            if (!Result.ApplyConfigSucceeded)
+            {
+                throw new SDKApplyConfigurationSetResultException("Unable to get the result of the apply configuration set as it was null.");
+            }
+
+            if (Result.ApplyResult.AreConfigUnitsAvailable)
+            {
+                for (var i = 0; i < Result.ApplyResult.Result.UnitResults.Count; ++i)
+                {
+                    ConfigurationResults.Add(new ConfigurationUnitResult(Result.ApplyResult.Result.UnitResults[i]));
+                }
+
+                Log.Logger?.ReportInfo(Log.Component.ConfigurationTarget, "Successfully applied the configuration");
+            }
+            else
+            {
+                throw new SDKApplyConfigurationSetResultException("No configuration units were found. Likely due to an error in the extension.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration on target machine.", ex);
         }
 
-        var unitResults = applyConfigurationResult.ApplyConfigurationSetResult.UnitResults;
-        for (var i = 0; i < unitResults.Count; ++i)
-        {
-            ConfigurationResults.Add(new ConfigurationUnitResult(unitResults[i]));
-        }
+        AddMessage(_stringResource.GetLocalized(StringResourceKey.ConfigureTargetApplyConfigurationStopped, $"{resultInformation}"));
+        ContinueExecution();
+    }
 
-        Result = applyConfigurationResult;
-        Console.WriteLine("ApplyConfigurationOperationCompleted");
-
+    private void ContinueExecution()
+    {
         // operation is complete, so signal the event.
-        IsExecuting = false;
         _autoResetEvent.Set();
     }
 
@@ -158,34 +212,41 @@ public class ConfigureTargetTask : ISetupTask, IDisposable
         {
             try
             {
+                UserNumberOfAttempts = 1;
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.ApplyingConfigurationMessage));
                 WingetConfigFileObject = _configurationFileBuilder.BuildConfigFileObjectFromTaskGroups(_setupFlowOrchestrator.TaskGroups);
                 WingetConfigFileString = _configurationFileBuilder.SerializeWingetFileObjectToString(WingetConfigFileObject);
                 var computeSystem = _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup;
-                IsExecuting = true;
                 var applyConfigurationOperation = computeSystem.ApplyConfiguration(WingetConfigFileString);
 
                 applyConfigurationOperation.Progress += OnApplyConfigurationOperationProgress;
                 applyConfigurationOperation.Completed += OnApplyConfigurationOperationCompleted;
 
-                while (IsExecuting)
+                _autoResetEvent.WaitOne();
+
+                var openConFigException = Result.OpenResult.ResultCode;
+                var applyConfigException = Result.ApplyResult.ResultException;
+
+                if (openConFigException != null)
                 {
-                    _autoResetEvent.WaitOne();
+                    throw openConFigException;
                 }
 
-                if (Result.ResultCode == null)
+                if (applyConfigException != null)
                 {
-                    return TaskFinishedState.Success;
+                    throw applyConfigException;
                 }
-                else
+
+                if (Result.ResultCode != null)
                 {
                     throw Result.ResultCode;
                 }
+
+                return TaskFinishedState.Success;
             }
             catch (Exception e)
             {
                 Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration on target machine.", e);
-                _autoResetEvent.Set();
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -220,45 +281,59 @@ public class ConfigureTargetTask : ISetupTask, IDisposable
         };
     }
 
-    public async Task<ExtensionAdaptiveCardPanel> CreateCorrectiveActionPanel(IExtensionAdaptiveCardSession2 session)
+    public async Task SetupHostConfigFiles()
     {
-        var correctiveAction = session;
-        var renderer = new AdaptiveCardRenderer();
-
-        // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
-        renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
-
-        var hostConfigContents = string.Empty;
-        var elementTheme = _themeSelectorService.Theme;
-        var hostConfigFileName = (elementTheme == ElementTheme.Light) ? "LightHostConfig.json" : "DarkHostConfig.json";
         try
         {
-            var uri = new Uri($"ms-appx:////DevHome.Settings/Assets/{hostConfigFileName}");
-            var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
-            hostConfigContents = await FileIO.ReadTextAsync(file);
+            foreach (var elementPairing in _hostConfigFileNames)
+            {
+                var uri = new Uri($"ms-appx:////DevHome.Settings/Assets/{_hostConfigFileNames[elementPairing.Key]}");
+                var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
+                AdaptiveCardHostConfigs.Add(elementPairing.Key, await FileIO.ReadTextAsync(file));
+            }
+
+            AdaptiveCardHostConfigs.Add(ElementTheme.Default, AdaptiveCardHostConfigs[ElementTheme.Light]);
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file - HostConfigFileName: {hostConfigFileName}.", ex);
+            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file", ex);
         }
+    }
 
-        // Add host config for current theme to renderer
-        if (!string.IsNullOrEmpty(hostConfigContents))
+    public async Task CreateCorrectiveActionPanel(IExtensionAdaptiveCardSession2 session)
+    {
+        await _dispatcherQueue.EnqueueAsync(async () =>
         {
-            renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
-        }
-        else
-        {
-            GlobalLog.Logger?.ReportInfo($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
-        }
+            await SetupHostConfigFiles();
+            var correctiveAction = session;
+            var renderer = new AdaptiveCardRenderer();
+            var elementTheme = _themeSelectorService.Theme;
 
-        renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+            // Add host config for current theme to renderer
+            if (AdaptiveCardHostConfigs.TryGetValue(elementTheme, out var hostConfigContents))
+            {
+                renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+            }
+            else
+            {
+                GlobalLog.Logger?.ReportInfo($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
+            }
 
-        var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
-        extensionAdaptiveCardPanel.Bind(correctiveAction, renderer);
-        extensionAdaptiveCardPanel.RequestedTheme = elementTheme;
+            renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
 
-        return extensionAdaptiveCardPanel;
+            var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
+            extensionAdaptiveCardPanel.Bind(correctiveAction, renderer);
+            extensionAdaptiveCardPanel.RequestedTheme = elementTheme;
+
+            if (ActionCenterMessages.ExtensionAdaptiveCardPanel != null)
+            {
+                ActionCenterMessages.ExtensionAdaptiveCardPanel = null;
+                UpdateActionCenterMessage(ActionCenterMessages, ActionMessageRequestKind.Remove);
+            }
+
+            ActionCenterMessages.ExtensionAdaptiveCardPanel = extensionAdaptiveCardPanel;
+            UpdateActionCenterMessage(ActionCenterMessages, ActionMessageRequestKind.Add);
+        });
     }
 
     protected virtual void Dispose(bool disposing)

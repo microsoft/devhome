@@ -6,6 +6,7 @@ extern alias Projection;
 using System;
 using System.Threading.Tasks;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Exceptions;
@@ -51,6 +52,10 @@ public class InstallPackageTask : ISetupTask
     {
         get;
     }
+
+#pragma warning disable 67
+    public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
+#pragma warning restore 67
 
     public InstallPackageTask(
         IWindowsPackageManager wpm,
