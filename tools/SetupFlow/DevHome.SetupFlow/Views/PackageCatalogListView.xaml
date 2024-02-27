@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     xmlns:views="using:DevHome.SetupFlow.Views"
+    xmlns:common="using:DevHome.Common.Views"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
@@ -33,11 +34,6 @@
             Spacing="27"
             Visibility="{x:Bind ViewModel.ViewAllCatalog, Mode=OneWay, Converter={StaticResource ViewAllConverter}}">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="auto" />
-                </Grid.ColumnDefinitions>
-
                 <!-- Full catalog path -->
                 <StackPanel Spacing="8">
                     <!-- Add negative margin to counteract the margin added by breadcrumb bar -->
@@ -57,12 +53,7 @@
                 </StackPanel>
 
                 <!-- Close button -->
-                <Button
-                    Grid.Column="1"
-                    FontSize="{ThemeResource CaptionTextBlockFontSize}"
-                    Padding="5"
-                    Command="{x:Bind ViewModel.ExitViewAllPackagesCommand}"
-                    Style="{ThemeResource AlternateCloseButtonStyle}" />
+                <common:CloseButton Command="{x:Bind ViewModel.ExitViewAllPackagesCommand}" />
             </Grid>
 
             <!-- Package list -->
