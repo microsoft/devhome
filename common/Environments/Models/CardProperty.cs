@@ -116,7 +116,7 @@ public partial class CardProperty : ObservableObject
     {
         try
         {
-            var indirectPathToResource = "@{" + packageFullName + "?" + iconPathUri.AbsoluteUri + "}";
+            var indirectPathToResource = "@{" + packageFullName + "? " + iconPathUri.AbsoluteUri + "}";
             Span<char> outputBuffer = new char[512];
 
             fixed (char* outBufferPointer = outputBuffer)

@@ -36,7 +36,7 @@
                     IsSelected="{Binding IsSelected, Mode=OneWay}"
                     HorizontalAlignment="Stretch">
                     <Grid
-                        Style="{StaticResource HorizontalCardRootWithUniformedPadding}">
+                        Style="{StaticResource HorizontalCardRootForSetupTargetFlow}">
                         <Grid>
                             <devEnvCustomControls:CardBody
                                 ComputeSystemTitle="{Binding ComputeSystemTitle, Mode=OneWay}"
@@ -155,7 +155,7 @@
                     HeaderTemplate="{StaticResource ComputeSystemContainerShimmerHeaderTemplate}"
                     DataContext="{Binding}"
                     SelectionMode="None"
-                    ItemTemplate="{StaticResource HorizontalCardRootWithUniformedPaddingShimmerTemplate}"
+                    ItemTemplate="{StaticResource HorizontalCardRootForSetupTargetFlowShimmerTemplate}"
                     Margin="0 0 0 10"
                     ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}">
                     <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
