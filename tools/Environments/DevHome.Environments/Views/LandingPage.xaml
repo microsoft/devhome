@@ -13,8 +13,7 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-    mc:Ignorable="d"
-    Loaded="RemoteLoadButton_Click">
+    mc:Ignorable="d">
     <!--
         ToDo List:
         - Add ComputeSystemProperties to Card
