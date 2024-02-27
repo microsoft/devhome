@@ -64,6 +64,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
     /// </summary>
     private async Task LoadCatalogsAsync()
     {
+        // Prevent concurrent loading of catalogs
         await _loadCatalogsSemaphore.WaitAsync();
         try
         {
