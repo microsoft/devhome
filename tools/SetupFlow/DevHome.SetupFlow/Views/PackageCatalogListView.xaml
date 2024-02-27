@@ -34,6 +34,11 @@
             Spacing="27"
             Visibility="{x:Bind ViewModel.ViewAllCatalog, Mode=OneWay, Converter={StaticResource ViewAllConverter}}">
             <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
                 <!-- Full catalog path -->
                 <StackPanel Spacing="8">
                     <!-- Add negative margin to counteract the margin added by breadcrumb bar -->
@@ -53,7 +58,9 @@
                 </StackPanel>
 
                 <!-- Close button -->
-                <common:CloseButton Command="{x:Bind ViewModel.ExitViewAllPackagesCommand}" />
+                <common:CloseButton
+                    Grid.Column="1"
+                    Command="{x:Bind ViewModel.ExitViewAllPackagesCommand}" />
             </Grid>
 
             <!-- Package list -->
