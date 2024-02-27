@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -38,6 +39,8 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     [NotifyCanExecuteChangedFor(nameof(ConfigureAsAdminCommand))]
     [NotifyCanExecuteChangedFor(nameof(ConfigureAsNonAdminCommand))]
     private bool _readAndAgree;
+
+    public ObservableCollection<ConfigurationUnitViewModel> ConfigurationUnits { get; } = new();
 
     public ConfigurationFileViewModel(
         ISetupFlowStringResource stringResource,
@@ -116,7 +119,12 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
                 Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
                 Configuration = new(file.Path);
                 Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
-                await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
+                var units = await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
+                foreach (var unit in units)
+                {
+                    ConfigurationUnits.Add(new ConfigurationUnitViewModel(unit));
+                }
+
                 TaskList.Add(new(StringResource, _dsc, file, Orchestrator.ActivityId));
                 return true;
             }

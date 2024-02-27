@@ -2,9 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Configuration;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services.WinGet;
 using Windows.Storage;
 
@@ -26,10 +30,13 @@ internal sealed class DesiredStateConfiguration : IDesiredStateConfiguration
     public async Task<bool> UnstubAsync() => await _winGetDeployment.UnstubConfigurationAsync();
 
     /// <inheritdoc />
-    public async Task ValidateConfigurationAsync(string filePath, Guid activityId)
+    public async Task<IList<ConfigurationUnit>> ValidateConfigurationAsync(string filePath, Guid activityId)
     {
         // Try to open the configuration file to validate it.
-        await OpenConfigurationSetAsync(filePath, activityId);
+        var configFile = await OpenConfigurationSetAsync(filePath, activityId);
+        var configUnitsOutOfProc = configFile.Units;
+        var configUnitsInProc = configUnitsOutOfProc.Select(unit => new ConfigurationUnit(unit));
+        return configUnitsInProc.ToList();
     }
 
     /// <inheritdoc />

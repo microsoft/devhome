@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Exceptions;
@@ -48,6 +50,8 @@ public class ConfigurationFileHelper
     {
         _activityId = activityId;
     }
+
+    public IList<ConfigurationUnit> Units => _configSet?.Units;
 
     /// <summary>
     /// Open configuration set from the provided <paramref name="content"/>.

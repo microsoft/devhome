@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
     <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
@@ -37,14 +38,44 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+
             <InfoBar
                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ConfigurationFileWarning"
                 IsOpen="True"
                 IsClosable="False"
                 Severity="Warning"/>
-            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
+
+            <ctControls:Segmented Grid.Row="1">
+                <ctControls:SegmentedItem IsSelected="True" Content="Summary view"/>
+                <ctControls:SegmentedItem Content="Code view"/>
+            </ctControls:Segmented>
+
+            <ListView ItemsSource="{x:Bind ViewModel.ConfigurationUnits}" Grid.Row="2" SelectionMode="None">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Expander
+                                        HorizontalContentAlignment="Left"
+                                        HorizontalAlignment="Stretch"
+                                        Header="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+                                        <StackPanel>
+                                            <TextBlock
+                                                Text="{Binding Content.Settings, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                                        </StackPanel>
+                                    </Expander>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+
+            <ScrollViewer Visibility="Collapsed" Grid.Row="2" HorizontalScrollBarVisibility="Auto">
                 <TextBlock
                     FontSize="{ThemeResource CaptionTextBlockFontSize}"
                     Padding="15"
