@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:templates="using:DevHome.SetupFlow.Templates"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:models="using:DevHome.SetupFlow.Models"
@@ -48,6 +49,11 @@
                         <Setter Property="Padding" Value="0" />
                     </Style>
                 </ResourceDictionary>
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Templates/CloneRepoSummaryInformation.xaml"/>
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Templates/ConfigurationSummaryInformation.xaml"/>
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Templates/CreateDevDriveSummaryInformation.xaml"/>
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Templates/EmptySummaryInformation.xaml"/>
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Templates/InstallPackageSummaryInformation.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -176,6 +182,22 @@
                 </Grid>
 
                 <!-- Next steps section -->
+                <ListView ItemsSource="{x:Bind ViewModel.SummaryInformation}">
+                    <ListView.Resources>
+                        <templates:SummaryInformationTemplateSelector
+                            x:Key="summaryInformationTemplateSelector"
+                            CloneRepoDataTemplate="{StaticResource cloneRepoDataTemplate}"
+                            ConfigurationDataTemplate="{StaticResource configurationDataTemplate}"
+                            CreateDevDriveDataTemplate="{StaticResource createDevDriveDataTemplate}"
+                            InstallPackageDataTemplate="{StaticResource installPackageDataTemplate}"
+                            EmptyDataTemplate="{StaticResource emptyDataTemplate}"/>
+                    </ListView.Resources>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:ISummaryInformationViewModel">
+                            <ContentControl Content="{x:Bind}" ContentTemplateSelector="{StaticResource summaryInformationTemplateSelector}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
                 <ContentControl Grid.Column="1" Template="{ThemeResource LinksTemplate}" />
             </Grid>
 

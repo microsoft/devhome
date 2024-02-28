@@ -41,6 +41,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly IAppManagementInitializer _appManagementInitializer;
 
     [ObservableProperty]
+    private ObservableCollection<ISummaryInformationViewModel> _summaryInformation;
+
+    [ObservableProperty]
     private List<SummaryErrorMessageViewModel> _failedTasks = new();
 
     [ObservableProperty]
@@ -203,6 +206,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
             if (flowPage is LoadingViewModel loadingViewModel)
             {
                 failedTasks = loadingViewModel.FailedTasks;
+                SummaryInformation = loadingViewModel.SummaryInformation;
             }
         }
 

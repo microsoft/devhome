@@ -13,6 +13,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using WinUIEx;
 
@@ -20,6 +21,8 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
+    private readonly IHost _host;
+
     private readonly IDesiredStateConfiguration _dsc;
 
     public List<ConfigureTask> TaskList { get; } = new List<ConfigureTask>();
@@ -42,7 +45,8 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     public ConfigurationFileViewModel(
         ISetupFlowStringResource stringResource,
         IDesiredStateConfiguration dsc,
-        SetupFlowOrchestrator orchestrator)
+        SetupFlowOrchestrator orchestrator,
+        IHost host)
         : base(stringResource, orchestrator)
     {
         _dsc = dsc;
@@ -50,6 +54,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         // Configure navigation bar
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         IsStepPage = false;
+        _host = host;
     }
 
     partial void OnReadAndAgreeChanged(bool value)
@@ -117,7 +122,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
                 Configuration = new(file.Path);
                 Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
                 await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
-                TaskList.Add(new(StringResource, _dsc, file, Orchestrator.ActivityId));
+                TaskList.Add(new(StringResource, _dsc, file, Orchestrator.ActivityId, _host));
                 return true;
             }
             catch (OpenConfigurationSetException e)

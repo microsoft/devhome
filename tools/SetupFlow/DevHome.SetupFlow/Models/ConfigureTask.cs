@@ -8,9 +8,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
+using Microsoft.Extensions.Hosting;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 using Windows.Storage;
@@ -39,11 +42,14 @@ public class ConfigureTask : ISetupTask
         get; private set;
     }
 
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
+
     public ConfigureTask(
         ISetupFlowStringResource stringResource,
         IDesiredStateConfiguration dsc,
         StorageFile file,
-        Guid activityId)
+        Guid activityId,
+        IHost host)
     {
         _stringResource = stringResource;
         _dsc = dsc;
