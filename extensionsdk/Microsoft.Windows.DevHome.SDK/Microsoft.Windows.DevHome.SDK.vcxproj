@@ -207,6 +207,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="ProviderOperationResult.h" />
     <ClInclude Include="RepositoriesResult.h" />
+    <ClInclude Include="RepositoriesSearchResult.h" />
     <ClInclude Include="RepositoryResult.h" />
     <ClInclude Include="RepositoryUriSupportResult.h" />
   </ItemGroup>
@@ -222,6 +223,7 @@
     </ClCompile>
     <ClCompile Include="ProviderOperationResult.cpp" />
     <ClCompile Include="RepositoriesResult.cpp" />
+    <ClCompile Include="RepositoriesSearchResult.cpp" />
     <ClCompile Include="RepositoryResult.cpp" />
     <ClCompile Include="RepositoryUriSupportResult.cpp" />
   </ItemGroup>
