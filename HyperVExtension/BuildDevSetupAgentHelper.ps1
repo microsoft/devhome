@@ -99,16 +99,6 @@ Try {
   Exit 1
 }
 
-
-
-
-
-
-
-#New-Item -ItemType Directory -Force -Path "$PSScriptRoot\_build"
-#& $nugetPath restore (Join-Path $PSScriptRoot "src\DevSetupAgent\DevSetupAgent.csproj")
-
-
 $TotalTime = (Get-Date)-$StartTime
 $TotalMinutes = [math]::Floor($TotalTime.TotalMinutes)
 $TotalSeconds = [math]::Ceiling($TotalTime.TotalSeconds)
