@@ -83,8 +83,8 @@ internal sealed class RepositoryProvider
     /// <returns>The names of the search fields.</returns>
     public List<string> GetSearchTerms()
     {
-        _repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
-        return _repositoryProvider2?.SearchFieldNames.ToList() ?? new List<string>();
+        var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
+        return repositoryProvider2?.SearchFieldNames.ToList() ?? new List<string>();
     }
 
     /// <summary>
@@ -96,8 +96,8 @@ internal sealed class RepositoryProvider
     /// <returns>A list of names that can be used for the field.  An empty list is returned if the provider isn't found</returns>
     public List<string> GetValuesFor(IDeveloperId developerId, Dictionary<string, string> searchTerms, string fieldName)
     {
-        _repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
-        return _repositoryProvider2?.GetValuesForSearchFieldAsync(fieldName, searchTerms, developerId).AsTask().Result.ToList() ?? new List<string>();
+        var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
+        return repositoryProvider2?.GetValuesForSearchFieldAsync(searchTerms, fieldName, developerId).AsTask().Result.ToList() ?? new List<string>();
     }
 
     /// <summary>
@@ -276,8 +276,8 @@ internal sealed class RepositoryProvider
         {
             if (IsSearchingEnabled())
             {
-                _repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
-                result = _repositoryProvider2.GetRepositoriesAsync(searchInputs, developerId).AsTask().Result;
+                var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
+                result = repositoryProvider2.GetRepositoriesAsync(searchInputs, developerId).AsTask().Result;
             }
             else
             {
