@@ -27,6 +27,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Foundation;
 using Windows.Storage;
 using WinUIEx;
 using WinUIEx.Messaging;
@@ -41,7 +42,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     private readonly Guid _activityId;
 
-    private readonly ConfigurationFileBuilder _configurationFileBuilder;
+    private readonly WindowEx _windowExService;
 
     private static readonly BitmapImage DarkCaution = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
     private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
@@ -186,20 +187,37 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ExecutionFinished.Invoke(null, null);
     }
 
-    public void AddMessage(string message)
+    public void AddMessage(string message, MessageSeverityKind severityKind = MessageSeverityKind.Info)
     {
         Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
             var messageToDisplay = new LoadingMessageViewModel(message);
             messageToDisplay.ShouldShowStatusSymbolIcon = false;
             messageToDisplay.ShouldShowProgressRing = false;
+
+            if (severityKind == MessageSeverityKind.Warning)
+            {
+                messageToDisplay.ShouldShowStatusSymbolIcon = true;
+                messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkCaution : LightCaution;
+            }
+            else if (severityKind == MessageSeverityKind.Error)
+            {
+                messageToDisplay.ShouldShowStatusSymbolIcon = true;
+                messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkError : LightError;
+            }
+            else if (severityKind == MessageSeverityKind.Success)
+            {
+                messageToDisplay.ShouldShowStatusSymbolIcon = true;
+                messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkSuccess : LightSuccess;
+            }
+
             Messages.Insert(Messages.Count - _numberOfExecutingTasks, messageToDisplay);
         });
     }
 
     public void UpdateActionCenterMessage(ActionCenterMessages message, ActionMessageRequestKind requestKind)
     {
-        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        _windowExService.DispatcherQueue.TryEnqueue(() =>
         {
             // We need to add/remove the message in a temporary list and then re add the items to a new collection. This is because
             // of the adaptive card panel and it receiving UI updates in the listview. There can be random crashes if we don't do this when
@@ -222,8 +240,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     public LoadingViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        ConfigurationFileBuilder configurationFileBuilder,
-        IHost host)
+        IHost host,
+        WindowEx windowExService)
         : base(stringResource, orchestrator)
     {
         _host = host;
@@ -240,7 +258,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ActionCenterItems = new();
         Messages = new();
         _activityId = orchestrator.ActivityId;
-        _configurationFileBuilder = configurationFileBuilder;
+        _windowExService = windowExService;
     }
 
     // Remove all tasks except for the SetupTarget
@@ -320,31 +338,14 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             {
                 Log.Logger?.ReportDebug(Log.Component.Loading, "Task succeeded but requires reboot; adding to action center");
                 stringToReplace = information.TaskToExecute.GetLoadingMessages().NeedsReboot;
-
-                if (_currentTheme == ElementTheme.Dark)
-                {
-                    statusSymbolIcon = DarkCaution;
-                }
-                else
-                {
-                    statusSymbolIcon = LightCaution;
-                }
-
+                statusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkCaution : LightCaution;
                 ActionCenterItems.Insert(0, information.TaskToExecute.GetRebootMessage());
             }
             else
             {
                 Log.Logger?.ReportDebug(Log.Component.Loading, "Task succeeded");
                 stringToReplace = information.TaskToExecute.GetLoadingMessages().Finished;
-
-                if (_currentTheme == ElementTheme.Dark)
-                {
-                    statusSymbolIcon = DarkSuccess;
-                }
-                else
-                {
-                    statusSymbolIcon = LightSuccess;
-                }
+                statusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkSuccess : LightSuccess;
             }
 
             TasksFinishedSuccessfully++;
@@ -353,15 +354,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             Log.Logger?.ReportDebug(Log.Component.Loading, "Task failed");
             stringToReplace = information.TaskToExecute.GetLoadingMessages().Error;
-            if (_currentTheme == ElementTheme.Dark)
-            {
-                statusSymbolIcon = DarkError;
-            }
-            else
-            {
-                statusSymbolIcon = LightError;
-            }
-
+            statusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkError : LightError;
             ActionCenterItems.Insert(0, information.TaskToExecute.GetErrorMessages());
             TasksFailed++;
 

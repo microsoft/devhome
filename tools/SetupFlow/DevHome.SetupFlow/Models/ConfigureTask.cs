@@ -89,7 +89,7 @@ public class ConfigureTask : ISetupTask
         {
             try
             {
-                AddMessage(_stringResource.GetLocalized(StringResourceKey.ApplyingConfigurationMessage));
+                AddMessage(_stringResource.GetLocalized(StringResourceKey.ApplyingConfigurationMessage), MessageSeverityKind.Info);
                 var result = await _dsc.ApplyConfigurationAsync(_file.Path, _activityId);
                 RequiresReboot = result.RequiresReboot;
                 UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();

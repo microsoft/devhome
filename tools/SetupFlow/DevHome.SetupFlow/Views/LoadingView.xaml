@@ -120,7 +120,7 @@
                                 Width="18"
                                     IsActive="{x:Bind ShouldShowProgressRing, Mode=OneWay}"
                                     Visibility="{x:Bind ShouldShowProgressRing, Mode=OneWay}"/>
-                            <TextBlock Grid.Column="1" Text="{x:Bind MessageToShow, Mode=OneWay}" VerticalAlignment="Center" Style="{x:Bind ShouldShowProgressRing, Mode=OneWay, Converter={StaticResource BoolToTextBrush}}" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Column="1" Text="{x:Bind MessageToShow, Mode=OneWay}" VerticalAlignment="Center" Style="{x:Bind ShouldShowProgressRing, Mode=OneWay, Converter={StaticResource BoolToTextBrush}}" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

@@ -18,6 +18,14 @@ public enum ActionMessageRequestKind
     Remove,
 }
 
+public enum MessageSeverityKind
+{
+    Info,
+    Success,
+    Warning,
+    Error,
+}
+
 /// <summary>
 /// A single atomic task to perform during the setup flow.
 /// </summary>
@@ -102,7 +110,7 @@ public interface ISetupTask
         get;
     }
 
-    public delegate void ChangeMessageHandler(string message);
+    public delegate void ChangeMessageHandler(string message, MessageSeverityKind severityKind);
 
     /// <summary>
     /// Use this event to insert a message into the loading screen.

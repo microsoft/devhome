@@ -204,7 +204,7 @@ public static class StringResourceKey
     public static readonly string ConfigurationUnitFailedUnitProcessing = nameof(ConfigurationUnitFailedUnitProcessing);
     public static readonly string ConfigurationUnitNotRunDueToFailedAssert = nameof(ConfigurationUnitNotRunDueToFailedAssert);
 
-    // Setup target page
+    // Setup target flow
     public static readonly string SetupTargetPageTitle = nameof(SetupTargetPageTitle);
     public static readonly string SetupTargetAllComboBoxOption = nameof(SetupTargetAllComboBoxOption);
     public static readonly string SetupTargetConfigurationUnknown = nameof(SetupTargetConfigurationUnknown);
@@ -224,4 +224,13 @@ public static class StringResourceKey
     public static readonly string SetupTargetConfigurationUnitProgressError = nameof(SetupTargetConfigurationUnitProgressError);
     public static readonly string ConfigureTargetApplyConfigurationStopped = nameof(ConfigureTargetApplyConfigurationStopped);
     public static readonly string ConfigureTargetApplyConfigurationActionNeeded = nameof(ConfigureTargetApplyConfigurationActionNeeded);
+    public static readonly string SetupTargetExtensionApplyingConfiguration = nameof(SetupTargetExtensionApplyingConfiguration);
+    public static readonly string SetupTargetExtensionApplyingConfigurationActionRequired = nameof(SetupTargetExtensionApplyingConfigurationActionRequired);
+    public static readonly string SetupTargetExtensionApplyConfigurationError = nameof(SetupTargetExtensionApplyConfigurationError);
+    public static readonly string SetupTargetExtensionApplyConfigurationSuccess = nameof(SetupTargetExtensionApplyConfigurationSuccess);
+    public static readonly string SetupTargetExtensionApplyConfigurationRebootRequired = nameof(SetupTargetExtensionApplyConfigurationRebootRequired);
+    public static readonly string SetupTargetMachineName = nameof(SetupTargetMachineName);
+    public static readonly string ConfigureTargetApplyConfigurationActionFailureRetry = nameof(ConfigureTargetApplyConfigurationActionFailureRetry);
+    public static readonly string ConfigureTargetApplyConfigurationActionFailureEnd = nameof(ConfigureTargetApplyConfigurationActionFailureEnd);
+    public static readonly string ConfigureTargetApplyConfigurationActionSuccess = nameof(ConfigureTargetApplyConfigurationActionSuccess);
 }

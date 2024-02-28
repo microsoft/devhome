@@ -92,7 +92,7 @@ internal sealed class CreateDevDriveTask : ISetupTask
     {
         return Task.Run(() =>
         {
-            AddMessage(_stringResource.GetLocalized(StringResourceKey.DevDriveNotAdminError));
+            AddMessage(_stringResource.GetLocalized(StringResourceKey.DevDriveNotAdminError), MessageSeverityKind.Error);
             return TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }
