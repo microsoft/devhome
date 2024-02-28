@@ -573,7 +573,10 @@ public class HyperVVirtualMachine : IComputeSystem
                         else
                         {
                             // TODO: Check if we can get any diagnostic from this unexpected response.
-                            Logging.Logger()?.ReportError($"Failed to apply configuration on {DateTime.Now}: VM details: {this}");
+                            Logging.Logger()?.ReportError(
+                                $"Unexpected response while applying configuration on {DateTime.Now}: " +
+                                $"responseId: {response.RequestId}, responseType: {response.ResponseType}, " +
+                                $"VM details: {this}");
                             operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_FAIL, $"Received unexpected response from the VM"), null);
                             return;
                         }
@@ -619,13 +622,6 @@ public class HyperVVirtualMachine : IComputeSystem
                             {
                                 if (!userLoggedInResponse.IsUserLoggedIn)
                                 {
-                                    // User is not logged in. We need to wait for user to log in.
-                                    if (i == (MaxRetryAttempts - 1))
-                                    {
-                                        operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_ABORT, "No interactive user on the VM"), null);
-                                        return;
-                                    }
-
                                     if (!WaitForUserToLogin(operation))
                                     {
                                         // User canceled the operation.
@@ -644,10 +640,20 @@ public class HyperVVirtualMachine : IComputeSystem
                             else
                             {
                                 // TODO: Check if we can get any diagnostic from this unexpected response.
-                                Logging.Logger()?.ReportError($"Failed to apply configuration on {DateTime.Now}: VM details: {this}");
+                                Logging.Logger()?.ReportError(
+                                    $"Unexpected response while applying configuration on {DateTime.Now}: " +
+                                    $"responseId: {response.RequestId}, responseType: {response.ResponseType}, " +
+                                    $"VM details: {this}");
                                 operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_FAIL, $"Received unexpected response from the VM"), null);
                                 return;
                             }
+                        }
+
+                        // User is not logged after MaxRetryAttempts. Cancel the operation.
+                        if (i == (MaxRetryAttempts - 1))
+                        {
+                            operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_ABORT, "No interactive user on the VM"), null);
+                            return;
                         }
                     }
 

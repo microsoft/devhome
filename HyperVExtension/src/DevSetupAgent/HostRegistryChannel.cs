@@ -33,21 +33,23 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
     private readonly string _toHostRegistryKeyPath;
     private readonly RegistryWatcher _registryWatcher;
     private readonly AutoResetEvent _registryKeyChangedEvent;
-    private readonly RegistryKey _registryHive = Registry.CurrentUser;
+    private readonly RegistryKey _registryHiveKey;
     private bool _disposed;
 
     public HostRegistryChannel(IRegistryChannelSettings registryChannelSettings)
     {
         _fromHostRegistryKeyPath = registryChannelSettings.FromHostRegistryKeyPath;
         _toHostRegistryKeyPath = registryChannelSettings.ToHostRegistryKeyPath;
-        _registryHive = registryChannelSettings.RegistryHive;
+
+        // If running x86 version on x64 OS, we need to open 64-bit registry view.
+        _registryHiveKey = RegistryKey.OpenBaseKey(registryChannelSettings.RegistryHive, RegistryView.Registry64);
 
         // Search and delete all existing registry values with name "DevSetup{<GUID>}"
-        MessageHelper.DeleteAllMessages(_registryHive, _toHostRegistryKeyPath, MessageHelper.MessageIdStart);
-        MessageHelper.DeleteAllMessages(_registryHive, _fromHostRegistryKeyPath, MessageHelper.MessageIdStart);
+        MessageHelper.DeleteAllMessages(_registryHiveKey, _toHostRegistryKeyPath, MessageHelper.MessageIdStart);
+        MessageHelper.DeleteAllMessages(_registryHiveKey, _fromHostRegistryKeyPath, MessageHelper.MessageIdStart);
 
         _registryKeyChangedEvent = new AutoResetEvent(true);
-        _registryWatcher = new RegistryWatcher(_registryHive, _fromHostRegistryKeyPath, OnDevSetupKeyChanged);
+        _registryWatcher = new RegistryWatcher(_registryHiveKey, _fromHostRegistryKeyPath, OnDevSetupKeyChanged);
     }
 
     private void OnDevSetupKeyChanged()
@@ -88,7 +90,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
             {
                 try
                 {
-                    var regKey = _registryHive.CreateSubKey(_toHostRegistryKeyPath);
+                    var regKey = _registryHiveKey.CreateSubKey(_toHostRegistryKeyPath);
                     if (regKey == null)
                     {
                         Logging.Logger()?.ReportError($"Cannot open {_toHostRegistryKeyPath} registry key. Error: {Marshal.GetLastWin32Error()}");
@@ -125,7 +127,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
             {
                 try
                 {
-                    MessageHelper.DeleteAllMessages(_registryHive, _toHostRegistryKeyPath, responseId);
+                    MessageHelper.DeleteAllMessages(_registryHiveKey, _toHostRegistryKeyPath, responseId);
                 }
                 catch (Exception ex)
                 {
@@ -144,7 +146,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
             // We need to merge all parts of the message before processing it.
             // TODO: Modify this class to use MessageHelper.MergeMessageParts (requires changing return valu and handling in the caller).
             HashSet<string> ignoreMessages = new();
-            var regKey = _registryHive.OpenSubKey(_fromHostRegistryKeyPath, true);
+            var regKey = _registryHiveKey.OpenSubKey(_fromHostRegistryKeyPath, true);
             var valueNames = regKey?.GetValueNames();
             if (valueNames != null)
             {
@@ -209,7 +211,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
                             Logging.Logger()?.ReportError($"Could not read host message {valueName}", ex);
                         }
 
-                        MessageHelper.DeleteAllMessages(_registryHive, _fromHostRegistryKeyPath, s[0]);
+                        MessageHelper.DeleteAllMessages(_registryHiveKey, _fromHostRegistryKeyPath, s[0]);
                         break;
                     }
                 }

@@ -74,24 +74,24 @@ Try {
     $buildRing = "Canary"
   }
 
-  foreach ($platform in $env:Build_Platform.Split(",")) {
-    foreach ($configuration in $env:Build_Configuration.Split(",")) {
-      $appxPackageDir = (Join-Path $env:Build_RootDirectory "AppxPackages\$configuration")
-      $msbuildArgs = @(
-          ("HyperVExtension\DevSetupAgent.sln"),
-          ("/p:Platform="+$platform),
-          ("/p:Configuration="+$configuration),
-          ("/restore"),
-          ("/binaryLogger:DevSetupAgent.$platform.$configuration.binlog"),
-          ("/p:BuildRing=$buildRing")
-      )
-      if (-not([string]::IsNullOrWhiteSpace($VersionOfSDK))) {
-        $msbuildArgs += ("/p:DevHomeSDKVersion="+$env:sdk_version)
-      }
-
-      & $msbuildPath $msbuildArgs
-    }
+  $msbuildArgs = @(
+      ("HyperVExtension\DevSetupAgent.sln"),
+      ("/p:Platform="+$platform),
+      ("/p:Configuration="+$configuration),
+      ("/restore"),
+      ("/binaryLogger:DevSetupAgent.$platform.$configuration.binlog"),
+      ("/p:BuildRing=$buildRing")
+  )
+  if (-not([string]::IsNullOrWhiteSpace($VersionOfSDK))) {
+    $msbuildArgs += ("/p:DevHomeSDKVersion="+$env:sdk_version)
   }
+
+  & $msbuildPath $msbuildArgs
+
+  $binariesOutputPath = (Join-Path $env:Build_RootDirectory "HyperVExtension\src\DevSetupAgent\bin\$Platform\$Configuration\net8.0-windows10.0.22000.0\win10-$Platform\*")
+  $zipOutputPath = (Join-Path $env:Build_RootDirectory "HyperVExtension\src\DevSetupAgent\bin\DevSetupAgent_$Platform.zip")
+
+  Compress-Archive -Force -Path $binariesOutputPath $zipOutputPath
 } Catch {
   $formatString = "`n{0}`n`n{1}`n`n"
   $fields = $_, $_.ScriptStackTrace
