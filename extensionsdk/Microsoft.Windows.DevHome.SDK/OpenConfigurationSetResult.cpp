@@ -4,8 +4,8 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    OpenConfigurationSetResult::OpenConfigurationSetResult(winrt::hresult const& result, hstring const& field, hstring const& fieldValue, uint32_t line, uint32_t column)
-        : m_resultCode(result), m_field(field), m_fieldValue(fieldValue), m_line(line), m_column(column)
+    OpenConfigurationSetResult::OpenConfigurationSetResult(winrt::hresult const& resultCode, hstring const& field, hstring const& fieldValue, uint32_t line, uint32_t column) :
+        m_resultCode(resultCode), m_field(field), m_fieldValue(fieldValue), m_line(line), m_column(column)
     {
     }
 

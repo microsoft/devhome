@@ -9,9 +9,8 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
         ConfigurationSetState const& setState,
         ConfigurationUnitState const& unitState,
         ConfigurationUnitResultInformation const& resultInformation,
-        ConfigurationUnit const& unit,
-        IExtensionAdaptiveCardSession2 const& correctiveActionCardSession)
-        : m_change(change), m_setState(setState), m_unitState(unitState), m_resultInformation(resultInformation), m_unit(unit), m_correctiveActionCardSession(correctiveActionCardSession)
+        ConfigurationUnit const& unit):
+        m_change(change), m_setState(setState), m_unitState(unitState), m_resultInformation(resultInformation), m_unit(unit)
     {
     }
 
@@ -38,10 +37,5 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
     ConfigurationUnit ConfigurationSetChangeData::Unit()
     {
         return m_unit;
-    }
-
-    IExtensionAdaptiveCardSession2 ConfigurationSetChangeData::CorrectiveActionCardSession()
-    {
-        return m_correctiveActionCardSession;
     }
 }

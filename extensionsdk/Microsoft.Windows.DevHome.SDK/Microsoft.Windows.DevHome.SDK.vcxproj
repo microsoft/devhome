@@ -200,23 +200,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AdaptiveCardSessionResult.h" />
+    <ClInclude Include="ApplyConfigurationActionRequiredEventArgs.h" />
     <ClInclude Include="ApplyConfigurationResult.h" />
     <ClInclude Include="ApplyConfigurationSetResult.h" />
     <ClInclude Include="ApplyConfigurationUnitResult.h" />
     <ClInclude Include="ComputeSystemAdaptiveCardResult.h" />
-    <ClInclude Include="ComputeSystemOperationData.h" />
     <ClInclude Include="ComputeSystemOperationResult.h" />
     <ClInclude Include="ComputeSystemProperty.h" />
     <ClInclude Include="ComputeSystemsResult.h" />
     <ClInclude Include="ComputeSystemStateResult.h" />
     <ClInclude Include="ComputeSystemThumbnailResult.h" />
     <ClInclude Include="ConfigurationSetChangeData.h" />
+    <ClInclude Include="ConfigurationSetStateChangedEventArgs.h" />
     <ClInclude Include="ConfigurationUnit.h" />
     <ClInclude Include="ConfigurationUnitResultInformation.h" />
+    <ClInclude Include="CreateComputeSystemActionRequiredEventArgs.h" />
+    <ClInclude Include="CreateComputeSystemProgressEventArgs.h" />
     <ClInclude Include="CreateComputeSystemResult.h" />
     <ClInclude Include="DeveloperIdResult.h" />
     <ClInclude Include="DeveloperIdsResult.h" />
-    <ClInclude Include="ExtensionAdaptiveCardSessionData.h" />
+    <ClInclude Include="ExtensionAdaptiveCardSessionStoppedEventArgs.h" />
     <ClInclude Include="GetFeaturedApplicationsGroupsResult.h" />
     <ClInclude Include="GetFeaturedApplicationsResult.h" />
     <ClInclude Include="OpenConfigurationSetResult.h" />
@@ -228,23 +231,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AdaptiveCardSessionResult.cpp" />
+    <ClCompile Include="ApplyConfigurationActionRequiredEventArgs.cpp" />
     <ClCompile Include="ApplyConfigurationResult.cpp" />
     <ClCompile Include="ApplyConfigurationSetResult.cpp" />
     <ClCompile Include="ApplyConfigurationUnitResult.cpp" />
     <ClCompile Include="ComputeSystemAdaptiveCardResult.cpp" />
-    <ClCompile Include="ComputeSystemOperationData.cpp" />
     <ClCompile Include="ComputeSystemOperationResult.cpp" />
     <ClCompile Include="ComputeSystemProperty.cpp" />
     <ClCompile Include="ComputeSystemsResult.cpp" />
     <ClCompile Include="ComputeSystemStateResult.cpp" />
     <ClCompile Include="ComputeSystemThumbnailResult.cpp" />
     <ClCompile Include="ConfigurationSetChangeData.cpp" />
+    <ClCompile Include="ConfigurationSetStateChangedEventArgs.cpp" />
     <ClCompile Include="ConfigurationUnit.cpp" />
     <ClCompile Include="ConfigurationUnitResultInformation.cpp" />
+    <ClCompile Include="CreateComputeSystemActionRequiredEventArgs.cpp" />
+    <ClCompile Include="CreateComputeSystemProgressEventArgs.cpp" />
     <ClCompile Include="CreateComputeSystemResult.cpp" />
     <ClCompile Include="DeveloperIdResult.cpp" />
     <ClCompile Include="DeveloperIdsResult.cpp" />
-    <ClCompile Include="ExtensionAdaptiveCardSessionData.cpp" />
+    <ClCompile Include="ExtensionAdaptiveCardSessionStoppedEventArgs.cpp" />
     <ClCompile Include="Generated Files\module.g.cpp" />
     <ClCompile Include="GetFeaturedApplicationsGroupsResult.cpp" />
     <ClCompile Include="GetFeaturedApplicationsResult.cpp" />
