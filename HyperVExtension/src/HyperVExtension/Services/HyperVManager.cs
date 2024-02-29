@@ -23,6 +23,8 @@ public class HyperVManager : IHyperVManager, IDisposable
 {
     private readonly IPowerShellService _powerShellService;
 
+    private readonly HyperVVirtualMachineFactory _hyperVVirtualMachineFactory;
+
     private readonly IHost _host;
 
     private readonly object _operationLock = new();
@@ -43,10 +45,11 @@ public class HyperVManager : IHyperVManager, IDisposable
 
     private bool _disposed;
 
-    public HyperVManager(IHost host, IPowerShellService powerShellService)
+    public HyperVManager(IHost host, IPowerShellService powerShellService, HyperVVirtualMachineFactory hyperVVirtualMachineFactory)
     {
         _powerShellService = powerShellService;
         _host = host;
+        _hyperVVirtualMachineFactory = hyperVVirtualMachineFactory;
     }
 
     /// <inheritdoc cref="IHyperVManager.IsHyperVModuleLoaded"/>
@@ -135,7 +138,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         var returnList = result.PsObjects?
             .Where(psObject => psObject != null)
-            .Select(psObject => new HyperVVirtualMachine(_host, this, psObject));
+            .Select(psObject => _hyperVVirtualMachineFactory(psObject));
 
         return returnList ?? new List<HyperVVirtualMachine>();
     }
@@ -159,7 +162,7 @@ public class HyperVManager : IHyperVManager, IDisposable
             var psObject = result.PsObjects?.FirstOrDefault();
             if (psObject != null)
             {
-                return new HyperVVirtualMachine(_host, this, psObject);
+                return _hyperVVirtualMachineFactory(psObject);
             }
 
             throw new HyperVManagerException($"Unable to get VM with Id {vmId} due to PowerShell returning a null PsObject");
@@ -214,7 +217,7 @@ public class HyperVManager : IHyperVManager, IDisposable
                 return false;
             }
 
-            var virtualMachine = new HyperVVirtualMachine(_host, this, vmObject);
+            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
 
             // If the current state and endstate are the same we were able to stop the VM successfully.
             return AreStringsTheSame(virtualMachine?.State, endStateString);
@@ -255,7 +258,7 @@ public class HyperVManager : IHyperVManager, IDisposable
                 return false;
             }
 
-            var virtualMachine = new HyperVVirtualMachine(_host, this, vmObject);
+            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
 
             // Check if we were able to turn on the VM successfully.
             return AreStringsTheSame(virtualMachine?.State, HyperVStrings.RunningState);
@@ -296,7 +299,7 @@ public class HyperVManager : IHyperVManager, IDisposable
                 return false;
             }
 
-            var virtualMachine = new HyperVVirtualMachine(_host, this, vmObject);
+            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
 
             // Check if we were able to pause the VM successfully.
             return AreStringsTheSame(virtualMachine?.State, HyperVStrings.PausedState);
@@ -339,7 +342,7 @@ public class HyperVManager : IHyperVManager, IDisposable
                 return false;
             }
 
-            var virtualMachine = new HyperVVirtualMachine(_host, this, vmObject);
+            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
 
             // Check if we were able to resume the VM successfully.
             return AreStringsTheSame(virtualMachine?.State, HyperVStrings.RunningState);
@@ -382,7 +385,7 @@ public class HyperVManager : IHyperVManager, IDisposable
                 return false;
             }
 
-            var virtualMachine = new HyperVVirtualMachine(_host, this, vmObject);
+            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
             return virtualMachine.IsDeleted;
         }
         finally
@@ -628,7 +631,7 @@ public class HyperVManager : IHyperVManager, IDisposable
             }
 
             // confirm the VM was started successfully.
-            var virtualMachine = new HyperVVirtualMachine(_host, this, vmObject);
+            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
             return virtualMachine.State == HyperVStrings.RunningState;
         }
         finally
@@ -690,7 +693,7 @@ public class HyperVManager : IHyperVManager, IDisposable
             return default(T);
         }
 
-        if (typeof(T) == typeof(HyperVVirtualMachine) && new HyperVVirtualMachine(_host, this, psObject) is T virtualMachine)
+        if (typeof(T) == typeof(HyperVVirtualMachine) && _hyperVVirtualMachineFactory(psObject) is T virtualMachine)
         {
             return virtualMachine;
         }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using HyperVExtension.Common;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Services;
@@ -12,11 +13,19 @@ namespace HyperVExtension.Providers;
 /// <summary> Class that provides compute system information for Hyper-V Virtual machines. </summary>
 public class HyperVProvider : IComputeSystemProvider
 {
+    private readonly string errorResourceKey = "ErrorPerformingOperation";
+
+    private readonly string operationErrorString;
+
+    private readonly IStringResource _stringResource;
+
     private readonly IHyperVManager _hyperVManager;
 
-    public HyperVProvider(IHyperVManager hyperVManager)
+    public HyperVProvider(IHyperVManager hyperVManager, IStringResource stringResource)
     {
         _hyperVManager = hyperVManager;
+        _stringResource = stringResource;
+        operationErrorString = _stringResource.GetLocalized(errorResourceKey);
     }
 
     /// <summary> Gets or sets the default compute system properties. </summary>
@@ -52,7 +61,7 @@ public class HyperVProvider : IComputeSystemProvider
     }
 
     /// <summary> Gets a list of all Hyper-V compute systems. The developerId is not used by the Hyper-V provider </summary>
-    public IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId, string options)
+    public IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId)
     {
         return Task.Run(() =>
         {
@@ -65,22 +74,25 @@ public class HyperVProvider : IComputeSystemProvider
             catch (Exception ex)
             {
                 Logging.Logger()?.ReportError($"Failed to retrieved all virtual machines on: {DateTime.Now}", ex);
-                return new ComputeSystemsResult(ex, ex.Message);
+                return new ComputeSystemsResult(ex, operationErrorString, ex.Message);
             }
         }).AsAsyncOperation();
     }
 
-    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSession(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
+    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForDeveloperId(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
     {
         // This won't be supported until creation is supported.
         var notImplementedException = new NotImplementedException($"Method not implemented by Hyper-V Compute System Provider");
-        return new ComputeSystemAdaptiveCardResult(notImplementedException, notImplementedException.Message);
+        return new ComputeSystemAdaptiveCardResult(notImplementedException, operationErrorString, notImplementedException.Message);
     }
 
-    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSession(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind)
+    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForComputeSystem(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind)
     {
         // This won't be supported until property modification is supported.
         var notImplementedException = new NotImplementedException($"Method not implemented by Hyper-V Compute System Provider");
-        return new ComputeSystemAdaptiveCardResult(notImplementedException, notImplementedException.Message);
+        return new ComputeSystemAdaptiveCardResult(notImplementedException, operationErrorString, notImplementedException.Message);
     }
+
+    // This will be implemented in a future release, but will be available for Dev Environments 1.0.
+    public ICreateComputeSystemOperation CreateCreateComputeSystemOperation(IDeveloperId developerId, string InputJson) => throw new NotImplementedException();
 }

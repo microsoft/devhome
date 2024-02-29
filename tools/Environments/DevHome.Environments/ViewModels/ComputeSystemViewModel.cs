@@ -25,7 +25,7 @@ public partial class ComputeSystemViewModel : ObservableObject
 {
     public IComputeSystem ComputeSystem { get; }
 
-    public string Name => ComputeSystem.Name;
+    public string Name => ComputeSystem.DisplayName;
 
     public string AlternativeName { get; }
 
@@ -51,7 +51,7 @@ public partial class ComputeSystemViewModel : ObservableObject
     {
         ComputeSystem = system;
         Type = displayName;
-        AlternativeName = new string("(" + ComputeSystem.AlternativeDisplayName + ")");
+        AlternativeName = new string("(" + ComputeSystem.SupplementalDisplayName + ")");
 
         LaunchOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillLaunchButtonOperations(system));
         DotOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillDotButtonOperations(system));
@@ -68,7 +68,7 @@ public partial class ComputeSystemViewModel : ObservableObject
     {
         try
         {
-            var result = await ComputeSystem.GetStateAsync(string.Empty);
+            var result = await ComputeSystem.GetStateAsync();
             if (result.Result.Status == ProviderOperationStatus.Success)
             {
                 State = result.State;

@@ -4,43 +4,46 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using HyperVExtension.HostGuestCommunication;
+using HyperVExtension.Models;
 using HyperVExtension.Providers;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
+using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.Win32.Foundation;
-
 using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace HyperVExtension.CommunicationWithGuest;
 
-internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation, IDisposable
+public sealed class ApplyConfigurationOperation : IApplyConfigurationOperation, IDisposable
 {
-    private readonly IComputeSystem _computeSystem;
+    private readonly HyperVVirtualMachine _virtualMachine;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
+
     private bool _disposed;
 
-    public ApplyConfigurationOperation(IComputeSystem computeSystem)
+    public string Configuration { get; private set; } = string.Empty;
+
+    public ApplyConfigurationOperation(HyperVVirtualMachine virtualMachine, string configuration)
     {
-        _computeSystem = computeSystem;
+        _virtualMachine = virtualMachine;
+        Configuration = configuration;
     }
 
-    public ApplyConfigurationOperation(IComputeSystem computeSystem, Exception result, string? resultDescription = null)
+    public ApplyConfigurationOperation(HyperVVirtualMachine virtualMachine, Exception result, string? resultDescription = null)
     {
-        _computeSystem = computeSystem;
-        CompletionStatus = new SDK.ApplyConfigurationResult(
-            result,
-            resultDescription,
-            null,
-            null);
+        _virtualMachine = virtualMachine;
+        CompletionStatus = new SDK.ApplyConfigurationResult(result, result.Message, result.Message);
     }
 
     public CancellationToken CancellationToken => _cancellationTokenSource.Token;
 
-    public event TypedEventHandler<IComputeSystem, SDK.ApplyConfigurationResult>? Completed;
+    public event TypedEventHandler<IApplyConfigurationOperation, ApplyConfigurationActionRequiredEventArgs> ActionRequired = (s, e) => { };
 
-    public event TypedEventHandler<IComputeSystem, SDK.ConfigurationSetChangeData>? Progress;
+    public event TypedEventHandler<IApplyConfigurationOperation, ConfigurationSetStateChangedEventArgs> ConfigurationSetStateChanged = (s, e) => { };
 
     public SDK.ApplyConfigurationResult? CompletionStatus { get; private set; }
 
@@ -50,15 +53,11 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
             SDK.ConfigurationSetState.Unknown,
             SDK.ConfigurationUnitState.Unknown,
             new SDK.ConfigurationUnitResultInformation(null, null, null, SDK.ConfigurationUnitResultSource.None),
-            new SDK.ConfigurationUnit(null, null, SDK.ConfigurationUnitState.Unknown, false, null),
-            null);
+            new SDK.ConfigurationUnit(null, null, SDK.ConfigurationUnitState.Unknown, false, null, null, SDK.ConfigurationUnitIntent.Unknown));
 
-    public void Cancel() => throw new NotImplementedException();
-
-    public void SetState(
+    public void SetProgress(
         SDK.ConfigurationSetState state,
         HostGuestCommunication.ConfigurationSetChangeData? progressData,
-        HostGuestCommunication.ApplyConfigurationResult? completionStatus,
         SDK.IExtensionAdaptiveCardSession2? adaptiveCardSession)
     {
         var sdkProgressData = GetSdkProgressData(state, progressData, adaptiveCardSession);
@@ -66,23 +65,23 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
         if (sdkProgressData != null)
         {
             ProgressData = sdkProgressData;
-            Progress?.Invoke(_computeSystem, ProgressData);
+            ConfigurationSetStateChanged?.Invoke(this, new(ProgressData));
         }
+    }
 
+    public SDK.ApplyConfigurationResult CompleteOperation(HostGuestCommunication.ApplyConfigurationResult? completionStatus)
+    {
         // If the completionStatus is not null, then the operation is completed.
-        if ((completionStatus != null) || (state == SDK.ConfigurationSetState.Completed))
+        // if ((completionStatus != null) || (state == SDK.ConfigurationSetState.Completed))
+        var sdkCompletionStatus = GetSdkConfigurationResult(completionStatus);
+        if (sdkCompletionStatus == null)
         {
-            var sdkCompletionStatus = GetSdkConfigurationResult(completionStatus);
-            if (sdkCompletionStatus == null)
-            {
-                // No apply configuration result was provided, but state is "Completed"
-                // so create ApplyConfigurationResult with no error (meaning operation is completed).
-                sdkCompletionStatus = new SDK.ApplyConfigurationResult(null, null, null, null);
-            }
-
-            CompletionStatus = sdkCompletionStatus;
-            Completed?.Invoke(_computeSystem, CompletionStatus);
+            // No apply configuration result was provided, but state is "Completed"
+            // so create ApplyConfigurationResult with no error (meaning operation is completed).
+            sdkCompletionStatus = new SDK.ApplyConfigurationResult(null, null);
         }
+
+        return sdkCompletionStatus;
     }
 
     private SDK.ConfigurationSetChangeData GetSdkProgressData(
@@ -114,8 +113,7 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
                 (SDK.ConfigurationSetState)progressData.SetState,
                 (SDK.ConfigurationUnitState)progressData.UnitState,
                 resultInfo,
-                sdkUnit,
-                adaptiveCardSession);
+                sdkUnit);
         }
         else
         {
@@ -124,8 +122,7 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
                 state,
                 SDK.ConfigurationUnitState.Unknown,
                 null,
-                null,
-                adaptiveCardSession);
+                null);
         }
 
         return sdkProgressData;
@@ -170,8 +167,11 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
                                 (SDK.ConfigurationUnitResultSource)unitResult.ResultInformation.ResultSource);
                         }
 
+                        var configurationUnitState = sdkUnit != null ? sdkUnit.State : SDK.ConfigurationUnitState.Unknown;
+
                         sdkUnitResults.Add(new SDK.ApplyConfigurationUnitResult(
                             sdkUnit,
+                            configurationUnitState,
                             unitResult.PreviouslyInDesiredState,
                             unitResult.RebootRequired,
                             sdkResultInfo));
@@ -185,13 +185,15 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
                     sdkUnitResults.AsReadOnly());
             }
 
-            return new SDK.ApplyConfigurationResult(
-                completionStatus.ResultCode == HRESULT.S_OK ?
-                    null :
-                    new HResultException(completionStatus.ResultCode),
-                completionStatus.ResultDescription,
-                sdkOpenConfigurationSetResult,
-                sdkApplyConfigurationSetResult);
+            var wasConfigurationSuccessful = completionStatus.ResultCode == HRESULT.S_OK;
+            if (wasConfigurationSuccessful)
+            {
+                return new SDK.ApplyConfigurationResult(sdkOpenConfigurationSetResult, sdkApplyConfigurationSetResult);
+            }
+
+            var hresultException = new HResultException(completionStatus.ResultCode);
+
+            return new SDK.ApplyConfigurationResult(hresultException, completionStatus.ResultDescription, hresultException.Message);
         }
 
         return null;
@@ -205,14 +207,16 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
             if (configurationUnit.Units != null)
             {
                 units = new();
-                foreach (var u in configurationUnit.Units)
+                foreach (var hostAndGuestUnit in configurationUnit.Units)
                 {
                     units.Add(new(
-                        u.Type,
-                        u.Identifier,
-                        (SDK.ConfigurationUnitState)u.State,
-                        u.IsGroup,
-                        null));
+                        hostAndGuestUnit.Type,
+                        hostAndGuestUnit.Identifier,
+                        (SDK.ConfigurationUnitState)hostAndGuestUnit.State,
+                        hostAndGuestUnit.IsGroup,
+                        null,
+                        hostAndGuestUnit.Settings,
+                        (SDK.ConfigurationUnitIntent)hostAndGuestUnit.Intent));
                 }
             }
 
@@ -221,7 +225,9 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
                 configurationUnit.Identifier,
                 (SDK.ConfigurationUnitState)configurationUnit.State,
                 configurationUnit.IsGroup,
-                units);
+                units,
+                configurationUnit.Settings,
+                (SDK.ConfigurationUnitIntent)configurationUnit.Intent);
         }
 
         return null;
@@ -244,5 +250,13 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
 
             _disposed = true;
         }
+    }
+
+    public IAsyncOperation<SDK.ApplyConfigurationResult> StartAsync()
+    {
+        return Task.Run(() =>
+        {
+            return _virtualMachine.ApplyConfiguration(this);
+        }).AsAsyncOperation();
     }
 }

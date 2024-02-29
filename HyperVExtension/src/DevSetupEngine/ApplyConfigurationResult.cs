@@ -7,6 +7,7 @@
 
 using System.Runtime.InteropServices;
 using Microsoft.Windows.DevHome.DevSetupEngine;
+using Windows.Foundation.Collections;
 using DevSetupEngineTypes = Microsoft.Windows.DevHome.DevSetupEngine;
 
 namespace HyperVExtension.DevSetupEngine.ConfigurationResultTypes;
@@ -96,13 +97,15 @@ public class OpenConfigurationSetResult : IOpenConfigurationSetResult
 [ComDefaultInterface(typeof(IConfigurationUnit))]
 public class ConfigurationUnit : IConfigurationUnit
 {
-    public ConfigurationUnit(string type, string identifier, DevSetupEngineTypes.ConfigurationUnitState state, bool isGroup, IList<IConfigurationUnit>? units)
+    public ConfigurationUnit(string type, string identifier, DevSetupEngineTypes.ConfigurationUnitState state, bool isGroup, IList<IConfigurationUnit>? units, ValueSet settings, ConfigurationUnitIntent intent)
     {
         Type = type;
         Identifier = identifier;
         State = state;
         IsGroup = isGroup;
         Units = units;
+        Intent = intent;
+        Settings = settings;
     }
 
     // The type of the unit being configured; not a name for this instance.
@@ -120,6 +123,10 @@ public class ConfigurationUnit : IConfigurationUnit
 
     // The configuration units that are part of this unit (if IsGroup is true).
     public IList<IConfigurationUnit>? Units { get; }
+
+    public ConfigurationUnitIntent Intent { get; }
+
+    public ValueSet Settings { get; }
 }
 
 [ComVisible(true)]
@@ -157,12 +164,13 @@ public class ConfigurationSetChangeData : IConfigurationSetChangeData
 [ComDefaultInterface(typeof(IApplyConfigurationUnitResult))]
 public class ApplyConfigurationUnitResult : IApplyConfigurationUnitResult
 {
-    public ApplyConfigurationUnitResult(IConfigurationUnit unit, bool previouslyInDesiredState, bool rebootRequired, IConfigurationUnitResultInformation resultInformation)
+    public ApplyConfigurationUnitResult(IConfigurationUnit unit, ConfigurationUnitState state, bool previouslyInDesiredState, bool rebootRequired, IConfigurationUnitResultInformation resultInformation)
     {
         Unit = unit;
         PreviouslyInDesiredState = previouslyInDesiredState;
         RebootRequired = rebootRequired;
         ResultInformation = resultInformation;
+        State = state;
     }
 
     // The configuration unit that was applied.
@@ -176,6 +184,8 @@ public class ApplyConfigurationUnitResult : IApplyConfigurationUnitResult
 
     // The result of applying the configuration unit.
     public IConfigurationUnitResultInformation ResultInformation { get; }
+
+    public ConfigurationUnitState State { get; }
 }
 
 [ComVisible(true)]

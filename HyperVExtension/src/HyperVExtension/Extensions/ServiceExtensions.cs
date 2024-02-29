@@ -26,6 +26,7 @@ public static class ServiceExtensions
         // Pattern to allow multiple non-service registered interfaces to be used with registered interfaces during construction.
         services.AddSingleton<IPowerShellService>(psService =>
             ActivatorUtilities.CreateInstance<PowerShellService>(psService, new PowerShellSession()));
+        services.AddSingleton<HyperVVirtualMachineFactory>(sp => psObject => ActivatorUtilities.CreateInstance<HyperVVirtualMachine>(sp, psObject));
 
         return services;
     }
