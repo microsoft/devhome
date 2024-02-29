@@ -46,6 +46,11 @@ public class ThemeSelectorService : IThemeSelectorService
             (Theme == ElementTheme.Default && Application.Current.RequestedTheme == ApplicationTheme.Dark);
     }
 
+    public ElementTheme GetActualTheme()
+    {
+        return IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
+    }
+
     private async Task<ElementTheme> LoadThemeFromSettingsAsync()
     {
         var themeName = await _localSettingsService.ReadSettingAsync<string>(SettingsKey);
