@@ -1,7 +1,7 @@
 ################################################################################
 # yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2    #
 #                                                                              #
-# This DSC config file will install Microsoft.PowerToys, then configure, by:    #
+# This DSC config file will install Microsoft.PowerToys, then configure, by:   #
 # Disabling the ShortcutGuide and setting it to full opacity, then enabling    #
 # Fancy Zones and setting the Fancy Zone Editor hotkey to Shift+Ctrl+Alt+F.    #
 #                                                                              #
