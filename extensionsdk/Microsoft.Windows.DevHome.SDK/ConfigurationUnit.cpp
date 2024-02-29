@@ -2,7 +2,6 @@
 #include "ConfigurationUnit.h"
 #include "ConfigurationUnit.g.cpp"
 
-
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     ConfigurationUnit::ConfigurationUnit(
@@ -12,8 +11,8 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
         bool isGroup,
         IVector<DevHomeSDKProjection::ConfigurationUnit> const& units,
         ValueSet const& settings,
-        DevHomeSDKProjection::ConfigurationUnitIntent const& intent)
-        : m_type(type), m_identifier(identifier), m_state(state), m_isGroup(isGroup), m_units(units), m_settings(settings), m_intent(intent)
+        DevHomeSDKProjection::ConfigurationUnitIntent const& intent) :
+        m_type(type), m_identifier(identifier), m_state(state), m_isGroup(isGroup), m_units(units), m_settings(settings), m_intent(intent)
     {
     }
 

@@ -28,6 +28,16 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         public Uri Uri { get; set; }
 
         public string Icon { get; set; }
+
+        public WinGetPackageUri GetPackageUri()
+        {
+            if (WinGetPackageUri.TryCreate(Uri, out var packageUri))
+            {
+                return packageUri;
+            }
+
+            return null;
+        }
     }
 
     /// <summary>
@@ -84,6 +94,25 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         return result;
     }
 
+    private List<WinGetPackageUri> GetPackageUris(IList<JsonWinGetPackage> jsonPackages)
+    {
+        var result = new List<WinGetPackageUri>();
+        foreach (var jsonPackage in jsonPackages)
+        {
+            var packageUri = jsonPackage.GetPackageUri();
+            if (packageUri != null)
+            {
+                result.Add(packageUri);
+            }
+            else
+            {
+                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Skipping {jsonPackage.Uri} because it is not a valid winget package uri");
+            }
+        }
+
+        return result;
+    }
+
     /// <summary>
     /// Load a package catalog with the list of winget packages sorted based on
     /// the input JSON catalog
@@ -97,12 +126,13 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 
         try
         {
-            var packages = await GetPackagesAsync(jsonCatalog.WinGetPackages.Select(p => p.Uri).ToList());
+            var packageUris = GetPackageUris(jsonCatalog.WinGetPackages);
+            var packages = await GetPackagesAsync(packageUris);
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for JSON packages: [{string.Join(", ", packages.Select(p => $"({p.Name}, {p.CatalogName})"))}]");
             foreach (var package in packages)
             {
                 var packageUri = WindowsPackageManager.CreatePackageUri(package);
-                var jsonPackage = jsonCatalog.WinGetPackages.FirstOrDefault(p => packageUri == p.Uri);
+                var jsonPackage = jsonCatalog.WinGetPackages.FirstOrDefault(p => packageUri.Equals(p.GetPackageUri(), WinGetPackageUriParameters.None));
                 if (jsonPackage != null)
                 {
                     var icon = await GetJsonApplicationIconAsync(jsonPackage);

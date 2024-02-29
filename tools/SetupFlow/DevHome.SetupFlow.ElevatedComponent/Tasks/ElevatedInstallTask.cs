@@ -35,7 +35,7 @@ public sealed class ElevatedInstallTask
     /// <summary>
     /// Installs a package given its ID and the ID of the catalog it comes from.
     /// </summary>
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(string packageId, string catalogName)
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(string packageId, string catalogName, string version)
     {
         return Task.Run(async () =>
         {
@@ -72,6 +72,14 @@ public sealed class ElevatedInstallTask
 
                 var installOptions = _wingetFactory.CreateInstallOptions();
                 installOptions.PackageInstallMode = PackageInstallMode.Silent;
+                if (!string.IsNullOrWhiteSpace(version))
+                {
+                    installOptions.PackageVersionId = FindVersionOrThrow(result, packageToInstall, version);
+                }
+                else
+                {
+                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Install version not specified. Falling back to default install version {packageToInstall.DefaultInstallVersion.Version}");
+                }
 
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initiating install of package {packageId}");
                 var installResult = await packageManager.InstallPackageAsync(packageToInstall, installOptions);
@@ -116,5 +124,31 @@ public sealed class ElevatedInstallTask
         findOptions.ResultLimit = 1;
 
         return findOptions;
+    }
+
+    /// <summary>
+    /// Find a specific version in the list of available versions for a package.
+    /// </summary>
+    /// <param name="package">Target package</param>
+    /// <param name="version">Version to find</param>
+    /// <returns>Specified version</returns>
+    /// <exception>Exception thrown if the specified version was not found</exception>
+    private PackageVersionId FindVersionOrThrow(ElevatedInstallTaskResult result, CatalogPackage package, string version)
+    {
+        // Find the version in the list of available versions
+        for (var i = 0; i < package.AvailableVersions.Count; i++)
+        {
+            if (package.AvailableVersions[i].Version == version)
+            {
+                return package.AvailableVersions[i];
+            }
+        }
+
+        var installErrorInvalidParameter = unchecked((int)0x8A150112);
+        result.Status = (int)InstallResultStatus.InvalidOptions;
+        result.ExtendedErrorCode = installErrorInvalidParameter;
+        var message = $"Specified install version was not found {version}.";
+        Log.Logger?.ReportError(Log.Component.AppManagement, message);
+        throw new ArgumentException(message);
     }
 }

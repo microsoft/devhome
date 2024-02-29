@@ -14,5 +14,5 @@ public interface IRegistryChannelSettings
 
     string ToHostRegistryKeyPath { get; }
 
-    RegistryKey RegistryHive { get; }
+    RegistryHive RegistryHive { get; }
 }

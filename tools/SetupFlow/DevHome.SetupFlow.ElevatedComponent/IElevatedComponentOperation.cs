@@ -34,8 +34,9 @@ public interface IElevatedComponentOperation
     /// </summary>
     /// <param name="packageId">Package id</param>
     /// <param name="catalogName">Package catalog name</param>
+    /// <param name="version">Package version</param>
     /// <returns>Install package operation result</returns>
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName);
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName, string version);
 
     /// <summary>
     /// Create a dev drive

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 
@@ -14,21 +13,21 @@ internal interface IWinGetProtocolParser
     /// </summary>
     /// <param name="package">Package</param>
     /// <returns>Package uri</returns>
-    public Uri CreatePackageUri(IWinGetPackage package);
+    public WinGetPackageUri CreatePackageUri(IWinGetPackage package);
 
     /// <summary>
     /// Create a winget catalog package uri from a package id
     /// </summary>
     /// <param name="packageId">Package id</param>
     /// <returns>Package uri</returns>
-    public Uri CreateWinGetCatalogPackageUri(string packageId);
+    public WinGetPackageUri CreateWinGetCatalogPackageUri(string packageId);
 
     /// <summary>
     /// Create a Microsoft store catalog package uri from a package id
     /// </summary>
     /// <param name="packageId">Package id</param>
     /// <returns>Package uri</returns>
-    public Uri CreateMsStoreCatalogPackageUri(string packageId);
+    public WinGetPackageUri CreateMsStoreCatalogPackageUri(string packageId);
 
     /// <summary>
     /// Create a custom catalog package uri from a package id and catalog name
@@ -36,21 +35,14 @@ internal interface IWinGetProtocolParser
     /// <param name="packageId">Package id</param>
     /// <param name="catalogName">Catalog name</param>
     /// <returns>Package uri</returns>
-    public Uri CreateCustomCatalogPackageUri(string packageId, string catalogName);
-
-    /// <summary>
-    /// Get the package id and catalog from a package uri
-    /// </summary>
-    /// <param name="packageUri">Input package uri</param>
-    /// <returns>Package id and catalog, or null if the URI protocol is inaccurate</returns>
-    public WinGetProtocolParserResult ParsePackageUri(Uri packageUri);
+    public WinGetPackageUri CreateCustomCatalogPackageUri(string packageId, string catalogName);
 
     /// <summary>
     /// Resolve a catalog from a parser result
     /// </summary>
-    /// <param name="result">Parser result</param>
+    /// <param name="packageUri">Package uri</param>
     /// <returns>Catalog</returns>
-    public Task<WinGetCatalog> ResolveCatalogAsync(WinGetProtocolParserResult result);
+    public Task<WinGetCatalog> ResolveCatalogAsync(WinGetPackageUri packageUri);
 
     /// <summary>
     /// Create a package uri from a package id and catalog
@@ -58,5 +50,5 @@ internal interface IWinGetProtocolParser
     /// <param name="packageId">Package id</param>
     /// <param name="catalog">Catalog</param>
     /// <returns>Package uri</returns>
-    public Uri CreatePackageUri(string packageId, WinGetCatalog catalog);
+    public WinGetPackageUri CreatePackageUri(string packageId, WinGetCatalog catalog);
 }

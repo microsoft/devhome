@@ -2,17 +2,17 @@
 #include "ConfigurationUnit.g.h"
 
 using namespace winrt::Windows::Foundation::Collections;
-
 namespace DevHomeSDKProjection = winrt::Microsoft::Windows::DevHome::SDK;
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     struct ConfigurationUnit : ConfigurationUnitT<ConfigurationUnit>
     {
-        ConfigurationUnit(hstring const& type, 
-            hstring const& identifier, 
-            ConfigurationUnitState const& state, 
-            bool isGroup, 
+        ConfigurationUnit(
+            hstring const& type,
+            hstring const& identifier,
+            ConfigurationUnitState const& state,
+            bool isGroup,
             IVector<DevHomeSDKProjection::ConfigurationUnit> const& units,
             ValueSet const& settings,
             DevHomeSDKProjection::ConfigurationUnitIntent const& intent);
@@ -24,7 +24,6 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
         IVector<DevHomeSDKProjection::ConfigurationUnit> Units();
         ValueSet Settings();
         DevHomeSDKProjection::ConfigurationUnitIntent Intent();
-
 
     private:
         hstring m_type;

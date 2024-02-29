@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="$(SolutionDir)ToolingVersions.props" />
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup>
     <RootNamespace>HyperVExtension.Telemetry</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>

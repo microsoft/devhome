@@ -538,6 +538,10 @@
     <value>Learn more</value>
     <comment>Click on this link if you want to learn more and read the security policy. View is an action.</comment>
   </data>
+  <data name="ViewLogs.Header" xml:space="preserve">
+    <value>View logs</value>
+    <comment>Click on this if you want to see Dev Home's logs on your machine.</comment>
+  </data>
   <data name="EnvironmentsManagementPage_Description" xml:space="preserve">
     <value>Manage your local and cloud development virtual machines from Dev Home</value>
     <comment>Text within a display card that explains what users can do with the Environments management feature. Users can choose to toggle this on/off to add or remove the feature.</comment>

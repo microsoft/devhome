@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
 using Microsoft.Management.Deployment;
 using Windows.Storage.Streams;
@@ -28,8 +29,10 @@ public class WinGetPackage : IWinGetPackage
         CatalogName = package.DefaultInstallVersion.PackageCatalog.Info.Name;
         UniqueKey = new(Id, CatalogId);
         Name = package.Name;
-        Version = package.DefaultInstallVersion.Version;
-        IsInstalled = package.InstalledVersion != null;
+        AvailableVersions = package.AvailableVersions.Select(v => v.Version).ToList();
+        InstalledVersion = FindVersion(package.AvailableVersions, package.InstalledVersion);
+        DefaultInstallVersion = FindVersion(package.AvailableVersions, package.DefaultInstallVersion);
+        IsInstalled = InstalledVersion != null;
         IsElevationRequired = requiresElevated;
         PackageUrl = GetMetadataValue(package, metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null);
         PublisherUrl = GetMetadataValue(package, metadata => new Uri(metadata.PublisherUrl), nameof(CatalogPackageMetadata.PublisherUrl), null);
@@ -47,7 +50,11 @@ public class WinGetPackage : IWinGetPackage
 
     public string Name { get; }
 
-    public string Version { get; }
+    public string InstalledVersion { get; }
+
+    public string DefaultInstallVersion { get; }
+
+    public IReadOnlyList<string> AvailableVersions { get; }
 
     public bool IsInstalled { get; }
 
@@ -68,8 +75,10 @@ public class WinGetPackage : IWinGetPackage
     public InstallPackageTask CreateInstallTask(
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory,
-        Guid activityId) => new(wpm, stringResource, this, activityId);
+        string installVersion,
+        Guid activityId) => new(wpm, stringResource, this, installVersion, activityId);
+
+    public WinGetPackageUri GetUri(string installVersion) => new(CatalogName, Id, new(installVersion));
 
     /// <summary>
     /// Gets the package metadata from the current culture name (e.g. 'en-US')
@@ -92,5 +101,38 @@ public class WinGetPackage : IWinGetPackage
             Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package metadata [{metadataFieldName}] for package {package.Id}; defaulting to {defaultValue}");
             return defaultValue;
         }
+    }
+
+    /// <summary>
+    /// Find the provided version in the list of available versions
+    /// </summary>
+    /// <param name="availableVersions">List of available versions</param>
+    /// <param name="versionInfo">Version to find</param>
+    /// <returns>Package version</returns>
+    private string FindVersion(IReadOnlyList<PackageVersionId> availableVersions, PackageVersionInfo versionInfo)
+    {
+        if (versionInfo == null)
+        {
+            return null;
+        }
+
+        // Best effort to find the version in the list of available versions
+        // If CompareToVersion throws an exception, we default to the version provided
+        try
+        {
+            for (var i = 0; i < availableVersions.Count; i++)
+            {
+                if (versionInfo.CompareToVersion(availableVersions[i].Version) == CompareResult.Equal)
+                {
+                    return availableVersions[i].Version;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Unable to validate if the version {versionInfo.Version} is in the list of available versions", e);
+        }
+
+        return versionInfo.Version;
     }
 }

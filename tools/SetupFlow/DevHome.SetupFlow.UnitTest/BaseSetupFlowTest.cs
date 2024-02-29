@@ -3,6 +3,7 @@
 
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -58,12 +59,14 @@ public class BaseSetupFlowTest
                 services.AddSingleton<IThemeSelectorService>(ThemeSelectorService!.Object);
                 services.AddSingleton<ISetupFlowStringResource>(StringResource.Object);
                 services.AddSingleton<SetupFlowOrchestrator>(new SetupFlowOrchestrator());
+                services.AddSingleton<IExtensionService>(new ExtensionService());
 
                 // App-management view models
                 services.AddTransient<PackageViewModel>();
                 services.AddTransient<PackageCatalogViewModel>();
                 services.AddTransient<SearchViewModel>();
                 services.AddTransient<LoadingViewModel>();
+                services.AddTransient<IDevDriveManager, DevDriveManager>();
 
                 // App-management services
                 services.AddSingleton<IWindowsPackageManager>(WindowsPackageManager.Object);

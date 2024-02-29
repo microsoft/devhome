@@ -12,5 +12,5 @@ public class TestRegistryChannelSettings : IRegistryChannelSettings
 
     public string ToHostRegistryKeyPath => @"TEST\Guest";
 
-    public RegistryKey RegistryHive => Registry.CurrentUser;
+    public RegistryHive RegistryHive => RegistryHive.CurrentUser;
 }

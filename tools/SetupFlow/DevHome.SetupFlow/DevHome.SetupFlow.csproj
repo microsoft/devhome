@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Labs.WinUI.Shimmer" Version="0.1.230830" />
     <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Collections" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Collections" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.0.240109" />

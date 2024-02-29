@@ -6,7 +6,8 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
     struct ComputeSystemOperationResult : ComputeSystemOperationResultT<ComputeSystemOperationResult>
     {
         ComputeSystemOperationResult();
-        ComputeSystemOperationResult(winrt::hresult const& e, hstring const& diagnosticText);
+
+        ComputeSystemOperationResult(winrt::hresult const& e, hstring const& displayMessage, hstring const& diagnosticText);
         ProviderOperationResult Result();
 
     private:

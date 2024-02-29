@@ -4,17 +4,17 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    ComputeSystemOperationResult::ComputeSystemOperationResult()
-        : m_result(ProviderOperationStatus::Success, S_OK, hstring(), hstring())
+    ComputeSystemOperationResult::ComputeSystemOperationResult() :
+        m_result(ProviderOperationStatus::Success, S_OK, hstring(), hstring())
     {
     }
 
-    ComputeSystemOperationResult::ComputeSystemOperationResult(winrt::hresult const& e, hstring const& diagnosticText)
-        : m_result(ProviderOperationStatus::Failure, e, diagnosticText, diagnosticText)
+    ComputeSystemOperationResult::ComputeSystemOperationResult(winrt::hresult const& e, hstring const& displayMessage, hstring const& diagnosticText) :
+        m_result(ProviderOperationStatus::Failure, e, displayMessage, diagnosticText)
     {
     }
 
-    winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult ComputeSystemOperationResult::Result()
+    ProviderOperationResult ComputeSystemOperationResult::Result()
     {
         return m_result;
     }

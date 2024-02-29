@@ -26,7 +26,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
         // Arrange
         var expectedPackages = new List<IWinGetPackage>();
         var restoreApplicationInfoList = expectedPackages.Select(p => CreateRestoreApplicationInfo(p.Id).Object).ToList();
-        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<Uri>>())).ReturnsAsync(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<WinGetPackageUri>>())).ReturnsAsync(expectedPackages);
         ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act
@@ -34,14 +34,14 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
 
         // Assert
         Assert.AreEqual(0, loadedPackages.Count);
-        WindowsPackageManager.Verify(wpm => wpm.GetPackagesAsync(It.IsAny<IList<Uri>>()), Times.Never());
+        WindowsPackageManager.Verify(wpm => wpm.GetPackagesAsync(It.IsAny<IList<WinGetPackageUri>>()), Times.Never());
     }
 
     [TestMethod]
     public void LoadCatalogs_ExceptionThrownWhenGettingPackages_ReturnsNoCatalogs()
     {
         // Arrange
-        WindowsPackageManager!.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<Uri>>())).ThrowsAsync(new FindPackagesException(FindPackagesResultStatus.CatalogError));
+        WindowsPackageManager!.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<WinGetPackageUri>>())).ThrowsAsync(new FindPackagesException(FindPackagesResultStatus.CatalogError));
         ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, new List<IRestoreApplicationInfo>());
 
         // Act
@@ -78,7 +78,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
             PackageHelper.CreatePackage(packageId2).Object,
         };
         var restoreApplicationInfoList = expectedPackages.Select(p => CreateRestoreApplicationInfo(p.Id).Object).ToList();
-        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<Uri>>())).ReturnsAsync(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<WinGetPackageUri>>())).ReturnsAsync(expectedPackages);
         ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act
@@ -105,7 +105,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
             PackageHelper.CreatePackage("mock2").Object,
         };
         var restoreApplicationInfoList = expectedPackages.Select(p => CreateRestoreApplicationInfo(p.Id).Object).ToList();
-        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<Uri>>())).ReturnsAsync(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<WinGetPackageUri>>())).ReturnsAsync(expectedPackages);
         ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act
@@ -140,7 +140,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
 
             return restoreAppInfo.Object;
         }).ToList();
-        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<Uri>>())).ReturnsAsync(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<WinGetPackageUri>>())).ReturnsAsync(expectedPackages);
         ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act
@@ -162,8 +162,8 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
             PackageHelper.CreatePackage("mock").Object,
         };
         var restoreApplicationInfoList = expectedPackages.Select(p => CreateRestoreApplicationInfo(p.Id, EmptyIconStreamSize).Object).ToList();
-        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<Uri>>())).ReturnsAsync(expectedPackages);
-        WindowsPackageManager.Setup(wpm => wpm.CreateWinGetCatalogPackageUri(It.IsAny<string>())).Returns(new Uri("http://mock"));
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<WinGetPackageUri>>())).ReturnsAsync(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.CreateWinGetCatalogPackageUri(It.IsAny<string>())).Returns(new WinGetPackageUri("x-ms-winget://mock/mock"));
         ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act

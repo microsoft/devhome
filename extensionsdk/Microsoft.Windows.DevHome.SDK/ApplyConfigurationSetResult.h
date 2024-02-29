@@ -9,12 +9,12 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     struct ApplyConfigurationSetResult : ApplyConfigurationSetResultT<ApplyConfigurationSetResult>
     {
-        ApplyConfigurationSetResult(winrt::hresult const& result, IVectorView<DevHomeSDKProjection::ApplyConfigurationUnitResult> const& unitResults);
-        IVectorView<ApplyConfigurationUnitResult> UnitResults();
+        ApplyConfigurationSetResult(winrt::hresult const& resultCode, IVectorView<DevHomeSDKProjection::ApplyConfigurationUnitResult> const& unitResults);
+        IVectorView<DevHomeSDKProjection::ApplyConfigurationUnitResult> UnitResults();
         winrt::hresult ResultCode();
 
     private:
-        winrt::hresult m_resultCode { S_OK };
+        winrt::hresult m_resultCode{ S_OK };
         IVectorView<DevHomeSDKProjection::ApplyConfigurationUnitResult> m_unitResults{ nullptr };
     };
 }

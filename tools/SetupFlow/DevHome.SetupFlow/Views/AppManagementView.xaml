@@ -146,7 +146,7 @@
                                 <TextBlock Style="{ThemeResource AppManagementPackageTitleTextBlock}" Text="{Binding PackageTitle}"/>
                             </ctControls:SettingsCard.Header>
                             <ctControls:SettingsCard.Description>
-                                <TextBlock Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{Binding PackageDescription}"/>
+                                <TextBlock Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{Binding PackageFullDescription}"/>
                             </ctControls:SettingsCard.Description>
                             <ctControls:SettingsCard.HeaderIcon>
                                 <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
