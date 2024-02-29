@@ -18,5 +18,5 @@ public class RegistryChannelSettings : IRegistryChannelSettings
 
     public string ToHostRegistryKeyPath => @"SOFTWARE\Microsoft\Virtual Machine\Guest";
 
-    public RegistryKey RegistryHive => Registry.LocalMachine;
+    public RegistryHive RegistryHive => RegistryHive.LocalMachine;
 }
