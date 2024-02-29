@@ -56,8 +56,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
-    <ProjectReference Include="..\..\..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
+    <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
   </ItemGroup>
 
   <Target Name="CopyWinmdToTargetDir" BeforeTargets="BeforeBuild">
