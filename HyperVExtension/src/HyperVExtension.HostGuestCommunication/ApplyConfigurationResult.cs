@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json.Serialization;
+using Windows.Foundation.Collections;
 
 namespace HyperVExtension.HostGuestCommunication;
 
@@ -45,6 +46,14 @@ public enum ConfigurationUnitState : int
     InProgress = 0x2,
     Completed = 0x3,
     Skipped = 0x4,
+}
+
+public enum ConfigurationUnitIntent : int
+{
+    Assert,
+    Inform,
+    Apply,
+    Unknown,
 }
 
 public class ApplyConfigurationResult
@@ -130,6 +139,12 @@ public class ConfigurationUnit
 
     // The configuration units that are part of this unit (if IsGroup is true).
     public List<ConfigurationUnit>? Units { get; set; }
+
+    // Contains the values that are for use by the configuration unit itself.
+    public ValueSet? Settings { get; set; }
+
+    // Describes how this configuration unit will be used.
+    public ConfigurationUnitIntent Intent { get; }
 }
 
 public class ConfigurationSetChangeData

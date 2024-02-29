@@ -8,7 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Helpers;
+using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 using Windows.Foundation.Metadata;
@@ -22,6 +24,8 @@ namespace DevHome.Common.Environments.Models;
 /// </summary>
 public class ComputeSystemProvider
 {
+    private readonly string errorString;
+
     private readonly string _componentName = "ComputeSystemProvider";
 
     private readonly IComputeSystemProvider _computeSystemProvider;
@@ -38,18 +42,19 @@ public class ComputeSystemProvider
         Id = computeSystemProvider.Id;
         DisplayName = computeSystemProvider.DisplayName;
         SupportedOperations = computeSystemProvider.SupportedOperations;
+        errorString = StringResourceHelper.GetResource("ComputeSystemUnexpectedError", DisplayName);
     }
 
-    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSession(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
+    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForDeveloperId(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
     {
         try
         {
-            return _computeSystemProvider.CreateAdaptiveCardSession(developerId, sessionKind);
+            return _computeSystemProvider.CreateAdaptiveCardSessionForDeveloperId(developerId, sessionKind);
         }
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"CreateAdaptiveCardSessionWithDeveloperId for: {this} failed due to exception", ex);
-            return new ComputeSystemAdaptiveCardResult(ex, ex.Message);
+            return new ComputeSystemAdaptiveCardResult(ex, errorString, ex.Message);
         }
     }
 
@@ -57,25 +62,25 @@ public class ComputeSystemProvider
     {
         try
         {
-            return _computeSystemProvider.CreateAdaptiveCardSession(computeSystem, sessionKind);
+            return _computeSystemProvider.CreateAdaptiveCardSessionForComputeSystem(computeSystem, sessionKind);
         }
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"CreateAdaptiveCardSessionWithComputeSystem for: {this} failed due to exception", ex);
-            return new ComputeSystemAdaptiveCardResult(ex, ex.Message);
+            return new ComputeSystemAdaptiveCardResult(ex, errorString, ex.Message);
         }
     }
 
-    public async Task<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId, string options)
+    public async Task<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId)
     {
         try
         {
-            return await _computeSystemProvider.GetComputeSystemsAsync(developerId, options);
+            return await _computeSystemProvider.GetComputeSystemsAsync(developerId);
         }
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"GetComputeSystemsAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemsResult(ex, ex.Message);
+            return new ComputeSystemsResult(ex, errorString, ex.Message);
         }
     }
 

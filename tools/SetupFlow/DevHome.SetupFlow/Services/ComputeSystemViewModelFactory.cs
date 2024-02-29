@@ -27,7 +27,7 @@ public class ComputeSystemViewModelFactory
         try
         {
             cardViewModel.ComputeSystemWrapper = computeSystem;
-            cardViewModel.ComputeSystemTitle = computeSystem.Name;
+            cardViewModel.ComputeSystemTitle = computeSystem.DisplayName;
             cardViewModel.ComputeSystemWrapper.StateChanged += cardViewModel.OnComputeSystemStateChanged;
             cardViewModel.CardState = await cardViewModel.GetCardStateAsync();
             cardViewModel.ComputeSystemImage = await GetBitmapImage(computeSystem);

@@ -28,9 +28,9 @@ public class ComputeSystemWrapperTest
     [TestMethod]
     public void ComputeSystemWrapper_Returns_Id()
     {
-        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId);
+        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, false);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
-        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId(), string.Empty).Result;
+        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId()).Result;
         var computeSystem = computeSystemsResult.ComputeSystems.ToList().First();
 
         Assert.AreEqual(TestHelpers.ComputeSystemId, computeSystem.Id);
@@ -39,31 +39,31 @@ public class ComputeSystemWrapperTest
     [TestMethod]
     public void ComputeSystemWrapper_Returns_Name()
     {
-        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId);
+        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, false);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
-        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId(), string.Empty).Result;
+        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId()).Result;
         var computeSystem = computeSystemsResult.ComputeSystems.ToList().First();
 
-        Assert.AreEqual(TestHelpers.ComputeSystemName, computeSystem.Name);
+        Assert.AreEqual(TestHelpers.ComputeSystemName, computeSystem.DisplayName);
     }
 
     [TestMethod]
     public void ComputeSystemWrapper_Returns_AlternativeDisplayName()
     {
-        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId);
+        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, false);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
-        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId(), string.Empty).Result;
+        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId()).Result;
         var computeSystem = computeSystemsResult.ComputeSystems.ToList().First();
 
-        Assert.AreEqual(TestHelpers.ComputeSystemAlternativeDisplayName, computeSystem.AlternativeDisplayName);
+        Assert.AreEqual(TestHelpers.ComputeSystemAlternativeDisplayName, computeSystem.SupplementalDisplayName);
     }
 
     [TestMethod]
     public void ComputeSystemWrapper_Returns_AssociatedDeveloperId()
     {
-        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId);
+        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, false);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
-        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId(), string.Empty).Result;
+        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId()).Result;
         var computeSystem = computeSystemsResult.ComputeSystems.ToList().First();
 
         Assert.AreEqual(new TestDeveloperId().LoginId, computeSystem.AssociatedDeveloperId.LoginId);
@@ -72,9 +72,9 @@ public class ComputeSystemWrapperTest
     [TestMethod]
     public void ComputeSystemWrapper_Returns_AssociatedProviderId()
     {
-        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId);
+        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, false);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
-        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId(), string.Empty).Result;
+        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId()).Result;
         var computeSystem = computeSystemsResult.ComputeSystems.ToList().First();
 
         Assert.AreEqual(TestHelpers.ComputeSystemProviderId, computeSystem.AssociatedProviderId);
@@ -83,9 +83,9 @@ public class ComputeSystemWrapperTest
     [TestMethod]
     public void ComputeSystemWrapper_Returns_SupportedOperations()
     {
-        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId);
+        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, false);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
-        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId(), string.Empty).Result;
+        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId()).Result;
         var computeSystem = computeSystemsResult.ComputeSystems.ToList().First();
 
         Assert.AreEqual(SupportedOperations, computeSystem.SupportedOperations);

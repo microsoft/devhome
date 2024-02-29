@@ -101,8 +101,8 @@ public partial class LandingPageViewModel : ObservableObject
         {
             if (system is ComputeSystemViewModel computeSystemViewModel)
             {
-                var systemName = computeSystemViewModel.ComputeSystem.Name;
-                var systemAltName = computeSystemViewModel.ComputeSystem.AlternativeDisplayName;
+                var systemName = computeSystemViewModel.ComputeSystem.DisplayName;
+                var systemAltName = computeSystemViewModel.ComputeSystem.SupplementalDisplayName;
                 return systemName.Contains(query, StringComparison.OrdinalIgnoreCase) || systemAltName.Contains(query, StringComparison.OrdinalIgnoreCase);
             }
 
