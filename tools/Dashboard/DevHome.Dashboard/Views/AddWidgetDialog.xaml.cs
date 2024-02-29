@@ -2,11 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
@@ -14,11 +12,7 @@ using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Widgets.Hosts;
 using WinUIEx;
 
@@ -36,7 +30,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private readonly IWidgetIconService _widgetIconService;
     private readonly WindowEx _windowEx;
 
-    private ObservableCollection<NavigationViewItem> MenuItems { get; set; }
+    private ObservableCollection<MenuItemViewModel> ProviderMenuItems { get; set; }
 
     public AddWidgetDialog()
     {
@@ -49,6 +43,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _windowEx = Application.Current.GetService<WindowEx>();
 
         RequestedTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
+
+        ProviderMenuItems = [];
     }
 
     [RelayCommand]
@@ -63,7 +59,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task FillAvailableWidgetsAsync()
     {
-        MenuItems.Clear();
+        ProviderMenuItems.Clear();
 
         var catalog = await _hostingService.GetWidgetCatalogAsync();
         var host = await _hostingService.GetWidgetHostAsync();
@@ -89,84 +85,43 @@ public sealed partial class AddWidgetDialog : ContentDialog
         {
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
             {
-                var navItem = new NavigationViewItem
+                var navItem = new MenuItemViewModel
                 {
-                    IsExpanded = true,
                     Tag = providerDef,
-                    Content = providerDef.DisplayName,
+                    Text = providerDef.DisplayName,
                 };
 
                 foreach (var widgetDef in widgetDefinitions)
                 {
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
-                        var subItemContent = await BuildWidgetNavItem(widgetDef);
+                        var image = await _widgetIconService.GetWidgetIconForThemeAsync(widgetDef, ActualTheme);
                         var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
-                        var subItem = new NavigationViewItem
-                        {
-                            Tag = widgetDef,
-                            Content = subItemContent,
-                            IsEnabled = enable,
-                        };
-                        subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
-                        subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
+                        var subItem = new MenuItemViewModel();
+                        subItem.Tag = widgetDef;
+                        subItem.Image = image;
+                        subItem.Text = widgetDef.DisplayTitle;
+                        subItem.IsEnabled = enable;
+                        ////subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
+                        ////subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
 
-                        navItem.MenuItems.Add(subItem);
+                        navItem.SubMenuItems.Add(subItem);
                     }
                 }
 
-                if (navItem.MenuItems.Count > 0)
+                if (navItem.SubMenuItems.Count > 0)
                 {
-                    MenuItems.Add(navItem);
+                    ProviderMenuItems.Add(navItem);
                 }
             }
         }
 
         // If there were no available widgets, log an error.
         // This should never happen since Dev Home's core widgets are always available.
-        if (!MenuItems.Any())
+        if (!ProviderMenuItems.Any())
         {
             Log.Logger()?.ReportError("AddWidgetDialog", $"FillAvailableWidgetsAsync found no available widgets.");
         }
-    }
-
-    private async Task<StackPanel> BuildWidgetNavItem(WidgetDefinition widgetDefinition)
-    {
-        var image = await _widgetIconService.GetWidgetIconForThemeAsync(widgetDefinition, ActualTheme);
-        return BuildNavItem(image, widgetDefinition.DisplayTitle);
-    }
-
-    private StackPanel BuildNavItem(BitmapImage image, string text)
-    {
-        var itemContent = new StackPanel
-        {
-            Orientation = Orientation.Horizontal,
-        };
-
-        if (image is not null)
-        {
-            var itemSquare = new Rectangle()
-            {
-                Width = 16,
-                Height = 16,
-                Margin = new Thickness(0, 0, 10, 0),
-                Fill = new ImageBrush
-                {
-                    ImageSource = image,
-                    Stretch = Stretch.Uniform,
-                },
-            };
-
-            itemContent.Children.Add(itemSquare);
-        }
-
-        var itemText = new TextBlock()
-        {
-            Text = text,
-        };
-        itemContent.Children.Add(itemText);
-
-        return itemContent;
     }
 
     private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef, Widget[] currentlyPinnedWidgets)
@@ -215,7 +170,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
 
         // Get selected widget definition.
-        var selectedTag = (sender.SelectedItem as NavigationViewItem).Tag;
+        var selectedTag = (sender.SelectedItem as MenuItemViewModel).Tag;
         if (selectedTag is null)
         {
             Log.Logger()?.ReportError("AddWidgetDialog", $"Selected widget description did not have a tag");
@@ -295,24 +250,24 @@ public sealed partial class AddWidgetDialog : ContentDialog
             }
 
             // Remove the deleted WidgetDefinition from the list of available widgets.
-            foreach (var providerItem in MenuItems.Cast<NavigationViewItem>())
+            foreach (var providerItem in ProviderMenuItems)
             {
-                foreach (var widgetItem in providerItem.MenuItems.Cast<NavigationViewItem>())
+                foreach (var widgetItem in providerItem.SubMenuItems)
                 {
                     if (widgetItem.Tag is WidgetDefinition tagDefinition)
                     {
                         if (tagDefinition.Id.Equals(deletedDefinitionId, StringComparison.Ordinal))
                         {
-                            providerItem.MenuItems.Remove(widgetItem);
+                            providerItem.SubMenuItems.Remove(widgetItem);
 
                             // If we've removed all widgets from a provider, remove the provider from the list.
-                            if (!providerItem.MenuItems.Any())
+                            if (!providerItem.SubMenuItems.Any())
                             {
-                                MenuItems.Remove(providerItem);
+                                ProviderMenuItems.Remove(providerItem);
 
                                 // If we've removed all providers from the list, log an error.
                                 // This should never happen since Dev Home's core widgets are always available.
-                                if (!MenuItems.Any())
+                                if (!ProviderMenuItems.Any())
                                 {
                                     Log.Logger()?.ReportError("AddWidgetDialog", $"WidgetCatalog_WidgetDefinitionDeleted found no available widgets.");
                                 }

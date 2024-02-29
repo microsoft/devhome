@@ -8,6 +8,8 @@
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:vm="using:DevHome.Dashboard.ViewModels"
     Style="{StaticResource DefaultContentDialogStyle}"
     SizeChanged="ContentDialog_SizeChanged">
     <i:Interaction.Behaviors>
@@ -32,6 +34,7 @@
         <Thickness x:Key="LargePinButtonMargin">0,42</Thickness>
         <Thickness x:Key="SmallWidgetPreviewTopMargin">0,20,0,0</Thickness>
         <Thickness x:Key="LargeWidgetPreviewTopMargin">0,42,0,0</Thickness>
+        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToVisibilityConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
     </ContentDialog.Resources>
 
     <StackPanel>
@@ -52,8 +55,36 @@
                         IsTitleBarAutoPaddingEnabled="False"
                         OpenPaneLength="218"
                         MaxHeight="560"
-                        MenuItemsSource="{x:Bind MenuItems, Mode=OneWay}"
+                        MenuItemsSource="{x:Bind ProviderMenuItems, Mode=OneWay}"
                         SelectionChanged="AddWidgetNavigationView_SelectionChanged">
+            <NavigationView.MenuItemTemplate>
+                <DataTemplate x:DataType="vm:MenuItemViewModel">
+                    <NavigationViewItem
+                        Content="{x:Bind}"
+                        Tag="{x:Bind Tag, Mode=OneWay}"
+                        IsExpanded="True"
+                        MenuItemsSource="{x:Bind SubMenuItems, Mode=OneWay}">
+                        <NavigationViewItem.ContentTemplate>
+                            <DataTemplate x:DataType="vm:MenuItemViewModel">
+                                <StackPanel Orientation="Horizontal">
+                                    <Rectangle
+                                        Width="16"
+                                        Height="16"
+                                        Margin="0, 0, 10, 0"
+                                        Visibility="{x:Bind Image, Mode=OneWay, Converter={StaticResource EmptyObjectToVisibilityConverter}}">
+                                        <Rectangle.Fill>
+                                            <ImageBrush
+                                                ImageSource="{x:Bind Image, Mode=OneWay}"
+                                                Stretch="Uniform" />
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <TextBlock Text="{x:Bind Text, Mode=OneWay}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </NavigationViewItem.ContentTemplate>
+                    </NavigationViewItem>
+                </DataTemplate>
+            </NavigationView.MenuItemTemplate>
 
             <!-- Widget preview -->
             <Grid x:Name="WidgetPreviewContentGrid">
