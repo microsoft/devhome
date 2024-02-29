@@ -27,6 +27,9 @@ public class ExperimentationService : IExperimentationService
         {
             _isExperimentationEnabled = _localSettingsService.ReadSettingAsync<bool>("ExperimentationEnabled").Result;
         }
+
+        var isSeeker = _localSettingsService.ReadSettingAsync<bool>("IsSeeker").Result;
+        TelemetryFactory.Get<ITelemetry>().Log("Seeker_Event", LogLevel.Critical, new SeekerEvent(isSeeker));
     }
 
     public bool IsFeatureEnabled(string key)
@@ -60,6 +63,7 @@ public class ExperimentationService : IExperimentationService
                 Task.Run(() =>
                 {
                     TelemetryFactory.Get<ITelemetry>().Log("Experimentation_Toggled_Event", LogLevel.Critical, new ExperimentationEvent(_isExperimentationEnabled));
+                    _localSettingsService!.SaveSettingAsync($"IsSeeker", true);
                     return _localSettingsService!.SaveSettingAsync($"ExperimentationEnabled", _isExperimentationEnabled);
                 }).Wait();
             }
