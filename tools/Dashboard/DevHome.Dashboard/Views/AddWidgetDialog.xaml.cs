@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
@@ -26,11 +25,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     public AddWidgetViewModel ViewModel { get; set; }
 
-    private readonly IWidgetHostingService _hostingService;
-    private readonly IWidgetIconService _widgetIconService;
     private readonly WindowEx _windowEx;
-
-    private ObservableCollection<MenuItemViewModel> ProviderMenuItems { get; set; }
 
     public AddWidgetDialog()
     {
@@ -43,8 +38,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _windowEx = Application.Current.GetService<WindowEx>();
 
         RequestedTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
-
-        ProviderMenuItems = [];
     }
 
     [RelayCommand]
@@ -55,91 +48,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         await FillAvailableWidgetsAsync();
         SelectFirstWidgetByDefault();
-    }
-
-    private async Task FillAvailableWidgetsAsync()
-    {
-        ProviderMenuItems.Clear();
-
-        var catalog = await _hostingService.GetWidgetCatalogAsync();
-        var host = await _hostingService.GetWidgetHostAsync();
-
-        if (catalog is null || host is null)
-        {
-            // We should never have gotten here if we don't have a WidgetCatalog.
-            Log.Logger()?.ReportError("AddWidgetDialog", $"Opened the AddWidgetDialog, but WidgetCatalog is null.");
-            return;
-        }
-
-        // Show the providers and widgets underneath them in alphabetical order.
-        var providerDefinitions = await Task.Run(() => catalog!.GetProviderDefinitions().OrderBy(x => x.DisplayName));
-        var widgetDefinitions = await Task.Run(() => catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle));
-
-        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
-
-        // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
-        // Tag each item with the widget or provider definition, so that it can be used to create
-        // the widget if it is selected later.
-        var currentlyPinnedWidgets = await Task.Run(() => host.GetWidgets());
-        foreach (var providerDef in providerDefinitions)
-        {
-            if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
-            {
-                var navItem = new MenuItemViewModel
-                {
-                    Tag = providerDef,
-                    Text = providerDef.DisplayName,
-                };
-
-                foreach (var widgetDef in widgetDefinitions)
-                {
-                    if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
-                    {
-                        var image = await _widgetIconService.GetWidgetIconForThemeAsync(widgetDef, ActualTheme);
-                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
-                        var subItem = new MenuItemViewModel();
-                        subItem.Tag = widgetDef;
-                        subItem.Image = image;
-                        subItem.Text = widgetDef.DisplayTitle;
-                        subItem.IsEnabled = enable;
-
-                        navItem.SubMenuItems.Add(subItem);
-                    }
-                }
-
-                if (navItem.SubMenuItems.Count > 0)
-                {
-                    ProviderMenuItems.Add(navItem);
-                }
-            }
-        }
-
-        // If there were no available widgets, log an error.
-        // This should never happen since Dev Home's core widgets are always available.
-        if (!ProviderMenuItems.Any())
-        {
-            Log.Logger()?.ReportError("AddWidgetDialog", $"FillAvailableWidgetsAsync found no available widgets.");
-        }
-    }
-
-    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef, Widget[] currentlyPinnedWidgets)
-    {
-        // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
-        if (!widgetDef.AllowMultiple)
-        {
-            if (currentlyPinnedWidgets != null)
-            {
-                foreach (var pinnedWidget in currentlyPinnedWidgets)
-                {
-                    if (pinnedWidget.DefinitionId == widgetDef.Id)
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
     }
 
     private void SelectFirstWidgetByDefault()
