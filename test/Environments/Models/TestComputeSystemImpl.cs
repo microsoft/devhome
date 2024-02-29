@@ -60,7 +60,7 @@ public class TestComputeSystemImpl : IComputeSystem
 
     public IAsyncOperation<ComputeSystemStateResult> GetStateAsync() => throw new NotImplementedException();
 
-    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string InputJson) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string inputJson) => throw new NotImplementedException();
 
     public IAsyncOperation<ComputeSystemOperationResult> PauseAsync(string options) => throw new NotImplementedException();
 

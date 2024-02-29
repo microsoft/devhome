@@ -140,7 +140,7 @@ public class TestSystems : IComputeSystem
 
     public IAsyncOperation<ComputeSystemOperationResult> DeleteSnapshotAsync(string options) => throw new NotImplementedException();
 
-    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string InputJson) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string inputJson) => throw new NotImplementedException();
 
     public IAsyncOperation<ComputeSystemOperationResult> ConnectAsync(string options) => throw new NotImplementedException();
 

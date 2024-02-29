@@ -542,7 +542,7 @@ public class HyperVVirtualMachine : IComputeSystem
         }).AsAsyncOperation();
     }
 
-    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string InputJson)
+    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string inputJson)
     {
         // This is temporary until we have a proper implementation for this.
         var notImplementedException = new NotImplementedException($"Method not implemented by Hyper-V Compute Systems: VM details: {this}");
