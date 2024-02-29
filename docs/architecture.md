@@ -8,6 +8,9 @@ Dev Home has a modular architecture that consists of multiple components. These 
 1. Tools
 1. Extensions
 
+![image info](images/architecture.png)
+
+A more detailed look at how the projects are related:
 ```mermaid
 graph TD;
     DevHome.Logging-->DevHome.Common;
@@ -18,7 +21,8 @@ graph TD;
     DevHome.Common-->DevHome.Experiments;
     DevHome.Common-->DevHome.ExtensionLibrary;
     DevHome.Common-->DevHome.Settings;
-    DevHome.Common-->DevHome.SetupFlow.Common;
+    DevHome.Logging-->DevHome.SetupFlow.Common;
+    DevHome.Telemetry-->DevHome.SetupFlow.Common;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow.ElevatedComponent;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow.ElevatedServer;
@@ -33,8 +37,6 @@ graph TD;
     DevHome.Settings-->DevHome;
     DevHome.SetupFlow-->DevHome;
 ```
-
-<!--![image info](images/architecture.png)-->
 
 ## Dev Home Core
 
