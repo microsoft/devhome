@@ -20,8 +20,6 @@ public enum StopVMKind
 /// <summary> Class that handles interacting directly with Hyper-V.</summary>
 public interface IHyperVManager
 {
-    public void ImportHyperVModule();
-
     /// <summary> Gets a boolean indicating whether the user is in the Hyper-V Administrator group.</summary>
     public bool IsUserInHyperVAdminGroup();
 

@@ -198,7 +198,7 @@ public class ConfigureTargetTask : ISetupTask, IDisposable
         var applyConfigSetResult = applyConfigurationResult.ApplyConfigurationSetResult;
         var openConfigResult = applyConfigurationResult.OpenConfigurationSetResult;
         var resultCode = applyConfigurationResult.ResultCode;
-        var resultInformation = applyConfigurationResult.ResultDescription;
+        var resultInformation = new string(applyConfigurationResult.ResultDescription);
 
         try
         {

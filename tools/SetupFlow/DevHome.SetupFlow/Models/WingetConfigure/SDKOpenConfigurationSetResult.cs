@@ -24,12 +24,12 @@ public class SDKOpenConfigurationSetResult
 
         if (Result != null)
         {
-            Field = result.Field.Clone() as string;
+            Field = new(result.Field);
             Line = result.Line;
             Column = result.Column;
-            Value = result.Value.Clone() as string;
+            Value = new(result.Value);
             ResultCode = Result.ResultCode;
-            Succeeded = ResultCode != null && ResultCode.HResult == 0;
+            Succeeded = ResultCode == null || ResultCode?.HResult == 0;
         }
     }
 
