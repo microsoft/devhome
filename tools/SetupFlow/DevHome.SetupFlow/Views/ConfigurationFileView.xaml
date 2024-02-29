@@ -10,6 +10,7 @@
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     mc:Ignorable="d">
     <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
@@ -53,26 +54,72 @@
                 <ctControls:SegmentedItem Content="Code view"/>
             </ctControls:Segmented>
 
-            <ListView ItemsSource="{x:Bind ViewModel.ConfigurationUnits}" Grid.Row="2" SelectionMode="None">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <Expander
-                                        HorizontalContentAlignment="Left"
-                                        HorizontalAlignment="Stretch"
-                                        Header="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Text="{Binding Content.Settings, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
-                                        </StackPanel>
-                                    </Expander>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListView.ItemContainerStyle>
+            <ListView
+                ItemsSource="{x:Bind ViewModel.ConfigurationUnits}"
+                Grid.Row="2"
+                SelectionMode="None">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="10" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:ConfigurationUnitViewModel">
+                        <Expander
+                            IsExpanded="True"
+                            HorizontalContentAlignment="Left"
+                            HorizontalAlignment="Stretch">
+                            <Expander.Header>
+                                <StackPanel>
+                                    <TextBlock Text="{x:Bind Title}" />
+                                    <TextBlock Text="{x:Bind SubTitle}" />
+                                </StackPanel>
+                            </Expander.Header>
+                            <StackPanel Spacing="10">
+                                <StackPanel.Resources>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="MinHeight" Value="0" />
+                                    </Style>
+                                </StackPanel.Resources>
+                                <!-- Metadata -->
+                                <StackPanel>
+                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Metadata</TextBlock>
+                                    <ListView
+                                        SelectionMode="None"
+                                        ItemsSource="{x:Bind Metadata}">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Spacing="2" Orientation="Horizontal">
+                                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{Binding Key}" />
+                                                    <TextBlock Text=":" />
+                                                    <TextBlock Text="{Binding Value}" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </StackPanel>
+
+                                <!-- Settings -->
+                                <StackPanel>
+                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Settings</TextBlock>
+                                    <ListView
+                                        SelectionMode="None"
+                                        ItemsSource="{x:Bind Settings}">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Spacing="2" Orientation="Horizontal">
+                                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{Binding Key}" />
+                                                    <TextBlock Text=":" />
+                                                    <TextBlock Text="{Binding Value}" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </StackPanel>
+                            </StackPanel>
+                        </Expander>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
             </ListView>
 
             <ScrollViewer Visibility="Collapsed" Grid.Row="2" HorizontalScrollBarVisibility="Auto">
