@@ -77,7 +77,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         if (!moduleFound)
         {
-            Logging.Logger()?.ReportWarn($"PowerShell returned an error while attempting to get the Hyper-V module: {result.CommandOutputErrorMessage}");
+            Logging.Logger()?.ReportWarn($"PowerShell could not find the Hyper-V module in the list of modules loaded into the current session: {result.CommandOutputErrorMessage}");
         }
 
         return moduleFound;
@@ -101,7 +101,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
         {
-            Logging.Logger()?.ReportWarn($"PowerShell returned an error while attempting to get the Hyper-V module: {result.CommandOutputErrorMessage}");
+            Logging.Logger()?.ReportWarn($"PowerShell returned an error while attempting to get the Hyper-V module on the first try: {result.CommandOutputErrorMessage}");
         }
     }
 
