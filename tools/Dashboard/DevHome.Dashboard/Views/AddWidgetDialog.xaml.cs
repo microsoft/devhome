@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Contracts.Services;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
@@ -32,9 +33,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private readonly IWidgetHostingService _hostingService;
     private readonly IWidgetIconService _widgetIconService;
 
-    public AddWidgetDialog(
-        DispatcherQueue dispatcher,
-        ElementTheme theme)
+    public AddWidgetDialog(DispatcherQueue dispatcher)
     {
         ViewModel = Application.Current.GetService<AddWidgetViewModel>();
         _hostingService = Application.Current.GetService<IWidgetHostingService>();
@@ -44,9 +43,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         _dispatcher = dispatcher;
 
-        // Strange behavior: just setting the requested theme when we new-up the dialog results in
-        // the wrong theme's resources being used. Setting RequestedTheme here fixes the problem.
-        RequestedTheme = theme;
+        RequestedTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
     }
 
     [RelayCommand]
