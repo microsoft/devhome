@@ -50,7 +50,7 @@ public sealed partial class FeedbackPage : Page
         Breadcrumbs = new ObservableCollection<Breadcrumb>
         {
             new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
-            new(stringResource.GetLocalized("Settings_Feedback_Header"), typeof(ExtensionsViewModel).FullName!),
+            new(stringResource.GetLocalized("Settings_Feedback_Header"), typeof(FeedbackViewModel).FullName!),
         };
     }
 

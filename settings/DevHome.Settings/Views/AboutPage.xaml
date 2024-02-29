@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:CommunityToolkit.WinUI"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
 
@@ -42,6 +43,12 @@
                             <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
                         </StackPanel>
                     </ctControls:SettingsCard>
+                    <ctControls:SettingsCard
+                        Visibility="Collapsed"
+                        x:Name="ViewLogsSettingsCard"
+                        x:Uid="ViewLogs"
+                        IsClickEnabled="True"
+                        ActionIcon="{ui:FontIcon Glyph=&#xE8A7;}" />
                 </ctControls:SettingsExpander.Items>
             </ctControls:SettingsExpander>
         </ScrollViewer>

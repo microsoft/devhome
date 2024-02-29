@@ -21,12 +21,8 @@ public static class ServiceExtensions
         services.AddTransient<AboutPage>();
         services.AddTransient<AccountsViewModel>();
         services.AddTransient<AccountsPage>();
-        services.AddTransient<ExtensionsViewModel>();
-        services.AddTransient<ExtensionsPage>();
         services.AddTransient<PreferencesViewModel>();
         services.AddTransient<PreferencesPage>();
-        services.AddTransient<ExtensionSettingsViewModel>();
-        services.AddTransient<ExtensionSettingsPage>();
         services.AddSingleton<ExperimentalFeaturesViewModel>();
 
         return services;

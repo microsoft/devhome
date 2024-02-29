@@ -38,7 +38,7 @@ internal sealed class RepositoryProvider
     /// <summary>
     /// Dictionary with all the repositories per account.
     /// </summary>
-    private Dictionary<IDeveloperId, IEnumerable<IRepository>> _repositories = new();
+    private readonly Dictionary<IDeveloperId, IEnumerable<IRepository>> _repositories = new();
 
     /// <summary>
     /// The DeveloperId provider used to log a user into an account.

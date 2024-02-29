@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
+
   <ItemGroup>
     <Content Update="Assets\LightHostConfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -15,12 +16,11 @@
        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
   <ItemGroup>
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\AccountsPage.xaml" />
     <None Remove="Views\ExperimentalFeaturesPage.xaml" />
-    <None Remove="Views\ExtensionSettingsPage.xaml" />
-    <None Remove="Views\ExtensionsPage.xaml" />
     <None Remove="Views\FeedbackPage.xaml" />
     <None Remove="Views\LoginUIDialog.xaml" />
     <None Remove="Views\PreferencesPage.xaml" />
@@ -58,11 +58,8 @@
     <Page Update="Views\PreferencesPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Views\ExtensionsPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Views\ExtensionSettingsPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    <Page Update="Views\ExperimentalFeaturesPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
 
@@ -70,9 +67,7 @@
     <Folder Include="TelemetryEvents\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Page Update="Views\ExperimentalFeaturesPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
 </Project>

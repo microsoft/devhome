@@ -3,15 +3,15 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Contracts;
-using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.ExtensionLibrary.ViewModels;
+using DevHome.ExtensionLibrary.Views;
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
 using DevHome.ViewModels;
 using DevHome.Views;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Services;
@@ -33,7 +33,6 @@ public class PageService : IPageService
         Configure<SettingsViewModel, SettingsPage>();
         Configure<PreferencesViewModel, PreferencesPage>();
         Configure<AccountsViewModel, AccountsPage>();
-        Configure<ExtensionsViewModel, ExtensionsPage>();
         Configure<AboutViewModel, AboutPage>();
         Configure<FeedbackViewModel, FeedbackPage>();
         Configure<WhatsNewViewModel, WhatsNewPage>();

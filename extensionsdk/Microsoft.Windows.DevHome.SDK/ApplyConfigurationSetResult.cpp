@@ -4,8 +4,8 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    ApplyConfigurationSetResult::ApplyConfigurationSetResult(winrt::hresult const& result, IVectorView<DevHomeSDKProjection::ApplyConfigurationUnitResult> const& unitResults)
-        : m_resultCode(result), m_unitResults(unitResults)
+    ApplyConfigurationSetResult::ApplyConfigurationSetResult(winrt::hresult const& resultCode, IVectorView<DevHomeSDKProjection::ApplyConfigurationUnitResult> const& unitResults) :
+        m_resultCode(resultCode), m_unitResults(unitResults)
     {
     }
 

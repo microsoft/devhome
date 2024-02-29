@@ -157,7 +157,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
     /// <param name="appInfo">Application information</param>
     /// <returns>Package URI</returns>
     /// <remarks>All restored applications are from winget catalog</remarks>
-    private Uri GetPackageUri(IRestoreApplicationInfo appInfo)
+    private WinGetPackageUri GetPackageUri(IRestoreApplicationInfo appInfo)
     {
         return WindowsPackageManager.CreateWinGetCatalogPackageUri(appInfo.Id);
     }

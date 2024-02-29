@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
@@ -46,10 +45,10 @@ internal sealed class WindowsPackageManager : IWindowsPackageManager
     }
 
     /// <inheritdoc/>
-    public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package) => await _operations.InstallPackageAsync(package);
+    public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri) => await _operations.InstallPackageAsync(packageUri);
 
     /// <inheritdoc/>
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris) => await _operations.GetPackagesAsync(packageUris);
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<WinGetPackageUri> packageUris) => await _operations.GetPackagesAsync(packageUris);
 
     /// <inheritdoc/>
     public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit) => await _operations.SearchAsync(query, limit);
@@ -70,14 +69,14 @@ internal sealed class WindowsPackageManager : IWindowsPackageManager
     public bool IsWinGetPackage(IWinGetPackage package) => _catalogConnector.IsWinGetPackage(package);
 
     /// <inheritdoc />
-    public Uri CreatePackageUri(IWinGetPackage package) => _protocolParser.CreatePackageUri(package);
+    public WinGetPackageUri CreatePackageUri(IWinGetPackage package) => _protocolParser.CreatePackageUri(package);
 
     /// <inheritdoc />
-    public Uri CreateWinGetCatalogPackageUri(string packageId) => _protocolParser.CreateWinGetCatalogPackageUri(packageId);
+    public WinGetPackageUri CreateWinGetCatalogPackageUri(string packageId) => _protocolParser.CreateWinGetCatalogPackageUri(packageId);
 
     /// <inheritdoc />
-    public Uri CreateMsStoreCatalogPackageUri(string packageId) => _protocolParser.CreateMsStoreCatalogPackageUri(packageId);
+    public WinGetPackageUri CreateMsStoreCatalogPackageUri(string packageId) => _protocolParser.CreateMsStoreCatalogPackageUri(packageId);
 
     /// <inheritdoc />
-    public Uri CreateCustomCatalogPackageUri(string packageId, string catalogName) => _protocolParser.CreateCustomCatalogPackageUri(packageId, catalogName);
+    public WinGetPackageUri CreateCustomCatalogPackageUri(string packageId, string catalogName) => _protocolParser.CreateCustomCatalogPackageUri(packageId, catalogName);
 }

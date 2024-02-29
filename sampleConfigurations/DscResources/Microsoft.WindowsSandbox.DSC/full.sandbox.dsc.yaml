@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+
+###############################################################################
+# Create Windows Sandbox instance with WinGet installed.                      #
+# Run as Administrator using Invoke-WinGetConfiguration                       #
+# The Logon command performs the following steps in Windows PowerShell:       #
+# 1. Install Nuget package provider                                           #
+# 2. Install Microsoft.WinGet.Client (0.2.1) PS module from the PS gallery.   #
+# 3. Set the execution policy to RemoteSigned                                 #
+# 4. Run Repair-WingetPackageManager to install App Installer (WinGet).       #
+# Note: Modifying the C:\Sandbox directory contents in Windows Sanbox         #
+#       will also modify C:\Sandbox on the Host filesystem.                   #
+############################################################################### 
+
+properties:
+  resources:
+    - resource: PSDscResources/WindowsOptionalFeature
+      id: WindowsSandbox
+      directives:
+        description: Ensure Windows Sandbox is enabled
+      settings:
+        Name: Containers-DisposableClientVM
+        Ensure: Present
+    - resource: Microsoft.WindowsSandbox.DSC/WindowsSandbox
+      dependsOn: 
+        - WindowsSandbox
+      directives:
+        description: Create Windows Sandbox with Winget installed
+        allowPrerelease: true
+      settings:
+        Ensure: Present        
+        HostFolder: C:\Sandbox
+        SandboxFolder: C:\Sandbox
+        LogonCommand: >
+          cmd /c start powershell -NoExit -Command "Write-Host 'Installing NuGet package provider...';
+          Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force;
+          Write-Host `n'Installing Microsoft.WinGet.Client PowerShell module...' `n;
+          Install-Module Microsoft.WinGet.Client -RequiredVersion 0.2.1 -Repository PSGallery -Force;
+          Write-Host 'Setting execution policy to remote signed...' `n;
+          Set-ExecutionPolicy RemoteSigned -Force;
+          Write-Host 'Running the Repair-WinGetPackageManager cmdlet to install App Installer (WinGet)...' `n;
+          Repair-WingetPackageManager
+  configurationVersion: 0.2.0

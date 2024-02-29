@@ -35,8 +35,8 @@
                             <StackPanel>
                                 <TextBox x:Name="ReportBugIssueTitle" x:Uid="Settings_Feedback_ReportBug_IssueTitle" AcceptsReturn="True" />
                                 <TextBox x:Name="ReportBugReproSteps" x:Uid="Settings_Feedback_ReportBug_ReproSteps" TextWrapping="Wrap" MinHeight="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
-                                <TextBox x:Name="ReportBugExpectedBehavior" x:Uid="Settings_Feedback_ReportBug_ExpectedBehavior" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
-                                <TextBox x:Name="ReportBugActualBehavior" x:Uid="Settings_Feedback_ReportBug_ActualBehavior" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
+                                <TextBox x:Name="ReportBugExpectedBehavior" x:Uid="Settings_Feedback_ReportBug_ExpectedBehavior" TextWrapping="Wrap" MinHeight="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
+                                <TextBox x:Name="ReportBugActualBehavior" x:Uid="Settings_Feedback_ReportBug_ActualBehavior" TextWrapping="Wrap" MinHeight="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
                                 <Expander x:Name="ReportBugSysInfoExpander" Expanding="ShowSysInfoExpander_Expanding" Margin="{StaticResource SmallTopMargin}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinWidth="{StaticResource FeedbackExpanderWidth}">
                                     <Expander.Header>
                                         <CheckBox x:Name="ReportBugIncludeSystemInfo" x:Uid="Settings_Feedback_ReportBug_IncludeSystemInfo" IsChecked="True"/>

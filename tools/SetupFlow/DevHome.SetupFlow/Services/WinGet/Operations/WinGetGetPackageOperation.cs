@@ -33,7 +33,7 @@ internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
     }
 
     /// <inheritdoc />
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris)
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<WinGetPackageUri> packageUris)
     {
         // Remove duplicates (optimization to prevent querying the same package multiple times)
         var distinctPackageUris = packageUris.Distinct();
@@ -45,7 +45,8 @@ internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
 
         // Get packages grouped by catalog
         var getPackagesTasks = new List<Task<List<IWinGetPackage>>>();
-        foreach (var parsedUrisGroup in GroupParsedUrisByCatalog(packageUrisToQuery))
+        var groupedParsedUris = packageUrisToQuery.GroupBy(p => p.CatalogName).Select(p => p.ToList()).ToList();
+        foreach (var parsedUrisGroup in groupedParsedUris)
         {
             if (parsedUrisGroup.Count != 0)
             {
@@ -55,7 +56,7 @@ internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
                     // All parsed URIs in the group have the same catalog, resolve catalog from the first entry
                     var firstParsedUri = parsedUrisGroup.First();
                     var packageIds = parsedUrisGroup.Select(p => p.PackageId).ToHashSet();
-                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages [{string.Join(", ", packageIds)}] from parsed uri catalog name: {firstParsedUri.CatalogUriName}");
+                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages [{string.Join(", ", packageIds)}] from parsed uri catalog name: {firstParsedUri.CatalogName}");
 
                     // Get packages from the catalog
                     var catalog = await _protocolParser.ResolveCatalogAsync(firstParsedUri);
@@ -75,13 +76,13 @@ internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
         var unorderedPackagesMap = getPackagesTasks
             .SelectMany(p => p.Result)
             .Concat(cachedPackages)
-            .ToDictionary(p => _protocolParser.CreatePackageUri(p), p => p);
+            .ToDictionary(p => _protocolParser.CreatePackageUri(p).ToString(WinGetPackageUriParameters.None), p => p);
 
         // Order packages by the order of the input URIs using a dictionary
         var orderedPackages = new List<IWinGetPackage>();
         foreach (var packageUri in packageUris)
         {
-            if (unorderedPackagesMap.TryGetValue(packageUri, out var package))
+            if (unorderedPackagesMap.TryGetValue(packageUri.ToString(WinGetPackageUriParameters.None), out var package))
             {
                 orderedPackages.Add(package);
             }
@@ -92,32 +93,5 @@ internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
         }
 
         return orderedPackages;
-    }
-
-    /// <summary>
-    /// Group packages by their catalogs
-    /// </summary>
-    /// <param name="packageUriSet">Package URIs</param>
-    /// <returns>Dictionary of package ids by catalog</returns>
-    private List<List<WinGetProtocolParserResult>> GroupParsedUrisByCatalog(IEnumerable<Uri> packageUriSet)
-    {
-        var parsedUris = new List<WinGetProtocolParserResult>();
-
-        // 1. Parse all package URIs and log invalid ones
-        foreach (var packageUri in packageUriSet)
-        {
-            var uriInfo = _protocolParser.ParsePackageUri(packageUri);
-            if (uriInfo != null)
-            {
-                parsedUris.Add(uriInfo);
-            }
-            else
-            {
-                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get URI details from '{packageUri}'");
-            }
-        }
-
-        // 2. Group package ids by catalog
-        return parsedUris.GroupBy(p => p.CatalogUriName).Select(p => p.ToList()).ToList();
     }
 }
