@@ -6,34 +6,45 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     RepositoriesSearchResult::RepositoriesSearchResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository> const& repositories)
     {
-        throw hresult_not_implemented();
+        _Repositories = std::make_shared<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository>>(repositories);
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring(""), winrt::to_hstring(""));
     }
+
     RepositoriesSearchResult::RepositoriesSearchResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository> const& repositories, hstring const& searchPath, array_view<hstring const> selectionOptions, hstring const& selectionOptionsName)
     {
-        throw hresult_not_implemented();
+        _Repositories = std::make_shared<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository>>(repositories);
+        _SearchPath = std::make_shared<hstring>(searchPath);
+        _SelectionOptions = std::make_shared<array_view<hstring>>(selectionOptions);
+        _SelectionOptionsName = std::make_shared<hstring>(selectionOptionsName);
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring(""), winrt::to_hstring(""));
     }
+
     RepositoriesSearchResult::RepositoriesSearchResult(winrt::hresult const& e, hstring const& diagnosticText)
     {
-        throw hresult_not_implemented();
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), winrt::to_hstring("Something went wrong"), diagnosticText);
     }
+
     winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository> RepositoriesSearchResult::Repositories()
     {
-        throw hresult_not_implemented();
+        return *_Repositories.get();
     }
+
     hstring RepositoriesSearchResult::SearchPath()
     {
-        throw hresult_not_implemented();
+        return *_SearchPath.get();
     }
+
     com_array<hstring> RepositoriesSearchResult::SelectionOptions()
     {
-        throw hresult_not_implemented();
+        return winrt::com_array<hstring>{ _SelectionOptions.get()->begin(), _SelectionOptions.get()->end() };
     }
+
     hstring RepositoriesSearchResult::SelectionOptionsName()
     {
-        throw hresult_not_implemented();
+        return *_SelectionOptionsName.get();
     }
     winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult RepositoriesSearchResult::Result()
     {
-        throw hresult_not_implemented();
+        return *_Result.get();
     }
 }
