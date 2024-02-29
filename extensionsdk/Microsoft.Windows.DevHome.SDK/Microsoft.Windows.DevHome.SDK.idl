@@ -1044,10 +1044,16 @@ namespace Microsoft.Windows.DevHome.SDK
             ConfigurationUnitIntent intent);
 
         // The type of the unit being configured; not a name for this instance.
-        String Type;
+        String Type
+        {
+            get;
+        };
 
         // The identifier name of this instance within the set.
-        String Identifier;
+        String Identifier
+        {
+            get;
+        };
 
         // The current state of the configuration unit.
         ConfigurationUnitState State
@@ -1063,7 +1069,10 @@ namespace Microsoft.Windows.DevHome.SDK
         };
 
         // The configuration units that are part of this unit (if IsGroup is true).
-        Windows.Foundation.Collections.IVector<ConfigurationUnit> Units;
+        Windows.Foundation.Collections.IVector<ConfigurationUnit> Units
+        {
+            get;
+        };
 
         // Contains the values that are for use by the configuration unit itself.
         Windows.Foundation.Collections.ValueSet Settings
