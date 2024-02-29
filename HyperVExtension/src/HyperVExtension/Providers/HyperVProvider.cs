@@ -94,5 +94,5 @@ public class HyperVProvider : IComputeSystemProvider
     }
 
     // This will be implemented in a future release, but will be available for Dev Environments 1.0.
-    public ICreateComputeSystemOperation CreateCreateComputeSystemOperation(IDeveloperId developerId, string InputJson) => throw new NotImplementedException();
+    public ICreateComputeSystemOperation CreateCreateComputeSystemOperation(IDeveloperId developerId, string inputJson) => throw new NotImplementedException();
 }

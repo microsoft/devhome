@@ -47,5 +47,5 @@ public class TestSystemProvider : IComputeSystemProvider
 
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForComputeSystem(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind) => throw new NotImplementedException();
 
-    public ICreateComputeSystemOperation CreateCreateComputeSystemOperation(IDeveloperId developerId, string InputJson) => throw new NotImplementedException();
+    public ICreateComputeSystemOperation CreateCreateComputeSystemOperation(IDeveloperId developerId, string inputJson) => throw new NotImplementedException();
 }
