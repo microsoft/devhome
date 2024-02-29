@@ -498,7 +498,7 @@ namespace Microsoft.Windows.DevHome.SDK
         // For creation the adaptive card session should be used like a "Form". Upon invoking the submission,
         // the user input can be validated by the extension. Who can then pass the form inputs back to DevHome
         // by raising the IExtensionAdaptiveCardSession2::Stopped event.
-        ICreateComputeSystemOperation CreateCreateComputeSystemOperation(IDeveloperId developerId, String InputJson);
+        ICreateComputeSystemOperation CreateCreateComputeSystemOperation(IDeveloperId developerId, String inputJson);
 
         // Returns existing Compute Systems for a specific DeveloperId.
         Windows.Foundation.IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId);
@@ -865,7 +865,7 @@ namespace Microsoft.Windows.DevHome.SDK
         // Modifies a compute systems properties.
         // Note: This method takes a json string that the compute system can use to modify its properties.
         // The string passed to this method should have intrinsic meaning to the compute system.
-        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(String InputJson);
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(String inputJson);
 
         // Gets the thumbnail image associated with the compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemThumbnailResult> GetComputeSystemThumbnailAsync(String options);
