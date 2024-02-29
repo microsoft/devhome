@@ -2,8 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
@@ -33,6 +36,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private readonly IWidgetIconService _widgetIconService;
     private readonly WindowEx _windowEx;
 
+    private ObservableCollection<NavigationViewItem> MenuItems { get; set; }
+
     public AddWidgetDialog()
     {
         ViewModel = Application.Current.GetService<AddWidgetViewModel>();
@@ -58,7 +63,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task FillAvailableWidgetsAsync()
     {
-        AddWidgetNavigationView.MenuItems.Clear();
+        MenuItems.Clear();
 
         var catalog = await _hostingService.GetWidgetCatalogAsync();
         var host = await _hostingService.GetWidgetHostAsync();
@@ -112,14 +117,14 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
                 if (navItem.MenuItems.Count > 0)
                 {
-                    AddWidgetNavigationView.MenuItems.Add(navItem);
+                    MenuItems.Add(navItem);
                 }
             }
         }
 
         // If there were no available widgets, log an error.
         // This should never happen since Dev Home's core widgets are always available.
-        if (!AddWidgetNavigationView.MenuItems.Any())
+        if (!MenuItems.Any())
         {
             Log.Logger()?.ReportError("AddWidgetDialog", $"FillAvailableWidgetsAsync found no available widgets.");
         }
@@ -290,8 +295,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             }
 
             // Remove the deleted WidgetDefinition from the list of available widgets.
-            var menuItems = AddWidgetNavigationView.MenuItems;
-            foreach (var providerItem in menuItems.Cast<NavigationViewItem>())
+            foreach (var providerItem in MenuItems.Cast<NavigationViewItem>())
             {
                 foreach (var widgetItem in providerItem.MenuItems.Cast<NavigationViewItem>())
                 {
@@ -304,11 +308,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
                             // If we've removed all widgets from a provider, remove the provider from the list.
                             if (!providerItem.MenuItems.Any())
                             {
-                                menuItems.Remove(providerItem);
+                                MenuItems.Remove(providerItem);
 
                                 // If we've removed all providers from the list, log an error.
                                 // This should never happen since Dev Home's core widgets are always available.
-                                if (!menuItems.Any())
+                                if (!MenuItems.Any())
                                 {
                                     Log.Logger()?.ReportError("AddWidgetDialog", $"WidgetCatalog_WidgetDefinitionDeleted found no available widgets.");
                                 }

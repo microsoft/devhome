@@ -52,9 +52,8 @@
                         IsTitleBarAutoPaddingEnabled="False"
                         OpenPaneLength="218"
                         MaxHeight="560"
+                        MenuItemsSource="{x:Bind MenuItems, Mode=OneWay}"
                         SelectionChanged="AddWidgetNavigationView_SelectionChanged">
-            <NavigationView.MenuItems>
-            </NavigationView.MenuItems>
 
             <!-- Widget preview -->
             <Grid x:Name="WidgetPreviewContentGrid">
