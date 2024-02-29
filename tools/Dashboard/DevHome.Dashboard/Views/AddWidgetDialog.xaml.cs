@@ -102,8 +102,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
                         subItem.Image = image;
                         subItem.Text = widgetDef.DisplayTitle;
                         subItem.IsEnabled = enable;
-                        ////subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
-                        ////subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
 
                         navItem.SubMenuItems.Add(subItem);
                     }

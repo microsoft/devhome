@@ -63,7 +63,9 @@
                         Content="{x:Bind}"
                         Tag="{x:Bind Tag, Mode=OneWay}"
                         IsExpanded="True"
-                        MenuItemsSource="{x:Bind SubMenuItems, Mode=OneWay}">
+                        MenuItemsSource="{x:Bind SubMenuItems, Mode=OneWay}"
+                        AutomationProperties.Name="{x:Bind Text}"
+                        AutomationProperties.AutomationId="{x:Bind Text}">
                         <NavigationViewItem.ContentTemplate>
                             <DataTemplate x:DataType="vm:MenuItemViewModel">
                                 <StackPanel Orientation="Horizontal">
