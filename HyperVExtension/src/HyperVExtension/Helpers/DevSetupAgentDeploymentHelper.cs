@@ -66,10 +66,13 @@ public class DevSetupAgentDeploymentHelper
 
     public virtual string GetSourcePath(ushort architecture)
     {
-        if (architecture == (ushort)ProcessorArchitecture.X64)
+        if ((architecture == (ushort)ProcessorArchitecture.X64) || (architecture == (ushort)ProcessorArchitecture.X86))
         {
-            // TODO: Adjust path once we have the actual DevSetupAgent package.
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "DevSetupAgent_x64.zip");
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DevSetupAgent_x86.zip");
+        }
+        else if (architecture == (ushort)ProcessorArchitecture.ARM64)
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DevSetupAgent_arm64.zip");
         }
         else
         {
@@ -240,10 +243,21 @@ function Install-DevSetupAgent
                     Write-Progress -Activity $using:activity -Status ""Stopping $using:DevSetupEngineConst process"" -PercentComplete 40
                     Stop-Process -Force -Name ""$using:DevSetupEngineConst""
                 }
+
+                # Unregister DevSetupEngine
+                $enginePath = Join-Path -Path $guestDevSetupAgentPath -ChildPath ""$using:DevSetupEngineConst.exe""
+                if (Test-Path -Path $enginePath)
+                {
+                    Write-Host ""Unregistering DevSetupEngine ($enginePath)""
+                    Write-Progress -Activity $using:activity -Status ""Registering DevSetupEngine ($enginePath)"" -PercentComplete 88
+                    &$enginePath ""-UnregisterComServer""
+                }
             
                 # Remove previous version of DevSetupAgent service files
                 if (Test-Path -Path $guestDevSetupAgentPath)
                 {
+                    # Sleep a few seconds to make sure all handles released after shutting down previous DevSetupEngine
+                    Start-Sleep -Seconds 3he service is stopped
                     Write-Host ""Deleting old DevSetupAgent service files""
                     Write-Progress -Activity $using:activity -Status ""Deleting old DevSetupAgent service files"" -PercentComplete 45
                     Remove-Item -Recurse -Force -Path $guestDevSetupAgentPath
