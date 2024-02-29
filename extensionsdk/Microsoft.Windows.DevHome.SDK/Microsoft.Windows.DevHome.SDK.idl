@@ -330,7 +330,8 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // IExtensionAdaptiveCardSession2 interface that extends IExtensionAdaptiveCardSession. It is used
     // to provide Dev Home with a way to know when an adaptive card session has stopped.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IExtensionAdaptiveCardSession2
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    interface IExtensionAdaptiveCardSession2 
         requires IExtensionAdaptiveCardSession
     {
         // Event used to signal to Dev Home from the extension that the Adaptive Card session has stopped.
@@ -344,7 +345,7 @@ namespace Microsoft.Windows.DevHome.SDK
         ExtensionAdaptiveCardSessionStoppedEventArgs(ProviderOperationResult result, String resultJson);
 
         // The json result   the extension sends back to Dev Home based on an interaction with the user. This
-        // for example allows extension specific user input for an extension’s method, to be
+        // for example allows extension specific user input for an extension's method, to be
         // passed back to Dev Home, so Dev Home can use it, as a parameter when calling the method.
         String ResultJson
         {
@@ -362,7 +363,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // Start of Dev Environments feature.
 
-    // Result payload for ICreateComputeSystemOperation’s StartAsync method that is returned to Dev Home when it attempts to create an IComputeSystem.
+    // Result payload for ICreateComputeSystemOperation's StartAsync method that is returned to Dev Home when it attempts to create an IComputeSystem.
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
     runtimeclass CreateComputeSystemResult
     {
@@ -456,7 +457,7 @@ namespace Microsoft.Windows.DevHome.SDK
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
     interface IComputeSystemProvider 
     {
-        // Name of Compute System provider that can be displayed within Dev Home’s UI
+        // Name of Compute System provider that can be displayed within Dev Home's UI
         String DisplayName
         {
             get;
@@ -494,7 +495,7 @@ namespace Microsoft.Windows.DevHome.SDK
         ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForComputeSystem(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind);
 
         // Creates a new compute system from user provided json, specific to the compute system technology.
-        // For creation the adaptive card session should be used like a “Form”. Upon invoking the submission,
+        // For creation the adaptive card session should be used like a "Form". Upon invoking the submission,
         // the user input can be validated by the extension. Who can then pass the form inputs back to DevHome
         // by raising the IExtensionAdaptiveCardSession2::Stopped event.
         ICreateComputeSystemOperation CreateCreateComputeSystemOperation(IDeveloperId developerId, String InputJson);
@@ -549,10 +550,10 @@ namespace Microsoft.Windows.DevHome.SDK
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
     runtimeclass ComputeSystemsResult
     {
-        // Used when retrieving the list of IComputeSystem’s was successful.
+        // Used when retrieving the list of IComputeSystem's was successful.
         ComputeSystemsResult(IIterable<IComputeSystem> computeSystems);
 
-        // Used when retrieving the list of IComputeSystem’s was unsuccessful.
+        // Used when retrieving the list of IComputeSystem's was unsuccessful.
         // The extension can provide Dev Home with an error message to be displayed in the UI, by providing
         // a non-empty value for the displayMessage. diagnosticText can be used to send non-localized error
         // information back to Dev Home
@@ -654,7 +655,7 @@ namespace Microsoft.Windows.DevHome.SDK
     // An enum value that extensions will use in the ComputeSystemProperty to tell Dev Home if the property is
     // one of the predefined properties or a custom property. Dev Home will use this value as a way to keep
     // predefined types formatted the same in the UI across compute system providers. The custom enum value
-    // can be used for properties specific to a compute system’s underlying technology. For example, a virtual
+    // can be used for properties specific to a compute system's underlying technology. For example, a virtual
     // machine compute system may have a property for a network adapter with an IP address, while other compute
     // systems like a container may not.
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
@@ -720,7 +721,7 @@ namespace Microsoft.Windows.DevHome.SDK
     {
         CreateComputeSystemProgressEventArgs(String operationStatus, UInt32 percentageCompleted);
 
-        // Allows extensions to provide intermediary status for the operation e.g “Downloading image file”.
+        // Allows extensions to provide intermediary status for the operation e.g "Downloading image file".
         String Status
         {
             get;
@@ -763,7 +764,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
         // Whereas the Name property is intended to provide Dev Home with a friendly name for the compute
         // system. The SupplementalDisplayName is intended to allow extensions to provide a name that may be
-        // specific to the compute system’s backing technology.
+        // specific to the compute system's backing technology.
         String SupplementalDisplayName
         {
             get;
@@ -775,7 +776,7 @@ namespace Microsoft.Windows.DevHome.SDK
             get;
         };
 
-        // The Id of the compute system. These Id’s should be unique per compute system from a provider.
+        // The Id of the compute system. These Id's should be unique per compute system from a provider.
         String Id
         {
             get;
@@ -798,8 +799,8 @@ namespace Microsoft.Windows.DevHome.SDK
         // With that said, it is important to note that there can be a disconnect between the underlying
         // platform for the compute system and the extension. The underlying platform may not know that the
         // extension exists and may have other means other than through the extension, for users to perform
-        // operations that may change a compute system’s state. However, Due to performance considerations we
-        // don’t recommend polling the platform in order to keep the platform and extension in sync.
+        // operations that may change a compute system's state. However, Due to performance considerations we
+        // don't recommend polling the platform in order to keep the platform and extension in sync.
         event Windows.Foundation.TypedEventHandler<IComputeSystem, ComputeSystemState> StateChanged;
 
         // Gets the current state of the compute system.
@@ -807,58 +808,58 @@ namespace Microsoft.Windows.DevHome.SDK
 
         // Starts a stopped compute system.
         // It is recommended to return success for redundant operations and return failure if the operation
-        // doesn’t apply due to the current state of the compute system.
+        // doesn't apply due to the current state of the compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> StartAsync(String options);
 
         // Gracefully shuts down a running compute system.
         // Note: It is recommended to return success for redundant operations and return failure if the
-        // operation doesn’t apply due to the current state of the compute system.
+        // operation doesn't apply due to the current state of the compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> ShutDownAsync(String options);
 
         // Restarts a running compute system.
         // Note: It is recommended to return success for redundant operations and return failure if the
-        // operation doesn’t apply due to the current state of the compute system.
+        // operation doesn't apply due to the current state of the compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> RestartAsync(String options);
 
         // Terminates a running Compute System. This is equivalent to removing the power cable of a running
         // computer.
         // Note: It is recommended to return success for redundant operations and return failure if the
-        // operation doesn’t apply due to the current state of the compute system.
+        // operation doesn't apply due to the current state of the compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> TerminateAsync(String options);
 
         // Deletes the compute system.
         // Note: It is recommended to return success for redundant operations and return failure if the
-        // operation doesn’t apply due to the current state of the compute system.
+        // operation doesn't apply due to the current state of the compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> DeleteAsync(String options);
 
         // Saves the state of a running Compute System.
         // Note: It is recommended to return success for redundant operations and return failure if the
-        // operation doesn’t apply due to the current state of the compute system.
+        // operation doesn't apply due to the current state of the compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> SaveAsync(String options);
 
         // Pauses a running Compute System.
         // Note: It is recommended to return success for redundant operations and return failure if the
-        // operation doesn’t apply due to the current state of the compute system.
+        // operation doesn't apply due to the current state of the compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> PauseAsync(String options);
 
         // Resumes a paused Compute System.
         // Note: It is recommended to return success for redundant operations and return failure if the
-        // operation doesn’t apply due to the current state of the compute system.
+        // operation doesn't apply due to the current state of the compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> ResumeAsync(String options);
 
         // Creates a snapshot of the compute system.
         // Note: It is recommended to return success for redundant operations and return failure if the
-        // operation doesn’t apply due to the current state of the compute system.
+        // operation doesn't apply due to the current state of the compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> CreateSnapshotAsync(String options);
 
         // Applies a previously saved snapshot of the compute system.
         // Note: It is recommended to return success for redundant operations and return failure if the
-        // operation doesn’t apply due to the current state of the compute system.
+        // operation doesn't apply due to the current state of the compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> RevertSnapshotAsync(String options);
 
         // Deletes a previously saved snapshot of the compute system.
         // Note: It is recommended to return success for redundant operations and return failure if the
-        // operation doesn’t apply due to the current state of the compute system.
+        // operation doesn't apply due to the current state of the compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> DeleteSnapshotAsync(String options);
 
         // Modifies a compute systems properties.
@@ -875,7 +876,7 @@ namespace Microsoft.Windows.DevHome.SDK
         // Connects to a compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> ConnectAsync(String options);
 
-        // Creates an instance of IApplyConfigurationOperation interface that’s used to apply a
+        // Creates an instance of IApplyConfigurationOperation interface that's used to apply a
         // configuration to a compute system. This method expects the configuration to be passed in
         // via a string.
         IApplyConfigurationOperation CreateApplyConfigurationOperation(String configuration);
@@ -903,7 +904,7 @@ namespace Microsoft.Windows.DevHome.SDK
         ProvisioningDevice,
         // Waiting for an admin logon (e.g. to complete operation that requires admin user)
         WaitingForAdminUserLogon,
-        // Waiting for user’s logon (e.g. to run “WinGet configure”)
+        // Waiting for user's logon (e.g. to run "WinGet configure")
         WaitingForUserLogon
     };
 
