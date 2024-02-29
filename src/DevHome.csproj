@@ -3,6 +3,7 @@
 
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <Import Project="$(SolutionDir)Directory.CppBuild.props" />
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -59,7 +60,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
     <PackageReference Include="WinUIEx" Version="1.8.0" />
   </ItemGroup>
@@ -72,6 +72,7 @@
     <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
+    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.Server\DevHome.QuietBackgroundProcesses.Server.vcxproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.UI\DevHome.QuietBackgroundProcesses.UI.csproj" />
     <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
     <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
@@ -100,8 +101,22 @@
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
   
+  <!-- Quiet Background Processes bins -->
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <CppPlatformTarget>$(Platform)</CppPlatformTarget>
+    <CppPlatformTarget Condition="'$(Platform)' == 'x86'">Win32</CppPlatformTarget>
+  </PropertyGroup>
   <ItemGroup>
-    <Content Include="$(DevHomeInternal_Win32RuntimePath)Microsoft.Internal.Windows.DevHome.Helpers.QuietBackgroundProcesses.dll">
+    <Content Include="$(DevHomeInternal_Win32RuntimePath)..\$(CppPlatformTarget)\Microsoft.Internal.Windows.DevHome.Helpers.QuietBackgroundProcesses.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Server\DevHome.QuietBackgroundProcesses.Server.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Common\DevHome.QuietBackgroundProcesses.winmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -110,25 +125,5 @@
     <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
     <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
   </PropertyGroup>
-  
-  <!-- Publish QuietBackgroundProcesses dlls/exes/winmds to the Appx package folder -->
-  <Target Name="ExtraAppxFilesInPackage" AfterTargets="_ComputeAppxPackagePayload">
-    <ItemGroup>
-      <AdditionalPackageFile Include="$(TargetDir)\DevHome.QuietBackgroundProcesses.Server.exe">
-        <PackagePath>.\</PackagePath>
-      </AdditionalPackageFile>
-      <AdditionalPackageFile Include="$(TargetDir)\DevHome.QuietBackgroundProcesses.ElevatedServer.exe">
-        <PackagePath>.\</PackagePath>
-      </AdditionalPackageFile>
-      <AdditionalPackageFile Include="$(TargetDir)\DevHome.QuietBackgroundProcesses.winmd">
-        <PackagePath>.\</PackagePath>
-      </AdditionalPackageFile>
-    </ItemGroup>
-    <ItemGroup>
-      <AppxPackagePayload Include="%(AdditionalPackageFile.Identity)" KeepDuplicates="false">
-        <TargetPath>%(AdditionalPackageFile.PackagePath)\%(AdditionalPackageFile.RecursiveDir)%(AdditionalPackageFile.Filename)%(AdditionalPackageFile.Extension)</TargetPath>
-      </AppxPackagePayload>
-    </ItemGroup>
-  </Target>
 
 </Project>

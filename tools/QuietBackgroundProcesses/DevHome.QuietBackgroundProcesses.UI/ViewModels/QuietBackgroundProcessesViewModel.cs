@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
@@ -20,13 +21,16 @@ using Windows.Win32;
 
 namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
 
-public class QuietBackgroundProcessesViewModel : INotifyPropertyChanged
+public partial class QuietBackgroundProcessesViewModel : ObservableObject
 {
     private readonly bool _isFeatureSupported;
     private readonly TimeSpan _zero;
 #nullable enable
     private DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession? _session;
 #nullable disable
+
+    [ObservableProperty]
+    private string _sessionStateText;
 
     private DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession GetSession()
     {
@@ -118,8 +122,6 @@ public class QuietBackgroundProcessesViewModel : INotifyPropertyChanged
                     Log.Logger()?.ReportError("QuietBackgroundProcessesSession::Stop failed", ex);
                 }
             }
-
-            OnPropertyChanged(nameof(IsToggleOn));
         }
     }
 
@@ -205,31 +207,6 @@ public class QuietBackgroundProcessesViewModel : INotifyPropertyChanged
         else
         {
             SessionStateText = _secondsLeft.ToString(); // CultureInfo.InvariantCulture
-        }
-    }
-
-    private string _timeLeft = string.Empty;
-
-    public string SessionStateText
-    {
-        get => _timeLeft;
-
-        set
-        {
-            _timeLeft = value;
-            OnPropertyChanged(nameof(SessionStateText));
-        }
-    }
-
-    // INotifyPropertyChanged members
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        var handler = PropertyChanged;
-        if (handler != null)
-        {
-            handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

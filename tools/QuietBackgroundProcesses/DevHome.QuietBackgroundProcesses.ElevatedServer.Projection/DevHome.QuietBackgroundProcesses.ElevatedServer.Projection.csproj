@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <Import Project="$(SolutionDir)Directory.CppBuild.props" />
   
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <MdmergeMergedDir>..\DevHome.QuietBackgroundProcesses.Common\AnyCPU\$(Configuration)\Merged\</MdmergeMergedDir>
+    <OutDir>$(CppOutDir)</OutDir>
   </PropertyGroup>
   
 
@@ -32,11 +34,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
+    <ProjectReference Include="..\DevHome.QuietBackgroundProcesses.Common\DevHome.QuietBackgroundProcesses.Common.vcxproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="nuget\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.nuspec" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

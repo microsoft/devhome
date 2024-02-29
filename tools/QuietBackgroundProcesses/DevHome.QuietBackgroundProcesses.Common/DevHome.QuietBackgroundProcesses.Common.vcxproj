@@ -4,6 +4,7 @@
     <Language>C++</Language>
   </PropertyGroup>
   <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <Import Project="$(SolutionDir)Directory.CppBuild.props" />
   <PropertyGroup Label="Globals">
     <CppWinRTOptimized>true</CppWinRTOptimized>
     <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
@@ -20,9 +21,8 @@
     <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.22000.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
     <WindowsAppContainer>false</WindowsAppContainer>
-    <!-- Generate OutDir -->
-    <OutDir>$(SolutionDir)src\bin\$(Platform)\$(Configuration)\$(TargetFramework)\</OutDir>
     <MdmergeMergedDir>AnyCPU\$(Configuration)\Merged\</MdmergeMergedDir>
+    <OutDir>$(CppOutDir)</OutDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
@@ -142,8 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Midl Include="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession.idl" />
-    <Midl Include="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager.idl" />
+    <Midl Include="DevHome.QuietBackgroundProcesses.idl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h" />
@@ -155,11 +154,10 @@
     <ClCompile Include="empty.cpp" />
   </ItemGroup>
   <!-- Run mdmerge.exe on our generated winmd files -->
-  <Target Name="Mdmerge" BeforeTargets="Build" Outputs="AnyCPU\$(Configuration)\Merged\DevHome.QuietBackgroundProcesses.winmd">
+  <Target Name="Mdmerge" AfterTargets="Build" Outputs="$(MergedWinmdFilePath)">
     <ItemGroup>
       <_MdmergeInputs Include="@(Midl)" Condition="'%(Midl.ExcludedFromBuild)' != 'true'">
         <WinMDPath>%(Midl.MetadataFileName)</WinMDPath>
-        <MdMergeOutputFile>$(CppWinRTProjectWinMD)</MdMergeOutputFile>
       </_MdmergeInputs>
       <MdmergeInputs Include="@(_MdmergeInputs-&gt;'%(WinMDPath)'-&gt;Distinct())" />
     </ItemGroup>
@@ -173,6 +171,7 @@
       <MdmergeParameters>$(MdmergeParameters) -o "$(MdmergeMergedDir.TrimEnd('\'))" -partial $(MdmergeMergeDepth)</MdmergeParameters>
     </PropertyGroup>
     <PropertyGroup>
+      <MergedWinmdFilePath>$(MdmergeMergedDir)DevHome.QuietBackgroundProcesses.winmd</MergedWinmdFilePath>
       <MdmergeResponseFile Condition="'$(MdmergeResponseFile)'==''">$(IntDir)$(MSBuildProjectFile).mdmerge.rsp</MdmergeResponseFile>
       <MdmergeCommand>$(MdMergePath)mdmerge %40"$(MdmergeResponseFile)"</MdmergeCommand>
     </PropertyGroup>
@@ -181,11 +180,15 @@
     <Exec Command="$(MdmergeCommand)" />
   </Target>
   <!-- Copy the merged .winmd to the out folder -->
-  <Target Name="CopyWinmdMerged" AfterTargets="Mdmerge" Inputs="AnyCPU\$(Configuration)\Merged\DevHome.QuietBackgroundProcesses.winmd" Outputs="$(OutDir)DevHome.QuietBackgroundProcesses.winmd">
+  <Target Name="CopyWinmdMerged" AfterTargets="Mdmerge" Inputs="$(MergedWinmdFilePath)" Outputs="$(OutDir)DevHome.QuietBackgroundProcesses.winmd">
     <PropertyGroup>
       <MergedWinmdCopyCommand>copy /Y "$(MdmergeMergedDir)DevHome.QuietBackgroundProcesses.winmd" "$(OutDir)."</MergedWinmdCopyCommand>
     </PropertyGroup>
-    <Exec Command="$(MergedWinmdCopyCommand)" />
+    <Message Text="Copying merged winmd file to out folder: $(MergedWinmdFilePath) -&gt; $(OutDir)" Importance="Normal" />
+    <Copy SkipUnchangedFiles="false" SourceFiles="$(MergedWinmdFilePath)" DestinationFiles="$(OutDir)DevHome.QuietBackgroundProcesses.winmd" />
+    <ItemGroup>
+      <FileWrites Include="$(OutDir)DevHome.QuietBackgroundProcesses.winmd" />
+    </ItemGroup>
   </Target>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

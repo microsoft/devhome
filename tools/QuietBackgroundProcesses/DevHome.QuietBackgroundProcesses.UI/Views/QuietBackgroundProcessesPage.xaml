@@ -7,39 +7,43 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pg="using:DevHome.Common"
-    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
             <StackPanel Orientation="Vertical">
-                <TextBlock Text="{Binding ViewModel.TimeLeft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="16" Foreground="LightBlue" Margin="{StaticResource MediumLeftRightMargin}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                <controls:SettingsExpander x:Uid="QuietBackgroundProcesses" IsExpanded="True" Margin="{ThemeResource SettingsCardMargin}">
+                <ctControls:SettingsExpander x:Uid="QuietBackgroundProcesses" IsExpanded="True" Margin="{ThemeResource SettingsCardMargin}">
 
                     <!-- Header icon -->
-                    <controls:SettingsExpander.HeaderIcon>
+                    <ctControls:SettingsExpander.HeaderIcon>
                         <BitmapIcon ShowAsMonochrome="False" UriSource="/Assets/DevHome.ico" />
-                    </controls:SettingsExpander.HeaderIcon>
+                    </ctControls:SettingsExpander.HeaderIcon>
 
                     <!-- Toggle switch -->
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{x:Bind ViewModel.SessionStateText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="16" Foreground="LightBlue"  Margin="{StaticResource MediumLeftRightMargin}" Grid.Column="1" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            Text="{x:Bind ViewModel.SessionStateText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Foreground="{StaticResource AccentTextFillColorTertiaryBrush}"
+                            Margin="{StaticResource MediumLeftRightMargin}"
+                            VerticalAlignment="Center"
+                            TextTrimming="CharacterEllipsis" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <ToggleSwitch IsOn="{x:Bind ViewModel.IsToggleOn, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.IsToggleEnabled, Mode=OneWay}" />
                         </StackPanel>
                     </StackPanel>
 
                     <!-- Expander -->
-                    <controls:SettingsExpander.Items>
-                        <controls:SettingsCard x:Uid="QuietBackgroundProcessesExplanation" HorizontalContentAlignment="Left" >
-                        </controls:SettingsCard>
-                    </controls:SettingsExpander.Items>
+                    <ctControls:SettingsExpander.Items>
+                        <ctControls:SettingsCard x:Uid="QuietBackgroundProcessesExplanation" HorizontalContentAlignment="Left" >
+                        </ctControls:SettingsCard>
+                    </ctControls:SettingsExpander.Items>
 
-                </controls:SettingsExpander>
+                </ctControls:SettingsExpander>
 
             </StackPanel>
         </ScrollViewer>

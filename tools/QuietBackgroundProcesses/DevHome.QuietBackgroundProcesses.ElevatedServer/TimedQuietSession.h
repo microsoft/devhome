@@ -16,7 +16,7 @@
 #include <wil/win32_helpers.h>
 #include <wil/winrt.h>
 
-#include "DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager.h"
+#include "DevHome.QuietBackgroundProcesses.h"
 
 #include "Timer.h"
 #include "QuietState.h"
@@ -69,7 +69,8 @@ struct UnelevatedServerReference
 //          - The session (TimedQuietSession) also keeps the manager (in unelevated server) alive until timer expiration;
 //              this is only because the manager caches a *strong* handle to the session (elevated server),
 //              and there is no way to invalidate the session (proxy handle) in the client if we tore down
-//              this session.  (Using IWeakReference seems to actually hold a *strong* handle when used cross-proc.)
+//              this session.  (Using IWeakReference does hold a weak reference to the object, but also holds a strong
+//              reference against the hosting process's lifetime.)
 // 
 //      Teardown Sequence:
 //          When all session timers (elevated) expire, the manager (unelevated) reference is released -> COM triggers
