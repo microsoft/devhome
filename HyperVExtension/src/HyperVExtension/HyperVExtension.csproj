@@ -45,7 +45,7 @@
 
     <!--
     Copy DevSetupAgent_<Patform>.zip to the output directory so it picked up by MSIX packaging.
-    If building from the Build script the zip file sould exist as it's created by as part of the script execution.
+    If building from the build script the zip file should exist as it's created as part of the script execution.
     VS currently doesn't have a task to create it and it may not exist if it wasn't previously created by the build script.
     We will not treat that as an error for now.
     If building Dev Home for x64 or x86 paltforms DevSetupAgent will be built only as x86 to reduce package size.
