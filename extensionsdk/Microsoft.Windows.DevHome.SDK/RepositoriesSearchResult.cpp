@@ -14,7 +14,8 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
     {
         _Repositories = std::make_shared<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository>>(repositories);
         _SearchPath = std::make_shared<hstring>(searchPath);
-        _SelectionOptions = std::make_shared<array_view<hstring>>(selectionOptions);
+        _SelectionOptions = std::make_shared<array_view<hstring const>>();
+        _SelectionOptions.reset(&selectionOptions);
         _SelectionOptionsName = std::make_shared<hstring>(selectionOptionsName);
         _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring(""), winrt::to_hstring(""));
     }
