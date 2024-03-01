@@ -113,18 +113,11 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
     private void OnThemeChanged(object sender, ElementTheme e)
     {
-        ElementTheme themeToSwitchTo = e;
+        var themeToSwitchTo = e;
 
         if (themeToSwitchTo == ElementTheme.Default)
         {
-            if (_themeSelectorService.IsDarkTheme())
-            {
-                themeToSwitchTo = ElementTheme.Dark;
-            }
-            else
-            {
-                themeToSwitchTo = ElementTheme.Light;
-            }
+            themeToSwitchTo = _themeSelectorService.GetActualTheme();
         }
 
         // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
