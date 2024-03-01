@@ -1,0 +1,21 @@
+{
+  "configurations": [
+    {
+      "defines": [
+        "WIN32",
+        "_DEBUG",
+        "UNICODE",
+        "_UNICODE"
+      ],
+      "includePath": [
+        "${env.INCLUDE}",
+        "${workspaceRoot}\\**"
+      ],
+      "inheritEnvironments": [
+        "msvc_x86"
+      ],
+      "intelliSenseMode": "windows-msvc-x86",
+      "name": "x86-Debug"
+    }
+  ]
+}
