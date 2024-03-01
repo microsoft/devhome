@@ -71,7 +71,7 @@ public sealed partial class EditClonePathDialog
         this.InitializeComponent();
         _setupFlowOrchestrator = Application.Current.GetService<SetupFlowOrchestrator>();
         EditClonePathViewModel = new EditClonePathViewModel();
-        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
+        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager, _setupFlowOrchestrator);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource, _setupFlowOrchestrator);
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {

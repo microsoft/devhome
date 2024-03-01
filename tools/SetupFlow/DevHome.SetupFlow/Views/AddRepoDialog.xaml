@@ -46,10 +46,7 @@
                     </Style>
                 </ResourceDictionary>
             </StackPanel.Resources>
-            <ctControls:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single" SelectionChanged="Segmented_SelectionChanged" Visibility="{x:Bind AddRepoViewModel.IsSettingUpLocalMachine, Mode=OneWay}">
-                <ctControls:SegmentedItem x:Name="AddViaAccountSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton" IsEnabled="{x:Bind AddRepoViewModel.IsAccountButtonEnabled, Mode=OneWay}" AutomationProperties.PositionInSet="1" AutomationProperties.SizeOfSet="2"/>
-                <ctControls:SegmentedItem x:Name="AddViaUrlSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" AutomationProperties.PositionInSet="2" AutomationProperties.SizeOfSet="2"/>
-            <ctControls:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single">
+            <ctControls:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single" Visibility="{x:Bind AddRepoViewModel.IsSettingUpLocalMachine, Mode=OneWay}">
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="SelectionChanged">
                         <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.ChangePageCommand}" CommandParameter="{x:Bind SwitchViewsSegmentedView.SelectedItem, Mode=OneWay}"/>

@@ -532,12 +532,7 @@ public partial class AddRepoViewModel : ObservableObject
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
         _activityId = activityId;
         FolderPickerViewModel = new FolderPickerViewModel(stringResource, setupFlowOrchestrator);
-
-        CurrentSetupFlowKind = _host.GetService<SetupFlowOrchestrator>().CurrentSetupFlowKind;
-        IsSettingUpLocalMachine = CurrentSetupFlowKind == SetupFlowKind.LocalMachine;
-        FolderPickerViewModel.CloneLocation = FolderPickerViewModel.GetDefaultCloneLocation(CurrentSetupFlowKind);
-
-        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
+        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager, setupFlowOrchestrator);
 
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {

@@ -40,7 +40,6 @@ public partial class AddRepoDialog : ContentDialog
         get; set;
     }
 
-
     public SetupFlowOrchestrator Orchestrator { get; set; }
 
     /// <summary>
@@ -63,7 +62,7 @@ public partial class AddRepoDialog : ContentDialog
         AddRepoViewModel = new AddRepoViewModel(setupFlowOrchestrator, stringResource, previouslySelectedRepos, host, activityId, this, devDriveManager);
 
         // Changing view to account so the selection changed event for Segment correctly shows URL.
-        AddRepoViewModel.CurrentPage = PageKind.AddViaAccount;
+        AddRepoViewModel.CurrentPage = PageKind.AddViaUrl;
         AddRepoViewModel.ShouldEnablePrimaryButton = false;
         AddViaUrlSegmentedItem.IsSelected = true;
         SwitchViewsSegmentedView.SelectedIndex = 1;

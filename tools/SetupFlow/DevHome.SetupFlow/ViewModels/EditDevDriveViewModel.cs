@@ -31,6 +31,8 @@ public enum DevDriveDisplayNameKind
 /// </summary>
 public partial class EditDevDriveViewModel : ObservableObject
 {
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+
     /// <summary>
     /// The manager to handle dev drives.
     /// </summary>
@@ -101,11 +103,12 @@ public partial class EditDevDriveViewModel : ObservableObject
     [ObservableProperty]
     private bool _devDriveValidationError;
 
-    public EditDevDriveViewModel(IDevDriveManager devDriveManager)
+    public EditDevDriveViewModel(IDevDriveManager devDriveManager, SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _devDriveManager = devDriveManager;
         ShowCustomizeOption = Visibility.Collapsed;
         IsDevDriveCheckboxEnabled = true;
+        _setupFlowOrchestrator = setupFlowOrchestrator;
     }
 
     public event EventHandler<string> DevDriveClonePathUpdated = (_, path) => { };
@@ -217,7 +220,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </remarks>
     public void SetUpStateIfDevDrivesIfExists()
     {
-        ShowDevDriveInformation = DevDriveUtil.IsDevDriveFeatureEnabled;
+        ShowDevDriveInformation = DevDriveUtil.IsDevDriveFeatureEnabled && _setupFlowOrchestrator.IsSettingUpLocalMachine;
         if (ShowDevDriveInformation)
         {
             var existingDevDrives = _devDriveManager.GetAllDevDrivesThatExistOnSystem();

@@ -32,7 +32,8 @@ public class AddRepoDialogTests : BaseSetupFlowTest
     {
         var orchestrator = TestHost.GetService<SetupFlowOrchestrator>();
         var stringResource = TestHost.GetService<ISetupFlowStringResource>();
-        var addRepoViewModel = new AddRepoViewModel(orchestrator, stringResource, new List<CloningInformation>(), TestHost, Guid.NewGuid(), null);
+        var devDriveManager = TestHost.GetService<IDevDriveManager>();
+        var addRepoViewModel = new AddRepoViewModel(orchestrator, stringResource, new List<CloningInformation>(), TestHost, Guid.NewGuid(), null, devDriveManager);
         addRepoViewModel.ChangeToUrlPage();
         Assert.AreEqual(true, addRepoViewModel.ShowUrlPage);
         Assert.AreEqual(false, addRepoViewModel.ShowAccountPage);
