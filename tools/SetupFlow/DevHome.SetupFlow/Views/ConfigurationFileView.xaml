@@ -12,6 +12,7 @@
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     xmlns:cf="using:DevHome.SetupFlow.Views"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     mc:Ignorable="d">
     <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
@@ -46,6 +47,8 @@
                     <TextBlock Text="{Binding Value}" />
                 </StackPanel>
             </DataTemplate>
+            <converters:StringVisibilityConverter x:Key="StringVisibilityConverter"/>
+            <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     
@@ -92,6 +95,7 @@
                                 <StackPanel>
                                     <TextBlock Text="{x:Bind Title}" />
                                     <TextBlock
+                                        Visibility="{x:Bind Title, Converter={StaticResource StringVisibilityConverter}}"
                                         Style="{ThemeResource CaptionTextBlockStyle}"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                         Text="{x:Bind SubTitle}" />
@@ -114,7 +118,7 @@
                                 <ListView>
                                     <ListView.ItemTemplate>
                                         <DataTemplate x:DataType="cf:RecordDefinition">
-                                            <StackPanel Orientation="Horizontal">
+                                            <StackPanel Visibility="{x:Bind Value, Converter={StaticResource StringVisibilityConverter}}" Orientation="Horizontal">
                                                 <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind Key}" />
                                                 <TextBlock>:</TextBlock>
                                                 <TextBlock Text="{x:Bind Value}" />
@@ -136,7 +140,7 @@
                                 </ListView>
                                 
                                 <!-- Dependencies -->
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" Visibility="{x:Bind Dependencies, Converter={StaticResource CollectionVisibilityConverter}}">
                                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Dependencies</TextBlock>
                                     <TextBlock>:</TextBlock>
                                     <ListView ItemsSource="{x:Bind Dependencies}">
@@ -166,13 +170,13 @@
                                 </StackPanel>
                                 
                                 <!-- Metadata -->
-                                <StackPanel>
+                                <StackPanel Visibility="{x:Bind Metadata, Converter={StaticResource CollectionVisibilityConverter}}">
                                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Metadata</TextBlock>
                                     <ListView ItemTemplate="{ThemeResource KeyValueDictionary}" ItemsSource="{x:Bind Metadata}"/>
                                 </StackPanel>
 
                                 <!-- Settings -->
-                                <StackPanel>
+                                <StackPanel Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
                                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Settings</TextBlock>
                                     <ListView ItemTemplate="{ThemeResource KeyValueDictionary}" ItemsSource="{x:Bind Settings}"/>
                                 </StackPanel>
