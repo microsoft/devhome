@@ -14,7 +14,7 @@
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" />
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
     <PackageReference Include="coverlet.collector" Version="3.2.0" />
   </ItemGroup>
 
@@ -24,6 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ReferenceCopyLocalPaths Include="$(SolutionDir)HyperVExtension\src\DevSetupEngineProjection\bin\$(Platform)\$(Configuration)\**\Microsoft.Windows.DevHome.DevSetupEngine.winmd" />
+    <ReferenceCopyLocalPaths Include="$(ProjectDir)..\DevSetupEngineProjection\bin\$(Platform)\$(Configuration)\**\Microsoft.Windows.DevHome.DevSetupEngine.winmd" />
   </ItemGroup>
 </Project>

@@ -26,7 +26,7 @@ Description:
 Options:
 
   -Platform <platform>
-      Only buil the selected platform(s)
+      Only build the selected platform(s)
       Example: -Platform x64
       Example: -Platform "x86,x64,arm64"
 
@@ -58,6 +58,19 @@ $ErrorActionPreference = "Stop"
 if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
   foreach ($configuration in $env:Build_Configuration.Split(",")) {
     extensionsdk\BuildSDKHelper.ps1 -Configuration $configuration -VersionOfSDK $env:sdk_version -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+  }
+}
+
+if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "DevSetupAgent")) {
+  foreach ($platform in $env:Build_Platform.Split(",")) {
+    foreach ($configuration in $env:Build_Configuration.Split(",")) {
+      if ($Platform -ieq "arm64") {
+        HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform $Platform -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+      }
+      else {
+        HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform "x86" -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+      }
+    }
   }
 }
 

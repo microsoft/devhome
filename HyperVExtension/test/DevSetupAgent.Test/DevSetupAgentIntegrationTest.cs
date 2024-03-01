@@ -83,6 +83,37 @@ public class DevSetupAgentIntegrationTest
         // TODO: Check that the response message is deleted
     }
 
+    /// <summary>
+    /// Test that a simple IsUserLoggedIn request can be sent to DevSetupAgent and that it responds
+    /// with IsUserLoggedIn property set to true.
+    /// Only works from elevated command prompt and LsaEnumerateLogonSessions requires Admin, System, or SeTcbPrivilege.
+    /// </summary>
+    [TestMethod]
+    public void TestIsUserLoggedInRequest()
+    {
+        var registryChannelSettings = TestHost.GetService<IRegistryChannelSettings>();
+        var inputkey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.FromHostRegistryKeyPath);
+        var messageId = "DevSetup{10000000-1000-1000-1000-100000000000}";
+        var messageName = messageId + "~1~1";
+        inputkey.SetValue(messageName, $"{{\"RequestId\": \"{messageId}\", \"RequestType\": \"IsUserLoggedIn\", \"Version\": 1, \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"}}");
+
+        Thread.Sleep(3000);
+
+        var outputKey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.ToHostRegistryKeyPath);
+        var responseMessage = (string?)outputKey.GetValue(messageName);
+        Assert.IsNotNull(responseMessage);
+        var json = JsonDocument.Parse(responseMessage).RootElement;
+        Assert.AreEqual(messageId, json.GetProperty("RequestId").GetString());
+
+        // Check that the timestamp is within 5 second of the current
+        var time = json.GetProperty("Timestamp").GetDateTime();
+        var now = DateTime.UtcNow;
+        Assert.IsTrue(now - time < TimeSpan.FromSeconds(5));
+
+        var isUserLoggedIn = json.GetProperty("IsUserLoggedIn").GetBoolean();
+        Assert.AreEqual(true, isUserLoggedIn);
+    }
+
     [TestMethod]
     public void TestInvalidRequest()
     {

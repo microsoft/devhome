@@ -26,6 +26,7 @@ public class InstallPackageTask : ISetupTask
     private readonly WinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly Guid _activityId;
+    private readonly string _installVersion;
 
     private InstallResultStatus _installResultStatus;
     private uint _installerErrorCode;
@@ -56,12 +57,14 @@ public class InstallPackageTask : ISetupTask
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
         WinGetPackage package,
+        string installVersion,
         Guid activityId)
     {
         _wpm = wpm;
         _stringResource = stringResource;
         _package = package;
         _activityId = activityId;
+        _installVersion = installVersion;
     }
 
     public TaskMessages GetLoadingMessages()
@@ -103,6 +106,7 @@ public class InstallPackageTask : ISetupTask
         {
             PackageId = _package.Id,
             CatalogName = _package.CatalogName,
+            Version = _installVersion,
         };
     }
 
@@ -115,7 +119,8 @@ public class InstallPackageTask : ISetupTask
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id));
-                var installResult = await _wpm.InstallPackageAsync(_package);
+                var packageUri = _package.GetUri(_installVersion);
+                var installResult = await _wpm.InstallPackageAsync(packageUri);
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
 
@@ -152,7 +157,7 @@ public class InstallPackageTask : ISetupTask
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id));
-                var elevatedResult = await elevatedComponentOperation.InstallPackageAsync(_package.Id, _package.CatalogName);
+                var elevatedResult = await elevatedComponentOperation.InstallPackageAsync(_package.Id, _package.CatalogName, _installVersion);
                 WasInstallSuccessful = elevatedResult.TaskSucceeded;
                 RequiresReboot = elevatedResult.RebootRequired;
                 _installResultStatus = (InstallResultStatus)elevatedResult.Status;

@@ -6,6 +6,7 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
     struct OpenConfigurationSetResult : OpenConfigurationSetResultT<OpenConfigurationSetResult>
     {
         OpenConfigurationSetResult(winrt::hresult const& result, hstring const& field, hstring const& fieldValue, uint32_t line, uint32_t column);
+        
         winrt::hresult ResultCode();
         hstring Field();
         hstring Value();

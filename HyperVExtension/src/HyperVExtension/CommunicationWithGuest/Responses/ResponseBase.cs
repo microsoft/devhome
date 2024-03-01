@@ -100,4 +100,16 @@ internal class ResponseBase : IGuestResponse
             throw new ArgumentException($"{valueName} cannot be empty.", ex);
         }
     }
+
+    protected bool GetRequiredBoolValue(string valueName)
+    {
+        try
+        {
+            return (bool?)JsonData[valueName] ?? throw new ArgumentException($"{valueName} cannot be empty.");
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException($"{valueName} cannot be empty.", ex);
+        }
+    }
 }

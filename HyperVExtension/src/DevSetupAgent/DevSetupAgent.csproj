@@ -23,7 +23,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ReferenceCopyLocalPaths Include="$(SolutionDir)HyperVExtension\src\DevSetupEngineIdl\bin\$(Platform)\$(Configuration)\\Microsoft.Windows.DevHome.DevSetupEngine.winmd" />
+    <ReferenceCopyLocalPaths Include="$(ProjectDir)..\DevSetupEngineIdl\bin\$(Platform)\$(Configuration)\\Microsoft.Windows.DevHome.DevSetupEngine.winmd" />
   </ItemGroup>
 </Project>

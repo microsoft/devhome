@@ -9,8 +9,8 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
         winrt::hresult const& result,
         hstring const& description,
         hstring const& details,
-        ConfigurationUnitResultSource const& resultSource)
-        : m_resultCode(result), m_description(description), m_details(details), m_resultSource(resultSource)
+        ConfigurationUnitResultSource const& resultSource) :
+        m_resultCode(result), m_description(description), m_details(details), m_resultSource(resultSource)
     {
     }
 

@@ -58,4 +58,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="VmCredentialRequest.CancelText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="VmCredentialRequest.Description1" xml:space="preserve">
+    <value>Dev Home needs VM administrator credentials to install DevSetupAgent service.</value>
+  </data>
+  <data name="VmCredentialRequest.Description2" xml:space="preserve">
+    <value>Please enter credential for the VM administrator account</value>
+  </data>
+  <data name="VmCredentialRequest.OkText" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="VmCredentialRequest.PasswordErrorMsg" xml:space="preserve">
+    <value>Password is required</value>
+  </data>
+  <data name="VmCredentialRequest.PasswordLabel" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="VmCredentialRequest.Title" xml:space="preserve">
+    <value>Dev Home Hyper-V Extension credential request</value>
+  </data>
+  <data name="VmCredentialRequest.UsernameErrorMsg" xml:space="preserve">
+    <value>Username is required</value>
+  </data>
+  <data name="VmCredentialRequest.UsernameLabel" xml:space="preserve">
+    <value>Admin username</value>
+  </data>
+  <data name="WaitForLoginRequest.Description" xml:space="preserve">
+    <value>Please login to &lt;Name&gt; Hyper-V VM to continue configuration. Click Ok after logging on.</value>
+  </data>
+  <data name="WaitForLoginRequest.Title" xml:space="preserve">
+    <value>Dev Home Hyper-V Extension login request.</value>
+  </data>
 </root>

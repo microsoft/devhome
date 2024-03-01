@@ -142,18 +142,18 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
     /// </summary>
     /// <param name="uriStrings">List of package URI strings</param>
     /// <returns>List of package URIs</returns>
-    private List<Uri> ParseURIs(IReadOnlyList<string> uriStrings)
+    private List<WinGetPackageUri> ParseURIs(IReadOnlyList<string> uriStrings)
     {
-        var result = new List<Uri>();
-        foreach (var app in uriStrings)
+        var result = new List<WinGetPackageUri>();
+        foreach (var uriString in uriStrings)
         {
-            if (Uri.TryCreate(app, UriKind.Absolute, out var uri))
+            if (WinGetPackageUri.TryCreate(uriString, out var packageUri))
             {
-                result.Add(uri);
+                result.Add(packageUri);
             }
             else
             {
-                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Invalid package uri: {app}");
+                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Invalid package uri: {uriString}");
             }
         }
 
