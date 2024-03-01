@@ -19,14 +19,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.TaskGroups;
 
-public class SetupTargetTaskGroup : ISetupTaskGroup, IDisposable
+public class SetupTargetTaskGroup : ISetupTaskGroup
 {
     private readonly SetupTargetViewModel _setupTargetViewModel;
     private readonly SetupTargetReviewViewModel _setupTargetReviewViewModel;
 
     private readonly ConfigureTargetTask _setupTargetTaskGroup;
-
-    private bool _disposedValue;
 
     public SetupTargetTaskGroup(
         SetupTargetViewModel setupTargetViewModel,
@@ -59,24 +57,4 @@ public class SetupTargetTaskGroup : ISetupTaskGroup, IDisposable
     public SetupPageViewModelBase GetSetupPageViewModel() => _setupTargetViewModel;
 
     public ReviewTabViewModelBase GetReviewTabViewModel() => _setupTargetReviewViewModel;
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            if (disposing)
-            {
-                _setupTargetTaskGroup.Dispose();
-            }
-
-            _disposedValue = true;
-        }
-    }
-
-    public void Dispose()
-    {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
 }

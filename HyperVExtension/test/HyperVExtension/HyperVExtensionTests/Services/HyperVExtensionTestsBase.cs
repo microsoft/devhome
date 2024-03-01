@@ -121,6 +121,8 @@ public class HyperVExtensionTestsBase
 
                 services.AddTransient<IWindowsServiceController>(controller =>
                     ActivatorUtilities.CreateInstance<WindowsServiceControllerMock>(controller, VirtualMachineManagementServiceStatus));
+
+                services.AddSingleton<HyperVVirtualMachineFactory>(sp => psObject => ActivatorUtilities.CreateInstance<HyperVVirtualMachine>(sp, psObject));
             }).Build();
     }
 }

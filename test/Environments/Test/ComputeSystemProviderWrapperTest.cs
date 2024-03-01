@@ -14,9 +14,9 @@ public class ComputeSystemProviderWrapperTest
     [TestMethod]
     public void ComputeSystemProviderWrapper_Returns_ComputeSystems()
     {
-        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId);
+        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, false);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
-        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId(), string.Empty).Result;
+        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId()).Result;
         var computeSystems = computeSystemsResult.ComputeSystems.ToList();
         var numberOfComputeSystems = 1;
 
@@ -28,9 +28,9 @@ public class ComputeSystemProviderWrapperTest
     [TestMethod]
     public void ComputeSystemProviderWrapper_Does_Not_Allow_Exceptions_To_Escape_When_Retrieving_ComputeSystems()
     {
-        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId);
+        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, true);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
-        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId(), "Throw").Result;
+        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId()).Result;
 
         // Verify that the result is a failure and that the exception was caught within the wrapper.
         Assert.AreEqual(ProviderOperationStatus.Failure, computeSystemsResult.Result.Status);
@@ -39,7 +39,7 @@ public class ComputeSystemProviderWrapperTest
     [TestMethod]
     public void ComputeSystemProviderWrapper_Returns_DisplayName()
     {
-        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId);
+        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, false);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
 
         Assert.AreEqual(TestHelpers.ComputeSystemProviderDisplayName, computeSystemProviderWrapper.DisplayName);
@@ -48,7 +48,7 @@ public class ComputeSystemProviderWrapperTest
     [TestMethod]
     public void ComputeSystemProviderWrapper_Returns_Id()
     {
-        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId);
+        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, false);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
 
         Assert.AreEqual(TestHelpers.ComputeSystemProviderId, computeSystemProviderWrapper.Id);
@@ -57,7 +57,7 @@ public class ComputeSystemProviderWrapperTest
     [TestMethod]
     public void ComputeSystemProviderWrapperReturnsSupportedOperations()
     {
-        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId);
+        var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, false);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
 
         Assert.AreEqual(ComputeSystemProviderOperations.CreateComputeSystem, computeSystemProviderWrapper.SupportedOperations);

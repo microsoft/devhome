@@ -44,7 +44,7 @@
                         Grid.Column="1"
                         FontSize="14"
                         Margin="0 0 0 0"
-                        Text="{x:Bind ViewModel.ComputeSystemSetupItem.ComputeSystemToSetup.Name, Mode=OneWay}"
+                        Text="{x:Bind ViewModel.ComputeSystemSetupItem.ComputeSystemToSetup.DisplayName, Mode=OneWay}"
                         Style="{StaticResource BodyTextBlockStyle}"
                         Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
 

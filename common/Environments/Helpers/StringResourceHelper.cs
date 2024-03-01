@@ -19,8 +19,8 @@ public static class StringResourceHelper
     private const string ComputeSystemStorage = "ComputeSystemStorage";
     private const string ComputeSystemUnknownWithColon = "ComputeSystemUnknownWithColon";
 
-    public static string GetResource(string key)
+    public static string GetResource(string key, params object[] args)
     {
-        return _stringResource.GetLocalized(key);
+        return _stringResource.GetLocalized(key, args);
     }
 }

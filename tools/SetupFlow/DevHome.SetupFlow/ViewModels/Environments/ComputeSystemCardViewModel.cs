@@ -66,11 +66,11 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     public async Task<ComputeSystemState> GetCardStateAsync()
     {
-        var result = await ComputeSystemWrapper.GetStateAsync(string.Empty);
+        var result = await ComputeSystemWrapper.GetStateAsync();
 
         if (result.Result.Status == ProviderOperationStatus.Failure)
         {
-            Log.Logger.ReportError(Log.Component.ComputeSystemCardViewModel, $"Failed to get state for compute system {ComputeSystemWrapper.Name} from provider {ComputeSystemWrapper.AssociatedProviderId}. Error: {result.Result.DiagnosticText}");
+            Log.Logger.ReportError(Log.Component.ComputeSystemCardViewModel, $"Failed to get state for compute system {ComputeSystemWrapper.DisplayName} from provider {ComputeSystemWrapper.AssociatedProviderId}. Error: {result.Result.DiagnosticText}");
         }
 
         UpdateStateColor(result.State);

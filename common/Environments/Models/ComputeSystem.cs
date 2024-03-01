@@ -7,7 +7,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Helpers;
+using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 
@@ -20,32 +22,35 @@ namespace DevHome.Common.Environments.Models;
 /// </summary>
 public class ComputeSystem
 {
+    private readonly string errorString;
+
     private readonly string _componentName = "ComputeSystem";
 
     private readonly IComputeSystem _computeSystem;
 
-    public string Id { get; private set; } = string.Empty;
+    public string? Id { get; private set; } = string.Empty;
 
-    public string Name { get; private set; } = string.Empty;
+    public string? DisplayName { get; private set; } = string.Empty;
 
     public ComputeSystemOperations SupportedOperations { get; private set; }
 
-    public string AlternativeDisplayName { get; private set; } = string.Empty;
+    public string? SupplementalDisplayName { get; private set; } = string.Empty;
 
     public IDeveloperId AssociatedDeveloperId { get; private set; }
 
-    public string AssociatedProviderId { get; private set; } = string.Empty;
+    public string? AssociatedProviderId { get; private set; } = string.Empty;
 
     public ComputeSystem(IComputeSystem computeSystem)
     {
         _computeSystem = computeSystem;
-        Id = computeSystem.Id;
-        Name = computeSystem.Name;
+        Id = new string(computeSystem.Id);
+        DisplayName = new string(computeSystem.DisplayName);
         SupportedOperations = computeSystem.SupportedOperations;
-        AlternativeDisplayName = computeSystem.AlternativeDisplayName;
+        SupplementalDisplayName = new string(computeSystem.SupplementalDisplayName);
         AssociatedDeveloperId = computeSystem.AssociatedDeveloperId;
-        AssociatedProviderId = computeSystem.AssociatedProviderId;
+        AssociatedProviderId = new string(computeSystem.AssociatedProviderId);
         _computeSystem.StateChanged += OnComputeSystemStateChanged;
+        errorString = StringResourceHelper.GetResource("ComputeSystemUnexpectedError", DisplayName);
     }
 
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> StateChanged = (sender, state) => { };
@@ -63,16 +68,16 @@ public class ComputeSystem
         }
     }
 
-    public async Task<ComputeSystemStateResult> GetStateAsync(string options)
+    public async Task<ComputeSystemStateResult> GetStateAsync()
     {
         try
         {
-            return await _computeSystem.GetStateAsync(options);
+            return await _computeSystem.GetStateAsync();
         }
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"GetStateAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemStateResult(ex, ex.Message);
+            return new ComputeSystemStateResult(ex, errorString, ex.Message);
         }
     }
 
@@ -85,7 +90,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"StartAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -98,7 +103,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"ShutDownAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -111,7 +116,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"RestartAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -124,7 +129,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"TerminateAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -137,7 +142,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"DeleteAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -150,7 +155,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"SaveAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -163,7 +168,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"PauseAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -176,7 +181,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"ResumeAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -189,7 +194,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"CreateSnapshotAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -202,7 +207,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"RevertSnapshotAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -215,7 +220,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"DeleteSnapshotAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -228,7 +233,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"ModifyPropertiesAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -241,7 +246,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"GetComputeSystemThumbnailAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemThumbnailResult(ex, ex.Message);
+            return new ComputeSystemThumbnailResult(ex, errorString, ex.Message);
         }
     }
 
@@ -267,7 +272,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"ConnectAsync for: {this} failed due to exception", ex);
-            return new ComputeSystemOperationResult(ex, ex.Message);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
 
@@ -275,7 +280,7 @@ public class ComputeSystem
     {
         try
         {
-            return _computeSystem.ApplyConfiguration(configuration);
+            return _computeSystem.CreateApplyConfigurationOperation(configuration);
         }
         catch (Exception ex)
         {
@@ -288,8 +293,8 @@ public class ComputeSystem
     {
         StringBuilder builder = new();
         builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem ID: {Id} ");
-        builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem name: {Name} ");
-        builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem alternativeDisplayName: {AlternativeDisplayName} ");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem name: {DisplayName} ");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem SupplementalDisplayName: {SupplementalDisplayName} ");
         builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem associated Provider Id : {AssociatedProviderId} ");
         builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem associated developerId LoginId: {AssociatedDeveloperId?.LoginId} ");
         builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem associated developerId Url: {AssociatedDeveloperId?.Url} ");

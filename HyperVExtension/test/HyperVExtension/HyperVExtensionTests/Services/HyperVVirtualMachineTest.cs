@@ -57,7 +57,8 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
-        var hyperVVirtualMachine = new HyperVVirtualMachine(TestHost!, hyperVManager, expectedPsObjectCollection.First());
+        var hyperVVirtualMachineFactory = TestHost!.GetService<HyperVVirtualMachineFactory>();
+        var hyperVVirtualMachine = hyperVVirtualMachineFactory(expectedPsObjectCollection.First());
 
         // Act
         var computeSystemOperationResult = await hyperVVirtualMachine.StartAsync(string.Empty);
@@ -80,7 +81,8 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
-        var hyperVVirtualMachine = new HyperVVirtualMachine(TestHost!, hyperVManager, expectedPsObjectCollection.First());
+        var hyperVVirtualMachineFactory = TestHost!.GetService<HyperVVirtualMachineFactory>();
+        var hyperVVirtualMachine = hyperVVirtualMachineFactory(expectedPsObjectCollection.First());
 
         // Act
         var computeSystemOperationResult = await hyperVVirtualMachine.ShutDownAsync(string.Empty);
@@ -103,7 +105,8 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
-        var hyperVVirtualMachine = new HyperVVirtualMachine(TestHost!, hyperVManager, expectedPsObjectCollection.First());
+        var hyperVVirtualMachineFactory = TestHost!.GetService<HyperVVirtualMachineFactory>();
+        var hyperVVirtualMachine = hyperVVirtualMachineFactory(expectedPsObjectCollection.First());
 
         // Act
         var computeSystemOperationResult = await hyperVVirtualMachine.TerminateAsync(string.Empty);
@@ -124,7 +127,8 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
-        var hyperVVirtualMachine = new HyperVVirtualMachine(TestHost!, hyperVManager, expectedPsObjectCollection.First());
+        var hyperVVirtualMachineFactory = TestHost!.GetService<HyperVVirtualMachineFactory>();
+        var hyperVVirtualMachine = hyperVVirtualMachineFactory(expectedPsObjectCollection.First());
 
         // Act
         var computeSystemOperationResult = await hyperVVirtualMachine.DeleteAsync(string.Empty);
@@ -147,7 +151,8 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
-        var hyperVVirtualMachine = new HyperVVirtualMachine(TestHost!, hyperVManager, expectedPsObjectCollection.First());
+        var hyperVVirtualMachineFactory = TestHost!.GetService<HyperVVirtualMachineFactory>();
+        var hyperVVirtualMachine = hyperVVirtualMachineFactory(expectedPsObjectCollection.First());
 
         // Act
         var computeSystemOperationResult = await hyperVVirtualMachine.SaveAsync(string.Empty);
@@ -170,7 +175,8 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
-        var hyperVVirtualMachine = new HyperVVirtualMachine(TestHost!, hyperVManager, expectedPsObjectCollection.First());
+        var hyperVVirtualMachineFactory = TestHost!.GetService<HyperVVirtualMachineFactory>();
+        var hyperVVirtualMachine = hyperVVirtualMachineFactory(expectedPsObjectCollection.First());
 
         // Act
         var computeSystemOperationResult = await hyperVVirtualMachine.PauseAsync(string.Empty);
@@ -193,7 +199,8 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
-        var hyperVVirtualMachine = new HyperVVirtualMachine(TestHost!, hyperVManager, expectedPsObjectCollection.First());
+        var hyperVVirtualMachineFactory = TestHost!.GetService<HyperVVirtualMachineFactory>();
+        var hyperVVirtualMachine = hyperVVirtualMachineFactory(expectedPsObjectCollection.First());
 
         // Act
         var computeSystemOperationResult = await hyperVVirtualMachine.ResumeAsync(string.Empty);
@@ -215,7 +222,8 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
-        var hyperVVirtualMachine = new HyperVVirtualMachine(TestHost!, hyperVManager, new PSObject(_psVirtualMachineObject));
+        var hyperVVirtualMachineFactory = TestHost!.GetService<HyperVVirtualMachineFactory>();
+        var hyperVVirtualMachine = hyperVVirtualMachineFactory(new PSObject(_psVirtualMachineObject));
 
         // Act
         var computeSystemOperationResult = await hyperVVirtualMachine.CreateSnapshotAsync(string.Empty);
@@ -238,7 +246,8 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
-        var hyperVVirtualMachine = new HyperVVirtualMachine(TestHost!, hyperVManager, new PSObject(_psVirtualMachineObject));
+        var hyperVVirtualMachineFactory = TestHost!.GetService<HyperVVirtualMachineFactory>();
+        var hyperVVirtualMachine = hyperVVirtualMachineFactory(new PSObject(_psVirtualMachineObject));
 
         // Act
         var computeSystemOperationResult = await hyperVVirtualMachine.RevertSnapshotAsync(string.Empty);
@@ -262,7 +271,8 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
             .Returns(() => { return psObjectCollectionReturnedAfterDeletion; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
-        var hyperVVirtualMachine = new HyperVVirtualMachine(TestHost!, hyperVManager, initialReturnedPsObjectCollection.First());
+        var hyperVVirtualMachineFactory = TestHost!.GetService<HyperVVirtualMachineFactory>();
+        var hyperVVirtualMachine = hyperVVirtualMachineFactory(initialReturnedPsObjectCollection.First());
 
         // Act
         var computeSystemOperationResult = await hyperVVirtualMachine.DeleteSnapshotAsync(string.Empty);

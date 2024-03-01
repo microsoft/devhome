@@ -18,22 +18,22 @@ public class TestSystems : IComputeSystem
 {
     public TestSystems(string name, string thumbnailURI, string altName)
     {
-        Name = name;
+        DisplayName = name;
         ThumbnailURI = thumbnailURI;
-        AlternativeDisplayName = altName;
+        SupplementalDisplayName = altName;
         ComputeSystemProperties = new List<ComputeSystemProperty>();
         ProcessProperties();
     }
 
     public string? Id { get; private set; }
 
-    public string Name { get; private set; }
+    public string DisplayName { get; private set; }
 
     public string ThumbnailURI { get; private set; }
 
     public IEnumerable<ComputeSystemProperty> ComputeSystemProperties { get; set; }
 
-    public string AlternativeDisplayName { get; set; }
+    public string SupplementalDisplayName { get; set; }
 
     public IDeveloperId AssociatedDeveloperId => throw new NotImplementedException();
 
@@ -43,7 +43,7 @@ public class TestSystems : IComputeSystem
 
     public ComputeSystemOperations SupportedOperations => ComputeSystemOperations.Start | ComputeSystemOperations.ShutDown | ComputeSystemOperations.Restart | ComputeSystemOperations.CreateSnapshot | ComputeSystemOperations.RevertSnapshot | ComputeSystemOperations.Delete | ComputeSystemOperations.Pause | ComputeSystemOperations.Resume;
 
-    public IAsyncOperation<ComputeSystemStateResult> GetStateAsync(string options)
+    public IAsyncOperation<ComputeSystemStateResult> GetStateAsync()
     {
         return Task.Run(async () =>
         {
@@ -57,9 +57,9 @@ public class TestSystems : IComputeSystem
     public void ProcessProperties()
     {
         var rand = new Random();
-        var p1 = new ComputeSystemProperty(rand.Next(1, 6), ComputeSystemPropertyKind.CpuCount);
-        var p3 = new ComputeSystemProperty(rand.Next(128, 512) * 1073741824L, ComputeSystemPropertyKind.StorageSizeInBytes);
-        var p4 = new ComputeSystemProperty(rand.Next(8, 64) * 1073741824L, ComputeSystemPropertyKind.AssignedMemorySizeInBytes);
+        var p1 = ComputeSystemProperty.Create(ComputeSystemPropertyKind.CpuCount, rand.Next(1, 6));
+        var p3 = ComputeSystemProperty.Create(ComputeSystemPropertyKind.StorageSizeInBytes, rand.Next(128, 512) * 1073741824L);
+        var p4 = ComputeSystemProperty.Create(ComputeSystemPropertyKind.AssignedMemorySizeInBytes, rand.Next(8, 64) * 1073741824L);
         var properties = new List<ComputeSystemProperty>() { p1, p4, p3 };
         ComputeSystemProperties = properties;
     }
@@ -140,9 +140,9 @@ public class TestSystems : IComputeSystem
 
     public IAsyncOperation<ComputeSystemOperationResult> DeleteSnapshotAsync(string options) => throw new NotImplementedException();
 
-    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string inputJson) => throw new NotImplementedException();
 
     public IAsyncOperation<ComputeSystemOperationResult> ConnectAsync(string options) => throw new NotImplementedException();
 
-    public IApplyConfigurationOperation ApplyConfiguration(string configuration) => throw new NotImplementedException();
+    public IApplyConfigurationOperation CreateApplyConfigurationOperation(string configuration) => throw new NotImplementedException();
 }

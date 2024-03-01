@@ -11,7 +11,7 @@ using Windows.Foundation;
 
 namespace HyperVExtension.Models;
 
-internal sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSession2, IDisposable
+public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSession2, IDisposable
 {
     private sealed class InputPayload
     {
@@ -27,7 +27,7 @@ internal sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSe
     private bool _isUserLoggedIn;
     private bool _disposed;
 
-    public event TypedEventHandler<IExtensionAdaptiveCardSession2, ExtensionAdaptiveCardSessionData>? SessionStatusChanged;
+    public event TypedEventHandler<IExtensionAdaptiveCardSession2, ExtensionAdaptiveCardSessionStoppedEventArgs>? Stopped;
 
     public WaitForLoginAdaptiveCardSession(ApplyConfigurationOperation operation)
     {
@@ -39,11 +39,10 @@ internal sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSe
         ((IDisposable)this).Dispose();
     }
 
-    public ProviderOperationResult Initialize(IExtensionAdaptiveCard extensionAdaptiveCard)
+    public ProviderOperationResult Initialize(IExtensionAdaptiveCard extensionUI)
     {
-        _extensionAdaptiveCard = extensionAdaptiveCard;
+        _extensionAdaptiveCard = extensionUI;
         var operationResult = _extensionAdaptiveCard.Update(GetTemplate(), null, "WaitForVmUserLogin");
-        SessionStatusChanged?.Invoke(this, new ExtensionAdaptiveCardSessionData(ExtensionAdaptiveCardSessionEventKind.SessionStarted, operationResult));
         return operationResult;
     }
 
@@ -87,7 +86,7 @@ internal sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSe
                 operationResult = new ProviderOperationResult(ProviderOperationStatus.Failure, ex, "Something went wrong", ex.Message);
             }
 
-            SessionStatusChanged?.Invoke(this, new ExtensionAdaptiveCardSessionData(ExtensionAdaptiveCardSessionEventKind.SessionEnded, operationResult));
+            Stopped?.Invoke(this, new(operationResult, string.Empty));
             return operationResult;
         }).AsAsyncOperation();
     }

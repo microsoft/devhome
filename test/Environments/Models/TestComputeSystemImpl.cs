@@ -12,7 +12,7 @@ namespace DevHome.Test.Environments.Models;
 /// </summary>
 public class TestComputeSystemImpl : IComputeSystem
 {
-    public string AlternativeDisplayName { get; set; }
+    public string SupplementalDisplayName { get; set; }
 
     public IDeveloperId AssociatedDeveloperId => new TestDeveloperId();
 
@@ -20,7 +20,7 @@ public class TestComputeSystemImpl : IComputeSystem
 
     public string Id { get; set; }
 
-    public string Name { get; set; }
+    public string DisplayName { get; set; }
 
     public ComputeSystemOperations SupportedOperations => ComputeSystemOperations.Start |
                 ComputeSystemOperations.ShutDown |
@@ -41,9 +41,9 @@ public class TestComputeSystemImpl : IComputeSystem
     public TestComputeSystemImpl(string providerId)
     {
         Id = TestHelpers.ComputeSystemId;
-        Name = TestHelpers.ComputeSystemName;
+        DisplayName = TestHelpers.ComputeSystemName;
         AssociatedProviderId = providerId;
-        AlternativeDisplayName = TestHelpers.ComputeSystemAlternativeDisplayName;
+        SupplementalDisplayName = TestHelpers.ComputeSystemAlternativeDisplayName;
     }
 
     public IAsyncOperation<ComputeSystemOperationResult> ConnectAsync(string options) => throw new NotImplementedException();
@@ -58,9 +58,9 @@ public class TestComputeSystemImpl : IComputeSystem
 
     public IAsyncOperation<ComputeSystemThumbnailResult> GetComputeSystemThumbnailAsync(string options) => throw new NotImplementedException();
 
-    public IAsyncOperation<ComputeSystemStateResult> GetStateAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemStateResult> GetStateAsync() => throw new NotImplementedException();
 
-    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string inputJson) => throw new NotImplementedException();
 
     public IAsyncOperation<ComputeSystemOperationResult> PauseAsync(string options) => throw new NotImplementedException();
 
@@ -78,5 +78,5 @@ public class TestComputeSystemImpl : IComputeSystem
 
     public IAsyncOperation<ComputeSystemOperationResult> TerminateAsync(string options) => throw new NotImplementedException();
 
-    public IApplyConfigurationOperation ApplyConfiguration(string configuration) => throw new NotImplementedException();
+    public IApplyConfigurationOperation CreateApplyConfigurationOperation(string configuration) => throw new NotImplementedException();
 }
