@@ -15,24 +15,6 @@
 
 #include "DevHome.QuietBackgroundProcesses.h"
 
-#define STATUS_ACCESS_DENIED ((NTSTATUS)0xC0000022L)
-#define STATUS_OBJECT_NAME_NOT_FOUND ((NTSTATUS)0xC0000034L)
-
-static bool isFeatureSupported() noexcept
-{
-    HRESULT hr = DisableQuietBackgroundProcesses();
-    if (hr == HRESULT_FROM_NT(STATUS_OBJECT_NAME_NOT_FOUND))
-    {
-        return false;
-    }
-    else if (hr == HRESULT_FROM_NT(STATUS_ACCESS_DENIED))
-    {
-        return true;
-    }
-    LOG_HR(hr);
-    return false;
-}
-
 namespace ABI::DevHome::QuietBackgroundProcesses
 {
     class QuietBackgroundProcessesSessionManager :
@@ -67,11 +49,12 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         CATCH_RETURN()
 
         // IQuietBackgroundProcessesSessionManagerStatics
-        STDMETHODIMP IsFeatureSupported(_Out_ boolean* isSupported) noexcept override
+        STDMETHODIMP IsFeaturePresent(_Out_ boolean* isPresent) noexcept override try
         {
-            *isSupported = isFeatureSupported();
+            THROW_IF_FAILED(IsQuietBackgroundProcessesFeaturePresent((bool*)isPresent));
             return S_OK;
         }
+        CATCH_RETURN();
 
         STDMETHODIMP GetSession(_Outptr_result_nullonfailure_ IQuietBackgroundProcessesSession** session) noexcept override
         try

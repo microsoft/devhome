@@ -11,7 +11,6 @@
 #include <wrl/implements.h>
 #include <wrl/module.h>
 
-#include <wil/com.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <wil/win32_helpers.h>
@@ -124,26 +123,13 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         // IQuietBackgroundProcessesSessionStatics
         STDMETHODIMP GetSingleton(_COM_Outptr_ IQuietBackgroundProcessesSession** session) noexcept override try
         {
-            if (m_weakSingleton)
-            {
-                if (auto strong = m_weakSingleton.query<IQuietBackgroundProcessesSession>())
-                {
-                    *session = strong.detach();
-                    return S_OK;
-                }
-            }
-
-            wil::com_ptr<IQuietBackgroundProcessesSession> sessionInstance;
-            THROW_IF_FAILED(Microsoft::WRL::MakeAndInitialize<QuietBackgroundProcessesSession>(&sessionInstance));
-            m_weakSingleton = wil::com_weak_query(sessionInstance);
-            *session = sessionInstance.detach();
+            // Instanced objects are the only feasible way to manage a COM singleton without keeping a strong
+            // handle to the server - which keeps it alive.  (IWeakReference keeps a strong handle to the server!)
+            // An 'instance' can be thought of as a 'handle' to 'the singleton' backend.
+            THROW_IF_FAILED(Microsoft::WRL::MakeAndInitialize<QuietBackgroundProcessesSession>(session));
             return S_OK;
         }
         CATCH_RETURN()
-
-    private:
-        // Use a weak ref to track the singleton so we don't keep this server alive forever
-        wil::com_weak_ref m_weakSingleton;
     };
 
     ActivatableClassWithFactory(QuietBackgroundProcessesSession, QuietBackgroundProcessesSessionStatics);

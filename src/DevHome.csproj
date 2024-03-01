@@ -54,7 +54,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240131-x1351" />
+    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240301-x1739" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
       <PrivateAssets>all</PrivateAssets>
@@ -102,12 +102,8 @@
   </PropertyGroup>
   
   <!-- Quiet Background Processes bins -->
-  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-    <CppPlatformTarget>$(Platform)</CppPlatformTarget>
-    <CppPlatformTarget Condition="'$(Platform)' == 'x86'">Win32</CppPlatformTarget>
-  </PropertyGroup>
   <ItemGroup>
-    <Content Include="$(DevHomeInternal_Win32RuntimePath)..\$(CppPlatformTarget)\Microsoft.Internal.Windows.DevHome.Helpers.QuietBackgroundProcesses.dll">
+    <Content Include="$(DevHomeInternal_Win32RuntimePath)Microsoft.Internal.Windows.DevHome.Helpers.QuietBackgroundProcesses.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Server\DevHome.QuietBackgroundProcesses.Server.exe">

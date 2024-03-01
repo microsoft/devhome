@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<pg:ToolPage
+<common:ToolPage
     x:Class="DevHome.QuietBackgroundProcesses.UI.Views.QuietBackgroundProcessesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:DevHome.QuietBackgroundProcesses.UI.Views"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pg="using:DevHome.Common"
-    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
-    mc:Ignorable="d">
+    xmlns:common="using:DevHome.Common"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls">
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
+        <ScrollViewer VerticalAlignment="Top">
             <StackPanel Orientation="Vertical">
                 <ctControls:SettingsExpander x:Uid="QuietBackgroundProcesses" IsExpanded="True" Margin="{ThemeResource SettingsCardMargin}">
 
@@ -48,4 +41,4 @@
             </StackPanel>
         </ScrollViewer>
     </Grid>
-</pg:ToolPage>
+</common:ToolPage>
