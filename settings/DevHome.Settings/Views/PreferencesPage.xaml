@@ -47,7 +47,7 @@
                 </ctControls:SettingsCard>
                 <ctControls:SettingsCard x:Uid="Settings_Experimentation" Margin="{ThemeResource SettingsCardMargin}">
                     <ctControls:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xF196;" />
+                        <FontIcon FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="&#xF196;" />
                     </ctControls:SettingsCard.HeaderIcon>
                     <ToggleSwitch IsOn="{x:Bind ViewModel.IsExperimentationEnabled, Mode=OneWay}">
                         <i:Interaction.Behaviors>
