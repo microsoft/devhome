@@ -14,6 +14,8 @@
     xmlns:cf="using:DevHome.SetupFlow.Views"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d">
     <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
@@ -41,6 +43,10 @@
 
     <UserControl.Resources>
         <ResourceDictionary>
+            <converters:StringVisibilityConverter x:Key="StringVisibilityConverter"/>
+            <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
+            <converters:CollectionVisibilityConverter x:Key="CollectionNegativeVisibilityConverter" EmptyValue="Visible"  NotEmptyValue="Collapsed"/>
+            <converters:BoolToVisibilityConverter x:Key="BoolToNegativeVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
             <DataTemplate x:Key="KeyValueDictionary">
                 <StackPanel Spacing="2" Orientation="Horizontal">
                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{Binding Key}" />
@@ -48,8 +54,6 @@
                     <TextBlock Text="{Binding Value}" />
                 </StackPanel>
             </DataTemplate>
-            <converters:StringVisibilityConverter x:Key="StringVisibilityConverter"/>
-            <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     
@@ -67,106 +71,89 @@
                 IsClosable="False"
                 Severity="Warning"/>
 
-            <ctControls:Segmented Grid.Row="1">
-                <ctControls:SegmentedItem IsSelected="True" Content="Summary view"/>
-                <ctControls:SegmentedItem Content="Code view"/>
+            <ctControls:Segmented Grid.Row="1" SelectedIndex="0">
+                <ctControls:SegmentedItem IsSelected="{x:Bind ViewModel.IsCodeMode, Mode=TwoWay}" Content="Code view"/>
+                <ctControls:SegmentedItem Content="Summary view" />
+
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="SelectionChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.ViewModeChangedCommand}" />
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
             </ctControls:Segmented>
 
-            <ListView SelectionMode="None" Grid.Row="2">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Spacing="10" />
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <labs:Shimmer Height="150" />
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-                <x:String></x:String>
-                <x:String></x:String>
-                <x:String></x:String>
-            </ListView>
-            
-            <!-- Summary view -->
-            <ListView
-                Visibility="Collapsed"
-                ItemsSource="{x:Bind ViewModel.ConfigurationUnits}"
-                x:Name="ConfigurationUnitSections"
-                Grid.Row="2"
-                SelectionMode="None">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Spacing="10" />
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="viewmodels:ConfigurationUnitViewModel">
-                        <Expander
-                            IsExpanded="True"
-                            Tag="{x:Bind Id}"
-                            HorizontalContentAlignment="Left"
-                            HorizontalAlignment="Stretch">
+            <!-- Summary mode -->
+            <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.IsCodeMode, Mode=OneWay, Converter={StaticResource BoolToNegativeVisibilityConverter}}">
+                <!-- Shimmers -->
+                <ListView SelectionMode="None" Visibility="{x:Bind ViewModel.ConfigurationUnits, Mode=OneWay, Converter={StaticResource CollectionNegativeVisibilityConverter}}">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="10" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <labs:Shimmer Height="150" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <x:String></x:String>
+                    <x:String></x:String>
+                    <x:String></x:String>
+                </ListView>
 
-                            <!-- Header -->
-                            <Expander.Header>
-                                <StackPanel>
-                                    <TextBlock Text="{x:Bind Title}" />
-                                    <TextBlock
-                                        Visibility="{x:Bind Title, Converter={StaticResource StringVisibilityConverter}}"
-                                        Style="{ThemeResource CaptionTextBlockStyle}"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Text="{x:Bind SubTitle}" />
-                                </StackPanel>
-                            </Expander.Header>
-                            
-                            <!-- Content -->
-                            <StackPanel Spacing="10">
-                                <StackPanel.Resources>
-                                    <Style TargetType="ListView">
-                                        <Setter Property="SelectionMode" Value="None" />
-                                    </Style>
-                                    <Style TargetType="ListViewItem">
-                                        <Setter Property="MinHeight" Value="0" />
-                                        <Setter Property="MinWidth" Value="0" />
-                                    </Style>
-                                </StackPanel.Resources>
+                <!-- Summary view -->
+                <ListView
+                    ItemsSource="{x:Bind ViewModel.ConfigurationUnits, Mode=OneWay}"
+                    x:Name="ConfigurationUnitSections"
+                    SelectionMode="None">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="10" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:ConfigurationUnitViewModel">
+                            <Expander
+                                IsExpanded="True"
+                                Tag="{x:Bind Id}"
+                                HorizontalContentAlignment="Left"
+                                HorizontalAlignment="Stretch">
 
-                                <!-- Individual records -->
-                                <ListView>
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate x:DataType="cf:RecordDefinition">
-                                            <StackPanel Visibility="{x:Bind Value, Converter={StaticResource StringVisibilityConverter}}" Orientation="Horizontal">
-                                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind Key}" />
-                                                <TextBlock>:</TextBlock>
-                                                <TextBlock Text="{x:Bind Value}" />
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                    <ListView.ItemContainerStyle>
+                                <!-- Header -->
+                                <Expander.Header>
+                                    <StackPanel>
+                                        <TextBlock Text="{x:Bind Title}" />
+                                        <TextBlock
+                                            Visibility="{x:Bind Title, Converter={StaticResource StringVisibilityConverter}}"
+                                            Style="{ThemeResource CaptionTextBlockStyle}"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="{x:Bind SubTitle}" />
+                                    </StackPanel>
+                                </Expander.Header>
+                                
+                                <!-- Content -->
+                                <StackPanel Spacing="10">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="ListView">
+                                            <Setter Property="SelectionMode" Value="None" />
+                                        </Style>
                                         <Style TargetType="ListViewItem">
                                             <Setter Property="MinHeight" Value="0" />
                                             <Setter Property="MinWidth" Value="0" />
-                                            <Setter Property="Padding" Value="0"/>
-                                            <Setter Property="Margin" Value="2,0"/>
                                         </Style>
-                                    </ListView.ItemContainerStyle>
+                                    </StackPanel.Resources>
 
-                                    <!-- Data -->
-                                    <cf:RecordDefinition Key="Id" Value="{x:Bind Id}" />
-                                    <cf:RecordDefinition Key="Intent" Value="{x:Bind Intent}" />
-                                </ListView>
-                                
-                                <!-- Dependencies -->
-                                <StackPanel Orientation="Horizontal" Visibility="{x:Bind Dependencies, Converter={StaticResource CollectionVisibilityConverter}}">
-                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Dependencies</TextBlock>
-                                    <TextBlock>:</TextBlock>
-                                    <ListView ItemsSource="{x:Bind Dependencies}">
-                                        <ListView.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel Orientation="Horizontal" />
-                                            </ItemsPanelTemplate>
-                                        </ListView.ItemsPanel>
+                                    <!-- Individual records -->
+                                    <ListView>
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate x:DataType="cf:RecordDefinition">
+                                                <StackPanel Visibility="{x:Bind Value, Converter={StaticResource StringVisibilityConverter}}" Orientation="Horizontal">
+                                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind Key}" />
+                                                    <TextBlock>:</TextBlock>
+                                                    <TextBlock Text="{x:Bind Value}" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
                                         <ListView.ItemContainerStyle>
                                             <Style TargetType="ListViewItem">
                                                 <Setter Property="MinHeight" Value="0" />
@@ -175,36 +162,62 @@
                                                 <Setter Property="Margin" Value="2,0"/>
                                             </Style>
                                         </ListView.ItemContainerStyle>
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate x:DataType="x:String">
-                                                <TextBlock Tag="{x:Bind}">
-                                                    <Hyperlink Click="Hyperlink_Click">
-                                                        <Run Text="{x:Bind}" />
-                                                    </Hyperlink>
-                                                </TextBlock>
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
+
+                                        <!-- Data -->
+                                        <cf:RecordDefinition Key="Id" Value="{x:Bind Id}" />
+                                        <cf:RecordDefinition Key="Intent" Value="{x:Bind Intent}" />
                                     </ListView>
-                                </StackPanel>
-                                
-                                <!-- Metadata -->
-                                <StackPanel Visibility="{x:Bind Metadata, Converter={StaticResource CollectionVisibilityConverter}}">
-                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Metadata</TextBlock>
-                                    <ListView ItemTemplate="{ThemeResource KeyValueDictionary}" ItemsSource="{x:Bind Metadata}"/>
-                                </StackPanel>
+                                    
+                                    <!-- Dependencies -->
+                                    <StackPanel Orientation="Horizontal" Visibility="{x:Bind Dependencies, Converter={StaticResource CollectionVisibilityConverter}}">
+                                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Dependencies</TextBlock>
+                                        <TextBlock>:</TextBlock>
+                                        <ListView ItemsSource="{x:Bind Dependencies}">
+                                            <ListView.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Horizontal" />
+                                                </ItemsPanelTemplate>
+                                            </ListView.ItemsPanel>
+                                            <ListView.ItemContainerStyle>
+                                                <Style TargetType="ListViewItem">
+                                                    <Setter Property="MinHeight" Value="0" />
+                                                    <Setter Property="MinWidth" Value="0" />
+                                                    <Setter Property="Padding" Value="0"/>
+                                                    <Setter Property="Margin" Value="2,0"/>
+                                                </Style>
+                                            </ListView.ItemContainerStyle>
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <TextBlock Tag="{x:Bind}">
+                                                        <Hyperlink Click="Hyperlink_Click">
+                                                            <Run Text="{x:Bind}" />
+                                                        </Hyperlink>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </StackPanel>
+                                    
+                                    <!-- Metadata -->
+                                    <StackPanel Visibility="{x:Bind Metadata, Converter={StaticResource CollectionVisibilityConverter}}">
+                                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Metadata</TextBlock>
+                                        <ListView ItemTemplate="{ThemeResource KeyValueDictionary}" ItemsSource="{x:Bind Metadata}"/>
+                                    </StackPanel>
 
-                                <!-- Settings -->
-                                <StackPanel Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
-                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Settings</TextBlock>
-                                    <ListView ItemTemplate="{ThemeResource KeyValueDictionary}" ItemsSource="{x:Bind Settings}"/>
+                                    <!-- Settings -->
+                                    <StackPanel Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
+                                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Settings</TextBlock>
+                                        <ListView ItemTemplate="{ThemeResource KeyValueDictionary}" ItemsSource="{x:Bind Settings}"/>
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
-                        </Expander>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                            </Expander>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
 
-            <ScrollViewer Visibility="Collapsed" Grid.Row="2" HorizontalScrollBarVisibility="Auto">
+            <!-- Code mode -->
+            <ScrollViewer Visibility="{x:Bind ViewModel.IsCodeMode, Mode=OneWay}" Grid.Row="2" HorizontalScrollBarVisibility="Auto">
                 <TextBlock
                     FontSize="{ThemeResource CaptionTextBlockFontSize}"
                     Padding="15"

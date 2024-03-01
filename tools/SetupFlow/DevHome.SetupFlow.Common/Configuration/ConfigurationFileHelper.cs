@@ -73,6 +73,16 @@ public class ConfigurationFileHelper
         }
     }
 
+    public async Task ResolveConfigurationUnitDetails()
+    {
+        if (_processor == null || _configSet == null)
+        {
+            throw new InvalidOperationException("Cannot ");
+        }
+
+        await _processor.GetSetDetailsAsync(_configSet, ConfigurationUnitDetailFlags.ReadOnly);
+    }
+
     private async Task<ConfigurationSet> OpenConfigurationSetInternalAsync(ConfigurationProcessor processor, string filePath, string content)
     {
         var file = await StorageFile.GetFileFromPathAsync(filePath);

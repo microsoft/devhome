@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -40,7 +41,22 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     [NotifyCanExecuteChangedFor(nameof(ConfigureAsNonAdminCommand))]
     private bool _readAndAgree;
 
-    public ObservableCollection<ConfigurationUnitViewModel> ConfigurationUnits { get; } = new();
+    [ObservableProperty]
+    private bool _isCodeMode;
+
+    [RelayCommand]
+    private async Task ViewModeChangedAsync()
+    {
+        var loadConfigurationUnits = !IsCodeMode && Configuration != null && ConfigurationUnits == null;
+        if (loadConfigurationUnits)
+        {
+            var configUnits = await _dsc.GetConfigurationUnitDetailsAsync(Configuration, Orchestrator.ActivityId);
+            ConfigurationUnits = configUnits.Select(u => new ConfigurationUnitViewModel(u)).ToList();
+        }
+    }
+
+    [ObservableProperty]
+    private IList<ConfigurationUnitViewModel> _configurationUnits;
 
     public ConfigurationFileViewModel(
         ISetupFlowStringResource stringResource,
@@ -119,12 +135,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
                 Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
                 Configuration = new(file.Path);
                 Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
-                var units = await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
-                foreach (var unit in units)
-                {
-                    ConfigurationUnits.Add(new ConfigurationUnitViewModel(unit));
-                }
-
+                await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
                 TaskList.Add(new(StringResource, _dsc, file, Orchestrator.ActivityId));
                 return true;
             }

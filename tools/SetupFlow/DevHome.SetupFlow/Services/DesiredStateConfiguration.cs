@@ -29,10 +29,17 @@ internal sealed class DesiredStateConfiguration : IDesiredStateConfiguration
     public async Task<bool> UnstubAsync() => await _winGetDeployment.UnstubConfigurationAsync();
 
     /// <inheritdoc />
-    public async Task<IList<ConfigurationUnit>> ValidateConfigurationAsync(string filePath, Guid activityId)
+    public async Task ValidateConfigurationAsync(string filePath, Guid activityId)
     {
         // Try to open the configuration file to validate it.
-        var configFile = await OpenConfigurationSetAsync(filePath, activityId);
+        await OpenConfigurationSetAsync(filePath, activityId);
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<ConfigurationUnit>> GetConfigurationUnitDetailsAsync(Configuration configuration, Guid activityId)
+    {
+        var configFile = await OpenConfigurationSetAsync(configuration.Path, configuration.Content, activityId);
+        await configFile.ResolveConfigurationUnitDetails();
         var configUnitsOutOfProc = configFile.Units;
         var configUnitsInProc = configUnitsOutOfProc.Select(unit => new ConfigurationUnit(unit));
         return configUnitsInProc.ToList();
@@ -54,10 +61,15 @@ internal sealed class DesiredStateConfiguration : IDesiredStateConfiguration
     /// <returns>Configuration file helper</returns>
     private async Task<ConfigurationFileHelper> OpenConfigurationSetAsync(string filePath, Guid activityId)
     {
-        var configFile = new ConfigurationFileHelper(activityId);
         var file = await StorageFile.GetFileFromPathAsync(filePath);
         var content = File.ReadAllText(file.Path);
-        await configFile.OpenConfigurationSetAsync(file.Path, content);
+        return await OpenConfigurationSetAsync(file.Path, content, activityId);
+    }
+
+    private async Task<ConfigurationFileHelper> OpenConfigurationSetAsync(string filePath, string content, Guid activityId)
+    {
+        var configFile = new ConfigurationFileHelper(activityId);
+        await configFile.OpenConfigurationSetAsync(filePath, content);
         return configFile;
     }
 }

@@ -23,7 +23,15 @@ public interface IDesiredStateConfiguration
     /// </summary>
     /// <param name="filePath">Path to the configuration file.</param>
     /// <param name="activityId">Activity ID.</param>
-    public Task<IList<ConfigurationUnit>> ValidateConfigurationAsync(string filePath, Guid activityId);
+    public Task ValidateConfigurationAsync(string filePath, Guid activityId);
+
+    /// <summary>
+    /// Gets the details of the provided configuration file.
+    /// </summary>
+    /// <param name="configuration">Configuration</param>
+    /// <param name="activityId">Activity ID.</param>
+    /// <returns>List of configuration units</returns>
+    public Task<IReadOnlyList<ConfigurationUnit>> GetConfigurationUnitDetailsAsync(Configuration configuration, Guid activityId);
 
     /// <summary>
     /// Applies the provided configuration file.
