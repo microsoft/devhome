@@ -18,22 +18,50 @@ using Windows.Win32.UI.Shell;
 
 namespace DevHome.Common.Environments.Models;
 
-public class CardProperty : ICardProperty
+/// <summary>
+/// Enum value that represent additional non compute system specific actions that can be taken by
+/// the user from Dev Home.
+/// </summary>
+public enum EnvironmentAdditionalActions
 {
-    public BitmapImage? Icon { get; private set; }
+    PinToStart,
+    PinToTaskBar,
+}
 
-    public string? Title { get; private set; }
+/// <summary>
+/// Enum values that are used to visually represent the state of a compute system in the UI.
+/// </summary>
+public enum CardStateColor
+{
+    Success,
+    Neutral,
+    Caution,
+}
 
-    public object? Value { get; private set; }
+public partial class CardProperty : ObservableObject
+{
+    [ObservableProperty]
+    private BitmapImage? _icon;
 
-    public string? Glyph { get; private set; }
+    [ObservableProperty]
+    private string? _title;
 
-    // TODO: Update this class to use Icon property when SDK is updated.
-    public CardProperty(ComputeSystemProperty property)
+    [ObservableProperty]
+    private object? _value;
+
+    public string PackageFullName { get; private set; }
+
+    public CardProperty(ComputeSystemProperty property, string packageFullName)
     {
         Title = property.Name;
+        PackageFullName = packageFullName;
         UpdateTitleBasedOnPropertyKind(property.Name, property.PropertyKind);
         UpdateValueBasedOnPropertyKind(property.Value, property.PropertyKind);
+
+        if (property.Icon != null)
+        {
+            Icon = ConvertMsResourceToIcon(property.Icon, packageFullName);
+        }
     }
 
     public void UpdateValueBasedOnPropertyKind(object? value, ComputeSystemPropertyKind propertyKind)
@@ -83,32 +111,38 @@ public class CardProperty : ICardProperty
     /// Converts a passed in ms-resource URI and package full name to a BitmapImage.
     /// </summary>
     /// <param name="iconPathUri">the ms-resource:// path to an image resource in an app packages pri file.</param>
-    /// <param name="packageFullName">The package full name where the resource is located.</param>
     /// <returns>The bitmap image that represents the icon.</returns>
-    public unsafe BitmapImage ConvertMsResourceToIcon(Uri iconPathUri, string packageFullName)
+    public static unsafe BitmapImage ConvertMsResourceToIcon(Uri iconPathUri, string packageFullName)
     {
-        var indirectPathToResource = "@{" + packageFullName + "?" + iconPathUri.AbsolutePath + "}";
-        Span<char> outputBuffer = new char[512];
-
-        fixed (char* outBufferPointer = outputBuffer)
+        try
         {
-            fixed (char* resourcePathPointer = indirectPathToResource)
+            var indirectPathToResource = "@{" + packageFullName + "? " + iconPathUri.AbsoluteUri + "}";
+            Span<char> outputBuffer = new char[512];
+
+            fixed (char* outBufferPointer = outputBuffer)
             {
-                var res = PInvoke.SHLoadIndirectString(resourcePathPointer, new PWSTR(outBufferPointer), (uint)outputBuffer.Length, null);
-                if (res.Succeeded)
+                fixed (char* resourcePathPointer = indirectPathToResource)
                 {
-                    var iconImageLocation = new string(outputBuffer.TrimEnd('\0'));
-
-                    if (File.Exists(iconImageLocation))
+                    var res = PInvoke.SHLoadIndirectString(resourcePathPointer, new PWSTR(outBufferPointer), (uint)outputBuffer.Length, null);
+                    if (res.Succeeded)
                     {
-                        var bitmap = new BitmapImage();
-                        bitmap.UriSource = new Uri(iconImageLocation);
-                        return bitmap;
-                    }
-                }
+                        var iconImageLocation = new string(outputBuffer.TrimEnd('\0'));
 
-                Log.Logger()?.ReportError($"Failed to load icon from ms-resource: {iconPathUri} for package: {packageFullName} due to error: 0x{res.Value:X}");
+                        if (File.Exists(iconImageLocation))
+                        {
+                            var bitmap = new BitmapImage();
+                            bitmap.UriSource = new Uri(iconImageLocation);
+                            return bitmap;
+                        }
+                    }
+
+                    Log.Logger()?.ReportError($"Failed to find icon image in path: {iconPathUri} for package: {packageFullName} due to error: 0x{res.Value:X}");
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError($"Failed to load icon from ms-resource: {iconPathUri} for package: {packageFullName} due to error:", ex);
         }
 
         return new BitmapImage();

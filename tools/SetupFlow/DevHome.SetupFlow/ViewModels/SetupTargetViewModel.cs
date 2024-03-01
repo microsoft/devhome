@@ -73,7 +73,8 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         SetupFlowViewModel setupflowModel,
         SetupFlowOrchestrator orchestrator,
         IComputeSystemManager computeSystemManager,
-        ComputeSystemViewModelFactory computeSystemViewModelFactory)
+        ComputeSystemViewModelFactory computeSystemViewModelFactory,
+        ToastNotificationService toastNotificationService)
         : base(stringResource, orchestrator)
     {
         // Setup initial state for page.
@@ -97,6 +98,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         ComputeSystemManagerObj = computeSystemManager;
         _setupFlowViewModel = setupflowModel;
         _setupFlowViewModel.EndSetupFlow += OnRemovingComputeSystems;
+        toastNotificationService.CheckIfUserIsAHyperVAdmin();
     }
 
     /// <summary>
@@ -301,6 +303,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         {
             _computeSystemViewModelList[i].CardSelectionChanged -= OnListSelectionChanged;
             _computeSystemViewModelList[i].SelectedItem = null;
+            _computeSystemViewModelList[i].RemoveCardViewModelEventHandlers();
             ComputeSystemProviderComboBoxNames.Remove(_computeSystemViewModelList[i].DisplayName);
             _computeSystemViewModelList.RemoveAt(i);
         }
@@ -378,7 +381,8 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
                     continue;
                 }
 
-                var card = await _computeSystemViewModelFactory.CreateCardViewModelAsync(wrapper);
+                var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
+                var card = await _computeSystemViewModelFactory.CreateCardViewModelAsync(ComputeSystemManagerObj, wrapper, packageFullName);
                 curListViewModel.ComputeSystemCardCollection.Add(card);
                 curListViewModel.CardSelectionChanged += OnListSelectionChanged;
             }

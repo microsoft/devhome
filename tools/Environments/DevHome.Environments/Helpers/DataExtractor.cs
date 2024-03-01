@@ -21,38 +21,13 @@ namespace DevHome.Environments.Helpers;
 public class DataExtractor
 {
     /// <summary>
-    /// Converts the compute computeSystem thumbnail (byte array) to a BitmapImage.
-    /// </summary>
-    /// <param name="computeSystem">Compute system to retrieve thumbnail from.</param>
-    public static BitmapImage GetCardBodyImage(IComputeSystem computeSystem)
-    {
-        var bitmap = new BitmapImage();
-        var result = computeSystem.GetComputeSystemThumbnailAsync(string.Empty).GetAwaiter().GetResult();
-        if (result.Result.Status == ProviderOperationStatus.Success)
-        {
-            var thumbnail = result.ThumbnailInBytes;
-            if (thumbnail.Length > 0)
-            {
-                bitmap.SetSource(thumbnail.AsBuffer().AsStream().AsRandomAccessStream());
-            }
-
-            return bitmap;
-        }
-        else
-        {
-            // ToDo: Remove this test value
-            return new BitmapImage { UriSource = new Uri("ms-appx:///Assets/Temp-Bloom.jpg"), };
-        }
-    }
-
-    /// <summary>
     /// Checks for supported operations and adds the text, icon, and function associated with the operation.
     /// Returns the list of operations to be added to the dot button.
     /// ToDo: Use resources instead of literals
     /// ToDo: Add a pause after each operation
     /// </summary>
     /// <param name="computeSystem">Compute system used to fill OperationsViewModel's callback function.</param>
-    public static List<OperationsViewModel> FillDotButtonOperations(IComputeSystem computeSystem)
+    public static List<OperationsViewModel> FillDotButtonOperations(ComputeSystem computeSystem)
     {
         var operations = new List<OperationsViewModel>();
         var supportedOperations = computeSystem.SupportedOperations;
@@ -78,7 +53,7 @@ public class DataExtractor
     /// Returns the list of operations to be added to the launch button.
     /// </summary>
     // <param name="computeSystem">Compute system used to fill OperationsViewModel's callback function.</param>
-    public static List<OperationsViewModel> FillLaunchButtonOperations(IComputeSystem computeSystem)
+    public static List<OperationsViewModel> FillLaunchButtonOperations(ComputeSystem computeSystem)
     {
         var operations = new List<OperationsViewModel>();
         var supportedOperations = computeSystem.SupportedOperations;
@@ -119,60 +94,5 @@ public class DataExtractor
         }
 
         return operations;
-    }
-
-    /// <summary>
-    /// Checks for properties and adds the text, value, and icon associated with the property.
-    /// Only handles the default 4 cases for now; no custom icons
-    /// TODO: remove this in favor of using the shared CardProperty class as this doesn't handle
-    /// buffer overflows, and other data types other than ints for the value propery.
-    /// </summary>
-    /// <param name="computeSystem">Compute system that the properties will be retrieved from.</param>
-    public static List<PropertyViewModel> FillPropertiesAsync(IComputeSystem computeSystem)
-    {
-        var result = new List<PropertyViewModel>();
-        var properties = computeSystem.GetComputeSystemPropertiesAsync(string.Empty).GetAwaiter().GetResult();
-        foreach (var property in properties)
-        {
-            var value = property.Value;
-            if (value.GetType() == typeof(string))
-            {
-                continue;
-            }
-
-            // Temporarily wrap in try-catch to handle the case where the value is not an int.
-            // This will be removed when the CardProperty class is used.
-            try
-            {
-                switch (property.PropertyKind)
-                {
-                    case ComputeSystemPropertyKind.CpuCount:
-                        result.Add(new PropertyViewModel("vCPU", (int)value, "\uEEA1"));
-                        break;
-
-                    case ComputeSystemPropertyKind.AssignedMemorySizeInBytes:
-                        var memory = (int)((long)value / (1024 * 1024 * 1024));
-                        result.Add(new PropertyViewModel("GB RAM", memory, "\uEEA0"));
-                        break;
-
-                    case ComputeSystemPropertyKind.StorageSizeInBytes:
-                        var storage = (int)((long)value / (1024 * 1024 * 1024));
-                        result.Add(new PropertyViewModel("GB Storage", storage, "\uEDA2"));
-                        break;
-
-                    // TODO: update this to use the new CardProperty class. Uptime is a TimeSpan, not an int.
-                    // case ComputeSystemPropertyKind.UptimeIn100ns:
-                    //   result.Add(new PropertyViewModel("Uptime", (int)value / 100, "\uE703"));
-                    //    break;
-                    default:
-                        break;
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        return result;
     }
 }

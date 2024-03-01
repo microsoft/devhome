@@ -46,7 +46,7 @@
                                 ComputeSystemProperties="{Binding ComputeSystemPropertiesForCardUI, Mode=OneWay}">
                                 <devEnvCustomControls:CardBody.ComputeSystemPropertyTemplate>
                                     <!-- Properties template for compute system properties.-->
-                                    <DataTemplate x:DataType="devCommonModels:ICardProperty">
+                                    <DataTemplate x:DataType="devCommonModels:CardProperty">
                                         <Grid
                                             HorizontalAlignment="Stretch"
                                             Margin="0 0 5 0">
@@ -155,7 +155,7 @@
                     HeaderTemplate="{StaticResource ComputeSystemContainerShimmerHeaderTemplate}"
                     DataContext="{Binding}"
                     SelectionMode="None"
-                    ItemTemplate="{StaticResource HorizontalCardRootWithUniformedPaddingShimmerTemplate}"
+                    ItemTemplate="{StaticResource HorizontalCardRootForSetupTargetFlowShimmerTemplate}"
                     Margin="0 0 0 10"
                     ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}">
                     <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
@@ -202,7 +202,7 @@
                         IsTabStop="False"
                         DataContext="{Binding}">
                         <StackPanel
-                            Margin="0 50 0 0"
+                            Margin="0 50 0 50"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
                             <TextBlock

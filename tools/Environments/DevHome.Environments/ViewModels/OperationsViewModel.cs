@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
@@ -21,9 +22,9 @@ public partial class OperationsViewModel
 
     public string IconGlyph { get; }
 
-    private Func<string, IAsyncOperation<ComputeSystemOperationResult>> Command { get; }
+    private Func<string, Task<ComputeSystemOperationResult>> Command { get; }
 
-    public OperationsViewModel(string name, string icon, Func<string, IAsyncOperation<ComputeSystemOperationResult>> command)
+    public OperationsViewModel(string name, string icon, Func<string, Task<ComputeSystemOperationResult>> command)
     {
         Name = name;
         IconGlyph = icon;
@@ -31,8 +32,12 @@ public partial class OperationsViewModel
     }
 
     [RelayCommand]
-    public void InvokeAction()
+    public async Task InvokeAction()
     {
-        Command(string.Empty).GetAwaiter().GetResult();
+        // We'll need to disable the card UI while the operation is in progress and handle failures.
+        await Task.Run(async () =>
+        {
+            await Command(string.Empty);
+        });
     }
 }

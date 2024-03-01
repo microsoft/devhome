@@ -7,5 +7,5 @@ internal sealed class Constants
 {
     public const string WindowsThumbnail = "ms-appx:///HyperVExtension/Assets/hyper-v-windows-default-image.jpg";
 
-    public const string ExtensionIcon = "ms-appx:///HyperVExtension/Assets/hyper-v-provider-icon.png";
+    public const string ExtensionIcon = "ms-resource://HyperVExtension/Files/HyperVExtension/Assets/hyper-v-provider-icon.png";
 }

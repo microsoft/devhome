@@ -12,6 +12,7 @@ using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Foundation;
 
 namespace DevHome.Common.Environments.Services;
 
@@ -22,6 +23,8 @@ namespace DevHome.Common.Environments.Services;
 public class ComputeSystemManager : IComputeSystemManager
 {
     private readonly IComputeSystemService _computeSystemService;
+
+    public event TypedEventHandler<ComputeSystem, ComputeSystemState> ComputeSystemStateChanged = (sender, state) => { };
 
     // Used in the setup flow to store the ComputeSystem needed to configure.
     public ComputeSystemReviewItem? ComputeSystemSetupItem { get;  set; }
@@ -40,30 +43,26 @@ public class ComputeSystemManager : IComputeSystemManager
         var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(2));
         var token = cancellationTokenSource.Token;
-        var computeSystemsProviders = await _computeSystemService.GetComputeSystemProvidersAsync();
+        var computeSystemsProviderDetails = await _computeSystemService.GetComputeSystemProvidersAsync();
 
         try
         {
             // get compute systems from providers in parallel.
-            await Parallel.ForEachAsync(computeSystemsProviders, async (providerAndDevIdKeyPair, token) =>
+            await Parallel.ForEachAsync(computeSystemsProviderDetails, async (providerDetails, token) =>
             {
-                var provider = new ComputeSystemProvider(providerAndDevIdKeyPair.Key);
+                var provider = providerDetails.ComputeSystemProvider;
                 var devIdWrappers = new List<DeveloperIdWrapper>();
                 var results = new List<ComputeSystemsResult>();
-                var wrapperDictionary = new Dictionary<ComputeSystemProvider, List<DeveloperIdWrapper>>
-                {
-                    { provider, new() },
-                };
+                var wrapperDictionary = new Dictionary<DeveloperIdWrapper, ComputeSystemsResult>();
 
-                foreach (var devId in providerAndDevIdKeyPair.Value)
+                foreach (var devIdWrapper in providerDetails.DeveloperIds)
                 {
-                    var result = await providerAndDevIdKeyPair.Key.GetComputeSystemsAsync(devId);
-                    devIdWrappers.Add(new DeveloperIdWrapper(devId));
-                    wrapperDictionary[provider].Add(new DeveloperIdWrapper(devId));
+                    var result = await providerDetails.ComputeSystemProvider.GetComputeSystemsAsync(devIdWrapper.DeveloperId, string.Empty);
+                    wrapperDictionary.Add(devIdWrapper, result);
                     results.Add(result);
                 }
 
-                var loadedData = new ComputeSystemsLoadedData(wrapperDictionary.First(), results);
+                var loadedData = new ComputeSystemsLoadedData(providerDetails, wrapperDictionary);
                 await callback(loadedData);
             });
         }
@@ -85,5 +84,10 @@ public class ComputeSystemManager : IComputeSystemManager
         {
             Log.Logger()?.ReportError($"Failed to get retrieve all compute systems from all compute system providers ", ex);
         }
+    }
+
+    public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
+    {
+        ComputeSystemStateChanged(sender, state);
     }
 }

@@ -11,7 +11,7 @@
     
         <DataTemplate x:Key="SampleHorizontalCard">
             <Grid
-                Style="{StaticResource HorizontalCardRoot} x:DataType="viewModels:SampleCardViewModel">
+                Style="{StaticResource HorizontalCardRootForEnvironmentsPage} x:DataType="viewModels:SampleCardViewModel">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -37,6 +37,8 @@
             </Grid>
         </DataTemplate>
     -->
+
+    <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
 
     <DataTemplate x:Key="CardHeaderShimmerTemplate">
         <Grid
@@ -188,7 +190,7 @@
     </DataTemplate>
 
     <!-- Shimmer template for cards that appear in setup target flow in machine configuration page. -->
-    <DataTemplate x:Key="HorizontalCardRootWithUniformedPaddingShimmerTemplate">
+    <DataTemplate x:Key="HorizontalCardRootForSetupTargetFlowShimmerTemplate">
         <Grid
             Style="{StaticResource HorizontalCardRootForSetupTargetFlow}">
             <ContentControl

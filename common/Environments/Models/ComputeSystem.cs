@@ -55,7 +55,7 @@ public class ComputeSystem
 
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> StateChanged = (sender, state) => { };
 
-    private void OnComputeSystemStateChanged(object? sender, ComputeSystemState state)
+    public void OnComputeSystemStateChanged(object? sender, ComputeSystemState state)
     {
         try
         {
