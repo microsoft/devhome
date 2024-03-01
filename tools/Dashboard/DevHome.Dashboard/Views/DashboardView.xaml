@@ -47,6 +47,8 @@
                         x:Uid="AddWidget"
                         HorizontalAlignment="Right"
                         Command="{x:Bind AddWidgetClickCommand}"
+                        AutomationProperties.Name="Testing"
+                        AutomationProperties.ItemStatus="Please"
                         IsEnabled="{x:Bind ViewModel.HasWidgetService, Mode=OneWay}"/>
             </StackPanel>
         </Grid>
