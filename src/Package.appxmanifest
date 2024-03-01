@@ -79,8 +79,7 @@
                 <Activation>
                   <CreateInstance ClassId="426A52D6-8007-4894-A946-CF80F39507F1" />
                 </Activation>
-                <SupportedInterfaces>
-                </SupportedInterfaces>
+                <SupportedInterfaces></SupportedInterfaces>
               </DevHomeProvider>
             </uap3:Properties>
           </uap3:AppExtension>

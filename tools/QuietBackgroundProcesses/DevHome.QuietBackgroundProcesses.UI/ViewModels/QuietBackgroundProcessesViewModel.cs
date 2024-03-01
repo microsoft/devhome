@@ -23,7 +23,7 @@ namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
 
 public partial class QuietBackgroundProcessesViewModel : ObservableObject
 {
-    private readonly bool _isFeatureSupported;
+    private readonly bool _isFeaturePresent;
     private readonly TimeSpan _zero;
 #nullable enable
     private DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession? _session;
@@ -57,8 +57,8 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
     {
         _zero = new TimeSpan(0, 0, 0);
 
-        _isFeatureSupported = DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager.IsFeatureSupported();
-        if (!_isFeatureSupported)
+        _isFeaturePresent = DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager.IsFeaturePresent();
+        if (!_isFeaturePresent)
         {
             SessionStateText = GetStatusString("FeatureNotSupported");
             return;
@@ -75,7 +75,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
         }
     }
 
-    public bool IsToggleEnabled => _isFeatureSupported;
+    public bool IsToggleEnabled => _isFeaturePresent;
 
     private bool _isToggleOn;
 

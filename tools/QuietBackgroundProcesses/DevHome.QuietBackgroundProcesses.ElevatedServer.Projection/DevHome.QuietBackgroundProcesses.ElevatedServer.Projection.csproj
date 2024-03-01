@@ -6,8 +6,7 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <MdmergeMergedDir>..\DevHome.QuietBackgroundProcesses.Common\AnyCPU\$(Configuration)\Merged\</MdmergeMergedDir>
-    <OutDir>$(CppOutDir)</OutDir>
+    <MdmergeMergedDir>$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Common\</MdmergeMergedDir>
   </PropertyGroup>
   
 
@@ -18,10 +17,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <GeneratedNugetDir>.\nuget\</GeneratedNugetDir>
-    <NuspecFile>$(GeneratedNugetDir)DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.nuspec</NuspecFile>
-    <OutputPath>$(GeneratedNugetDir)</OutputPath>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <OutputPath>$(OutDir)</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -38,11 +34,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="nuget\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.nuspec" />
+    <Folder Include="nuget\" />
   </ItemGroup>
+  <Target Name="RemoveWinRTRuntimeReference" Inputs="@(RuntimeCopyLocalItems)" AfterTargets="ResolvePackageAssets" Outputs="@(RuntimeCopyLocalItems)">
 
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+    <ItemGroup>
+      <Reference Remove="WinRT.Runtime" /> 
+      <RuntimeCopyLocalItems Remove="@(RuntimeCopyLocalItems)" Condition="'%(DestinationSubPath)' == 'WinRT.Runtime.dll'" />
+      <ResolvedCompileFileDefinitions Remove="@(ResolvedCompileFileDefinitions)" Condition="'%(HintPath)' == '$(CsWinRTPath)lib\net6.0\WinRT.Runtime.dll'" />
+    </ItemGroup>
 
+  </Target>
 </Project>
