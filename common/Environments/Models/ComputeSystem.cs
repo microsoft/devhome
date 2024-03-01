@@ -57,8 +57,15 @@ public class ComputeSystem
 
     private void OnComputeSystemStateChanged(object? sender, ComputeSystemState state)
     {
-        Log.Logger()?.ReportInfo(_componentName, $"Compute System State Changed for: {Id} to {state}");
-        StateChanged(this, state);
+        try
+        {
+            Log.Logger()?.ReportInfo(_componentName, $"Compute System State Changed for: {Id} to {state}");
+            StateChanged(this, state);
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError(_componentName, $"OnComputeSystemStateChanged for: {this} failed due to exception", ex);
+        }
     }
 
     public async Task<ComputeSystemStateResult> GetStateAsync()
@@ -266,6 +273,19 @@ public class ComputeSystem
         {
             Log.Logger()?.ReportError(_componentName, $"ConnectAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public IApplyConfigurationOperation ApplyConfiguration(string configuration)
+    {
+        try
+        {
+            return _computeSystem.ApplyConfiguration(configuration);
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError(_componentName, $"ApplyConfiguration for: {this} failed due to exception", ex);
+            throw;
         }
     }
 

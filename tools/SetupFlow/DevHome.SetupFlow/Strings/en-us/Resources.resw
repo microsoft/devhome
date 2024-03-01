@@ -677,8 +677,12 @@
     <value>Search for applications to install or select them below.</value>
     <comment>Description for the application management page</comment>
   </data>
-  <data name="SetupShell_RepoConfig.Description" xml:space="preserve">
+  <data name="SetupShellRepoConfigLocalMachine" xml:space="preserve">
     <value>Add private or public repositories to clone to your machine.</value>
+    <comment>Description for the repo config page</comment>
+  </data>
+  <data name="SetupShellRepoConfigTargetMachine" xml:space="preserve">
+    <value>Add public repositories to clone to your target machine.</value>
     <comment>Description for the repo config page</comment>
   </data>
   <data name="SetupShell_SetupTarget.Description" xml:space="preserve">
@@ -1427,5 +1431,105 @@
   <data name="SetupTargetReviewPageProviderName.Text" xml:space="preserve">
     <value>Provider name:</value>
     <comment>The name of the technology platform that the compute system belongs to.</comment>
+  </data>
+  <data name="SetupTargetConfigurationCompleted" xml:space="preserve">
+    <value>Completed</value>
+	<comment>Text for the completed status of the configuration operation that happened on a remote machine</comment>
+  </data>
+  <data name="SetupTargetConfigurationInProgress" xml:space="preserve">
+    <value>In progress</value>
+    <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine</comment>
+  </data>
+  <data name="SetupTargetConfigurationPending" xml:space="preserve">
+    <value>Pending</value>
+	<comment>Text for the pending status of the configuration operation that happened on a remote machine</comment>
+  </data>
+  <data name="SetupTargetConfigurationProvisioningDevice" xml:space="preserve">
+    <value>Provisioning device</value>
+	<comment>Text for the 'provisioning device' status of the configuration operation that happened on a remote machine</comment>
+  </data>
+  <data name="SetupTargetConfigurationRestartingDevice" xml:space="preserve">
+    <value>Restarting device</value>
+	<comment>Text for the 'Restarting device' status of the configuration operation that happened on a remote machine</comment>
+  </data>
+  <data name="SetupTargetConfigurationShuttingDownDevice" xml:space="preserve">
+    <value>Shutting down device</value>
+	<comment>Text for the 'shut down' status of the configuration operation that happened on a remote machine</comment>
+  </data>
+  <data name="SetupTargetConfigurationStartingDevice" xml:space="preserve">
+    <value>Starting device</value>
+	<comment>Text for when the device is starting up as part of the configuration operation that happened on a remote machine</comment>
+  </data>
+  <data name="SetupTargetConfigurationUnknown" xml:space="preserve">
+    <value>Unknown</value>
+	<comment>Text for when the we do not know the current state of the operation</comment>
+  </data>
+  <data name="SetupTargetConfigurationWaitingForAdminUserLogon" xml:space="preserve">
+    <value>Waiting for an admin to logon</value>
+	<comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for a user with administrator priviledges to logon to the machine</comment>
+  </data>
+  <data name="SetupTargetConfigurationWaitingForUserLogon" xml:space="preserve">
+    <value>Waiting for the user to logon</value>
+	<comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for the current user to logon to the machine</comment>
+  </data>
+  <data name="SetupTargetConfigurationSkipped" xml:space="preserve">
+    <value>Skipped</value>
+	<comment>Text for when the a part of the configuration on the remove machine was completed but its completed status was set to skipped.</comment>
+  </data>
+  <data name="SetupTargetConfigurationOpenConfigFailed" xml:space="preserve">
+    <value>The extension failed to open the configuration file. You may need to check the extensions log file for more information</value>
+	<comment>Text for when an extension recieved the configuration file string from Dev Home but was unable to open it</comment>
+  </data>
+  <data name="SetupTargetConfigurationSetProgressMessage" xml:space="preserve">
+    <value>Configuration set status: {0}</value>
+	<comment>Text for the ongoing progress of applying a set of configuration units in the configuration file. A configurations file are made up of configuration units.</comment>
+  </data>
+  <data name="SetupTargetConfigurationUnitProgressError" xml:space="preserve">
+    <value>There was an issue applying part of the configuration. Error: {0}</value>
+	<comment>Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine.</comment>
+  </data>
+  <data name="SetupTargetConfigurationUnitProgressMessage" xml:space="preserve">
+    <value>Configuration unit status: {0}</value>
+    <comment>Text for the error that occurred while of applying a configuration unit in the configuration file on to the remote machine.</comment>
+  </data>
+  <data name="ConfigureTargetApplyConfigurationActionNeeded" xml:space="preserve">
+    <value>Action required. Please review the action center. ({0}/{1})</value>
+    <comment>Locked={"0", "{1}"} Text to tell the user that their action is needed in order to complete the configuration. {0} is the amount of attempts  the user has done so far while {1} is the max amount attempts the user has.</comment>
+  </data>
+  <data name="ConfigureTargetApplyConfigurationStopped" xml:space="preserve">
+    <value>Apply configuration stoppped with status: {0}. You may need to check the extensions log file for more information</value>
+    <comment>Locked={"0"} Info message that tells the user applying the configuration operation from the extension has stopped. {0} is the message from the extension who attempted to apply the configuration file.</comment>
+  </data>
+  <data name="SetupTargetExtensionApplyingConfiguration" xml:space="preserve">
+    <value>Attempting to apply configuration on {0}</value>
+	<comment>Locked={"0"} Text for the ongoing progress of applying the whole configuration file on to the remote machine. {0} is the name of the remote machine or virtual machine.</comment>
+  </data>
+  <data name="SetupTargetExtensionApplyConfigurationError" xml:space="preserve">
+    <value>We couldn't apply the configuration file onto {0}</value>
+    <comment>Locked={"0"} Label displayed when the settings listed in a configuration file have not been applied successfully on the remote machine. {0} is the name of the remote machine or virtual machine.</comment>
+  </data>
+  <data name="SetupTargetExtensionApplyConfigurationSuccess" xml:space="preserve">
+    <value>{0} successfully applied the configuration</value>
+    <comment>Locked={"0"} Label displayed when a configuration file has been applied successfully on a remote machine. {0} is the name of the remote machine or virtual machine.</comment>
+  </data>
+  <data name="SetupTargetExtensionApplyConfigurationRebootRequired" xml:space="preserve">
+    <value>{0} successfully applied the configuration but a reboot is required</value>
+    <comment>Locked={"0"} Label displayed when a configuration file has been applied successfully and a system restart is required for the remove machine. {0} is the name of the remote machine or virtual machine.</comment>
+  </data>
+  <data name="SetupTargetMachineName" xml:space="preserve">
+    <value>target machine</value>
+	<comment>placeholder name that is used to describe a remote machine when we do not know its name</comment>
+  </data>
+  <data name="ConfigureTargetApplyConfigurationActionSuccess" xml:space="preserve">
+    <value>Corrective action was sent to the extension successfully</value>
+    <comment>Text to tell the user that Dev Home was able to successfully send their corrective action back to the extension who was waiting for a response</comment>
+  </data>
+  <data name="ConfigureTargetApplyConfigurationActionFailureRetry" xml:space="preserve">
+    <value>Corrective action failed. Please try again</value>
+    <comment>Text to tell the user that the corrective action that they took to fix an issue failed. The user is allowed to attempt to remediate the issue again.</comment>
+  </data>
+  <data name="ConfigureTargetApplyConfigurationActionFailureEnd" xml:space="preserve">
+    <value>Corrective action failed. No more attempts permitted</value>
+    <comment>Text to tell the user that the corrective action that they took to fix an issue failed. The user is no longer allowed to remediate the issue.</comment>
   </data>
 </root>

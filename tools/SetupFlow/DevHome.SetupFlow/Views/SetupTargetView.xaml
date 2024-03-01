@@ -36,7 +36,7 @@
                     IsSelected="{Binding IsSelected, Mode=OneWay}"
                     HorizontalAlignment="Stretch">
                     <Grid
-                        Style="{StaticResource HorizontalCardRootWithUniformedPadding}">
+                        Style="{StaticResource HorizontalCardRootForSetupTargetFlow}">
                         <Grid>
                             <devEnvCustomControls:CardBody
                                 ComputeSystemTitle="{Binding ComputeSystemTitle, Mode=OneWay}"

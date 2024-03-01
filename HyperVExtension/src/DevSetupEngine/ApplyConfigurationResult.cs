@@ -104,8 +104,8 @@ public class ConfigurationUnit : IConfigurationUnit
         State = state;
         IsGroup = isGroup;
         Units = units;
-        Intent = intent;
         Settings = settings;
+        Intent = intent;
     }
 
     // The type of the unit being configured; not a name for this instance.
@@ -124,9 +124,9 @@ public class ConfigurationUnit : IConfigurationUnit
     // The configuration units that are part of this unit (if IsGroup is true).
     public IList<IConfigurationUnit>? Units { get; }
 
-    public ConfigurationUnitIntent Intent { get; }
+    public DevSetupEngineTypes.ConfigurationUnitIntent Intent { get; }
 
-    public ValueSet Settings { get; }
+    public ValueSet? Settings { get; }
 }
 
 [ComVisible(true)]

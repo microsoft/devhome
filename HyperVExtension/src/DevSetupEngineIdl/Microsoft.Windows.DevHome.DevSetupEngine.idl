@@ -58,7 +58,7 @@ namespace Microsoft.Windows.DevHome.DevSetupEngine
         Precondition,
     };
 
-     // Defines how the configuration unit is to be used within the configuration system.
+    // Defines how the configuration unit is to be used within the configuration system.
     [contract(Microsoft.Windows.DevHome.DevSetupEngine.DevSetupEngineContract, 1)]
     enum ConfigurationUnitIntent
     {
@@ -130,7 +130,7 @@ namespace Microsoft.Windows.DevHome.DevSetupEngine
 
         // The configuration units that are part of this unit (if IsGroup is true).
         Windows.Foundation.Collections.IVector<IConfigurationUnit> Units{ get; };
-        
+
         // Contains the values that are for use by the configuration unit itself.
         Windows.Foundation.Collections.ValueSet Settings { get; };
 

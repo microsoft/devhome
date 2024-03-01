@@ -94,9 +94,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     public void UpdateCanSetUp()
     {
-        // TODO: Temporarily prevent user from setting up a target flow on the review page. Remove this when we've coded
-        // loading page for configuration of a target.
-        CanSetUp = HasTasksToSetUp && IsValidTermsAgreement() && !_setupFlowOrchestrator.IsInSetupTargetFlow;
+        CanSetUp = HasTasksToSetUp && IsValidTermsAgreement();
     }
 
     /// <summary>
@@ -115,7 +113,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         {
             // If we are in the setup target flow, we don't need to initialize the elevated server.
             // as work will be done in a remote machine.
-            if (!Orchestrator.IsInSetupTargetFlow)
+            if (!Orchestrator.IsSettingUpATargetMachine)
             {
                 await Orchestrator.InitializeElevatedServerAsync();
             }
