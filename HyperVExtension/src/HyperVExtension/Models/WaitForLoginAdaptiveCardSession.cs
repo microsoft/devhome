@@ -62,7 +62,7 @@ internal sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSe
                     case "WaitForVmUserLogin":
                         {
                             Logging.Logger()?.ReportDebug($"inputs: {inputs}");
-                            var actionPayload = Json.ToObject<AdaptiveCardActionPayload>(action) ?? throw new InvalidOperationException("Invalid action");
+                            var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action) ?? throw new InvalidOperationException("Invalid action");
                             if (actionPayload.IsOkAction())
                             {
                                 _isUserLoggedIn = true;
@@ -130,20 +130,20 @@ internal sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSe
     ""body"": [
         {
             ""type"": ""TextBlock"",
-            ""text"": ""%WaitForLoginRequest.Title%"",
+            ""text"": ""%WaitForLoginRequest/Title%"",
             ""wrap"": true,
             ""style"": ""heading""
         },
         {
             ""type"": ""TextBlock"",
-            ""text"": ""%WaitForLoginRequest.Description%"",
+            ""text"": ""%WaitForLoginRequest/Description%"",
             ""wrap"": true
         }
     ],
     ""actions"": [
         {
             ""type"": ""Action.Execute"",
-            ""title"": ""%VmCredentialRequest.OkText%"",
+            ""title"": ""%VmCredentialRequest/OkText%"",
             ""data"": {
                 ""id"": ""okAction""
             },
@@ -151,7 +151,7 @@ internal sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSe
         },
         {
             ""type"": ""Action.Execute"",
-            ""title"": ""%VmCredentialRequest.CancelText%"",
+            ""title"": ""%VmCredentialRequest/CancelText%"",
             ""data"": {
                 ""id"": ""cancelAction""
             },

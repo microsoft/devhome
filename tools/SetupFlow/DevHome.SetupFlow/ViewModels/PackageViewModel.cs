@@ -107,7 +107,7 @@ public partial class PackageViewModel : ObservableObject
     public IReadOnlyList<string> AvailableVersions => _package.AvailableVersions;
 
     // When in setup target flow don't disable installed packaged.
-    public bool IsInstalled => _setupFlowOrchestrator.IsInSetupTargetFlow ? false : _package.IsInstalled;
+    public bool IsInstalled => _setupFlowOrchestrator.IsSettingUpATargetMachine ? false : _package.IsInstalled;
 
     public string CatalogName => _package.CatalogName;
 

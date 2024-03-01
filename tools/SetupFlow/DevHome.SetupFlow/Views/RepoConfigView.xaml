@@ -32,9 +32,10 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <setupControls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_RepoConfig"
-                               Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
-                               Foreground="{ThemeResource TextFillColorSecondary}">
+    <setupControls:SetupShell 
+            Description="{x:Bind ViewModel.PageSubTitle, Mode=OneWay}"
+            Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+            Foreground="{ThemeResource TextFillColorSecondary}">
         <setupControls:SetupShell.Header>
             <Button
                 AutomationProperties.AutomationId="AddRepositoriesButton"
@@ -48,7 +49,7 @@
             </Grid.RowDefinitions>
             <!---Warning info bar if we're in the setup target flow, warning users only public Git repositories are allow. -->
             <InfoBar
-                Visibility="{x:Bind ViewModel.IsInSetupTargetFlow}"
+                Visibility="{x:Bind ViewModel.Orchestrator.IsSettingUpATargetMachine}"
                 IsOpen="True"
                 Severity="Warning"
                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupTargetCloneRepositoryInfoBar"

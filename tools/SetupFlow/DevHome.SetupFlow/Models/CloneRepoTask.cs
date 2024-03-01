@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -120,6 +121,8 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     // When this task needs to insert messages into the loading screen this pragma can be removed.
 #pragma warning disable 67
     public event ISetupTask.ChangeMessageHandler AddMessage;
+
+    public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
 #pragma warning restore 67
 
     public bool DependsOnDevDriveToBeInstalled

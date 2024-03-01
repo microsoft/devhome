@@ -8,20 +8,29 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Renderers;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.Views;
 using DevHome.Contracts.Services;
+using DevHome.Logging;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskGroups;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Windows.DevHome.SDK;
+using Windows.Foundation;
+using Windows.Storage;
 using WinUIEx;
+using WinUIEx.Messaging;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -32,6 +41,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private readonly ElementTheme _currentTheme;
 
     private readonly Guid _activityId;
+
+    private readonly WindowEx _windowExService;
 
     private static readonly BitmapImage DarkCaution = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
     private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
@@ -176,21 +187,61 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ExecutionFinished.Invoke(null, null);
     }
 
-    public void AddMessage(string message)
+    public void AddMessage(string message, MessageSeverityKind severityKind = MessageSeverityKind.Info)
     {
         Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
             var messageToDisplay = new LoadingMessageViewModel(message);
             messageToDisplay.ShouldShowStatusSymbolIcon = false;
             messageToDisplay.ShouldShowProgressRing = false;
+
+            if (severityKind == MessageSeverityKind.Warning)
+            {
+                messageToDisplay.ShouldShowStatusSymbolIcon = true;
+                messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkCaution : LightCaution;
+            }
+            else if (severityKind == MessageSeverityKind.Error)
+            {
+                messageToDisplay.ShouldShowStatusSymbolIcon = true;
+                messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkError : LightError;
+            }
+            else if (severityKind == MessageSeverityKind.Success)
+            {
+                messageToDisplay.ShouldShowStatusSymbolIcon = true;
+                messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkSuccess : LightSuccess;
+            }
+
             Messages.Insert(Messages.Count - _numberOfExecutingTasks, messageToDisplay);
+        });
+    }
+
+    public void UpdateActionCenterMessage(ActionCenterMessages message, ActionMessageRequestKind requestKind)
+    {
+        _windowExService.DispatcherQueue.TryEnqueue(() =>
+        {
+            // We need to add/remove the message in a temporary list and then re add the items to a new collection. This is because
+            // of the adaptive card panel and it receiving UI updates in the listview. There can be random crashes if we don't do this when
+            // the user switches between different Dev Home pages and then comes back to the loading screen when an adaptive card is
+            // loaded into the action center.
+            var items = ActionCenterItems.ToList();
+            if (requestKind == ActionMessageRequestKind.Add)
+            {
+                items.Add(message);
+            }
+            else
+            {
+                items.Remove(message);
+            }
+
+            ActionCenterItems = new(items);
         });
     }
 
     public LoadingViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        IHost host)
+        IHost host,
+        WindowEx windowExService)
         : base(stringResource, orchestrator)
     {
         _host = host;
@@ -207,7 +258,10 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ActionCenterItems = new();
         Messages = new();
         _activityId = orchestrator.ActivityId;
+        _windowExService = windowExService;
     }
+
+    // Remove all tasks except for the SetupTarget
 
     /// <summary>
     /// Reads from the orchestrator to get all the tasks to run.
@@ -217,6 +271,23 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     {
         Log.Logger?.ReportDebug(Log.Component.Loading, "Fetching task information");
         var taskIndex = 0;
+
+        if (Orchestrator.IsSettingUpATargetMachine)
+        {
+            var taskGroup = Orchestrator.GetTaskGroup<SetupTargetTaskGroup>();
+            var task = taskGroup.SetupTasks.First();
+            task.AddMessage += AddMessage;
+            task.UpdateActionCenterMessage += UpdateActionCenterMessage;
+            TasksToRun.Add(new TaskInformation
+            {
+                TaskIndex = taskIndex++,
+                TaskToExecute = task,
+                MessageToShow = task.GetLoadingMessages().Executing,
+            });
+            SetExecutingTaskAndActionCenter();
+            return;
+        }
+
         foreach (var taskGroup in Orchestrator.TaskGroups)
         {
             foreach (var task in taskGroup.SetupTasks)
@@ -267,31 +338,14 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             {
                 Log.Logger?.ReportDebug(Log.Component.Loading, "Task succeeded but requires reboot; adding to action center");
                 stringToReplace = information.TaskToExecute.GetLoadingMessages().NeedsReboot;
-
-                if (_currentTheme == ElementTheme.Dark)
-                {
-                    statusSymbolIcon = DarkCaution;
-                }
-                else
-                {
-                    statusSymbolIcon = LightCaution;
-                }
-
-                ActionCenterItems.Add(information.TaskToExecute.GetRebootMessage());
+                statusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkCaution : LightCaution;
+                ActionCenterItems.Insert(0, information.TaskToExecute.GetRebootMessage());
             }
             else
             {
                 Log.Logger?.ReportDebug(Log.Component.Loading, "Task succeeded");
                 stringToReplace = information.TaskToExecute.GetLoadingMessages().Finished;
-
-                if (_currentTheme == ElementTheme.Dark)
-                {
-                    statusSymbolIcon = DarkSuccess;
-                }
-                else
-                {
-                    statusSymbolIcon = LightSuccess;
-                }
+                statusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkSuccess : LightSuccess;
             }
 
             TasksFinishedSuccessfully++;
@@ -300,16 +354,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             Log.Logger?.ReportDebug(Log.Component.Loading, "Task failed");
             stringToReplace = information.TaskToExecute.GetLoadingMessages().Error;
-            if (_currentTheme == ElementTheme.Dark)
-            {
-                statusSymbolIcon = DarkError;
-            }
-            else
-            {
-                statusSymbolIcon = LightError;
-            }
-
-            ActionCenterItems.Add(information.TaskToExecute.GetErrorMessages());
+            statusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkError : LightError;
+            ActionCenterItems.Insert(0, information.TaskToExecute.GetErrorMessages());
             TasksFailed++;
 
             Log.Logger?.ReportDebug(Log.Component.Loading, "Adding task to list for retry");

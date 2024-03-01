@@ -50,7 +50,7 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
             SDK.ConfigurationSetState.Unknown,
             SDK.ConfigurationUnitState.Unknown,
             new SDK.ConfigurationUnitResultInformation(null, null, null, SDK.ConfigurationUnitResultSource.None),
-            new SDK.ConfigurationUnit(null, null, SDK.ConfigurationUnitState.Unknown, false, null),
+            new SDK.ConfigurationUnit(null, null, SDK.ConfigurationUnitState.Unknown, false, null, null, SDK.ConfigurationUnitIntent.Unknown),
             null);
 
     public void Cancel() => throw new NotImplementedException();
@@ -170,8 +170,11 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
                                 (SDK.ConfigurationUnitResultSource)unitResult.ResultInformation.ResultSource);
                         }
 
+                        var configurationUnitState = sdkUnit != null ? sdkUnit.State : SDK.ConfigurationUnitState.Unknown;
+
                         sdkUnitResults.Add(new SDK.ApplyConfigurationUnitResult(
                             sdkUnit,
+                            configurationUnitState,
                             unitResult.PreviouslyInDesiredState,
                             unitResult.RebootRequired,
                             sdkResultInfo));
@@ -205,14 +208,16 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
             if (configurationUnit.Units != null)
             {
                 units = new();
-                foreach (var u in configurationUnit.Units)
+                foreach (var hostAndGuestUnit in configurationUnit.Units)
                 {
                     units.Add(new(
-                        u.Type,
-                        u.Identifier,
-                        (SDK.ConfigurationUnitState)u.State,
-                        u.IsGroup,
-                        null));
+                        hostAndGuestUnit.Type,
+                        hostAndGuestUnit.Identifier,
+                        (SDK.ConfigurationUnitState)hostAndGuestUnit.State,
+                        hostAndGuestUnit.IsGroup,
+                        null,
+                        hostAndGuestUnit.Settings,
+                        (SDK.ConfigurationUnitIntent)hostAndGuestUnit.Intent));
                 }
             }
 
@@ -221,7 +226,9 @@ internal sealed class ApplyConfigurationOperation : IApplyConfigurationOperation
                 configurationUnit.Identifier,
                 (SDK.ConfigurationUnitState)configurationUnit.State,
                 configurationUnit.IsGroup,
-                units);
+                units,
+                configurationUnit.Settings,
+                (SDK.ConfigurationUnitIntent)configurationUnit.Intent);
         }
 
         return null;

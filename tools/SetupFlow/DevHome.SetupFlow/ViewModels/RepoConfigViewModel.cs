@@ -27,8 +27,6 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class RepoConfigViewModel : SetupPageViewModelBase
 {
-    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
-
     /// <summary>
     /// All the tasks that need to be ran during the loading page.
     /// </summary>
@@ -86,7 +84,8 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         set => _shouldAutoCheckDevDriveCheckbox = value;
     }
 
-    public bool IsInSetupTargetFlow => _setupFlowOrchestrator.IsInSetupTargetFlow;
+    [ObservableProperty]
+    private string _pageSubTitle;
 
     /// <summary>
     /// All repositories the user wants to clone.
@@ -113,7 +112,10 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         _themeSelectorService = host.GetService<IThemeSelectorService>();
         _themeSelectorService.ThemeChanged += OnThemeChanged;
         Host = host;
-        _setupFlowOrchestrator = orchestrator;
+
+        PageSubTitle = Orchestrator.IsSettingUpLocalMachine
+            ? stringResource.GetLocalized(StringResourceKey.SetupShellRepoConfigLocalMachine)
+            : stringResource.GetLocalized(StringResourceKey.SetupShellRepoConfigTargetMachine);
     }
 
     private void OnThemeChanged(object sender, ElementTheme e)

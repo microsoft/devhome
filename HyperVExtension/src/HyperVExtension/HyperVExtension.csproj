@@ -10,22 +10,18 @@
 
     <ItemGroup>
         <PackageReference Include="MessageFormat" Version="6.0.2" />
-    <!-- 
-        The Hyper-V module doesn't load by default when using Microsoft.PowerShell.SDK 7.4.*, as a work around we will stick with 7.2.8 until a fix is made.
-      Even attempting to load the module manually via the SDK with 7.4.* and use Hyper-V commands will result the following error:
-      "command was found in the module 'Hyper-V', but the module could not be loaded."
-    -->
         <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
-        <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" />
-        <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.0" />
+		<PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
         <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.1099.408.401" />
+        <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.1099.421.2021" />
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="System.Management.Automation" Version="7.4.0" />
         <PackageReference Include="System.Security.Principal.Windows" Version="5.0.0" />
     </ItemGroup>
 

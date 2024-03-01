@@ -16,11 +16,6 @@
             HorizontalScrollMode="Auto">
             <StackPanel
                 Margin="10 0 0 10">
-                <!---TODO: Remove this infobar when setup target flow has been updated to configure a target machine. -->
-                <InfoBar
-                    IsOpen="True"
-                    Severity="Warning"
-                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupTargetFlowUnderConstruction"/>
                 <!---Warning info bar if we're in the setup target flow, warning users only public Git repositories are allow. -->
                 <InfoBar
                     IsOpen="True"

@@ -118,7 +118,9 @@ public class ConfigurationFileHelper
                 unitResult.Unit.Identifier,
                 (DevSetupEngineTypes.ConfigurationUnitState)unitResult.Unit.State,
                 false,
-                null);
+                null,
+                unitResult.Unit.Settings,
+                (DevSetupEngineTypes.ConfigurationUnitIntent)unitResult.Unit.Intent);
 
             var resultInfo = new ConfigurationResultTypes.ConfigurationUnitResultInformation(
                 unitResult.ResultInformation.ResultCode,
@@ -128,6 +130,7 @@ public class ConfigurationFileHelper
 
             var configurationUnitResult = new ConfigurationResultTypes.ApplyConfigurationUnitResult(
                 unit,
+                (DevSetupEngineTypes.ConfigurationUnitState)unitResult.State,
                 unitResult.PreviouslyInDesiredState,
                 unitResult.RebootRequired,
                 resultInfo);

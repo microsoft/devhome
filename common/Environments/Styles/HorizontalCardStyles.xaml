@@ -10,35 +10,30 @@
 
     <!-- Style for the grid that acts as the root element for the Horizontal card -->
     <Style
-        x:Key="HorizontalCardRoot"
+        x:Key="HorizontalCardRootForEnvironmentsPage"
         TargetType="Grid">
         <Setter Property="Padding" Value="10 0 10 10" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
-        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
         <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
     </Style>
 
     <Style
-        x:Key="HorizontalCardRootWithUniformedPadding"
-        TargetType="Grid"
-        BasedOn="{StaticResource HorizontalCardRoot}">
-        <Setter Property="Padding" Value="15 15 10 20" />
+        x:Key="HorizontalCardRootForSetupTargetFlow"
+        TargetType="Grid">
+        <Setter Property="Padding" Value="0 15 10 20" />
+        <Setter Property="BorderThickness" Value="1" />
     </Style>
 
-    <!--
-        This is needed so the margin and padding of the ListViewItem covers the Horizontal card exactly.
-        The default style adds extra margins and padding so we need to reduce them. When needing to select
-        a horizontal card using the listview's selection mode use this style for the list view's item container.
-    -->
     <Style
         x:Key="HorizontalCardListViewItemContainerStyle"
         TargetType="ListViewItem"
         BasedOn="{StaticResource DefaultListViewItemStyle}">
-        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
         <Setter Property="Margin" Value="0 0 0 3"/>
-        <Setter Property="Padding" Value="3 1 3 1"/>
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
     </Style>
 
     <!--

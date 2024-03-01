@@ -3,9 +3,12 @@
 
 extern alias Projection;
 
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Management.Configuration;
 using Projection::DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Windows.Win32.Foundation;
+
+using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -38,6 +41,20 @@ public class ConfigurationUnitResult
         ErrorDescription = result.ErrorDescription;
     }
 
+    public ConfigurationUnitResult(SDK.ApplyConfigurationUnitResult result)
+    {
+        Type = result.Unit.Type;
+        Id = result.Unit.Identifier;
+        result.Unit.Settings.TryGetValue("description", out var descriptionObj);
+        UnitDescription = descriptionObj?.ToString() ?? string.Empty;
+        Intent = result.Unit.Intent.ToString();
+        IsSkipped = result.State == SDK.ConfigurationUnitState.Skipped;
+        HResult = result.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK;
+        SdkResultSource = result.ResultInformation?.ResultSource ?? SDK.ConfigurationUnitResultSource.None;
+        Details = result.ResultInformation?.Details;
+        ErrorDescription = result.ResultInformation?.Description;
+    }
+
     public string Type { get; }
 
     public string Id { get; }
@@ -53,6 +70,8 @@ public class ConfigurationUnitResult
     public int HResult { get; }
 
     public ConfigurationUnitResultSource ResultSource { get; }
+
+    public SDK.ConfigurationUnitResultSource SdkResultSource { get; }
 
     public string Details { get; }
 }
