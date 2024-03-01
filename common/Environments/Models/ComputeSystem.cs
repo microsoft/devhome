@@ -280,7 +280,7 @@ public class ComputeSystem
     {
         try
         {
-            return _computeSystem.ApplyConfiguration(configuration);
+            return _computeSystem.CreateApplyConfigurationOperation(configuration);
         }
         catch (Exception ex)
         {

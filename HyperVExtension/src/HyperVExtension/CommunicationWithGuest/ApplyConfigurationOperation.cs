@@ -60,12 +60,17 @@ public sealed class ApplyConfigurationOperation : IApplyConfigurationOperation, 
         HostGuestCommunication.ConfigurationSetChangeData? progressData,
         SDK.IExtensionAdaptiveCardSession2? adaptiveCardSession)
     {
-        var sdkProgressData = GetSdkProgressData(state, progressData, adaptiveCardSession);
+        var sdkProgressData = GetSdkProgressData(state, progressData);
 
         if (sdkProgressData != null)
         {
             ProgressData = sdkProgressData;
             ConfigurationSetStateChanged?.Invoke(this, new(ProgressData));
+        }
+
+        if (adaptiveCardSession != null)
+        {
+            ActionRequired?.Invoke(this, new(adaptiveCardSession));
         }
     }
 
@@ -86,8 +91,7 @@ public sealed class ApplyConfigurationOperation : IApplyConfigurationOperation, 
 
     private SDK.ConfigurationSetChangeData GetSdkProgressData(
         SDK.ConfigurationSetState state,
-        HostGuestCommunication.ConfigurationSetChangeData? progressData,
-        SDK.IExtensionAdaptiveCardSession2? adaptiveCardSession)
+        HostGuestCommunication.ConfigurationSetChangeData? progressData)
     {
         SDK.ConfigurationSetChangeData sdkProgressData;
         if (progressData != null)

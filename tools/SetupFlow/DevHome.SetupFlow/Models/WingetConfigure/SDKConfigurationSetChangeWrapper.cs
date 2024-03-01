@@ -49,9 +49,6 @@ public class SDKConfigurationSetChangeWrapper
     // The configuration unit whose state changed.
     public SDK.ConfigurationUnit Unit => _configurationSetChangeData.Unit;
 
-    // An adaptive card that the extension can send to Dev Home to allow the user to perform an action.
-    public SDK.IExtensionAdaptiveCardSession2 CorrectiveActionCardSession => _configurationSetChangeData.CorrectiveActionCardSession;
-
     public bool IsErrorMessagePresent => ResultInformation != null && (!string.IsNullOrEmpty(DetailedFailureDescription) || !string.IsNullOrEmpty(ShortFailureDescription));
 
     public string ConfigurationSetState

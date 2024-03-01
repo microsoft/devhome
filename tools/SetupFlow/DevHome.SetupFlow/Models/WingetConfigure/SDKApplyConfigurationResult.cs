@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models.WingetConfigure;
 
@@ -11,16 +12,16 @@ public class SDKApplyConfigurationResult
 
     public SDKOpenConfigurationSetResult OpenResult { get; private set; }
 
-    public Exception ResultCode { get; private set; }
+    public ProviderOperationResult ProviderResult { get; private set; }
 
     public string ResultDescription { get; private set; }
 
-    public SDKApplyConfigurationResult(Exception resultCode, string resultDescription, SDKApplyConfigurationSetResult applyResult, SDKOpenConfigurationSetResult openResult)
+    public SDKApplyConfigurationResult(ProviderOperationResult providerResult, SDKApplyConfigurationSetResult applyResult, SDKOpenConfigurationSetResult openResult)
     {
         ApplyResult = applyResult;
         OpenResult = openResult;
-        ResultCode = resultCode;
-        ResultDescription = resultDescription;
+        ProviderResult = providerResult;
+        ResultDescription = providerResult.DisplayMessage;
     }
 
     public bool ApplyConfigSucceeded => ApplyResult.Succeeded;
