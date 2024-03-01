@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.Linq;
 using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -16,6 +15,8 @@ public class ConfigurationUnitViewModel
         _configurationUnit = configurationUnit;
     }
 
+    public string Id => _configurationUnit.Id;
+
     public string Title => GetTitle();
 
     public string SubTitle => GetSubTitle();
@@ -27,6 +28,8 @@ public class ConfigurationUnitViewModel
     public string ModuleName => _configurationUnit.ModuleName;
 
     public string Intent => _configurationUnit.Intent;
+
+    public IList<string> Dependencies => _configurationUnit.Dependencies;
 
     public IList<KeyValuePair<string, string>> Settings => _configurationUnit.Settings;
 

@@ -15,6 +15,8 @@ public class ConfigurationUnit
     {
         Type = unit.Type;
         Id = unit.Identifier;
+        Intent = unit.Intent.ToString();
+        Dependencies = [.. unit.Dependencies];
 
         // Get description from settings
         unit.Settings.TryGetValue(DescriptionSettingsKey, out var descriptionObj);
@@ -24,22 +26,23 @@ public class ConfigurationUnit
         unit.Metadata.TryGetValue(ModuleMetadataKey, out var moduleObj);
         ModuleName = moduleObj?.ToString() ?? string.Empty;
 
-        Intent = unit.Intent.ToString();
         Settings = unit.Settings.Select(s => new KeyValuePair<string, string>(s.Key, s.Value.ToString())).ToList();
         Metadata = unit.Metadata.Select(m => new KeyValuePair<string, string>(m.Key, m.Value.ToString())).ToList();
     }
 
-    public string Type { get; set; }
+    public string Type { get; }
 
-    public string Id { get; set; }
+    public string Id { get; }
 
-    public string Description { get; set; }
+    public string Description { get; }
 
-    public string ModuleName { get; set; }
+    public string ModuleName { get; }
 
-    public string Intent { get; set; }
+    public string Intent { get; }
 
-    public IList<KeyValuePair<string, string>> Settings { get; set; }
+    public IList<string> Dependencies { get; }
 
-    public IList<KeyValuePair<string, string>> Metadata { get; set; }
+    public IList<KeyValuePair<string, string>> Settings { get; }
+
+    public IList<KeyValuePair<string, string>> Metadata { get; }
 }

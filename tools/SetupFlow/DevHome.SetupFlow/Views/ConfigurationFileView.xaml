@@ -11,6 +11,7 @@
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:cf="using:DevHome.SetupFlow.Views"
     mc:Ignorable="d">
     <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
@@ -35,8 +36,21 @@
             </SplitButton.Flyout>
         </ToggleSplitButton>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="KeyValueDictionary">
+                <StackPanel Spacing="2" Orientation="Horizontal">
+                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{Binding Key}" />
+                    <TextBlock Text=":" />
+                    <TextBlock Text="{Binding Value}" />
+                </StackPanel>
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
     <controls:SetupShell Orchestrator="{x:Bind ViewModel.Orchestrator}">
-        <Grid>
+        <Grid RowSpacing="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -54,8 +68,10 @@
                 <ctControls:SegmentedItem Content="Code view"/>
             </ctControls:Segmented>
 
+            <!-- Summary view -->
             <ListView
                 ItemsSource="{x:Bind ViewModel.ConfigurationUnits}"
+                x:Name="ConfigurationUnitSections"
                 Grid.Row="2"
                 SelectionMode="None">
                 <ListView.ItemsPanel>
@@ -67,54 +83,98 @@
                     <DataTemplate x:DataType="viewmodels:ConfigurationUnitViewModel">
                         <Expander
                             IsExpanded="True"
+                            Tag="{x:Bind Id}"
                             HorizontalContentAlignment="Left"
                             HorizontalAlignment="Stretch">
+
+                            <!-- Header -->
                             <Expander.Header>
                                 <StackPanel>
                                     <TextBlock Text="{x:Bind Title}" />
-                                    <TextBlock Text="{x:Bind SubTitle}" />
+                                    <TextBlock
+                                        Style="{ThemeResource CaptionTextBlockStyle}"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="{x:Bind SubTitle}" />
                                 </StackPanel>
                             </Expander.Header>
+                            
+                            <!-- Content -->
                             <StackPanel Spacing="10">
                                 <StackPanel.Resources>
+                                    <Style TargetType="ListView">
+                                        <Setter Property="SelectionMode" Value="None" />
+                                    </Style>
                                     <Style TargetType="ListViewItem">
                                         <Setter Property="MinHeight" Value="0" />
+                                        <Setter Property="MinWidth" Value="0" />
                                     </Style>
                                 </StackPanel.Resources>
-                                <!-- Metadata -->
-                                <StackPanel>
-                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Metadata</TextBlock>
-                                    <ListView
-                                        SelectionMode="None"
-                                        ItemsSource="{x:Bind Metadata}">
+
+                                <!-- Individual records -->
+                                <ListView>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="cf:RecordDefinition">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind Key}" />
+                                                <TextBlock>:</TextBlock>
+                                                <TextBlock Text="{x:Bind Value}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="MinHeight" Value="0" />
+                                            <Setter Property="MinWidth" Value="0" />
+                                            <Setter Property="Padding" Value="0"/>
+                                            <Setter Property="Margin" Value="2,0"/>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+
+                                    <!-- Data -->
+                                    <cf:RecordDefinition Key="Id" Value="{x:Bind Id}" />
+                                    <cf:RecordDefinition Key="Intent" Value="{x:Bind Intent}" />
+                                </ListView>
+                                
+                                <!-- Dependencies -->
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Dependencies</TextBlock>
+                                    <TextBlock>:</TextBlock>
+                                    <ListView ItemsSource="{x:Bind Dependencies}">
+                                        <ListView.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ListView.ItemsPanel>
+                                        <ListView.ItemContainerStyle>
+                                            <Style TargetType="ListViewItem">
+                                                <Setter Property="MinHeight" Value="0" />
+                                                <Setter Property="MinWidth" Value="0" />
+                                                <Setter Property="Padding" Value="0"/>
+                                                <Setter Property="Margin" Value="2,0"/>
+                                            </Style>
+                                        </ListView.ItemContainerStyle>
                                         <ListView.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Spacing="2" Orientation="Horizontal">
-                                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{Binding Key}" />
-                                                    <TextBlock Text=":" />
-                                                    <TextBlock Text="{Binding Value}" />
-                                                </StackPanel>
+                                            <DataTemplate x:DataType="x:String">
+                                                <TextBlock Tag="{x:Bind}">
+                                                    <Hyperlink Click="Hyperlink_Click">
+                                                        <Run Text="{x:Bind}" />
+                                                    </Hyperlink>
+                                                </TextBlock>
                                             </DataTemplate>
                                         </ListView.ItemTemplate>
                                     </ListView>
+                                </StackPanel>
+                                
+                                <!-- Metadata -->
+                                <StackPanel>
+                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Metadata</TextBlock>
+                                    <ListView ItemTemplate="{ThemeResource KeyValueDictionary}" ItemsSource="{x:Bind Metadata}"/>
                                 </StackPanel>
 
                                 <!-- Settings -->
                                 <StackPanel>
                                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Settings</TextBlock>
-                                    <ListView
-                                        SelectionMode="None"
-                                        ItemsSource="{x:Bind Settings}">
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Spacing="2" Orientation="Horizontal">
-                                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{Binding Key}" />
-                                                    <TextBlock Text=":" />
-                                                    <TextBlock Text="{Binding Value}" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                    </ListView>
+                                    <ListView ItemTemplate="{ThemeResource KeyValueDictionary}" ItemsSource="{x:Bind Settings}"/>
                                 </StackPanel>
                             </StackPanel>
                         </Expander>
