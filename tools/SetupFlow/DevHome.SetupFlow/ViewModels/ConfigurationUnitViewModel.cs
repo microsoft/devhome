@@ -27,6 +27,10 @@ public class ConfigurationUnitViewModel
 
     public string ModuleName => _configurationUnit.ModuleName;
 
+    public string ModuleDescription => _configurationUnit.ModuleDescription;
+
+    public string Author => _configurationUnit.Author;
+
     public string Intent => _configurationUnit.Intent;
 
     public IList<string> Dependencies => _configurationUnit.Dependencies;

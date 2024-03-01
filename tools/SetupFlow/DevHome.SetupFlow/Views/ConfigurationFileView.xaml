@@ -56,6 +56,12 @@
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
+
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
     
     <controls:SetupShell Orchestrator="{x:Bind ViewModel.Orchestrator}">
         <Grid RowSpacing="10">
@@ -74,12 +80,6 @@
             <ctControls:Segmented Grid.Row="1" SelectedIndex="0">
                 <ctControls:SegmentedItem IsSelected="{x:Bind ViewModel.IsCodeMode, Mode=TwoWay}" Content="Code view"/>
                 <ctControls:SegmentedItem Content="Summary view" />
-
-                <i:Interaction.Behaviors>
-                    <ic:EventTriggerBehavior EventName="SelectionChanged">
-                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.ViewModeChangedCommand}" />
-                    </ic:EventTriggerBehavior>
-                </i:Interaction.Behaviors>
             </ctControls:Segmented>
 
             <!-- Summary mode -->
@@ -208,6 +208,27 @@
                                     <StackPanel Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
                                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Settings</TextBlock>
                                         <ListView ItemTemplate="{ThemeResource KeyValueDictionary}" ItemsSource="{x:Bind Settings}"/>
+                                    </StackPanel>
+
+                                    <!-- Details -->
+                                    <StackPanel Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
+                                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Details</TextBlock>
+                                        <ListView>
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate x:DataType="cf:RecordDefinition">
+                                                    <StackPanel Visibility="{x:Bind Value, Converter={StaticResource StringVisibilityConverter}}" Orientation="Horizontal">
+                                                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind Key}" />
+                                                        <TextBlock>:</TextBlock>
+                                                        <TextBlock Text="{x:Bind Value}" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+
+                                            <!-- Data -->
+                                            <cf:RecordDefinition Key="Module name" Value="{x:Bind ModuleName}" />
+                                            <cf:RecordDefinition Key="Module description" Value="{x:Bind ModuleDescription}" />
+                                            <cf:RecordDefinition Key="Author" Value="{x:Bind Author}" />
+                                        </ListView>
                                     </StackPanel>
                                 </StackPanel>
                             </Expander>

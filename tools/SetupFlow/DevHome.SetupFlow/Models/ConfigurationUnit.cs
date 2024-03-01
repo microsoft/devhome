@@ -27,8 +27,19 @@ public class ConfigurationUnit
         unit.Metadata.TryGetValue(ModuleMetadataKey, out var moduleObj);
         ModuleName = moduleObj?.ToString() ?? string.Empty;
 
+        // Load dictionary values into list of key value pairs
         Settings = unit.Settings.Select(s => new KeyValuePair<string, string>(s.Key, s.Value.ToString())).ToList();
         Metadata = unit.Metadata.Select(m => new KeyValuePair<string, string>(m.Key, m.Value.ToString())).ToList();
+
+        // Load details if available
+        if (unit.Details != null)
+        {
+            // Use the module name from the details if available
+            ModuleName = unit.Details.ModuleName;
+
+            ModuleDescription = unit.Details.ModuleDescription;
+            Author = unit.Details.Author;
+        }
     }
 
     public string Type { get; }
@@ -38,6 +49,10 @@ public class ConfigurationUnit
     public string Description { get; }
 
     public string ModuleName { get; }
+
+    public string ModuleDescription { get; }
+
+    public string Author { get; }
 
     public string Intent { get; }
 

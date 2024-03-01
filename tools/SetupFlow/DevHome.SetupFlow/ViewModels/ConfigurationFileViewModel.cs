@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -44,17 +43,6 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private bool _isCodeMode;
 
-    [RelayCommand]
-    private async Task ViewModeChangedAsync()
-    {
-        var loadConfigurationUnits = !IsCodeMode && Configuration != null && ConfigurationUnits == null;
-        if (loadConfigurationUnits)
-        {
-            var configUnits = await _dsc.GetConfigurationUnitDetailsAsync(Configuration, Orchestrator.ActivityId);
-            ConfigurationUnits = configUnits.Select(u => new ConfigurationUnitViewModel(u)).ToList();
-        }
-    }
-
     [ObservableProperty]
     private IList<ConfigurationUnitViewModel> _configurationUnits;
 
@@ -84,7 +72,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     public string Content => Configuration.Content;
 
     [RelayCommand(CanExecute = nameof(ReadAndAgree))]
-    public async Task ConfigureAsAdminAsync()
+    private async Task ConfigureAsAdminAsync()
     {
         foreach (var task in TaskList)
         {
@@ -104,10 +92,20 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(ReadAndAgree))]
-    public async Task ConfigureAsNonAdminAsync()
+    private async Task ConfigureAsNonAdminAsync()
     {
         TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", LogLevel.Critical, new ConfigureCommandEvent(false), Orchestrator.ActivityId);
         await Orchestrator.GoToNextPage();
+    }
+
+    [RelayCommand]
+    private async Task OnLoadedAsync()
+    {
+        if (Configuration != null && ConfigurationUnits == null)
+        {
+            var configUnits = await _dsc.GetConfigurationUnitDetailsAsync(Configuration, Orchestrator.ActivityId);
+            ConfigurationUnits = configUnits.Select(u => new ConfigurationUnitViewModel(u)).ToList();
+        }
     }
 
     /// <summary>
