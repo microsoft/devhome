@@ -294,6 +294,7 @@
                                     DataContext="{x:Bind PageKey}"
                                     Click="Button_ClickAsync"
                                     HorizontalAlignment="Stretch"
+                                    AutomationProperties.Name="{x:Bind Button}"
                                     VerticalAlignment="Bottom">
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal">

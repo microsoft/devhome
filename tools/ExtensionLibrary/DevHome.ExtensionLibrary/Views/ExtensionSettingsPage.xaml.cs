@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
-using DevHome.Settings.ViewModels;
+using DevHome.ExtensionLibrary.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.Settings.Views;
+namespace DevHome.ExtensionLibrary.Views;
 
 public sealed partial class ExtensionSettingsPage : Page
 {
