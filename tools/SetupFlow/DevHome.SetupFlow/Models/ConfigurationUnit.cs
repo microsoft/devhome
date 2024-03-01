@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using OutOfProcConfigurationUnit = Microsoft.Management.Configuration.ConfigurationUnit;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -11,7 +12,7 @@ public class ConfigurationUnit
     private const string DescriptionSettingsKey = "description";
     private const string ModuleMetadataKey = "module";
 
-    public ConfigurationUnit(Microsoft.Management.Configuration.ConfigurationUnit unit)
+    public ConfigurationUnit(OutOfProcConfigurationUnit unit)
     {
         Type = unit.Type;
         Id = unit.Identifier;

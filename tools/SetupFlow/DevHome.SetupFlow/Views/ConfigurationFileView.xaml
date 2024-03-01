@@ -13,6 +13,7 @@
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     xmlns:cf="using:DevHome.SetupFlow.Views"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     mc:Ignorable="d">
     <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
@@ -71,8 +72,25 @@
                 <ctControls:SegmentedItem Content="Code view"/>
             </ctControls:Segmented>
 
+            <ListView SelectionMode="None" Grid.Row="2">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="10" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <labs:Shimmer Height="150" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <x:String></x:String>
+                <x:String></x:String>
+                <x:String></x:String>
+            </ListView>
+            
             <!-- Summary view -->
             <ListView
+                Visibility="Collapsed"
                 ItemsSource="{x:Bind ViewModel.ConfigurationUnits}"
                 x:Name="ConfigurationUnitSections"
                 Grid.Row="2"
