@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     xmlns:views="using:DevHome.SetupFlow.Views"
+    xmlns:common="using:DevHome.Common.Views"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
@@ -57,12 +58,9 @@
                 </StackPanel>
 
                 <!-- Close button -->
-                <Button
+                <common:CloseButton
                     Grid.Column="1"
-                    FontSize="{ThemeResource CaptionTextBlockFontSize}"
-                    Padding="5"
-                    Command="{x:Bind ViewModel.ExitViewAllPackagesCommand}"
-                    Style="{ThemeResource AlternateCloseButtonStyle}" />
+                    Command="{x:Bind ViewModel.ExitViewAllPackagesCommand}" />
             </Grid>
 
             <!-- Package list -->
