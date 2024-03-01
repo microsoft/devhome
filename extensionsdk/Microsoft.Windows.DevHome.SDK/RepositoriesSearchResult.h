@@ -20,7 +20,7 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
         std::shared_ptr<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult> _Result;
         std::shared_ptr<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository>> _Repositories;
         std::shared_ptr<hstring> _SearchPath;
-        std::shared_ptr<array_view<hstring const>> _SelectionOptions;
+        winrt::com_array<hstring> _SelectionOptions;
         std::shared_ptr<hstring> _SelectionOptionsName;
     };
 }
