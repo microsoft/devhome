@@ -135,7 +135,7 @@ namespace Microsoft.Windows.DevHome.SDK
             get;
         };
 
-        String SearchPath
+        String SelectionsOptionLabel
         {
             get;
         };
