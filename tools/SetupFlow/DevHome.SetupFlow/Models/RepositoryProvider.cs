@@ -183,6 +183,7 @@ internal sealed class RepositoryProvider
 
         // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
         renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
+        renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
 
         var hostConfigContents = string.Empty;
         var hostConfigFileName = (elementTheme == ElementTheme.Light) ? "LightHostConfig.json" : "DarkHostConfig.json";

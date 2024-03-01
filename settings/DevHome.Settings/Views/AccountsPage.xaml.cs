@@ -156,6 +156,7 @@ public sealed partial class AccountsPage : Page
 
         // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
         renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
+        renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
 
         var hostConfigContents = string.Empty;
         var hostConfigFileName = (ActualTheme == ElementTheme.Light) ? "LightHostConfig.json" : "DarkHostConfig.json";
