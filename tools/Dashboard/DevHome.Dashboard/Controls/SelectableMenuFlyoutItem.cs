@@ -2,13 +2,24 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Automation.Provider;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Dashboard.Controls;
 
-public sealed class SelectableMenuFlyoutItem : MenuFlyoutItem, ISelectionItemProvider
+public sealed class SelectableMenuFlyoutItem : MenuFlyoutItem
 {
+    protected override AutomationPeer OnCreateAutomationPeer()
+    {
+        return new SelectableMenuFlyoutItemAutomationPeer(this);
+    }
+}
+
+public class SelectableMenuFlyoutItemAutomationPeer : MenuFlyoutItemAutomationPeer, ISelectionItemProvider
+{
+    private readonly FrameworkElement _owner;
     private bool _selected;
 
     public bool IsSelected
@@ -17,9 +28,18 @@ public sealed class SelectableMenuFlyoutItem : MenuFlyoutItem, ISelectionItemPro
         set => _selected = value;
     }
 
-    public IRawElementProviderSimple SelectionContainer => throw new NotImplementedException();
+    public SelectableMenuFlyoutItemAutomationPeer(SelectableMenuFlyoutItem owner)
+        : base(owner)
+    {
+        _owner = owner;
+    }
 
-    public void AddToSelection() => throw new NotImplementedException();
+    public IRawElementProviderSimple SelectionContainer => (IRawElementProviderSimple)_owner.Parent;
+
+    public void AddToSelection()
+    {
+        IsSelected = true;
+    }
 
     public void RemoveFromSelection()
     {
@@ -29,5 +49,20 @@ public sealed class SelectableMenuFlyoutItem : MenuFlyoutItem, ISelectionItemPro
     public void Select()
     {
         IsSelected = true;
+    }
+
+    protected override string GetClassNameCore()
+    {
+        return "SelectableMenuItemFlyoutItem";
+    }
+
+    protected override object GetPatternCore(PatternInterface patternInterface)
+    {
+        if (patternInterface == PatternInterface.SelectionItem)
+        {
+            return this;
+        }
+
+        return base.GetPatternCore(patternInterface);
     }
 }
