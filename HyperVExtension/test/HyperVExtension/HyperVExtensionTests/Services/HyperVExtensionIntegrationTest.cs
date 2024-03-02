@@ -81,6 +81,7 @@ public class HyperVExtensionIntegrationTest
                 // Pattern to allow multiple non-service registered interfaces to be used with registered interfaces during construction.
                 services.AddSingleton<IPowerShellService>(psService =>
                     ActivatorUtilities.CreateInstance<PowerShellService>(psService, new PowerShellSession()));
+                services.AddSingleton<HyperVVirtualMachineFactory>(sp => psObject => ActivatorUtilities.CreateInstance<HyperVVirtualMachine>(sp, psObject));
 
                 services.AddTransient<IWindowsServiceController, WindowsServiceController>();
             }).Build();
@@ -95,14 +96,14 @@ public class HyperVExtensionIntegrationTest
     ///   User logged on to the VM.
     /// </summary>
     [TestMethod]
-    public void TestConfigureRequest()
+    public async Task TestConfigureRequest()
     {
         IHyperVManager hyperVManager = TestHost!.GetService<IHyperVManager>();
         var machines = hyperVManager.GetAllVirtualMachines();
         HyperVVirtualMachine? testVm = null;
         foreach (var vm in machines)
         {
-            if (string.Equals(vm.Name, "TestVM", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(vm.DisplayName, "TestVM", StringComparison.OrdinalIgnoreCase))
             {
                 testVm = vm;
                 break;
@@ -131,70 +132,59 @@ properties:
   configurationVersion: 0.2.0";
 
         var operationData = new OperationData();
-        var operation = testVm.ApplyConfiguration(configurationYaml)!;
+        var operation = testVm.CreateApplyConfigurationOperation(configurationYaml)!;
 
-        operation.Completed += (sender, result) =>
+        operation.ConfigurationSetStateChanged += (sender, progressData) =>
         {
-            operationData.ConfigurationResult = result;
-            operationData.Completed.Set();
+            operationData.ProgressData.Add(progressData.ConfigurationSetChangeData);
+            PrintProgressData(progressData.ConfigurationSetChangeData);
         };
 
-        operation.Progress += async (sender, progressData) =>
+        operation.ActionRequired += async (sender, actionRequired) =>
         {
-            operationData.ProgressData.Add(progressData);
-            PrintProgressData(progressData);
-
-            if (progressData.CorrectiveActionCardSession != null)
+            if (actionRequired.CorrectiveActionCardSession is VmCredentialAdaptiveCardSession credentialsCardSession)
             {
-                if (progressData.SetState == ConfigurationSetState.WaitingForAdminUserLogon)
-                {
-                    var extensionAdaptiveCard = new Mock<IExtensionAdaptiveCard>();
-                    extensionAdaptiveCard
-                        .Setup(x => x.Update(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                        .Returns((string templateJson, string dataJson, string state) => new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null));
+               var extensionAdaptiveCard = new Mock<IExtensionAdaptiveCard>();
+               extensionAdaptiveCard
+                    .Setup(x => x.Update(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                    .Returns((string templateJson, string dataJson, string state) => new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null));
 
-                    extensionAdaptiveCard
-                        .Setup(x => x.State)
-                        .Returns("VmCredential");
+               extensionAdaptiveCard
+                    .Setup(x => x.State)
+                    .Returns("VmCredential");
 
-                    progressData.CorrectiveActionCardSession.Initialize(extensionAdaptiveCard.Object);
-                    var op = progressData.CorrectiveActionCardSession.OnAction(@"{ ""Type"": ""Action.Execute"", ""Id"": ""okAction"" }", @"{ ""id"": ""okAction"", ""UserVal"": """", ""PassVal"": """" }");
-                    await op.AsTask();
-                }
-                else if (progressData.SetState == ConfigurationSetState.WaitingForUserLogon)
-                {
-                    var extensionAdaptiveCard = new Mock<IExtensionAdaptiveCard>();
-                    extensionAdaptiveCard
-                        .Setup(x => x.Update(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                        .Returns((string templateJson, string dataJson, string state) => new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null));
+               credentialsCardSession.Initialize(extensionAdaptiveCard.Object);
+               var op = credentialsCardSession.OnAction(@"{ ""Type"": ""Action.Execute"", ""Id"": ""okAction"" }", @"{ ""id"": ""okAction"", ""UserVal"": """", ""PassVal"": """" }");
+               await op.AsTask();
+            }
+            else if (actionRequired.CorrectiveActionCardSession is WaitForLoginAdaptiveCardSession waitForLoginCardSession)
+            {
+                var extensionAdaptiveCard = new Mock<IExtensionAdaptiveCard>();
+                extensionAdaptiveCard
+                    .Setup(x => x.Update(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                    .Returns((string templateJson, string dataJson, string state) => new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null));
 
-                    extensionAdaptiveCard
-                        .Setup(x => x.State)
-                        .Returns("WaitForVmUserLogin");
+                extensionAdaptiveCard
+                    .Setup(x => x.State)
+                    .Returns("WaitForVmUserLogin");
 
-                    // TODO: figure out how to wait for user's login
-                    progressData.CorrectiveActionCardSession.Initialize(extensionAdaptiveCard.Object);
-                    var op = progressData.CorrectiveActionCardSession.OnAction(@"{ ""Type"": ""Action.Execute"", ""Id"": ""okAction"" }", @"{ }");
-                    await op.AsTask();
-                }
+                // TODO: figure out how to wait for user's login
+                waitForLoginCardSession.Initialize(extensionAdaptiveCard.Object);
+                var op = waitForLoginCardSession.OnAction(@"{ ""Type"": ""Action.Execute"", ""Id"": ""okAction"" }", @"{ }");
+                await op.AsTask();
             }
         };
 
-        var result = operation.CompletionStatus;
+        var result = await operation.StartAsync();
         if (result != null)
         {
             operationData.ConfigurationResult = result;
-            operationData.ProgressData.Add(operation.ProgressData);
-        }
-        else
-        {
-            operationData.Completed.WaitOne(TimeSpan.FromMinutes(10));
         }
 
         Assert.IsNotNull(operationData.ConfigurationResult);
         PrintResultData(operationData.ConfigurationResult);
 
-        Assert.IsNull(operationData.ConfigurationResult.ResultCode);
+        Assert.IsTrue(operationData.ConfigurationResult.Result.Status == ProviderOperationStatus.Success);
         Assert.IsNotNull(operationData.ConfigurationResult.OpenConfigurationSetResult);
         Assert.IsNull(operationData.ConfigurationResult.OpenConfigurationSetResult.ResultCode);
         Assert.IsNotNull(operationData.ConfigurationResult.ApplyConfigurationSetResult);
@@ -217,8 +207,8 @@ properties:
     {
         StringBuilder sb = new StringBuilder();
         sb.Append(CultureInfo.InvariantCulture, $"Result:\n");
-        sb.Append(CultureInfo.InvariantCulture, $"  ResultCode: {configurationResult.ResultCode}\n");
-        sb.Append(CultureInfo.InvariantCulture, $"  ResultDescription: {configurationResult.ResultDescription}\n");
+        sb.Append(CultureInfo.InvariantCulture, $"  ProviderOperation result status: {configurationResult.Result.Status}\n");
+        sb.Append(CultureInfo.InvariantCulture, $"  ProviderOperation diagnostic text: {configurationResult.Result.DiagnosticText}\n");
 
         if (configurationResult.OpenConfigurationSetResult != null)
         {
@@ -335,7 +325,7 @@ properties:
         HyperVVirtualMachine? testVm = null;
         foreach (var vm in machines)
         {
-            if (string.Equals(vm.Name, "TestVM", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(vm.DisplayName, "TestVM", StringComparison.OrdinalIgnoreCase))
             {
                 testVm = vm;
                 break;

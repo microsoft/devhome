@@ -46,5 +46,7 @@ public class Log
         public static readonly string ComputeSystemsListViewModel = nameof(ComputeSystemsListViewModel);
         public static readonly string ComputeSystemCardViewModel = nameof(ComputeSystemCardViewModel);
         public static readonly string ComputeSystemViewModelFactory = nameof(ComputeSystemViewModelFactory);
+        public static readonly string ConfigurationTarget = nameof(ConfigurationTarget);
+        public static readonly string SDKOpenConfigurationSetResult = nameof(SDKOpenConfigurationSetResult);
     }
 }

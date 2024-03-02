@@ -11,19 +11,11 @@ namespace DevHome.Environments.Models;
 
 public class TestSystemProvider : IComputeSystemProvider
 {
-    public string DefaultComputeSystemProperties
-    {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
-    }
-
     public string DisplayName => "Test Hyper-V";
 
     public string Id => "DevHome.Test.IComputeSystemProvider";
 
-    public string Properties => throw new NotImplementedException();
-
-    public IEnumerable<IComputeSystem> GetComputeSystemsAsync(IDeveloperId developerId)
+    public IEnumerable<IComputeSystem> GetComputeSystems(IDeveloperId developerId)
     {
         var computeSystems = new List<IComputeSystem>
         {
@@ -34,12 +26,12 @@ public class TestSystemProvider : IComputeSystemProvider
         return computeSystems;
     }
 
-    public IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId, string options)
+    public IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId)
     {
         return Task.Run(async () =>
         {
             await Task.Delay(10);
-            var computeSystems = GetComputeSystemsAsync(developerId);
+            var computeSystems = GetComputeSystems(developerId);
             return new ComputeSystemsResult(computeSystems);
         }).AsAsyncOperation();
     }
@@ -49,11 +41,11 @@ public class TestSystemProvider : IComputeSystemProvider
 
     public Uri Icon => throw new NotImplementedException();
 
-    public IAsyncOperationWithProgress<CreateComputeSystemResult, ComputeSystemOperationData> CreateComputeSystemAsync(IDeveloperId developerId, string options) => throw new NotImplementedException();
-
-    ComputeSystemAdaptiveCardResult IComputeSystemProvider.CreateAdaptiveCardSession(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind) => throw new NotImplementedException();
-
-    ComputeSystemAdaptiveCardResult IComputeSystemProvider.CreateAdaptiveCardSession(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind) => throw new NotImplementedException();
-
     public ICreateComputeSystemOperation CreateComputeSystem(IDeveloperId developerId, string options) => throw new NotImplementedException();
+
+    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForDeveloperId(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind) => throw new NotImplementedException();
+
+    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForComputeSystem(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind) => throw new NotImplementedException();
+
+    public ICreateComputeSystemOperation CreateCreateComputeSystemOperation(IDeveloperId developerId, string inputJson) => throw new NotImplementedException();
 }

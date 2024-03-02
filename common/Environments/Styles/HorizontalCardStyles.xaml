@@ -14,8 +14,6 @@
         TargetType="Grid">
         <Setter Property="Padding" Value="10 0 10 10" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
-        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
         <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
     </Style>
 

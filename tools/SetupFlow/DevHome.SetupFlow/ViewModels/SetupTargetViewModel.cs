@@ -105,7 +105,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     /// When the ComputeSystemManager is removing compute systems, we need to remove the event handlers from the ListViewModels.
     /// And we need to remove the ListViewModels from the list of ListViewModels.
     /// </summary>
-    /// <param name="sender">The ComputeSystemManager object, however this parameter is unused.</param>
+    /// <param name="sender">object that ends the setup flow</param>
     /// <param name="e">An empty event arg</param>
     private void OnRemovingComputeSystems(object sender, EventArgs e)
     {

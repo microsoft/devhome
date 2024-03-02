@@ -23,9 +23,13 @@ public class HyperVManager : IHyperVManager, IDisposable
 {
     private readonly IPowerShellService _powerShellService;
 
+    private readonly HyperVVirtualMachineFactory _hyperVVirtualMachineFactory;
+
     private readonly IHost _host;
 
     private readonly object _operationLock = new();
+
+    public bool IsFirstTimeLoadingModule { get; private set; } = true;
 
     /// <summary>
     /// This dictionary is used so we can map a virtual machines id to the amount of operations
@@ -43,28 +47,65 @@ public class HyperVManager : IHyperVManager, IDisposable
 
     private bool _disposed;
 
-    public HyperVManager(IHost host, IPowerShellService powerShellService)
+    public HyperVManager(IHost host, IPowerShellService powerShellService, HyperVVirtualMachineFactory hyperVVirtualMachineFactory)
     {
         _powerShellService = powerShellService;
         _host = host;
+        _hyperVVirtualMachineFactory = hyperVVirtualMachineFactory;
     }
 
     /// <inheritdoc cref="IHyperVManager.IsHyperVModuleLoaded"/>
     public bool IsHyperVModuleLoaded()
     {
+        if (IsFirstTimeLoadingModule)
+        {
+            IsFirstTimeLoadingModule = false;
+            LoadHyperVModule();
+        }
+
+        // Build command line statement to get all the available modules.
+        // Work around for .Net 8 and PowerShell.SDK 7.4.* issue where the PowerShell session
+        // Can't find the module, even though it appears in a regular PowerShell terminal window.
+        // this will be removed once the issue is resolved.
+        var commandLineStatements = new StatementBuilder()
+            .AddScript("Get-Module -ListAvailable", true)
+            .Build();
+
+        var result = _powerShellService.Execute(commandLineStatements, PipeType.None);
+        var moduleFound = result.PsObjects?.Any(psObject =>
+        {
+            var helper = new PsObjectHelper(psObject);
+            return helper.MemberNameToValue<string>(HyperVStrings.Name) == HyperVStrings.HyperVModuleName;
+        }) ?? false;
+
+        if (!moduleFound)
+        {
+            Logging.Logger()?.ReportWarn($"PowerShell could not find the Hyper-V module in the list of modules loaded into the current session: {result.CommandOutputErrorMessage}");
+        }
+
+        return moduleFound;
+    }
+
+    private void LoadHyperVModule()
+    {
+        // Makes sure the Hyper-V module is loaded in the current PowerShell session.
+        // After moving to .Net 8 and using PowerShell.SDK 7.4.*, simply attempting to
+        // import the Hyper-V module from Dev Home does not work. We need to force the
+        // module by attempting to load it twice.
+        // A work around is to use the Get-Module twice in the PowerShell session
+        // to find the Hyper-V module. I'll need to investigate this further.
         var commandLineStatements = new StatementBuilder()
             .AddCommand(HyperVStrings.GetModule)
             .AddParameter(HyperVStrings.ListAvailable, true)
             .AddParameter(HyperVStrings.Name, HyperVStrings.HyperVModuleName)
-            .AddCommand(HyperVStrings.SelectObject)
-            .AddParameter(HyperVStrings.Property, HyperVStrings.Name)
             .Build();
 
-        var helper = ExecuteAndReturnObject<PsObjectHelper>(commandLineStatements, PipeType.PipeOutput);
-        var name = helper?.MemberNameToValue<string>(HyperVStrings.Name) ?? string.Empty;
+        var result = _powerShellService.Execute(commandLineStatements, PipeType.None);
 
-        // If the name of the returned module is Hyper-V then we know the module is loaded in PowerShell.
-        return AreStringsTheSame(name, HyperVStrings.HyperVModuleName);
+        if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
+        {
+            Logging.Logger()?.ReportWarn($"PowerShell returned an error while attempting to get the Hyper-V module on the first try: {result.CommandOutputErrorMessage}");
+        }
     }
 
     /// <inheritdoc cref="IHyperVManager.StartVirtualMachineManagementService"/>
@@ -77,7 +118,9 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         if (!IsHyperVModuleLoaded())
         {
-            throw new HyperVModuleNotLoadedException("The Hyper-V PowerShell Module is not Loaded");
+            // we won't throw an exception here. If there is a cmdlet failure due to the module not being loaded, we'll let the
+            // PowerShell cmdlet throw the exception.
+            Logging.Logger()?.ReportError("The Hyper-V PowerShell Module is not Loaded");
         }
 
         var serviceController = _host.GetService<IWindowsServiceController>();
@@ -135,7 +178,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         var returnList = result.PsObjects?
             .Where(psObject => psObject != null)
-            .Select(psObject => new HyperVVirtualMachine(_host, this, psObject));
+            .Select(psObject => _hyperVVirtualMachineFactory(psObject));
 
         return returnList ?? new List<HyperVVirtualMachine>();
     }
@@ -159,7 +202,7 @@ public class HyperVManager : IHyperVManager, IDisposable
             var psObject = result.PsObjects?.FirstOrDefault();
             if (psObject != null)
             {
-                return new HyperVVirtualMachine(_host, this, psObject);
+                return _hyperVVirtualMachineFactory(psObject);
             }
 
             throw new HyperVManagerException($"Unable to get VM with Id {vmId} due to PowerShell returning a null PsObject");
@@ -214,7 +257,7 @@ public class HyperVManager : IHyperVManager, IDisposable
                 return false;
             }
 
-            var virtualMachine = new HyperVVirtualMachine(_host, this, vmObject);
+            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
 
             // If the current state and endstate are the same we were able to stop the VM successfully.
             return AreStringsTheSame(virtualMachine?.State, endStateString);
@@ -255,7 +298,7 @@ public class HyperVManager : IHyperVManager, IDisposable
                 return false;
             }
 
-            var virtualMachine = new HyperVVirtualMachine(_host, this, vmObject);
+            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
 
             // Check if we were able to turn on the VM successfully.
             return AreStringsTheSame(virtualMachine?.State, HyperVStrings.RunningState);
@@ -296,7 +339,7 @@ public class HyperVManager : IHyperVManager, IDisposable
                 return false;
             }
 
-            var virtualMachine = new HyperVVirtualMachine(_host, this, vmObject);
+            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
 
             // Check if we were able to pause the VM successfully.
             return AreStringsTheSame(virtualMachine?.State, HyperVStrings.PausedState);
@@ -339,7 +382,7 @@ public class HyperVManager : IHyperVManager, IDisposable
                 return false;
             }
 
-            var virtualMachine = new HyperVVirtualMachine(_host, this, vmObject);
+            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
 
             // Check if we were able to resume the VM successfully.
             return AreStringsTheSame(virtualMachine?.State, HyperVStrings.RunningState);
@@ -382,7 +425,7 @@ public class HyperVManager : IHyperVManager, IDisposable
                 return false;
             }
 
-            var virtualMachine = new HyperVVirtualMachine(_host, this, vmObject);
+            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
             return virtualMachine.IsDeleted;
         }
         finally
@@ -628,7 +671,7 @@ public class HyperVManager : IHyperVManager, IDisposable
             }
 
             // confirm the VM was started successfully.
-            var virtualMachine = new HyperVVirtualMachine(_host, this, vmObject);
+            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
             return virtualMachine.State == HyperVStrings.RunningState;
         }
         finally
@@ -690,7 +733,7 @@ public class HyperVManager : IHyperVManager, IDisposable
             return default(T);
         }
 
-        if (typeof(T) == typeof(HyperVVirtualMachine) && new HyperVVirtualMachine(_host, this, psObject) is T virtualMachine)
+        if (typeof(T) == typeof(HyperVVirtualMachine) && _hyperVVirtualMachineFactory(psObject) is T virtualMachine)
         {
             return virtualMachine;
         }

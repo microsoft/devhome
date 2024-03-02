@@ -66,7 +66,9 @@ public partial class SetupFlowOrchestrator : ObservableObject
         get; private set;
     }
 
-    public bool IsInSetupTargetFlow => CurrentSetupFlowKind == SetupFlowKind.SetupTarget;
+    public bool IsSettingUpATargetMachine => CurrentSetupFlowKind == SetupFlowKind.SetupTarget;
+
+    public bool IsSettingUpLocalMachine => CurrentSetupFlowKind == SetupFlowKind.LocalMachine;
 
     /// <summary>
     /// Occurs right before a page changes

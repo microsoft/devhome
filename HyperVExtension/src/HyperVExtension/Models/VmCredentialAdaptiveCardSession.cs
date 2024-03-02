@@ -11,7 +11,7 @@ using Windows.Foundation;
 
 namespace HyperVExtension.Models;
 
-internal sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSession2, IDisposable
+public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSession2, IDisposable
 {
     private sealed class InputPayload
     {
@@ -38,7 +38,7 @@ internal sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSe
     private SecureString? _passwordString;
     private bool _disposed;
 
-    public event TypedEventHandler<IExtensionAdaptiveCardSession2, ExtensionAdaptiveCardSessionData>? SessionStatusChanged;
+    public event TypedEventHandler<IExtensionAdaptiveCardSession2, ExtensionAdaptiveCardSessionStoppedEventArgs>? Stopped;
 
     public VmCredentialAdaptiveCardSession(ApplyConfigurationOperation operation)
     {
@@ -50,11 +50,10 @@ internal sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSe
         ((IDisposable)this).Dispose();
     }
 
-    public ProviderOperationResult Initialize(IExtensionAdaptiveCard extensionAdaptiveCard)
+    public ProviderOperationResult Initialize(IExtensionAdaptiveCard extensionUI)
     {
-        _extensionAdaptiveCard = extensionAdaptiveCard;
+        _extensionAdaptiveCard = extensionUI;
         var operationResult = _extensionAdaptiveCard.Update(GetTemplate(), null, "VmCredential");
-        SessionStatusChanged?.Invoke(this, new ExtensionAdaptiveCardSessionData(ExtensionAdaptiveCardSessionEventKind.SessionStarted, operationResult));
         return operationResult;
     }
 
@@ -73,10 +72,10 @@ internal sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSe
                     case "VmCredential":
                         {
                             Logging.Logger()?.ReportDebug($"inputs: {inputs}");
-                            var actionPayload = Json.ToObject<AdaptiveCardActionPayload>(action) ?? throw new InvalidOperationException("Invalid action");
+                            var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action) ?? throw new InvalidOperationException("Invalid action");
                             if (actionPayload.IsOkAction())
                             {
-                                var inputPayload = Json.ToObject<InputPayload>(inputs) ?? throw new InvalidOperationException("Invalid inputs");
+                                var inputPayload = Helpers.Json.ToObject<InputPayload>(inputs) ?? throw new InvalidOperationException("Invalid inputs");
                                 _usernameString = inputPayload.UserVal;
                                 _passwordString = new NetworkCredential(string.Empty, inputPayload.PassVal).SecurePassword;
                             }
@@ -100,7 +99,7 @@ internal sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSe
                 operationResult = new ProviderOperationResult(ProviderOperationStatus.Failure, ex, "Something went wrong", ex.Message);
             }
 
-            SessionStatusChanged?.Invoke(this, new ExtensionAdaptiveCardSessionData(ExtensionAdaptiveCardSessionEventKind.SessionEnded, operationResult));
+            Stopped?.Invoke(this, new(operationResult, string.Empty));
             return operationResult;
         }).AsAsyncOperation();
     }
@@ -143,43 +142,39 @@ internal sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSe
     ""body"": [
         {
             ""type"": ""TextBlock"",
-            ""size"": ""Medium"",
-            ""weight"": ""Bolder"",
-            ""text"": ""%VmCredentialRequest.Title%"",
+            ""text"": ""%VmCredentialRequest/Title%"",
             ""horizontalAlignment"": ""Center"",
             ""wrap"": true,
             ""style"": ""heading""
         },
         {
             ""type"": ""TextBlock"",
-            ""text"": ""%VmCredentialRequest.Description1%"",
+            ""text"": ""%VmCredentialRequest/Description1%"",
             ""wrap"": true
         },
         {
             ""type"": ""TextBlock"",
-            ""text"": ""%VmCredentialRequest.Description2%"",
+            ""text"": ""%VmCredentialRequest/Description2%"",
             ""wrap"": true
         },
         {
             ""type"": ""Input.Text"",
             ""id"": ""UserVal"",
-            ""label"": ""%VmCredentialRequest.UsernameLabel%"",
+            ""label"": ""%VmCredentialRequest/UsernameLabel%"",
             ""isRequired"": true,
-            ""errorMessage"": ""%VmCredentialRequest.UsernameErrorMsg%""
+            ""errorMessage"": ""%VmCredentialRequest/UsernameErrorMsg%""
         },
         {
             ""type"": ""Input.Text"",
             ""id"": ""PassVal"",
             ""style"": ""Password"",
-            ""label"": ""%VmCredentialRequest.PasswordLabel%"",
-            ""isRequired"": true,
-            ""errorMessage"": ""%VmCredentialRequest.PasswordErrorMsg%""
+            ""label"": ""%VmCredentialRequest/PasswordLabel%""
         }
     ],
     ""actions"": [
         {
             ""type"": ""Action.Execute"",
-            ""title"": ""%VmCredentialRequest.OkText%"",
+            ""title"": ""%VmCredentialRequest/OkText%"",
             ""id"": ""okAction"",
             ""data"": {
                 ""id"": ""okAction""
@@ -187,7 +182,7 @@ internal sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSe
         },
         {
             ""type"": ""Action.Execute"",
-            ""title"": ""%VmCredentialRequest.CancelText%"",
+            ""title"": ""%VmCredentialRequest/CancelText%"",
             ""id"": ""cancelAction""
         }
     ]

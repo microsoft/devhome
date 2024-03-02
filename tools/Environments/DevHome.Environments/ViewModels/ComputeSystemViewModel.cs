@@ -26,11 +26,11 @@ public partial class ComputeSystemViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
+    public string Name => ComputeSystem.DisplayName;
+
     private readonly IComputeSystemManager _computeSystemManager;
 
     public ComputeSystem ComputeSystem { get; }
-
-    public string Name => ComputeSystem.Name;
 
     public string AlternativeName { get; } = string.Empty;
 
