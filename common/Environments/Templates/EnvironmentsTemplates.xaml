@@ -193,7 +193,8 @@
     <!-- Shimmer template for cards that appear in setup target flow in machine configuration page. -->
     <DataTemplate x:Key="HorizontalCardRootForSetupTargetFlowShimmerTemplate">
         <Grid
-            Style="{StaticResource HorizontalCardRootForSetupTargetFlow}">
+            Style="{StaticResource HorizontalCardRootForSetupTargetFlow}"
+            Margin="5 0 0 0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -202,7 +203,6 @@
                 Grid.Row="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                Margin="-3 10 0 0"
                 ContentTemplate="{StaticResource CardHeaderShimmerTemplate}"/>
             <ContentControl
                 Grid.Row="1"

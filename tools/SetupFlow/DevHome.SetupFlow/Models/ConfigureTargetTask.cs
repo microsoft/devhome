@@ -304,8 +304,6 @@ public class ConfigureTargetTask : ISetupTask
 
                 HandleCompletedOperation(result);
 
-                HandleCompletedOperation(result);
-
                 var openConFigException = Result.OpenResult.ResultCode;
                 var applyConfigException = Result.ApplyResult.ResultException;
 
@@ -374,7 +372,7 @@ public class ConfigureTargetTask : ISetupTask
         {
             foreach (var elementPairing in _hostConfigFileNames)
             {
-                var uri = new Uri($"ms-appx://///DevHome.Settings//Assets/{_hostConfigFileNames[elementPairing.Key]}");
+                var uri = new Uri($"ms-appx:///DevHome.Settings//Assets/{_hostConfigFileNames[elementPairing.Key]}");
                 var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
                 AdaptiveCardHostConfigs.Add(elementPairing.Key, await FileIO.ReadTextAsync(file));
             }

@@ -182,7 +182,6 @@ public class ConfigurationFileBuilder
         return new WinGetConfigResource()
         {
             Resource = DscHelpers.GitCloneDscResource,
-            Id = webAddress.AbsolutePath,
             Directives = new() { AllowPrerelease = true, Description = $"Cloning: {task.RepositoryName}" },
             DependsOn = [DscHelpers.GitDscWinGetId],
             Settings = new GitDscSettings() { HttpsUrl = webAddress.AbsoluteUri, RootDirectory = task.CloneLocation.FullName },
