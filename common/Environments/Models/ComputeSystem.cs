@@ -28,17 +28,17 @@ public class ComputeSystem
 
     private readonly IComputeSystem _computeSystem;
 
-    public string? Id { get; private set; } = string.Empty;
+    public string Id { get; private set; } = string.Empty;
 
-    public string? DisplayName { get; private set; } = string.Empty;
+    public string DisplayName { get; private set; } = string.Empty;
 
     public ComputeSystemOperations SupportedOperations { get; private set; }
 
-    public string? SupplementalDisplayName { get; private set; } = string.Empty;
+    public string SupplementalDisplayName { get; private set; } = string.Empty;
 
     public IDeveloperId AssociatedDeveloperId { get; private set; }
 
-    public string? AssociatedProviderId { get; private set; } = string.Empty;
+    public string AssociatedProviderId { get; private set; } = string.Empty;
 
     public ComputeSystem(IComputeSystem computeSystem)
     {

@@ -57,12 +57,14 @@ public partial class LandingPageViewModel : ObservableObject
         _computeSystemManager = manager;
 
         ComputeSystemsView = new AdvancedCollectionView(ComputeSystems);
-        _notificationService.CheckIfUserIsAHyperVAdmin();
     }
 
     [RelayCommand]
     public async Task SyncButton()
     {
+        // temporary, we'll need to give the users a way to disable this.
+        // if they don't want to use hyper-v
+        _notificationService.CheckIfUserIsAHyperVAdmin();
         await LoadModelAsync();
     }
 
@@ -82,6 +84,9 @@ public partial class LandingPageViewModel : ObservableObject
             IsLoading = true;
         }
 
+        // temporary, we'll need to give the users a way to disable this.
+        // if they don't want to use hyper-v
+        _notificationService.CheckIfUserIsAHyperVAdmin();
         for (var i = ComputeSystems.Count - 1; i >= 0; i--)
         {
             ComputeSystems[i].RemoveStateChangedHandler();

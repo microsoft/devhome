@@ -27,8 +27,6 @@
                 Grid.Column="0"
                 Style="{StaticResource ComputeSystemIconStyle}">
                 <Grid>
-                    <!-- Background rectangle that we will fallback into if an image is not passed to the card header. -->
-                    <Rectangle Style="{StaticResource ComputeSystemIconBackgroundStyle}"/>
                     <!-- Image for the card header. -->
                     <Border Style="{StaticResource ComputeSystemIconBorderStyle}">
                         <Image 
@@ -43,7 +41,8 @@
             <TextBlock
                 Grid.Column="1"
                 Style="{StaticResource ComputeSystemTitleStyle}"
-                Text="{x:Bind HeaderCaption, Mode=OneWay}" />
+                Text="{x:Bind HeaderCaption, Mode=OneWay}" 
+                IsTextSelectionEnabled="True"/>
         </Grid>
         <!-- 
             For an Action control, like a three dots button. Pass a DataTemplate for your control to the CardHeader's ActionControlTemplate in xaml.

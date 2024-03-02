@@ -44,6 +44,7 @@ public class ComputeSystemProvider
         Id = computeSystemProvider.Id;
         DisplayName = computeSystemProvider.DisplayName;
         SupportedOperations = computeSystemProvider.SupportedOperations;
+        Icon = computeSystemProvider.Icon;
         errorString = StringResourceHelper.GetResource("ComputeSystemUnexpectedError", DisplayName);
     }
 

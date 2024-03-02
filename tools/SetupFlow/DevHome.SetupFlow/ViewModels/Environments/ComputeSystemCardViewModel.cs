@@ -32,6 +32,10 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     public BitmapImage ComputeSystemImage { get; set; }
 
+    public BitmapImage ComputeSystemProviderImage { get; set; }
+
+    public string ComputeSystemProviderName { get; set; }
+
     [ObservableProperty]
     private bool _isSelected;
 
@@ -46,6 +50,10 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     [ObservableProperty]
     private CardStateColor _stateColor;
+
+    // This will be used for the accessibility name of the compute system card.
+    [ObservableProperty]
+    private Lazy<string> _accessibilityName;
 
     public List<CardProperty> ComputeSystemProperties { get; set; }
 
@@ -68,7 +76,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     {
         _dispatcher = Dispatching.DispatcherQueue.GetForCurrentThread();
         _computeSystemManager = manager;
-        ComputeSystemTitle = computeSystem.Name;
+        ComputeSystemTitle = computeSystem.DisplayName;
         ComputeSystemWrapper = computeSystem;
         ComputeSystemWrapper.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;

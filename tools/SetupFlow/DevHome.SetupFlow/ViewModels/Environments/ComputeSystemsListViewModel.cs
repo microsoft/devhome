@@ -18,12 +18,22 @@ using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models.Environments;
 
+public enum SortByKind
+{
+    ComputeSystemTitle,
+}
+
 /// <summary>
 /// The view model for the list of compute systems retrieved from a single compute system provider.
 /// </summary>
 public partial class ComputeSystemsListViewModel : ObservableObject
 {
     private const string SortByComputeSystemTitle = "ComputeSystemTitle";
+
+    private const string HyperVExtensionProviderName = "Microsoft.HyperV";
+
+    [ObservableProperty]
+    private bool _isHyperVExtension;
 
     [NotifyPropertyChangedFor(nameof(FormattedDeveloperId))]
     [ObservableProperty]
@@ -47,6 +57,9 @@ public partial class ComputeSystemsListViewModel : ObservableObject
     public ComputeSystemsResult CurrentResult { get; set; }
 
     public List<ComputeSystem> ComputeSystemWrappers { get; set; } = new();
+
+    [ObservableProperty]
+    private string _accessibilityName;
 
     /// <summary>
     /// Gets the Formatted the developerId login string that will be displayed in the UI.
@@ -76,7 +89,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
             if (result?.Status == ProviderOperationStatus.Failure)
             {
                 Log.Logger.ReportError(Log.Component.ComputeSystemsListViewModel, $"Failed to get Compute system due to error. Display: {result.DisplayMessage}, DiagnosticText: {result.DiagnosticText}, ExtendedError: {result.ExtendedError}");
-                return result.DisplayMessage ?? result.DiagnosticText;
+                return string.IsNullOrEmpty(result.DisplayMessage) ? result.DiagnosticText : result.DisplayMessage;
             }
 
             return string.Empty;
@@ -103,8 +116,15 @@ public partial class ComputeSystemsListViewModel : ObservableObject
         // Create a new AdvancedCollectionView for the ComputeSystemCards collection.
         ComputeSystemCardAdvancedCollectionView = new(ComputeSystemCardCollection);
 
-        // Always Sort the cards by the compute system title.
-        ComputeSystemCardAdvancedCollectionView.SortDescriptions.Add(new SortDescription(SortByComputeSystemTitle, SortDirection.Ascending));
+        // Always Sort the cards by the compute system title initially
+        SortBySpecificProperty(SortByKind.ComputeSystemTitle, SortDirection.Ascending);
+
+        if (string.Equals(Provider.Id, HyperVExtensionProviderName, StringComparison.Ordinal))
+        {
+            IsHyperVExtension = true;
+        }
+
+        AccessibilityName = Provider.DisplayName + " " + FormattedDeveloperId;
     }
 
     /// <summary>
@@ -157,5 +177,18 @@ public partial class ComputeSystemsListViewModel : ObservableObject
         {
             cardViewModel.RemoveComputeSystemStateChangedHandler();
         }
+    }
+
+    public void SortBySpecificProperty(SortByKind sortByKind, SortDirection direction)
+    {
+        var sortOption = string.Empty;
+
+        if (sortByKind == SortByKind.ComputeSystemTitle)
+        {
+            sortOption = SortByComputeSystemTitle;
+        }
+
+        ComputeSystemCardAdvancedCollectionView.SortDescriptions.Clear();
+        ComputeSystemCardAdvancedCollectionView.SortDescriptions.Add(new SortDescription(sortOption, direction));
     }
 }

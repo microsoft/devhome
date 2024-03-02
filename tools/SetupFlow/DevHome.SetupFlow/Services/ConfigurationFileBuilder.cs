@@ -158,10 +158,14 @@ public class ConfigurationFileBuilder
     private WinGetConfigResource CreateResourceFromTaskForWinGetDsc(InstallPackageTask task)
     {
         var arguments = task.GetArguments();
+
+        // Only add the id if the package is Git for Windows. This is a pre-requisite for the GitDsc resource that clones repositories.
+        // other Id values are not needed.
+        var id = arguments.PackageId == DscHelpers.GitDscWinGetId ? DscHelpers.GitDscWinGetId : null;
         return new WinGetConfigResource()
         {
             Resource = DscHelpers.WinGetDscResource,
-            Id = arguments.PackageId,
+            Id = id,
             Directives = new() { AllowPrerelease = true, Description = $"Installing {arguments.PackageId}" },
             Settings = new WinGetDscSettings() { Id = arguments.PackageId, Source = DscHelpers.DscSourceNameForWinGet },
         };

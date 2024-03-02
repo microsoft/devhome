@@ -18,6 +18,8 @@ public static class StringResourceHelper
     private const string ComputeSystemUptime = "ComputeSystemUptime";
     private const string ComputeSystemStorage = "ComputeSystemStorage";
     private const string ComputeSystemUnknownWithColon = "ComputeSystemUnknownWithColon";
+    public const string UserNotInHyperAdminGroupButton = "UserNotInHyperAdminGroupButton";
+    public const string UserNotInHyperAdminGroupMessage = "UserNotInHyperAdminGroupMessage";
 
     public static string GetResource(string key, params object[] args)
     {

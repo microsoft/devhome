@@ -8,8 +8,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ABI.System;
 using DevHome.Common.Contracts;
+using DevHome.Common.Environments.Helpers;
+using DevHome.Common.Helpers;
 using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
@@ -23,6 +24,10 @@ public class ToastNotificationService
 {
     private readonly IWindowsIdentityService _windowsIdentityService;
 
+    private readonly string _componentName = "ToastNotificationService";
+
+    public bool WasHyperVAddToAdminGroupSuccessful { get; private set; }
+
     public ToastNotificationService(IWindowsIdentityService windowsIdentityService)
     {
         _windowsIdentityService = windowsIdentityService;
@@ -30,11 +35,12 @@ public class ToastNotificationService
 
     public bool ShowHyperVAdminWarningToast()
     {
-        // To Do: Add localization
+        // Temporary toast notification to inform the user that they are not in the Hyper-V admin group.
+        // In the future we'll use an admin process from Dev Home to add the user to the group.
         var toast = new AppNotificationBuilder()
            .AddText("Warning")
-           .AddText("The current user is not a Hyper-V administrator. Hyper-V Virtual machines will not load. Please add the user to the Hyper-V Administrators group and reboot.")
-           .AddButton(new AppNotificationButton("Add user to the Hyper-V Admin group and enable Hyper-V")
+           .AddText(StringResourceHelper.GetResource(StringResourceHelper.UserNotInHyperAdminGroupMessage))
+           .AddButton(new AppNotificationButton(StringResourceHelper.GetResource(StringResourceHelper.UserNotInHyperAdminGroupButton))
            .AddArgument("action", "AddUserToHyperVAdminGroup"))
            .BuildNotification();
 
@@ -46,16 +52,20 @@ public class ToastNotificationService
     {
         if (args.Data is ToastNotificationActivatedEventArgs toastArgs)
         {
-            if (toastArgs.Argument.Contains("action=AddUserToHyperVAdminGroup"))
+            try
             {
-                // Launch powershell and add user to the Hyper-V admin group and enable hyper-v.
-                var processStartInfo = new ProcessStartInfo();
-                processStartInfo.Verb = "RunAs";
-                processStartInfo.FileName = "powershell.exe";
-                processStartInfo.ArgumentList.Add("net localgroup \"Hyper-V Administrators\" (whoami) /add");
-                processStartInfo.ArgumentList.Add("Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart");
-                Process.Start(processStartInfo);
-                return;
+                if (toastArgs.Argument.Contains("action=AddUserToHyperVAdminGroup"))
+                {
+                    // Launch compmgmt.msc in powershell
+                    var psi = new ProcessStartInfo();
+                    psi.FileName = "powershell";
+                    psi.Arguments = "Start-Process compmgmt.msc -Verb RunAs";
+                    Process.Start(psi);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Logger()?.ReportError(_componentName, $"Unable to launch computer management due to exception", ex);
             }
         }
     }

@@ -190,7 +190,7 @@
     <comment>Title for the storage property of the compute system. (The amount of disk space it has).</comment>
   </data>
   <data name="ComputeSystemUnexpectedError" xml:space="preserve">
-    <value>An unexpected error occurred while attempting to perform the operation on {0}. Please see the logs for more information.</value>
+    <value>An unexpected error occurred while attempting to perform the operation on the {0} provider. Please see the logs for more information.</value>
     <comment>Locked={"{0}"} Text for when there was an error performing a compute system operation. . {0} is the name of the compute system</comment>
   </data>
   <data name="ComputeSystemUnknown" xml:space="preserve">
@@ -204,5 +204,13 @@
   <data name="ComputeSystemUptime" xml:space="preserve">
     <value>Uptime:</value>
     <comment>Title for the uptime property of a compute system. (The amount of time its been running)</comment>
+  </data>
+  <data name="UserNotInHyperAdminGroupButton" xml:space="preserve">
+    <value>Launch computer management</value>
+    <comment>Button text for the user to click, in order for us to add them to the Hyper-V admin group</comment>
+  </data>
+  <data name="UserNotInHyperAdminGroupMessage" xml:space="preserve">
+    <value>The current user is not a Hyper-V administrator. Hyper-V Virtual machines will not load. Please add the user to the Hyper-V Administrators group and reboot.</value>
+    <comment>Text explaining that the user is not in the hyper-v admin group and that we need to add them.</comment>
   </data>
 </root>
