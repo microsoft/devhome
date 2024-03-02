@@ -34,11 +34,21 @@ public class ConfigurationUnit
         // Load details if available
         if (unit.Details != null)
         {
-            // Use the module name from the details if available
+            UnitType = unit.Details.UnitType;
+            UnitDescription = unit.Details.UnitDescription;
+            UnitDocumentationUri = unit.Details.UnitDocumentationUri?.ToString();
             ModuleName = unit.Details.ModuleName;
-
+            ModuleType = unit.Details.ModuleType;
+            ModuleSource = unit.Details.ModuleSource;
             ModuleDescription = unit.Details.ModuleDescription;
+            ModuleDocumentationUri = unit.Details.ModuleDocumentationUri?.ToString();
+            PublishedModuleUri = unit.Details.PublishedModuleUri?.ToString();
+            Version = unit.Details.Version;
+            PublishedDate = $"{unit.Details.PublishedDate}";
+            IsLocal = unit.Details.IsLocal;
             Author = unit.Details.Author;
+            Publisher = unit.Details.Publisher;
+            IsPublic = unit.Details.IsPublic;
         }
     }
 
@@ -48,12 +58,6 @@ public class ConfigurationUnit
 
     public string Description { get; }
 
-    public string ModuleName { get; }
-
-    public string ModuleDescription { get; }
-
-    public string Author { get; }
-
     public string Intent { get; }
 
     public IList<string> Dependencies { get; }
@@ -61,4 +65,34 @@ public class ConfigurationUnit
     public IList<KeyValuePair<string, string>> Settings { get; }
 
     public IList<KeyValuePair<string, string>> Metadata { get; }
+
+    public string UnitType { get; }
+
+    public string UnitDescription { get; }
+
+    public string UnitDocumentationUri { get; }
+
+    public string ModuleName { get; }
+
+    public string ModuleType { get; }
+
+    public string ModuleSource { get; }
+
+    public string ModuleDescription { get; }
+
+    public string ModuleDocumentationUri { get; }
+
+    public string PublishedModuleUri { get; }
+
+    public string Version { get; }
+
+    public string PublishedDate { get; }
+
+    public bool IsLocal { get; }
+
+    public string Author { get; }
+
+    public string Publisher { get; }
+
+    public bool IsPublic { get; }
 }

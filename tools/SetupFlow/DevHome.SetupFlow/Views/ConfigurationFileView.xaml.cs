@@ -52,7 +52,7 @@ public sealed partial class ConfigurationFileView : UserControl
     }
 }
 
-public class RecordDefinition
+public class ConfigurationUnitDataEntry
 {
     public string Key { get; set; }
 

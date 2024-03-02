@@ -11,7 +11,7 @@
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
-    xmlns:cf="using:DevHome.SetupFlow.Views"
+    xmlns:local="using:DevHome.SetupFlow.Views"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
@@ -47,13 +47,29 @@
             <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
             <converters:CollectionVisibilityConverter x:Key="CollectionNegativeVisibilityConverter" EmptyValue="Visible"  NotEmptyValue="Collapsed"/>
             <converters:BoolToVisibilityConverter x:Key="BoolToNegativeVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
-            <DataTemplate x:Key="KeyValueDictionary">
-                <StackPanel Spacing="2" Orientation="Horizontal">
+            <DataTemplate x:Key="KeyValueTemplate">
+                <StackPanel Spacing="2" Orientation="Horizontal" Visibility="{Binding Value, Converter={StaticResource StringVisibilityConverter}}">
                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{Binding Key}" />
                     <TextBlock Text=":" />
-                    <TextBlock Text="{Binding Value}" />
+                    <TextBlock IsTextSelectionEnabled="True" Text="{Binding Value}" />
                 </StackPanel>
             </DataTemplate>
+            <Style TargetType="ListView" x:Key="KeyValueList">
+                <Setter Property="SelectionMode" Value="None" />
+                <Setter Property="Margin" Value="10,0" />
+                <Setter Property="ItemContainerStyle">
+                    <Setter.Value>
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="MinHeight" Value="0" />
+                            <Setter Property="MinWidth" Value="0" />
+                        </Style>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <x:Double x:Key="SectionSpacing">10</x:Double>
+            <Thickness x:Key="BlockThickness">0,0,0,5</Thickness>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -64,7 +80,7 @@
     </i:Interaction.Behaviors>
     
     <controls:SetupShell Orchestrator="{x:Bind ViewModel.Orchestrator}">
-        <Grid RowSpacing="10">
+        <Grid RowSpacing="{StaticResource SectionSpacing}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -85,30 +101,25 @@
             <!-- Summary mode -->
             <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.IsCodeMode, Mode=OneWay, Converter={StaticResource BoolToNegativeVisibilityConverter}}">
                 <!-- Shimmers -->
-                <ListView SelectionMode="None" Visibility="{x:Bind ViewModel.ConfigurationUnits, Mode=OneWay, Converter={StaticResource CollectionNegativeVisibilityConverter}}">
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Spacing="10" />
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <labs:Shimmer Height="150" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                    <x:String></x:String>
-                    <x:String></x:String>
-                    <x:String></x:String>
-                </ListView>
+                <StackPanel Spacing="{StaticResource SectionSpacing}" Visibility="{x:Bind ViewModel.ConfigurationUnits, Mode=OneWay, Converter={StaticResource CollectionNegativeVisibilityConverter}}">
+                    <StackPanel.Resources>
+                        <Style TargetType="labs:Shimmer">
+                            <Setter Property="Height" Value="150" />
+                        </Style>
+                    </StackPanel.Resources>
+                    <labs:Shimmer />
+                    <labs:Shimmer />
+                    <labs:Shimmer />
+                </StackPanel>
 
                 <!-- Summary view -->
                 <ListView
                     ItemsSource="{x:Bind ViewModel.ConfigurationUnits, Mode=OneWay}"
                     x:Name="ConfigurationUnitSections"
-                    SelectionMode="None">
+                    Style="{StaticResource KeyValueList}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Spacing="10" />
+                            <StackPanel Spacing="{StaticResource SectionSpacing}" />
                         </ItemsPanelTemplate>
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
@@ -132,60 +143,23 @@
                                 </Expander.Header>
                                 
                                 <!-- Content -->
-                                <StackPanel Spacing="10">
-                                    <StackPanel.Resources>
-                                        <Style TargetType="ListView">
-                                            <Setter Property="SelectionMode" Value="None" />
-                                        </Style>
-                                        <Style TargetType="ListViewItem">
-                                            <Setter Property="MinHeight" Value="0" />
-                                            <Setter Property="MinWidth" Value="0" />
-                                        </Style>
-                                    </StackPanel.Resources>
-
+                                <StackPanel>
                                     <!-- Individual records -->
-                                    <ListView>
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate x:DataType="cf:RecordDefinition">
-                                                <StackPanel Visibility="{x:Bind Value, Converter={StaticResource StringVisibilityConverter}}" Orientation="Horizontal">
-                                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind Key}" />
-                                                    <TextBlock>:</TextBlock>
-                                                    <TextBlock Text="{x:Bind Value}" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                        <ListView.ItemContainerStyle>
-                                            <Style TargetType="ListViewItem">
-                                                <Setter Property="MinHeight" Value="0" />
-                                                <Setter Property="MinWidth" Value="0" />
-                                                <Setter Property="Padding" Value="0"/>
-                                                <Setter Property="Margin" Value="2,0"/>
-                                            </Style>
-                                        </ListView.ItemContainerStyle>
-
-                                        <!-- Data -->
-                                        <cf:RecordDefinition Key="Id" Value="{x:Bind Id}" />
-                                        <cf:RecordDefinition Key="Intent" Value="{x:Bind Intent}" />
+                                    <ListView Margin="{StaticResource BlockThickness}" Style="{StaticResource KeyValueList}" ItemTemplate="{StaticResource KeyValueTemplate}">
+                                        <local:ConfigurationUnitDataEntry Key="Id" Value="{x:Bind Id}" />
+                                        <local:ConfigurationUnitDataEntry Key="Intent" Value="{x:Bind Intent}" />
                                     </ListView>
                                     
                                     <!-- Dependencies -->
-                                    <StackPanel Orientation="Horizontal" Visibility="{x:Bind Dependencies, Converter={StaticResource CollectionVisibilityConverter}}">
+                                    <StackPanel Margin="{StaticResource BlockThickness}" Orientation="Horizontal" Visibility="{x:Bind Dependencies, Converter={StaticResource CollectionVisibilityConverter}}">
                                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Dependencies</TextBlock>
-                                        <TextBlock>:</TextBlock>
-                                        <ListView ItemsSource="{x:Bind Dependencies}">
+                                        <TextBlock Text=":" Margin="2,0" />
+                                        <ListView Style="{StaticResource KeyValueList}" ItemsSource="{x:Bind Dependencies}">
                                             <ListView.ItemsPanel>
                                                 <ItemsPanelTemplate>
-                                                    <StackPanel Orientation="Horizontal" />
+                                                    <StackPanel Spacing="2" Orientation="Horizontal" />
                                                 </ItemsPanelTemplate>
                                             </ListView.ItemsPanel>
-                                            <ListView.ItemContainerStyle>
-                                                <Style TargetType="ListViewItem">
-                                                    <Setter Property="MinHeight" Value="0" />
-                                                    <Setter Property="MinWidth" Value="0" />
-                                                    <Setter Property="Padding" Value="0"/>
-                                                    <Setter Property="Margin" Value="2,0"/>
-                                                </Style>
-                                            </ListView.ItemContainerStyle>
                                             <ListView.ItemTemplate>
                                                 <DataTemplate x:DataType="x:String">
                                                     <TextBlock Tag="{x:Bind}">
@@ -199,35 +173,36 @@
                                     </StackPanel>
                                     
                                     <!-- Metadata -->
-                                    <StackPanel Visibility="{x:Bind Metadata, Converter={StaticResource CollectionVisibilityConverter}}">
+                                    <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Metadata, Converter={StaticResource CollectionVisibilityConverter}}">
                                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Metadata</TextBlock>
-                                        <ListView ItemTemplate="{ThemeResource KeyValueDictionary}" ItemsSource="{x:Bind Metadata}"/>
+                                        <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{ThemeResource KeyValueTemplate}" ItemsSource="{x:Bind Metadata}"/>
                                     </StackPanel>
 
                                     <!-- Settings -->
-                                    <StackPanel Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
+                                    <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
                                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Settings</TextBlock>
-                                        <ListView ItemTemplate="{ThemeResource KeyValueDictionary}" ItemsSource="{x:Bind Settings}"/>
+                                        <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{ThemeResource KeyValueTemplate}" ItemsSource="{x:Bind Settings}"/>
                                     </StackPanel>
 
                                     <!-- Details -->
-                                    <StackPanel Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
+                                    <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
                                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Details</TextBlock>
-                                        <ListView>
-                                            <ListView.ItemTemplate>
-                                                <DataTemplate x:DataType="cf:RecordDefinition">
-                                                    <StackPanel Visibility="{x:Bind Value, Converter={StaticResource StringVisibilityConverter}}" Orientation="Horizontal">
-                                                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind Key}" />
-                                                        <TextBlock>:</TextBlock>
-                                                        <TextBlock Text="{x:Bind Value}" />
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </ListView.ItemTemplate>
-
-                                            <!-- Data -->
-                                            <cf:RecordDefinition Key="Module name" Value="{x:Bind ModuleName}" />
-                                            <cf:RecordDefinition Key="Module description" Value="{x:Bind ModuleDescription}" />
-                                            <cf:RecordDefinition Key="Author" Value="{x:Bind Author}" />
+                                        <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{StaticResource KeyValueTemplate}">
+                                            <local:ConfigurationUnitDataEntry Key="Unit type" Value="{x:Bind UnitType}" />
+                                            <local:ConfigurationUnitDataEntry Key="Unit description" Value="{x:Bind UnitDescription}" />
+                                            <local:ConfigurationUnitDataEntry Key="Unit documentation uri" Value="{x:Bind UnitDocumentationUri}" />
+                                            <local:ConfigurationUnitDataEntry Key="Module name" Value="{x:Bind ModuleName}" />
+                                            <local:ConfigurationUnitDataEntry Key="Module type" Value="{x:Bind ModuleType}" />
+                                            <local:ConfigurationUnitDataEntry Key="Module source" Value="{x:Bind ModuleSource}" />
+                                            <local:ConfigurationUnitDataEntry Key="Module description" Value="{x:Bind ModuleDescription}" />
+                                            <local:ConfigurationUnitDataEntry Key="Module documentation uri" Value="{x:Bind ModuleDocumentationUri}" />
+                                            <local:ConfigurationUnitDataEntry Key="Published module uri" Value="{x:Bind PublishedModuleUri}" />
+                                            <local:ConfigurationUnitDataEntry Key="Version" Value="{x:Bind Version}" />
+                                            <local:ConfigurationUnitDataEntry Key="Published date" Value="{x:Bind PublishedDate}" />
+                                            <local:ConfigurationUnitDataEntry Key="Is local" Value="{x:Bind IsLocal}" />
+                                            <local:ConfigurationUnitDataEntry Key="Author" Value="{x:Bind Author}" />
+                                            <local:ConfigurationUnitDataEntry Key="Publisher" Value="{x:Bind Publisher}" />
+                                            <local:ConfigurationUnitDataEntry Key="Is public" Value="{x:Bind IsPublic}" />
                                         </ListView>
                                     </StackPanel>
                                 </StackPanel>
