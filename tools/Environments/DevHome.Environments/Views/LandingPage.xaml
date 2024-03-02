@@ -98,12 +98,12 @@
 
         <!-- Shimmer template from SetupFlow/SetupTargetView.xaml -->
         <DataTemplate x:Key="ComputeSystemLoadingTemplate">
-                <ListView
-                    SelectionMode="None"
-                    ItemTemplate="{StaticResource HorizontalCardRootShimmerTemplate}"
-                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
-                    <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
-                    <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
+            <ListView
+                SelectionMode="None"
+                ItemTemplate="{StaticResource HorizontalCardRootShimmerTemplate}"
+                ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
+                <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
+                <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
             </ListView>
         </DataTemplate>
 

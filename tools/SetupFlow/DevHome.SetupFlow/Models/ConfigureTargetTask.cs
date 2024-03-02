@@ -67,8 +67,8 @@ public class ConfigureTargetTask : ISetupTask
 
     private readonly Dictionary<ElementTheme, string> _hostConfigFileNames = new()
     {
-        { ElementTheme.Dark, "HostConfigDark.json" },
-        { ElementTheme.Light, "HostConfigLight.json" },
+        { ElementTheme.Dark, "DarkHostConfig.json" },
+        { ElementTheme.Light, "LightHostConfig.json" },
     };
 
     public ActionCenterMessages ActionCenterMessages { get; set; } = new();

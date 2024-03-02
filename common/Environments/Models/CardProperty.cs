@@ -40,6 +40,8 @@ public enum CardStateColor
 
 public partial class CardProperty : ObservableObject
 {
+    private const int MaxBufferLength = 1024;
+
     [ObservableProperty]
     private BitmapImage? _icon;
 
@@ -117,7 +119,7 @@ public partial class CardProperty : ObservableObject
         try
         {
             var indirectPathToResource = "@{" + packageFullName + "? " + iconPathUri.AbsoluteUri + "}";
-            Span<char> outputBuffer = new char[512];
+            Span<char> outputBuffer = new char[MaxBufferLength];
 
             fixed (char* outBufferPointer = outputBuffer)
             {

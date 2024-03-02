@@ -23,7 +23,7 @@ public static class ComputeSystemHelpers
         {
             var result = await computeSystemWrapper.GetComputeSystemThumbnailAsync(string.Empty);
 
-            if (result.Result.Status == ProviderOperationStatus.Failure || result.ThumbnailInBytes.Length <= 0)
+            if ((result.Result.Status == ProviderOperationStatus.Failure) || (result.ThumbnailInBytes.Length <= 0))
             {
                 Log.Logger()?.ReportError($"Failed to get thumbnail for compute system {computeSystemWrapper}. Error: {result.Result.DiagnosticText}");
 

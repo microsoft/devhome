@@ -1521,7 +1521,7 @@
     <comment>Locked={"0", "{1}"} Text to tell the user that their action is needed in order to complete the configuration. {0} is the amount of attempts  the user has done so far while {1} is the max amount attempts the user has.</comment>
   </data>
   <data name="ConfigureTargetApplyConfigurationStopped" xml:space="preserve">
-    <value>Apply configuration stoppped with status: {0}. You may need to check the extensions log file for more information</value>
+    <value>Apply configuration stopped with status: {0}. You may need to check the extensions log file for more information</value>
     <comment>Locked={"0"} Info message that tells the user applying the configuration operation from the extension has stopped. {0} is the message from the extension who attempted to apply the configuration file.</comment>
   </data>
   <data name="ConfigureTargetApplyConfigurationStoppedWithNoEndingMessage" xml:space="preserve">
