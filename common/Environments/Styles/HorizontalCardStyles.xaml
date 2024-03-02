@@ -12,6 +12,8 @@
     <Style
         x:Key="HorizontalCardRootForEnvironmentsPage"
         TargetType="Grid">
+        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
         <Setter Property="Padding" Value="10 0 10 10" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
@@ -22,6 +24,7 @@
         TargetType="Grid">
         <Setter Property="Padding" Value="0 15 10 20" />
         <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
     </Style>
 
     <Style
@@ -30,7 +33,7 @@
         BasedOn="{StaticResource DefaultListViewItemStyle}">
         <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
-        <Setter Property="Margin" Value="0 0 0 3"/>
+        <Setter Property="Margin" Value="0 0 0 10"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
     </Style>
@@ -39,7 +42,7 @@
         x:Key="HorizontalCardListViewItemContainerForManagementPageStyle"
         TargetType="ListViewItem"
         BasedOn="{StaticResource DefaultListViewItemStyle}">
-        <Setter Property="Margin" Value="0 0 0 5"/>
+        <Setter Property="Margin" Value="0 0 0 10"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
     </Style>

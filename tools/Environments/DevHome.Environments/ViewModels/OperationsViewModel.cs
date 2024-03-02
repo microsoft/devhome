@@ -32,10 +32,10 @@ public partial class OperationsViewModel
     }
 
     [RelayCommand]
-    public async Task InvokeAction()
+    public void InvokeAction()
     {
         // We'll need to disable the card UI while the operation is in progress and handle failures.
-        await Task.Run(async () =>
+        Task.Run(async () =>
         {
             await Command(string.Empty);
         });

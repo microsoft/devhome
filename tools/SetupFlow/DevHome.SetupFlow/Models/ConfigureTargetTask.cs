@@ -84,7 +84,7 @@ public class ConfigureTargetTask : ISetupTask
     /// what we will display to the user in the summary page, assuming the extension was able to start Winget
     /// configure and send back the results to us.
     /// </summary>
-    public List<ConfigurationUnitResult> ConfigurationResults { get; private set; }
+    public List<ConfigurationUnitResult> ConfigurationResults { get; private set; } = new();
 
     public uint UserNumberOfAttempts { get; private set; } = 1;
 
@@ -256,6 +256,12 @@ public class ConfigureTargetTask : ISetupTask
         var tempResultInfo = !string.IsNullOrEmpty(resultInformation) ? resultInformation : string.Empty;
         var severity = Result.ApplyConfigSucceeded ? MessageSeverityKind.Info : MessageSeverityKind.Error;
 
+        if (string.IsNullOrEmpty(tempResultInfo))
+        {
+            AddMessage(_stringResource.GetLocalized(StringResourceKey.ConfigureTargetApplyConfigurationStoppedWithNoEndingMessage), severity);
+            return;
+        }
+
         AddMessage(_stringResource.GetLocalized(StringResourceKey.ConfigureTargetApplyConfigurationStopped, $"{tempResultInfo}"), severity);
     }
 
@@ -295,6 +301,8 @@ public class ConfigureTargetTask : ISetupTask
 
                 applyConfigurationOperation.ConfigurationSetStateChanged -= OnApplyConfigurationOperationChanged;
                 applyConfigurationOperation.ActionRequired -= OnActionRequired;
+
+                HandleCompletedOperation(result);
 
                 HandleCompletedOperation(result);
 
@@ -366,12 +374,10 @@ public class ConfigureTargetTask : ISetupTask
         {
             foreach (var elementPairing in _hostConfigFileNames)
             {
-                var uri = new Uri($"ms-appx://///DevHome.Dashboard//Assets/{_hostConfigFileNames[elementPairing.Key]}");
+                var uri = new Uri($"ms-appx://///DevHome.Settings//Assets/{_hostConfigFileNames[elementPairing.Key]}");
                 var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
                 AdaptiveCardHostConfigs.Add(elementPairing.Key, await FileIO.ReadTextAsync(file));
             }
-
-            AdaptiveCardHostConfigs.Add(ElementTheme.Default, AdaptiveCardHostConfigs[ElementTheme.Light]);
         }
         catch (Exception ex)
         {
@@ -392,7 +398,7 @@ public class ConfigureTargetTask : ISetupTask
             await SetupHostConfigFiles();
             var correctiveAction = session;
             Renderer ??= new AdaptiveCardRenderer();
-            var elementTheme = _themeSelectorService.Theme;
+            var elementTheme = _themeSelectorService.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
             UpdateHostConfig();
 
             Renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
@@ -414,8 +420,13 @@ public class ConfigureTargetTask : ISetupTask
 
     private string BuildConfigurationUnitDescription(ConfigurationUnit unit)
     {
-        unit.Settings.TryGetValue("description", out var descriptionObj);
-        var unitDescription = descriptionObj?.ToString() ?? string.Empty;
+        var unitDescription = string.Empty;
+
+        if (unit.Settings?.TryGetValue("description", out var descriptionObj) == true)
+        {
+            unitDescription = descriptionObj?.ToString() ?? string.Empty;
+        }
+
         if (string.IsNullOrEmpty(unit.Identifier) && string.IsNullOrEmpty(unitDescription))
         {
             return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryMinimal, unit.Intent, unit.Type);
@@ -440,7 +451,7 @@ public class ConfigureTargetTask : ISetupTask
         {
             _dispatcherQueue.TryEnqueue(() =>
             {
-                var elementTheme = _themeSelectorService.Theme;
+                var elementTheme = _themeSelectorService.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
 
                 // Add host config for current theme to renderer
                 if (AdaptiveCardHostConfigs.TryGetValue(elementTheme, out var hostConfigContents))

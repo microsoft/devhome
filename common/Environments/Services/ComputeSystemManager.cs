@@ -57,7 +57,7 @@ public class ComputeSystemManager : IComputeSystemManager
 
                 foreach (var devIdWrapper in providerDetails.DeveloperIds)
                 {
-                    var result = await providerDetails.ComputeSystemProvider.GetComputeSystemsAsync(devIdWrapper.DeveloperId, string.Empty);
+                    var result = await providerDetails.ComputeSystemProvider.GetComputeSystemsAsync(devIdWrapper.DeveloperId);
                     wrapperDictionary.Add(devIdWrapper, result);
                     results.Add(result);
                 }

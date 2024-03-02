@@ -36,6 +36,8 @@ public partial class ComputeSystemViewModel : ObservableObject
 
     public string Type { get; }
 
+    public bool IsOperationInProgress { get; set; }
+
     // Launch button operations
     public ObservableCollection<OperationsViewModel> LaunchOperations { get; set; }
 
@@ -65,9 +67,9 @@ public partial class ComputeSystemViewModel : ObservableObject
         Type = provider.DisplayName;
         PackageFullName = packageFullName;
 
-        if (!string.IsNullOrEmpty(ComputeSystem.AlternativeDisplayName))
+        if (!string.IsNullOrEmpty(ComputeSystem.SupplementalDisplayName))
         {
-            AlternativeName = new string("(" + ComputeSystem.AlternativeDisplayName + ")");
+            AlternativeName = new string("(" + ComputeSystem.SupplementalDisplayName + ")");
         }
 
         LaunchOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillLaunchButtonOperations(ComputeSystem));
@@ -86,10 +88,10 @@ public partial class ComputeSystemViewModel : ObservableObject
 
     private async Task InitializeStateAsync()
     {
-        var result = await ComputeSystem.GetStateAsync(string.Empty);
+        var result = await ComputeSystem.GetStateAsync();
         if (result.Result.Status == ProviderOperationStatus.Failure)
         {
-            Log.Logger()?.ReportError($"Failed to get state for {ComputeSystem.Name} due to {result.Result.DiagnosticText}");
+            Log.Logger()?.ReportError($"Failed to get state for {ComputeSystem.DisplayName} due to {result.Result.DiagnosticText}");
         }
 
         State = result.State;
@@ -128,6 +130,14 @@ public partial class ComputeSystemViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task LaunchAction()
-        => await ComputeSystem.ConnectAsync(string.Empty);
+    public void LaunchAction()
+    {
+        // We'll need to disable the card UI while the operation is in progress and handle failures.
+        Task.Run(async () =>
+        {
+            IsOperationInProgress = true;
+            await ComputeSystem.ConnectAsync(string.Empty);
+            IsOperationInProgress = false;
+        });
+    }
 }

@@ -39,6 +39,7 @@
     -->
 
     <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
 
     <DataTemplate x:Key="CardHeaderShimmerTemplate">
         <Grid
@@ -193,11 +194,22 @@
     <DataTemplate x:Key="HorizontalCardRootForSetupTargetFlowShimmerTemplate">
         <Grid
             Style="{StaticResource HorizontalCardRootForSetupTargetFlow}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
             <ContentControl
+                Grid.Row="0"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Margin="-3 10 0 0"
+                ContentTemplate="{StaticResource CardHeaderShimmerTemplate}"/>
+            <ContentControl
+                Grid.Row="1"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 HorizontalContentAlignment="Stretch"
-                ContentTemplate="{StaticResource CardBodyShimmerForNoHeaderTemplate}"/>
+                ContentTemplate="{StaticResource CardBodyShimmerTemplate}"/>
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

@@ -12,7 +12,7 @@ public class StringResource : IStringResource
 
     public StringResource()
     {
-        _resourceLoader = new ResourceLoader();
+        _resourceLoader = new ResourceLoader("HyperVExtension/Resources");
     }
 
     public StringResource(string name)

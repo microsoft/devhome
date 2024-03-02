@@ -33,8 +33,7 @@
 
             <!-- Launch Button template -->
             <DataTemplate x:Key="LaunchButton" x:DataType="vm:ComputeSystemViewModel">
-                <Grid Grid.Column="2" Style="{StaticResource CardBodyContainerStyle}">
-                    <SplitButton 
+                <SplitButton 
                         VerticalAlignment="Top" 
                         Command="{x:Bind LaunchActionCommand}" 
                         x:Uid="ms-resource:///DevHome.Environments/Resources/LaunchButton"
@@ -43,13 +42,13 @@
                             <customControls:CardFlyout ItemsViewModels="{x:Bind LaunchOperations}"/>
                         </SplitButton.Flyout>
                     </SplitButton>
-                </Grid>
             </DataTemplate>
 
             <!-- Three Dot Button template -->
             <DataTemplate x:Key="ThreeDotsButton" x:DataType="vm:ComputeSystemViewModel">
                 <Grid>
-                    <Button Style="{StaticResource HorizontalThreeDotsStyle}">
+                    <Button
+                        Style="{StaticResource HorizontalThreeDotsStyle}">
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations}"/>
                         </Button.Flyout>
@@ -84,14 +83,16 @@
                         Text="{x:Bind Title, Mode=OneWay}"
                         TextTrimming="CharacterEllipsis"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Center"/>
+                        VerticalAlignment="Center"
+                        IsTextSelectionEnabled="True"/>
                     <TextBlock
                         Grid.Column="2"
                         Visibility="{x:Bind Value, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
                         Text="{x:Bind Value, Mode=OneWay}"
                         TextTrimming="CharacterEllipsis"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Center"/>
+                        VerticalAlignment="Center"
+                        IsTextSelectionEnabled="True"/>
                 </Grid>
             </DataTemplate>
 

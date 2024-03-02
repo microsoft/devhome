@@ -45,7 +45,7 @@ public class EnvironmentsExtensionsService
     {
         var provider = Application.Current.GetService<IComputeSystemProvider>();
 
-        var result = await provider.GetComputeSystemsAsync(new EmptyDevId(), string.Empty);
+        var result = await provider.GetComputeSystemsAsync(new EmptyDevId());
         var wrapperList = new List<DeveloperIdWrapper>() { new(new EmptyDevId()) };
         if (result.Result.Status == ProviderOperationStatus.Success)
         {
