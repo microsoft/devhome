@@ -52,7 +52,7 @@ public sealed partial class WidgetControl : UserControl
     {
         if (sender as Button is Button widgetMenuButton)
         {
-            var widgetMenuFlyout = widgetMenuButton.Flyout as SelectionableMenuFlyout;
+            var widgetMenuFlyout = widgetMenuButton.Flyout as MenuFlyout;
             widgetMenuFlyout.Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.BottomEdgeAlignedLeft;
             if (widgetMenuFlyout?.Items.Count == 0)
             {
@@ -70,7 +70,7 @@ public sealed partial class WidgetControl : UserControl
         }
     }
 
-    private void AddRemoveToWidgetMenu(SelectionableMenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    private void AddRemoveToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
     {
         var removeWidgetText = resourceLoader.GetString("RemoveWidgetMenuText");
         var icon = new FontIcon()
@@ -116,7 +116,7 @@ public sealed partial class WidgetControl : UserControl
         }
     }
 
-    private async Task AddSizesToWidgetMenuAsync(SelectionableMenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    private async Task AddSizesToWidgetMenuAsync(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
     {
         var widgetCatalog = await Application.Current.GetService<IWidgetHostingService>().GetWidgetCatalogAsync();
         var widgetDefinition = await Task.Run(() => widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId));
@@ -175,7 +175,8 @@ public sealed partial class WidgetControl : UserControl
                 if (_currentSelectedSize is not null)
                 {
                     _currentSelectedSize.Icon = null;
-                    _currentSelectedSize.ClearValue(AutomationProperties.ItemStatusProperty);
+                    var peer = FrameworkElementAutomationPeer.FromElement(menuSizeItem) as SelectableMenuFlyoutItemAutomationPeer;
+                    peer.RemoveFromSelection();
                 }
 
                 // Resize widget.
@@ -192,18 +193,16 @@ public sealed partial class WidgetControl : UserControl
 
     private void MarkSize(SelectableMenuFlyoutItem menuSizeItem)
     {
-        var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
         var fontIcon = new FontIcon
         {
             Glyph = "\xE915",
         };
         menuSizeItem.Icon = fontIcon;
-        menuSizeItem.SetValue(AutomationProperties.ItemStatusProperty, resourceLoader.GetString("WidgetSizeSelected"));
         var peer = FrameworkElementAutomationPeer.FromElement(menuSizeItem) as SelectableMenuFlyoutItemAutomationPeer;
         peer.Select();
     }
 
-    private void AddCustomizeToWidgetMenu(SelectionableMenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
     {
         if (widgetViewModel.IsCustomizable)
         {
