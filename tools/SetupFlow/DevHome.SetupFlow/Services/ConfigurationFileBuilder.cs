@@ -194,12 +194,14 @@ public class ConfigurationFileBuilder
         // For normal cases, the Id will be null. This can be changed in the future when a use case for this Dsc File builder is needed outside the setup
         // setup target flow. We can likely drop the if statement and just use whats in its body.
         string id = null;
+        var gitDependsOnId = DscHelpers.GitWinGetPackageId;
 
         if (configurationFileKind == ConfigurationFileKind.SetupTarget)
         {
             // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
             // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
             id = $"Clone {task.RepositoryName}" + ": " + task.CloneLocation.FullName;
+            gitDependsOnId = $"{DscHelpers.GitWinGetPackageId} | Install: {DscHelpers.GitName}";
         }
 
         return new WinGetConfigResource()
@@ -207,7 +209,7 @@ public class ConfigurationFileBuilder
             Resource = DscHelpers.GitCloneDscResource,
             Id = id,
             Directives = new() { AllowPrerelease = true, Description = $"Cloning: {task.RepositoryName}" },
-            DependsOn = [DscHelpers.GitDscWinGetId],
+            DependsOn = [gitDependsOnId],
             Settings = new GitDscSettings() { HttpsUrl = webAddress.AbsoluteUri, RootDirectory = task.CloneLocation.FullName },
         };
     }
@@ -222,9 +224,9 @@ public class ConfigurationFileBuilder
         return new WinGetConfigResource()
         {
             Resource = DscHelpers.WinGetDscResource,
-            Id = $"{DscHelpers.GitDscWinGetId} | Install: {DscHelpers.GitName}",
+            Id = $"{DscHelpers.GitWinGetPackageId} | Install: {DscHelpers.GitName}",
             Directives = new() { AllowPrerelease = true, Description = $"Installing {DscHelpers.GitName}" },
-            Settings = new WinGetDscSettings() { Id = DscHelpers.GitDscWinGetId, Source = DscHelpers.DscSourceNameForWinGet },
+            Settings = new WinGetDscSettings() { Id = DscHelpers.GitWinGetPackageId, Source = DscHelpers.DscSourceNameForWinGet },
         };
     }
 }

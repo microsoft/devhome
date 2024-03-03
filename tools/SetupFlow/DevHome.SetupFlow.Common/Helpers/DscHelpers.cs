@@ -10,7 +10,7 @@ public static class DscHelpers
 {
     public const string GitCloneDscResource = "GitDsc/GitClone";
 
-    public const string GitDscWinGetId = "Git.Git";
+    public const string GitWinGetPackageId = "Git.Git";
 
     public const string GitName = "Git";
 

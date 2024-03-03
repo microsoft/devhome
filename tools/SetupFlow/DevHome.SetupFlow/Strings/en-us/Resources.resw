@@ -1469,7 +1469,7 @@
     <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationUnitInProgress" xml:space="preserve">
-    <value>This part of the configuration is still in progress</value>
+    <value>This part of the configuration is in progress</value>
     <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationPending" xml:space="preserve">
@@ -1493,7 +1493,7 @@
     <comment>Text for the 'shut down' status of the configuration operation that happened on a remote machine</comment>
   </data>
   <data name="SetupTargetConfigurationUnitSkipped" xml:space="preserve">
-    <value>This part of the configuration unit has been skipped</value>
+    <value>This part of the configuration has been skipped</value>
     <comment>Text for the 'shut down' status of the configuration operation that happened on a remote machine</comment>
   </data>
   <data name="SetupTargetConfigurationStartingDevice" xml:space="preserve">
