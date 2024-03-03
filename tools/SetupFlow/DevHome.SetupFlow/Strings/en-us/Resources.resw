@@ -1444,8 +1444,8 @@
     <value>Proceeding with the next step may result in the target machine being rebooted and logging in may be required. Dev Home's Dev Setup Agent service will be installed as it is required to setup a Hyper-V virtual machine</value>
     <comment>Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
   </data>
-  <data name="SetupTargetReviewPageUnknownOsName" xml:space="preserve">
-    <value>Couldn't retrieve operating system name</value>
+  <data name="SetupTargetUnknownStatus" xml:space="preserve">
+    <value>Unknown</value>
     <comment>Text that appears in an expander next to the remote computers name, letting the user know that we couldn't find its operating system.</comment>
   </data>
   <data name="SetupTargetPageSyncButton" xml:space="preserve">
@@ -1457,47 +1457,71 @@
     <comment>The name of the technology platform that the compute system belongs to.</comment>
   </data>
   <data name="SetupTargetConfigurationCompleted" xml:space="preserve">
-    <value>Completed</value>
-    <comment>Text for the completed status of the configuration operation that happened on a remote machine</comment>
+    <value>The entire configuration is now completed</value>
+    <comment>Text for the completed status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
+  </data>
+  <data name="SetupTargetConfigurationUnitCompleted" xml:space="preserve">
+    <value>This part of the configuration is now complete</value>
+    <comment>Text for the completed status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationInProgress" xml:space="preserve">
-    <value>In progress</value>
-    <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine</comment>
+    <value>The entire configuration is still in progress</value>
+    <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
+  </data>
+  <data name="SetupTargetConfigurationUnitInProgress" xml:space="preserve">
+    <value>This part of the configuration is still in progress</value>
+    <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationPending" xml:space="preserve">
-    <value>Pending</value>
-    <comment>Text for the pending status of the configuration operation that happened on a remote machine</comment>
+    <value>The entire configuration is still pending</value>
+    <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
+  </data>
+	<data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
+    <value>This part of the configuration is still pending</value>
+    <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationProvisioningDevice" xml:space="preserve">
-    <value>Provisioning device</value>
+    <value>We're currently provisioning device</value>
     <comment>Text for the 'provisioning device' status of the configuration operation that happened on a remote machine</comment>
   </data>
   <data name="SetupTargetConfigurationRestartingDevice" xml:space="preserve">
-    <value>Restarting device</value>
+    <value>We're currently restarting device</value>
     <comment>Text for the 'Restarting device' status of the configuration operation that happened on a remote machine</comment>
   </data>
   <data name="SetupTargetConfigurationShuttingDownDevice" xml:space="preserve">
-    <value>Shutting down device</value>
+    <value>We're currently shutting down device</value>
+    <comment>Text for the 'shut down' status of the configuration operation that happened on a remote machine</comment>
+  </data>
+  <data name="SetupTargetConfigurationUnitSkipped" xml:space="preserve">
+    <value>This part of the configuration unit has been skipped</value>
     <comment>Text for the 'shut down' status of the configuration operation that happened on a remote machine</comment>
   </data>
   <data name="SetupTargetConfigurationStartingDevice" xml:space="preserve">
-    <value>Starting device</value>
+    <value>We're currently starting the device</value>
     <comment>Text for when the device is starting up as part of the configuration operation that happened on a remote machine</comment>
   </data>
+  <data name="SetupTargetConfigurationProgressUpdate" xml:space="preserve">
+    <value>Configuration progress received!</value>
+    <comment>Text for when we display the progress of applying the entire configuration up to the point of displaying this message</comment>
+  </data>
+  <data name="SetupTargetConfigurationUnitUnknown" xml:space="preserve">
+    <value>State of this configuration unit is unknown</value>
+    <comment>Generic text for when a part of the configuration we're attempting to apply on a remote computer is unknown.</comment>
+  </data>
   <data name="SetupTargetConfigurationUnknown" xml:space="preserve">
-    <value>Unknown</value>
-    <comment>Text for when the we do not know the current state of the operation</comment>
+    <value>State of this configuration unit is unknown</value>
+    <comment>Generic text for when  all of the configurations we're attempting to apply on a remote computer is unknown.</comment>
   </data>
   <data name="SetupTargetConfigurationWaitingForAdminUserLogon" xml:space="preserve">
-    <value>Waiting for an admin to logon</value>
+    <value>We're currently waiting for an admin to logon</value>
     <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for a user with administrator priviledges to logon to the machine</comment>
   </data>
   <data name="SetupTargetConfigurationWaitingForUserLogon" xml:space="preserve">
-    <value>Waiting for the user to logon</value>
+    <value>We're currently waiting for the user to logon</value>
     <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for the current user to logon to the machine</comment>
   </data>
   <data name="SetupTargetConfigurationSkipped" xml:space="preserve">
-    <value>Skipped</value>
+    <value>Winget skipped this unit</value>
     <comment>Text for when the a part of the configuration on the remove machine was completed but its completed status was set to skipped.</comment>
   </data>
   <data name="SetupTargetConfigurationOpenConfigFailed" xml:space="preserve">
@@ -1508,13 +1532,17 @@
     <value>Configuration set status: {0}</value>
     <comment>Text for the ongoing progress of applying a set of configuration units in the configuration file. A configurations file are made up of configuration units.</comment>
   </data>
+  <data name="SetupTargetConfigurationUnitProgressErrorWithMsg" xml:space="preserve">
+    <value>There was an issue applying part of the configuration using DSC resource: '{0}'. Error: {1}</value>
+    <comment>Locked={"0", "{1}"} Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine. {0} is the name of the DSC resource we're using for this part of the configuration file, while {1} is the message from the other app.</comment>
+  </data>
   <data name="SetupTargetConfigurationUnitProgressError" xml:space="preserve">
-    <value>There was an issue applying part of the configuration. Error: {0}</value>
-    <comment>Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine.</comment>
+    <value>There was an issue applying part of the configuration using DSC resource: '{0}'. Check the extension's logs</value>
+    <comment>Locked={"0"} Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine. {0} is the name of the DSC resource we're using for this part of the configuration file</comment>
   </data>
   <data name="SetupTargetConfigurationUnitProgressMessage" xml:space="preserve">
     <value>Configuration unit status: {0}</value>
-    <comment>Text for the error that occurred while of applying a configuration unit in the configuration file on to the remote machine.</comment>
+    <comment>Locked={"0"} Text for the error that occurred while of applying a configuration unit in the configuration file on to the remote machine. {0} is the status string, e.g "pending", "completed" but it comes from a different app</comment>
   </data>
   <data name="ConfigureTargetApplyConfigurationActionNeeded" xml:space="preserve">
     <value>Action required. Please review the action center. ({0}/{1})</value>
@@ -1525,7 +1553,7 @@
     <comment>Locked={"0"} Info message that tells the user applying the configuration operation from the extension has stopped. {0} is the message from the extension who attempted to apply the configuration file.</comment>
   </data>
   <data name="ConfigureTargetApplyConfigurationStoppedWithNoEndingMessage" xml:space="preserve">
-    <value>The extension has stopped applying configuration. You may need to check the logs if there were any failures.</value>
+    <value>The extension has stopped applying the configuration. You may need to check the logs if there were any failures.</value>
     <comment>Info message that tells the user applying the configuration operation from the extension has stopped.</comment>
   </data>
   <data name="SetupTargetExtensionApplyingConfiguration" xml:space="preserve">

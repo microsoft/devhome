@@ -94,7 +94,7 @@ public partial class SetupTargetReviewViewModel : ReviewTabViewModelBase
         else
         {
             WasOsNameRetrieved = false;
-            OsName = _stringResource.GetLocalized(StringResourceKey.SetupTargetReviewPageUnknownOsName);
+            OsName = _stringResource.GetLocalized(StringResourceKey.SetupTargetUnknownStatus);
         }
     }
 }

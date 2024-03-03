@@ -190,7 +190,11 @@ public sealed class ApplyConfigurationOperation : IApplyConfigurationOperation, 
             }
 
             var wasConfigurationSuccessful = completionStatus.ResultCode == HRESULT.S_OK;
-            if (wasConfigurationSuccessful)
+            var isUnitResultsPresent = sdkApplyConfigurationSetResult?.UnitResults?.Count > 0;
+
+            // If there was no error in the completionStatus or there are unit results we'll say our operation was successful.
+            // Even if a unit result has errors, we will display this to the user.
+            if (wasConfigurationSuccessful || isUnitResultsPresent)
             {
                 return new SDK.ApplyConfigurationResult(sdkOpenConfigurationSetResult, sdkApplyConfigurationSetResult);
             }

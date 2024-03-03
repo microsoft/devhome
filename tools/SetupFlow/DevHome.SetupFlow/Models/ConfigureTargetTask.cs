@@ -6,6 +6,8 @@ extern alias Projection;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
@@ -21,6 +23,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.WingetConfigure;
 using DevHome.SetupFlow.Services;
+using LibGit2Sharp;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
@@ -94,6 +97,8 @@ public class ConfigureTargetTask : ISetupTask
     /// Gets the result of the apply configuration operation.
     /// </summary>
     public SDKApplyConfigurationResult Result { get; private set; }
+
+    public IAsyncOperation<ApplyConfigurationResult> ApplyConfigurationAsyncOperation { get; private set; }
 
     public ConfigureTargetTask(
         ISetupFlowStringResource stringResource,
@@ -173,16 +178,30 @@ public class ConfigureTargetTask : ISetupTask
 
             if (progressData == null)
             {
-                Log.Logger?.ReportWarn(Log.Component.ConfigurationTarget, "Unable to get progress of the configuration");
+                Log.Logger?.ReportError(Log.Component.ConfigurationTarget, "Unable to get progress of the configuration as the progress data was null");
                 return;
             }
 
+            var severity = MessageSeverityKind.Info;
+
             // Adaptive card session was not sent, so we check if there are any errors or due to applying a configuration unit/set.
             var wrapper = new SDKConfigurationSetChangeWrapper(progressData, _stringResource);
+            var potentialErrorMsg = wrapper.GetErrorMessagesForDisplay();
+            var stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine("---- " + _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationProgressUpdate) + " ----");
+            var startingLineNumber = 0u;
+
+            if (wrapper.Change == SDK.ConfigurationSetChangeEventType.SetStateChanged)
+            {
+                // Configuration set changed
+                stringBuilder.AppendLine(GetSpacingForProgressMessage(startingLineNumber++) + wrapper.ConfigurationSetState);
+            }
+
             if (wrapper.IsErrorMessagePresent)
             {
                 Log.Logger?.ReportError(Log.Component.ConfigurationTarget, $"Target experienced an error while applying the configuration: {wrapper.GetErrorMessageForLogging()}");
-                AddMessage(wrapper.GetErrorMessagesForDisplay(), MessageSeverityKind.Error);
+                severity = MessageSeverityKind.Error;
+                stringBuilder.AppendLine(GetSpacingForProgressMessage(startingLineNumber++) + wrapper.GetErrorMessagesForDisplay());
             }
 
             // In the future we need to add more messaging to the UI for the user to understand what is happening. It is on the extension to provide
@@ -190,14 +209,47 @@ public class ConfigureTargetTask : ISetupTask
             // there is no way for us to know what the extension is doing, it may not have started configuration yet but may simply be installing prerequisites.
             if (wrapper.Unit != null)
             {
+                // We may need to change the formatting of the message in the future.
                 var description = BuildConfigurationUnitDescription(wrapper.Unit);
-                AddMessage(description, MessageSeverityKind.Info);
+                stringBuilder.AppendLine(GetSpacingForProgressMessage(startingLineNumber++) + description);
+                stringBuilder.AppendLine(GetSpacingForProgressMessage(startingLineNumber++) + wrapper.ConfigurationUnitState);
             }
+            else
+            {
+                Log.Logger?.ReportInfo(Log.Component.ConfigurationTarget, "Extension sent progress but there was no configuration unit data sent.");
+            }
+
+            // Example of a message that will be displayed in the UI:
+            // ---- Configuration progress recieved! ----
+            // There was an issue applying part of the configuration using DSC resource: 'GitClone'.Check the extension's logs
+            //      - Assert : GitClone[Clone: wil - C:\Users\Public\Documents\source\repos\wil]
+            //            - This part of the configuration is now complete
+            AddMessage(stringBuilder.ToString(), severity);
         }
         catch (Exception ex)
         {
             Log.Logger?.ReportError(Log.Component.ConfigurationTarget, $"Failed to process configuration progress data on target machine.'{ComputeSystemName}'", ex);
         }
+    }
+
+    private string GetSpacingForProgressMessage(uint lineNumber)
+    {
+        if (lineNumber == 0)
+        {
+            return string.Empty;
+        }
+
+        var spacing = string.Empty;
+
+        // Add 6 spaces for each line number.
+        for (var i = 0; i < lineNumber; ++i)
+        {
+            spacing += "      ";
+        }
+
+        // now add a dash to the end of the spacing to make it look like a bullet point.
+        spacing += "- ";
+        return spacing;
     }
 
     public void HandleCompletedOperation(SDK.ApplyConfigurationResult applyConfigurationResult)
@@ -217,7 +269,7 @@ public class ConfigureTargetTask : ISetupTask
             if (resultStatus == ProviderOperationStatus.Failure)
             {
                 Log.Logger?.ReportError(Log.Component.ConfigurationTarget, $"Extension failed to configure config file with exception. Diagnostic text: {result.DiagnosticText}", result.ExtendedError);
-                throw new SDKApplyConfigurationSetResultException(applyConfigurationResult.Result.DisplayMessage);
+                throw new SDKApplyConfigurationSetResultException(applyConfigurationResult.Result.DiagnosticText);
             }
 
             // Check if there were errors while opening the configuration set.
@@ -290,14 +342,21 @@ public class ConfigureTargetTask : ISetupTask
                 var computeSystem = _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup;
                 ComputeSystemName = computeSystem.DisplayName;
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyingConfiguration, ComputeSystemName), MessageSeverityKind.Info);
-                WingetConfigFileString = _configurationFileBuilder.BuildConfigFileStringFromTaskGroups(_setupFlowOrchestrator.TaskGroups);
+                WingetConfigFileString = _configurationFileBuilder.BuildConfigFileStringFromTaskGroups(_setupFlowOrchestrator.TaskGroups, ConfigurationFileKind.SetupTarget);
                 var applyConfigurationOperation = computeSystem.ApplyConfiguration(WingetConfigFileString);
 
                 applyConfigurationOperation.ConfigurationSetStateChanged += OnApplyConfigurationOperationChanged;
                 applyConfigurationOperation.ActionRequired += OnActionRequired;
 
-                // Will need to handle cancelation case in the future.
-                var result = await applyConfigurationOperation.StartAsync();
+                // We'll cancell the operation after 10 minutes. This is arbitrary for now and will need to be adjusted in the future.
+                // but we'll need to give the user the ability to cancel the operation in the UI as well. This is just a safety net.
+                // More work is needed to give the user the ability to cancel the operation as the capability is not currently available.
+                // in the UI of Dev Home's Loading page.
+                var tokenSource = new CancellationTokenSource();
+                tokenSource.CancelAfter(TimeSpan.FromMinutes(10));
+
+                ApplyConfigurationAsyncOperation = applyConfigurationOperation.StartAsync();
+                var result = await ApplyConfigurationAsyncOperation.AsTask().WaitAsync(tokenSource.Token);
 
                 applyConfigurationOperation.ConfigurationSetStateChanged -= OnApplyConfigurationOperationChanged;
                 applyConfigurationOperation.ActionRequired -= OnActionRequired;

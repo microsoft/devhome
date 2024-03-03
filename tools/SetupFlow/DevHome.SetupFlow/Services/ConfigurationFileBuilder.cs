@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Models.WingetConfigure;
@@ -12,6 +13,12 @@ using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace DevHome.SetupFlow.Services;
+
+public enum ConfigurationFileKind
+{
+    Normal,
+    SetupTarget,
+}
 
 public class ConfigurationFileBuilder
 {
@@ -28,7 +35,7 @@ public class ConfigurationFileBuilder
     /// directly to a file.
     /// </summary>
     /// <returns>The config file object representing the yaml file.</returns>
-    public WinGetConfigFile BuildConfigFileObjectFromTaskGroups(IList<ISetupTaskGroup> taskGroups)
+    public WinGetConfigFile BuildConfigFileObjectFromTaskGroups(IList<ISetupTaskGroup> taskGroups, ConfigurationFileKind configurationFileKind)
     {
         var listOfResources = new List<WinGetConfigResource>();
 
@@ -37,12 +44,12 @@ public class ConfigurationFileBuilder
             if (taskGroup is RepoConfigTaskGroup repoConfigGroup)
             {
                 // Add the GitDSC resource blocks to yaml
-                listOfResources.AddRange(GetResourcesForCloneTaskGroup(repoConfigGroup));
+                listOfResources.AddRange(GetResourcesForCloneTaskGroup(repoConfigGroup, configurationFileKind));
             }
             else if (taskGroup is AppManagementTaskGroup appManagementGroup)
             {
                 // Add the WinGetDsc resource blocks to yaml
-                listOfResources.AddRange(GetResourcesForAppManagementTaskGroup(appManagementGroup));
+                listOfResources.AddRange(GetResourcesForAppManagementTaskGroup(appManagementGroup, configurationFileKind));
             }
         }
 
@@ -73,10 +80,10 @@ public class ConfigurationFileBuilder
     /// This is already formatted as valid yaml and can be written directly to a file.
     /// </summary>
     /// <returns>The string representing the yaml file. This string is formatted as yaml.</returns>
-    public string BuildConfigFileStringFromTaskGroups(IList<ISetupTaskGroup> taskGroups)
+    public string BuildConfigFileStringFromTaskGroups(IList<ISetupTaskGroup> taskGroups, ConfigurationFileKind configurationFileKind)
     {
         // Create the new WinGetConfigFile object and serialize it to yaml
-        var wingetConfigFile = BuildConfigFileObjectFromTaskGroups(taskGroups);
+        var wingetConfigFile = BuildConfigFileObjectFromTaskGroups(taskGroups, configurationFileKind);
         return SerializeWingetFileObjectToString(wingetConfigFile);
     }
 
@@ -105,7 +112,7 @@ public class ConfigurationFileBuilder
     /// </summary>
     /// <param name="repoConfigGroup">Clone repository task group where cloning information is located</param>
     /// <returns>List of objects that represent a WinGet configure resource block</returns>
-    private List<WinGetConfigResource> GetResourcesForCloneTaskGroup(RepoConfigTaskGroup repoConfigGroup)
+    private List<WinGetConfigResource> GetResourcesForCloneTaskGroup(RepoConfigTaskGroup repoConfigGroup, ConfigurationFileKind configurationFileKind)
     {
         var listOfResources = new List<WinGetConfigResource>();
         var repoConfigTasks = repoConfigGroup.SetupTasks
@@ -122,7 +129,7 @@ public class ConfigurationFileBuilder
         {
             if (repoConfigTask.RepositoryToClone is GenericRepository genericRepository)
             {
-                listOfResources.Add(CreateResourceFromTaskForGitDsc(repoConfigTask, genericRepository.RepoUri));
+                listOfResources.Add(CreateResourceFromTaskForGitDsc(repoConfigTask, genericRepository.RepoUri, configurationFileKind));
             }
         }
 
@@ -134,7 +141,7 @@ public class ConfigurationFileBuilder
     /// </summary>
     /// <param name="appManagementGroup">The task group that holds information about the apps the user wants to install</param>
     /// <returns>List of objects that represent a WinGet configure resource block</returns>
-    private List<WinGetConfigResource> GetResourcesForAppManagementTaskGroup(AppManagementTaskGroup appManagementGroup)
+    private List<WinGetConfigResource> GetResourcesForAppManagementTaskGroup(AppManagementTaskGroup appManagementGroup, ConfigurationFileKind configurationFileKind)
     {
         var listOfResources = new List<WinGetConfigResource>();
         var installList = appManagementGroup.SetupTasks
@@ -144,7 +151,7 @@ public class ConfigurationFileBuilder
 
         foreach (var installTask in installList)
         {
-            listOfResources.Add(CreateResourceFromTaskForWinGetDsc(installTask));
+            listOfResources.Add(CreateResourceFromTaskForWinGetDsc(installTask, configurationFileKind));
         }
 
         return listOfResources;
@@ -155,13 +162,18 @@ public class ConfigurationFileBuilder
     /// </summary>
     /// <param name="task">The install task with the package information for the app</param>
     /// <returns>The WinGetConfigResource object that represents the block of yaml needed by WinGetDsc to install the app. </returns>
-    private WinGetConfigResource CreateResourceFromTaskForWinGetDsc(InstallPackageTask task)
+    private WinGetConfigResource CreateResourceFromTaskForWinGetDsc(InstallPackageTask task, ConfigurationFileKind configurationFileKind)
     {
         var arguments = task.GetArguments();
+        var id = arguments.PackageId;
 
-        // Only add the id if the package is Git for Windows. This is a pre-requisite for the GitDsc resource that clones repositories.
-        // other Id values are not needed.
-        var id = arguments.PackageId == DscHelpers.GitDscWinGetId ? DscHelpers.GitDscWinGetId : null;
+        if (configurationFileKind == ConfigurationFileKind.SetupTarget)
+        {
+            // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
+            // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
+            id = $"{arguments.PackageId} | Install: " + task.PackageName;
+        }
+
         return new WinGetConfigResource()
         {
             Resource = DscHelpers.WinGetDscResource,
@@ -177,11 +189,23 @@ public class ConfigurationFileBuilder
     /// <param name="task">The task that includes the cloning information for the repository</param>
     /// <param name="webAddress">The url to the public Git repository</param>
     /// <returns>The WinGetConfigResource object that represents the block of yaml needed by GitDsc to clone the repository. </returns>
-    private WinGetConfigResource CreateResourceFromTaskForGitDsc(CloneRepoTask task, Uri webAddress)
+    private WinGetConfigResource CreateResourceFromTaskForGitDsc(CloneRepoTask task, Uri webAddress, ConfigurationFileKind configurationFileKind)
     {
+        // For normal cases, the Id will be null. This can be changed in the future when a use case for this Dsc File builder is needed outside the setup
+        // setup target flow. We can likely drop the if statement and just use whats in its body.
+        string id = null;
+
+        if (configurationFileKind == ConfigurationFileKind.SetupTarget)
+        {
+            // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
+            // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
+            id = $"Clone {task.RepositoryName}" + ": " + task.CloneLocation.FullName;
+        }
+
         return new WinGetConfigResource()
         {
             Resource = DscHelpers.GitCloneDscResource,
+            Id = id,
             Directives = new() { AllowPrerelease = true, Description = $"Cloning: {task.RepositoryName}" },
             DependsOn = [DscHelpers.GitDscWinGetId],
             Settings = new GitDscSettings() { HttpsUrl = webAddress.AbsoluteUri, RootDirectory = task.CloneLocation.FullName },
@@ -198,7 +222,7 @@ public class ConfigurationFileBuilder
         return new WinGetConfigResource()
         {
             Resource = DscHelpers.WinGetDscResource,
-            Id = DscHelpers.GitDscWinGetId,
+            Id = $"{DscHelpers.GitDscWinGetId} | Install: {DscHelpers.GitName}",
             Directives = new() { AllowPrerelease = true, Description = $"Installing {DscHelpers.GitName}" },
             Settings = new WinGetDscSettings() { Id = DscHelpers.GitDscWinGetId, Source = DscHelpers.DscSourceNameForWinGet },
         };

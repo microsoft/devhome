@@ -101,7 +101,7 @@
                             Margin="0 0 5 0"
                             Visibility="{x:Bind ViewModel.WasOsNameRetrieved, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                             Text="{x:Bind ViewModel.OsName, Mode=OneWay}"
-                            Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource BodyTextBlockStyle}"
                             IsTextSelectionEnabled="True"/>
                     </StackPanel>
