@@ -25,8 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\logging\DevHome.Logging.csproj" />
+    <ProjectReference Include="..\..\common\DevHome.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
