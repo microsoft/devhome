@@ -105,7 +105,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
     {
         // Note: Create new observable collections instead of clearing existing
         // ones to ensure that the collections are not modified while binding
-        // notification event handlers are being processed which can causes
+        // notification event handlers are being processed which can cause
         // "unspecified exception".
         PackageCatalogs = [];
         PackageCatalogShimmers = [];
