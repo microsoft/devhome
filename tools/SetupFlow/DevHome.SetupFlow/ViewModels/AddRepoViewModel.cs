@@ -53,15 +53,8 @@ public partial class AddRepoViewModel : ObservableObject
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
     /// <summary>
-    /// Holds all the currently executing tasks to GetRepositories.
-    /// Used to match a Task against _taskToUseForResults to make sure the results of the most recently executed task
-    /// is shows in the UI.
-    /// </summary>
-    private readonly List<Task> _runningGetReposTasks = new();
-
-    /// <summary>
-    /// Because logic is split between the back-end and the view model, incrementally migrating code from the view
-    /// to the view model is impossible.
+    /// Because logic is split between the back-end and the view model, migrating code from the view
+    /// in one PR to the view model is too much work.
     /// This member is here to support this partial migration.  Once all the code-behind logic is out of the view
     /// _addRepoDialog can be removed.
     /// </summary>
@@ -180,13 +173,6 @@ public partial class AddRepoViewModel : ObservableObject
     private bool _showRepoPage;
 
     /// <summary>
-    /// If the extension implements IRepositoryProvider2 users can navigate to this page
-    /// allowing users to define a simple search query to narrow down the repos returned from the extension.
-    /// </summary>
-    [ObservableProperty]
-    private bool _shouldShowSelectingSearchTerms;
-
-    /// <summary>
     /// Should the error text be shown?
     /// </summary>
     [ObservableProperty]
@@ -268,44 +254,47 @@ public partial class AddRepoViewModel : ObservableObject
     private bool _isCancelling;
 
     /// <summary>
-    /// The remote path to the repo.  Example, at a minimum each repo has a path of [server]/[RepoName]
-    /// Everything before [RepoName] is in this string.
+    /// Used to figure out what button is pressed for the split button.
+    /// This determines the UI elements shown/hidden.
     /// </summary>
-    [ObservableProperty]
-    private string _pathToRepos;
+    private enum SegmentedItemTag
+    {
+        Account,
+        URL,
+    }
 
     /// <summary>
-    /// The last path part before [RepoName].  All strings in here will be in a combobox.
+    /// Hides/Shows UI elements for the selected button.
     /// </summary>
-    [ObservableProperty]
-    private ObservableCollection<string> _lastPathPartsList;
+    /// <param name="selectedItem">The button the user clicked on.</param>
+    [RelayCommand]
+    public async Task ChangePage(SegmentedItem selectedItem)
+    {
+        if (selectedItem.Tag == null)
+        {
+            return;
+        }
 
-    [ObservableProperty]
-    private string _lastPathPartPlaceholderText;
+        if (!Enum.TryParse<SegmentedItemTag>(selectedItem.Tag.ToString(), out var pageToGoTo))
+        {
+            return;
+        }
 
-    /// <summary>
-    /// Don't show the oath selector UI when querying repos and when selecting search terms.
-    /// </summary>
-    [ObservableProperty]
-    private bool _shouldShowPathSelector;
+        if (pageToGoTo == SegmentedItemTag.Account)
+        {
+            await ChangeToAccountPageAsync();
+            return;
+        }
 
-    /// <summary>
-    /// The accounts the user is logged into is stored here.
-    /// </summary>
-    [ObservableProperty]
-    private MenuFlyout _accountsToShow;
+        if (pageToGoTo == SegmentedItemTag.URL)
+        {
+            ChangeToUrlPage();
+            return;
+        }
 
-    [ObservableProperty]
-    private bool _shouldShowPathGrid;
-
-    [ObservableProperty]
-    private bool _shouldShowChangePathHyperlinkButton;
-
-    /// <summary>
-    /// IRepositoryProvider2 supports search queries when fetching repos.  Each extension has the option to
-    /// implement IRepositoryProvider2 or not.  this needs to be updated when a provider is selected.
-    /// </summary>
-    private bool _isSearchingEnabled;
+        // enum did not match.  Don't change.
+        return;
+    }
 
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
@@ -385,6 +374,24 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
+    /// The accounts the user is logged into is stored here.
+    /// </summary>
+    [ObservableProperty]
+    private MenuFlyout _accountsToShow;
+
+    /// <summary>
+    /// Used to show the login UI.
+    /// </summary>
+    [ObservableProperty]
+    private Frame _loginUiContent;
+
+    /// <summary>
+    /// Soley used to reset the account drop down when the account page is navigated to.
+    /// </summary>
+    [ObservableProperty]
+    private int _accountIndex;
+
+    /// <summary>
     /// Switches the repos shown to the account selected.
     /// </summary>
     [RelayCommand]
@@ -401,7 +408,20 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void LastPathPartChanged(string selectedItem)
+    private async Task OpenFolderPicker()
+    {
+        await FolderPickerViewModel.ChooseCloneLocation();
+        ToggleCloneButton();
+    }
+
+    /// <summary>
+    /// Makes the MenuFlyout object used to display multple accounts in the repo tool.
+    /// </summary>
+    /// <returns>The MenuFlyout to display.</returns>
+    /// <remarks>
+    /// The layout is a list of added accounts.  A line seperator.  One menu item to add an account.
+    /// </remarks>
+    private MenuFlyout ConstructFlyout()
     {
         if (selectedItem == null)
         {
@@ -557,9 +577,41 @@ public partial class AddRepoViewModel : ObservableObject
         var defaultClonePath = Path.Join(userFolder, "source", "repos");
         FolderPickerViewModel.CloneLocation = defaultClonePath;
 
-        PathToRepos = string.Empty;
-        LastPathPartsList = new();
-        LastPathPartPlaceholderText = string.Empty;
+        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
+
+        EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
+        {
+            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+            FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
+        };
+
+        ChangeToUrlPage();
+
+        // override changes ChangeToUrlPage to correctly set the state.
+        UrlParsingError = string.Empty;
+        ShouldShowUrlError = false;
+        ShowErrorTextBox = false;
+        _accountIndex = -1;
+    }
+
+    /// <summary>
+    /// Toggles the clone button.  Make sure other view models have correct information.
+    /// </summary>
+    public void ToggleCloneButton()
+    {
+        var isEverythingGood = ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
+        if (EditDevDriveViewModel.DevDrive != null && EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
+        {
+            isEverythingGood &= EditDevDriveViewModel.IsDevDriveValid();
+        }
+
+        ShouldEnablePrimaryButton = isEverythingGood;
+
+        // Fill in EverythingToClone with the location
+        if (isEverythingGood)
+        {
+            SetCloneLocation(FolderPickerViewModel.CloneLocation);
+        }
     }
 
     /// <summary>
@@ -602,7 +654,6 @@ public partial class AddRepoViewModel : ObservableObject
         ShowUrlPage = true;
         ShowAccountPage = false;
         ShowRepoPage = false;
-        ShouldShowSelectingSearchTerms = false;
         IsUrlAccountButtonChecked = true;
         IsAccountToggleButtonChecked = false;
         CurrentPage = PageKind.AddViaUrl;
@@ -614,17 +665,7 @@ public partial class AddRepoViewModel : ObservableObject
 
     public async Task ChangeToAccountPageAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Account page");
-        ShouldShowUrlError = Visibility.Collapsed;
-        ShowUrlPage = false;
-        ShowAccountPage = true;
-        ShowRepoPage = false;
-        ShouldShowSelectingSearchTerms = false;
-        IsUrlAccountButtonChecked = false;
-        IsAccountToggleButtonChecked = true;
-        CurrentPage = PageKind.AddViaAccount;
-        PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoAccountPagePrimaryButtonText);
-        ShouldShowLoginUi = false;
+        AccountIndex = -1;
 
         // List of extensions needs to be refreshed before accessing
         GetExtensions();
@@ -663,7 +704,7 @@ public partial class AddRepoViewModel : ObservableObject
         ToggleCloneButton();
     }
 
-    public void ChangeToRepoPage(Dictionary<string, string> searchInputs)
+    public async Task ChangeToRepoPageAsync()
     {
         await GetAccountsAsync(_selectedRepoProvider, LoginUiContent);
         if (Accounts.Any())
@@ -678,19 +719,6 @@ public partial class AddRepoViewModel : ObservableObject
         ShowUrlPage = false;
         ShowAccountPage = false;
         ShowRepoPage = true;
-
-        ShouldShowSelectingSearchTerms = false;
-        ShouldShowPathGrid = false;
-
-        if (_isSearchingEnabled)
-        {
-            ShouldShowPathSelector = true;
-        }
-        else
-        {
-            ShouldShowPathSelector = false;
-        }
-
         CurrentPage = PageKind.Repositories;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
         ShouldShowLoginUi = false;

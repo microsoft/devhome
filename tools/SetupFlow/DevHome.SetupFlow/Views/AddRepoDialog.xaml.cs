@@ -296,61 +296,6 @@ public partial class AddRepoDialog : ContentDialog
         }
     }
 
-    private async void SwitchToRepoPage(string repositoryProviderName)
-    {
-        await AddRepoViewModel.GetAccountsAsync(repositoryProviderName, LoginUIContent);
-        if (AddRepoViewModel.Accounts.Any())
-        {
-            AddRepoViewModel.ChangeToRepoPage(new());
-            AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
-            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-            AddRepoViewModel.SelectedAccount = AddRepoViewModel.Accounts.First();
-            AddRepoViewModel.ShouldEnablePrimaryButton = false;
-        }
-    }
-
-    private void FilterSuggestions(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
-    {
-        sender.ItemsSource = _searchFieldsAndValues[sender.Header.ToString()].Where(x => x.Contains(sender.Text));
-        return;
-    }
-
-    private async void ChangeToSearchInputViewAsync(object sender, RoutedEventArgs e)
-    {
-        SwitchToSelectSearchTermsPage();
-        _searchFieldsAndValues.Clear();
-        ShowingSearchTermsGrid.Children.Clear();
-        GatheringSearchValuesGrid.Visibility = Visibility.Visible;
-        ShowingSearchTermsGrid.Visibility = Visibility.Collapsed;
-
-        var loginId = (string)AddRepoViewModel.SelectedAccount;
-        var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-        var searchTerms = AddRepoViewModel.GetSearchTerms(providerName);
-        ShowingSearchTermsGrid.RowSpacing = 10;
-
-        var searchTermRow = 0;
-        for (var termIndex = 0; termIndex < searchTerms.Count - 1; termIndex++)
-        {
-            var localTermIndex = termIndex;
-            ShowingSearchTermsGrid.RowDefinitions.Add(new RowDefinition());
-
-            var searchFieldName = string.Empty;
-            var searchFieldSuggestions = await Task.Run(() => AddRepoViewModel.GetSuggestionsFor(providerName, loginId, new(), searchTerms[localTermIndex]));
-
-            _searchFieldsAndValues.Add(searchTerms[localTermIndex], searchFieldSuggestions);
-            var suggestBox = new AutoSuggestBox();
-            suggestBox.Header = searchTerms[localTermIndex];
-            suggestBox.ItemsSource = searchFieldSuggestions;
-            suggestBox.Text = searchFieldName;
-            suggestBox.TextChanged += FilterSuggestions;
-            ShowingSearchTermsGrid.Children.Add(suggestBox);
-            Grid.SetRow(suggestBox, searchTermRow++);
-        }
-
-        GatheringSearchValuesGrid.Visibility = Visibility.Collapsed;
-        ShowingSearchTermsGrid.Visibility = Visibility.Visible;
-    }
-
     /// <summary>
     /// Adds or removes the default dev drive.  This dev drive will be made at the loading screen.
     /// </summary>
