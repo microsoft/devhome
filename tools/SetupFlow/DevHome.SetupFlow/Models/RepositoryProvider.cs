@@ -77,6 +77,12 @@ internal sealed class RepositoryProvider
         return _repositoryProvider;
     }
 
+    public string GetAskChangeSearchFieldsLabel()
+    {
+        var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
+        return repositoryProvider2?.AskToSearchLabel ?? string.Empty;
+    }
+
     /// <summary>
     /// Asks the provider for search terms for querying repositories.
     /// </summary>
@@ -261,27 +267,41 @@ internal sealed class RepositoryProvider
         return developerIdsResult.DeveloperIds;
     }
 
-    /// <summary>
-    /// Gets all the repositories an account has for this provider.
-    /// </summary>
-    /// <param name="developerId">The account to search in.</param>
-    /// <param name="searchInputs">The key/value pairs that the extension will use to search for repos.</param>
-    /// <returns>A collection of repositories.  May be empty</returns>
-    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId, Dictionary<string, string> searchInputs)
+    public RepositorySearchInformation SearchForRepositories(IDeveloperId developerId, Dictionary<string, string> searchInputs)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
 
-        RepositoriesResult result;
+        var repoSearchInformation = new RepositorySearchInformation();
         try
         {
-            if (IsSearchingEnabled())
+            if (IsSearchingEnabled() && searchInputs != null)
             {
                 var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
-                result = repositoryProvider2.GetRepositoriesAsync(searchInputs, developerId).AsTask().Result;
+                RepositoriesSearchResult result = repositoryProvider2.GetRepositoriesAsync(searchInputs, developerId).AsTask().Result;
+
+                if (result.Result.Status == ProviderOperationStatus.Success)
+                {
+                    repoSearchInformation.Repositories = result.Repositories;
+                    repoSearchInformation.SelectionOptions = result.SelectionOptions.ToList();
+                    repoSearchInformation.SelectionOptionsLabel = result.SelectionOptionsName;
+                    repoSearchInformation.SelectionOptionsLabel = result.SearchPath;
+                }
+                else
+                {
+                    Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
+                }
             }
             else
             {
-                result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+                RepositoriesResult result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+                if (result.Result.Status == ProviderOperationStatus.Success)
+                {
+                    repoSearchInformation.Repositories = result.Repositories;
+                }
+                else
+                {
+                    Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
+                }
             }
         }
         catch (AggregateException aggregateException)
@@ -295,48 +315,67 @@ internal sealed class RepositoryProvider
             {
                 GlobalLog.Logger?.ReportError($"{aggregateException}");
             }
-
-            _repositories[developerId] = new List<IRepository>();
-            return _repositories[developerId];
+        }
+        catch (Exception ex)
+        {
+            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {ex}");
         }
 
-        if (result.Result.Status == ProviderOperationStatus.Success)
+        SetRepositories(developerId, repoSearchInformation.Repositories);
+
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
+        return repoSearchInformation;
+    }
+
+    public RepositorySearchInformation GetAllRepositories(IDeveloperId developerId)
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
+        var repoSearchInformation = new RepositorySearchInformation();
+        try
         {
-            if (_repositories.TryGetValue(developerId, out var _))
+            RepositoriesResult result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+            if (result.Result.Status == ProviderOperationStatus.Success)
             {
-                _repositories[developerId] = result.Repositories;
+                repoSearchInformation.Repositories = result.Repositories;
             }
             else
             {
-                _repositories.Add(developerId, result.Repositories);
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
             }
+        }
+        catch (AggregateException aggregateException)
+        {
+            // Because tasks can be canceled DevHome should emit different logs.
+            if (aggregateException.InnerException is OperationCanceledException)
+            {
+                GlobalLog.Logger?.ReportInfo($"Get Repos operation was cancalled.");
+            }
+            else
+            {
+                GlobalLog.Logger?.ReportError($"{aggregateException}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {ex}");
+        }
+
+        SetRepositories(developerId, repoSearchInformation.Repositories);
+
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
+        return repoSearchInformation;
+    }
+
+    private void SetRepositories(IDeveloperId developerId, IEnumerable<IRepository> repos)
+    {
+        if (_repositories.TryGetValue(developerId, out var _))
+        {
+            _repositories[developerId] = repos;
         }
         else
         {
-            if (_repositories.TryGetValue(developerId, out var _))
-            {
-                _repositories[developerId] = new List<IRepository>();
-            }
-            else
-            {
-                _repositories.Add(developerId, new List<IRepository>());
-            }
-
+            _repositories.Add(developerId, repos);
         }
-
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
-
-        return _repositories[developerId];
-    }
-
-    /// <summary>
-    /// Gets all the repositories an account has for this provider.
-    /// </summary>
-    /// <param name="developerId">The account to search in.</param>
-    /// <returns>A collection of repositories.  May be empty</returns>
-    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
-    {
-        return GetAllRepositories(developerId, new());
     }
 
     /// <summary>
@@ -346,6 +385,11 @@ internal sealed class RepositoryProvider
     /// <returns>If the extension implements IRepositoryProvider2.</returns>
     public bool IsSearchingEnabled()
     {
-        return (_repositoryProvider as IRepositoryProvider2) != null;
+        if (_repositoryProvider is IRepositoryProvider2 repoProviderWithSearch)
+        {
+            return repoProviderWithSearch.IsSearchingSupported;
+        }
+
+        return false;
     }
 }

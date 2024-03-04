@@ -103,13 +103,47 @@
             
             <!-- Show Repositories -->
             <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
-                <Grid ColumnSpacing="8" RowSpacing="10">
+                <Grid ColumnSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <SplitButton x:Name="AccountSplitButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Grid.Row="0" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource BoolToNegationConverter}}"/>
-                    <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="RepoTool_FilterTextBox" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource BoolToNegationConverter}}" />
+                    <Grid x:Name="AccountAndFilterGrid" ColumnSpacing="5" Grid.Row="0" Grid.ColumnSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                        </Grid.ColumnDefinitions>
+                        <SplitButton x:Name="AccountSplitButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Grid.Row="0" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}"/>
+                        <TextBox x:Name="FilterTextBox" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegateBoolConverter}}" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
+                    </Grid>
+                    <Grid x:Name="PathAndChangePathGrid" Grid.Row="1" Visibility="{x:Bind AddRepoViewModel.ShouldShowGranularSearch, Mode=OneWay}" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Column="0" Grid.Row="1" FontSize="{StaticResource SmallFontSize}" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind AddRepoViewModel.PathToRepos, Mode=OneWay}" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
+                        <ComboBox x:Name="LastPathPartComboBox" Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind AddRepoViewModel.LastPathPartsList, Mode=OneWay}" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" PlaceholderText="{x:Bind AddRepoViewModel.LastPathPartPlaceholderText, Mode=OneWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <TextBlock Text="{x:Bind}" TextTrimming="CharacterEllipsis"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                            <i:Interaction.Behaviors>
+                                <ic:EventTriggerBehavior EventName="SelectionChanged">
+                                    <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.LastPathPartChangedCommand}" CommandParameter="{x:Bind LastPathPartComboBox.SelectedItem, Mode=OneWay}"/>
+                                </ic:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
+                        </ComboBox>
+                    </Grid>
+                    <HyperlinkButton Visibility="{x:Bind AddRepoViewModel.ShouldShowChangeSearchTermsHyperlinkButton, Mode=OneWay}" Grid.Row="1" Grid.Column="2" Click="SwitchToSearchPage" Content="{x:Bind AddRepoViewModel.AskToChangeLabel, Mode=OneWay}" HorizontalAlignment="Right"/>
                 </Grid>
                 <Grid Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay}" Height="300" Width="300">
                     <Grid.RowDefinitions>
@@ -149,6 +183,16 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackPanel>
+            <Grid x:Name="SearchForMoreReposGrid" Visibility="{x:Bind AddRepoViewModel.ShouldShowSelectingSearchTerms, Mode=OneWay}">
+                <Grid x:Name="GatheringSearchValuesGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ProgressRing x:Name="SearchForMoreReposWaitingProgressRing" Grid.Row="0" HorizontalAlignment="Center"/>
+                </Grid>
+                <Grid x:Name="ShowingSearchTermsGrid"/>
+            </Grid>
             <TextBlock x:Name="ErrorTextBlock" Style="{ThemeResource BodyStrongTextBlockStyle}" Visibility="{x:Bind AddRepoViewModel.ShowErrorTextBox, Mode=OneWay}" x:Uid="Repo_ToolClonePathError"/>
             <!-- Repo page and URL page both have clonepath + dev drive check box-->
             <Grid Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.ShouldShowFolderPicker, Mode=OneWay}">

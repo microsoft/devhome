@@ -50,7 +50,16 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly ISetupFlowStringResource _stringResource;
 
+    private readonly List<RepoViewListItem> _allRepositories = new();
+
     private readonly List<CloningInformation> _previouslySelectedRepos;
+
+    /// <summary>
+    /// Holds all the currently executing tasks to GetRepositories.
+    /// Used to match a Task against _taskToUseForResults to make sure the results of the most recently executed task
+    /// is shows in the UI.
+    /// </summary>
+    private readonly List<Task> _runningGetReposTasks = new();
 
     /// <summary>
     /// Because logic is split between the back-end and the view model, migrating code from the view
@@ -152,8 +161,6 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<RepoViewListItem> _repositoriesToDisplay = new();
 
-    private List<RepoViewListItem> _allRepositories = new();
-
     /// <summary>
     /// Should the URL page be visible?
     /// </summary>
@@ -171,6 +178,13 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private bool _showRepoPage;
+
+    /// <summary>
+    /// If the extension implements IRepositoryProvider2 users can navigate to this page
+    /// allowing users to define a simple search query to narrow down the repos returned from the extension.
+    /// </summary>
+    [ObservableProperty]
+    private bool _shouldShowSelectingSearchTerms;
 
     /// <summary>
     /// Should the error text be shown?
@@ -252,6 +266,22 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private bool _isCancelling;
+
+    /// <summary>
+    /// The remote path to the repo.  Example, at a minimum each repo has a path of [server]/[RepoName]
+    /// Everything before [RepoName] is in this string.
+    /// </summary>
+    [ObservableProperty]
+    private string _pathToRepos;
+
+    /// <summary>
+    /// The last path part before [RepoName].  All strings in here will be in a combobox.
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<string> _lastPathPartsList;
+
+    [ObservableProperty]
+    private string _lastPathPartPlaceholderText;
 
     /// <summary>
     /// Used to figure out what button is pressed for the split button.
@@ -363,7 +393,8 @@ public partial class AddRepoViewModel : ObservableObject
 
         _selectedRepoProvider = repositoryProviderName;
         _isSearchingEnabled = _providers.IsSearchingEnabled(repositoryProviderName);
-        ShouldShowChangePathHyperlinkButton = _isSearchingEnabled;
+        ShouldShowChangeSearchTermsHyperlinkButton = _isSearchingEnabled;
+        AskToChangeLabel = _providers.GetAskChangeSearchFieldsLabel(repositoryProviderName);
     }
 
     [RelayCommand]
@@ -372,6 +403,12 @@ public partial class AddRepoViewModel : ObservableObject
         IsLoggingIn = false;
         IsCancelling = true;
     }
+
+    /// <summary>
+    /// Don't show the oath selector UI when querying repos and when selecting search terms.
+    /// </summary>
+    [ObservableProperty]
+    private bool _shouldShowPathSelector;
 
     /// <summary>
     /// The accounts the user is logged into is stored here.
@@ -391,6 +428,15 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private int _accountIndex;
 
+    [ObservableProperty]
+    private string _askToChangeLabel;
+
+    [ObservableProperty]
+    private bool _shouldShowGranularSearch;
+
+    [ObservableProperty]
+    private bool _shouldShowChangeSearchTermsHyperlinkButton;
+
     /// <summary>
     /// Switches the repos shown to the account selected.
     /// </summary>
@@ -407,6 +453,17 @@ public partial class AddRepoViewModel : ObservableObject
         });
     }
 
+    private void SearchRepos()
+    {
+        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(async () =>
+        {
+            await SearchForRepos(_selectedRepoProvider, SelectedAccount);
+
+            var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
+            _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
+        });
+    }
+
     [RelayCommand]
     private async Task OpenFolderPicker()
     {
@@ -415,13 +472,13 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Makes the MenuFlyout object used to display multple accounts in the repo tool.
+    /// IRepositoryProvider2 supports search queries when fetching repos.  Each extension has the option to
+    /// implement IRepositoryProvider2 or not.  this needs to be updated when a provider is selected.
     /// </summary>
-    /// <returns>The MenuFlyout to display.</returns>
-    /// <remarks>
-    /// The layout is a list of added accounts.  A line seperator.  One menu item to add an account.
-    /// </remarks>
-    private MenuFlyout ConstructFlyout()
+    private bool _isSearchingEnabled;
+
+    [RelayCommand]
+    private void LastPathPartChanged(string selectedItem)
     {
         if (selectedItem == null)
         {
@@ -687,7 +744,7 @@ public partial class AddRepoViewModel : ObservableObject
         // switch to the repo page.
         if (CanSkipAccountConnection)
         {
-            await ChangeToRepoPageAsync();
+            await ChangeToRepoPageAsync(new());
             return;
         }
 
@@ -713,12 +770,71 @@ public partial class AddRepoViewModel : ObservableObject
             EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
             SelectedAccount = Accounts.First();
             ShouldEnablePrimaryButton = false;
+
+            // The dialog makes a user log in if they have no accounts.
+            // keep this here just in case.
+            if (Accounts.Any())
+            {
+                SelectedAccount = Accounts.First();
+                MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
+            }
         }
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
         ShowUrlPage = false;
         ShowAccountPage = false;
         ShowRepoPage = true;
+
+        ShouldShowSelectingSearchTerms = false;
+        ShouldShowGranularSearch = false;
+
+        if (_isSearchingEnabled)
+        {
+            ShouldShowPathSelector = true;
+        }
+        else
+        {
+            ShouldShowPathSelector = false;
+        }
+
+        CurrentPage = PageKind.Repositories;
+        PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
+        ShouldShowLoginUi = false;
+
+        // The only way to get the repo page is through the account page.
+        // No need to change toggle buttons.
+    }
+
+    public async Task ChangeToRepoPageAsync(Dictionary<string, string> searchInputs)
+    {
+        await GetAccountsAsync(_selectedRepoProvider, LoginUiContent);
+        if (Accounts.Any())
+        {
+            FolderPickerViewModel.ShowFolderPicker();
+            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+            SelectedAccount = Accounts.First();
+            ShouldEnablePrimaryButton = false;
+            SelectedAccount = Accounts.First();
+            SearchRepos();
+        }
+
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
+        ShowUrlPage = false;
+        ShowAccountPage = false;
+        ShowRepoPage = true;
+
+        ShouldShowSelectingSearchTerms = false;
+        ShouldShowGranularSearch = false;
+
+        if (_isSearchingEnabled)
+        {
+            ShouldShowPathSelector = true;
+        }
+        else
+        {
+            ShouldShowPathSelector = false;
+        }
+
         CurrentPage = PageKind.Repositories;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
         ShouldShowLoginUi = false;
@@ -737,7 +853,10 @@ public partial class AddRepoViewModel : ObservableObject
         ShowAccountPage = false;
         ShowRepoPage = false;
         ShouldShowSelectingSearchTerms = true;
+        FolderPickerViewModel.ShouldShowFolderPicker = Visibility.Collapsed;
+        EditDevDriveViewModel.ShowDevDriveInformation = Visibility.Collapsed;
         PrimaryButtonText = "Connect";
+        ShouldEnablePrimaryButton = true;
     }
 
     /// <summary>
@@ -861,14 +980,6 @@ public partial class AddRepoViewModel : ObservableObject
         // To avoid this, just store the login id.
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId));
         AccountsToShow = ConstructFlyout();
-
-        // The dialog makes a user log in if they have no accounts.
-        // keep this here just in case.
-        if (Accounts.Any())
-        {
-            SelectedAccount = Accounts.First();
-            MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
-        }
     }
 
     /// <summary>
@@ -1153,6 +1264,52 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
+    public async Task SearchForRepos(string repositoryProvider, string loginId)
+    {
+        SelectedAccount = loginId;
+        IsFetchingRepos = true;
+
+        var repoSearchInformation = new RepositorySearchInformation();
+        var localTask = Task.Run(
+              () =>
+              {
+                  TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllLoggedInAccounts"), _activityId);
+                  var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
+
+                  TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllRepos"), _activityId);
+                  repoSearchInformation = _providers.SearchForRepos(repositoryProvider, loggedInDeveloper, _repoSearchInputs);
+              });
+
+        // Multiple calls can execute at the same time.  However, DevHome uses the results of the
+        // most recent query.  A list of tasks is used to keep track of all running queries.
+        // When a query is done, it is compared with the id of the most recently executed task.
+        // if a match, DevHome uses that.
+        _taskToUseForResults = localTask;
+        _runningGetReposTasks.Add(localTask);
+
+        await localTask;
+
+        _runningGetReposTasks.Remove(localTask);
+        if (localTask.Id != _taskToUseForResults.Id)
+        {
+            _repositoriesForAccount ??= new List<IRepository>();
+            return;
+        }
+
+        _repositoriesForAccount = repoSearchInformation.Repositories;
+
+        // Update the UI.
+        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        {
+            ShouldShowPathSelector = !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsLabel) &&
+                        !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsPleaseHolderText) &&
+                        repoSearchInformation.SelectionOptions.Count != 0;
+
+            IsFetchingRepos = false;
+            ShouldShowGranularSearch = true;
+        });
+    }
+
     /// <summary>
     /// Gets all the repositories for the specified provider and account.
     /// </summary>
@@ -1167,7 +1324,7 @@ public partial class AddRepoViewModel : ObservableObject
         SelectedAccount = loginId;
         IsFetchingRepos = true;
 
-        IEnumerable<IRepository> repositoriesForAccount = new List<IRepository>();
+        var repoSearchInformation = new RepositorySearchInformation();
         var localTask = Task.Run(
               () =>
           {
@@ -1175,7 +1332,7 @@ public partial class AddRepoViewModel : ObservableObject
               var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
 
               TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllRepos"), _activityId);
-              repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper, _repoSearchInputs);
+              repoSearchInformation = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
           });
 
         // Multiple calls can execute at the same time.  However, DevHome uses the results of the
@@ -1194,89 +1351,17 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        // If the provider does not provider search, don't worry about generating the search UI.
-        _allRepositories = repositoriesForAccount.Select(x => new RepoViewListItem(x)).ToList();
-        _repositoriesForAccount = repositoriesForAccount;
-        if (!_isSearchingEnabled)
-        {
-            _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
-            {
-                ShouldShowPathSelector = false;
-                IsFetchingRepos = false;
-                ShouldShowPathGrid = false;
-            });
-
-            return;
-        }
-
-        // Repositories are assumed to have a "path" of sorts before their name.
-        // For example [Server]\[Project]\[Cluster]\[RepoName].  Where the number of parts before [RepoName] matches the number
-        // of search terms returned from the provider.
-        // DevHome's repo page displays the current path, and allows users to select the last path part they want to use.
-        // In the above example [Server] and [Project] can't be changed in the repo page, but [Cluster] can.
-        // The code does three things.
-        // 1. Generates and saves the [Server]\[Project] string.  Example www.MyServer.com\Contoso.
-        //     1.A If [Server] or [Project] have more than 1 unique value * will be used.
-        // 2. Generates and saves the list of all unique [Cluster] values.
-        // 3. Changes the UI back to the Repo page, but showing the textblock and combo box.
-        var provider = _providers.GetProvider(repositoryProvider);
-        var searchFields = provider.GetSearchTerms();
-        var pathString = string.Empty;
-        var lastPathParts = new HashSet<string>();
-        var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
-
-        // If at least one search field is present make a list of the last part.
-        if (_repoSearchInputs.Count > 0)
-        {
-            var pathParts = provider.GetValuesFor(loggedInDeveloper, _repoSearchInputs, searchFields.Last());
-            pathParts.ForEach(x => lastPathParts.Add(x));
-            LastPathPartPlaceholderText = searchFields[searchFields.Count - 1];
-        }
-
-        // If at least two parts are present make a string with all but the last part.
-        if (searchFields.Count > 1)
-        {
-            var searchFieldsAndValues = searchFields.ToDictionary(x => x, y => new HashSet<string>());
-
-            foreach (var searchField in _repoSearchInputs.Keys)
-            {
-                var validTerms = provider.GetValuesFor(loggedInDeveloper, _repoSearchInputs, searchField);
-                searchFieldsAndValues[searchField] = new HashSet<string>(validTerms);
-            }
-
-            // Go through all search terms to build the string.
-            StringBuilder builder = new StringBuilder();
-            for (var searchFieldIndex = 0; searchFieldIndex < searchFields.Count - 1; searchFieldIndex++)
-            {
-                var values = searchFieldsAndValues[searchFields[searchFieldIndex]];
-                if (values.Count == 1)
-                {
-                    builder.Append(values.First());
-                }
-                else
-                {
-                    builder.Append('*');
-                }
-
-                builder.Append(Path.DirectorySeparatorChar);
-            }
-
-            pathString = builder.ToString();
-        }
+        _repositoriesForAccount = repoSearchInformation.Repositories;
 
         // Update the UI.
         _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
-            PathToRepos = pathString;
-            LastPathPartsList.Clear();
-            foreach (var lastPathPart in lastPathParts.Order())
-            {
-                LastPathPartsList.Add(lastPathPart);
-            }
+            ShouldShowPathSelector = !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsLabel) &&
+            !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsPleaseHolderText) &&
+            repoSearchInformation.SelectionOptions.Count != 0;
 
-            ShouldShowPathSelector = repositoriesForAccount.Any();
             IsFetchingRepos = false;
-            ShouldShowPathGrid = true;
+            ShouldShowGranularSearch = true;
         });
     }
 
