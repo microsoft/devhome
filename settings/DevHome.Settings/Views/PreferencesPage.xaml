@@ -28,22 +28,24 @@
             ItemsSource="{x:Bind Breadcrumbs}" />
 
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
-            <ctControls:SettingsCard x:Uid="Settings_Theme">
-                <ctControls:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xE790;" />
-                </ctControls:SettingsCard.HeaderIcon>
-                <ComboBox x:Name="ThemeSelectionComboBox">
-                    <ComboBoxItem x:Uid="Settings_Theme_Default" Tag="{x:Bind xaml:ElementTheme.Default}" />
-                    <ComboBoxItem x:Uid="Settings_Theme_Light" Tag="{x:Bind xaml:ElementTheme.Light}" />
-                    <ComboBoxItem x:Uid="Settings_Theme_Dark" Tag="{x:Bind xaml:ElementTheme.Dark}" />
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="SelectionChanged">
-                            <ic:InvokeCommandAction Command="{x:Bind ViewModel.SwitchThemeCommand}" 
-                                                    CommandParameter="{x:Bind ((ComboBoxItem)ThemeSelectionComboBox.SelectedItem).Tag, Mode=OneWay}" />
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </ComboBox>
-            </ctControls:SettingsCard>
+            <StackPanel>
+                <ctControls:SettingsCard x:Uid="Settings_Theme">
+                    <ctControls:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE790;" />
+                    </ctControls:SettingsCard.HeaderIcon>
+                    <ComboBox x:Name="ThemeSelectionComboBox">
+                        <ComboBoxItem x:Uid="Settings_Theme_Default" Tag="{x:Bind xaml:ElementTheme.Default}" />
+                        <ComboBoxItem x:Uid="Settings_Theme_Light" Tag="{x:Bind xaml:ElementTheme.Light}" />
+                        <ComboBoxItem x:Uid="Settings_Theme_Dark" Tag="{x:Bind xaml:ElementTheme.Dark}" />
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="SelectionChanged">
+                                <ic:InvokeCommandAction Command="{x:Bind ViewModel.SwitchThemeCommand}" 
+                                                        CommandParameter="{x:Bind ((ComboBoxItem)ThemeSelectionComboBox.SelectedItem).Tag, Mode=OneWay}" />
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </ComboBox>
+                </ctControls:SettingsCard>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </Page>
