@@ -16,22 +16,15 @@ namespace DevHome.Settings.ViewModels;
 public partial class PreferencesViewModel : ObservableObject
 {
     private readonly IThemeSelectorService _themeSelectorService;
-    private readonly IExperimentationService _experimentationService;
 
     [ObservableProperty]
     private ElementTheme _elementTheme;
 
-    [ObservableProperty]
-    private bool _isExperimentationEnabled;
-
-    public PreferencesViewModel(IThemeSelectorService themeSelectorService, IExperimentationService experimentationService)
+    public PreferencesViewModel(IThemeSelectorService themeSelectorService)
     {
         _themeSelectorService = themeSelectorService;
-        _experimentationService = experimentationService;
 
         _elementTheme = _themeSelectorService.Theme;
-
-        _isExperimentationEnabled = _experimentationService.IsExperimentationEnabled;
     }
 
     [RelayCommand]
@@ -39,15 +32,5 @@ public partial class PreferencesViewModel : ObservableObject
     {
         ElementTheme = elementTheme;
         await _themeSelectorService.SetThemeAsync(elementTheme);
-    }
-
-    [RelayCommand]
-    public async Task ExperimentationToggledAsync()
-    {
-        IsExperimentationEnabled = !IsExperimentationEnabled;
-
-        _experimentationService.IsExperimentationEnabled = IsExperimentationEnabled;
-
-        await Task.CompletedTask;
     }
 }

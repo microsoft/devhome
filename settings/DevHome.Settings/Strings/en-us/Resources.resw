@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Settings_Preferences_Description" xml:space="preserve">
-    <value>Themes and experimentation</value>
+    <value>Themes</value>
     <comment>Body text description for a card than when clicked takes the user to the Preferences settings page</comment>
   </data>
   <data name="Settings_Preferences_Header" xml:space="preserve">
@@ -541,13 +541,5 @@
   <data name="ViewLogs.Header" xml:space="preserve">
     <value>View logs</value>
     <comment>Click on this if you want to see Dev Home's logs on your machine.</comment>
-  </data>
-  <data name="Settings_Experimentation.Header" xml:space="preserve">
-    <value>Experimentation</value>
-    <comment>Header for a card than when turned on enables experimentation</comment>
-  </data>
-  <data name="Settings_Experimentation.Description" xml:space="preserve">
-    <value>Turn off to opt out of experimentation</value>
-    <comment>Body text description for a card that when turned on enables experimentation</comment>
   </data>
 </root>
