@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 
@@ -30,28 +29,12 @@ internal sealed class WinGetInstallOperation : IWinGetInstallOperation
     }
 
     /// <inheritdoc />
-    public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package)
+    public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri)
     {
         return await _recovery.DoWithRecoveryAsync(async () =>
         {
-            var catalog = await _catalogConnector.GetPackageCatalogAsync(package);
-            return await _packageInstaller.InstallPackageAsync(catalog, package.Id);
-        });
-    }
-
-    /// <inheritdoc />
-    public async Task<InstallPackageResult> InstallPackageAsync(Uri packageUri)
-    {
-        var parsedPackageUri = _protocolParser.ParsePackageUri(packageUri);
-        if (parsedPackageUri == null)
-        {
-            throw new ArgumentException($"Invalid package URI ${packageUri}");
-        }
-
-        return await _recovery.DoWithRecoveryAsync(async () =>
-        {
-            var catalog = await _protocolParser.ResolveCatalogAsync(parsedPackageUri);
-            return await _packageInstaller.InstallPackageAsync(catalog, parsedPackageUri.PackageId);
+            var catalog = await _protocolParser.ResolveCatalogAsync(packageUri);
+            return await _packageInstaller.InstallPackageAsync(catalog, packageUri.PackageId, packageUri.Options.Version);
         });
     }
 }

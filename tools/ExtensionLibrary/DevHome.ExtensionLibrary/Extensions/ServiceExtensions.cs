@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.ExtensionLibrary.ViewModels;
+using DevHome.ExtensionLibrary.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -11,9 +12,11 @@ public static class ServiceExtensions
 {
     public static IServiceCollection AddExtensionLibrary(this IServiceCollection services, HostBuilderContext context)
     {
-        // View-models
         services.AddTransient<ExtensionLibraryViewModel>();
         services.AddTransient<ExtensionLibraryBannerViewModel>();
+
+        services.AddTransient<ExtensionSettingsViewModel>();
+        services.AddTransient<ExtensionSettingsPage>();
 
         return services;
     }

@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
     <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Internal.winmd" Link="Microsoft.Windows.Widgets.Internal.winmd" CopyToOutputDirectory="PreserveNewest" />
     <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.winmd" Link="Microsoft.Windows.Widgets.winmd" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
@@ -64,5 +63,10 @@
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
+    <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
   </PropertyGroup>
 </Project>

@@ -22,10 +22,10 @@ public interface IWindowsPackageManager
     public Task InitializeAsync();
 
     /// <inheritdoc cref="IWinGetOperations.InstallPackageAsync"/>
-    public Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package);
+    public Task<InstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri);
 
     /// <inheritdoc cref="IWinGetOperations.GetPackagesAsync"/>
-    public Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris);
+    public Task<IList<IWinGetPackage>> GetPackagesAsync(IList<WinGetPackageUri> packageUris);
 
     /// <inheritdoc cref="IWinGetOperations.SearchAsync"/>
     public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit);
@@ -46,14 +46,14 @@ public interface IWindowsPackageManager
     public bool IsWinGetPackage(IWinGetPackage package);
 
     /// <inheritdoc cref="IWinGetProtocolParser.CreatePackageUri"/>
-    public Uri CreatePackageUri(IWinGetPackage package);
+    public WinGetPackageUri CreatePackageUri(IWinGetPackage package);
 
     /// <inheritdoc cref="IWinGetProtocolParser.CreateWinGetCatalogPackageUri"/>
-    public Uri CreateWinGetCatalogPackageUri(string packageId);
+    public WinGetPackageUri CreateWinGetCatalogPackageUri(string packageId);
 
     /// <inheritdoc cref="IWinGetProtocolParser.CreateMsStoreCatalogPackageUri"/>
-    public Uri CreateMsStoreCatalogPackageUri(string packageId);
+    public WinGetPackageUri CreateMsStoreCatalogPackageUri(string packageId);
 
     /// <inheritdoc cref="IWinGetProtocolParser.CreateCustomCatalogPackageUri"/>
-    public Uri CreateCustomCatalogPackageUri(string packageId, string catalogName);
+    public WinGetPackageUri CreateCustomCatalogPackageUri(string packageId, string catalogName);
 }

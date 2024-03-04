@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
@@ -59,8 +60,6 @@ internal sealed class RepositoryProvider
 
     public string ExtensionDisplayName => _extensionWrapper.Name;
 
-    private readonly object _getRepoLock = new();
-
     /// <summary>
     /// Starts the extension if it isn't running.
     /// </summary>
@@ -76,6 +75,29 @@ internal sealed class RepositoryProvider
     public IRepositoryProvider GetProvider()
     {
         return _repositoryProvider;
+    }
+
+    /// <summary>
+    /// Asks the provider for search terms for querying repositories.
+    /// </summary>
+    /// <returns>The names of the search fields.</returns>
+    public List<string> GetSearchTerms()
+    {
+        var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
+        return repositoryProvider2?.SearchFieldNames.ToList() ?? new List<string>();
+    }
+
+    /// <summary>
+    /// Asks the provider for a list of suggestions, given values of other search terms.
+    /// </summary>
+    /// <param name="developerId">The logged in user.</param>
+    /// <param name="searchTerms">All information found in the search grid</param>
+    /// <param name="fieldName">The field to request data for</param>
+    /// <returns>A list of names that can be used for the field.  An empty list is returned if the provider isn't found</returns>
+    public List<string> GetValuesFor(IDeveloperId developerId, Dictionary<string, string> searchTerms, string fieldName)
+    {
+        var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
+        return repositoryProvider2?.GetValuesForSearchFieldAsync(searchTerms, fieldName, developerId).AsTask().Result.ToList() ?? new List<string>();
     }
 
     /// <summary>
@@ -183,6 +205,7 @@ internal sealed class RepositoryProvider
 
         // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
         renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
+        renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
 
         var hostConfigContents = string.Empty;
         var hostConfigFileName = (elementTheme == ElementTheme.Light) ? "LightHostConfig.json" : "DarkHostConfig.json";
@@ -242,33 +265,87 @@ internal sealed class RepositoryProvider
     /// Gets all the repositories an account has for this provider.
     /// </summary>
     /// <param name="developerId">The account to search in.</param>
+    /// <param name="searchInputs">The key/value pairs that the extension will use to search for repos.</param>
     /// <returns>A collection of repositories.  May be empty</returns>
-    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
+    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId, Dictionary<string, string> searchInputs)
     {
-        IEnumerable<IRepository> repositoriesForAccount;
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
 
-        lock (_getRepoLock)
+        RepositoriesResult result;
+        try
         {
-            if (!_repositories.TryGetValue(developerId, out repositoriesForAccount))
+            if (IsSearchingEnabled())
             {
-                TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
-                var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
-                if (result.Result.Status != ProviderOperationStatus.Success)
-                {
-                    _repositories.Add(developerId, new List<IRepository>());
-                }
-                else
-                {
-                    _repositories.Add(developerId, result.Repositories);
-                }
+                var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
+                result = repositoryProvider2.GetRepositoriesAsync(searchInputs, developerId).AsTask().Result;
+            }
+            else
+            {
+                result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
             }
         }
+        catch (AggregateException aggregateException)
+        {
+            // Because tasks can be canceled DevHome should emit different logs.
+            if (aggregateException.InnerException is OperationCanceledException)
+            {
+                GlobalLog.Logger?.ReportInfo($"Get Repos operation was cancalled.");
+            }
+            else
+            {
+                GlobalLog.Logger?.ReportError($"{aggregateException}");
+            }
 
-        // _repositories should have an entry for developerId by now.
-        repositoriesForAccount ??= _repositories[developerId];
+            _repositories[developerId] = new List<IRepository>();
+            return _repositories[developerId];
+        }
+
+        if (result.Result.Status == ProviderOperationStatus.Success)
+        {
+            if (_repositories.TryGetValue(developerId, out var _))
+            {
+                _repositories[developerId] = result.Repositories;
+            }
+            else
+            {
+                _repositories.Add(developerId, result.Repositories);
+            }
+        }
+        else
+        {
+            if (_repositories.TryGetValue(developerId, out var _))
+            {
+                _repositories[developerId] = new List<IRepository>();
+            }
+            else
+            {
+                _repositories.Add(developerId, new List<IRepository>());
+            }
+
+        }
 
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
-        return repositoriesForAccount;
+        return _repositories[developerId];
+    }
+
+    /// <summary>
+    /// Gets all the repositories an account has for this provider.
+    /// </summary>
+    /// <param name="developerId">The account to search in.</param>
+    /// <returns>A collection of repositories.  May be empty</returns>
+    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
+    {
+        return GetAllRepositories(developerId, new());
+    }
+
+    /// <summary>
+    /// If extensions implement IRepositoryProvider2 then it can accept search terms when fetching repos.
+    /// Specifically for DevHome, the RepoTool will modify its UI to enable users to supply search values.
+    /// </summary>
+    /// <returns>If the extension implements IRepositoryProvider2.</returns>
+    public bool IsSearchingEnabled()
+    {
+        return (_repositoryProvider as IRepositoryProvider2) != null;
     }
 }
