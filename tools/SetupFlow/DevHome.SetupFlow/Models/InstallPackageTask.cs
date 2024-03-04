@@ -54,6 +54,8 @@ public class InstallPackageTask : ISetupTask
         get;
     }
 
+    public string PackageName => _package.Name;
+
 #pragma warning disable 67
     public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
 #pragma warning restore 67

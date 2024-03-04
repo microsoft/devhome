@@ -36,12 +36,15 @@ public class ComputeSystemProvider
 
     public ComputeSystemProviderOperations SupportedOperations { get; private set; }
 
+    public Uri Icon { get; }
+
     public ComputeSystemProvider(IComputeSystemProvider computeSystemProvider)
     {
         _computeSystemProvider = computeSystemProvider;
         Id = computeSystemProvider.Id;
         DisplayName = computeSystemProvider.DisplayName;
         SupportedOperations = computeSystemProvider.SupportedOperations;
+        Icon = computeSystemProvider.Icon;
         errorString = StringResourceHelper.GetResource("ComputeSystemUnexpectedError", DisplayName);
     }
 

@@ -27,9 +27,9 @@ public class ComputeSystemService : IComputeSystemService
         _accountService = accountService;
     }
 
-    public async Task<Dictionary<IComputeSystemProvider, List<IDeveloperId>>> GetComputeSystemProvidersAsync()
+    public async Task<List<ComputeSystemProviderDetails>> GetComputeSystemProvidersAsync()
     {
-        var computeSystemProvidersFromAllExtensions = new Dictionary<IComputeSystemProvider, List<IDeveloperId>>();
+        var computeSystemProvidersFromAllExtensions = new List<ComputeSystemProviderDetails>();
         var extensions = await _extensionService.GetInstalledExtensionsAsync(ProviderType.ComputeSystem);
         foreach (var extension in extensions)
         {
@@ -37,16 +37,16 @@ public class ComputeSystemService : IComputeSystemService
             {
                 var computeSystemProviders = await extension.GetListOfProvidersAsync<IComputeSystemProvider>();
                 var extensionObj = extension.GetExtensionObject();
-                var devIdList = new List<IDeveloperId>();
+                var devIdList = new List<DeveloperIdWrapper>();
                 if (extensionObj != null && computeSystemProviders.FirstOrDefault() != null)
                 {
-                    devIdList.AddRange(_accountService.GetDeveloperIds(extensionObj));
+                    devIdList.AddRange(_accountService.GetDeveloperIds(extensionObj).Select(id => new DeveloperIdWrapper(id)));
                 }
 
                 if (devIdList.Count == 0)
                 {
                     // If we don't have a developer id for the extension, add an empty one so we can still get the compute systems.
-                    devIdList.Add(new EmptyDeveloperId());
+                    devIdList.Add(new DeveloperIdWrapper(new EmptyDeveloperId()));
                 }
 
                 // Only add non-null providers to the list.
@@ -54,7 +54,7 @@ public class ComputeSystemService : IComputeSystemService
                 {
                     if (computeSystemProviders.ElementAt(i) != null)
                     {
-                        computeSystemProvidersFromAllExtensions.Add(computeSystemProviders.ElementAt(i), devIdList);
+                        computeSystemProvidersFromAllExtensions.Add(new(extension, new ComputeSystemProvider(computeSystemProviders.ElementAt(i)), devIdList));
                     }
                 }
             }

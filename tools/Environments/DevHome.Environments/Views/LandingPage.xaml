@@ -9,16 +9,13 @@
     xmlns:vm="using:DevHome.Environments.ViewModels"
     xmlns:customControls="using:DevHome.Environments.CustomControls"
     xmlns:commonCustomControls="using:DevHome.Common.Environments.CustomControls"
+    xmlns:commonModels="using:DevHome.Common.Environments.Models"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-    mc:Ignorable="d">
-    <!--
-        ToDo List:
-        - Add ComputeSystemProperties to Card
-        - Add Search and Sort fields
-    -->
+    mc:Ignorable="d"
+    Loaded="OnLoaded">
 
     <pg:ToolPage.Resources>
         <ResourceDictionary Source="ms-appx:///DevHome.Common/Environments/Templates/EnvironmentsTemplates.xaml" />
@@ -36,19 +33,22 @@
 
             <!-- Launch Button template -->
             <DataTemplate x:Key="LaunchButton" x:DataType="vm:ComputeSystemViewModel">
-                <Grid Grid.Column="2" Style="{StaticResource CardBodyContainerStyle}">
-                    <SplitButton VerticalAlignment="Top" Command="{x:Bind LaunchActionCommand}" x:Uid="ms-resource:///DevHome.Environments/Resources/LaunchButton">
+                <SplitButton 
+                        VerticalAlignment="Top" 
+                        Command="{x:Bind LaunchActionCommand}" 
+                        x:Uid="ms-resource:///DevHome.Environments/Resources/LaunchButton"
+                        Style="{StaticResource CardBodySplitButtonStyle}">
                         <SplitButton.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind LaunchOperations}"/>
                         </SplitButton.Flyout>
                     </SplitButton>
-                </Grid>
             </DataTemplate>
 
             <!-- Three Dot Button template -->
             <DataTemplate x:Key="ThreeDotsButton" x:DataType="vm:ComputeSystemViewModel">
                 <Grid>
-                    <Button Style="{StaticResource HorizontalThreeDotsStyle}">
+                    <Button
+                        Style="{StaticResource HorizontalThreeDotsStyle}">
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations}"/>
                         </Button.Flyout>
@@ -56,23 +56,53 @@
                 </Grid>
             </DataTemplate>
 
-        <!-- Properties template -->
-        <DataTemplate x:Key="BottomRowProperties" x:DataType="vm:PropertyViewModel">
-            <StackPanel Orientation="Horizontal">
-                <FontIcon Glyph="{x:Bind Glyph}" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                <TextBlock Text="{x:Bind Value}" Margin="5 0 2 0" Style="{StaticResource CardPropertyTextBlockStyle}"/>
-                <TextBlock Text="{x:Bind Title}" Style="{StaticResource CardPropertyTextBlockStyle}"/>
-            </StackPanel>
-        </DataTemplate>
+            <!-- Properties template for the compute system properties that appear within a horizontal card.-->
+            <DataTemplate x:Key="BottomRowProperties" x:DataType="commonModels:CardProperty">
+                <Grid
+                    HorizontalAlignment="Stretch"
+                    Margin="0 2 5 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="4*" />
+                        <ColumnDefinition Width="6*" />
+                    </Grid.ColumnDefinitions>
+                    <Image
+                        Grid.Column="0"
+                        Margin="0 0 10 0"
+                        Visibility="{x:Bind Icon, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
+                        Source="{x:Bind Icon, Mode=OneWay}"
+                        Width="{StaticResource ComputeSystemIcon12px}"
+                        Height="{StaticResource ComputeSystemIcon12px}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        MaxWidth="50"/>
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="0 0 5 0"
+                        Visibility="{x:Bind Title, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
+                        Text="{x:Bind Title, Mode=OneWay}"
+                        TextTrimming="CharacterEllipsis"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        IsTextSelectionEnabled="True"/>
+                    <TextBlock
+                        Grid.Column="2"
+                        Visibility="{x:Bind Value, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
+                        Text="{x:Bind Value, Mode=OneWay}"
+                        TextTrimming="CharacterEllipsis"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        IsTextSelectionEnabled="True"/>
+                </Grid>
+            </DataTemplate>
 
         <!-- Shimmer template from SetupFlow/SetupTargetView.xaml -->
         <DataTemplate x:Key="ComputeSystemLoadingTemplate">
-                <ListView
+            <ListView
                 SelectionMode="None"
                 ItemTemplate="{StaticResource HorizontalCardRootShimmerTemplate}"
-                        Margin="12 0 8 0"
-                        ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}">
-                    <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
+                ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
+                <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
                 <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
             </ListView>
         </DataTemplate>
@@ -92,7 +122,7 @@
             <TextBlock Grid.Column="0" x:Uid="Titlebar" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Left" x:Name="Titlebar"/>
             <!-- Top right 'Sync' button -->
 <!-- ToDo: Revisit after confirming glyphs to be used -->
-            <Button Grid.Column="4" HorizontalAlignment="Right" Padding="45 5 30 5" Click="{x:Bind ViewModel.SyncButton_Click}" Margin="0 0 13 0">
+            <Button Grid.Column="4" HorizontalAlignment="Right" Padding="45 5 30 5" Command="{x:Bind ViewModel.SyncButtonCommand}" Margin="0 0 13 0">
                 <StackPanel Orientation="Horizontal">
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;" FontSize="11">
                         <FontIcon.RenderTransform>
@@ -133,7 +163,14 @@
         <!-- Per VM/Compute System card -->
         <ScrollViewer Grid.Row="2" Style="{StaticResource EnvironmentScrollViewerStyle}">
             <StackPanel>
-                <ListView ItemsSource="{x:Bind ViewModel.ComputeSystemsView}" SelectionMode="None">
+                <ListView 
+                    ItemsSource="{x:Bind ViewModel.ComputeSystemsView}" SelectionMode="None"
+                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="vm:ComputeSystemViewModel">
                             <Grid Style="{StaticResource HorizontalCardRootForEnvironmentsPage}">

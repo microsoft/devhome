@@ -8,10 +8,11 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Environments.Services;
+using DevHome.Common.Helpers;
 using DevHome.Environments.Helpers;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 
@@ -23,13 +24,19 @@ namespace DevHome.Environments.ViewModels;
 /// </summary>
 public partial class ComputeSystemViewModel : ObservableObject
 {
-    public IComputeSystem ComputeSystem { get; }
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     public string Name => ComputeSystem.DisplayName;
 
-    public string AlternativeName { get; }
+    private readonly IComputeSystemManager _computeSystemManager;
+
+    public ComputeSystem ComputeSystem { get; }
+
+    public string AlternativeName { get; } = string.Empty;
 
     public string Type { get; }
+
+    public bool IsOperationInProgress { get; set; }
 
     // Launch button operations
     public ObservableCollection<OperationsViewModel> LaunchOperations { get; set; }
@@ -37,58 +44,100 @@ public partial class ComputeSystemViewModel : ObservableObject
     // Dot button operations
     public ObservableCollection<OperationsViewModel> DotOperations { get; set; }
 
-    public ObservableCollection<ICardProperty>? Properties { get; set; }
+    public ObservableCollection<CardProperty> Properties { get; set; } = new();
 
-    public ComputeSystemState State { get; set; }
+    [ObservableProperty]
+    private ComputeSystemState _state;
 
-    public CardStateColor StateColor { get; private set; }
+    [ObservableProperty]
+    private CardStateColor _stateColor;
 
-    public BitmapImage HeaderImage { get; set; }
+    public BitmapImage? HeaderImage { get; set; } = new();
 
-    public BitmapImage BodyImage { get; set; }
+    public BitmapImage? BodyImage { get; set; } = new();
 
-    public ComputeSystemViewModel(IComputeSystem system, string displayName)
+    public string PackageFullName { get; set; }
+
+    public ComputeSystemViewModel(IComputeSystemManager manager, IComputeSystem system, ComputeSystemProvider provider, string packageFullName)
     {
-        ComputeSystem = system;
-        Type = displayName;
-        AlternativeName = new string("(" + ComputeSystem.SupplementalDisplayName + ")");
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _computeSystemManager = manager;
 
-        LaunchOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillLaunchButtonOperations(system));
-        DotOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillDotButtonOperations(system));
-        BodyImage = DataExtractor.GetCardBodyImage(system);
-        Properties = new ObservableCollection<ICardProperty>(DataExtractor.FillPropertiesAsync(system));
+        ComputeSystem = new(system);
+        Type = provider.DisplayName;
+        PackageFullName = packageFullName;
 
-        // ToDo: Remove this test value, and replace with the shared Card Property method once PFN is available
-        HeaderImage = new BitmapImage { UriSource = new Uri("ms-appx:///Assets/Preview/AppList.scale-100.png"), };
+        if (!string.IsNullOrEmpty(ComputeSystem.SupplementalDisplayName))
+        {
+            AlternativeName = new string("(" + ComputeSystem.SupplementalDisplayName + ")");
+        }
 
-        InitializeState();
+        LaunchOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillLaunchButtonOperations(ComputeSystem));
+        DotOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillDotButtonOperations(ComputeSystem));
+        HeaderImage = CardProperty.ConvertMsResourceToIcon(provider.Icon, packageFullName);
+        ComputeSystem.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
+        _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;
     }
 
-    public async void InitializeState()
+    public async Task InitializeCardDataAsync()
     {
-        try
+        await InitializeStateAsync();
+        await SetBodyImageAsync();
+        await SetPropertiesAsync();
+    }
+
+    private async Task InitializeStateAsync()
+    {
+        var result = await ComputeSystem.GetStateAsync();
+        if (result.Result.Status == ProviderOperationStatus.Failure)
         {
-            var result = await ComputeSystem.GetStateAsync();
-            if (result.Result.Status == ProviderOperationStatus.Success)
-            {
-                State = result.State;
-            }
-            else
-            {
-                // ToDo: Log error
-                State = ComputeSystemState.Unknown;
-            }
+            Log.Logger()?.ReportError($"Failed to get state for {ComputeSystem.DisplayName} due to {result.Result.DiagnosticText}");
         }
-        catch (Exception e)
+
+        State = result.State;
+        StateColor = ComputeSystemHelpers.GetColorBasedOnState(State);
+    }
+
+    private async Task SetBodyImageAsync()
+    {
+        BodyImage = await ComputeSystemHelpers.GetBitmapImageAsync(ComputeSystem);
+    }
+
+    private async Task SetPropertiesAsync()
+    {
+        foreach (var property in await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(ComputeSystem, PackageFullName))
         {
-            // ToDo: Log error & change test value
-            Debug.WriteLine(e);
-            State = ComputeSystemState.Running;
-            StateColor = CardStateColor.Success;
+            Properties.Add(property);
         }
+    }
+
+    public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
+    {
+        _dispatcher.TryEnqueue(() =>
+        {
+            if (sender.Id == ComputeSystem.Id)
+            {
+                State = state;
+                StateColor = ComputeSystemHelpers.GetColorBasedOnState(state);
+            }
+        });
+    }
+
+    public void RemoveStateChangedHandler()
+    {
+        ComputeSystem.StateChanged -= _computeSystemManager.OnComputeSystemStateChanged;
+        _computeSystemManager.ComputeSystemStateChanged -= OnComputeSystemStateChanged;
     }
 
     [RelayCommand]
-    public async Task LaunchAction()
-        => await ComputeSystem.ConnectAsync(string.Empty);
+    public void LaunchAction()
+    {
+        // We'll need to disable the card UI while the operation is in progress and handle failures.
+        Task.Run(async () =>
+        {
+            IsOperationInProgress = true;
+            await ComputeSystem.ConnectAsync(string.Empty);
+            IsOperationInProgress = false;
+        });
+    }
 }

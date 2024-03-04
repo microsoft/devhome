@@ -87,20 +87,20 @@ public class SDKConfigurationSetChangeWrapper
     {
         get
         {
-            switch (SetState)
+            switch (UnitState)
             {
-                case SDK.ConfigurationSetState.Unknown:
-                    return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnknown);
-                case SDK.ConfigurationSetState.Pending:
-                    return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationPending);
-                case SDK.ConfigurationSetState.InProgress:
-                    return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationInProgress);
-                case SDK.ConfigurationSetState.Completed:
-                    return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationCompleted);
-                case SDK.ConfigurationSetState.ShuttingDownDevice:
-                    return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationSkipped);
+                case SDK.ConfigurationUnitState.Unknown:
+                    return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnitUnknown);
+                case SDK.ConfigurationUnitState.Pending:
+                    return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnitPending);
+                case SDK.ConfigurationUnitState.InProgress:
+                    return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnitInProgress);
+                case SDK.ConfigurationUnitState.Completed:
+                    return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnitCompleted);
+                case SDK.ConfigurationUnitState.Skipped:
+                    return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnitSkipped);
                 default:
-                    return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnknown);
+                    return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnitUnknown);
             }
         }
     }
@@ -119,7 +119,14 @@ public class SDKConfigurationSetChangeWrapper
 
     public string GetErrorMessagesForDisplay()
     {
-        return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnitProgressError, ShortFailureDescription);
+        var resourceName = Unit?.Type ?? _stringResource.GetLocalized(StringResourceKey.SetupTargetUnknownStatus);
+
+        if (string.IsNullOrEmpty(ShortFailureDescription))
+        {
+            return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnitProgressError, resourceName);
+        }
+
+        return _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationUnitProgressErrorWithMsg, resourceName, ShortFailureDescription);
     }
 
     public string GetErrorMessageForLogging()

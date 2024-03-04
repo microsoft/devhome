@@ -41,20 +41,23 @@
             -->
             <StackPanel
                 Grid.Column="1"
+                Grid.ColumnSpan="2"
                 Style="{StaticResource CardBodyStackPanelStyle}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock
                     Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
-                    Text="{x:Bind ComputeSystemTitle, Mode=OneWay}"/>
+                    Text="{x:Bind ComputeSystemTitle, Mode=OneWay}"
+                    IsTextSelectionEnabled="True"/>
                 <TextBlock
                     Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
-                    Text="{x:Bind ComputeSystemAlternativeTitle, Mode=OneWay}"/>
+                    Text="{x:Bind ComputeSystemAlternativeTitle, Mode=OneWay}"
+                    IsTextSelectionEnabled="True"/>
             </StackPanel>
                 <Grid
                     ColumnSpacing="{StaticResource ContainerElementSpacing}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <!-- Colored dot that indicates the visual state of the compute system. -->
                     <Ellipse
@@ -65,7 +68,8 @@
                     <TextBlock
                         Grid.Column="1"
                         Text="{x:Bind CardState, Converter={StaticResource CardStateToLocalizedTextConverter}, Mode=OneWay}"
-                        Style="{StaticResource CardBodyStateTextBlockStyle}"/>
+                        Style="{StaticResource CardBodyStateTextBlockStyle}"
+                        IsTextSelectionEnabled="True"/>
                 </Grid>
                 <!-- Wrap panel from community toolkit that will display properties of variable length. -->
                 <ItemsRepeater 

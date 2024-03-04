@@ -45,8 +45,11 @@ public class ConfigurationUnitResult
     {
         Type = result.Unit.Type;
         Id = result.Unit.Identifier;
-        result.Unit.Settings.TryGetValue("description", out var descriptionObj);
-        UnitDescription = descriptionObj?.ToString() ?? string.Empty;
+        if (result.Unit.Settings?.TryGetValue("description", out var descriptionObj) == true)
+        {
+            UnitDescription = descriptionObj?.ToString() ?? string.Empty;
+        }
+
         Intent = result.Unit.Intent.ToString();
         IsSkipped = result.State == SDK.ConfigurationUnitState.Skipped;
         HResult = result.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK;

@@ -58,6 +58,22 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         }
     }
 
+    public bool CanSetupTarget
+    {
+        get
+        {
+            var repoConfigTasksTotal = _setupFlowOrchestrator.GetTaskGroup<RepoConfigTaskGroup>()?.CloneTasks.Count ?? 0;
+            var appManagementTasksTotal = _setupFlowOrchestrator.GetTaskGroup<AppManagementTaskGroup>()?.SetupTasks.Count() ?? 0;
+            if (_setupFlowOrchestrator.IsSettingUpATargetMachine && repoConfigTasksTotal == 0 && appManagementTasksTotal == 0)
+            {
+                // either repo config or app management task group is required to setup target
+                return false;
+            }
+
+            return true;
+        }
+    }
+
     public bool HasTasksToSetUp => Orchestrator.TaskGroups.Any(g => g.SetupTasks.Any());
 
     public ReviewViewModel(
@@ -94,7 +110,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     public void UpdateCanSetUp()
     {
-        CanSetUp = HasTasksToSetUp && IsValidTermsAgreement();
+        CanSetUp = HasTasksToSetUp && IsValidTermsAgreement() && CanSetupTarget;
     }
 
     /// <summary>

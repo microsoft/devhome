@@ -28,6 +28,8 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
+    private readonly ToastNotificationService _toastNotificationService;
+
     private const string SortByDisplayName = "DisplayName";
 
     private readonly string _allKeyWordLocalized;
@@ -54,13 +56,15 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ObservableCollection<string> _computeSystemProviderComboBoxNames;
 
-    [NotifyPropertyChangedFor(nameof(ComboBoxNamesCollectionView))]
+    [NotifyPropertyChangedFor(nameof(ProviderComboBoxNamesCollectionView))]
     [NotifyCanExecuteChangedFor(nameof(SyncComputeSystemsCommand))]
     [ObservableProperty]
     private bool _computeSystemLoadingCompleted;
 
     [ObservableProperty]
-    private AdvancedCollectionView _comboBoxNamesCollectionView;
+    private AdvancedCollectionView _providerComboBoxNamesCollectionView;
+
+    public ObservableCollection<string> ComputeSystemsSortOptions { get; private set; }
 
     public AdvancedCollectionView ComputeSystemsCollectionView { get; private set; }
 
@@ -68,12 +72,15 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
     public string SelectedComputeSystemProviderComboBoxName { get; set; }
 
+    public int SelectedComputeSystemSortComboBoxIndex { get; set; }
+
     public SetupTargetViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowViewModel setupflowModel,
         SetupFlowOrchestrator orchestrator,
         IComputeSystemManager computeSystemManager,
-        ComputeSystemViewModelFactory computeSystemViewModelFactory)
+        ComputeSystemViewModelFactory computeSystemViewModelFactory,
+        ToastNotificationService toastNotificationService)
         : base(stringResource, orchestrator)
     {
         // Setup initial state for page.
@@ -86,8 +93,15 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         // Add the "All" option to the combo box and make sure its always sorted.
         SelectedComputeSystemProviderComboBoxName = _allKeyWordLocalized;
         _computeSystemProviderComboBoxNames = new() { SelectedComputeSystemProviderComboBoxName, };
-        ComboBoxNamesCollectionView = new AdvancedCollectionView(_computeSystemProviderComboBoxNames, true);
-        ComboBoxNamesCollectionView.SortDescriptions.Add(new SortDescription(SortDirection.Ascending));
+        ProviderComboBoxNamesCollectionView = new AdvancedCollectionView(_computeSystemProviderComboBoxNames, true);
+        ProviderComboBoxNamesCollectionView.SortDescriptions.Add(new SortDescription(SortDirection.Ascending));
+
+        // Add sort options like A-Z, Z-A, etc.
+        ComputeSystemsSortOptions = new ObservableCollection<string>
+        {
+            _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetSortAToZLabel),
+            _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetSortZToALabel),
+        };
 
         // Add AdvancedCollectionView to make filtering and sorting the list of ComputeSystemsListViewModels easier.
         ComputeSystemsCollectionView = new AdvancedCollectionView(_computeSystemViewModelList, true);
@@ -97,6 +111,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         ComputeSystemManagerObj = computeSystemManager;
         _setupFlowViewModel = setupflowModel;
         _setupFlowViewModel.EndSetupFlow += OnRemovingComputeSystems;
+        _toastNotificationService = toastNotificationService;
     }
 
     /// <summary>
@@ -236,6 +251,9 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     [RelayCommand(CanExecute = nameof(CanEnableSyncButton))]
     public void SyncComputeSystems()
     {
+        // temporary, we'll need to give the users a way to disable this.
+        // if they don't want to use hyper-v
+        _toastNotificationService.CheckIfUserIsAHyperVAdmin();
         GetComputeSystems();
     }
 
@@ -247,6 +265,10 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     {
         // Do nothing, but we need to override this as the base expects a task to be returned.
         await Task.CompletedTask;
+
+        // temporary, we'll need to give the users a way to disable this.
+        // if they don't want to use hyper-v
+        _toastNotificationService.CheckIfUserIsAHyperVAdmin();
 
         GetComputeSystems();
     }
@@ -301,6 +323,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         {
             _computeSystemViewModelList[i].CardSelectionChanged -= OnListSelectionChanged;
             _computeSystemViewModelList[i].SelectedItem = null;
+            _computeSystemViewModelList[i].RemoveCardViewModelEventHandlers();
             ComputeSystemProviderComboBoxNames.Remove(_computeSystemViewModelList[i].DisplayName);
             _computeSystemViewModelList.RemoveAt(i);
         }
@@ -312,7 +335,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         ComputeSystemManagerObj.ComputeSystemSetupItem = null;
         ShouldShowCollectionView = false;
         ComputeSystemsCollectionView.Refresh();
-        ComboBoxNamesCollectionView.Refresh();
+        ProviderComboBoxNamesCollectionView.Refresh();
     }
 
     /// <summary>
@@ -378,7 +401,8 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
                     continue;
                 }
 
-                var card = await _computeSystemViewModelFactory.CreateCardViewModelAsync(wrapper);
+                var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
+                var card = await _computeSystemViewModelFactory.CreateCardViewModelAsync(ComputeSystemManagerObj, wrapper, curListViewModel.Provider, packageFullName);
                 curListViewModel.ComputeSystemCardCollection.Add(card);
                 curListViewModel.CardSelectionChanged += OnListSelectionChanged;
             }
@@ -387,5 +411,23 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             ComputeSystemLoadingCompleted = true;
             ShouldShowShimmerBelowList = true;
         });
+    }
+
+    /// <summary>
+    /// Sorts the list of ComputeSystemsListViewModels based on the selected sort option.
+    /// </summary>
+    /// <param name="index">The current index of the combo box the user selected</param>
+    [RelayCommand]
+    public void SortComboBoxChanged(int index)
+    {
+        var direction = index == 0 ? SortDirection.Ascending : SortDirection.Descending;
+        ComputeSystemsCollectionView.SortDescriptions.Clear();
+        ComputeSystemsCollectionView.SortDescriptions.Add(new SortDescription(SortByDisplayName, direction));
+
+        foreach (var viewModel in _computeSystemViewModelList)
+        {
+            // For now , we only support sorting by the ComputeSystemTitle.
+            viewModel.SortBySpecificProperty(SortByKind.ComputeSystemTitle, direction);
+        }
     }
 }

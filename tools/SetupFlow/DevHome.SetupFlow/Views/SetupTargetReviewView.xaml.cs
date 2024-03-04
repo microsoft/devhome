@@ -18,4 +18,12 @@ public partial class SetupTargetReviewView : UserControl
     {
         this.InitializeComponent();
     }
+
+    private void UserControl_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (ViewModel != null)
+        {
+            _ = ViewModel.LoadViewModelContentAsync();
+        }
+    }
 }

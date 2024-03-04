@@ -34,19 +34,30 @@
                 <ListViewItem
                     DataContext="{Binding}"
                     IsSelected="{Binding IsSelected, Mode=OneWay}"
-                    HorizontalAlignment="Stretch">
+                    HorizontalAlignment="Stretch"
+                    AutomationProperties.ItemStatus="Loaded">
                     <Grid
                         Style="{StaticResource HorizontalCardRootForSetupTargetFlow}">
                         <Grid>
-                            <devEnvCustomControls:CardBody
-                                ComputeSystemTitle="{Binding ComputeSystemTitle, Mode=OneWay}"
-                                ComputeSystemImage="{Binding ComputeSystemImage, Mode=OneWay}"
-                                StateColor="{Binding StateColor, Mode=OneWay}"
-                                CardState="{Binding CardState, Mode=OneWay}"
-                                ComputeSystemProperties="{Binding ComputeSystemPropertiesForCardUI, Mode=OneWay}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                                <devEnvCustomControls:CardHeader
+                                    Grid.Row="0"
+                                    HeaderCaption="{x:Bind ComputeSystemProviderName, Mode=OneWay}"
+                                    HeaderIcon="{x:Bind ComputeSystemProviderImage, Mode=OneWay}"
+                                    Margin="0 -5 0 10"/>
+                                <devEnvCustomControls:CardBody
+                                    Grid.Row="1"
+                                    ComputeSystemTitle="{Binding ComputeSystemTitle, Mode=OneWay}"
+                                    ComputeSystemImage="{Binding ComputeSystemImage, Mode=OneWay}"
+                                    StateColor="{Binding StateColor, Mode=OneWay}"
+                                    CardState="{Binding CardState, Mode=OneWay}"
+                                    ComputeSystemProperties="{Binding ComputeSystemPropertiesForCardUI, Mode=OneWay}">
                                 <devEnvCustomControls:CardBody.ComputeSystemPropertyTemplate>
                                     <!-- Properties template for compute system properties.-->
-                                    <DataTemplate x:DataType="devCommonModels:ICardProperty">
+                                    <DataTemplate x:DataType="devCommonModels:CardProperty">
                                         <Grid
                                             HorizontalAlignment="Stretch"
                                             Margin="0 0 5 0">
@@ -72,14 +83,16 @@
                                                     Text="{x:Bind Title, Mode=OneWay}"
                                                     TextTrimming="CharacterEllipsis"
                                                     HorizontalAlignment="Left"
-                                                    VerticalAlignment="Center"/>
+                                                    VerticalAlignment="Center"
+                                                    IsTextSelectionEnabled="True"/>
                                                 <TextBlock
                                                     Grid.Column="2"
                                                     Visibility="{x:Bind Value, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
                                                     Text="{x:Bind Value, Mode=OneWay}"
                                                     TextTrimming="CharacterEllipsis"
                                                     HorizontalAlignment="Left"
-                                                    VerticalAlignment="Center"/>    
+                                                    VerticalAlignment="Center"
+                                                    IsTextSelectionEnabled="True"/>    
                                         </Grid>
                                     </DataTemplate>
                                 </devEnvCustomControls:CardBody.ComputeSystemPropertyTemplate>
@@ -129,7 +142,8 @@
             <!-- Listview Template for showing the Environment cards within a ComputeSystemsListViewModel object. -->
             <DataTemplate x:Key="ComputeSystemLoadedTemplate" x:DataType="devEnvModels:ComputeSystemsListViewModel">
                 <ListView
-                    x:Name="EnvironmentList"  
+                    x:Name="EnvironmentList"
+                    AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"
                     HeaderTemplate="{StaticResource ComputeSystemContainerHeaderTemplate}"
                     DataContext="{Binding}"
                     ItemsSource="{x:Bind ComputeSystemCardAdvancedCollectionView, Mode=OneWay}"
@@ -152,10 +166,11 @@
             <!-- Template for showing the shimmer effect when the horizontal cards are loading. -->
             <DataTemplate x:Key="ComputeSystemLoadingTemplate" x:DataType="devEnvModels:ComputeSystemsListViewModel">
                 <ListView
+                    AutomationProperties.Name="SetupTargetLoadingCard"
                     HeaderTemplate="{StaticResource ComputeSystemContainerShimmerHeaderTemplate}"
                     DataContext="{Binding}"
                     SelectionMode="None"
-                    ItemTemplate="{StaticResource HorizontalCardRootWithUniformedPaddingShimmerTemplate}"
+                    ItemTemplate="{StaticResource HorizontalCardRootForSetupTargetFlowShimmerTemplate}"
                     Margin="0 0 0 10"
                     ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}">
                     <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
@@ -166,6 +181,7 @@
             <!-- Listview Template for showing the error message associated with loading ComputeSystemsListViewModel object. -->
             <DataTemplate x:Key="ComputeSystemLoadingErrorTemplate" x:DataType="devEnvModels:ComputeSystemsListViewModel">
                 <ListView
+                    AutomationProperties.Name="{x:Bind ErrorText, Mode=OneWay}"
                     HeaderTemplate="{StaticResource ComputeSystemContainerHeaderTemplate}"
                     SelectionMode="None"
                     Margin="0 0 0 10"
@@ -174,18 +190,15 @@
                         IsTabStop="False"
                         DataContext="{Binding}">
                         <StackPanel
-                            Margin="0 50 0 0"
+                            Margin="0 50 0 50"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
                             <TextBlock
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupTargetErrorLoading"
-                                Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                                FontSize="15"
-                                Margin="0 0 0 10"/>
-                            <TextBlock
                                 Text="{x:Bind ErrorText}"
                                 Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                                Margin="0 0 0 10"/>
+                                Margin="0 0 0 10"
+                                HorizontalAlignment="Center"
+                                IsTextSelectionEnabled="True"/>
                         </StackPanel>
                     </ListViewItem>
                 </ListView>
@@ -194,6 +207,8 @@
             <!-- Listview Template for showing the info message when no EnvironmentCardViewModels were found. -->
             <DataTemplate x:Key="ComputeSystemsNotFoundTemplate">
                 <ListView
+                    AutomationProperties.Name="SetupTargetNoEnvironmentsFound"
+                    AutomationProperties.LiveSetting="Polite"
                     HeaderTemplate="{StaticResource ComputeSystemContainerHeaderTemplate}"
                     SelectionMode="None"
                     Margin="0 0 0 10"
@@ -202,11 +217,11 @@
                         IsTabStop="False"
                         DataContext="{Binding}">
                         <StackPanel
-                            Margin="0 50 0 0"
+                            Margin="0 50 0 50"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
                             <TextBlock
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupTargetNoEnvironmentsFound"
+                                x:Uid="SetupTargetNoEnvironmentsFound"
                                 Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                                 FontSize="15"
                                 Margin="0 0 0 10"/>
@@ -221,7 +236,7 @@
         <StackPanel Spacing="10">
             <!--- Show the "Setup a Target header on the page. -->
             <setupControls:SetupShell 
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_SetupTarget"
+                x:Uid="SetupShell_SetupTarget"
                 Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
                 Foreground="{ThemeResource TextFillColorSecondary}" />
 
@@ -229,16 +244,16 @@
                 ColumnSpacing="10"
                 Margin="0 0 0 20">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="7*"/>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="6*"/>
                 </Grid.ColumnDefinitions>
                 <!--- Show the Filter box on the page on the page. -->
-                <AutoSuggestBox
+                <TextBox
+                    Height="41"
+                    Margin="0 0 0 0"
                     x:Name="FilterTextBox"
-                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupTarget_Filter"
+                    x:Uid="SetupTarget_Filter"
                     Grid.Column="0"
-                    QueryIcon="Filter"
-                    IsSuggestionListOpen="False"
                     Text="{x:Bind ViewModel.ComputeSystemFilterText, Mode=TwoWay}">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="TextChanged">
@@ -247,7 +262,7 @@
                                 CommandParameter="{Binding Text, ElementName=FilterTextBox}"/>
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
-                </AutoSuggestBox>
+                </TextBox>
                 <!--- Show the Target Provide icon, text, combo box and the sync button on the page. -->
                 <Grid
                     Grid.Column="1"
@@ -258,23 +273,25 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <!--- Target Provide icon. -->
-                    <FontIcon Grid.Column="0" FontSize="20" FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="&#xF03F;" />
                     <!--- Target Provider text. -->
                     <TextBlock 
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupTarget_TargetProvider"
-                        Grid.Column="1"
+                        x:Uid="SetupTarget_TargetProvider"
+                        Grid.Column="0"
                         VerticalAlignment="Center"
                         FontSize="16"/>
                     <!--- Combo box with list of installed ComputeSystemProvider. -->
                     <ComboBox
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupTarget_TargetProvider_ComboBox"
+                        x:Uid="SetupTarget_TargetProvider_ComboBox"
                         x:Name="ComputeSystemProviderComboBox"
-                        Grid.Column="2"
+                        Grid.Column="1"
                         VerticalAlignment="Center"
+                        Margin="0 9 0 9"
+                        Padding="10 10 0 10"
+                        FontSize="16"
                         MinWidth="200"
-                        ItemsSource="{x:Bind ViewModel.ComboBoxNamesCollectionView, Mode=OneWay}"
+                        ItemsSource="{x:Bind ViewModel.ProviderComboBoxNamesCollectionView, Mode=OneWay}"
                         SelectedValue="{x:Bind ViewModel.SelectedComputeSystemProviderComboBoxName, Mode=TwoWay}">
                         <i:Interaction.Behaviors>
                             <ic:EventTriggerBehavior EventName="SelectionChanged">
@@ -283,17 +300,64 @@
                                     CommandParameter="{Binding SelectedValue, ElementName=ComputeSystemProviderComboBox, Mode=OneWay}"/>
                             </ic:EventTriggerBehavior>
                         </i:Interaction.Behaviors>
-                        <ComboBoxItem>
-                            <SymbolIconSource Symbol="Add"/>
-                        </ComboBoxItem>
+                    </ComboBox>
+                    <!--- Sort text label -->
+                    <TextBlock 
+                        x:Uid="SetupTargetSortLabel"
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        FontSize="16"/>
+                    <!--- Combo box with list of installed ComputeSystemProvider. -->
+                    <ComboBox
+                        x:Uid="SetupTargetSortComboBox"
+                        x:Name="ComputeSystemsSortComboBox"
+                        Grid.Column="3"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        HorizontalContentAlignment="Left"
+                        MinWidth="200"
+                        Margin="0 9 0 9"
+                        Padding="10 10 0 10"
+                        FontSize="16"
+                        ItemsSource="{x:Bind ViewModel.ComputeSystemsSortOptions, Mode=OneWay}"
+                        SelectedIndex="{x:Bind ViewModel.SelectedComputeSystemSortComboBoxIndex, Mode=TwoWay}">
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="SelectionChanged">
+                                <ic:InvokeCommandAction  
+                                    Command="{Binding SortComboBoxChangedCommand, Mode=OneWay}"  
+                                    CommandParameter="{Binding SelectedIndex, ElementName=ComputeSystemsSortComboBox, Mode=OneWay}"/>
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+
                     </ComboBox>
                     <!--- Sync button that will refresh ComputeSystemOwners list. -->
                     <Button
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupTarget_SyncButton"
-                        Grid.Column="3"
+                        x:Uid="SetupTarget_SyncButton"
+                        Grid.Column="4"
                         Command="{x:Bind ViewModel.SyncComputeSystemsCommand , Mode=OneWay}"
-                        VerticalAlignment="Center">
-                        <FontIcon Glyph="&#xE72C;" FontSize="19" />
+                        VerticalAlignment="Center"
+                        Padding="40 7.5 40 7.5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <FontIcon 
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Grid.Column="0"
+                                Glyph="&#xE72C;" 
+                                FontSize="16" 
+                                Margin="0 0 10 0"/>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Grid.Column="1"
+                                Text="Sync"
+                                Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                                Margin="0 0 5 3"
+                                FontSize="16"/>
+                        </Grid>
                     </Button>
                 </Grid>
             </Grid>
@@ -372,7 +436,7 @@
                         HorizontalAlignment="Center"
                         Margin="0 100 0 0">
                         <TextBlock
-                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupTargetNoEnvironmentsFound"
+                            x:Uid="SetupTargetNoEnvironmentsFound"
                             Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                             FontSize="15"/>
                     </StackPanel>

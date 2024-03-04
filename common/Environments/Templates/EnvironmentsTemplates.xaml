@@ -11,7 +11,7 @@
     
         <DataTemplate x:Key="SampleHorizontalCard">
             <Grid
-                Style="{StaticResource HorizontalCardRoot} x:DataType="viewModels:SampleCardViewModel">
+                Style="{StaticResource HorizontalCardRootForEnvironmentsPage} x:DataType="viewModels:SampleCardViewModel">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -37,6 +37,9 @@
             </Grid>
         </DataTemplate>
     -->
+
+    <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
 
     <DataTemplate x:Key="CardHeaderShimmerTemplate">
         <Grid
@@ -188,14 +191,25 @@
     </DataTemplate>
 
     <!-- Shimmer template for cards that appear in setup target flow in machine configuration page. -->
-    <DataTemplate x:Key="HorizontalCardRootWithUniformedPaddingShimmerTemplate">
+    <DataTemplate x:Key="HorizontalCardRootForSetupTargetFlowShimmerTemplate">
         <Grid
-            Style="{StaticResource HorizontalCardRootForSetupTargetFlow}">
+            Style="{StaticResource HorizontalCardRootForSetupTargetFlow}"
+            Margin="5 0 0 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
             <ContentControl
+                Grid.Row="0"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                ContentTemplate="{StaticResource CardHeaderShimmerTemplate}"/>
+            <ContentControl
+                Grid.Row="1"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 HorizontalContentAlignment="Stretch"
-                ContentTemplate="{StaticResource CardBodyShimmerForNoHeaderTemplate}"/>
+                ContentTemplate="{StaticResource CardBodyShimmerTemplate}"/>
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

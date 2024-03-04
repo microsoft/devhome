@@ -30,11 +30,9 @@ public delegate HyperVVirtualMachine HyperVVirtualMachineFactory(PSObject pSObje
 /// <summary> Class that represents a Hyper-V virtual machine object. </summary>
 public class HyperVVirtualMachine : IComputeSystem
 {
-    private readonly string errorResourceKey = "ErrorPerformingOperation";
+    private readonly string _errorResourceKey = "ErrorPerformingOperation";
 
-    private readonly string currentCheckpointKey = "CurrentCheckpoint";
-
-    private readonly string operationErrorString;
+    private readonly string _currentCheckpointKey = "CurrentCheckpoint";
 
     private readonly IStringResource _stringResource;
 
@@ -88,6 +86,9 @@ public class HyperVVirtualMachine : IComputeSystem
 
     public bool IsDeleted => _psObjectHelper.MemberNameToValue<bool>(HyperVStrings.IsDeleted);
 
+    // Temporary will need to add more error strings for different operations.
+    public string OperationErrorUnknownString => _stringResource.GetLocalized(_errorResourceKey);
+
     // TODO: make getting this list dynamic so we can remove operations based on OS version.
     public ComputeSystemOperations SupportedOperations => ComputeSystemOperations.Start |
                 ComputeSystemOperations.ShutDown |
@@ -113,7 +114,6 @@ public class HyperVVirtualMachine : IComputeSystem
         _hyperVManager = hyperVManager;
         _psObjectHelper = new(psObject);
         _stringResource = stringResource;
-        operationErrorString = _stringResource.GetLocalized(errorResourceKey);
     }
 
     public IEnumerable<HyperVVirtualMachineHardDisk> GetHardDrives()
@@ -193,7 +193,7 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             StateChanged(this, ComputeSystemState.Unknown);
             Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.Start), ex);
-            return new ComputeSystemOperationResult(ex, operationErrorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
         }
     }
 
@@ -223,7 +223,7 @@ public class HyperVVirtualMachine : IComputeSystem
             {
                 StateChanged(this, ComputeSystemState.Unknown);
                 Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.ShutDown));
-                return new ComputeSystemOperationResult(ex, operationErrorString, ex.Message);
+                return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
     }
@@ -254,7 +254,7 @@ public class HyperVVirtualMachine : IComputeSystem
             {
                 StateChanged(this, ComputeSystemState.Unknown);
                 Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.Terminate), ex);
-                return new ComputeSystemOperationResult(ex, operationErrorString, ex.Message);
+                return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
     }
@@ -279,7 +279,7 @@ public class HyperVVirtualMachine : IComputeSystem
             {
                 StateChanged(this, ComputeSystemState.Unknown);
                 Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.Delete), ex);
-                return new ComputeSystemOperationResult(ex, operationErrorString, ex.Message);
+                return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
     }
@@ -310,7 +310,7 @@ public class HyperVVirtualMachine : IComputeSystem
             {
                 StateChanged(this, ComputeSystemState.Unknown);
                 Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.Save), ex);
-                return new ComputeSystemOperationResult(ex, operationErrorString, ex.Message);
+                return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
     }
@@ -341,7 +341,7 @@ public class HyperVVirtualMachine : IComputeSystem
             {
                 StateChanged(this, ComputeSystemState.Unknown);
                 Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.Pause), ex);
-                return new ComputeSystemOperationResult(ex, operationErrorString, ex.Message);
+                return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
     }
@@ -372,7 +372,7 @@ public class HyperVVirtualMachine : IComputeSystem
             {
                 StateChanged(this, ComputeSystemState.Unknown);
                 Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.Resume), ex);
-                return new ComputeSystemOperationResult(ex, operationErrorString, ex.Message);
+                return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
     }
@@ -394,7 +394,7 @@ public class HyperVVirtualMachine : IComputeSystem
             catch (Exception ex)
             {
                 Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.CreateSnapshot), ex);
-                return new ComputeSystemOperationResult(ex, operationErrorString, ex.Message);
+                return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
     }
@@ -417,7 +417,7 @@ public class HyperVVirtualMachine : IComputeSystem
             catch (Exception ex)
             {
                 Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.RevertSnapshot), ex);
-                return new ComputeSystemOperationResult(ex, operationErrorString, ex.Message);
+                return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
     }
@@ -440,7 +440,7 @@ public class HyperVVirtualMachine : IComputeSystem
             catch (Exception ex)
             {
                 Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.DeleteSnapshot), ex);
-                return new ComputeSystemOperationResult(ex, operationErrorString, ex.Message);
+                return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
     }
@@ -458,7 +458,7 @@ public class HyperVVirtualMachine : IComputeSystem
             catch (Exception ex)
             {
                 Logging.Logger()?.ReportError($"Failed to launch vmconnect on {DateTime.Now}: VM details: {this}", ex);
-                return new ComputeSystemOperationResult(ex, operationErrorString, ex.Message);
+                return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
     }
@@ -488,7 +488,7 @@ public class HyperVVirtualMachine : IComputeSystem
             {
                 StateChanged(this, ComputeSystemState.Unknown);
                 Logging.Logger()?.ReportError(OperationErrorString(ComputeSystemOperations.Restart), ex);
-                return new ComputeSystemOperationResult(ex, operationErrorString, ex.Message);
+                return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
     }
@@ -529,7 +529,7 @@ public class HyperVVirtualMachine : IComputeSystem
                     ComputeSystemProperty.Create(ComputeSystemPropertyKind.AssignedMemorySizeInBytes, MemoryAssigned),
                     ComputeSystemProperty.Create(ComputeSystemPropertyKind.AssignedMemorySizeInBytes, totalDiskSize),
                     ComputeSystemProperty.Create(ComputeSystemPropertyKind.UptimeIn100ns, Uptime),
-                    ComputeSystemProperty.CreateCustom(ParentCheckpointName, _stringResource.GetLocalized(currentCheckpointKey), null),
+                    ComputeSystemProperty.CreateCustom(ParentCheckpointName, _stringResource.GetLocalized(_currentCheckpointKey), null),
                 };
 
                 return properties.AsEnumerable();
@@ -546,7 +546,7 @@ public class HyperVVirtualMachine : IComputeSystem
     {
         // This is temporary until we have a proper implementation for this.
         var notImplementedException = new NotImplementedException($"Method not implemented by Hyper-V Compute Systems: VM details: {this}");
-        return Task.FromResult(new ComputeSystemOperationResult(notImplementedException, operationErrorString, notImplementedException.Message)).AsAsyncOperation();
+        return Task.FromResult(new ComputeSystemOperationResult(notImplementedException, OperationErrorUnknownString, notImplementedException.Message)).AsAsyncOperation();
     }
 
     public SDK.ApplyConfigurationResult ApplyConfiguration(ApplyConfigurationOperation operation)

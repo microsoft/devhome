@@ -2,6 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Linq;
+using System.Management.Automation.Runspaces;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
@@ -23,34 +26,13 @@ public sealed partial class LandingPage : ToolPage
 
     public LandingPageViewModel ViewModel { get; }
 
-    public IWindowsIdentityService IdentityService { get; }
-
-    public ToastNotificationService NotificationService { get; }
-
     public LandingPage()
     {
         ViewModel = Application.Current.GetService<LandingPageViewModel>();
-
-        // To Do: Move this to a view model
-        IdentityService = Application.Current.GetService<IWindowsIdentityService>();
-        NotificationService = Application.Current.GetService<ToastNotificationService>();
-
         InitializeComponent();
-        CheckIfUserIsAHyperVAdmin();
 
 #if DEBUG
         Loaded += AddDebugButtons;
-#endif
-    }
-
-    private void CheckIfUserIsAHyperVAdmin()
-    {
-        if (!IdentityService.IsUserHyperVAdmin())
-        {
-            NotificationService.ShowHyperVAdminWarningToast();
-        }
-#if DEBUG
-        NotificationService.ShowSimpleToast(message: "You are viewing the Environments Page", title: "Welcome");
 #endif
     }
 
@@ -62,8 +44,9 @@ public sealed partial class LandingPage : ToolPage
             Content = "Load local testing values",
             HorizontalAlignment = HorizontalAlignment.Right,
             Margin = new Thickness(3, 0, 0, 0),
+            Command = LocalLoadButtonCommand,
         };
-        onlyLocalButton.Click += LocalLoadButton_Click;
+
         SyncButtonGrid.Children.Add(onlyLocalButton);
 
         var onlyRemoteButton = new Button
@@ -71,8 +54,9 @@ public sealed partial class LandingPage : ToolPage
             Content = "Load real extension values",
             HorizontalAlignment = HorizontalAlignment.Right,
             Margin = new Thickness(3, 0, 0, 0),
+            Command = RemoteLoadButtonCommand,
         };
-        onlyRemoteButton.Click += RemoteLoadButton_Click;
+
         SyncButtonGrid.Children.Add(onlyRemoteButton);
 
         var column = Grid.GetColumn(Titlebar);
@@ -80,14 +64,26 @@ public sealed partial class LandingPage : ToolPage
         Grid.SetColumn(onlyRemoteButton, column + 2);
     }
 
-    private void LocalLoadButton_Click(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    private async Task LocalLoadButton()
     {
-        ViewModel.LoadModel(true);
+        await ViewModel.LoadModelAsync(true);
     }
 
-    private void RemoteLoadButton_Click(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    private async Task RemoteLoadButton()
     {
-        ViewModel.LoadModel(false);
+        await ViewModel.LoadModelAsync(false);
     }
 #endif
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.HasPageLoadedForTheFirstTime)
+        {
+            return;
+        }
+
+        _ = ViewModel.LoadModelAsync(false);
+    }
 }

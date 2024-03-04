@@ -223,6 +223,7 @@ public static class StringResourceKey
     public static readonly string SetupTargetConfigurationSetProgressMessage = nameof(SetupTargetConfigurationSetProgressMessage);
     public static readonly string SetupTargetConfigurationUnitProgressError = nameof(SetupTargetConfigurationUnitProgressError);
     public static readonly string ConfigureTargetApplyConfigurationStopped = nameof(ConfigureTargetApplyConfigurationStopped);
+    public static readonly string ConfigureTargetApplyConfigurationStoppedWithNoEndingMessage = nameof(ConfigureTargetApplyConfigurationStoppedWithNoEndingMessage);
     public static readonly string ConfigureTargetApplyConfigurationActionNeeded = nameof(ConfigureTargetApplyConfigurationActionNeeded);
     public static readonly string SetupTargetExtensionApplyingConfiguration = nameof(SetupTargetExtensionApplyingConfiguration);
     public static readonly string SetupTargetExtensionApplyingConfigurationActionRequired = nameof(SetupTargetExtensionApplyingConfigurationActionRequired);
@@ -233,4 +234,20 @@ public static class StringResourceKey
     public static readonly string ConfigureTargetApplyConfigurationActionFailureRetry = nameof(ConfigureTargetApplyConfigurationActionFailureRetry);
     public static readonly string ConfigureTargetApplyConfigurationActionFailureEnd = nameof(ConfigureTargetApplyConfigurationActionFailureEnd);
     public static readonly string ConfigureTargetApplyConfigurationActionSuccess = nameof(ConfigureTargetApplyConfigurationActionSuccess);
+    public static readonly string SetupTargetReviewPageDefaultInfoBarTitle = nameof(SetupTargetReviewPageDefaultInfoBarTitle);
+    public static readonly string SetupTargetReviewPageDefaultInfoBarMessage = nameof(SetupTargetReviewPageDefaultInfoBarMessage);
+    public static readonly string SetupTargetReviewPageHyperVInfoBarMessage = nameof(SetupTargetReviewPageHyperVInfoBarMessage);
+    public static readonly string SetupTargetUnknownStatus = nameof(SetupTargetUnknownStatus);
+    public static readonly string SetupTargetSortAToZLabel = nameof(SetupTargetSortAToZLabel);
+    public static readonly string SetupTargetSortZToALabel = nameof(SetupTargetSortZToALabel);
+    public static readonly string SetupTargetPageSyncButton = nameof(SetupTargetPageSyncButton);
+    public static readonly string SetupTargetConfigurationUnitCompleted = nameof(SetupTargetConfigurationUnitCompleted);
+    public static readonly string SetupTargetConfigurationUnitInProgress = nameof(SetupTargetConfigurationUnitInProgress);
+    public static readonly string SetupTargetConfigurationUnitPending = nameof(SetupTargetConfigurationUnitPending);
+    public static readonly string SetupTargetConfigurationUnitSkipped = nameof(SetupTargetConfigurationUnitSkipped);
+    public static readonly string SetupTargetConfigurationSetCurrentState = nameof(SetupTargetConfigurationSetCurrentState);
+    public static readonly string SetupTargetConfigurationUnitCurrentState = nameof(SetupTargetConfigurationUnitCurrentState);
+    public static readonly string SetupTargetConfigurationProgressUpdate = nameof(SetupTargetConfigurationProgressUpdate);
+    public static readonly string SetupTargetConfigurationUnitProgressErrorWithMsg = nameof(SetupTargetConfigurationUnitProgressErrorWithMsg);
+    public static readonly string SetupTargetConfigurationUnitUnknown = nameof(SetupTargetConfigurationUnitUnknown);
 }

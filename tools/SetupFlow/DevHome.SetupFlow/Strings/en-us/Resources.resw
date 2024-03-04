@@ -1369,7 +1369,7 @@
     <comment>Title of the 'Setup Target' page where users can select a remote machine to setup using Dev Home.</comment>
   </data>
   <data name="SetupTargetAllComboBoxOption" xml:space="preserve">
-    <value>All</value>
+    <value>All providers</value>
     <comment>value in combo box that will allow the user to view all the Dev Home extensions that are for interacting with remote machines or virtual machines</comment>
   </data>
   <data name="SetupTarget_Filter.PlaceholderText" xml:space="preserve">
@@ -1377,20 +1377,32 @@
     <comment>placeholder text for the textbox where users will be able to filter results from a list displayed in the UI.</comment>
   </data>
   <data name="SetupTarget_TargetProvider.Text" xml:space="preserve">
-    <value>Target provider</value>
+    <value>Provider:</value>
     <comment>Textblock that appears on the side of the combo box that will contain the names of Dev Home extensions that are for interacting with remote machines or virtual machines.</comment>
   </data>
+  <data name="SetupTargetSortLabel.Text" xml:space="preserve">
+    <value>Sort:</value>
+    <comment>Textblock that appears on the side of the combo box that will contain a list of options to sort items on a page.</comment>
+  </data>
+  <data name="SetupTargetSortAToZLabel" xml:space="preserve">
+    <value>Name: A-Z</value>
+    <comment>Textblock that appears inside of a combo box that is used to sort a list of remote computer names in Ascending order.</comment>
+  </data>
+  <data name="SetupTargetSortZToALabel" xml:space="preserve">
+    <value>Name: Z-A</value>
+    <comment>Textblock that appears inside of a combo box that is used to sort a list of remote computer names in descending order</comment>
+  </data>
   <data name="SetupTarget_TargetProvider_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Target provider</value>
+    <value>Provider</value>
     <comment>Label for combo box that will contain the names of Dev Home extensions that are for interacting with remote machines or virtual machines.</comment>
+  </data>
+  <data name="SetupTargetSortComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Sort your environments</value>
+    <comment>Label for combo box that will sort the users remote machines in ascending and descending order.</comment>
   </data>
   <data name="SetupTarget_SyncButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Sync your compute systems</value>
     <comment>Label for the sync button that allows users to refresh the list of remote machines and virtual machines. Dev Home calls these Compute systems.</comment>
-  </data>
-  <data name="SetupTargetErrorLoading.Text" xml:space="preserve">
-    <value>We couldn't retrieve your compute systems due to an error</value>
-    <comment>Error string that we display in the setup target environment page when we are unable to query a Dev Home extension for its compute systems. Compute systems mean a remote machine or virtual machine.</comment>
   </data>
   <data name="SetupTargetNoEnvironmentsFound.Text" xml:space="preserve">
     <value>No compute systems were found that support configuration</value>
@@ -1420,89 +1432,133 @@
     <value>Version:</value>
     <comment>The operating system version of the compute system.</comment>
   </data>
-  <data name="SetupTargetReviewPageInfoBar.Message" xml:space="preserve">
-    <value>Proceeding with the next step may result in the target machine being rebooted and re-logging in may be required.</value>
+  <data name="SetupTargetReviewPageDefaultInfoBarMessage" xml:space="preserve">
+    <value>Proceeding with the next step may result in the target machine being rebooted and logging in may be required.</value>
     <comment>Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
   </data>
-  <data name="SetupTargetReviewPageInfoBar.Title" xml:space="preserve">
+  <data name="SetupTargetReviewPageDefaultInfoBarTitle" xml:space="preserve">
     <value>Warning</value>
     <comment>Title for info bar that will warn users that proceeding with the setup may result in the restart and re-login of the targetted remote machine or virtual machine.</comment>
+  </data>
+  <data name="SetupTargetReviewPageHyperVInfoBarMessage" xml:space="preserve">
+    <value>Proceeding with the next step may result in the target machine being rebooted and logging in may be required. Dev Home's Dev Setup Agent service will be installed as it is required to setup a Hyper-V virtual machine</value>
+    <comment>Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
+  </data>
+  <data name="SetupTargetUnknownStatus" xml:space="preserve">
+    <value>Unknown</value>
+    <comment>Text that appears in an expander next to the remote computers name, letting the user know that we couldn't find its operating system.</comment>
+  </data>
+  <data name="SetupTargetPageSyncButton" xml:space="preserve">
+    <value>Sync</value>
+    <comment>Text that appears in a button to refresh the page that has a list of the users remote machine</comment>
   </data>
   <data name="SetupTargetReviewPageProviderName.Text" xml:space="preserve">
     <value>Provider name:</value>
     <comment>The name of the technology platform that the compute system belongs to.</comment>
   </data>
   <data name="SetupTargetConfigurationCompleted" xml:space="preserve">
-    <value>Completed</value>
-	<comment>Text for the completed status of the configuration operation that happened on a remote machine</comment>
+    <value>The entire configuration is now completed</value>
+    <comment>Text for the completed status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
+  </data>
+  <data name="SetupTargetConfigurationUnitCompleted" xml:space="preserve">
+    <value>This part of the configuration is now complete</value>
+    <comment>Text for the completed status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationInProgress" xml:space="preserve">
-    <value>In progress</value>
-    <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine</comment>
+    <value>The entire configuration is still in progress</value>
+    <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
+  </data>
+  <data name="SetupTargetConfigurationUnitInProgress" xml:space="preserve">
+    <value>This part of the configuration is in progress</value>
+    <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationPending" xml:space="preserve">
-    <value>Pending</value>
-	<comment>Text for the pending status of the configuration operation that happened on a remote machine</comment>
+    <value>The entire configuration is still pending</value>
+    <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
+  </data>
+	<data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
+    <value>This part of the configuration is still pending</value>
+    <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationProvisioningDevice" xml:space="preserve">
-    <value>Provisioning device</value>
-	<comment>Text for the 'provisioning device' status of the configuration operation that happened on a remote machine</comment>
+    <value>We're currently provisioning device</value>
+    <comment>Text for the 'provisioning device' status of the configuration operation that happened on a remote machine</comment>
   </data>
   <data name="SetupTargetConfigurationRestartingDevice" xml:space="preserve">
-    <value>Restarting device</value>
-	<comment>Text for the 'Restarting device' status of the configuration operation that happened on a remote machine</comment>
+    <value>We're currently restarting device</value>
+    <comment>Text for the 'Restarting device' status of the configuration operation that happened on a remote machine</comment>
   </data>
   <data name="SetupTargetConfigurationShuttingDownDevice" xml:space="preserve">
-    <value>Shutting down device</value>
-	<comment>Text for the 'shut down' status of the configuration operation that happened on a remote machine</comment>
+    <value>We're currently shutting down device</value>
+    <comment>Text for the 'shut down' status of the configuration operation that happened on a remote machine</comment>
+  </data>
+  <data name="SetupTargetConfigurationUnitSkipped" xml:space="preserve">
+    <value>This part of the configuration has been skipped</value>
+    <comment>Text for the 'shut down' status of the configuration operation that happened on a remote machine</comment>
   </data>
   <data name="SetupTargetConfigurationStartingDevice" xml:space="preserve">
-    <value>Starting device</value>
-	<comment>Text for when the device is starting up as part of the configuration operation that happened on a remote machine</comment>
+    <value>We're currently starting the device</value>
+    <comment>Text for when the device is starting up as part of the configuration operation that happened on a remote machine</comment>
+  </data>
+  <data name="SetupTargetConfigurationProgressUpdate" xml:space="preserve">
+    <value>Configuration progress received!</value>
+    <comment>Text for when we display the progress of applying the entire configuration up to the point of displaying this message</comment>
+  </data>
+  <data name="SetupTargetConfigurationUnitUnknown" xml:space="preserve">
+    <value>State of this configuration unit is unknown</value>
+    <comment>Generic text for when a part of the configuration we're attempting to apply on a remote computer is unknown.</comment>
   </data>
   <data name="SetupTargetConfigurationUnknown" xml:space="preserve">
-    <value>Unknown</value>
-	<comment>Text for when the we do not know the current state of the operation</comment>
+    <value>State of this configuration unit is unknown</value>
+    <comment>Generic text for when  all of the configurations we're attempting to apply on a remote computer is unknown.</comment>
   </data>
   <data name="SetupTargetConfigurationWaitingForAdminUserLogon" xml:space="preserve">
-    <value>Waiting for an admin to logon</value>
-	<comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for a user with administrator priviledges to logon to the machine</comment>
+    <value>We're currently waiting for an admin to logon</value>
+    <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for a user with administrator priviledges to logon to the machine</comment>
   </data>
   <data name="SetupTargetConfigurationWaitingForUserLogon" xml:space="preserve">
-    <value>Waiting for the user to logon</value>
-	<comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for the current user to logon to the machine</comment>
+    <value>We're currently waiting for the user to logon</value>
+    <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for the current user to logon to the machine</comment>
   </data>
   <data name="SetupTargetConfigurationSkipped" xml:space="preserve">
-    <value>Skipped</value>
-	<comment>Text for when the a part of the configuration on the remove machine was completed but its completed status was set to skipped.</comment>
+    <value>Winget skipped this unit</value>
+    <comment>Text for when the a part of the configuration on the remove machine was completed but its completed status was set to skipped.</comment>
   </data>
   <data name="SetupTargetConfigurationOpenConfigFailed" xml:space="preserve">
     <value>The extension failed to open the configuration file. You may need to check the extensions log file for more information</value>
-	<comment>Text for when an extension recieved the configuration file string from Dev Home but was unable to open it</comment>
+    <comment>Text for when an extension recieved the configuration file string from Dev Home but was unable to open it</comment>
   </data>
   <data name="SetupTargetConfigurationSetProgressMessage" xml:space="preserve">
     <value>Configuration set status: {0}</value>
-	<comment>Text for the ongoing progress of applying a set of configuration units in the configuration file. A configurations file are made up of configuration units.</comment>
+    <comment>Text for the ongoing progress of applying a set of configuration units in the configuration file. A configurations file are made up of configuration units.</comment>
+  </data>
+  <data name="SetupTargetConfigurationUnitProgressErrorWithMsg" xml:space="preserve">
+    <value>There was an issue applying part of the configuration using DSC resource: '{0}'. Error: {1}</value>
+    <comment>Locked={"0", "{1}"} Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine. {0} is the name of the DSC resource we're using for this part of the configuration file, while {1} is the message from the other app.</comment>
   </data>
   <data name="SetupTargetConfigurationUnitProgressError" xml:space="preserve">
-    <value>There was an issue applying part of the configuration. Error: {0}</value>
-	<comment>Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine.</comment>
+    <value>There was an issue applying part of the configuration using DSC resource: '{0}'. Check the extension's logs</value>
+    <comment>Locked={"0"} Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine. {0} is the name of the DSC resource we're using for this part of the configuration file</comment>
   </data>
   <data name="SetupTargetConfigurationUnitProgressMessage" xml:space="preserve">
     <value>Configuration unit status: {0}</value>
-    <comment>Text for the error that occurred while of applying a configuration unit in the configuration file on to the remote machine.</comment>
+    <comment>Locked={"0"} Text for the error that occurred while of applying a configuration unit in the configuration file on to the remote machine. {0} is the status string, e.g "pending", "completed" but it comes from a different app</comment>
   </data>
   <data name="ConfigureTargetApplyConfigurationActionNeeded" xml:space="preserve">
     <value>Action required. Please review the action center. ({0}/{1})</value>
     <comment>Locked={"0", "{1}"} Text to tell the user that their action is needed in order to complete the configuration. {0} is the amount of attempts  the user has done so far while {1} is the max amount attempts the user has.</comment>
   </data>
   <data name="ConfigureTargetApplyConfigurationStopped" xml:space="preserve">
-    <value>Apply configuration stoppped with status: {0}. You may need to check the extensions log file for more information</value>
+    <value>Apply configuration stopped with status: {0}. You may need to check the extensions log file for more information</value>
     <comment>Locked={"0"} Info message that tells the user applying the configuration operation from the extension has stopped. {0} is the message from the extension who attempted to apply the configuration file.</comment>
+  </data>
+  <data name="ConfigureTargetApplyConfigurationStoppedWithNoEndingMessage" xml:space="preserve">
+    <value>The extension has stopped applying the configuration. You may need to check the logs if there were any failures.</value>
+    <comment>Info message that tells the user applying the configuration operation from the extension has stopped.</comment>
   </data>
   <data name="SetupTargetExtensionApplyingConfiguration" xml:space="preserve">
     <value>Attempting to apply configuration on {0}</value>
-	<comment>Locked={"0"} Text for the ongoing progress of applying the whole configuration file on to the remote machine. {0} is the name of the remote machine or virtual machine.</comment>
+    <comment>Locked={"0"} Text for the ongoing progress of applying the whole configuration file on to the remote machine. {0} is the name of the remote machine or virtual machine.</comment>
   </data>
   <data name="SetupTargetExtensionApplyConfigurationError" xml:space="preserve">
     <value>We couldn't apply the configuration file onto {0}</value>
@@ -1518,7 +1574,7 @@
   </data>
   <data name="SetupTargetMachineName" xml:space="preserve">
     <value>target machine</value>
-	<comment>placeholder name that is used to describe a remote machine when we do not know its name</comment>
+    <comment>placeholder name that is used to describe a remote machine when we do not know its name</comment>
   </data>
   <data name="ConfigureTargetApplyConfigurationActionSuccess" xml:space="preserve">
     <value>Corrective action was sent to the extension successfully</value>
@@ -1531,5 +1587,17 @@
   <data name="ConfigureTargetApplyConfigurationActionFailureEnd" xml:space="preserve">
     <value>Corrective action failed. No more attempts permitted</value>
     <comment>Text to tell the user that the corrective action that they took to fix an issue failed. The user is no longer allowed to remediate the issue.</comment>
+  </data>
+  <data name="SetupTargetHyperVInfoBar.Message" xml:space="preserve">
+    <value>To setup the Hyper-V virtual machine an installation of Dev Home's Dev Setup Agent service is required</value>
+    <comment>message text to tell the user which app is needed to be installed inorder for Dev Home to complete the remote machines configuration.</comment>
+  </data>
+  <data name="SetupTargetHyperVInfoBar.Title" xml:space="preserve">
+    <value>App install required</value>
+    <comment>title text for a caution infobar to alert the user that we need to install an app on their remote machine in order to complete the configuration</comment>
+  </data>
+  <data name="SetupTargetLoadingCard" xml:space="preserve">
+    <value>Loading your environments</value>
+    <comment>Test that tells the user that we're still loading their environments. These environments can be virtual or remote machines</comment>
   </data>
 </root>
