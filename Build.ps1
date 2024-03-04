@@ -61,14 +61,17 @@ if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
   }
 }
 
-if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "DevSetupAgent")) {
-  foreach ($platform in $env:Build_Platform.Split(",")) {
-    foreach ($configuration in $env:Build_Configuration.Split(",")) {
+if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "DevSetupAgent") -Or ($BuildStep -ieq "fullMsix")) {
+  foreach ($configuration in $env:Build_Configuration.Split(",")) {
+    # We use x86 DevSetupAgent for x64 and x86 Dev Home build. Only need to build it once if we are building multiple platforms. 
+    $builtX86 = $false
+    foreach ($platform in $env:Build_Platform.Split(",")) {
       if ($Platform -ieq "arm64") {
         HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform $Platform -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
       }
-      else {
+      elseif (-not $builtX86) {
         HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform "x86" -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+        $builtX86 = $true
       }
     }
   }
@@ -92,7 +95,7 @@ if (-not([string]::IsNullOrWhiteSpace($SDKNugetSource))) {
 . build\Scripts\CertSignAndInstall.ps1
 
 Try {
-  if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msix")) {
+  if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msix") -Or ($BuildStep -ieq "fullMsix")) {
     $buildRing = "Dev"
     $newPackageName = $null
     $newPackageDisplayName = $null
