@@ -50,24 +50,24 @@
       "borderColor": "#00000000",
       "foregroundColors": {
         "default": {
-          "default": "#FFFFFF",
-          "subtle": "#C8FFFFFF"
+          "default": "#FFFFFFFF",
+          "subtle": "#C5FFFFFF"
         },
         "accent": {
           "default": "#0063B1",
-          "subtle": "#880063B1"
+          "subtle": "#DD0063B1"
         },
         "attention": {
           "default": "#FF5555",
           "subtle": "#DDFF5555"
         },
         "good": {
-          "default": "#54a254",
-          "subtle": "#DD54a254"
+          "default": "#6CCB5E",
+          "subtle": "#DD6CCB5E"
         },
         "warning": {
-          "default": "#c3ab23",
-          "subtle": "#DDc3ab23"
+          "default": "#FCE100",
+          "subtle": "#DDFCE100"
         }
       }
     },
@@ -76,24 +76,24 @@
       "borderColor": "#09FFFFFF",
       "foregroundColors": {
         "default": {
-          "default": "#FFFFFF",
-          "subtle": "#C8FFFFFF"
+          "default": "#FFFFFFFF",
+          "subtle": "#C5FFFFFF"
         },
         "accent": {
           "default": "#2E89FC",
-          "subtle": "#882E89FC"
+          "subtle": "#EE2E89FC"
         },
         "attention": {
           "default": "#FF5555",
           "subtle": "#DDFF5555"
         },
         "good": {
-          "default": "#54a254",
-          "subtle": "#DD54a254"
+          "default": "#6CCB5E",
+          "subtle": "#EE6CCB5E"
         },
         "warning": {
           "default": "#c3ab23",
-          "subtle": "#DDc3ab23"
+          "subtle": "#FFc3ab23"
         }
       }
     }
