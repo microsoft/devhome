@@ -28,8 +28,6 @@ graph TD;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow.ElevatedServer;
     DevHome.SetupFlow.ElevatedComponent-->DevHome.SetupFlow.ElevatedServer;
     DevHome.SetupFlow.ElevatedComponent.Projection-->DevHome.SetupFlow;
-    DevHome.Dashboard-->DevHome.SetupFlow;
-    DevHome.Settings-->DevHome.SetupFlow;
     CoreWidgetProvider-->DevHome;
     DevHome.Dashboard-->DevHome;
     DevHome.Experiments-->DevHome;
