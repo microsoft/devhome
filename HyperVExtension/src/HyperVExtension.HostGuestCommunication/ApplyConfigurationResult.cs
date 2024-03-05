@@ -141,10 +141,10 @@ public class ConfigurationUnit
     public List<ConfigurationUnit>? Units { get; set; }
 
     // Contains the values that are for use by the configuration unit itself.
-    public ValueSet? Settings { get; set; }
+    public Dictionary<string, string>? Settings { get; set; }
 
     // Describes how this configuration unit will be used.
-    public ConfigurationUnitIntent Intent { get; }
+    public ConfigurationUnitIntent Intent { get; set; }
 }
 
 public class ConfigurationSetChangeData

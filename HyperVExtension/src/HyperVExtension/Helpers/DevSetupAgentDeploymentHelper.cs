@@ -297,10 +297,12 @@ function Install-DevSetupAgent
                 # Register DevSetupEngine
                 Write-Host ""Registering DevSetupEngine ($enginePath)""
                 Write-Progress -Activity $using:activity -Status ""Registering DevSetupEngine ($enginePath)"" -PercentComplete 88
-                &$enginePath ""-RegisterComServer""
-                if ($LastExitCode -ne 0)
+
+                # Executing non-console apps using '&' does not set $LastExitCode. Using Start-Process here to get the returned error code.
+                $process = Start-Process -NoNewWindow -Wait $enginePath -ArgumentList ""-RegisterComServer"" -PassThru
+                if ($process.ExitCode -ne 0)
                 {
-                    throw ""Error registering $enginePath`: $LastExitCode""
+                    throw ""Error registering $enginePath`: $process.ExitCode""
                 }
 
                 Write-Host ""Starting DevSetupAgent service""

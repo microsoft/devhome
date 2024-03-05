@@ -57,7 +57,17 @@ public static class ApplyConfigurationResultExtensions
             result.Type = configurationUnit.Type;
             result.Identifier = configurationUnit.Identifier;
             result.State = (HostGuestCommunication.ConfigurationUnitState)configurationUnit.State;
+            result.Intent = (HostGuestCommunication.ConfigurationUnitIntent)configurationUnit.Intent;
             result.IsGroup = configurationUnit.IsGroup;
+            if (configurationUnit.Settings != null)
+            {
+                result.Settings = new Dictionary<string, string>();
+                foreach (var setting in configurationUnit.Settings)
+                {
+                    result.Settings.Add(setting.Key, setting.Value.ToString() ?? string.Empty);
+                }
+            }
+
             if (configurationUnit.Units != null)
             {
                 var count = configurationUnit.Units.Count;
