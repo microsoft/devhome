@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using DevHome.Activation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;

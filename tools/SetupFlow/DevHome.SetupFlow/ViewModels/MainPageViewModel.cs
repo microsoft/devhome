@@ -16,6 +16,7 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Windows.Storage;
 using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -71,6 +72,17 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
 
         BannerViewModel = bannerViewModel;
+    }
+
+    public async Task StartFileActivationAsync(StorageFile file)
+    {
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching configuration file flow");
+        var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
+        if (await configFileSetupFlow.LoadFromLocalFileAsync(file))
+        {
+            Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow from file activation");
+            StartSetupFlowForTaskGroups(null, "ConfigurationFile", configFileSetupFlow);
+        }
     }
 
     protected async override Task OnFirstNavigateToAsync()
