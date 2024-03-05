@@ -257,7 +257,7 @@ function Install-DevSetupAgent
                 if (Test-Path -Path $guestDevSetupAgentPath)
                 {
                     # Sleep a few seconds to make sure all handles released after shutting down previous DevSetupEngine
-                    Start-Sleep -Seconds 3he service is stopped
+                    Start-Sleep -Seconds 7
                     Write-Host ""Deleting old DevSetupAgent service files""
                     Write-Progress -Activity $using:activity -Status ""Deleting old DevSetupAgent service files"" -PercentComplete 45
                     Remove-Item -Recurse -Force -Path $guestDevSetupAgentPath
@@ -295,7 +295,6 @@ function Install-DevSetupAgent
                 New-Service -Name $using:DevSetupAgentConst -BinaryPathName $servicePath -StartupType Automatic
 
                 # Register DevSetupEngine
-                $enginePath = Join-Path -Path $guestDevSetupAgentPath -ChildPath ""$using:DevSetupEngineConst.exe""
                 Write-Host ""Registering DevSetupEngine ($enginePath)""
                 Write-Progress -Activity $using:activity -Status ""Registering DevSetupEngine ($enginePath)"" -PercentComplete 88
                 &$enginePath ""-RegisterComServer""
