@@ -62,10 +62,6 @@
     </Page>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="TelemetryEvents\" />
-  </ItemGroup>
-
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
   </PropertyGroup>
