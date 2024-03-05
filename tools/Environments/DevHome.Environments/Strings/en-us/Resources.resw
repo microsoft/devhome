@@ -122,19 +122,19 @@
     <value>Sort By</value>
     <comment>Text labelling sort by text block</comment>
   </data>
-	<data name="StartButtonContextMenuItem" xml:space="preserve">
+    <data name="StartButtonContextMenuItem" xml:space="preserve">
     <value>Start</value>
     <comment>Text for start button in the context menu that will start the virtual machine.</comment>
   </data>
-	<data name="SyncButtonTextBlock.Text" xml:space="preserve">
+    <data name="SyncButtonTextBlock.Text" xml:space="preserve">
     <value>Sync</value>
     <comment>Text for the sync button on the top right side</comment>
   </data>
-	<data name="TerminateButtonContextMenuItem" xml:space="preserve">
+    <data name="TerminateButtonContextMenuItem" xml:space="preserve">
     <value>Turn off</value>
     <comment>Text for terminate button in the context menu that will turn off the virtual machine. This button turns off the power to the virtual machine without gracefully shutting it down first.</comment>
   </data>
-	<data name="Titlebar.Text" xml:space="preserve">
+    <data name="Titlebar.Text" xml:space="preserve">
     <value>Environments</value>
     <comment>Title text for the main landing page</comment>
   </data>

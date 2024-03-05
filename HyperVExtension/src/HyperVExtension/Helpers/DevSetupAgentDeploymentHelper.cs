@@ -288,7 +288,7 @@ function Install-DevSetupAgent
                     Expand-Archive -Path $zipPath -Destination $guestDevSetupAgentPath
                 }
 
-                # Register DevSetupAgent service				
+                # Register DevSetupAgent service
                 $servicePath = Join-Path -Path $guestDevSetupAgentPath -ChildPath ""$using:DevSetupAgentConst.exe""
                 Write-Host ""Registering DevSetupAgent service ($servicePath)""
                 Write-Progress -Activity $using:activity -Status ""Registering DevSetupAgent service ($servicePath)"" -PercentComplete 85
