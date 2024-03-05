@@ -4,7 +4,11 @@
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Contracts;
+using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Contracts.Services;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.ViewModels;
@@ -19,6 +23,7 @@ public partial class PreferencesViewModel : ObservableObject
     public PreferencesViewModel(IThemeSelectorService themeSelectorService)
     {
         _themeSelectorService = themeSelectorService;
+
         _elementTheme = _themeSelectorService.Theme;
     }
 
