@@ -37,7 +37,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\..\logging\DevHome.Logging.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -61,10 +60,6 @@
     <Page Update="Views\ExperimentalFeaturesPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="TelemetryEvents\" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

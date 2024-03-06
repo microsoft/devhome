@@ -4,3 +4,6 @@ List of common controls that are generic, customizable and reusable from all pag
 ## Windows
 - [Window title bar](./WindowTitleBar.md)
 - [Secondary window](./SecondaryWindow.md)
+
+## Controls
+- [CloseButton](./CloseButton.md)
