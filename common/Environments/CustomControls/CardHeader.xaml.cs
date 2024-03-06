@@ -23,7 +23,7 @@ public sealed partial class CardHeader : UserControl
     public string HeaderCaption
     {
         get => (string)GetValue(HeaderCaptionProperty);
-        set => SetValue(HeaderCaptionProperty, value);s
+        set => SetValue(HeaderCaptionProperty, value);
     }
 
     public BitmapImage HeaderIcon
