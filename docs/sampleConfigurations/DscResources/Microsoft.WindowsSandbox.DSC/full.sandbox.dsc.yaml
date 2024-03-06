@@ -2,14 +2,11 @@
 
 ###############################################################################
 # Create Windows Sandbox instance with WinGet installed.                      #
-# Run as Administrator using Invoke-WinGetConfiguration                       #
+# Run as Administrator                                                        #
+# Mount C:\Sandbox on the local filesystem into the Sandbox filesystem.       #
 # The Logon command performs the following steps in Windows PowerShell:       #
-# 1. Install Nuget package provider                                           #
-# 2. Install Microsoft.WinGet.Client (0.2.1) PS module from the PS gallery.   #
-# 3. Set the execution policy to RemoteSigned                                 #
-# 4. Run Repair-WingetPackageManager to install App Installer (WinGet).       #
-# Note: Modifying the C:\Sandbox directory contents in Windows Sanbox         #
-#       will also modify C:\Sandbox on the Host filesystem.                   #
+# 1. Set the execution policy to RemoteSigned                                 #
+# 2. Download and install App Installer (WinGet) and it's dependencies        #
 ############################################################################### 
 
 properties:
@@ -32,12 +29,14 @@ properties:
         HostFolder: C:\Sandbox
         SandboxFolder: C:\Sandbox
         LogonCommand: >
-          cmd /c start powershell -NoExit -Command "Write-Host 'Installing NuGet package provider...';
-          Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force;
-          Write-Host `n'Installing Microsoft.WinGet.Client PowerShell module...' `n;
-          Install-Module Microsoft.WinGet.Client -RequiredVersion 0.2.1 -Repository PSGallery -Force;
+          cmd /c start powershell -NoExit -Command "$progressPreference = 'silentlyContinue';
           Write-Host 'Setting execution policy to remote signed...' `n;
           Set-ExecutionPolicy RemoteSigned -Force;
-          Write-Host 'Running the Repair-WinGetPackageManager cmdlet to install App Installer (WinGet)...' `n;
-          Repair-WingetPackageManager
+          Write-Host 'Downloading WinGet and its dependencies...' `n;
+          Invoke-WebRequest -Uri https://aka.ms/getwinget -OutFile Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle;
+          Invoke-WebRequest -Uri https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile Microsoft.VCLibs.x64.14.00.Desktop.appx;
+          Invoke-WebRequest -Uri https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.x64.appx -OutFile Microsoft.UI.Xaml.2.8.x64.appx;
+          Add-AppxPackage Microsoft.VCLibs.x64.14.00.Desktop.appx;
+          Add-AppxPackage Microsoft.UI.Xaml.2.8.x64.appx;
+          Add-AppxPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle;
   configurationVersion: 0.2.0
