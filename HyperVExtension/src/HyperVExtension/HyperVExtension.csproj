@@ -44,7 +44,7 @@
     If building from the build script the zip file should exist as it's created as part of the script execution.
     VS currently doesn't have a task to create it and it may not exist if it wasn't previously created by the build script.
     We will not treat that as an error for now.
-    If building Dev Home for x64 or x86 paltforms DevSetupAgent will be built only as x86 to reduce package size.
+    If building Dev Home for x64 or x86 platforms DevSetupAgent will be built only as x86 to reduce package size.
     x86 binaries can be deployed on both x64 and x86 VMs.
     -->
   <ItemGroup>
