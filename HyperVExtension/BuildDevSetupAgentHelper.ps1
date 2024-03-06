@@ -89,7 +89,7 @@ Try {
   & $msbuildPath $msbuildArgs
 
   $binariesOutputPath = (Join-Path $env:Build_RootDirectory "HyperVExtension\src\DevSetupAgent\bin\$Platform\$Configuration\net8.0-windows10.0.22000.0\win10-$Platform\*")
-  $zipOutputPath = (Join-Path $env:Build_RootDirectory "HyperVExtension\src\DevSetupAgent\bin\DevSetupAgent_$Platform.zip")
+  $zipOutputPath = (Join-Path $env:Build_RootDirectory "HyperVExtension\src\DevSetupAgent\bin\$Platform\$Configuration\DevSetupAgent_$Platform.zip")
 
   Compress-Archive -Force -Path $binariesOutputPath $zipOutputPath
 } Catch {

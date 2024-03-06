@@ -11,6 +11,7 @@ using HyperVExtension.Models;
 using HyperVExtension.Providers;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
+using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.Win32.Foundation;
@@ -223,7 +224,7 @@ public sealed class ApplyConfigurationOperation : IApplyConfigurationOperation, 
                         (SDK.ConfigurationUnitState)hostAndGuestUnit.State,
                         hostAndGuestUnit.IsGroup,
                         null,
-                        hostAndGuestUnit.Settings,
+                        Dictionary2ValueSet(hostAndGuestUnit.Settings),
                         (SDK.ConfigurationUnitIntent)hostAndGuestUnit.Intent));
                 }
             }
@@ -234,11 +235,27 @@ public sealed class ApplyConfigurationOperation : IApplyConfigurationOperation, 
                 (SDK.ConfigurationUnitState)configurationUnit.State,
                 configurationUnit.IsGroup,
                 units,
-                configurationUnit.Settings,
+                Dictionary2ValueSet(configurationUnit.Settings),
                 (SDK.ConfigurationUnitIntent)configurationUnit.Intent);
         }
 
         return null;
+    }
+
+    private ValueSet? Dictionary2ValueSet(Dictionary<string, string>? dictionary)
+    {
+        if (dictionary == null)
+        {
+            return null;
+        }
+
+        var valueSet = new ValueSet();
+        foreach (var kvp in dictionary)
+        {
+            valueSet.Add(kvp.Key, kvp.Value);
+        }
+
+        return valueSet;
     }
 
     public void Dispose()
