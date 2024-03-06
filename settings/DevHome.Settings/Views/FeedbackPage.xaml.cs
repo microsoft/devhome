@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -11,7 +10,6 @@ using System.Threading.Tasks;
 using System.Web;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
 using Microsoft.Management.Infrastructure;
 using Microsoft.UI.Xaml;
@@ -31,36 +29,12 @@ public sealed partial class FeedbackPage : Page
     private static readonly double ByteSizeGB = 1024 * 1024 * 1024;
     private static string wmiCPUInfo = string.Empty;
 
-    public FeedbackViewModel ViewModel
-    {
-        get;
-    }
-
-    public ObservableCollection<Breadcrumb> Breadcrumbs
-    {
-        get;
-    }
+    public FeedbackViewModel ViewModel { get; }
 
     public FeedbackPage()
     {
         ViewModel = Application.Current.GetService<FeedbackViewModel>();
         InitializeComponent();
-
-        var stringResource = new StringResource("DevHome.Settings/Resources");
-        Breadcrumbs = new ObservableCollection<Breadcrumb>
-        {
-            new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
-            new(stringResource.GetLocalized("Settings_Feedback_Header"), typeof(ExtensionsViewModel).FullName!),
-        };
-    }
-
-    private void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
-    {
-        if (args.Index < Breadcrumbs.Count - 1)
-        {
-            var crumb = (Breadcrumb)args.Item;
-            crumb.NavigateTo();
-        }
     }
 
     private async void DisplaySuggestFeature(object sender, RoutedEventArgs e)

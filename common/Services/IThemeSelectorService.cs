@@ -11,10 +11,7 @@ public interface IThemeSelectorService
 {
     public event EventHandler<ElementTheme> ThemeChanged;
 
-    ElementTheme Theme
-    {
-        get;
-    }
+    ElementTheme Theme { get; }
 
     Task InitializeAsync();
 
@@ -27,4 +24,6 @@ public interface IThemeSelectorService
     /// </summary>
     /// <returns>True if the current theme is dark</returns>
     bool IsDarkTheme();
+
+    ElementTheme GetActualTheme();
 }

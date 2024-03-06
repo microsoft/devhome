@@ -57,7 +57,7 @@ public class ComponentLogger : IDisposable
         return new Options
         {
             LogFileFolderRoot = ApplicationData.Current.TemporaryFolder.Path,
-            LogFileName = _componentName + "_{now}.log",
+            LogFileName = _componentName + "_{now}.dhlog",
             LogFileFolderName = _folderName,
             DebugListenerEnabled = true,
 #if DEBUG
@@ -69,7 +69,6 @@ public class ComponentLogger : IDisposable
             LogStdoutFilter = SeverityLevel.Info,
             LogFileFilter = SeverityLevel.Info,
 #endif
-            FailFastSeverity = FailFastSeverityLevel.Critical,
         };
     }
 

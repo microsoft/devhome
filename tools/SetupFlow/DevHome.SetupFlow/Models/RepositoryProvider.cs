@@ -38,7 +38,7 @@ internal sealed class RepositoryProvider
     /// <summary>
     /// Dictionary with all the repositories per account.
     /// </summary>
-    private Dictionary<IDeveloperId, IEnumerable<IRepository>> _repositories = new();
+    private readonly Dictionary<IDeveloperId, IEnumerable<IRepository>> _repositories = new();
 
     /// <summary>
     /// The DeveloperId provider used to log a user into an account.
@@ -183,6 +183,7 @@ internal sealed class RepositoryProvider
 
         // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
         renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
+        renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
 
         var hostConfigContents = string.Empty;
         var hostConfigFileName = (elementTheme == ElementTheme.Light) ? "LightHostConfig.json" : "DarkHostConfig.json";

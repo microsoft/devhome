@@ -44,7 +44,7 @@ public abstract class WinGetPackageDataSource
     /// <typeparam name="T">Input type</typeparam>
     /// <param name="packageUris">List of package URIs</param>
     /// <returns>List of packages</returns>
-    protected async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris)
+    protected async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<WinGetPackageUri> packageUris)
     {
         List<IWinGetPackage> result = new();
 

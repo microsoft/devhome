@@ -68,6 +68,8 @@ public partial class ExperimentalFeature : ObservableObject
 
         await LocalSettingsService!.SaveSettingAsync($"ExperimentalFeature_{Id}", IsEnabled);
 
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForExtensions_Event", LogLevel.Critical, new ExperimentalFeatureEvent(Id, IsEnabled));
+        await LocalSettingsService!.SaveSettingAsync($"IsSeeker", true);
+
+        TelemetryFactory.Get<ITelemetry>().Log("ExperimentalFeature_Toggled_Event", LogLevel.Critical, new ExperimentalFeatureEvent(Id, IsEnabled));
     }
 }

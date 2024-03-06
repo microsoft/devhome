@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Settings_Preferences_Description" xml:space="preserve">
-    <value>Theme</value>
+    <value>Themes</value>
     <comment>Body text description for a card than when clicked takes the user to the Preferences settings page</comment>
   </data>
   <data name="Settings_Preferences_Header" xml:space="preserve">
@@ -537,5 +537,9 @@
   <data name="Settings_Feedback_ReportSecurity_TextBlock.Text" xml:space="preserve">
     <value>Learn more</value>
     <comment>Click on this link if you want to learn more and read the security policy. View is an action.</comment>
+  </data>
+  <data name="ViewLogs.Header" xml:space="preserve">
+    <value>View logs</value>
+    <comment>Click on this if you want to see Dev Home's logs on your machine.</comment>
   </data>
 </root>
