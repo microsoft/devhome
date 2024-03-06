@@ -1,8 +1,7 @@
 {
   "profiles": {
     "DevHome (Package)": {
-      "commandName": "MsixPackage",
-      "commandLineArgs": "C:\\win\\tmp\\dsc_samples\\check-os.dsc.winget"
+      "commandName": "MsixPackage"
     },
     "DevHome (Unpackaged)": {
       "commandName": "Project"
