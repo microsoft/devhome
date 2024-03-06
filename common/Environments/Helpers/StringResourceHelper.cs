@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 
 namespace DevHome.Common.Environments.Helpers;
@@ -23,6 +24,14 @@ public static class StringResourceHelper
 
     public static string GetResource(string key, params object[] args)
     {
-        return _stringResource.GetLocalized(key, args);
+        try
+        {
+            return _stringResource.GetLocalized(key, args);
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError($"Failed to get resource for key {key}.", ex);
+            return key;
+        }
     }
 }

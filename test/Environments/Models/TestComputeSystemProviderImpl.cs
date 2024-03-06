@@ -26,7 +26,7 @@ public class TestComputeSystemProviderImpl : IComputeSystemProvider
 
     public ComputeSystemProviderOperations SupportedOperations => ComputeSystemProviderOperations.CreateComputeSystem;
 
-    public Uri Icon => throw new NotImplementedException();
+    public Uri Icon => new("ms-resource://text.png");
 
     public IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId? developerId)
     {

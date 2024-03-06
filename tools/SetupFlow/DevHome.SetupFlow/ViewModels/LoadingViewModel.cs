@@ -42,8 +42,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     private readonly Guid _activityId;
 
-    private readonly WindowEx _windowExService;
-
     private static readonly BitmapImage DarkCaution = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
     private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
     private static readonly BitmapImage DarkSuccess = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkSuccess.png"));
@@ -217,7 +215,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     public void UpdateActionCenterMessage(ActionCenterMessages message, ActionMessageRequestKind requestKind)
     {
-        _windowExService.DispatcherQueue.TryEnqueue(() =>
+        // ALl referenced to WindowEx and Application.Current will be removed in the future,
+        // in the loadingViewModel.
+        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
             // We need to add/remove the message in a temporary list and then re add the items to a new collection. This is because
             // of the adaptive card panel and it receiving UI updates in the listview. There can be random crashes if we don't do this when
@@ -240,8 +240,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     public LoadingViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        IHost host,
-        WindowEx windowExService)
+        IHost host)
         : base(stringResource, orchestrator)
     {
         _host = host;
@@ -258,7 +257,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ActionCenterItems = new();
         Messages = new();
         _activityId = orchestrator.ActivityId;
-        _windowExService = windowExService;
     }
 
     // Remove all tasks except for the SetupTarget
