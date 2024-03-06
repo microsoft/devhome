@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
@@ -41,6 +42,8 @@ public partial class DashboardView : ToolPage
     private readonly WidgetViewModelFactory _widgetViewModelFactory;
 
     public static ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
+
+    private readonly SemaphoreSlim _pinnedWidgetsLock = new(1, 1);
 
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly ILocalSettingsService _localSettingsService;
@@ -540,13 +543,21 @@ public partial class DashboardView : ToolPage
     {
         if (e.OldItems != null)
         {
-            var removedIndex = e.OldStartingIndex;
-            Log.Logger()?.ReportDebug("DashboardView", $"Removed widget at index {removedIndex}");
-            for (var i = removedIndex; i < PinnedWidgets.Count; i++)
+            await _pinnedWidgetsLock.WaitAsync();
+            try
             {
-                Log.Logger()?.ReportDebug("DashboardView", $"Updatingg widget position for widget now at {i}");
-                var widgetToUpdate = PinnedWidgets.ElementAt(i);
-                await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
+                var removedIndex = e.OldStartingIndex;
+                Log.Logger()?.ReportDebug("DashboardView", $"Removed widget at index {removedIndex}");
+                for (var i = removedIndex; i < PinnedWidgets.Count; i++)
+                {
+                    Log.Logger()?.ReportDebug("DashboardView", $"Updatingg widget position for widget now at {i}");
+                    var widgetToUpdate = PinnedWidgets.ElementAt(i);
+                    await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
+                }
+            }
+            finally
+            {
+                _pinnedWidgetsLock.Release();
             }
         }
     }
