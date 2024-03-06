@@ -814,7 +814,7 @@ public partial class AddRepoViewModel : ObservableObject
             EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
             SelectedAccount = Accounts.First();
             ShouldEnablePrimaryButton = false;
-            SelectedAccount = Accounts.First();
+            _repoSearchInputs = searchInputs;
             SearchRepos();
         }
 
@@ -1304,6 +1304,9 @@ public partial class AddRepoViewModel : ObservableObject
             ShouldShowPathSelector = !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsLabel) &&
                         !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsPleaseHolderText) &&
                         repoSearchInformation.SelectionOptions.Count != 0;
+            PathToRepos = repoSearchInformation.SelectionOptionsLabel;
+            LastPathPartsList = new ObservableCollection<string>(repoSearchInformation.SelectionOptions);
+            LastPathPartPlaceholderText = repoSearchInformation.SelectionOptionsPleaseHolderText;
 
             IsFetchingRepos = false;
             ShouldShowGranularSearch = true;

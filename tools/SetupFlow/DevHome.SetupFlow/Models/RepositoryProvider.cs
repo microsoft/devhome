@@ -277,14 +277,13 @@ internal sealed class RepositoryProvider
             if (IsSearchingEnabled() && searchInputs != null)
             {
                 var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
-                RepositoriesSearchResult result = repositoryProvider2.GetRepositoriesAsync(searchInputs, developerId).AsTask().Result;
-
+                var result = repositoryProvider2.GetRepositoriesAsync(searchInputs, developerId).AsTask().Result;
                 if (result.Result.Status == ProviderOperationStatus.Success)
                 {
                     repoSearchInformation.Repositories = result.Repositories;
+                    repoSearchInformation.SelectionOptionsPleaseHolderText = result.SelectionOptionsName;
+                    repoSearchInformation.SelectionOptionsLabel = result.SelectionsOptionsLabel;
                     repoSearchInformation.SelectionOptions = result.SelectionOptions.ToList();
-                    repoSearchInformation.SelectionOptionsLabel = result.SelectionOptionsName;
-                    repoSearchInformation.SelectionOptionsLabel = result.SearchPath;
                 }
                 else
                 {
@@ -333,7 +332,7 @@ internal sealed class RepositoryProvider
         var repoSearchInformation = new RepositorySearchInformation();
         try
         {
-            RepositoriesResult result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+            var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
             if (result.Result.Status == ProviderOperationStatus.Success)
             {
                 repoSearchInformation.Repositories = result.Repositories;

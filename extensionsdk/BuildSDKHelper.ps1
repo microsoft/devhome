@@ -74,17 +74,7 @@ Try {
   Exit 1
 }
 
-foreach ($config in $Configuration.Split(",")) {
-  if ($config -eq "release")
-  {
-    & $nugetPath pack (Join-Path $PSScriptRoot "nuget\Microsoft.Windows.DevHome.SDK.nuspec") -Version $VersionOfSDK -OutputDirectory "$PSScriptRoot\_build"
-  } else {
-Write-Host @"
-WARNING: You are currently building as '$config' configuration.
-DevHomeSDK nuget creation only supports 'release' configuration right now.
-"@ -ForegroundColor YELLOW
-  }
-}
+& $nugetPath pack (Join-Path $PSScriptRoot "nuget\Microsoft.Windows.DevHome.SDK.nuspec") -Version $VersionOfSDK -OutputDirectory "$PSScriptRoot\_build"
 
 if ($IsAzurePipelineBuild) {
   Write-Host "##vso[task.setvariable variable=VersionOfSDK;]$VersionOfSDK"

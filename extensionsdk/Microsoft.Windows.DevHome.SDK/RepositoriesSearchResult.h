@@ -11,17 +11,17 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
         RepositoriesSearchResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository> const& repositories, hstring const& searchPath, array_view<hstring const> selectionOptions, hstring const& selectionOptionsName);
         RepositoriesSearchResult(winrt::hresult const& e, hstring const& diagnosticText);
         winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository> Repositories();
-        hstring SearchPath();
+        hstring SelectionsOptionsLabel();
         com_array<hstring> SelectionOptions();
         hstring SelectionOptionsName();
         winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult Result();
 
     private:
-        std::shared_ptr<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult> _Result;
+        winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult _Result;
         std::shared_ptr<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository>> _Repositories;
-        std::shared_ptr<hstring> _SearchPath;
-        winrt::com_array<hstring> _SelectionOptions;
-        std::shared_ptr<hstring> _SelectionOptionsName;
+        hstring _SelectionsOptionsLabel;
+        std::vector<hstring> _SelectionOptions;
+        hstring _SelectionOptionsName;
     };
 }
 namespace winrt::Microsoft::Windows::DevHome::SDK::factory_implementation
