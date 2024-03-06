@@ -31,7 +31,7 @@ using Log = DevHome.Dashboard.Helpers.Log;
 
 namespace DevHome.Dashboard.Views;
 
-public partial class DashboardView : ToolPage
+public partial class DashboardView : ToolPage, IDisposable
 {
     public override string ShortName => "Dashboard";
 
@@ -47,6 +47,7 @@ public partial class DashboardView : ToolPage
 
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly ILocalSettingsService _localSettingsService;
+    private bool _disposedValue;
 
     private const string DraggedWidget = "DraggedWidget";
     private const string DraggedIndex = "DraggedIndex";
@@ -660,6 +661,25 @@ public partial class DashboardView : ToolPage
         foreach (var widget in PinnedWidgets)
         {
             widget.UnsubscribeFromWidgetUpdates();
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _pinnedWidgetsLock.Dispose();
+            }
+
+            _disposedValue = true;
         }
     }
 
