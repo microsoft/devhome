@@ -156,6 +156,9 @@ Try {
     }
     $appxmanifest.Save($appxmanifestPath)
 
+    # This is needed for vcxproj
+    & $nugetPath restore
+
     foreach ($platform in $env:Build_Platform.Split(",")) {
       foreach ($configuration in $env:Build_Configuration.Split(",")) {
         $appxPackageDir = (Join-Path $env:Build_RootDirectory "AppxPackages\$configuration")
