@@ -1,0 +1,5 @@
+﻿GetCurrentPackageFullName
+WIN32_ERROR
+E_FAIL
+E_ABORT
+S_OK

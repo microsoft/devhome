@@ -9,6 +9,10 @@
     <DevHomeSDKVersion Condition="$(DevHomeSDKVersion) == ''">$(DevHomeSDKVersion)</DevHomeSDKVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Environments\CustomControls\CardBody.xaml" />
+    <None Remove="Environments\CustomControls\CardHeader.xaml" />
+    <None Remove="Environments\Styles\HorizontalCardStyles.xaml" />
+    <None Remove="Environments\Templates\EnvironmentsTemplates.xaml" />
     <None Remove="Views\Banner.xaml" />
     <None Remove="Views\CloseButton.xaml" />
     <None Remove="Views\HyperlinkTextBlock.xaml" />
@@ -27,7 +31,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.100.369" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.200.427" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240304-x1959" />
@@ -39,6 +43,8 @@
     <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="2.0.0-beta" />
     <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="2.0.0-beta" />
     <PackageReference Include="AdaptiveCards.Templating" Version="1.5.0" />
+    <PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
+    <PackageReference Include="CommunityToolkit.Labs.WinUI.Shimmer" Version="0.1.230830" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +53,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Environments\CustomControls\CardBody.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Environments\CustomControls\CardHeader.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Environments\Styles\HorizontalCardStyles.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Environments\Templates\EnvironmentsTemplates.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Views\Banner.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
