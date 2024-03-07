@@ -281,7 +281,7 @@ internal sealed class RepositoryProvider
                 if (result.Result.Status == ProviderOperationStatus.Success)
                 {
                     repoSearchInformation.Repositories = result.Repositories;
-                    repoSearchInformation.SelectionOptionsPleaseHolderText = result.SelectionOptionsName;
+                    repoSearchInformation.SelectionOptionsPlaceHolderText = result.SelectionOptionsName;
                     repoSearchInformation.SelectionOptionsLabel = result.SelectionsOptionsLabel;
                     repoSearchInformation.SelectionOptions = result.SelectionOptions.ToList();
                 }

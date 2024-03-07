@@ -14,7 +14,7 @@ public class RepositorySearchInformation
 {
     public IEnumerable<IRepository> Repositories { get; set; } = Enumerable.Empty<IRepository>();
 
-    public string SelectionOptionsPleaseHolderText { get; set; } = string.Empty;
+    public string SelectionOptionsPlaceHolderText { get; set; } = string.Empty;
 
     public List<string> SelectionOptions { get; set; } = new List<string>();
 

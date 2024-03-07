@@ -267,20 +267,22 @@ public partial class AddRepoViewModel : ObservableObject
     private bool _isCancelling;
 
     /// <summary>
-    /// The remote path to the repo.  Example, at a minimum each repo has a path of [server]/[RepoName]
-    /// Everything before [RepoName] is in this string.
+    /// What to display to the left of the combobox.
     /// </summary>
     [ObservableProperty]
-    private string _pathToRepos;
+    private string _selectionOptionsPrefix;
 
     /// <summary>
-    /// The last path part before [RepoName].  All strings in here will be in a combobox.
+    /// The options a user can pick from for a granular search.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<string> _lastPathPartsList;
+    private ObservableCollection<string> _selectionOptions;
 
+    /// <summary>
+    /// The placeholder text for the selection options combobox
+    /// </summary>
     [ObservableProperty]
-    private string _lastPathPartPlaceholderText;
+    private string _selectionOptionsPlaceholderText;
 
     /// <summary>
     /// Used to figure out what button is pressed for the split button.
@@ -1307,11 +1309,11 @@ public partial class AddRepoViewModel : ObservableObject
         _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
             ShouldShowGranularSearch = !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsLabel) &&
-                        !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsPleaseHolderText) &&
+                        !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsPlaceHolderText) &&
                         repoSearchInformation.SelectionOptions.Count != 0;
-            PathToRepos = repoSearchInformation.SelectionOptionsLabel;
-            LastPathPartsList = new ObservableCollection<string>(repoSearchInformation.SelectionOptions);
-            LastPathPartPlaceholderText = repoSearchInformation.SelectionOptionsPleaseHolderText;
+            SelectionOptionsPrefix = repoSearchInformation.SelectionOptionsLabel;
+            SelectionOptions = new ObservableCollection<string>(repoSearchInformation.SelectionOptions);
+            SelectionOptionsPlaceholderText = repoSearchInformation.SelectionOptionsPlaceHolderText;
 
             IsFetchingRepos = false;
         });
