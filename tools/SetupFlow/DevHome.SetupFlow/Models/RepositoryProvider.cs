@@ -292,6 +292,7 @@ internal sealed class RepositoryProvider
             }
             else
             {
+                // Fallback in case this is called with IRepositoryProvider.
                 RepositoriesResult result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
                 if (result.Result.Status == ProviderOperationStatus.Success)
                 {
