@@ -518,11 +518,11 @@
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_SetupFlow.Header" xml:space="preserve">
-    <value>Setup local machine</value>
+    <value>Set up local machine</value>
     <comment>Header for a card that when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_SetupFlow_For_target.Header" xml:space="preserve">
-    <value>Setup a target</value>
+    <value>Set up a target</value>
     <comment>Header for a card that when clicked takes the user to a multi-step flow for setting up for a remote machine</comment>
   </data>
   <data name="MainPage_SetupFlow_For_target.Description" xml:space="preserve">
@@ -686,7 +686,7 @@
     <comment>Description for the repo config page</comment>
   </data>
   <data name="SetupShell_SetupTarget.Description" xml:space="preserve">
-    <value>Select a target machine to setup.</value>
+    <value>Select a target machine to set up.</value>
     <comment>Description for the setup target page</comment>
   </data>
   <data name="SetupShell_Review.Description" xml:space="preserve">
@@ -1589,7 +1589,7 @@
     <comment>Text to tell the user that the corrective action that they took to fix an issue failed. The user is no longer allowed to remediate the issue.</comment>
   </data>
   <data name="SetupTargetHyperVInfoBar.Message" xml:space="preserve">
-    <value>To setup the Hyper-V virtual machine an installation of Dev Home's Dev Setup Agent service is required</value>
+    <value>To set up the Hyper-V virtual machine an installation of Dev Home's Dev Setup Agent service is required</value>
     <comment>message text to tell the user which app is needed to be installed inorder for Dev Home to complete the remote machines configuration.</comment>
   </data>
   <data name="SetupTargetHyperVInfoBar.Title" xml:space="preserve">
