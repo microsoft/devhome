@@ -6,7 +6,7 @@ Param(
     [string]$Version,
     [string]$BuildStep = "all",
     [string]$AzureBuildingBranch = "main",
-    [switch]$IsAzurePipelineBuild = $false,
+    [bool]$IsAzurePipelineBuild = $false,
     [switch]$BypassWarning = $false,
     [switch]$Help = $false
 )
@@ -73,6 +73,10 @@ Try {
   } elseif ($AzureBuildingBranch -ieq "staging") {
     $buildRing = "Canary"
   }
+
+  Write-Host $nugetPath
+
+  & $nugetPath restore
 
   $msbuildArgs = @(
       ("HyperVExtension\DevSetupAgent.sln"),
