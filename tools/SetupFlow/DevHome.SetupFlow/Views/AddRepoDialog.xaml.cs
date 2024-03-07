@@ -257,6 +257,8 @@ public partial class AddRepoDialog : ContentDialog
                 await AddRepoViewModel.ChangeToRepoPageAsync();
                 deferral.Complete();
             }
+
+            AddRepoViewModel.ShouldShowPathSelector = false;
         }
         else if (AddRepoViewModel.CurrentPage == PageKind.SearchFields)
         {
@@ -272,7 +274,8 @@ public partial class AddRepoDialog : ContentDialog
 
             // switching to the repo page causes repos to be queried.
             var deferral = args.GetDeferral();
-            await AddRepoViewModel.ChangeToRepoPageAsync(searchInput);
+            await AddRepoViewModel.ChangeToRepoPageAsync();
+            AddRepoViewModel.SearchForRepos(searchInput);
             deferral.Complete();
         }
     }

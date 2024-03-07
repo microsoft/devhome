@@ -31,6 +31,7 @@ using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Devices.WiFiDirect;
 using Windows.Foundation;
 using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
@@ -49,8 +50,6 @@ public partial class AddRepoViewModel : ObservableObject
     private readonly Guid _activityId;
 
     private readonly ISetupFlowStringResource _stringResource;
-
-    private readonly List<RepoViewListItem> _allRepositories = new();
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
@@ -72,6 +71,8 @@ public partial class AddRepoViewModel : ObservableObject
     /// this class.
     /// </remarks>
     private readonly AddRepoDialog _addRepoDialog;
+
+    private List<RepoViewListItem> _allRepositories = new();
 
     /// <summary>
     /// Hold the task of the most recently ran GetRepos request.
@@ -478,7 +479,7 @@ public partial class AddRepoViewModel : ObservableObject
     private bool _isSearchingEnabled;
 
     [RelayCommand]
-    private void LastPathPartChanged(string selectedItem)
+    private void SelectionOptionsChanged(string selectedItem)
     {
         if (selectedItem == null)
         {
@@ -744,7 +745,7 @@ public partial class AddRepoViewModel : ObservableObject
         // switch to the repo page.
         if (CanSkipAccountConnection)
         {
-            await ChangeToRepoPageAsync(new());
+            await ChangeToRepoPageAsync();
             return;
         }
 
@@ -770,14 +771,7 @@ public partial class AddRepoViewModel : ObservableObject
             EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
             SelectedAccount = Accounts.First();
             ShouldEnablePrimaryButton = false;
-
-            // The dialog makes a user log in if they have no accounts.
-            // keep this here just in case.
-            if (Accounts.Any())
-            {
-                SelectedAccount = Accounts.First();
-                MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
-            }
+            MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
         }
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
@@ -805,43 +799,10 @@ public partial class AddRepoViewModel : ObservableObject
         // No need to change toggle buttons.
     }
 
-    public async Task ChangeToRepoPageAsync(Dictionary<string, string> searchInputs)
+    public void SearchForRepos(Dictionary<string, string> searchInputs)
     {
-        await GetAccountsAsync(_selectedRepoProvider, LoginUiContent);
-        if (Accounts.Any())
-        {
-            FolderPickerViewModel.ShowFolderPicker();
-            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-            SelectedAccount = Accounts.First();
-            ShouldEnablePrimaryButton = false;
-            _repoSearchInputs = searchInputs;
-            SearchRepos();
-        }
-
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
-        ShowUrlPage = false;
-        ShowAccountPage = false;
-        ShowRepoPage = true;
-
-        ShouldShowSelectingSearchTerms = false;
-        ShouldShowGranularSearch = false;
-
-        if (_isSearchingEnabled)
-        {
-            ShouldShowPathSelector = true;
-        }
-        else
-        {
-            ShouldShowPathSelector = false;
-        }
-
-        CurrentPage = PageKind.Repositories;
-        PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
-        ShouldShowLoginUi = false;
         _repoSearchInputs = searchInputs;
-
-        // The only way to get the repo page is through the account page.
-        // No need to change toggle buttons.
+        SearchRepos();
     }
 
     public void ChangeToSelectSearchTermsPage()
@@ -1264,21 +1225,39 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
-    public async Task SearchForRepos(string repositoryProvider, string loginId)
+    private Task<RepositorySearchInformation> StartSearchingForRepos(string repositoryProvider, string loginId)
     {
-        SelectedAccount = loginId;
-        IsFetchingRepos = true;
-
-        var repoSearchInformation = new RepositorySearchInformation();
-        var localTask = Task.Run(
+        return Task.Run(
               () =>
               {
                   TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllLoggedInAccounts"), _activityId);
                   var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
 
                   TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllRepos"), _activityId);
-                  repoSearchInformation = _providers.SearchForRepos(repositoryProvider, loggedInDeveloper, _repoSearchInputs);
+                  return _providers.SearchForRepos(repositoryProvider, loggedInDeveloper, _repoSearchInputs);
               });
+    }
+
+    private Task<RepositorySearchInformation> StartGettingAllRepos(string repositoryProvider, string loginId)
+    {
+        return Task.Run(
+      () =>
+      {
+          TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllLoggedInAccounts"), _activityId);
+          var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
+
+          TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllRepos"), _activityId);
+          return _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
+      });
+    }
+
+    public async Task SearchForRepos(string repositoryProvider, string loginId)
+    {
+        SelectedAccount = loginId;
+        IsFetchingRepos = true;
+
+        var repoSearchInformation = new RepositorySearchInformation();
+        var localTask = StartSearchingForRepos(repositoryProvider, loginId);
 
         // Multiple calls can execute at the same time.  However, DevHome uses the results of the
         // most recent query.  A list of tasks is used to keep track of all running queries.
@@ -1296,7 +1275,9 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
+        repoSearchInformation = localTask.Result;
         _repositoriesForAccount = repoSearchInformation.Repositories;
+        _allRepositories = repoSearchInformation.Repositories.Select(x => new RepoViewListItem(x)).ToList();
 
         // Update the UI.
         _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
@@ -1328,15 +1309,7 @@ public partial class AddRepoViewModel : ObservableObject
         IsFetchingRepos = true;
 
         var repoSearchInformation = new RepositorySearchInformation();
-        var localTask = Task.Run(
-              () =>
-          {
-              TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllLoggedInAccounts"), _activityId);
-              var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
-
-              TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllRepos"), _activityId);
-              repoSearchInformation = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
-          });
+        var localTask = StartGettingAllRepos(repositoryProvider, loginId);
 
         // Multiple calls can execute at the same time.  However, DevHome uses the results of the
         // most recent query.  A list of tasks is used to keep track of all running queries.
@@ -1354,7 +1327,9 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
+        repoSearchInformation = localTask.Result;
         _repositoriesForAccount = repoSearchInformation.Repositories;
+        _allRepositories = repoSearchInformation.Repositories.Select(x => new RepoViewListItem(x)).ToList();
 
         // Update the UI.
         _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
@@ -1364,7 +1339,7 @@ public partial class AddRepoViewModel : ObservableObject
             repoSearchInformation.SelectionOptions.Count != 0;
 
             IsFetchingRepos = false;
-            ShouldShowGranularSearch = true;
+            ShouldShowGranularSearch = ShouldShowPathSelector;
         });
     }
 

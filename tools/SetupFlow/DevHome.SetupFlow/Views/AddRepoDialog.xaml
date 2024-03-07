@@ -120,7 +120,7 @@
                         <SplitButton x:Name="AccountSplitButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Grid.Row="0" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}"/>
                         <TextBox x:Name="FilterTextBox" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegateBoolConverter}}" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
                     </Grid>
-                    <Grid x:Name="PathAndChangePathGrid" Grid.Row="1" Visibility="{x:Bind AddRepoViewModel.ShouldShowGranularSearch, Mode=OneWay}" >
+                    <Grid x:Name="GranularSearchGrid" Grid.Row="1" Visibility="{x:Bind AddRepoViewModel.ShouldShowGranularSearch, Mode=OneWay}" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition />
@@ -138,7 +138,7 @@
                             </ComboBox.ItemTemplate>
                             <i:Interaction.Behaviors>
                                 <ic:EventTriggerBehavior EventName="SelectionChanged">
-                                    <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.LastPathPartChangedCommand}" CommandParameter="{x:Bind LastPathPartComboBox.SelectedItem, Mode=OneWay}"/>
+                                    <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.SelectionOptionsChangedCommand}" CommandParameter="{x:Bind LastPathPartComboBox.SelectedItem, Mode=OneWay}"/>
                                 </ic:EventTriggerBehavior>
                             </i:Interaction.Behaviors>
                         </ComboBox>
