@@ -257,8 +257,6 @@ public partial class AddRepoDialog : ContentDialog
                 await AddRepoViewModel.ChangeToRepoPageAsync();
                 deferral.Complete();
             }
-
-            AddRepoViewModel.ShouldShowPathSelector = false;
         }
         else if (AddRepoViewModel.CurrentPage == PageKind.SearchFields)
         {

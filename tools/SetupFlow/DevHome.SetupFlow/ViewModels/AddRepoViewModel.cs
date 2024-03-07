@@ -6,13 +6,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI.Collections;
 using CommunityToolkit.WinUI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
@@ -31,7 +28,6 @@ using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.Devices.WiFiDirect;
 using Windows.Foundation;
 using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
@@ -406,12 +402,6 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Don't show the oath selector UI when querying repos and when selecting search terms.
-    /// </summary>
-    [ObservableProperty]
-    private bool _shouldShowPathSelector;
-
-    /// <summary>
     /// The accounts the user is logged into is stored here.
     /// </summary>
     [ObservableProperty]
@@ -429,12 +419,21 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private int _accountIndex;
 
+    /// <summary>
+    /// Text that prompts the user if they want to add search inputs.
+    /// </summary>
     [ObservableProperty]
     private string _askToChangeLabel;
 
+    /// <summary>
+    /// If the extension allows users to further filter repo results.
+    /// </summary>
     [ObservableProperty]
     private bool _shouldShowGranularSearch;
 
+    /// <summary>
+    /// Controls if the hyperlink button that allows switching to the search terms page is visible.
+    /// </summary>
     [ObservableProperty]
     private bool _shouldShowChangeSearchTermsHyperlinkButton;
 
@@ -454,6 +453,9 @@ public partial class AddRepoViewModel : ObservableObject
         });
     }
 
+    /// <summary>
+    /// Uses search inputs to search for repos.
+    /// </summary>
     private void SearchRepos()
     {
         _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(async () =>
@@ -478,6 +480,11 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     private bool _isSearchingEnabled;
 
+    /// <summary>
+    /// If granular search is enabled, this method handles the "SelectionChanged" event on the
+    /// combo box.
+    /// </summary>
+    /// <param name="selectedItem">The selection option the user chose.</param>
     [RelayCommand]
     private void SelectionOptionsChanged(string selectedItem)
     {
@@ -782,23 +789,18 @@ public partial class AddRepoViewModel : ObservableObject
         ShouldShowSelectingSearchTerms = false;
         ShouldShowGranularSearch = false;
 
-        if (_isSearchingEnabled)
-        {
-            ShouldShowPathSelector = true;
-        }
-        else
-        {
-            ShouldShowPathSelector = false;
-        }
-
         CurrentPage = PageKind.Repositories;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
         ShouldShowLoginUi = false;
 
         // The only way to get the repo page is through the account page.
-        // No need to change toggle buttons.
+        // No need to toggle the clone button.
     }
 
+    /// <summary>
+    /// Sends out a request to search for repos using searchInputs.
+    /// </summary>
+    /// <param name="searchInputs">The values to search for repos with.</param>
     public void SearchForRepos(Dictionary<string, string> searchInputs)
     {
         _repoSearchInputs = searchInputs;
@@ -1300,7 +1302,7 @@ public partial class AddRepoViewModel : ObservableObject
         // Update the UI.
         _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
-            ShouldShowPathSelector = !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsLabel) &&
+            ShouldShowGranularSearch = !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsLabel) &&
                         !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsPleaseHolderText) &&
                         repoSearchInformation.SelectionOptions.Count != 0;
             PathToRepos = repoSearchInformation.SelectionOptionsLabel;
@@ -1308,7 +1310,6 @@ public partial class AddRepoViewModel : ObservableObject
             LastPathPartPlaceholderText = repoSearchInformation.SelectionOptionsPleaseHolderText;
 
             IsFetchingRepos = false;
-            ShouldShowGranularSearch = ShouldShowPathSelector;
         });
     }
 
@@ -1358,7 +1359,7 @@ public partial class AddRepoViewModel : ObservableObject
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Setting the clone location for all repositories to {cloneLocation}");
         foreach (var cloningInformation in EverythingToClone)
         {
-            // N^2 algorithm.  Shouldn't be too slow unless at least 100 repos are added.
+            // N^2 algorithm.  Should chang eto something else when the number of repos is large.
             if (!_previouslySelectedRepos.Any(x => x == cloningInformation))
             {
                 cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
