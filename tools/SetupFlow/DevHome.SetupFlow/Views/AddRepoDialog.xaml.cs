@@ -42,12 +42,15 @@ public partial class AddRepoDialog : ContentDialog
         get; set;
     }
 
+    public SetupFlowOrchestrator Orchestrator { get; set; }
+
     /// <summary>
     /// Hold the clone location in case the user decides not to add a dev drive.
     /// </summary>
     private string _oldCloneLocation;
 
     public AddRepoDialog(
+        SetupFlowOrchestrator setupFlowOrchestrator,
         IDevDriveManager devDriveManager,
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
@@ -56,11 +59,12 @@ public partial class AddRepoDialog : ContentDialog
     {
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
+        Orchestrator = setupFlowOrchestrator;
 
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId, this, devDriveManager);
+        AddRepoViewModel = new AddRepoViewModel(setupFlowOrchestrator, stringResource, previouslySelectedRepos, host, activityId, this, devDriveManager);
 
         // Changing view to account so the selection changed event for Segment correctly shows URL.
-        AddRepoViewModel.CurrentPage = PageKind.AddViaAccount;
+        AddRepoViewModel.CurrentPage = PageKind.AddViaUrl;
         AddRepoViewModel.ShouldEnablePrimaryButton = false;
         AddViaUrlSegmentedItem.IsSelected = true;
         SwitchViewsSegmentedView.SelectedIndex = 1;

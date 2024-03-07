@@ -58,8 +58,8 @@
           "subtle": "#880063B1"
         },
         "attention": {
-          "default": "#FF0000",
-          "subtle": "#DDFF0000"
+          "default": "#FF5555",
+          "subtle": "#DDFF5555"
         },
         "good": {
           "default": "#54a254",
@@ -84,8 +84,8 @@
           "subtle": "#882E89FC"
         },
         "attention": {
-          "default": "#FF0000",
-          "subtle": "#DDFF0000"
+          "default": "#FF5555",
+          "subtle": "#DDFF5555"
         },
         "good": {
           "default": "#54a254",

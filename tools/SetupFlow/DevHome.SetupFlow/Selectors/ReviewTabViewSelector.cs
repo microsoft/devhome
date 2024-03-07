@@ -30,6 +30,11 @@ public class ReviewTabViewSelector : DataTemplateSelector
         get; set;
     }
 
+    public DataTemplate SetupTargetTabTemplate
+    {
+        get; set;
+    }
+
     protected override DataTemplate SelectTemplateCore(object item)
     {
         return ResolveDataTemplate(item, () => base.SelectTemplateCore(item));
@@ -53,6 +58,7 @@ public class ReviewTabViewSelector : DataTemplateSelector
             DevDriveReviewViewModel => DevDriveTabTemplate,
             RepoConfigReviewViewModel => RepoConfigTabTemplate,
             AppManagementReviewViewModel => AppManagementTabTemplate,
+            SetupTargetReviewViewModel => SetupTargetTabTemplate,
             _ => defaultDataTemplate(),
         };
     }

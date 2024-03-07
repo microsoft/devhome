@@ -50,6 +50,8 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly ISetupFlowStringResource _stringResource;
 
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
     /// <summary>
@@ -336,6 +338,8 @@ public partial class AddRepoViewModel : ObservableObject
         get; set;
     }
 
+    public bool IsSettingUpLocalMachine => _setupFlowOrchestrator.IsSettingUpLocalMachine;
+
     private TypedEventHandler<IDeveloperIdProvider, IDeveloperId> _developerIdChangedEvent;
 
     private string _selectedRepoProvider = string.Empty;
@@ -556,6 +560,7 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     public AddRepoViewModel(
+        SetupFlowOrchestrator setupFlowOrchestrator,
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
         IHost host,
@@ -567,17 +572,13 @@ public partial class AddRepoViewModel : ObservableObject
         _stringResource = stringResource;
         _host = host;
         _loginUiContent = new Frame();
+        _setupFlowOrchestrator = setupFlowOrchestrator;
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
         _activityId = activityId;
-        FolderPickerViewModel = new FolderPickerViewModel(stringResource);
-
-        var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        var defaultClonePath = Path.Join(userFolder, "source", "repos");
-        FolderPickerViewModel.CloneLocation = defaultClonePath;
-
-        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
+        FolderPickerViewModel = new FolderPickerViewModel(stringResource, setupFlowOrchestrator);
+        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager, setupFlowOrchestrator);
 
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {
@@ -622,6 +623,12 @@ public partial class AddRepoViewModel : ObservableObject
     /// </remarks>
     public void GetExtensions()
     {
+        // Don't use the repository extensions if we are in the setup target flow.
+        if (_setupFlowOrchestrator.IsSettingUpATargetMachine)
+        {
+            return;
+        }
+
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed extensions with Repository and DevId providers");
         var extensionService = _host.GetService<IExtensionService>();
         var extensionWrappers = extensionService.GetInstalledExtensionsAsync().Result;
@@ -937,8 +944,11 @@ public partial class AddRepoViewModel : ObservableObject
     /// <remarks>If the url is not valid this method sets UrlParsingError and ShouldShowUrlError to the correct values.</remarks>
     private void ValidateUriAndChangeUiIfBad(string url, out Uri uri)
     {
+        uri = null;
+
         // If the url isn't valid don't bother finding a provider.
-        if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
+        if (!Uri.IsWellFormedUriString(url, UriKind.Absolute) ||
+            !Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
         {
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
             ShouldShowUrlError = true;
@@ -990,7 +1000,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         // This will return null even if the repo uri has a typo in it.
         // Causing GetCloningInformationFromURL to fall back to git.
-        var provider = _providers.CanAnyProviderSupportThisUri(uri);
+        var provider = _providers?.CanAnyProviderSupportThisUri(uri);
 
         var cloningInformation = GetCloningInformationFromUrl(provider, cloneLocation, uri, LoginUiContent);
         if (cloningInformation == null)

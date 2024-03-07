@@ -82,6 +82,17 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
         // A different host config is used to render widgets (adaptive cards) in light and dark themes.
         await UpdateHostConfig();
 
+        // Due to a bug in the Adaptive Card renderer (https://github.com/microsoft/AdaptiveCards/issues/8840)
+        // positive and destructive buttons render with square corners. Override with XAML styles.
+        var positiveStyle = Application.Current.Resources["AccentButtonStyle"] as Style;
+        var destructiveStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+
+        _renderer.OverrideStyles = new ResourceDictionary
+        {
+            { "Adaptive.Action.Positive", positiveStyle },
+            { "Adaptive.Action.Destructive", destructiveStyle },
+        };
+
         // Remove margins from selectAction.
         _renderer.AddSelectActionMargin = false;
     }

@@ -7,3 +7,7 @@ GetCurrentPackageFullName
 SetWindowLong
 GetWindowLong
 WINDOW_EX_STYLE
+SHLoadIndirectString
+StrFormatByteSizeEx
+SFBS_FLAGS
+MAX_PATH
