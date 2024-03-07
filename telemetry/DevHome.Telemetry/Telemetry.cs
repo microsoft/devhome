@@ -143,7 +143,7 @@ internal sealed class Telemetry : ITelemetry
 
         this.LogInternal(
             ExceptionThrownEventName,
-            LogLevel.Measure,
+            LogLevel.Critical,
             new
             {
                 action,

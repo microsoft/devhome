@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <!-- Debug builds produce a console app; otherwise a Windows app -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseWinUI>false</UseWinUI>
+    <CsWinRTEnabled>false</CsWinRTEnabled>
+    <StartupObject>HyperVExtension.Program</StartupObject>
+    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+  <Platforms>x86;x64;arm64</Platforms>
+    <PublishProfileFullPath Condition="'$(BuildingInsideVisualStudio)' != 'True'">$(SolutionDir)\src\Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfileFullPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HyperVExtension.Common\HyperVExtension.Common.csproj" />
+    <ProjectReference Include="..\HyperVExtension\HyperVExtension.csproj" />
+    <ProjectReference Include="..\Logging\HyperVExtension.Logging.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Assets\" />
+  </ItemGroup>
+
+</Project>

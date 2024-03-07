@@ -84,6 +84,9 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         set => _shouldAutoCheckDevDriveCheckbox = value;
     }
 
+    [ObservableProperty]
+    private string _pageSubTitle;
+
     /// <summary>
     /// All repositories the user wants to clone.
     /// </summary>
@@ -109,22 +112,19 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         _themeSelectorService = host.GetService<IThemeSelectorService>();
         _themeSelectorService.ThemeChanged += OnThemeChanged;
         Host = host;
+
+        PageSubTitle = Orchestrator.IsSettingUpLocalMachine
+            ? stringResource.GetLocalized(StringResourceKey.SetupShellRepoConfigLocalMachine)
+            : stringResource.GetLocalized(StringResourceKey.SetupShellRepoConfigTargetMachine);
     }
 
     private void OnThemeChanged(object sender, ElementTheme e)
     {
-        ElementTheme themeToSwitchTo = e;
+        var themeToSwitchTo = e;
 
         if (themeToSwitchTo == ElementTheme.Default)
         {
-            if (_themeSelectorService.IsDarkTheme())
-            {
-                themeToSwitchTo = ElementTheme.Dark;
-            }
-            else
-            {
-                themeToSwitchTo = ElementTheme.Light;
-            }
+            themeToSwitchTo = _themeSelectorService.GetActualTheme();
         }
 
         // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.

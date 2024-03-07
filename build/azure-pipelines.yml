@@ -22,7 +22,7 @@ parameters:
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
   MSIXVersion: '0.1101'
-  VersionOfSDK: '0.100'
+  VersionOfSDK: '0.200'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
   testOutputArtifactDir: 'TestResults'
@@ -208,7 +208,7 @@ extends:
               retryCountOnTaskFailure: 2
               inputs:
                 filePath: 'Build.ps1'
-                arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -Version $(MSIXVersion) -BuildStep "msix" -AzureBuildingBranch "$(BuildingBranch)" -IsAzurePipelineBuild
+                arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -Version $(MSIXVersion) -BuildStep "fullMsix" -AzureBuildingBranch "$(BuildingBranch)" -IsAzurePipelineBuild
 
             - task: EsrpCodeSigning@2
               inputs:

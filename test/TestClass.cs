@@ -54,4 +54,11 @@ public class TestClass
         Microsoft.Internal.Windows.DevHome.Helpers.Helpers helpers = new();
         Assert.AreEqual("This is a test", helpers.Test());
     }
+
+    [TestMethod]
+    public void TestExperimentHelpers()
+    {
+        Microsoft.Internal.Windows.DevHome.Helpers.Experimentation.Experiment experiment = new();
+        Assert.IsTrue(experiment.IsEnabled("Sample_FeatureStaging"));
+    }
 }

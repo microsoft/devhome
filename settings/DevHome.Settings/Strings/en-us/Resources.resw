@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Settings_Preferences_Description" xml:space="preserve">
-    <value>Theme</value>
+    <value>Themes</value>
     <comment>Body text description for a card than when clicked takes the user to the Preferences settings page</comment>
   </data>
   <data name="Settings_Preferences_Header" xml:space="preserve">
@@ -537,5 +537,25 @@
   <data name="Settings_Feedback_ReportSecurity_TextBlock.Text" xml:space="preserve">
     <value>Learn more</value>
     <comment>Click on this link if you want to learn more and read the security policy. View is an action.</comment>
+  </data>
+  <data name="ViewLogs.Header" xml:space="preserve">
+    <value>View logs</value>
+    <comment>Click on this if you want to see Dev Home's logs on your machine.</comment>
+  </data>
+  <data name="EnvironmentsManagementPage_Description" xml:space="preserve">
+    <value>Manage your local and cloud development virtual machines from Dev Home</value>
+    <comment>Text within a display card that explains what users can do with the Environments management feature. Users can choose to toggle this on/off to add or remove the feature.</comment>
+  </data>
+  <data name="EnvironmentsManagementPage_Name" xml:space="preserve">
+    <value>Environments Management</value>
+    <comment>Title text for the Environments management feature.</comment>
+  </data>
+  <data name="EnvironmentsSetupTargetFlow_Description" xml:space="preserve">
+    <value>Configure your local and cloud development virtual machines from Dev Home</value>
+    <comment>Text within a display card that explains what users can do with the Environments configuration feature. Users can choose to toggle this on/off to add or remove the feature.</comment>
+  </data>
+  <data name="EnvironmentsSetupTargetFlow_Name" xml:space="preserve">
+    <value>Environments Configuration</value>
+    <comment>Title text for the Environments configuration feature.</comment>
   </data>
 </root>

@@ -41,5 +41,12 @@ public class Log
         public static readonly string IPCClient = nameof(IPCClient);
         public static readonly string IPCServer = nameof(IPCServer);
         public static readonly string Elevated = nameof(Elevated);
+
+        public static readonly string SetupTarget = nameof(SetupTarget);
+        public static readonly string ComputeSystemsListViewModel = nameof(ComputeSystemsListViewModel);
+        public static readonly string ComputeSystemCardViewModel = nameof(ComputeSystemCardViewModel);
+        public static readonly string ComputeSystemViewModelFactory = nameof(ComputeSystemViewModelFactory);
+        public static readonly string ConfigurationTarget = nameof(ConfigurationTarget);
+        public static readonly string SDKOpenConfigurationSetResult = nameof(SDKOpenConfigurationSetResult);
     }
 }
