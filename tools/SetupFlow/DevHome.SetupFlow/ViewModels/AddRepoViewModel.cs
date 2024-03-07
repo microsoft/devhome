@@ -1225,6 +1225,12 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Starts the task to search for repos.
+    /// </summary>
+    /// <param name="repositoryProvider">The name of the selected repository Provider.</param>
+    /// <param name="loginId">The loginId of the user.</param>
+    /// <returns>An awaitable task.</returns>
     private Task<RepositorySearchInformation> StartSearchingForRepos(string repositoryProvider, string loginId)
     {
         return Task.Run(
@@ -1238,6 +1244,12 @@ public partial class AddRepoViewModel : ObservableObject
               });
     }
 
+    /// <summary>
+    /// Starts the task to get all repos.
+    /// </summary>
+    /// <param name="repositoryProvider">The name of the selected repository Provider.</param>
+    /// <param name="loginId">The loginId of the user.</param>
+    /// <returns>An awaitable task.</returns>
     private Task<RepositorySearchInformation> StartGettingAllRepos(string repositoryProvider, string loginId)
     {
         return Task.Run(
@@ -1251,31 +1263,37 @@ public partial class AddRepoViewModel : ObservableObject
       });
     }
 
-    public async Task SearchForRepos(string repositoryProvider, string loginId)
+    /// <summary>
+    /// Takes a task of getting repositories and makes sure only the most recent request is used.
+    /// </summary>
+    /// <param name="loginId">The loginId of the user</param>
+    /// <param name="runningTask">The running task that is getting repos.</param>
+    /// <returns>An awaitable task.</returns>
+    private async Task CoordinateTasks(string loginId, Task<RepositorySearchInformation> runningTask)
     {
-        SelectedAccount = loginId;
-        IsFetchingRepos = true;
-
-        var repoSearchInformation = new RepositorySearchInformation();
-        var localTask = StartSearchingForRepos(repositoryProvider, loginId);
+        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        {
+            SelectedAccount = loginId;
+            IsFetchingRepos = true;
+        });
 
         // Multiple calls can execute at the same time.  However, DevHome uses the results of the
         // most recent query.  A list of tasks is used to keep track of all running queries.
         // When a query is done, it is compared with the id of the most recently executed task.
         // if a match, DevHome uses that.
-        _taskToUseForResults = localTask;
-        _runningGetReposTasks.Add(localTask);
+        _taskToUseForResults = runningTask;
+        _runningGetReposTasks.Add(runningTask);
 
-        await localTask;
+        await runningTask;
 
-        _runningGetReposTasks.Remove(localTask);
-        if (localTask.Id != _taskToUseForResults.Id)
+        _runningGetReposTasks.Remove(runningTask);
+        if (runningTask.Id != _taskToUseForResults.Id)
         {
             _repositoriesForAccount ??= new List<IRepository>();
             return;
         }
 
-        repoSearchInformation = localTask.Result;
+        var repoSearchInformation = runningTask.Result;
         _repositoriesForAccount = repoSearchInformation.Repositories;
         _allRepositories = repoSearchInformation.Repositories.Select(x => new RepoViewListItem(x)).ToList();
 
@@ -1290,8 +1308,14 @@ public partial class AddRepoViewModel : ObservableObject
             LastPathPartPlaceholderText = repoSearchInformation.SelectionOptionsPleaseHolderText;
 
             IsFetchingRepos = false;
-            ShouldShowGranularSearch = true;
+            ShouldShowGranularSearch = ShouldShowPathSelector;
         });
+    }
+
+    public async Task SearchForRepos(string repositoryProvider, string loginId)
+    {
+        var localTask = StartSearchingForRepos(repositoryProvider, loginId);
+        await CoordinateTasks(loginId, localTask);
     }
 
     /// <summary>
@@ -1305,42 +1329,8 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="loginId">The login Id to get the repositories for</param>
     public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
     {
-        SelectedAccount = loginId;
-        IsFetchingRepos = true;
-
-        var repoSearchInformation = new RepositorySearchInformation();
         var localTask = StartGettingAllRepos(repositoryProvider, loginId);
-
-        // Multiple calls can execute at the same time.  However, DevHome uses the results of the
-        // most recent query.  A list of tasks is used to keep track of all running queries.
-        // When a query is done, it is compared with the id of the most recently executed task.
-        // if a match, DevHome uses that.
-        _taskToUseForResults = localTask;
-        _runningGetReposTasks.Add(localTask);
-
-        await localTask;
-
-        _runningGetReposTasks.Remove(localTask);
-        if (localTask.Id != _taskToUseForResults.Id)
-        {
-            _repositoriesForAccount ??= new List<IRepository>();
-            return;
-        }
-
-        repoSearchInformation = localTask.Result;
-        _repositoriesForAccount = repoSearchInformation.Repositories;
-        _allRepositories = repoSearchInformation.Repositories.Select(x => new RepoViewListItem(x)).ToList();
-
-        // Update the UI.
-        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
-        {
-            ShouldShowPathSelector = !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsLabel) &&
-            !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsPleaseHolderText) &&
-            repoSearchInformation.SelectionOptions.Count != 0;
-
-            IsFetchingRepos = false;
-            ShouldShowGranularSearch = ShouldShowPathSelector;
-        });
+        await CoordinateTasks(loginId, localTask);
     }
 
     /// <summary>
