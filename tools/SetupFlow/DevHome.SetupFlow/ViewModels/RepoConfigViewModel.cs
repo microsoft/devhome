@@ -84,6 +84,9 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         set => _shouldAutoCheckDevDriveCheckbox = value;
     }
 
+    [ObservableProperty]
+    private string _pageSubTitle;
+
     /// <summary>
     /// All repositories the user wants to clone.
     /// </summary>
@@ -109,6 +112,10 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         _themeSelectorService = host.GetService<IThemeSelectorService>();
         _themeSelectorService.ThemeChanged += OnThemeChanged;
         Host = host;
+
+        PageSubTitle = Orchestrator.IsSettingUpLocalMachine
+            ? stringResource.GetLocalized(StringResourceKey.SetupShellRepoConfigLocalMachine)
+            : stringResource.GetLocalized(StringResourceKey.SetupShellRepoConfigTargetMachine);
     }
 
     private void OnThemeChanged(object sender, ElementTheme e)

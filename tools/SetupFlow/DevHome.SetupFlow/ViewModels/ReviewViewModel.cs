@@ -25,6 +25,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 {
     private readonly IHost _host;
 
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+
     [ObservableProperty]
     private IList<ReviewTabViewModelBase> _reviewTabs;
 
@@ -56,6 +58,22 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         }
     }
 
+    public bool CanSetupTarget
+    {
+        get
+        {
+            var repoConfigTasksTotal = _setupFlowOrchestrator.GetTaskGroup<RepoConfigTaskGroup>()?.CloneTasks.Count ?? 0;
+            var appManagementTasksTotal = _setupFlowOrchestrator.GetTaskGroup<AppManagementTaskGroup>()?.SetupTasks.Count() ?? 0;
+            if (_setupFlowOrchestrator.IsSettingUpATargetMachine && repoConfigTasksTotal == 0 && appManagementTasksTotal == 0)
+            {
+                // either repo config or app management task group is required to setup target
+                return false;
+            }
+
+            return true;
+        }
+    }
+
     public bool HasTasksToSetUp => Orchestrator.TaskGroups.Any(g => g.SetupTasks.Any());
 
     public ReviewViewModel(
@@ -68,6 +86,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReviewPageTitle);
+
+        _setupFlowOrchestrator = orchestrator;
     }
 
     protected async override Task OnEachNavigateToAsync()
@@ -82,6 +102,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
         NextPageButtonToolTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
         UpdateCanSetUp();
+
         await Task.CompletedTask;
     }
 
@@ -89,7 +110,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     public void UpdateCanSetUp()
     {
-        CanSetUp = HasTasksToSetUp && IsValidTermsAgreement();
+        CanSetUp = HasTasksToSetUp && IsValidTermsAgreement() && CanSetupTarget;
     }
 
     /// <summary>
@@ -106,7 +127,13 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     {
         try
         {
-            await Orchestrator.InitializeElevatedServerAsync();
+            // If we are in the setup target flow, we don't need to initialize the elevated server.
+            // as work will be done in a remote machine.
+            if (!Orchestrator.IsSettingUpATargetMachine)
+            {
+                await Orchestrator.InitializeElevatedServerAsync();
+            }
+
             await Orchestrator.GoToNextPage();
         }
         catch (Exception e)
