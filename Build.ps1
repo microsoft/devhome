@@ -94,6 +94,9 @@ if (-not([string]::IsNullOrWhiteSpace($SDKNugetSource))) {
 
 . build\Scripts\CertSignAndInstall.ps1
 
+# Restore nuget packages
+& $nugetPath restore
+
 Try {
   if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msix") -Or ($BuildStep -ieq "fullMsix")) {
     $buildRing = "Dev"
