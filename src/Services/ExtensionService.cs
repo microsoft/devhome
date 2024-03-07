@@ -114,7 +114,7 @@ public class ExtensionService : IExtensionService, IDisposable
             if (package.Id.FullName == extension.Package.Id.FullName)
             {
                 var (devHomeProvider, classId) = await GetDevHomeExtensionPropertiesAsync(extension);
-                return devHomeProvider != null && classId.Count == 0;
+                return devHomeProvider != null && classId.Count != 0;
             }
         }
 
