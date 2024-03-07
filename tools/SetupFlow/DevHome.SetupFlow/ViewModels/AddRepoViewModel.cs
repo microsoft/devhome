@@ -68,6 +68,8 @@ public partial class AddRepoViewModel : ObservableObject
     /// </remarks>
     private readonly AddRepoDialog _addRepoDialog;
 
+    private readonly object _setRepositoriesLock = new();
+
     private List<RepoViewListItem> _allRepositories = new();
 
     /// <summary>
@@ -389,9 +391,6 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         _selectedRepoProvider = repositoryProviderName;
-        _isSearchingEnabled = _providers.IsSearchingEnabled(repositoryProviderName);
-        ShouldShowChangeSearchTermsHyperlinkButton = _isSearchingEnabled;
-        AskToChangeLabel = _providers.GetAskChangeSearchFieldsLabel(repositoryProviderName);
     }
 
     [RelayCommand]
@@ -473,12 +472,6 @@ public partial class AddRepoViewModel : ObservableObject
         await FolderPickerViewModel.ChooseCloneLocation();
         ToggleCloneButton();
     }
-
-    /// <summary>
-    /// IRepositoryProvider2 supports search queries when fetching repos.  Each extension has the option to
-    /// implement IRepositoryProvider2 or not.  this needs to be updated when a provider is selected.
-    /// </summary>
-    private bool _isSearchingEnabled;
 
     /// <summary>
     /// If granular search is enabled, this method handles the "SelectionChanged" event on the
@@ -788,6 +781,8 @@ public partial class AddRepoViewModel : ObservableObject
 
         ShouldShowSelectingSearchTerms = false;
         ShouldShowGranularSearch = false;
+        ShouldShowChangeSearchTermsHyperlinkButton = _providers.IsSearchingEnabled(_selectedRepoProvider);
+        AskToChangeLabel = _providers.GetAskChangeSearchFieldsLabel(_selectedRepoProvider);
 
         CurrentPage = PageKind.Repositories;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
@@ -827,24 +822,26 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     /// <param name="providerName">The provider to ask</param>
     /// <returns>The names of the search fields.</returns>
-    public List<string> GetSearchTerms(string providerName)
+    public List<string> GetSearchTerms()
     {
-        return _providers.GetSearchTerms(providerName);
+        return _providers.GetSearchTerms(_selectedRepoProvider);
     }
 
     /// <summary>
     /// Asks the provider for a list of suggestions, given values of other search terms.
     /// </summary>
-    /// <param name="providerName">The provider to ask</param>
     /// <param name="loginId">The account of the user</param>
     /// <param name="inputFields">All information found in the search grid</param>
     /// <param name="fieldName">The field to request data for</param>
+    /// <remarks>
+    /// uses _selectedRepoProvider.
+    /// </remarks>
     /// <returns>A list of names that can be used for the field.</returns>
-    public List<string> GetSuggestionsFor(string providerName, string loginId, Dictionary<string, string> inputFields, string fieldName)
+    public List<string> GetSuggestionsFor(string loginId, Dictionary<string, string> inputFields, string fieldName)
     {
-        var loggedInDeveloper = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId == loginId);
+        var loggedInDeveloper = _providers.GetAllLoggedInAccounts(_selectedRepoProvider).FirstOrDefault(x => x.LoginId == loginId);
 
-        return _providers.GetValuesFor(providerName, loggedInDeveloper, inputFields, fieldName);
+        return _providers.GetValuesFor(_selectedRepoProvider, loggedInDeveloper, inputFields, fieldName);
     }
 
     /// <summary>
@@ -1279,25 +1276,32 @@ public partial class AddRepoViewModel : ObservableObject
             IsFetchingRepos = true;
         });
 
-        // Multiple calls can execute at the same time.  However, DevHome uses the results of the
+        // Multiple calls can execute at the same time.  DevHome uses the results of the
         // most recent query.  A list of tasks is used to keep track of all running queries.
         // When a query is done, it is compared with the id of the most recently executed task.
         // if a match, DevHome uses that.
-        _taskToUseForResults = runningTask;
-        _runningGetReposTasks.Add(runningTask);
-
-        await runningTask;
-
-        _runningGetReposTasks.Remove(runningTask);
-        if (runningTask.Id != _taskToUseForResults.Id)
+        // Using locks here to control access to non-thread safe collections.
+        lock (_setRepositoriesLock)
         {
-            _repositoriesForAccount ??= new List<IRepository>();
-            return;
+            _taskToUseForResults = runningTask;
+            _runningGetReposTasks.Add(runningTask);
         }
 
-        var repoSearchInformation = runningTask.Result;
-        _repositoriesForAccount = repoSearchInformation.Repositories;
-        _allRepositories = repoSearchInformation.Repositories.Select(x => new RepoViewListItem(x)).ToList();
+        await runningTask;
+        RepositorySearchInformation repoSearchInformation;
+        lock (_setRepositoriesLock)
+        {
+            _runningGetReposTasks.Remove(runningTask);
+            if (runningTask.Id != _taskToUseForResults.Id)
+            {
+                _repositoriesForAccount ??= new List<IRepository>();
+                return;
+            }
+
+            repoSearchInformation = runningTask.Result;
+            _repositoriesForAccount = repoSearchInformation.Repositories;
+            _allRepositories = repoSearchInformation.Repositories.Select(x => new RepoViewListItem(x)).ToList();
+        }
 
         // Update the UI.
         _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>

@@ -367,8 +367,7 @@ public partial class AddRepoDialog : ContentDialog
         ShowingSearchTermsGrid.Visibility = Visibility.Collapsed;
 
         var loginId = (string)AddRepoViewModel.SelectedAccount;
-        var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-        var searchTerms = AddRepoViewModel.GetSearchTerms(providerName);
+        var searchTerms = AddRepoViewModel.GetSearchTerms();
         ShowingSearchTermsGrid.RowSpacing = 10;
 
         var searchTermRow = 0;
@@ -378,7 +377,7 @@ public partial class AddRepoDialog : ContentDialog
             ShowingSearchTermsGrid.RowDefinitions.Add(new RowDefinition());
 
             var searchFieldName = string.Empty;
-            var searchFieldSuggestions = await Task.Run(() => AddRepoViewModel.GetSuggestionsFor(providerName, loginId, new(), searchTerms[localTermIndex]));
+            var searchFieldSuggestions = await Task.Run(() => AddRepoViewModel.GetSuggestionsFor(loginId, new(), searchTerms[localTermIndex]));
 
             _searchFieldsAndValues.Add(searchTerms[localTermIndex], searchFieldSuggestions);
             var suggestBox = new AutoSuggestBox();
