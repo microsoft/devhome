@@ -130,11 +130,7 @@
     <value>Sync</value>
     <comment>Text for the sync button on the top right side</comment>
   </data>
-    <data name="TerminateButtonContextMenuItem" xml:space="preserve">
-    <value>Turn off</value>
-    <comment>Text for terminate button in the context menu that will turn off the virtual machine. This button turns off the power to the virtual machine without gracefully shutting it down first.</comment>
-  </data>
-    <data name="Titlebar.Text" xml:space="preserve">
+  <data name="Titlebar.Text" xml:space="preserve">
     <value>Environments</value>
     <comment>Title text for the main landing page</comment>
   </data>
