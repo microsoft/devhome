@@ -1359,7 +1359,7 @@ public partial class AddRepoViewModel : ObservableObject
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Setting the clone location for all repositories to {cloneLocation}");
         foreach (var cloningInformation in EverythingToClone)
         {
-            // N^2 algorithm.  Should chang eto something else when the number of repos is large.
+            // N^2 algorithm.  Should change to something else when the number of repos is large.
             if (!_previouslySelectedRepos.Any(x => x == cloningInformation))
             {
                 cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
