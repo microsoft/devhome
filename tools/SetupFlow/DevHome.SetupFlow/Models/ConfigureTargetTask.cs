@@ -514,6 +514,9 @@ public class ConfigureTargetTask : ISetupTask
                 if (AdaptiveCardHostConfigs.TryGetValue(elementTheme, out var hostConfigContents))
                 {
                     Renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+
+                    // Remove margins from selectAction.
+                    Renderer.AddSelectActionMargin = false;
                 }
                 else
                 {
