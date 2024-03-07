@@ -42,7 +42,7 @@ The Dev Home framework will look at all types in its assembly for any inheriting
 On a found type, the framework will use:
   - ShortName property to get the name of the tool
 
-### Method definition
+#### Method definition
 
 This section contains a more detailed description of each of the interface methods.
 
@@ -58,6 +58,12 @@ Returns the name of the tool. This is used for the navigation menu text.
 
 [`toolpage.cs`](../common/ToolPage.cs)
 Contains the interface definition for Dev Home tools.
+
+### Navigation
+
+In order to allow navigation to your tool, your page and ViewModel must be registered with the PageService. If your tool only contains one page, it is automatically registered for you since you added your page to `NavConfig.jsonc`. However, you may have other sub-pages you wish to register.
+
+In order to do so, you must create an extension method for the PageService inside your tool. See examples in [Settings](../settings/DevHome.Settings/Extensions/PageExtensions.cs) or [Extensions](../tools/ExtensionLibrary/DevHome.ExtensionLibrary/Extensions/PageExtensions.cs). Then, call your extension from the [PageService](../src/Services/PageService.cs).
 
 ## Existing tools
 
