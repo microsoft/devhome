@@ -67,7 +67,10 @@ public class PageService : IPageService
                 }
             }
 
-            experimentationService.AddExperimentalFeature(new ExperimentalFeature(experimentalFeature.Identity, enabledByDefault, isVisible));
+            if (isVisible)
+            {
+                experimentationService.AddExperimentalFeature(new ExperimentalFeature(experimentalFeature.Identity, enabledByDefault, isVisible));
+            }
         }
     }
 
