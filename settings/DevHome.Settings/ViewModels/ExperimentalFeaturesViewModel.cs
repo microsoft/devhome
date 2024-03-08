@@ -21,7 +21,7 @@ public partial class ExperimentalFeaturesViewModel : ObservableObject
 
     public ExperimentalFeaturesViewModel(IExperimentationService experimentationService)
     {
-        ExperimentalFeatures = experimentationService!.ExperimentalFeatures.Where(x => x.IsEnabled).OrderBy(x => x.Id).ToList();
+        ExperimentalFeatures = experimentationService!.ExperimentalFeatures.Where(x => x.IsVisible).OrderBy(x => x.Id).ToList();
 
         var stringResource = new StringResource("DevHome.Settings/Resources");
         Breadcrumbs = new ObservableCollection<Breadcrumb>
