@@ -74,17 +74,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         BannerViewModel = bannerViewModel;
     }
 
-    public async Task StartFileActivationAsync(StorageFile file)
-    {
-        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching configuration file flow");
-        var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
-        if (await configFileSetupFlow.LoadFromLocalFileAsync(file))
-        {
-            Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow from file activation");
-            StartSetupFlowForTaskGroups(null, "ConfigurationFile", configFileSetupFlow);
-        }
-    }
-
     protected async override Task OnFirstNavigateToAsync()
     {
         if (await ValidateAppInstallerAsync())
@@ -226,5 +215,16 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private async Task<bool> ValidateAppInstallerAsync()
     {
         return EnablePackageInstallerItem = await _wpm.IsAvailableAsync();
+    }
+
+    public async Task StartConfigurationFileAsync(StorageFile file)
+    {
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching configuration file flow");
+        var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
+        if (await configFileSetupFlow.LoadFromLocalFileAsync(file))
+        {
+            Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow from file activation");
+            StartSetupFlowForTaskGroups(null, "ConfigurationFile", configFileSetupFlow);
+        }
     }
 }

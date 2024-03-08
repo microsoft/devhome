@@ -86,7 +86,7 @@ public partial class App : Application, IApp
 
             // Other Activation Handlers
             services.AddTransient<IActivationHandler, ProtocolActivationHandler>();
-            services.AddTransient<IActivationHandler, FileActivationHandler>();
+            services.AddTransient<IActivationHandler, DSCActivationHandler>();
 
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();

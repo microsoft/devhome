@@ -13,7 +13,6 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
-using Microsoft.UI.Xaml;
 using Windows.Storage;
 using WinUIEx;
 
@@ -103,13 +102,22 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     {
         // Create and configure file picker
         Log.Logger?.ReportInfo(Log.Component.Configuration, "Launching file picker to select configuration file");
-        var file = await _mainWindow.OpenFilePickerAsync(Log.Logger, ("*.yaml;*.yml", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
+        var file = await _mainWindow.OpenFilePickerAsync(Log.Logger, ("*.yaml;*.yml;*.winget", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
         return await LoadConfigurationFileInternalAsync(file);
     }
 
     public async Task<bool> LoadFileAsync(StorageFile file)
     {
         Log.Logger?.ReportInfo(Log.Component.Configuration, "Loading a configuration file");
+        if (!await _dsc.IsUnstubbedAsync())
+        {
+            await _mainWindow.ShowErrorMessageDialogAsync(
+                StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
+                "Configuration is disabled. Attempting to enable it. Please try again in a few minutes",
+                StringResource.GetLocalized(StringResourceKey.Close));
+            return false;
+        }
+
         return await LoadConfigurationFileInternalAsync(file);
     }
 
