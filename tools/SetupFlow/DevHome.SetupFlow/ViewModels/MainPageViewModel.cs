@@ -80,7 +80,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
         if (await configFileSetupFlow.LoadFromLocalFileAsync(file))
         {
-            Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow from file activation");
+            Log.Logger?.ReportInfo(Log.Component.MainPage, "Started flow from file activation");
             StartSetupFlowForTaskGroups(null, "ConfigurationFile", configFileSetupFlow);
         }
     }
