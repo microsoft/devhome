@@ -9,6 +9,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Customization.Extensions;
 using DevHome.Dashboard.Extensions;
 using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
@@ -141,6 +142,9 @@ public partial class App : Application, IApp
 
             // Environments
             services.AddEnvironments(context);
+
+            // Windows customization
+            services.AddWindowsCustomization(context);
         }).
         Build();
 

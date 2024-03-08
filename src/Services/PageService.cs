@@ -6,6 +6,8 @@ using DevHome.Common.Contracts;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Customization.ViewModels;
+using DevHome.Customization.Views;
 using DevHome.ExtensionLibrary.ViewModels;
 using DevHome.ExtensionLibrary.Views;
 using DevHome.Settings.ViewModels;
@@ -38,6 +40,7 @@ public class PageService : IPageService
         Configure<WhatsNewViewModel, WhatsNewPage>();
         Configure<ExtensionSettingsViewModel, ExtensionSettingsPage>();
         Configure<ExperimentalFeaturesViewModel, ExperimentalFeaturesPage>();
+        Configure<DeveloperFileExplorerViewModel, DeveloperFileExplorerPage>();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var group in App.NavConfig.NavMenu.Groups)
