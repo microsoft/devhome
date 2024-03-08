@@ -5,6 +5,7 @@ using CommunityToolkit.WinUI;
 using DevHome.Activation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Contracts.Services;
+using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
@@ -107,6 +108,9 @@ public partial class App : Application, IApp
             services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
             services.AddSingleton<IPackageDeploymentService, PackageDeploymentService>();
             services.AddSingleton<IScreenReaderService, ScreenReaderService>();
+            services.AddSingleton<IComputeSystemService, ComputeSystemService>();
+            services.AddSingleton<IComputeSystemManager, ComputeSystemManager>();
+            services.AddSingleton<ToastNotificationService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -136,6 +140,9 @@ public partial class App : Application, IApp
 
             // ExtensionLibrary
             services.AddExtensionLibrary(context);
+
+            // Environments
+            services.AddEnvironments(context);
         }).
         Build();
 
@@ -178,6 +185,12 @@ public partial class App : Application, IApp
 
     private async void OnActivated(object? sender, AppActivationArguments args)
     {
+        if (args.Kind == ExtendedActivationKind.ToastNotification)
+        {
+            GetService<ToastNotificationService>().HandlerNotificationActions(args);
+            return;
+        }
+
         // Note: Keep the reference to 'args.Data' object, as 'args' may be
         // disposed before the async operation completes (RpcCallFailed: 0x800706be)
         var localArgsDataReference = args.Data;

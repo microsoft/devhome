@@ -26,7 +26,7 @@ Description:
 Options:
 
   -Platform <platform>
-      Only buil the selected platform(s)
+      Only build the selected platform(s)
       Example: -Platform x64
       Example: -Platform "x86,x64,arm64"
 
@@ -61,6 +61,22 @@ if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
   }
 }
 
+if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "DevSetupAgent") -Or ($BuildStep -ieq "fullMsix")) {
+  foreach ($configuration in $env:Build_Configuration.Split(",")) {
+    # We use x86 DevSetupAgent for x64 and x86 Dev Home build. Only need to build it once if we are building multiple platforms. 
+    $builtX86 = $false
+    foreach ($platform in $env:Build_Platform.Split(",")) {
+      if ($Platform -ieq "arm64") {
+        HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform $Platform -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+      }
+      elseif (-not $builtX86) {
+        HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform "x86" -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+        $builtX86 = $true
+      }
+    }
+  }
+}
+
 $msbuildPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
 if ($IsAzurePipelineBuild) {
   $nugetPath = "nuget.exe";
@@ -79,7 +95,7 @@ if (-not([string]::IsNullOrWhiteSpace($SDKNugetSource))) {
 . build\Scripts\CertSignAndInstall.ps1
 
 Try {
-  if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msix")) {
+  if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msix") -Or ($BuildStep -ieq "fullMsix")) {
     $buildRing = "Dev"
     $newPackageName = $null
     $newPackageDisplayName = $null
@@ -139,6 +155,9 @@ Try {
       }
     }
     $appxmanifest.Save($appxmanifestPath)
+
+    # This is needed for vcxproj
+    & $nugetPath restore
 
     foreach ($platform in $env:Build_Platform.Split(",")) {
       foreach ($configuration in $env:Build_Configuration.Split(",")) {

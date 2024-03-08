@@ -137,6 +137,8 @@ public static class StringResourceKey
     public static readonly string ClonePathNotFolder = nameof(ClonePathNotFolder);
     public static readonly string ClonePathDriveDoesNotExist = nameof(ClonePathDriveDoesNotExist);
     public static readonly string RepoToolAddAnotherAccount = nameof(RepoToolAddAnotherAccount);
+    public static readonly string SetupShellRepoConfigLocalMachine = nameof(SetupShellRepoConfigLocalMachine);
+    public static readonly string SetupShellRepoConfigTargetMachine = nameof(SetupShellRepoConfigTargetMachine);
 
     // Url Validation
     public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);
@@ -203,4 +205,51 @@ public static class StringResourceKey
     public static readonly string ConfigurationUnitFailedSystemState = nameof(ConfigurationUnitFailedSystemState);
     public static readonly string ConfigurationUnitFailedUnitProcessing = nameof(ConfigurationUnitFailedUnitProcessing);
     public static readonly string ConfigurationUnitNotRunDueToFailedAssert = nameof(ConfigurationUnitNotRunDueToFailedAssert);
+
+    // Setup target flow
+    public static readonly string SetupTargetPageTitle = nameof(SetupTargetPageTitle);
+    public static readonly string SetupTargetAllComboBoxOption = nameof(SetupTargetAllComboBoxOption);
+    public static readonly string SetupTargetConfigurationUnknown = nameof(SetupTargetConfigurationUnknown);
+    public static readonly string SetupTargetConfigurationPending = nameof(SetupTargetConfigurationPending);
+    public static readonly string SetupTargetConfigurationInProgress = nameof(SetupTargetConfigurationInProgress);
+    public static readonly string SetupTargetConfigurationCompleted = nameof(SetupTargetConfigurationCompleted);
+    public static readonly string SetupTargetConfigurationShuttingDownDevice = nameof(SetupTargetConfigurationShuttingDownDevice);
+    public static readonly string SetupTargetConfigurationStartingDevice = nameof(SetupTargetConfigurationStartingDevice);
+    public static readonly string SetupTargetConfigurationRestartingDevice = nameof(SetupTargetConfigurationRestartingDevice);
+    public static readonly string SetupTargetConfigurationProvisioningDevice = nameof(SetupTargetConfigurationProvisioningDevice);
+    public static readonly string SetupTargetConfigurationWaitingForAdminUserLogon = nameof(SetupTargetConfigurationWaitingForAdminUserLogon);
+    public static readonly string SetupTargetConfigurationWaitingForUserLogon = nameof(SetupTargetConfigurationWaitingForUserLogon);
+    public static readonly string SetupTargetConfigurationSkipped = nameof(SetupTargetConfigurationSkipped);
+    public static readonly string SetupTargetConfigurationOpenConfigFailed = nameof(SetupTargetConfigurationOpenConfigFailed);
+    public static readonly string SetupTargetConfigurationUnitProgressMessage = nameof(SetupTargetConfigurationUnitProgressMessage);
+    public static readonly string SetupTargetConfigurationSetProgressMessage = nameof(SetupTargetConfigurationSetProgressMessage);
+    public static readonly string SetupTargetConfigurationUnitProgressError = nameof(SetupTargetConfigurationUnitProgressError);
+    public static readonly string ConfigureTargetApplyConfigurationStopped = nameof(ConfigureTargetApplyConfigurationStopped);
+    public static readonly string ConfigureTargetApplyConfigurationStoppedWithNoEndingMessage = nameof(ConfigureTargetApplyConfigurationStoppedWithNoEndingMessage);
+    public static readonly string ConfigureTargetApplyConfigurationActionNeeded = nameof(ConfigureTargetApplyConfigurationActionNeeded);
+    public static readonly string SetupTargetExtensionApplyingConfiguration = nameof(SetupTargetExtensionApplyingConfiguration);
+    public static readonly string SetupTargetExtensionApplyingConfigurationActionRequired = nameof(SetupTargetExtensionApplyingConfigurationActionRequired);
+    public static readonly string SetupTargetExtensionApplyConfigurationError = nameof(SetupTargetExtensionApplyConfigurationError);
+    public static readonly string SetupTargetExtensionApplyConfigurationSuccess = nameof(SetupTargetExtensionApplyConfigurationSuccess);
+    public static readonly string SetupTargetExtensionApplyConfigurationRebootRequired = nameof(SetupTargetExtensionApplyConfigurationRebootRequired);
+    public static readonly string SetupTargetMachineName = nameof(SetupTargetMachineName);
+    public static readonly string ConfigureTargetApplyConfigurationActionFailureRetry = nameof(ConfigureTargetApplyConfigurationActionFailureRetry);
+    public static readonly string ConfigureTargetApplyConfigurationActionFailureEnd = nameof(ConfigureTargetApplyConfigurationActionFailureEnd);
+    public static readonly string ConfigureTargetApplyConfigurationActionSuccess = nameof(ConfigureTargetApplyConfigurationActionSuccess);
+    public static readonly string SetupTargetReviewPageDefaultInfoBarTitle = nameof(SetupTargetReviewPageDefaultInfoBarTitle);
+    public static readonly string SetupTargetReviewPageDefaultInfoBarMessage = nameof(SetupTargetReviewPageDefaultInfoBarMessage);
+    public static readonly string SetupTargetReviewPageHyperVInfoBarMessage = nameof(SetupTargetReviewPageHyperVInfoBarMessage);
+    public static readonly string SetupTargetUnknownStatus = nameof(SetupTargetUnknownStatus);
+    public static readonly string SetupTargetSortAToZLabel = nameof(SetupTargetSortAToZLabel);
+    public static readonly string SetupTargetSortZToALabel = nameof(SetupTargetSortZToALabel);
+    public static readonly string SetupTargetPageSyncButton = nameof(SetupTargetPageSyncButton);
+    public static readonly string SetupTargetConfigurationUnitCompleted = nameof(SetupTargetConfigurationUnitCompleted);
+    public static readonly string SetupTargetConfigurationUnitInProgress = nameof(SetupTargetConfigurationUnitInProgress);
+    public static readonly string SetupTargetConfigurationUnitPending = nameof(SetupTargetConfigurationUnitPending);
+    public static readonly string SetupTargetConfigurationUnitSkipped = nameof(SetupTargetConfigurationUnitSkipped);
+    public static readonly string SetupTargetConfigurationSetCurrentState = nameof(SetupTargetConfigurationSetCurrentState);
+    public static readonly string SetupTargetConfigurationUnitCurrentState = nameof(SetupTargetConfigurationUnitCurrentState);
+    public static readonly string SetupTargetConfigurationProgressUpdate = nameof(SetupTargetConfigurationProgressUpdate);
+    public static readonly string SetupTargetConfigurationUnitProgressErrorWithMsg = nameof(SetupTargetConfigurationUnitProgressErrorWithMsg);
+    public static readonly string SetupTargetConfigurationUnitUnknown = nameof(SetupTargetConfigurationUnitUnknown);
 }

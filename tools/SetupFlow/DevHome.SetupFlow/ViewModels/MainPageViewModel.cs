@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
@@ -29,9 +30,12 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class MainPageViewModel : SetupPageViewModelBase
 {
+    private const string EnvironmentsSetupFlowFeatureName = "EnvironmentsSetupTargetFlow";
+
     private readonly IHost _host;
     private readonly IWindowsPackageManager _wpm;
     private readonly IDesiredStateConfiguration _dsc;
+    private readonly IExperimentationService _experimentationService;
 
     public MainPageBannerViewModel BannerViewModel { get; }
 
@@ -47,6 +51,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private bool _showAppInstallerUpdateNotification;
 
+    public bool ShouldShowSetupTargetItem => _experimentationService.IsFeatureEnabled(EnvironmentsSetupFlowFeatureName);
+
     /// <summary>
     /// Event raised when the user elects to start the setup flow.
     /// The orchestrator for the whole flow subscribes to this event to handle
@@ -60,12 +66,14 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         IWindowsPackageManager wpm,
         IDesiredStateConfiguration dsc,
         IHost host,
-        MainPageBannerViewModel bannerViewModel)
+        MainPageBannerViewModel bannerViewModel,
+        IExperimentationService experimentationService)
         : base(stringResource, orchestrator)
     {
         _host = host;
         _wpm = wpm;
         _dsc = dsc;
+        _experimentationService = experimentationService;
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
@@ -139,6 +147,21 @@ public partial class MainPageViewModel : SetupPageViewModelBase
             _host.GetService<RepoConfigTaskGroup>(),
             _host.GetService<AppManagementTaskGroup>(),
             _host.GetService<DevDriveTaskGroup>());
+    }
+
+    /// <summary>
+    /// Starts the setup target flow for remote machines.
+    /// </summary>
+    [RelayCommand]
+    private void StartSetupForTargetEnvironment(string flowTitle)
+    {
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting setup for target environment");
+        StartSetupFlowForTaskGroups(
+            flowTitle,
+            "SetupTargetEnvironment",
+            _host.GetService<SetupTargetTaskGroup>(),
+            _host.GetService<RepoConfigTaskGroup>(),
+            _host.GetService<AppManagementTaskGroup>());
     }
 
     /// <summary>

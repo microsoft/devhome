@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
@@ -27,36 +26,12 @@ namespace DevHome.Settings.Views;
 
 public sealed partial class AccountsPage : Page
 {
-    public AccountsViewModel ViewModel
-    {
-        get;
-    }
-
-    public ObservableCollection<Breadcrumb> Breadcrumbs
-    {
-        get;
-    }
+    public AccountsViewModel ViewModel { get; }
 
     public AccountsPage()
     {
         ViewModel = Application.Current.GetService<AccountsViewModel>();
         this.InitializeComponent();
-
-        var stringResource = new StringResource("DevHome.Settings/Resources");
-        Breadcrumbs = new ObservableCollection<Breadcrumb>
-        {
-            new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
-            new(stringResource.GetLocalized("Settings_Accounts_Header"), typeof(AccountsViewModel).FullName!),
-        };
-    }
-
-    private void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
-    {
-        if (args.Index < Breadcrumbs.Count - 1)
-        {
-            var crumb = (Breadcrumb)args.Item;
-            crumb.NavigateTo();
-        }
     }
 
     private async void AddAccountButton_Click(object sender, RoutedEventArgs e)

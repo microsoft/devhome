@@ -46,7 +46,7 @@
                     </Style>
                 </ResourceDictionary>
             </StackPanel.Resources>
-            <ctControls:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single">
+            <ctControls:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single" Visibility="{x:Bind AddRepoViewModel.IsSettingUpLocalMachine, Mode=OneWay}">
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="SelectionChanged">
                         <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.ChangePageCommand}" CommandParameter="{x:Bind SwitchViewsSegmentedView.SelectedItem, Mode=OneWay}"/>
@@ -99,7 +99,7 @@
                 </Grid>
                 <Frame Content="{x:Bind AddRepoViewModel.LoginUiContent, Mode=OneWay}" />
             </StackPanel>
-            
+
             <!-- Show Repositories -->
             <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
                 <Grid ColumnSpacing="8" RowSpacing="10">

@@ -12,6 +12,7 @@ using DevHome.Dashboard.ViewModels;
 using DevHome.Dashboard.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Widgets;
@@ -20,7 +21,7 @@ namespace DevHome.Dashboard.Controls;
 
 public sealed partial class WidgetControl : UserControl
 {
-    private MenuFlyoutItem _currentSelectedSize;
+    private SelectableMenuFlyoutItem _currentSelectedSize;
 
     public WidgetViewModel WidgetSource
     {
@@ -120,12 +121,12 @@ public sealed partial class WidgetControl : UserControl
         var widgetCatalog = await Application.Current.GetService<IWidgetHostingService>().GetWidgetCatalogAsync();
         var widgetDefinition = await Task.Run(() => widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId));
         var capabilities = widgetDefinition.GetWidgetCapabilities();
-        var sizeMenuItems = new List<MenuFlyoutItem>();
+        var sizeMenuItems = new List<SelectableMenuFlyoutItem>();
 
         // Add the three possible sizes. Each side should only be enabled if it is included in the widget's capabilities.
         if (capabilities.Any(cap => cap.Size == WidgetSize.Small))
         {
-            var menuItemSmall = new MenuFlyoutItem
+            var menuItemSmall = new SelectableMenuFlyoutItem
             {
                 Tag = WidgetSize.Small,
                 Text = resourceLoader.GetString("SmallWidgetMenuText"),
@@ -137,7 +138,7 @@ public sealed partial class WidgetControl : UserControl
 
         if (capabilities.Any(cap => cap.Size == WidgetSize.Medium))
         {
-            var menuItemMedium = new MenuFlyoutItem
+            var menuItemMedium = new SelectableMenuFlyoutItem
             {
                 Tag = WidgetSize.Medium,
                 Text = resourceLoader.GetString("MediumWidgetMenuText"),
@@ -149,7 +150,7 @@ public sealed partial class WidgetControl : UserControl
 
         if (capabilities.Any(cap => cap.Size == WidgetSize.Large))
         {
-            var menuItemLarge = new MenuFlyoutItem
+            var menuItemLarge = new SelectableMenuFlyoutItem
             {
                 Tag = WidgetSize.Large,
                 Text = resourceLoader.GetString("LargeWidgetMenuText"),
@@ -166,7 +167,7 @@ public sealed partial class WidgetControl : UserControl
 
     private async void OnMenuItemSizeClick(object sender, RoutedEventArgs e)
     {
-        if (sender is MenuFlyoutItem menuSizeItem)
+        if (sender is SelectableMenuFlyoutItem menuSizeItem)
         {
             if (menuSizeItem.DataContext is WidgetViewModel widgetViewModel)
             {
@@ -174,7 +175,8 @@ public sealed partial class WidgetControl : UserControl
                 if (_currentSelectedSize is not null)
                 {
                     _currentSelectedSize.Icon = null;
-                    _currentSelectedSize.ClearValue(AutomationProperties.ItemStatusProperty);
+                    var peer = FrameworkElementAutomationPeer.FromElement(_currentSelectedSize) as SelectableMenuFlyoutItemAutomationPeer;
+                    peer.RemoveFromSelection();
                 }
 
                 // Resize widget.
@@ -189,15 +191,15 @@ public sealed partial class WidgetControl : UserControl
         }
     }
 
-    private void MarkSize(MenuFlyoutItem menuSizeItem)
+    private void MarkSize(SelectableMenuFlyoutItem menuSizeItem)
     {
-        var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
         var fontIcon = new FontIcon
         {
             Glyph = "\xE915",
         };
         menuSizeItem.Icon = fontIcon;
-        menuSizeItem.SetValue(AutomationProperties.ItemStatusProperty, resourceLoader.GetString("WidgetSizeSelected"));
+        var peer = FrameworkElementAutomationPeer.FromElement(menuSizeItem) as SelectableMenuFlyoutItemAutomationPeer;
+        peer.Select();
     }
 
     private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
