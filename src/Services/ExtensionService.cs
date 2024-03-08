@@ -111,7 +111,7 @@ public class ExtensionService : IExtensionService, IDisposable
         var extensions = await AppExtensionCatalog.Open("com.microsoft.devhome").FindAllAsync();
         foreach (var extension in extensions)
         {
-            if (package.Id.FullName == extension.Package.Id.FullName)
+            if (package.Id?.FullName == extension.Package?.Id?.FullName)
             {
                 var (devHomeProvider, classId) = await GetDevHomeExtensionPropertiesAsync(extension);
                 return devHomeProvider != null && classId.Count != 0;
@@ -125,6 +125,11 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         var classIds = new List<string>();
         var properties = await extension.GetExtensionPropertiesAsync();
+
+        if (properties is null)
+        {
+            return (null, classIds);
+        }
 
         var devHomeProvider = GetSubPropertySet(properties, "DevHomeProvider");
         if (devHomeProvider is null)
