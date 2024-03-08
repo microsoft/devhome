@@ -40,6 +40,13 @@
             "viewModelFullName": "DevHome.QuietBackgroundProcesses.UI.ViewModels.QuietBackgroundProcessesViewModel",
             "icon": "f5b0",
             "experimentalFeatureIdentity": "QuietBackgroundProcessesExperiment"
+          },
+          {
+            "identity": "DevHome.Customization",
+            "assembly": "DevHome.Customization",
+            "viewFullName": "DevHome.Customization.Views.MainPage",
+            "viewModelFullName": "DevHome.Customization.ViewModels.MainPageViewModel",
+            "icon": "e9f5"
           }
         ]
       }
