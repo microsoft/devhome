@@ -14,7 +14,10 @@ using Windows.Storage;
 
 namespace DevHome.Services;
 
-public class DSCActivationHandler : ActivationHandler<FileActivatedEventArgs>
+/// <summary>
+/// Class that handles the activation of the application when a DSC file (*.winget) is opened
+/// </summary>
+public class DSCFileActivationHandler : ActivationHandler<FileActivatedEventArgs>
 {
     private const string WinGetFileExtension = ".winget";
     private readonly INavigationService _navigationService;
@@ -22,7 +25,7 @@ public class DSCActivationHandler : ActivationHandler<FileActivatedEventArgs>
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
     private readonly WindowEx _mainWindow;
 
-    public DSCActivationHandler(
+    public DSCFileActivationHandler(
         INavigationService navigationService,
         SetupFlowOrchestrator setupFlowOrchestrator,
         SetupFlowViewModel setupFlowViewModel,
@@ -58,14 +61,20 @@ public class DSCActivationHandler : ActivationHandler<FileActivatedEventArgs>
         }
         else
         {
+            // If the application was already running, start the flow immediately
             await DSCActivationFlowAsync(file);
         }
     }
 
+    /// <summary>
+    /// Navigates to the setup flow and starts the DSC activation flow
+    /// </summary>
+    /// <param name="file">The DSC file to activate</param>
     private async Task DSCActivationFlowAsync(StorageFile file)
     {
         try
         {
+            // Don't interrupt the user if the machine configuration is in progress
             if (_setupFlowOrchestrator.FlowPages.Count > 1)
             {
                 await _mainWindow.ShowErrorMessageDialogAsync(

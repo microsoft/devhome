@@ -114,6 +114,5 @@ public partial class SetupFlowViewModel : ObservableObject
     {
         Orchestrator.FlowPages = [_mainPageViewModel];
         await _mainPageViewModel.StartConfigurationFileAsync(file);
-        await Task.CompletedTask;
     }
 }

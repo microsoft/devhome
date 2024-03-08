@@ -106,6 +106,11 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         return await LoadConfigurationFileInternalAsync(file);
     }
 
+    /// <summary>
+    /// Load a configuration file if feature is enabled
+    /// </summary>
+    /// <param name="file">The configuration file to load</param>
+    /// <returns>True if the configuration file was loaded, false otherwise</returns>
     public async Task<bool> LoadFileAsync(StorageFile file)
     {
         Log.Logger?.ReportInfo(Log.Component.Configuration, "Loading a configuration file");
@@ -121,41 +126,45 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         return await LoadConfigurationFileInternalAsync(file);
     }
 
+    /// <summary>
+    /// Core logic to load a configuration file
+    /// </summary>
+    /// <param name="file">The configuration file to load</param>
+    /// <returns>True if the configuration file was loaded, false otherwise</returns>
     private async Task<bool> LoadConfigurationFileInternalAsync(StorageFile file)
     {
         // Check if a file was selected
         if (file == null)
         {
             Log.Logger?.ReportInfo(Log.Component.Configuration, "No configuration file selected");
+            return false;
         }
-        else
-        {
-            try
-            {
-                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
-                Configuration = new(file.Path);
-                Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
-                await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
-                TaskList.Add(new(StringResource, _dsc, file, Orchestrator.ActivityId));
-                return true;
-            }
-            catch (OpenConfigurationSetException e)
-            {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Opening configuration set failed.", e);
-                await _mainWindow.ShowErrorMessageDialogAsync(
-                    StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
-                    GetErrorMessage(e),
-                    StringResource.GetLocalized(StringResourceKey.Close));
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Unknown error while opening configuration set.", e);
 
-                await _mainWindow.ShowErrorMessageDialogAsync(
-                    file.Name,
-                    StringResource.GetLocalized(StringResourceKey.ConfigurationFileOpenUnknownError),
-                    StringResource.GetLocalized(StringResourceKey.Close));
-            }
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
+            Configuration = new(file.Path);
+            Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
+            await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
+            TaskList.Add(new(StringResource, _dsc, file, Orchestrator.ActivityId));
+            return true;
+        }
+        catch (OpenConfigurationSetException e)
+        {
+            Log.Logger?.ReportError(Log.Component.Configuration, $"Opening configuration set failed.", e);
+            await _mainWindow.ShowErrorMessageDialogAsync(
+                StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
+                GetErrorMessage(e),
+                StringResource.GetLocalized(StringResourceKey.Close));
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.Configuration, $"Unknown error while opening configuration set.", e);
+
+            await _mainWindow.ShowErrorMessageDialogAsync(
+                file.Name,
+                StringResource.GetLocalized(StringResourceKey.ConfigurationFileOpenUnknownError),
+                StringResource.GetLocalized(StringResourceKey.Close));
         }
 
         return false;
