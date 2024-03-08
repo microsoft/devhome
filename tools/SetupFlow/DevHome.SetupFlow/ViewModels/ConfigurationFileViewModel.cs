@@ -118,7 +118,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         {
             await _mainWindow.ShowErrorMessageDialogAsync(
                 StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
-                "Configuration is disabled. Attempting to enable it. Please try again in a few minutes",
+                StringResource.GetLocalized(StringResourceKey.ConfigurationActivationFailedDisabled),
                 StringResource.GetLocalized(StringResourceKey.Close));
             return false;
         }

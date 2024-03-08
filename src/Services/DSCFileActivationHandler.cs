@@ -20,17 +20,20 @@ namespace DevHome.Services;
 public class DSCFileActivationHandler : ActivationHandler<FileActivatedEventArgs>
 {
     private const string WinGetFileExtension = ".winget";
+    private readonly ISetupFlowStringResource _setupFlowStringResource;
     private readonly INavigationService _navigationService;
     private readonly SetupFlowViewModel _setupFlowViewModel;
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
     private readonly WindowEx _mainWindow;
 
     public DSCFileActivationHandler(
+        ISetupFlowStringResource setupFlowStringResource,
         INavigationService navigationService,
         SetupFlowOrchestrator setupFlowOrchestrator,
         SetupFlowViewModel setupFlowViewModel,
         WindowEx mainWindow)
     {
+        _setupFlowStringResource = setupFlowStringResource;
         _setupFlowViewModel = setupFlowViewModel;
         _setupFlowOrchestrator = setupFlowOrchestrator;
         _navigationService = navigationService;
@@ -80,9 +83,9 @@ public class DSCFileActivationHandler : ActivationHandler<FileActivatedEventArgs
             {
                 Log.Logger?.ReportWarn("Cannot activate the DSC flow because the machine configuration is in progress");
                 await _mainWindow.ShowErrorMessageDialogAsync(
-                    $"{file.Name}",
-                    "Cannot activate the DSC flow because the machine configuration is in progress",
-                    "Close");
+                    _setupFlowStringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
+                    _setupFlowStringResource.GetLocalized(StringResourceKey.ConfigurationActivationFailedBusy),
+                    _setupFlowStringResource.GetLocalized(StringResourceKey.Close));
             }
             else
             {

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using CommunityToolkit.WinUI;
 using DevHome.Activation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Contracts.Services;
@@ -175,11 +176,13 @@ public partial class App : Application, IApp
             GetService<IAppManagementInitializer>().InitializeAsync());
     }
 
-    private void OnActivated(object? sender, AppActivationArguments args)
+    private async void OnActivated(object? sender, AppActivationArguments args)
     {
-        _dispatcherQueue.TryEnqueue(async () =>
-        {
-            await GetService<IActivationService>().ActivateAsync(args.Data);
-        });
+        // Note: Keep the reference to 'args.Data' object, as 'args' may be
+        // disposed before the async operation completes (RpcCallFailed: 0x800706be)
+        var localArgsDataReference = args.Data;
+
+        // Activate the app and ensure the appropriate handlers are called.
+        await _dispatcherQueue.EnqueueAsync(async () => await GetService<IActivationService>().ActivateAsync(localArgsDataReference));
     }
 }
