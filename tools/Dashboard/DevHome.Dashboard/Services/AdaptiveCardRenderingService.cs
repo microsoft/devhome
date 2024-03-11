@@ -92,9 +92,6 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
             { "Adaptive.Action.Positive", positiveStyle },
             { "Adaptive.Action.Destructive", destructiveStyle },
         };
-
-        // Remove margins from selectAction.
-        _renderer.AddSelectActionMargin = false;
     }
 
     public async Task UpdateHostConfig()
@@ -121,6 +118,9 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
                 if (!string.IsNullOrEmpty(hostConfigContents))
                 {
                     _renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+
+                    // Remove margins from selectAction.
+                    _renderer.AddSelectActionMargin = false;
                 }
                 else
                 {
