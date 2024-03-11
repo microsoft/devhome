@@ -40,13 +40,15 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
     /// <summary>
     /// Gets a list of package catalogs to display
     /// </summary>
-    public ObservableCollection<PackageCatalogViewModel> PackageCatalogs { get; } = new();
+    [ObservableProperty]
+    private ObservableCollection<PackageCatalogViewModel> _packageCatalogs;
 
     /// <summary>
     /// Gets a list of shimmer indices.
     /// This list is used to repeat the shimmer control {Count} times
     /// </summary>
-    public ObservableCollection<int> PackageCatalogShimmers { get; } = new();
+    [ObservableProperty]
+    private ObservableCollection<int> _packageCatalogShimmers;
 
     public PackageCatalogListViewModel(
         IExtensionService extensionService,
@@ -68,7 +70,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
         await _loadCatalogsSemaphore.WaitAsync();
         try
         {
-            PackageCatalogs.Clear();
+            ResetCatalogs();
             AddShimmers(_catalogDataSourceLoader.CatalogCount);
             await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
             {
@@ -94,6 +96,19 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
         {
             _loadCatalogsSemaphore.Release();
         }
+    }
+
+    /// <summary>
+    /// Reset package catalogs
+    /// </summary>
+    private void ResetCatalogs()
+    {
+        // Note: Create new observable collections instead of clearing existing
+        // ones to ensure that the collections are not modified while binding
+        // notification event handlers are being processed which can cause
+        // "unspecified exception".
+        PackageCatalogs = [];
+        PackageCatalogShimmers = [];
     }
 
     /// <summary>

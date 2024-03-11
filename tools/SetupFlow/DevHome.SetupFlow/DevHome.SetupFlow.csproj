@@ -10,7 +10,9 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Labs.WinUI.Shimmer" Version="0.1.230830" />
     <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Collections" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
@@ -19,11 +21,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="YamlDotNet" Version="15.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
     <ProjectReference Include="..\..\..\settings\DevHome.Settings\DevHome.Settings.csproj" />
     <ProjectReference Include="..\..\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
@@ -39,6 +41,12 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\SetupTargetReviewView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\SetupTargetView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Styles\AppManagement_ThemeResources.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
@@ -83,6 +91,8 @@
     <None Remove="Views\RepoConfigReviewView.xaml" />
     <None Remove="Views\RepoConfigView.xaml" />
     <None Remove="Views\ReviewView.xaml" />
+    <None Remove="Views\SetupTargetReviewView.xaml" />
+    <None Remove="Views\SetupTargetView.xaml" />
     <None Remove="Views\SummaryView.xaml" />
     <None Remove="Windows\DevDriveWindow.xaml" />
     <None Remove="Windows\InstallationNotesWindow.xaml" />

@@ -77,12 +77,21 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
     {
         // Add custom Adaptive Card renderer.
         _renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
+        _renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
 
         // A different host config is used to render widgets (adaptive cards) in light and dark themes.
         await UpdateHostConfig();
 
-        // Remove margins from selectAction.
-        _renderer.AddSelectActionMargin = false;
+        // Due to a bug in the Adaptive Card renderer (https://github.com/microsoft/AdaptiveCards/issues/8840)
+        // positive and destructive buttons render with square corners. Override with XAML styles.
+        var positiveStyle = Application.Current.Resources["AccentButtonStyle"] as Style;
+        var destructiveStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+
+        _renderer.OverrideStyles = new ResourceDictionary
+        {
+            { "Adaptive.Action.Positive", positiveStyle },
+            { "Adaptive.Action.Destructive", destructiveStyle },
+        };
     }
 
     public async Task UpdateHostConfig()
@@ -109,6 +118,9 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
                 if (!string.IsNullOrEmpty(hostConfigContents))
                 {
                     _renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+
+                    // Remove margins from selectAction.
+                    _renderer.AddSelectActionMargin = false;
                 }
                 else
                 {
