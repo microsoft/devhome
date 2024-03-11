@@ -6,11 +6,11 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.ViewModels;
 
-public class ConfigurationUnitViewModel
+public class DSCConfigurationUnitViewModel
 {
-    private readonly ConfigurationUnit _configurationUnit;
+    private readonly DSCConfigurationUnit _configurationUnit;
 
-    public ConfigurationUnitViewModel(ConfigurationUnit configurationUnit)
+    public DSCConfigurationUnitViewModel(DSCConfigurationUnit configurationUnit)
     {
         _configurationUnit = configurationUnit;
     }

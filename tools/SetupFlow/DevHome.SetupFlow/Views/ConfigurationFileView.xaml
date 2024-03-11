@@ -123,7 +123,7 @@
                         </ItemsPanelTemplate>
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="viewmodels:ConfigurationUnitViewModel">
+                        <DataTemplate x:DataType="viewmodels:DSCConfigurationUnitViewModel">
                             <Expander
                                 IsExpanded="True"
                                 Tag="{x:Bind Id}"

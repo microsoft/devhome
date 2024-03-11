@@ -3,16 +3,16 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using OutOfProcConfigurationUnit = Microsoft.Management.Configuration.ConfigurationUnit;
+using Microsoft.Management.Configuration;
 
 namespace DevHome.SetupFlow.Models;
 
-public class ConfigurationUnit
+public class DSCConfigurationUnit
 {
     private const string DescriptionSettingsKey = "description";
     private const string ModuleMetadataKey = "module";
 
-    public ConfigurationUnit(OutOfProcConfigurationUnit unit)
+    public DSCConfigurationUnit(ConfigurationUnit unit)
     {
         Type = unit.Type;
         Id = unit.Identifier;

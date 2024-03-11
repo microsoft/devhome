@@ -36,12 +36,12 @@ internal sealed class DesiredStateConfiguration : IDesiredStateConfiguration
     }
 
     /// <inheritdoc />
-    public async Task<IReadOnlyList<ConfigurationUnit>> GetConfigurationUnitDetailsAsync(Configuration configuration, Guid activityId)
+    public async Task<IReadOnlyList<DSCConfigurationUnit>> GetConfigurationUnitDetailsAsync(Configuration configuration, Guid activityId)
     {
         var configFile = await OpenConfigurationSetAsync(configuration.Path, configuration.Content, activityId);
         await configFile.ResolveConfigurationUnitDetails();
         var configUnitsOutOfProc = configFile.Units;
-        var configUnitsInProc = configUnitsOutOfProc.Select(unit => new ConfigurationUnit(unit));
+        var configUnitsInProc = configUnitsOutOfProc.Select(unit => new DSCConfigurationUnit(unit));
         return configUnitsInProc.ToList();
     }
 

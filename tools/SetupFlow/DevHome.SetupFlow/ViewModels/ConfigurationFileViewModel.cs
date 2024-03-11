@@ -44,7 +44,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     private bool _isCodeMode;
 
     [ObservableProperty]
-    private IList<ConfigurationUnitViewModel> _configurationUnits;
+    private IList<DSCConfigurationUnitViewModel> _configurationUnits;
 
     public ConfigurationFileViewModel(
         ISetupFlowStringResource stringResource,
@@ -104,7 +104,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         if (Configuration != null && ConfigurationUnits == null)
         {
             var configUnits = await _dsc.GetConfigurationUnitDetailsAsync(Configuration, Orchestrator.ActivityId);
-            ConfigurationUnits = configUnits.Select(u => new ConfigurationUnitViewModel(u)).ToList();
+            ConfigurationUnits = configUnits.Select(u => new DSCConfigurationUnitViewModel(u)).ToList();
         }
     }
 
