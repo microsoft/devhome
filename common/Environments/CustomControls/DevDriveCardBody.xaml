@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.Common.Environments.CustomControls.DevDriveCardBody"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:devEnvConverters="using:DevHome.Common.Environments.Converters"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <devEnvConverters:CardStateColorToBrushConverter x:Key="CardStateColorToBrushConverter"/>
+        <devEnvConverters:CardStateToLocalizedTextConverter x:Key="CardStateToLocalizedTextConverter"/>
+    </UserControl.Resources>
+
+        <Grid
+            Style="{StaticResource CardBodyContainerStyle}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <!-- 64x64 image for the dev drive. -->
+            <Viewbox
+                Grid.Column="0"
+                Style="{StaticResource ComputeSystemImageStyle}">
+            <Grid>
+                <!-- Image for card body. -->
+                    <Border Style="{StaticResource ComputeSystemImageBorderStyle}">
+                        <Image
+                            Source="{x:Bind DevDriveImage, Mode=OneWay}"
+                            Width="{StaticResource ComputeSystemImage64px}"
+                            Height="{StaticResource ComputeSystemImage64px}"
+                            Stretch="Fill"/>
+                    </Border>
+                </Grid>
+            </Viewbox>
+            <!--
+                Stackpanel containing name of dev drive, dot indicating status of dev drive, state of dev drive in text  and a list of
+                the dev drive properties.
+            -->
+            <StackPanel
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                Style="{StaticResource CardBodyStackPanelStyle}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                        Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
+                        Text="{x:Bind DevDriveLabel, Mode=OneWay}"
+                        IsTextSelectionEnabled="True"/>
+                <StackPanel Orientation="Vertical" Margin="500 0 0 0">
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                        <TextBlock 
+                                Text="Size - "
+                                IsTextSelectionEnabled="True"/>
+                        <TextBlock
+                                Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                                Text="{x:Bind DevDriveSize, Mode=OneWay}"
+                                IsTextSelectionEnabled="True"/>
+                        <TextBlock
+                                Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                                Text="{x:Bind DevDriveUnitOfMeasure, Mode=OneWay}"
+                                IsTextSelectionEnabled="True"/>
+                    </StackPanel>
+                    <ProgressBar Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" />
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+                        <TextBlock
+                            Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                            Text="{x:Bind DevDriveUsedSize, Mode=OneWay}"
+                            IsTextSelectionEnabled="True"/>
+                        <TextBlock
+                            Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                            Text="{x:Bind DevDriveUnitOfMeasure, Mode=OneWay}"
+                            IsTextSelectionEnabled="True"/>
+                        <TextBlock 
+                            Text=" used."
+                            IsTextSelectionEnabled="True"/>
+                        <TextBlock 
+                            Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                            Text="{x:Bind DevDriveFreeSize, Mode=OneWay}"
+                            IsTextSelectionEnabled="True"/>
+                        <TextBlock
+                            Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                            Text="{x:Bind DevDriveUnitOfMeasure, Mode=OneWay}"
+                            IsTextSelectionEnabled="True"/>
+                        <TextBlock 
+                            Text=" free."
+                            IsTextSelectionEnabled="True"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+            <!--
+                For an action control, like a splitbutton or checkbox. Pass a Datatemplate to the CardBody's ActionControlTemplate in xaml.
+            -->
+            <ContentControl
+                Grid.Column="2"
+                IsTabStop="False"
+                HorizontalContentAlignment="Right"
+                VerticalContentAlignment="Stretch"
+                ContentTemplate="{x:Bind ActionControlTemplate, Mode=OneWay}"/>
+    </Grid>
+</UserControl>

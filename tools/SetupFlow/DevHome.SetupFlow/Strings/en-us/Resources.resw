@@ -501,6 +501,10 @@
     <value>Add a Dev Drive</value>
     <comment>Header for a card that when clicked takes the user to a page for creating a developer drive (virtual hard disk)</comment>
   </data>
+  <data name="MainPage_DevDriveInsights.Header" xml:space="preserve">
+    <value>Dev Drive Insights</value>
+    <comment>Header for a card that when clicked takes the user to the dev drive insights page</comment>
+  </data>
   <data name="MainPage_EnvironmentSetup.Text" xml:space="preserve">
     <value>Set up development environment</value>
     <comment>Header text for a group of controls giving multiple choices to set up the environment/machine</comment>
@@ -684,6 +688,10 @@
   <data name="SetupShellRepoConfigTargetMachine" xml:space="preserve">
     <value>Add public repositories to clone to your target machine.</value>
     <comment>Description for the repo config page</comment>
+  </data>
+  <data name="ListOfDevDrives" xml:space="preserve">
+    <value>Dev Drive volumes</value>
+    <comment>Details of dev drive volumes</comment>
   </data>
   <data name="SetupShell_SetupTarget.Description" xml:space="preserve">
     <value>Select a target machine to setup.</value>

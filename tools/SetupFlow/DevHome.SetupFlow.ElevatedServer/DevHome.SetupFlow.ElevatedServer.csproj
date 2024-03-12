@@ -28,4 +28,7 @@
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.1199.428.1917" />
+  </ItemGroup>
 </Project>

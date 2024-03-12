@@ -137,6 +137,7 @@ public static class StringResourceKey
     public static readonly string RepoToolAddAnotherAccount = nameof(RepoToolAddAnotherAccount);
     public static readonly string SetupShellRepoConfigLocalMachine = nameof(SetupShellRepoConfigLocalMachine);
     public static readonly string SetupShellRepoConfigTargetMachine = nameof(SetupShellRepoConfigTargetMachine);
+    public static readonly string ListOfDevDrives = nameof(ListOfDevDrives);
 
     // Url Validation
     public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);

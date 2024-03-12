@@ -25,6 +25,11 @@ public class ReviewTabViewSelector : DataTemplateSelector
         get; set;
     }
 
+    public DataTemplate DevDriveInsightsTabTemplate
+    {
+        get; set;
+    }
+
     public DataTemplate AppManagementTabTemplate
     {
         get; set;
@@ -56,6 +61,7 @@ public class ReviewTabViewSelector : DataTemplateSelector
         return item switch
         {
             DevDriveReviewViewModel => DevDriveTabTemplate,
+            DevDriveInsightsReviewViewModel => DevDriveInsightsTabTemplate,
             RepoConfigReviewViewModel => RepoConfigTabTemplate,
             AppManagementReviewViewModel => AppManagementTabTemplate,
             SetupTargetReviewViewModel => SetupTargetTabTemplate,

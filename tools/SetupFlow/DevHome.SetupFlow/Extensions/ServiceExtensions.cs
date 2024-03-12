@@ -29,6 +29,7 @@ public static class ServiceExtensions
         services.AddAppManagement();
         services.AddConfigurationFile();
         services.AddDevDrive();
+        services.AddDevDriveInsights();
         services.AddLoading();
         services.AddMainPage();
         services.AddRepoConfig();
@@ -127,6 +128,17 @@ public static class ServiceExtensions
         // Services
         services.AddTransient<DevDriveTaskGroup>();
         services.AddSingleton<IDevDriveManager, DevDriveManager>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddDevDriveInsights(this IServiceCollection services)
+    {
+        // View models
+        services.AddSingleton<DevDriveViewModelFactory>();
+        services.AddTransient<DevDriveInsightsViewModel>();
+        services.AddTransient<DevDriveInsightsReviewViewModel>();
+        services.AddTransient<DevDriveInsightsTaskGroup>();
 
         return services;
     }

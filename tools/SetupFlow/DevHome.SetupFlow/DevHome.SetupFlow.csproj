@@ -16,6 +16,7 @@
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.1199.428.1917" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
       <PrivateAssets>all</PrivateAssets>
@@ -42,6 +43,9 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="DevDriveInsights.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\SetupTargetReviewView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -76,6 +80,7 @@
     <None Remove="Assets\DevHomeFluentIcons.ttf" />
     <None Remove="Controls\PackageDetailsSettingsCard.xaml" />
     <None Remove="Controls\SetupFlowNavigation.xaml" />
+    <None Remove="DevDriveInsights.xaml" />
     <None Remove="NativeMethods.txt" />
     <None Remove="SetupFlowPage.xaml" />
     <None Remove="Controls\SetupShell.xaml" />
@@ -86,6 +91,8 @@
     <None Remove="Views\AddRepoDialog.xaml" />
     <None Remove="Views\DevDriveReviewView.xaml" />
     <None Remove="Views\DevDriveView.xaml" />
+    <None Remove="Views\DevDriveInsightsReviewView.xaml" />
+    <None Remove="Views\DevDriveInsightsView.xaml" />
     <None Remove="Views\EditClonePathDialog.xaml" />
     <None Remove="Views\LoadingView.xaml" />
     <None Remove="Views\MainPageView.xaml" />
@@ -143,6 +150,10 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\DevDriveView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\DevDriveInsightsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>

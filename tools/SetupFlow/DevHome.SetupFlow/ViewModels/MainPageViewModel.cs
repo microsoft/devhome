@@ -42,6 +42,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private bool _showDevDriveItem;
 
     [ObservableProperty]
+    private bool _showDevDriveInsights;
+
+    [ObservableProperty]
     private bool _enablePackageInstallerItem;
 
     [ObservableProperty]
@@ -77,6 +80,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
+        ShowDevDriveInsights = DevDriveUtil.IsDevDrivePresent;
 
         BannerViewModel = bannerViewModel;
     }
@@ -133,6 +137,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
             flowTitle,
             "EndToEnd",
             _host.GetService<RepoConfigTaskGroup>(),
+            _host.GetService<DevDriveInsightsTaskGroup>(),
             _host.GetService<AppManagementTaskGroup>(),
             _host.GetService<DevDriveTaskGroup>());
     }
@@ -164,6 +169,27 @@ public partial class MainPageViewModel : SetupPageViewModelBase
             "RepoConfig",
             _host.GetService<RepoConfigTaskGroup>(),
             _host.GetService<DevDriveTaskGroup>());
+    }
+
+    /// <summary>
+    /// Checks if a dev drive is present.
+    /// </summary>
+    private bool IsDevDrivePresent()
+    {
+        return true;
+    }
+
+    /// <summary>
+    /// Starts a setup flow that only includes dev drive insights.
+    /// </summary>
+    [RelayCommand]
+    private void StartDevDriveInsights(string flowTitle)
+    {
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for dev drive insights");
+        StartSetupFlowForTaskGroups(
+            flowTitle,
+            "DevDriveInsights",
+            _host.GetService<DevDriveInsightsTaskGroup>());
     }
 
     /// <summary>

@@ -215,6 +215,19 @@
                                 <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_DevDrive.png" />
                             </ctControls:SettingsCard.HeaderIcon>
                         </ctControls:SettingsCard>
+                        <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevDriveInsights"
+                            AutomationProperties.AutomationId="DevDriveButton"
+                            IsClickEnabled="True"
+                            Command="{x:Bind ViewModel.StartDevDriveInsightsCommand}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                            ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                            AutomationProperties.AccessibilityView="Control"
+                            ActionIcon="{x:Null}" 
+                            Visibility="{x:Bind ViewModel.ShowDevDriveInsights, Mode=OneWay}">
+                            <ctControls:SettingsCard.HeaderIcon>
+                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_DevDrive.png" />
+                            </ctControls:SettingsCard.HeaderIcon>
+                        </ctControls:SettingsCard>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

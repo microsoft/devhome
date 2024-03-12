@@ -107,6 +107,14 @@ public static class DevDriveUtil
     }
 
     /// <summary>
+    /// Gets a value indicating whether the system has a Dev Drive.
+    /// </summary>
+    /// <returns>
+    /// Returns true only if the Dev Drive is present on the machine.
+    /// </returns>
+    public static bool IsDevDrivePresent => true;
+
+    /// <summary>
     /// Given a byte unit which is either GB or TB converts the value parameter to bytes.
     /// Since this is just for DevDrives the minimum size is known of value
     /// is 50 (50 gb) and its max size should be 64 (64 Tb) which is

@@ -52,6 +52,11 @@
                             <views:RepoConfigView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.RepoConfigTemplate>
+                    <selectors:SetupFlowViewSelector.DevDriveInsightsTemplate>
+                        <DataTemplate>
+                            <views:DevDriveInsightsView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.DevDriveInsightsTemplate>
                     <selectors:SetupFlowViewSelector.AppManagementTemplate>
                         <DataTemplate>
                             <views:AppManagementView />

@@ -19,6 +19,8 @@ public class SetupFlowViewSelector : DataTemplateSelector
 
     public DataTemplate RepoConfigTemplate { get; set; }
 
+    public DataTemplate DevDriveInsightsTemplate { get; set; }
+
     public DataTemplate SetupTargetTemplate { get; set; }
 
     public DataTemplate AppManagementTemplate { get; set; }
@@ -53,6 +55,7 @@ public class SetupFlowViewSelector : DataTemplateSelector
         {
             MainPageViewModel => MainPageTemplate,
             RepoConfigViewModel => RepoConfigTemplate,
+            DevDriveInsightsViewModel => DevDriveInsightsTemplate,
             AppManagementViewModel => AppManagementTemplate,
             ReviewViewModel => ReviewTemplate,
             LoadingViewModel => LoadingTemplate,
