@@ -211,6 +211,9 @@ internal sealed class RepositoryProvider
             if (!string.IsNullOrEmpty(hostConfigContents))
             {
                 renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+
+                // Remove margins from selectAction.
+                renderer.AddSelectActionMargin = false;
             }
             else
             {

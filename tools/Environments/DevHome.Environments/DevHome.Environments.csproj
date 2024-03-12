@@ -26,12 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Converters\" />
     <Folder Include="CustomControls\" />
     <Folder Include="Extensions\" />
-    <Folder Include="Models\" />
     <Folder Include="Strings\" />
-    <Folder Include="Templates\" />
     <Folder Include="ViewModels\" />
     <Folder Include="Views\" />
   </ItemGroup>
