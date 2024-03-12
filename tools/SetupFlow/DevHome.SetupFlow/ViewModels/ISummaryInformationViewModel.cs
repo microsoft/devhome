@@ -5,4 +5,5 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public interface ISummaryInformationViewModel
 {
+    public bool HasContent { get; }
 }

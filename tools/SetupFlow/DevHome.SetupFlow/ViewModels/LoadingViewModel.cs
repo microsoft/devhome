@@ -456,11 +456,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
             window.DispatcherQueue.TryEnqueue(() =>
             {
-                if (taskInformation.TaskToExecute.SummaryScreenInformation != null)
-                {
-                    SummaryInformation.Add(taskInformation.TaskToExecute.SummaryScreenInformation);
-                }
-
                 // Keep decrement inside TryEnqueue to encorce "locking"
                 _numberOfExecutingTasks--;
                 ChangeMessage(taskInformation, loadingMessage, taskFinishedState);

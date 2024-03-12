@@ -19,9 +19,11 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.SetupFlow.Views;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.System;
 
@@ -48,6 +50,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
+
+    [ObservableProperty]
+    private ObservableCollection<UserControl> _nextSteps;
 
     [RelayCommand]
     public async Task ShowLogFiles()
@@ -191,6 +196,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _configurationUnitResults = new(GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
         _appManagementInitializer = appManagementInitializer;
+        _nextSteps = new();
 
         IsNavigationBarVisible = true;
         IsStepPage = false;
@@ -206,7 +212,26 @@ public partial class SummaryViewModel : SetupPageViewModelBase
             if (flowPage is LoadingViewModel loadingViewModel)
             {
                 failedTasks = loadingViewModel.FailedTasks;
-                SummaryInformation = loadingViewModel.SummaryInformation;
+            }
+        }
+
+        var taskGroups = Orchestrator.TaskGroups;
+        foreach (var taskGroup in taskGroups)
+        {
+            var setupTasks = taskGroup.SetupTasks;
+            foreach (var setupTask in setupTasks)
+            {
+                if (setupTask.SummaryScreenInformation.HasContent)
+                {
+                    switch (setupTask)
+                    {
+                        case CloneRepoTask:
+                            var configResult = new CloneRepoSummaryInformationView();
+                            configResult.DataContext = setupTask.SummaryScreenInformation;
+                            NextSteps.Add(configResult);
+                            break;
+                    }
+                }
             }
         }
 

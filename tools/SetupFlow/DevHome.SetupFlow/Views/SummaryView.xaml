@@ -6,7 +6,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
-    xmlns:templates="using:DevHome.SetupFlow.Templates"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:models="using:DevHome.SetupFlow.Models"
@@ -49,11 +48,6 @@
                         <Setter Property="Padding" Value="0" />
                     </Style>
                 </ResourceDictionary>
-                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Templates/CloneRepoSummaryInformation.xaml"/>
-                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Templates/ConfigurationSummaryInformation.xaml"/>
-                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Templates/CreateDevDriveSummaryInformation.xaml"/>
-                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Templates/EmptySummaryInformation.xaml"/>
-                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Templates/InstallPackageSummaryInformation.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -182,22 +176,6 @@
                 </Grid>
 
                 <!-- Next steps section -->
-                <ListView ItemsSource="{x:Bind ViewModel.SummaryInformation}">
-                    <ListView.Resources>
-                        <templates:SummaryInformationTemplateSelector
-                            x:Key="summaryInformationTemplateSelector"
-                            CloneRepoDataTemplate="{StaticResource cloneRepoDataTemplate}"
-                            ConfigurationDataTemplate="{StaticResource configurationDataTemplate}"
-                            CreateDevDriveDataTemplate="{StaticResource createDevDriveDataTemplate}"
-                            InstallPackageDataTemplate="{StaticResource installPackageDataTemplate}"
-                            EmptyDataTemplate="{StaticResource emptyDataTemplate}"/>
-                    </ListView.Resources>
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:ISummaryInformationViewModel">
-                            <ContentControl Content="{x:Bind}" ContentTemplateSelector="{StaticResource summaryInformationTemplateSelector}"/>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
                 <ContentControl Grid.Column="1" Template="{ThemeResource LinksTemplate}" />
             </Grid>
 
@@ -215,7 +193,7 @@
 
                 <!-- Numbers of tasks ran and next steps.-->
                 <!-- Or, if any tasks failed, failed tasks and next steps.-->
-                <Grid>
+                <Grid RowSpacing="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="*" />
@@ -280,7 +258,7 @@
                         HorizontalAlignment="Stretch" 
                         Padding="0,15,0,30"
                         BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
+                        BorderThickness="0, 1, 0, 2">
                         <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
                                 <ColumnDefinition Width="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
@@ -335,7 +313,20 @@
                                 Margin="0, 50, 0, 0"/>
                     </Grid>
                     <!-- Next steps section -->
-                    <ContentControl Grid.Row="1" Template="{ThemeResource LinksTemplate}" />
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <ListView Grid.Row="0" ItemsSource="{x:Bind ViewModel.NextSteps, Mode=OneWay}" SelectionMode="None">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="UserControl">
+                                    <ContentControl Content="{x:Bind}"/>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <ContentControl Grid.Row="1" Template="{ThemeResource LinksTemplate}" />
+                    </Grid>
                 </Grid>
 
                 <!-- Displays the repos cloned and apps downloaded -->

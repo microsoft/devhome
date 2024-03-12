@@ -115,9 +115,6 @@ public static class ServiceExtensions
     {
         // View models
         services.AddTransient<CloneRepoSummaryInformationViewModel>();
-        services.AddTransient<ConfigurationSummaryInformationViewModel>();
-        services.AddTransient<CreateDevDriveSummaryInformationViewModel>();
-        services.AddTransient<InstallPackageSummaryInformationViewModel>();
 
         return services;
     }

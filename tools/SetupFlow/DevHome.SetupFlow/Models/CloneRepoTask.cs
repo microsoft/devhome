@@ -254,7 +254,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
 
                 SummaryScreenInformation = _host.GetService<CloneRepoSummaryInformationViewModel>();
                 var fileToUse = configurationFileLocations.OrderBy(x => File.GetLastWriteTime(x)).FirstOrDefault();
-                (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).FileName = fileToUse;
+                (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).FilePathAndName = fileToUse;
                 (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).RepoName = RepositoryName;
             }
 

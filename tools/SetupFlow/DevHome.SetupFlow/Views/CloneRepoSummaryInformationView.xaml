@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.SetupFlow.Views.CloneRepoSummaryInformationView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DevHome.SetupFlow.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0, 0, 0, 1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="File detected" FontWeight="Bold" Margin="0, 0, 0, 5"/>
+        <TextBlock Grid.Row="1" TextWrapping="Wrap">
+            <Run Text="Detected configuration file name '" Foreground="{ThemeResource TextFillColorSecondary}"/>
+            <Run Text="{x:Bind ViewModel.FileName}" FontWeight="Bold" Foreground="{ThemeResource TextFillColorSecondary}"/>
+            <Run Text="' while cloning '" Foreground="{ThemeResource TextFillColorSecondary}"/>
+            <Run Text="{x:Bind ViewModel.RepoName}" FontWeight="Bold" Foreground="{ThemeResource TextFillColorSecondary}"/>
+            <Run Text="'." Foreground="{ThemeResource TextFillColorSecondary}"/>
+        </TextBlock>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <HyperlinkButton Grid.Column="0" Command="{x:Bind ViewModel.OpenFileInExplorerCommand}">
+                <HyperlinkButton.Content>
+                    <TextBlock Text="View file" TextDecorations="Underline"/>
+                </HyperlinkButton.Content>
+            </HyperlinkButton>
+            <HyperlinkButton Grid.Column="1">
+                <HyperlinkButton.Content>
+                    <TextBlock Text="Run files" TextDecorations="Underline"/>
+                </HyperlinkButton.Content>
+            </HyperlinkButton>
+        </Grid>
+    </Grid>
+</UserControl>

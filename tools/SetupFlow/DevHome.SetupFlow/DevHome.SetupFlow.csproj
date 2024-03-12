@@ -39,19 +39,7 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Page Update="Templates\InstallPackageSummaryInformation.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Templates\EmptySummaryInformation.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Templates\CreateDevDriveSummaryInformation.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Templates\ConfigurationSummaryInformation.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Templates\CloneRepoSummaryInformation.xaml">
+    <Page Update="Views\CloneRepoSummaryInformationView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Styles\AppManagement_ThemeResources.xaml">
@@ -89,12 +77,8 @@
     <None Remove="Styles\SetupFlowStyles.xaml" />
     <None Remove="Styles\SetupFlow_ThemeResources.xaml" />
     <None Remove="Styles\SetupToolStyles.xaml" />
-    <None Remove="Templates\CloneRepoSummaryInformation.xaml" />
-    <None Remove="Templates\ConfigurationSummaryInformation.xaml" />
-    <None Remove="Templates\CreateDevDriveSummaryInformation.xaml" />
-    <None Remove="Templates\EmptySummaryInformation.xaml" />
-    <None Remove="Templates\InstallPackageSummaryInformation.xaml" />
     <None Remove="Views\AddRepoDialog.xaml" />
+    <None Remove="Views\CloneRepoSummaryInformationView.xaml" />
     <None Remove="Views\DevDriveReviewView.xaml" />
     <None Remove="Views\DevDriveView.xaml" />
     <None Remove="Views\EditClonePathDialog.xaml" />
