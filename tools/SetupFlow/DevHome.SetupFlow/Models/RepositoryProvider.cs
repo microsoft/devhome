@@ -274,9 +274,9 @@ internal sealed class RepositoryProvider
         var repoSearchInformation = new RepositorySearchInformation();
         try
         {
-            if (IsSearchingEnabled() && searchInputs != null)
+            if (_repositoryProvider is IRepositoryProvider2 repositoryProvider2 &&
+                IsSearchingEnabled() && searchInputs != null)
             {
-                var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
                 var result = repositoryProvider2.GetRepositoriesAsync(searchInputs, developerId).AsTask().Result;
                 if (result.Result.Status == ProviderOperationStatus.Success)
                 {
@@ -321,7 +321,7 @@ internal sealed class RepositoryProvider
             Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {ex}");
         }
 
-        SetRepositories(developerId, repoSearchInformation.Repositories);
+        _repositories[developerId] = repoSearchInformation.Repositories;
 
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
         return repoSearchInformation;
@@ -360,27 +360,16 @@ internal sealed class RepositoryProvider
             Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {ex}");
         }
 
-        SetRepositories(developerId, repoSearchInformation.Repositories);
+        _repositories[developerId] = repoSearchInformation.Repositories;
 
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
         return repoSearchInformation;
     }
 
-    private void SetRepositories(IDeveloperId developerId, IEnumerable<IRepository> repos)
-    {
-        if (_repositories.TryGetValue(developerId, out var _))
-        {
-            _repositories[developerId] = repos;
-        }
-        else
-        {
-            _repositories.Add(developerId, repos);
-        }
-    }
-
     /// <summary>
-    /// If extensions implement IRepositoryProvider2 then it can accept search terms when fetching repos.
-    /// Specifically for DevHome, the RepoTool will modify its UI to enable users to supply search values.
+    /// Checks if
+    /// 1. _repositoryProvider is IRepositoryProvider2,
+    /// 2. if it is, calls IsSearchingSupported.
     /// </summary>
     /// <returns>If the extension implements IRepositoryProvider2.</returns>
     public bool IsSearchingEnabled()
