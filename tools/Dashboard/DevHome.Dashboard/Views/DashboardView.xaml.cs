@@ -66,7 +66,7 @@ public partial class DashboardView : ToolPage, IDisposable
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
 
-        ActualThemeChanged += OnActualThemeChanged;
+        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
 
         Loaded += OnLoaded;
 
@@ -102,11 +102,8 @@ public partial class DashboardView : ToolPage, IDisposable
         return true;
     }
 
-    private async void OnActualThemeChanged(FrameworkElement sender, object args)
+    private async void HandleRendererUpdated(object sender, object args)
     {
-        // A different host config is used to render widgets (adaptive cards) in light and dark themes.
-        await Application.Current.GetService<IAdaptiveCardRenderingService>().UpdateHostConfig();
-
         // Re-render the widgets with the new theme and renderer.
         foreach (var widget in PinnedWidgets)
         {
