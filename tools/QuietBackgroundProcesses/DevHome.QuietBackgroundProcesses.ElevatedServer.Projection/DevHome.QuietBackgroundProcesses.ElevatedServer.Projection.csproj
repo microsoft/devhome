@@ -11,7 +11,7 @@
   
 
   <PropertyGroup>
-    <CsWinRTWindowsMetadata>10.0.22000.0</CsWinRTWindowsMetadata>
+    <CsWinRTWindowsMetadata>10.0.19041.0</CsWinRTWindowsMetadata>
     <CsWinRTIncludes>DevHome.QuietBackgroundProcesses</CsWinRTIncludes>
     <CsWinRTGeneratedFilesDir>$(OutDir)</CsWinRTGeneratedFilesDir>
   </PropertyGroup>
@@ -33,16 +33,4 @@
     <ProjectReference Include="..\DevHome.QuietBackgroundProcesses.Common\DevHome.QuietBackgroundProcesses.Common.vcxproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="nuget\" />
-  </ItemGroup>
-  <Target Name="RemoveWinRTRuntimeReference" Inputs="@(RuntimeCopyLocalItems)" AfterTargets="ResolvePackageAssets" Outputs="@(RuntimeCopyLocalItems)">
-
-    <ItemGroup>
-      <Reference Remove="WinRT.Runtime" /> 
-      <RuntimeCopyLocalItems Remove="@(RuntimeCopyLocalItems)" Condition="'%(DestinationSubPath)' == 'WinRT.Runtime.dll'" />
-      <ResolvedCompileFileDefinitions Remove="@(ResolvedCompileFileDefinitions)" Condition="'%(HintPath)' == '$(CsWinRTPath)lib\net6.0\WinRT.Runtime.dll'" />
-    </ItemGroup>
-
-  </Target>
 </Project>

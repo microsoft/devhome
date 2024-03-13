@@ -7,13 +7,13 @@
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls">
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-        <ScrollViewer VerticalAlignment="Top">
+        <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
             <StackPanel Orientation="Vertical">
                 <ctControls:SettingsExpander x:Uid="QuietBackgroundProcesses" IsExpanded="True" Margin="{ThemeResource SettingsCardMargin}">
 
                     <!-- Header icon -->
                     <ctControls:SettingsExpander.HeaderIcon>
-                        <BitmapIcon ShowAsMonochrome="False" UriSource="/Assets/DevHome.ico" />
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xec7a;"/>
                     </ctControls:SettingsExpander.HeaderIcon>
 
                     <!-- Toggle switch -->

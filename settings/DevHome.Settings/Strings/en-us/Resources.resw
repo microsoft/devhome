@@ -564,6 +564,6 @@
   </data>
   <data name="QuietBackgroundProcessesExperiment_Description" xml:space="preserve">
     <value>Silence and track background processes that may hinder device performance</value>
-    <comment>Inline description of experimental feature ()'Quiet Background Processes') on the 'Settings -> Experiments' page where you enable it.</comment>
+    <comment>Inline description of the Quiet Background Processes experimental feature on the 'Settings -> Experiments' page where you enable it.</comment>
   </data>
 </root>

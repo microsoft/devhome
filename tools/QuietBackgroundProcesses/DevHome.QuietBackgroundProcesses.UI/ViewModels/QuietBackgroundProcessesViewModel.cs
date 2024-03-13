@@ -2,22 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
-using DevHome.QuietBackgroundProcesses;
 using Microsoft.UI.Xaml;
-using Microsoft.Windows.ApplicationModel.Resources;
-using Windows.UI.Xaml;
-using Windows.Win32;
 
 namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
 
