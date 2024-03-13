@@ -66,10 +66,6 @@ public partial class DashboardView : ToolPage, IDisposable
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
 
-        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
-
-        Loaded += OnLoaded;
-
 #if DEBUG
         Loaded += AddResetButton;
 #endif
@@ -111,9 +107,17 @@ public partial class DashboardView : ToolPage, IDisposable
         }
     }
 
-    private async void OnLoaded(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    private async Task OnLoadedAsync()
     {
+        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
         await InitializeDashboard();
+    }
+
+    [RelayCommand]
+    private void OnUnloaded()
+    {
+        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
     }
 
     private async Task InitializeDashboard()
