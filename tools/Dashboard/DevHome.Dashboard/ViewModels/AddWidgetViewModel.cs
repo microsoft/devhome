@@ -63,6 +63,7 @@ public partial class AddWidgetViewModel : ObservableObject
     [RelayCommand]
     internal async Task UpdateThemeAsync()
     {
+        // Update the preview image for the selected widget.
         var theme = _themeSelectorService.GetActualTheme();
         var bitmap = await _widgetScreenshotService.GetScreenshotFromCache(_selectedWidgetDefinition, theme);
         WidgetScreenshot = new ImageBrush
