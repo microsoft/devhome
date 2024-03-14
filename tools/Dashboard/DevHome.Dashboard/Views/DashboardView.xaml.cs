@@ -359,7 +359,7 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     public async Task AddWidgetClickAsync()
     {
-        var dialog = new AddWidgetDialog(_dispatcher)
+        var dialog = new AddWidgetDialog()
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,

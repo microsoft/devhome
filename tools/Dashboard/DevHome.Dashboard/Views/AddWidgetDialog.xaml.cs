@@ -18,13 +18,13 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Widgets.Hosts;
+using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
 
 public sealed partial class AddWidgetDialog : ContentDialog
 {
     private WidgetDefinition _selectedWidget;
-    private static DispatcherQueue _dispatcher;
 
     public WidgetDefinition AddedWidget { get; private set; }
 
@@ -32,8 +32,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private readonly IWidgetHostingService _hostingService;
     private readonly IWidgetIconService _widgetIconService;
+    private readonly WindowEx _windowEx;
 
-    public AddWidgetDialog(DispatcherQueue dispatcher)
+    public AddWidgetDialog()
     {
         ViewModel = Application.Current.GetService<AddWidgetViewModel>();
         _hostingService = Application.Current.GetService<IWidgetHostingService>();
@@ -41,7 +42,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         this.InitializeComponent();
 
-        _dispatcher = dispatcher;
+        _windowEx = Application.Current.GetService<WindowEx>();
 
         RequestedTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
     }
@@ -263,7 +264,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         var deletedDefinitionId = args.DefinitionId;
 
-        _dispatcher.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             // If we currently have the deleted widget open, un-select it.
             if (_selectedWidget is not null &&
