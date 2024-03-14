@@ -29,22 +29,17 @@
                             TextTrimming="CharacterEllipsis" />
 
                         <!-- Start/Stop button -->
-                        <StackPanel Orientation="Horizontal">
-                            <Button IsTextScaleFactorEnabled="True" Style="{StaticResource AccentButtonStyle}" IsEnabled="{x:Bind ViewModel.IsFeaturePresent, Mode=OneWay}">
-                                <TextBlock
-                                    Text="{x:Bind ViewModel.QuietButtonText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    VerticalAlignment="Center"
-                                    TextTrimming="CharacterEllipsis"/>
-                                <i:Interaction.Behaviors>
-                                    <ic:EventTriggerBehavior EventName="Click">
-                                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.QuietButtonClickedCommand}"/>
-                                    </ic:EventTriggerBehavior>
-                                </i:Interaction.Behaviors>
-                            </Button>
-                        </StackPanel>
-
+                        <ToggleButton
+                            Content="{x:Bind ViewModel.QuietButtonText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            IsEnabled="{x:Bind ViewModel.IsFeaturePresent, Mode=OneWay}"
+                            IsChecked="{x:Bind ViewModel.QuietButtonChecked, Mode=OneWay}">
+                            <i:Interaction.Behaviors>
+                                <ic:EventTriggerBehavior EventName="Click">
+                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.QuietButtonClickedCommand}"/>
+                                </ic:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
+                        </ToggleButton>
                     </StackPanel>
-
 
                     <!-- Expander -->
                     <ctControls:SettingsExpander.Items>
