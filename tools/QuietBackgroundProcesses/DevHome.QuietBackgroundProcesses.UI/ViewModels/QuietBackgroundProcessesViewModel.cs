@@ -3,6 +3,7 @@
 
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
@@ -11,14 +12,27 @@ namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
 
 public partial class QuietBackgroundProcessesViewModel : ObservableObject
 {
-    private readonly bool _isFeaturePresent;
     private readonly TimeSpan _zero;
+    private readonly TimeSpan _oneSecond;
+    private ButtonState _buttonState;
 #nullable enable
     private DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession? _session;
 #nullable disable
 
     [ObservableProperty]
+    private bool _isFeaturePresent;
+
+    [ObservableProperty]
     private string _sessionStateText;
+
+    [ObservableProperty]
+    private string _quietButtonText;
+
+    private enum ButtonState
+    {
+        Start,
+        Stop,
+    }
 
     private DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession GetSession()
     {
@@ -44,72 +58,80 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
     public QuietBackgroundProcessesViewModel()
     {
         _zero = new TimeSpan(0, 0, 0);
+        _oneSecond = new TimeSpan(0, 0, 1);
 
-        _isFeaturePresent = DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager.IsFeaturePresent();
-        if (!_isFeaturePresent)
+        IsFeaturePresent = DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager.IsFeaturePresent();
+
+        bool running = false;
+        if (IsFeaturePresent)
+        {
+            // Check if an existing quiet session is running.
+            // Note: GetIsActive() won't ever launch a UAC prompt, but GetTimeRemaining() will if no session is running - so be careful with call order
+            running = GetIsActive();
+        }
+        else
         {
             SessionStateText = GetStatusString("FeatureNotSupported");
-            return;
         }
 
         // Resume countdown if there's an existing quiet window
-        //
-        // Note: GetIsActive() won't ever launch a UAC prompt, but GetTimeRemaining() will if no session is running - so be careful with call order
-        if (GetIsActive())
+        SetQuietSessionRunningState(running);
+    }
+
+    private void SetQuietSessionRunningState(bool running, long? timeLeftInSeconds = null)
+    {
+        if (running)
         {
-            _isToggleOn = true;
-            var timeLeftInSeconds = GetTimeRemaining();
-            StartCountdownTimer(timeLeftInSeconds);
+            _buttonState = ButtonState.Stop;
+            var seconds = timeLeftInSeconds ?? GetTimeRemaining();
+            StartCountdownTimer(seconds);
+            QuietButtonText = GetString("QuietBackgroundProcesses_QuietButton_Stop");
+        }
+        else
+        {
+            _buttonState = ButtonState.Start;
+            _dispatcherTimer?.Stop();
+            QuietButtonText = GetString("QuietBackgroundProcesses_QuietButton_Start");
         }
     }
 
-    public bool IsToggleEnabled => _isFeaturePresent;
-
-    private bool _isToggleOn;
-
-    public bool IsToggleOn
+    [RelayCommand]
+    public void QuietButtonClicked()
     {
-        get => _isToggleOn;
-
-        set
+        switch (_buttonState)
         {
-            if (_isToggleOn == value)
-            {
-                return;
-            }
+            case ButtonState.Start:
+                {
+                    try
+                    {
+                        // Launch the server, which then elevates itself, showing a UAC prompt
+                        var timeLeftInSeconds = GetSession().Start();
+                        SetQuietSessionRunningState(true, timeLeftInSeconds);
+                    }
+                    catch (Exception ex)
+                    {
+                        SessionStateText = GetStatusString("SessionError");
+                        Log.Logger()?.ReportError("QuietBackgroundProcessesSession::Start failed", ex);
+                    }
+                }
 
-            _isToggleOn = value;
+                break;
+            case ButtonState.Stop:
+                {
+                    try
+                    {
+                        GetSession().Stop();
+                        SetQuietSessionRunningState(false);
+                        SessionStateText = GetStatusString("SessionEnded");
+                    }
+                    catch (Exception ex)
+                    {
+                        SessionStateText = GetStatusString("UnableToCancelSession");
+                        Log.Logger()?.ReportError("QuietBackgroundProcessesSession::Stop failed", ex);
+                    }
+                }
 
-            // Stop any existing timer
-            _dispatcherTimer?.Stop();
-
-            if (_isToggleOn)
-            {
-                try
-                {
-                    // Launch the server, which then elevates itself, showing a UAC prompt
-                    var timeLeftInSeconds = GetSession().Start();
-                    StartCountdownTimer(timeLeftInSeconds);
-                }
-                catch (Exception ex)
-                {
-                    SessionStateText = GetStatusString("SessionError");
-                    Log.Logger()?.ReportError("QuietBackgroundProcessesSession::Start failed", ex);
-                }
-            }
-            else
-            {
-                try
-                {
-                    GetSession().Stop();
-                    SessionStateText = GetStatusString("SessionEnded");
-                }
-                catch (Exception ex)
-                {
-                    SessionStateText = GetStatusString("UnableToCancelSession");
-                    Log.Logger()?.ReportError("QuietBackgroundProcessesSession::Stop failed", ex);
-                }
-            }
+                break;
         }
     }
 
@@ -167,29 +189,29 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
 
     private void DispatcherTimer_Tick(object sender, object e)
     {
+        // Subtract 1 second
+        _secondsLeft = _secondsLeft.Subtract(_oneSecond);
+
+        // Every 2 minutes ask the server for the actual time remaining (to resolve any drift)
+        if (_secondsLeft.Seconds % 120 == 0)
+        {
+            _secondsLeft = new TimeSpan(0, 0, GetTimeRemaining());
+        }
+
         var sessionEnded = false;
-
-        _secondsLeft = new TimeSpan(0, 0, GetTimeRemaining());
-
         if (_secondsLeft.CompareTo(_zero) <= 0)
         {
             // The window should be closed, but let's confirm with the server
-            if (GetSession().IsActive)
+            if (!GetSession().IsActive)
             {
-                // There has been some drift
-                _secondsLeft = new TimeSpan(0, 0, GetTimeRemaining());
-            }
-            else
-            {
-                _dispatcherTimer.Stop();
-                _secondsLeft = _zero;
-                IsToggleOn = false;
                 sessionEnded = true;
             }
         }
 
         if (sessionEnded)
         {
+            SetQuietSessionRunningState(false);
+            _secondsLeft = _zero;
             SessionStateText = GetStatusString("SessionEnded");
         }
         else
