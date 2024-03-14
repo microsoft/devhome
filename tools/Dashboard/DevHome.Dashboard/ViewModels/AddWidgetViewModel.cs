@@ -58,17 +58,21 @@ public partial class AddWidgetViewModel : ObservableObject
         WidgetProviderDisplayTitle = string.Empty;
         WidgetScreenshot = null;
         PinButtonVisibility = false;
+        _selectedWidgetDefinition = null;
     }
 
     [RelayCommand]
     private async Task UpdateThemeAsync()
     {
-        // Update the preview image for the selected widget.
-        var theme = _themeSelectorService.GetActualTheme();
-        var bitmap = await _widgetScreenshotService.GetScreenshotFromCache(_selectedWidgetDefinition, theme);
-        WidgetScreenshot = new ImageBrush
+        if (_selectedWidgetDefinition != null)
         {
-            ImageSource = bitmap,
-        };
+            // Update the preview image for the selected widget.
+            var theme = _themeSelectorService.GetActualTheme();
+            var bitmap = await _widgetScreenshotService.GetScreenshotFromCache(_selectedWidgetDefinition, theme);
+            WidgetScreenshot = new ImageBrush
+            {
+                ImageSource = bitmap,
+            };
+        }
     }
 }
