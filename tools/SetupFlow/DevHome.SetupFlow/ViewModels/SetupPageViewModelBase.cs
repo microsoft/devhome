@@ -140,7 +140,7 @@ public partial class SetupPageViewModelBase : ObservableObject
         {
             _hasExecutedFirstNavigateFrom = true;
             Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Executing pre-navigation tasks for page {this.GetType().Name}");
-            TelemetryFactory.Get<ITelemetry>().Log("PageNavigated", LogLevel.Critical, new PageNavigationTrackerEvent(this.GetType().Name));
+            TelemetryFactory.Get<ITelemetry>().Log("PageNavigated", LogLevel.Critical, new NavigateFromSummaryEvent(this.GetType().Name));
             await OnFirstNavigateFromAsync();
         }
     }
