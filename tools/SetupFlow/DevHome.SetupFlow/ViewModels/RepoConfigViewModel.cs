@@ -118,19 +118,12 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
             : stringResource.GetLocalized(StringResourceKey.SetupShellRepoConfigTargetMachine);
     }
 
-    private void OnThemeChanged(object sender, ElementTheme e)
+    private void OnThemeChanged(object sender, ElementTheme newRequestedTheme)
     {
-        var themeToSwitchTo = e;
-
-        if (themeToSwitchTo == ElementTheme.Default)
-        {
-            themeToSwitchTo = _themeSelectorService.GetActualTheme();
-        }
-
         // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
         foreach (var cloneInformation in RepoReviewItems)
         {
-            cloneInformation.SetIcon(themeToSwitchTo);
+            cloneInformation.SetIcon(_themeSelectorService.GetActualTheme());
         }
     }
 

@@ -16,6 +16,8 @@ namespace DevHome.Dashboard.Services;
 
 public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisposable
 {
+    public event EventHandler RendererUpdated = (_, _) => { };
+
     private readonly WindowEx _windowEx;
 
     private readonly IThemeSelectorService _themeSelectorService;
@@ -94,7 +96,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
         };
     }
 
-    public async Task UpdateHostConfig()
+    private async Task UpdateHostConfig()
     {
         if (_renderer != null)
         {
@@ -127,6 +129,8 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
                     Log.Logger()?.ReportError("DashboardView", $"HostConfig contents are {hostConfigContents}");
                 }
             });
+
+            RendererUpdated(this, null);
         }
     }
 
