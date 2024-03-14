@@ -61,7 +61,7 @@ public partial class AddWidgetViewModel : ObservableObject
     }
 
     [RelayCommand]
-    internal async Task UpdateThemeAsync()
+    private async Task UpdateThemeAsync()
     {
         // Update the preview image for the selected widget.
         var theme = _themeSelectorService.GetActualTheme();

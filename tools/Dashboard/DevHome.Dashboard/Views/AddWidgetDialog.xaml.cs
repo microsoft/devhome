@@ -10,7 +10,6 @@ using DevHome.Contracts.Services;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
@@ -232,7 +231,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     }
 
     [RelayCommand]
-    internal async Task UpdateThemeAsync()
+    private async Task UpdateThemeAsync()
     {
         // Update the icons for each available widget listed.
         foreach (var providerItem in AddWidgetNavigationView.MenuItems.Cast<NavigationViewItem>())
