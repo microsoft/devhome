@@ -222,7 +222,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         if (selectedTag as WidgetDefinition is WidgetDefinition selectedWidgetDefinition)
         {
             _selectedWidget = selectedWidgetDefinition;
-            await ViewModel.SetWidgetDefinition(selectedWidgetDefinition, ActualTheme);
+            await ViewModel.SetWidgetDefinition(selectedWidgetDefinition);
         }
         else if (selectedTag as WidgetProviderDefinition is not null)
         {
