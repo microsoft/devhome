@@ -313,6 +313,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
                                     Log.Logger()?.ReportError("AddWidgetDialog", $"WidgetCatalog_WidgetDefinitionDeleted found no available widgets.");
                                 }
                             }
+
+                            return;
                         }
                     }
                 }
