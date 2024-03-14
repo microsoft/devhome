@@ -232,6 +232,21 @@ public sealed partial class AddWidgetDialog : ContentDialog
     }
 
     [RelayCommand]
+    internal async Task UpdateThemeAsync()
+    {
+        // Update the icons for each available widget listed.
+        foreach (var providerItem in AddWidgetNavigationView.MenuItems.Cast<NavigationViewItem>())
+        {
+            foreach (var widgetItem in providerItem.MenuItems.Cast<NavigationViewItem>())
+            {
+                var widgetDefinition = widgetItem.Tag as WidgetDefinition;
+                var image = await _widgetIconService.GetWidgetIconForThemeAsync(widgetDefinition, ActualTheme);
+                widgetItem.Content = BuildNavItem(image, widgetDefinition.DisplayTitle);
+            }
+        }
+    }
+
+    [RelayCommand]
     private void PinButtonClick()
     {
         Log.Logger()?.ReportDebug("AddWidgetDialog", $"Pin selected");
