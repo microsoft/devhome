@@ -32,6 +32,14 @@
             "viewFullName": "DevHome.Environments.Views.LandingPage",
             "viewModelFullName": "DevHome.Environments.ViewModels.LandingPageViewModel",
             "icon": "E83B"
+          },
+          {
+            "identity": "DevHome.QuietBackgroundProcesses.UI",
+            "assembly": "DevHome.QuietBackgroundProcesses.UI",
+            "viewFullName": "DevHome.QuietBackgroundProcesses.UI.Views.QuietBackgroundProcessesPage",
+            "viewModelFullName": "DevHome.QuietBackgroundProcesses.UI.ViewModels.QuietBackgroundProcessesViewModel",
+            "icon": "f5b0",
+            "experimentalFeatureIdentity": "QuietBackgroundProcessesExperiment"
           }
         ]
       }
@@ -66,6 +74,27 @@
         {
           "buildType": "dev",
           "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": false,
+          "visible": false
+        },
+        {
+          "buildType": "release",
+          "enabledByDefault": false,
+          "visible": false
+        }
+      ]
+    },
+    {
+      "identity": "QuietBackgroundProcessesExperiment",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": false,
           "visible": true
         },
         {

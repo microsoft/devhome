@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 
@@ -10,5 +11,5 @@ public interface IAdaptiveCardRenderingService
 {
     public Task<AdaptiveCardRenderer> GetRenderer();
 
-    public Task UpdateHostConfig();
+    public event EventHandler RendererUpdated;
 }

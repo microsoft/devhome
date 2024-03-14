@@ -175,7 +175,7 @@ public sealed partial class WidgetControl : UserControl
                 if (_currentSelectedSize is not null)
                 {
                     _currentSelectedSize.Icon = null;
-                    var peer = FrameworkElementAutomationPeer.FromElement(menuSizeItem) as SelectableMenuFlyoutItemAutomationPeer;
+                    var peer = FrameworkElementAutomationPeer.FromElement(_currentSelectedSize) as SelectableMenuFlyoutItemAutomationPeer;
                     peer.RemoveFromSelection();
                 }
 

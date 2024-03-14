@@ -60,6 +60,7 @@ jobs:
       run: |
         cmd /c "$env:VSDevCmd" "&" msbuild -t:restore /m /p:Configuration=Release,Platform=${{ matrix.platform }},RestorePackagesConfig=true extensionsdk\\DevHomeSDK.sln
         cmd /c "$env:VSDevCmd" "&" msbuild -t:restore /m /p:Configuration=Release,Platform=${{ matrix.platform }} DevHome.sln
+        cmd /c ".\.nuget\nuget.exe restore"
 
     - name: Build_SDK
       run: cmd /c "$env:VSDevCmd" "&" msbuild /p:Configuration=Release,Platform=${{ matrix.platform }} extensionsdk\\DevHomeSDK.sln
