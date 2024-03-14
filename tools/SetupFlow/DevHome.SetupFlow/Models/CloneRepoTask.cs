@@ -32,6 +32,12 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloneRepoTask : ObservableObject, ISetupTask
 {
+    private const string _configurationFileName = ".configurations";
+
+    private const string _configurationFileYamlExtension = ".dsc.yaml";
+
+    private const string _configurationFileWingetExtension = ".winget";
+
     private readonly IHost _host;
 
     private readonly Guid _activityId;
@@ -238,24 +244,23 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                 return TaskFinishedState.Failure;
             }
 
-            var configurationFileLocations = new List<string>();
+            SummaryScreenInformation = _host.GetService<CloneRepoSummaryInformationViewModel>();
 
-            var configurationDirectory = Path.Join(_cloneLocation.FullName, ".configurations");
+            // Search for a configuration file.
+            var configurationDirectory = Path.Join(_cloneLocation.FullName, _configurationFileName);
             if (Directory.Exists(configurationDirectory))
             {
-                foreach (var configurationFile in Directory.EnumerateFiles(configurationDirectory))
-                {
-                    if (configurationFile.EndsWith(".dsc.yaml", StringComparison.OrdinalIgnoreCase) ||
-                    configurationFile.EndsWith(".winget", StringComparison.OrdinalIgnoreCase))
-                    {
-                        configurationFileLocations.Add(configurationFile);
-                    }
-                }
+                var fileToUse = Directory.EnumerateFiles(configurationDirectory)
+                .Where(file => file.EndsWith(_configurationFileYamlExtension, StringComparison.OrdinalIgnoreCase) ||
+                               file.EndsWith(_configurationFileWingetExtension, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(configurationFile => File.GetLastWriteTime(configurationFile))
+                .FirstOrDefault();
 
-                SummaryScreenInformation = _host.GetService<CloneRepoSummaryInformationViewModel>();
-                var fileToUse = configurationFileLocations.OrderBy(x => File.GetLastWriteTime(x)).FirstOrDefault();
-                (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).FilePathAndName = fileToUse;
-                (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).RepoName = RepositoryName;
+                if (fileToUse != null)
+                {
+                    (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).FilePathAndName = fileToUse;
+                    (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).RepoName = RepositoryName;
+                }
             }
 
             WasCloningSuccessful = true;

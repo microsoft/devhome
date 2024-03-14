@@ -23,17 +23,17 @@
             <Run Text="{x:Bind ViewModel.RepoName}" FontWeight="Bold" Foreground="{ThemeResource TextFillColorSecondary}"/>
             <Run Text="'." Foreground="{ThemeResource TextFillColorSecondary}"/>
         </TextBlock>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" BorderBrush="red" BorderThickness="1" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <HyperlinkButton Grid.Column="0" Command="{x:Bind ViewModel.OpenFileInExplorerCommand}">
+            <HyperlinkButton Grid.Column="0" Command="{x:Bind ViewModel.OpenFileInExplorerCommand}" HorizontalAlignment="Left">
                 <HyperlinkButton.Content>
                     <TextBlock Text="View file" TextDecorations="Underline"/>
                 </HyperlinkButton.Content>
             </HyperlinkButton>
-            <HyperlinkButton Grid.Column="1">
+            <HyperlinkButton Grid.Column="1" Command="{x:Bind ViewModel.RunInAdminCommandPromptCommand}">
                 <HyperlinkButton.Content>
                     <TextBlock Text="Run files" TextDecorations="Underline"/>
                 </HyperlinkButton.Content>

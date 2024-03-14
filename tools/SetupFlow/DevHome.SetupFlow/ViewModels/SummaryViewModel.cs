@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.TelemetryEvents.SetupFlow.SummaryPage;
 using DevHome.Contracts.Services;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Settings.ViewModels;
@@ -42,6 +43,10 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly PackageProvider _packageProvider;
     private readonly IAppManagementInitializer _appManagementInitializer;
 
+    private readonly List<UserControl> _cloneRepoNextSteps;
+
+    public List<UserControl> NextSteps => _cloneRepoNextSteps;
+
     [ObservableProperty]
     private ObservableCollection<ISummaryInformationViewModel> _summaryInformation;
 
@@ -50,9 +55,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
-
-    [ObservableProperty]
-    private ObservableCollection<UserControl> _nextSteps;
 
     [RelayCommand]
     public async Task ShowLogFiles()
@@ -196,7 +198,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _configurationUnitResults = new(GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
         _appManagementInitializer = appManagementInitializer;
-        _nextSteps = new();
+        _cloneRepoNextSteps = new();
 
         IsNavigationBarVisible = true;
         IsStepPage = false;
@@ -215,25 +217,30 @@ public partial class SummaryViewModel : SetupPageViewModelBase
             }
         }
 
+        // Collect all next steps.
         var taskGroups = Orchestrator.TaskGroups;
         foreach (var taskGroup in taskGroups)
         {
             var setupTasks = taskGroup.SetupTasks;
             foreach (var setupTask in setupTasks)
             {
-                if (setupTask.SummaryScreenInformation.HasContent)
+                if (setupTask.SummaryScreenInformation is not null &&
+                    setupTask.SummaryScreenInformation.HasContent)
                 {
                     switch (setupTask)
                     {
                         case CloneRepoTask:
                             var configResult = new CloneRepoSummaryInformationView();
                             configResult.DataContext = setupTask.SummaryScreenInformation;
-                            NextSteps.Add(configResult);
+                            _cloneRepoNextSteps.Add(configResult);
                             break;
                     }
                 }
             }
         }
+
+        // Send telemetry about the number of next steps tasks found broken down by their type.
+        ReportSummaryTaskCounts();
 
         BitmapImage statusSymbol;
         if (_host.GetService<IThemeSelectorService>().Theme == ElementTheme.Dark)
@@ -261,6 +268,14 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         }
 
         await ReloadCatalogsAsync();
+    }
+
+    /// <summary>
+    /// Send telemetry about all next steps.
+    /// </summary>
+    private void ReportSummaryTaskCounts()
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NextSteps_Event", LogLevel.Critical, new CloneRepoNextStepsEvent(_cloneRepoNextSteps.Count), Orchestrator.ActivityId);
     }
 
     private async Task ReloadCatalogsAsync()
