@@ -25,6 +25,7 @@ using DevHome.SetupFlow.Views;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
@@ -48,6 +49,8 @@ public partial class AddRepoViewModel : ObservableObject
     private readonly ISetupFlowStringResource _stringResource;
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
+
+    private readonly DispatcherQueue _dispatcherQueue;
 
     /// <summary>
     /// Holds all the currently executing tasks to GetRepositories.
@@ -444,7 +447,7 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     private void MenuItemClick(string selectedItemName)
     {
-        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(async () =>
+        _dispatcherQueue.TryEnqueue(async () =>
         {
             SelectedAccount = selectedItemName;
             await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
@@ -459,7 +462,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     private void SearchRepos()
     {
-        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(async () =>
+        _dispatcherQueue.TryEnqueue(async () =>
         {
             await SearchForRepos(_selectedRepoProvider, SelectedAccount);
 
@@ -626,6 +629,7 @@ public partial class AddRepoViewModel : ObservableObject
         _addRepoDialog = addRepoDialog;
         _stringResource = stringResource;
         _host = host;
+        _dispatcherQueue = host.GetService<WindowEx>().DispatcherQueue;
         _loginUiContent = new Frame();
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
@@ -813,8 +817,8 @@ public partial class AddRepoViewModel : ObservableObject
         ShowAccountPage = false;
         ShowRepoPage = false;
         ShouldShowSelectingSearchTerms = true;
-        FolderPickerViewModel.ShouldShowFolderPicker = Visibility.Collapsed;
-        EditDevDriveViewModel.ShowDevDriveInformation = Visibility.Collapsed;
+        FolderPickerViewModel.ShouldShowFolderPicker = false;
+        EditDevDriveViewModel.ShowDevDriveInformation = false;
         PrimaryButtonText = "Connect";
         ShouldEnablePrimaryButton = true;
     }
@@ -1272,7 +1276,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <returns>An awaitable task.</returns>
     private async Task CoordinateTasks(string loginId, Task<RepositorySearchInformation> runningTask)
     {
-        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        _dispatcherQueue.TryEnqueue(() =>
         {
             SelectedAccount = loginId;
             IsFetchingRepos = true;
@@ -1302,21 +1306,34 @@ public partial class AddRepoViewModel : ObservableObject
 
             repoSearchInformation = runningTask.Result;
             _repositoriesForAccount = repoSearchInformation.Repositories;
-            _allRepositories = repoSearchInformation.Repositories.Select(x => new RepoViewListItem(x)).ToList();
+            try
+            {
+                _allRepositories = repoSearchInformation.Repositories.Select(x => new RepoViewListItem(x)).ToList();
+            }
+            catch (Exception ex)
+            {
+                GlobalLog.Logger?.ReportError($"Exception thrown while selecting repositories from the return object", ex);
+                _allRepositories = new();
+            }
         }
 
         // Update the UI.
-        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        _dispatcherQueue.TryEnqueue(() =>
         {
-            ShouldShowGranularSearch = !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsLabel) &&
-                        !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsPlaceHolderText) &&
-                        repoSearchInformation.SelectionOptions.Count != 0;
+            ShouldShowGranularSearch = DoesTheExtensionUseGranularSearch(repoSearchInformation);
             SelectionOptionsPrefix = repoSearchInformation.SelectionOptionsLabel;
             SelectionOptions = new ObservableCollection<string>(repoSearchInformation.SelectionOptions);
             SelectionOptionsPlaceholderText = repoSearchInformation.SelectionOptionsPlaceHolderText;
 
             IsFetchingRepos = false;
         });
+    }
+
+    private bool DoesTheExtensionUseGranularSearch(RepositorySearchInformation repoSearchInformation)
+    {
+        return !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsLabel) &&
+                        !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsPlaceHolderText) &&
+                        repoSearchInformation.SelectionOptions.Count != 0;
     }
 
     public async Task SearchForRepos(string repositoryProvider, string loginId)

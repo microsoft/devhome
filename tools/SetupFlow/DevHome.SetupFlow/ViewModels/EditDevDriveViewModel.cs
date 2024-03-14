@@ -77,7 +77,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// Some builds don't have dev drives.
     /// </summary>
     [ObservableProperty]
-    private Visibility _showDevDriveInformation;
+    private bool _showDevDriveInformation;
 
     /// <summary>
     /// The customization hyperlink button visibility changes if the user wants a new dev drive.
@@ -127,13 +127,13 @@ public partial class EditDevDriveViewModel : ObservableObject
     {
         if (CanShowDevDriveUI)
         {
-            ShowDevDriveInformation = Visibility.Visible;
+            ShowDevDriveInformation = true;
         }
     }
 
     public void HideDevDriveUI()
     {
-        ShowDevDriveInformation = Visibility.Collapsed;
+        ShowDevDriveInformation = false;
     }
 
     public void RemoveNewDevDrive()
@@ -216,13 +216,13 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </remarks>
     public void SetUpStateIfDevDrivesIfExists()
     {
-        ShowDevDriveInformation = DevDriveUtil.IsDevDriveFeatureEnabled ? Visibility.Visible : Visibility.Collapsed;
-        if (ShowDevDriveInformation == Visibility.Visible)
+        ShowDevDriveInformation = DevDriveUtil.IsDevDriveFeatureEnabled;
+        if (ShowDevDriveInformation)
         {
             var existingDevDrives = _devDriveManager.GetAllDevDrivesThatExistOnSystem();
             if (existingDevDrives.Any())
             {
-                ShowDevDriveInformation = Visibility.Collapsed;
+                ShowDevDriveInformation = false;
                 DevDrive = existingDevDrives.OrderByDescending(x => x.DriveSizeInBytes).First();
                 CanShowDevDriveUI = false;
                 return;

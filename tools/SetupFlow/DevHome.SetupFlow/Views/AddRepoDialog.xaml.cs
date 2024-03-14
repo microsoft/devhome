@@ -370,6 +370,7 @@ public partial class AddRepoDialog : ContentDialog
         var searchTerms = AddRepoViewModel.GetSearchTerms();
         ShowingSearchTermsGrid.RowSpacing = 10;
 
+        // Set up the UI for searching.
         var searchTermRow = 0;
         for (var termIndex = 0; termIndex < searchTerms.Count; termIndex++)
         {

@@ -308,6 +308,6 @@ public sealed partial class EditClonePathDialog
             }
         }
 
-        EditDevDriveViewModel.ShowDevDriveInformation = Visibility.Visible;
+        EditDevDriveViewModel.ShowDevDriveInformation = true;
     }
 }

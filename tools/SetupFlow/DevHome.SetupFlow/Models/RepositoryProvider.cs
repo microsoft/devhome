@@ -309,11 +309,11 @@ internal sealed class RepositoryProvider
             // Because tasks can be canceled DevHome should emit different logs.
             if (aggregateException.InnerException is OperationCanceledException)
             {
-                GlobalLog.Logger?.ReportInfo($"Get Repos operation was cancalled.");
+                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Get Repos operation was cancalled.");
             }
             else
             {
-                GlobalLog.Logger?.ReportError($"{aggregateException}");
+                Log.Logger?.ReportInfo(Log.Component.RepoConfig, aggregateException.ToString());
             }
         }
         catch (Exception ex)

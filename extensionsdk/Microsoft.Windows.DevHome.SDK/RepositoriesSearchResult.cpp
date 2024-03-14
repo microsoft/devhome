@@ -27,7 +27,7 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
         _SelectionsOptionsLabel(L""),
         _SelectionOptionsName(L""),
         _SelectionOptions(std::vector<hstring>()),
-        _Result(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), winrt::to_hstring("Something went wrong"), diagnosticText)
+        _Result(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), diagnosticText, diagnosticText))
     {
     }
 
