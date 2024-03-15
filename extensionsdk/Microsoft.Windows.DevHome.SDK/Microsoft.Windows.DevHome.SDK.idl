@@ -97,7 +97,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
         // This should return a list of suggestions given fieldValues.
         // "Suggestions" is dependant on the extension and how it keeps track of repositories.
-        Windows.Foundation.IAsyncOperation<IIterable<String> > GetValuesForSearchFieldAsync(IMapView<String, String> fieldValues, String requestedSearchField, IDeveloperId developerId);
+        Windows.Foundation.IAsyncOperation<IVectorView<String> > GetValuesForSearchFieldAsync(IMapView<String, String> fieldValues, String requestedSearchField, IDeveloperId developerId);
         Windows.Foundation.IAsyncOperation<RepositoriesSearchResult> GetRepositoriesAsync(IMapView<String, String> fieldValues, IDeveloperId developerId);
     };
 
