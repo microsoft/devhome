@@ -1,6 +1,6 @@
 # What are Dev Environments in Dev Home
 
-Dev Environments is the name Dev Home holistically gives a compute system which can contain dev projects. These projects contain apps, packages and cloned repositories. The goal of Dev Environments is for developers to have a one stop shop for all their environments in a single place.
+Dev Environments is the name Dev Home holistically gives a compute system and the dev projects it contains. These projects contain apps, packages and cloned repositories. The goal of Dev Environments is for developers to have a one stop shop for all their environments in a single place.
 
 ## Terminology
 
@@ -11,49 +11,49 @@ Dev Environments is the name Dev Home holistically gives a compute system which 
 1. Remote machine
 1. Container
 
-Dev Home uses the [IComputeSystem](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L757) interface to interact with these types of software/Hardware systems. Extension developers should create and return an `IComputeSystem` for every compute system they want Dev Home to interact with. The following management operations can be performed by the interface.
+Dev Home uses the [IComputeSystem](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L757) interface to interact with these types of software/hardware systems. Extension developers should create and return an `IComputeSystem` for every compute system they want Dev Home to interact with. The following management operations can be performed by the interface.
 
 Operations:
 
-1. Start the system,
-1. ShutDown the system,
-1. Terminate the system,
-1. Delete the system,
-1. Save the state of the system,
-1. Pause the system,
-1. Resume the system,
-1. Restart the system,
-1. Create a Snapshot of the system,
-1. Revert to the last Snapshot of the system,
-1. Delete a Snapshot on the system,
-1. Apply a configuration file onto a system,
+1. Start the system
+1. ShutDown the system
+1. Terminate the system
+1. Delete the system
+1. Save the state of the system
+1. Pause the system
+1. Resume the system
+1. Restart the system
+1. Create a Snapshot of the system
+1. Revert to the last Snapshot of the system
+1. Delete a Snapshot on the system
+1. Apply a configuration file onto a system
 1. Modify the properties of the system
 
-Note: Extension developers can limit which operations an `IComputeSystem` supports by utilizing the [ComputeSystemOperations](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L510) enum.
+Note: Extension developers can limit which operations each `IComputeSystem` supports by utilizing the [ComputeSystemOperations](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L510) enum.
 
-Extensions should create objects that represent each compute system that their underlaying platform manages. These objects would implement the `IComputeSystem` interface, contain data about the object and have methods to interact with the underlaying platform. For example, The Hyper-V extension interacts directly with the Hyper-V virtual machine management service to perform the above operations under the hood. However, to provide Dev Home the ability to initiate one of these operations, we have created the `IComputeSystem` interface. Extensions create their objects, map them to the `IComputeSystem` interface and send these back to Dev Home. Dev Home can initiate one of these operation via a method call in the `IComputeSystem` interface, based on user input and then the extension can interact with its underlaying platform to perform that operation.  
+Extensions should create objects that represent each compute system that their underlaying platform manages. These objects would implement the `IComputeSystem` interface, contain data about the software/hardware system and have methods to interact with them. For example, The Hyper-V extension interacts directly with the Hyper-V virtual machine management service to perform the above operations on the virtual machine. So, to provide Dev Home the ability to initiate one of these operations, we have created the `IComputeSystem` interface. Extensions are expected to map their software/hardware system to the `IComputeSystem` interface and send these back to Dev Home. Dev Home can initiate one of these operations via a method call in the `IComputeSystem` interface, based on user input. The extension can then interact with its underlaying platform to perform that operation.  
 
 **Compute system provider:** A compute system provider is the provider type that Dev Home will query for when initially interacting with an extension. The compute system provider is used to perform general operations that are not specific to a ComputeSystem. Extension developers should implement the [IComputeSystemProvider](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L458) to perform the following operations:
 
-1. Retreive a list of `IComputeSystem`s
-1. Create a `IComputeSystem`
-1. Provide Dev Home with an Adaptive card for the creation of an `IComputeSystem`
-1. Provide Dev Home with an Adaptive card for the modification of an `IComputeSystem`s properties
+1. Retrieve a list of `IComputeSystem`s
+1. Create a new compute system
+1. Provide Dev Home with an Adaptive card for the creation of a new compute system
+1. Provide Dev Home with an Adaptive card for the modification of a compute systems properties
 
 Note: Only the creation operation can be limited by utilizing the [ComputeSystemProviderOperations](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L406) enum.
 
 ## What is needed to create a Dev Environment extension?
 
-First take a look at Dev Homes extensions documentation [here](https://github.com/microsoft/devhome/blob/main/docs/extensions.md)
-Then see the sample extension documentation Dev Homes sample extension [here](https://github.com/microsoft/devhome/tree/main/extensions/SampleExtension)
+First take a look at Dev Homes extensions documentation [here.](https://github.com/microsoft/devhome/blob/main/docs/extensions.md)
+Then see Dev Homes sample extension [here.](https://github.com/microsoft/devhome/tree/main/extensions/SampleExtension)
 
 Your extension will need to do three things to be considered an Extension that Dev Home recognizes as being a Dev Environment extension.
 
-1. Within the `Package.appxmanifest` file for the package, the `<ComputeSystem />`  attribute should be added to the list of the extensions supported interfaces. See: Dev Home's [appxmanifest file](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/src/Package.appxmanifest#L75)
-
-1. Your extension should implement the [IExtension](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L7) interface and within its `GetProvider` method return a single `IComputeSystemProvider` or a list of `IComputeSystemProvider`s
+1. Within the `Package.appxmanifest` file for the package, the `<ComputeSystem />`  attribute should be added to the list of the extensions supported interfaces. See: Dev Home's [appxmanifest file for an example](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/src/Package.appxmanifest#L75)
 
 1. A class that implements the [IComputeSystemProvider](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L458) interface should be created. This interface is used by Dev Home to perform specific operations like retrieving a list of [IComputeSystem](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L757) interfaces and creating a compute system.
+
+1. Your extension should implement the [IExtension](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L7) interface and within its `GetProvider` method return a single `IComputeSystemProvider` or a list of `IComputeSystemProvider`s.
 
 ## Examples
 
