@@ -1,7 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Globalization;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
 
 namespace HyperVExtension.Helpers;
 
@@ -18,7 +22,6 @@ public static class BytesHelper
     /// <summary>
     /// Converts bytes represented by a long value to its human readable string
     /// equivalent in either megabytes, gigabytes or terabytes.
-    /// Note: this is only for internal use and is not localized.
     /// </summary>
     public static string ConvertFromBytes(ulong size)
     {
@@ -30,7 +33,46 @@ public static class BytesHelper
         {
             return $"{(size / OneGbInBytes).ToString("F", CultureInfo.InvariantCulture)} GB";
         }
+        else if (size >= OneMbInBytes)
+        {
+            return $"{(size / OneMbInBytes).ToString("F", CultureInfo.InvariantCulture)} MB";
+        }
 
-        return $"{(size / OneMbInBytes).ToString("F", CultureInfo.InvariantCulture)} MB";
+        return $"{(size / OneKbInBytes).ToString("F", CultureInfo.InvariantCulture)} KB";
+    }
+
+    /// <summary>
+    /// Converts from a ulong amount of bytes to a localized string representation of that byte size in gigabytes.
+    /// Relies on StrFormatByteSizeEx to convert to localized.
+    /// </summary>
+    /// <returns>
+    /// If succeeds internally return localized size in gigabytes, otherwise falls back to community toolkit
+    /// implementation which is in English.
+    /// </returns>
+    public static string ConvertBytesToString(ulong sizeInBytes)
+    {
+        unsafe
+        {
+            // 15 characters + null terminator.
+            var buffer = new string(' ', 16);
+            fixed (char* tempPath = buffer)
+            {
+                var result =
+                    PInvoke.StrFormatByteSizeEx(
+                        sizeInBytes,
+                        SFBS_FLAGS.SFBS_FLAGS_TRUNCATE_UNDISPLAYED_DECIMAL_DIGITS,
+                        tempPath,
+                        PInvoke.MAX_PATH);
+                if (result != 0)
+                {
+                    // Fallback to using non localized version which is in english.
+                    return ConvertFromBytes(sizeInBytes);
+                }
+                else
+                {
+                    return buffer.Trim().Trim('\0');
+                }
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Management.Automation;
 using System.Security.Principal;
 using System.ServiceProcess;
+using System.Xml.Linq;
 using DevHome.Logging;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Exceptions;
@@ -712,6 +713,77 @@ public class HyperVManager : IHyperVManager, IDisposable
         var currentUser = _host.GetService<IWindowsIdentityService>().GetCurrentWindowsIdentity();
         var wasHyperVSidFound = currentUser?.Groups?.Any(sid => sid.Value == HyperVStrings.HyperVAdminGroupWellKnownSid);
         return wasHyperVSidFound ?? false;
+    }
+
+    /// <inheritdoc cref="IHyperVManager.GetVirtualMachineHost"/>
+    public HyperVVirtualMachineHost GetVirtualMachineHost()
+    {
+        StartVirtualMachineManagementService();
+
+        // Start building command line statement to get the virtual machine host.
+        var statementBuilder = new StatementBuilder().AddCommand(HyperVStrings.GetVMHost).Build();
+        var result = _powerShellService.Execute(statementBuilder, PipeType.None);
+
+        if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
+        {
+            throw new HyperVManagerException($"Unable to get Local Hyper-V host: {result.CommandOutputErrorMessage}");
+        }
+
+        // return the host object. It should be the only object in the list.
+        return new HyperVVirtualMachineHost(result.PsObjects.First());
+    }
+
+    /// <inheritdoc cref="IHyperVManager.CreateVirtualMachineFromGallery"/>
+    public HyperVVirtualMachine CreateVirtualMachineFromGallery(VirtualMachineCreationParameters parameters)
+    {
+        StartVirtualMachineManagementService();
+
+        // Start building command line statement to create the VM.
+        var statementBuilderForNewVm = new StatementBuilder()
+            .AddCommand(HyperVStrings.NewVM)
+            .AddParameter(HyperVStrings.VM, parameters.Name)
+            .AddParameter(HyperVStrings.Generation, parameters.Generation)
+            .AddParameter(HyperVStrings.VHDPath, parameters.VHDPath)
+            .AddParameter(HyperVStrings.SwitchName, HyperVStrings.DefaultSwitchName)
+            .Build();
+
+        var result = _powerShellService.Execute(statementBuilderForNewVm, PipeType.None);
+        if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
+        {
+            throw new HyperVManagerException($"Unable to create the virtual machine: {result.CommandOutputErrorMessage}");
+        }
+
+        var returnedPsObject = result.PsObjects.First();
+        var virtualMachine = _hyperVVirtualMachineFactory(returnedPsObject);
+
+        // Now we can set the processor count.
+        var statementBuilderForVmProperties = new StatementBuilder()
+            .AddCommand(HyperVStrings.SetVM)
+            .AddParameter(HyperVStrings.VM, returnedPsObject.BaseObject)
+            .AddParameter(HyperVStrings.ProcessorCount, parameters.ProcessorCount)
+            .AddParameter(HyperVStrings.EnhancedSessionTransportType, parameters.EnhancedSessionTransportType);
+
+        // Now we can set the startup memory.
+        if (virtualMachine.MemoryMinimum < parameters.MemoryStartupBytes && parameters.MemoryStartupBytes < virtualMachine.MemoryMaximum)
+        {
+            statementBuilderForVmProperties.AddParameter(HyperVStrings.MemoryStartupBytes, parameters.MemoryStartupBytes);
+        }
+
+        // Now we can set the secure boot.
+        statementBuilderForVmProperties.AddCommand(HyperVStrings.SetVMFirmware)
+            .AddParameter(HyperVStrings.VM, returnedPsObject.BaseObject)
+            .AddParameter(HyperVStrings.EnableSecureBoot, parameters.SecureBoot);
+
+        result = _powerShellService.Execute(statementBuilderForVmProperties.Build(), PipeType.None);
+        if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
+        {
+            // don't throw. If we can't set the processor count, we'll just log it. The VM was still created with the default processor count of 1,
+            // and The VM is still created with the default memory size of 512MB. The user can change this  later.
+            Logging.Logger()?.ReportError($"Unable to set VM properties count: {parameters.ProcessorCount} and startUpBytes: {parameters.MemoryStartupBytes} for VM {virtualMachine}: {result.CommandOutputErrorMessage}");
+        }
+
+        // return the created VM object
+        return virtualMachine;
     }
 
     private bool AreStringsTheSame(string? stringA, string? stringB)
