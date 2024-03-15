@@ -4,9 +4,7 @@
 <pg:ToolPage
     x:Class="DevHome.SetupFlow.Views.SetupFlowPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:pg="using:DevHome.Common"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
@@ -15,14 +13,12 @@
     xmlns:views="using:DevHome.SetupFlow.Views"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
-    mc:Ignorable="d">
+    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never">
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
     </Page.Resources>
 
-    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
@@ -83,6 +79,7 @@
 
         <controls:SetupFlowNavigation
             Grid.Row="1"
+            MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}"
             Visibility="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.IsNavigationBarVisible, Mode=OneWay}">
             <i:Interaction.Behaviors>
                 <setupFlowBehaviors:SetupFlowNavigationBehavior>
