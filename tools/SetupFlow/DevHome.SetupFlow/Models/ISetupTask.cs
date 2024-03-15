@@ -4,10 +4,6 @@
 extern alias Projection;
 
 using DevHome.SetupFlow.ViewModels;
-using System;
-using DevHome.Common.Views;
-using DevHome.SetupFlow.ViewModels;
-using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 

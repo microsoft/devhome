@@ -23,6 +23,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.WingetConfigure;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 using LibGit2Sharp;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
@@ -99,6 +100,8 @@ public class ConfigureTargetTask : ISetupTask
     public SDKApplyConfigurationResult Result { get; private set; }
 
     public IAsyncOperation<ApplyConfigurationResult> ApplyConfigurationAsyncOperation { get; private set; }
+
+    public ISummaryInformationViewModel SummaryScreenInformation => throw new NotImplementedException();
 
     public ConfigureTargetTask(
         ISetupFlowStringResource stringResource,

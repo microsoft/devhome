@@ -20,10 +20,12 @@
             <Run Text="Detected configuration file name '" Foreground="{ThemeResource TextFillColorSecondary}"/>
             <Run Text="{x:Bind ViewModel.FileName}" FontWeight="Bold" Foreground="{ThemeResource TextFillColorSecondary}"/>
             <Run Text="' while cloning '" Foreground="{ThemeResource TextFillColorSecondary}"/>
+            <Run Text="{x:Bind ViewModel.OwningAccount}" FontWeight="Bold" Foreground="{ThemeResource TextFillColorSecondary}"/>
+            <Run Text="/" FontWeight="Bold" Foreground="{ThemeResource TextFillColorSecondary}"/>
             <Run Text="{x:Bind ViewModel.RepoName}" FontWeight="Bold" Foreground="{ThemeResource TextFillColorSecondary}"/>
             <Run Text="'." Foreground="{ThemeResource TextFillColorSecondary}"/>
         </TextBlock>
-        <Grid Grid.Row="2" BorderBrush="red" BorderThickness="1" HorizontalAlignment="Stretch">
+        <Grid Grid.Row="2" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>

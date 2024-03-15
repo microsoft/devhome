@@ -263,6 +263,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                 {
                     (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).FilePathAndName = fileToUse;
                     (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).RepoName = RepositoryName;
+                    (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).OwningAccount = RepositoryToClone.OwningAccountName ?? string.Empty;
                 }
             }
 

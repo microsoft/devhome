@@ -42,11 +42,15 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
         }
     }
 
-    public bool HasContent => !string.IsNullOrEmpty(FilePathAndName) && !string.IsNullOrEmpty(RepoName);
+    public bool HasContent => !string.IsNullOrEmpty(FilePathAndName)
+        && !string.IsNullOrEmpty(RepoName)
+        && !string.IsNullOrEmpty(OwningAccount);
 
     public string FilePathAndName { get; set; } = string.Empty;
 
     public string RepoName { get; set; } = string.Empty;
+
+    public string OwningAccount { get; set; } = string.Empty;
 
     public CloneRepoSummaryInformationViewModel(IHost host)
     {
@@ -60,14 +64,14 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
 
         if (FilePathAndName is null)
         {
-            TelemetryFactory.Get<ITelemetry>().Log(_eventName, LogLevel.Critical, new CloneRepoNextStepError(_viewOperation, new ArgumentNullException(nameof(FilePathAndName)), RepoName), _relatedActivityId);
+            TelemetryFactory.Get<ITelemetry>().Log(_eventName, LogLevel.Critical, new CloneRepoNextStepError(_viewOperation, new ArgumentNullException(nameof(FilePathAndName)).ToString(), RepoName), _relatedActivityId);
             GlobalLog.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FilePathAndName)} is null when trying to view file.");
             return;
         }
 
         if (string.IsNullOrEmpty(FilePathAndName))
         {
-            TelemetryFactory.Get<ITelemetry>().Log(_eventName, LogLevel.Critical, new CloneRepoNextStepError(_viewOperation, new ArgumentException($"{nameof(FilePathAndName)} is empty."), RepoName), _relatedActivityId);
+            TelemetryFactory.Get<ITelemetry>().Log(_eventName, LogLevel.Critical, new CloneRepoNextStepError(_viewOperation, new ArgumentException($"{nameof(FilePathAndName)} is empty.").ToString(), RepoName), _relatedActivityId);
             GlobalLog.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FilePathAndName)} is empty when trying to view file.");
             return;
         }
@@ -81,7 +85,7 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
         }
         catch (PathTooLongException ex)
         {
-            TelemetryFactory.Get<ITelemetry>().Log(_eventName, LogLevel.Critical, new CloneRepoNextStepError(_viewOperation, ex, RepoName), _relatedActivityId);
+            TelemetryFactory.Get<ITelemetry>().Log(_eventName, LogLevel.Critical, new CloneRepoNextStepError(_viewOperation, ex.ToString(), RepoName), _relatedActivityId);
             GlobalLog.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FilePathAndName)} is too long.");
             return;
         }
@@ -96,14 +100,14 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
 
         if (FileName is null)
         {
-            TelemetryFactory.Get<ITelemetry>().LogError(_eventName, LogLevel.Critical, new CloneRepoNextStepError(_runOperation, new ArgumentNullException(nameof(FileName)), RepoName), _relatedActivityId);
+            TelemetryFactory.Get<ITelemetry>().LogError(_eventName, LogLevel.Critical, new CloneRepoNextStepError(_runOperation, new ArgumentNullException(nameof(FileName)).ToString(), RepoName), _relatedActivityId);
             GlobalLog.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FileName)} is null when trying to run file.");
             return;
         }
 
         if (FilePathAndName is null)
         {
-            TelemetryFactory.Get<ITelemetry>().LogError(_eventName, LogLevel.Critical, new CloneRepoNextStepError(_runOperation, new ArgumentException(nameof(FileName)), RepoName), _relatedActivityId);
+            TelemetryFactory.Get<ITelemetry>().LogError(_eventName, LogLevel.Critical, new CloneRepoNextStepError(_runOperation, new ArgumentException(nameof(FileName)).ToString(), RepoName), _relatedActivityId);
             GlobalLog.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FileName)} is null when trying to run file.");
             return;
         }
@@ -122,7 +126,7 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
     {
         if (processStartInfo is null)
         {
-            TelemetryFactory.Get<ITelemetry>().LogError(_eventName, LogLevel.Critical, new CloneRepoNextStepError(operation, new ArgumentNullException(nameof(processStartInfo)), RepoName), _relatedActivityId);
+            TelemetryFactory.Get<ITelemetry>().LogError(_eventName, LogLevel.Critical, new CloneRepoNextStepError(operation, new ArgumentNullException(nameof(processStartInfo)).ToString(), RepoName), _relatedActivityId);
             GlobalLog.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(Process)} is null.  Operation {operation}");
             return;
         }
@@ -134,17 +138,17 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
         catch (Win32Exception win32Exception)
         {
             // Usually because the UAC prompt was declined.
-            TelemetryFactory.Get<ITelemetry>().LogError(_eventName, LogLevel.Critical, new CloneRepoNextStepError(operation, win32Exception, RepoName), _relatedActivityId);
+            TelemetryFactory.Get<ITelemetry>().LogError(_eventName, LogLevel.Critical, new CloneRepoNextStepError(operation, win32Exception.ToString(), RepoName), _relatedActivityId);
             GlobalLog.Logger?.ReportError($"An error happened when starting the process.  Operation {operation}", win32Exception);
         }
         catch (ObjectDisposedException objectDisposedException)
         {
-            TelemetryFactory.Get<ITelemetry>().LogError(_eventName, LogLevel.Critical, new CloneRepoNextStepError(operation, objectDisposedException, RepoName), _relatedActivityId);
+            TelemetryFactory.Get<ITelemetry>().LogError(_eventName, LogLevel.Critical, new CloneRepoNextStepError(operation, objectDisposedException.ToString(), RepoName), _relatedActivityId);
             GlobalLog.Logger?.ReportError($"THe process object was disposed before it could start.  Operation {operation}", objectDisposedException);
         }
         catch (InvalidOperationException invalidOperationException)
         {
-            TelemetryFactory.Get<ITelemetry>().LogError(_eventName, LogLevel.Critical, new CloneRepoNextStepError(operation, invalidOperationException, RepoName), _relatedActivityId);
+            TelemetryFactory.Get<ITelemetry>().LogError(_eventName, LogLevel.Critical, new CloneRepoNextStepError(operation, invalidOperationException.ToString(), RepoName), _relatedActivityId);
             GlobalLog.Logger?.ReportError($"An error happened when starting the process.  Operation {operation}", invalidOperationException);
         }
     }

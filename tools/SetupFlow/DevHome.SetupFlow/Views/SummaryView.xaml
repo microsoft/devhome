@@ -27,7 +27,7 @@
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter"  TrueValue="Collapsed" FalseValue="Visible" />
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
                     <ControlTemplate x:Key="LinksTemplate">
-                        <StackPanel Orientation="Vertical" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
+                        <StackPanel Orientation="Vertical" >
                             <StackPanel.Resources>
                                 <Style TargetType="HyperlinkButton" BasedOn="{StaticResource TextBlockButtonStyle}"/>
                             </StackPanel.Resources>
@@ -196,7 +196,8 @@
                 <Grid RowSpacing="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
-                        <RowDefinition Height="*" />
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition />
                     </Grid.RowDefinitions>
 
                     <!-- Show any failed tasks if the loading screen has any failed tasks-->
@@ -253,59 +254,60 @@
                             </ListView>
                         </Grid>
                     </Grid>
-                <!-- Number of apps and repos cloned.  Show if not failed tasks-->
+                    <!-- Number of apps and repos cloned.  Show if not failed tasks-->
                     <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
                         HorizontalAlignment="Stretch" 
                         Padding="0,15,0,30"
                         BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
                         BorderThickness="0, 1, 0, 2">
                         <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
-                                <ColumnDefinition Width="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
+                            <ColumnDefinition Width="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
+                            <ColumnDefinition Width="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
                         <Grid
                             Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}"
                             Grid.Column="0"
                             HorizontalAlignment="Center">
                             <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <TextBlock 
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock 
                                     Grid.Row="0" Text="{x:Bind ViewModel.AppsDownloaded.Count}" 
                                     FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
                                     FontWeight="{StaticResource InfoBarTitleFontWeight}" 
                                     HorizontalAlignment="center"/>
-                                <TextBlock 
+                            <TextBlock 
                                     Grid.Row="1" 
                                     Text="{x:Bind ViewModel.ApplicationsClonedText}"
                                     HorizontalAlignment="center"
                                     Foreground="{ThemeResource TextFillColorSecondary}"/>
-                            </Grid>
-                            <Grid
-                                Grid.Column="1"
-                                Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <TextBlock 
+                        </Grid>
+                        <Grid
+                            Grid.Column="1"
+                            Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock 
                                     Grid.Row="0" 
                                     Text="{x:Bind ViewModel.RepositoriesCloned.Count}" 
                                     FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
                                     FontWeight="{StaticResource InfoBarTitleFontWeight}"
                                     HorizontalAlignment="Center"/>
-                                <TextBlock 
+                            <TextBlock 
                                     Grid.Row="1" 
                                     HorizontalAlignment="Center"
                                     Text="{x:Bind ViewModel.RepositoriesClonedText}"
                                     Foreground="{ThemeResource TextFillColorSecondary}"/>
-                            </Grid>
-                            <Button Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
+                        </Grid>
+                        <Button Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" 
                                 HorizontalAlignment="Center" 
                                 Command="{x:Bind ViewModel.GoToDashboardCommand, Mode=OneWay}" 
@@ -313,20 +315,16 @@
                                 Margin="0, 50, 0, 0"/>
                     </Grid>
                     <!-- Next steps section -->
-                    <Grid Grid.Row="1">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <ListView Grid.Row="0" ItemsSource="{x:Bind ViewModel.NextSteps, Mode=OneWay}" SelectionMode="None">
+                    <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.NextSteps, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
+                        <ListView ItemsSource="{x:Bind ViewModel.NextSteps, Mode=OneWay}" SelectionMode="None" ItemContainerStyle="{StaticResource DefaultListViewItemStyle}">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="UserControl">
-                                    <ContentControl Content="{x:Bind}"/>
+                                    <ContentControl Content="{x:Bind}" HorizontalContentAlignment="Stretch"/>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                        <ContentControl Grid.Row="1" Template="{ThemeResource LinksTemplate}" />
                     </Grid>
+                    <ContentControl Grid.Row="2" Template="{ThemeResource LinksTemplate}" />
                 </Grid>
 
                 <!-- Displays the repos cloned and apps downloaded -->
