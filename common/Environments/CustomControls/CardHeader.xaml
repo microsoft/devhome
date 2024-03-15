@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.Common.Environments.CustomControls.CardHeader"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DevHome.Common.Environments.CustomControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid
+        Style="{StaticResource CardHeaderContainerStyle}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <!-- Grid for the Compute system caption icon and the Compute system caption title -->
+        <Grid
+            Grid.Column="0"
+            Style="{StaticResource ComputeSystemCaptionIconAndTitleContainerStyle}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <!-- Compute system caption icon image wrapped in a Viewbox. -->
+            <Viewbox
+                Grid.Column="0"
+                Style="{StaticResource ComputeSystemIconStyle}">
+                <Grid>
+                    <!-- Image for the card header. -->
+                    <Border Style="{StaticResource ComputeSystemIconBorderStyle}">
+                        <Image 
+                            Source="{x:Bind HeaderIcon, Mode=OneWay}"
+                            Width="{StaticResource ComputeSystemIcon12px}"
+                            Height="{StaticResource ComputeSystemIcon12px}"
+                            Stretch="Fill"/>
+                    </Border>
+                </Grid>
+            </Viewbox>
+            <!-- Compute system caption title -->
+            <TextBlock
+                Grid.Column="1"
+                Style="{StaticResource ComputeSystemTitleStyle}"
+                Text="{x:Bind HeaderCaption, Mode=OneWay}" 
+                IsTextSelectionEnabled="True"/>
+        </Grid>
+        <!-- 
+            For an Action control, like a three dots button. Pass a DataTemplate for your control to the CardHeader's ActionControlTemplate in xaml.
+        -->
+        <ContentControl
+            Grid.Column="1"
+            IsTabStop="False"
+            HorizontalContentAlignment="Right"
+            VerticalContentAlignment="Stretch"
+            ContentTemplate="{x:Bind ActionControlTemplate, Mode=OneWay}"/>
+    </Grid>
+</UserControl>

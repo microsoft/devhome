@@ -39,15 +39,6 @@ public sealed partial class RepoConfigView : UserControl
 
     public void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        if (ViewModel != null)
-        {
-            // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
-            foreach (var cloneInformation in ViewModel.RepoReviewItems)
-            {
-                cloneInformation.SetIcon(sender.ActualTheme);
-            }
-        }
-
         if (_addRepoDialog != null)
         {
             _addRepoDialog.RequestedTheme = sender.ActualTheme;
@@ -67,7 +58,7 @@ public sealed partial class RepoConfigView : UserControl
 
         telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Open", dialogName), ActivityId);
 
-        _addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), ActivityId, ViewModel.Host);
+        _addRepoDialog = new AddRepoDialog(ViewModel.Orchestrator, ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), ActivityId, ViewModel.Host);
         var getExtensionsTask = _addRepoDialog.GetExtensionsAsync();
         var setupDevDrivesTask = _addRepoDialog.AddRepoViewModel.SetupDevDrivesAsync();
         _addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;

@@ -17,10 +17,7 @@ namespace DevHome.Views;
 
 public sealed partial class ShellPage : Page
 {
-    public ShellViewModel ViewModel
-    {
-        get;
-    }
+    public ShellViewModel ViewModel { get; }
 
     public ShellPage(ShellViewModel viewModel)
     {
@@ -59,6 +56,8 @@ public sealed partial class ShellPage : Page
         // Update the title bar if the system theme changes.
         TitleBarHelper.UpdateTitleBar(App.MainWindow, ActualTheme);
         AppTitleBar.Repaint();
+
+        ViewModel.NotifyActualThemeChanged();
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)

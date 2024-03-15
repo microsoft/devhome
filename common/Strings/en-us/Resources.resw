@@ -1,5 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -65,5 +124,93 @@
   <data name="CloseButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Close</value>
     <comment>Name of the button that closes a view</comment>
+  </data>
+  <data name="ComputeSystemAssignedMemory" xml:space="preserve">
+    <value>RAM:</value>
+    <comment>Title for the ram property of a compute system</comment>
+  </data>
+  <data name="ComputeSystemCpu" xml:space="preserve">
+    <value>vCPU:</value>
+    <comment>Title for the virtual cpu property of a compute system</comment>
+  </data>
+  <data name="ComputeSystemCreated" xml:space="preserve">
+    <value>Created</value>
+    <comment>Text for state of the compute system when it is created</comment>
+  </data>
+  <data name="ComputeSystemCreating" xml:space="preserve">
+    <value>Creating</value>
+    <comment>Text for the state of the compute system when it is being created</comment>
+  </data>
+  <data name="ComputeSystemDeleted" xml:space="preserve">
+    <value>Deleted</value>
+    <comment>Text for state of the compute system when it is deleted</comment>
+  </data>
+  <data name="ComputeSystemDeleting" xml:space="preserve">
+    <value>Deleting</value>
+    <comment>Text for the state of the compute system when it is being deleted</comment>
+  </data>
+  <data name="ComputeSystemPaused" xml:space="preserve">
+    <value>Paused</value>
+    <comment>Text for state of the compute system when it is paused</comment>
+  </data>
+  <data name="ComputeSystemPausing" xml:space="preserve">
+    <value>Pausing</value>
+    <comment>Text for the state of the compute system when it is being paused</comment>
+  </data>
+  <data name="ComputeSystemRestarting" xml:space="preserve">
+    <value>Restarting</value>
+    <comment>Text for the state of the compute system when it is restarting</comment>
+  </data>
+  <data name="ComputeSystemRunning" xml:space="preserve">
+    <value>Running</value>
+    <comment>Text for state of the compute system when it is running</comment>
+  </data>
+  <data name="ComputeSystemSaved" xml:space="preserve">
+    <value>Saved</value>
+    <comment>Text for state of the compute system when it is saved</comment>
+  </data>
+  <data name="ComputeSystemSaving" xml:space="preserve">
+    <value>Saving</value>
+    <comment>Text for the state of the compute system when it is saving</comment>
+  </data>
+  <data name="ComputeSystemStarting" xml:space="preserve">
+    <value>Starting</value>
+    <comment>Text for state of the compute system when it is starting</comment>
+  </data>
+  <data name="ComputeSystemStopped" xml:space="preserve">
+    <value>Stopped</value>
+    <comment>Text for state of the compute system when it is stopped</comment>
+  </data>
+  <data name="ComputeSystemStopping" xml:space="preserve">
+    <value>Stopping</value>
+    <comment>Text for state of the compute system when it is stopping</comment>
+  </data>
+  <data name="ComputeSystemStorage" xml:space="preserve">
+    <value>Storage:</value>
+    <comment>Title for the storage property of the compute system. (The amount of disk space it has).</comment>
+  </data>
+  <data name="ComputeSystemUnexpectedError" xml:space="preserve">
+    <value>An unexpected error occurred while attempting to perform the operation on the {0} provider. Please see the logs for more information.</value>
+    <comment>Locked={"{0}"} Text for when there was an error performing a compute system operation. . {0} is the name of the compute system</comment>
+  </data>
+  <data name="ComputeSystemUnknown" xml:space="preserve">
+    <value>Unknown</value>
+    <comment>Text for the state of the compute system when it is unknown</comment>
+  </data>
+  <data name="ComputeSystemUnknownWithColon" xml:space="preserve">
+    <value>Unknown:</value>
+    <comment>Title for a property of the compute system that is unknown.</comment>
+  </data>
+  <data name="ComputeSystemUptime" xml:space="preserve">
+    <value>Uptime:</value>
+    <comment>Title for the uptime property of a compute system. (The amount of time its been running)</comment>
+  </data>
+  <data name="UserNotInHyperAdminGroupButton" xml:space="preserve">
+    <value>Launch computer management</value>
+    <comment>Button text for the user to click, in order for us to add them to the Hyper-V admin group</comment>
+  </data>
+  <data name="UserNotInHyperAdminGroupMessage" xml:space="preserve">
+    <value>The current user is not a Hyper-V administrator. Hyper-V Virtual machines will not load. Please add the user to the Hyper-V Administrators group and reboot.</value>
+    <comment>Text explaining that the user is not in the hyper-v admin group and that we need to add them.</comment>
   </data>
 </root>

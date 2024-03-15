@@ -21,6 +21,8 @@ public partial class FolderPickerViewModel : ObservableObject
 {
     private readonly ISetupFlowStringResource _stringResource;
 
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+
     /// <summary>
     /// Some pages don't show a folder picker.
     /// </summary>
@@ -63,12 +65,14 @@ public partial class FolderPickerViewModel : ObservableObject
     [ObservableProperty]
     private bool _showFolderPickerError;
 
-    public FolderPickerViewModel(ISetupFlowStringResource stringResource)
+    public FolderPickerViewModel(ISetupFlowStringResource stringResource, SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _stringResource = stringResource;
         ShouldShowFolderPicker = true;
         CloneLocation = string.Empty;
         IsBrowseButtonEnabled = true;
+        _setupFlowOrchestrator = setupFlowOrchestrator;
+        SetDefaultCloneLocation();
     }
 
     public void ShowFolderPicker()
@@ -182,5 +186,21 @@ public partial class FolderPickerViewModel : ObservableObject
 
         ShowFolderPickerError = false;
         return true;
+    }
+
+    /// <summary>
+    /// Sets the clone location to the default location. For the local machine setup the default is the user's
+    /// profile. For the target machine setup the default is the common documents folder, since we don't know
+    /// which folders exists on the target machine.
+    /// </summary>
+    private void SetDefaultCloneLocation()
+    {
+        var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (_setupFlowOrchestrator.CurrentSetupFlowKind == SetupFlowKind.SetupTarget)
+        {
+            userFolder = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments);
+        }
+
+        CloneLocation = Path.Join(userFolder, "source", "repos");
     }
 }
