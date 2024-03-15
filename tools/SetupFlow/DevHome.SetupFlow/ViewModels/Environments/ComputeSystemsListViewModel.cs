@@ -96,6 +96,11 @@ public partial class ComputeSystemsListViewModel : ObservableObject
         }
     }
 
+    public override string ToString()
+    {
+        return AccessibilityName;
+    }
+
     public ComputeSystemsListViewModel(ComputeSystemsLoadedData loadedData)
     {
         Provider = loadedData.ProviderDetails.ComputeSystemProvider;

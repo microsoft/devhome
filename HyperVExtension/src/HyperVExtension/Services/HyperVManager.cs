@@ -68,7 +68,8 @@ public class HyperVManager : IHyperVManager, IDisposable
         // Can't find the module, even though it appears in a regular PowerShell terminal window.
         // this will be removed once the issue is resolved.
         var commandLineStatements = new StatementBuilder()
-            .AddScript("Get-Module -ListAvailable", true)
+            .AddCommand(HyperVStrings.GetModule)
+            .AddParameter(HyperVStrings.ListAvailable, true)
             .Build();
 
         var result = _powerShellService.Execute(commandLineStatements, PipeType.None);

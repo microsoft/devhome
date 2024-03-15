@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Helpers;
@@ -111,5 +113,19 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     {
         ComputeSystemWrapper.StateChanged -= _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged -= OnComputeSystemStateChanged;
+    }
+
+    public override string ToString()
+    {
+        var stringBuilder = new StringBuilder();
+        stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{ComputeSystemTitle}");
+        stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{CardState}");
+
+        foreach (var property in ComputeSystemProperties)
+        {
+            stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{property}");
+        }
+
+        return stringBuilder.ToString();
     }
 }

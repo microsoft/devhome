@@ -104,6 +104,8 @@
 
             <DataTemplate x:Key="ComputeSystemContainerHeaderTemplate" x:DataType="devEnvModels:ComputeSystemsListViewModel">
                 <StackPanel Orientation="Horizontal"
+                    x:Name="HeaderPanel"
+                    AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"
                     Margin="0 10 0 10"
                     VerticalAlignment="Center">
                     <TextBlock 
@@ -144,6 +146,7 @@
                 <ListView
                     x:Name="EnvironmentList"
                     AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"
+                    AutomationProperties.LabeledBy="{Binding ElementName=HeaderPanel}"
                     HeaderTemplate="{StaticResource ComputeSystemContainerHeaderTemplate}"
                     DataContext="{Binding}"
                     ItemsSource="{x:Bind ComputeSystemCardAdvancedCollectionView, Mode=OneWay}"
@@ -167,6 +170,7 @@
             <DataTemplate x:Key="ComputeSystemLoadingTemplate" x:DataType="devEnvModels:ComputeSystemsListViewModel">
                 <ListView
                     AutomationProperties.Name="SetupTargetLoadingCard"
+                    x:Uid="SetupTargetLoadingCard"
                     HeaderTemplate="{StaticResource ComputeSystemContainerShimmerHeaderTemplate}"
                     DataContext="{Binding}"
                     SelectionMode="None"
@@ -181,24 +185,25 @@
             <!-- Listview Template for showing the error message associated with loading ComputeSystemsListViewModel object. -->
             <DataTemplate x:Key="ComputeSystemLoadingErrorTemplate" x:DataType="devEnvModels:ComputeSystemsListViewModel">
                 <ListView
-                    AutomationProperties.Name="{x:Bind ErrorText, Mode=OneWay}"
+                    AutomationProperties.LabeledBy="{Binding ElementName=ErrorRetrievingComputeSystems}"
                     HeaderTemplate="{StaticResource ComputeSystemContainerHeaderTemplate}"
                     SelectionMode="None"
                     Margin="0 0 0 10"
                     ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}">
                     <ListViewItem
-                        IsTabStop="False"
                         DataContext="{Binding}">
                         <StackPanel
                             Margin="0 50 0 50"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
                             <TextBlock
-                                Text="{x:Bind ErrorText}"
+                                x:Name="ErrorRetrievingComputeSystems"
+                                Text="{x:Bind ErrorText, Mode=OneWay}"
                                 Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                                 Margin="0 0 0 10"
                                 HorizontalAlignment="Center"
-                                IsTextSelectionEnabled="True"/>
+                                IsTextSelectionEnabled="True"
+                                TextWrapping="Wrap"/>
                         </StackPanel>
                     </ListViewItem>
                 </ListView>
@@ -207,20 +212,20 @@
             <!-- Listview Template for showing the info message when no EnvironmentCardViewModels were found. -->
             <DataTemplate x:Key="ComputeSystemsNotFoundTemplate">
                 <ListView
-                    AutomationProperties.Name="SetupTargetNoEnvironmentsFound"
+                    AutomationProperties.LabeledBy="{Binding ElementName=NoEnvironmentsFound}"
                     AutomationProperties.LiveSetting="Polite"
                     HeaderTemplate="{StaticResource ComputeSystemContainerHeaderTemplate}"
                     SelectionMode="None"
                     Margin="0 0 0 10"
                     ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}">
                     <ListViewItem
-                        IsTabStop="False"
                         DataContext="{Binding}">
                         <StackPanel
                             Margin="0 50 0 50"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
                             <TextBlock
+                                x:Name="NoEnvironmentsFound"
                                 x:Uid="SetupTargetNoEnvironmentsFound"
                                 Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                                 FontSize="15"
@@ -244,12 +249,11 @@
                 ColumnSpacing="10"
                 Margin="0 0 0 20">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="6*"/>
                 </Grid.ColumnDefinitions>
                 <!--- Show the Filter box on the page on the page. -->
                 <TextBox
-                    Height="41"
                     Margin="0 0 0 0"
                     x:Name="FilterTextBox"
                     x:Uid="SetupTarget_Filter"
@@ -266,8 +270,7 @@
                 <!--- Show the Target Provide icon, text, combo box and the sync button on the page. -->
                 <Grid
                     Grid.Column="1"
-                    ColumnSpacing="15"
-                    Margin="30 0 0 0">
+                    ColumnSpacing="15">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
@@ -287,8 +290,6 @@
                         x:Name="ComputeSystemProviderComboBox"
                         Grid.Column="1"
                         VerticalAlignment="Center"
-                        Margin="0 9 0 9"
-                        Padding="10 10 0 10"
                         FontSize="16"
                         MinWidth="200"
                         ItemsSource="{x:Bind ViewModel.ProviderComboBoxNamesCollectionView, Mode=OneWay}"
@@ -316,8 +317,6 @@
                         HorizontalAlignment="Left"
                         HorizontalContentAlignment="Left"
                         MinWidth="200"
-                        Margin="0 9 0 9"
-                        Padding="10 10 0 10"
                         FontSize="16"
                         ItemsSource="{x:Bind ViewModel.ComputeSystemsSortOptions, Mode=OneWay}"
                         SelectedIndex="{x:Bind ViewModel.SelectedComputeSystemSortComboBoxIndex, Mode=TwoWay}">
@@ -335,8 +334,7 @@
                         x:Uid="SetupTarget_SyncButton"
                         Grid.Column="4"
                         Command="{x:Bind ViewModel.SyncComputeSystemsCommand , Mode=OneWay}"
-                        VerticalAlignment="Center"
-                        Padding="40 7.5 40 7.5">
+                        VerticalAlignment="Center">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -355,7 +353,7 @@
                                 Grid.Column="1"
                                 Text="Sync"
                                 Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                                Margin="0 0 5 3"
+                                Margin="0 0 5 0"
                                 FontSize="16"/>
                         </Grid>
                     </Button>
@@ -407,7 +405,8 @@
                     </ListView>
                     <!--- Show shimmers when still loading items in list. -->
                     <StackPanel
-                        Visibility="{x:Bind ViewModel.ShouldShowShimmerBelowList, Mode=OneWay}">
+                        Visibility="{x:Bind ViewModel.ShouldShowShimmerBelowList, Mode=OneWay}"
+                        IsTabStop="True">
                         <ContentControl
                             Content="{Binding}"
                             VerticalAlignment="Stretch"

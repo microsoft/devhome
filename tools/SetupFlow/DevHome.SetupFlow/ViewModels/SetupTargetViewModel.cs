@@ -21,6 +21,7 @@ using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.UI.Accessibility;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -43,6 +44,8 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
 
     private readonly ComputeSystemViewModelFactory _computeSystemViewModelFactory;
+
+    private readonly IScreenReaderService _screenReaderService;
 
     [ObservableProperty]
     private bool _shouldShowCollectionView;
@@ -80,7 +83,8 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         SetupFlowOrchestrator orchestrator,
         IComputeSystemManager computeSystemManager,
         ComputeSystemViewModelFactory computeSystemViewModelFactory,
-        ToastNotificationService toastNotificationService)
+        ToastNotificationService toastNotificationService,
+        IScreenReaderService screenReaderService)
         : base(stringResource, orchestrator)
     {
         // Setup initial state for page.
@@ -112,6 +116,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         _setupFlowViewModel = setupflowModel;
         _setupFlowViewModel.EndSetupFlow += OnRemovingComputeSystems;
         _toastNotificationService = toastNotificationService;
+        _screenReaderService = screenReaderService;
     }
 
     /// <summary>
@@ -364,6 +369,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     {
         try
         {
+            _screenReaderService.Announce("Loading environments");
             await ComputeSystemManagerObj.GetComputeSystemsAsync(UpdateListViewModelList);
         }
         catch (Exception ex)
@@ -372,6 +378,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
 
         ShouldShowShimmerBelowList = false;
+        _screenReaderService.Announce("Loaded all environments");
     }
 
     private void RemoveSelectedItemIfNotInUI(ComputeSystemsListViewModel listViewModel)
@@ -410,6 +417,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             AddListViewModelToList(curListViewModel);
             ComputeSystemLoadingCompleted = true;
             ShouldShowShimmerBelowList = true;
+            _screenReaderService.Announce("Some environments were loaded but others are still loading");
         });
     }
 
