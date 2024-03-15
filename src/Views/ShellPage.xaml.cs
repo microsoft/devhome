@@ -150,12 +150,12 @@ public sealed partial class ShellPage : Page
 
     private void UpdateNavigationMenuItems()
     {
-        var expVM = App.Current.GetService<ExperimentalFeaturesViewModel>();
+        var expService = App.Current.GetService<IExperimentationService>();
         foreach (var group in App.NavConfig.NavMenu.Groups)
         {
             foreach (var tool in group.Tools)
             {
-                var expFeature = expVM.ExperimentalFeatures.FirstOrDefault(x => x.Id == tool.ExperimentalFeatureIdentity);
+                var expFeature = expService.ExperimentalFeatures.FirstOrDefault(x => x.Id == tool.ExperimentalFeatureIdentity);
 
                 var navigationViewItemString = $@"
                     <NavigationViewItem
