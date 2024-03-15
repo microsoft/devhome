@@ -297,6 +297,19 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private List<ConfigurationUnitResultViewModel> GetConfigurationUnitResults()
     {
         List<ConfigurationUnitResultViewModel> unitResults = new();
+
+        // If we are setting up a target machine, we need to get the configuration results from the setup target task group.
+        if (_orchestrator.IsSettingUpATargetMachine)
+        {
+            var setupTaskGroup = _orchestrator.GetTaskGroup<SetupTargetTaskGroup>();
+            if (setupTaskGroup?.ConfigureTask?.ConfigurationResults != null)
+            {
+                unitResults.AddRange(setupTaskGroup.ConfigureTask.ConfigurationResults.Select(unitResult => _configurationUnitResultViewModelFactory(unitResult)));
+            }
+
+            return unitResults;
+        }
+
         var configTaskGroup = _orchestrator.GetTaskGroup<ConfigurationFileTaskGroup>();
         if (configTaskGroup?.ConfigureTask?.UnitResults != null)
         {

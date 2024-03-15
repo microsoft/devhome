@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.Utilities;
 using Microsoft.UI.Xaml;
 
@@ -30,6 +31,8 @@ public enum DevDriveDisplayNameKind
 /// </summary>
 public partial class EditDevDriveViewModel : ObservableObject
 {
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+
     /// <summary>
     /// The manager to handle dev drives.
     /// </summary>
@@ -77,7 +80,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// Some builds don't have dev drives.
     /// </summary>
     [ObservableProperty]
-    private Visibility _showDevDriveInformation;
+    private bool _showDevDriveInformation;
 
     /// <summary>
     /// The customization hyperlink button visibility changes if the user wants a new dev drive.
@@ -100,11 +103,12 @@ public partial class EditDevDriveViewModel : ObservableObject
     [ObservableProperty]
     private bool _devDriveValidationError;
 
-    public EditDevDriveViewModel(IDevDriveManager devDriveManager)
+    public EditDevDriveViewModel(IDevDriveManager devDriveManager, SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _devDriveManager = devDriveManager;
         ShowCustomizeOption = Visibility.Collapsed;
         IsDevDriveCheckboxEnabled = true;
+        _setupFlowOrchestrator = setupFlowOrchestrator;
     }
 
     public event EventHandler<string> DevDriveClonePathUpdated = (_, path) => { };
@@ -127,13 +131,13 @@ public partial class EditDevDriveViewModel : ObservableObject
     {
         if (CanShowDevDriveUI)
         {
-            ShowDevDriveInformation = Visibility.Visible;
+            ShowDevDriveInformation = true;
         }
     }
 
     public void HideDevDriveUI()
     {
-        ShowDevDriveInformation = Visibility.Collapsed;
+        ShowDevDriveInformation = false;
     }
 
     public void RemoveNewDevDrive()
@@ -216,13 +220,13 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </remarks>
     public void SetUpStateIfDevDrivesIfExists()
     {
-        ShowDevDriveInformation = DevDriveUtil.IsDevDriveFeatureEnabled ? Visibility.Visible : Visibility.Collapsed;
-        if (ShowDevDriveInformation == Visibility.Visible)
+        ShowDevDriveInformation = DevDriveUtil.IsDevDriveFeatureEnabled && _setupFlowOrchestrator.IsSettingUpLocalMachine;
+        if (ShowDevDriveInformation)
         {
             var existingDevDrives = _devDriveManager.GetAllDevDrivesThatExistOnSystem();
             if (existingDevDrives.Any())
             {
-                ShowDevDriveInformation = Visibility.Collapsed;
+                ShowDevDriveInformation = false;
                 DevDrive = existingDevDrives.OrderByDescending(x => x.DriveSizeInBytes).First();
                 CanShowDevDriveUI = false;
                 return;

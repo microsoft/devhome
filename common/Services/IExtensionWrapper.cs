@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel;
@@ -117,5 +118,14 @@ public interface IExtensionWrapper
     /// <typeparam name="T">The type of provider</typeparam>
     /// <returns>Nullable instance of the provider</returns>
     Task<T?> GetProviderAsync<T>()
+        where T : class;
+
+    /// <summary>
+    /// Starts the extension if not running and gets a list of providers of type T from the underlying IExtension object.
+    /// If no providers are found, returns an empty list.
+    /// </summary>
+    /// <typeparam name="T">The type of provider</typeparam>
+    /// <returns>Nullable instance of the provider</returns>
+    Task<IEnumerable<T>> GetListOfProvidersAsync<T>()
         where T : class;
 }

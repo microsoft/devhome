@@ -10,7 +10,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.Collections;
+using CommunityToolkit.WinUI.Controls;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -45,11 +48,13 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly ISetupFlowStringResource _stringResource;
 
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
     /// <summary>
-    /// Because logic is split between the back-end and the view model, incrementally migrating code from the view
-    /// to the view model is impossible.
+    /// Because logic is split between the back-end and the view model, migrating code from the view
+    /// in one PR to the view model is too much work.
     /// This member is here to support this partial migration.  Once all the code-behind logic is out of the view
     /// _addRepoDialog can be removed.
     /// </summary>
@@ -67,6 +72,14 @@ public partial class AddRepoViewModel : ObservableObject
     /// THis can be made private when EditDevDriveViewModel is in this class.
     /// </remarks>
     public FolderPickerViewModel FolderPickerViewModel
+    {
+        get; private set;
+    }
+
+    /// <summary>
+    /// Gets the view model to handle adding a dev drive.
+    /// </summary>
+    public EditDevDriveViewModel EditDevDriveViewModel
     {
         get; private set;
     }
@@ -134,25 +147,25 @@ public partial class AddRepoViewModel : ObservableObject
     /// Should the URL page be visible?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showUrlPage;
+    private bool _showUrlPage;
 
     /// <summary>
     /// Should the account page be visible?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showAccountPage;
+    private bool _showAccountPage;
 
     /// <summary>
     /// Should the repositories page be visible?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showRepoPage;
+    private bool _showRepoPage;
 
     /// <summary>
     /// Should the error text be shown?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showErrorTextBox;
+    private bool _showErrorTextBox;
 
     /// <summary>
     /// Keeps track of if the account button is checked.  Used to switch UIs
@@ -178,7 +191,7 @@ public partial class AddRepoViewModel : ObservableObject
     public bool IsAccountComboBoxEnabled => Accounts.Count > 1;
 
     [ObservableProperty]
-    private Visibility _shouldShowUrlError;
+    private bool _shouldShowUrlError;
 
     [ObservableProperty]
     private bool _isFetchingRepos;
@@ -197,6 +210,49 @@ public partial class AddRepoViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isCancelling;
+
+    /// <summary>
+    /// Used to figure out what button is pressed for the split button.
+    /// This determines the UI elements shown/hidden.
+    /// </summary>
+    private enum SegmentedItemTag
+    {
+        Account,
+        URL,
+    }
+
+    /// <summary>
+    /// Hides/Shows UI elements for the selected button.
+    /// </summary>
+    /// <param name="selectedItem">The button the user clicked on.</param>
+    [RelayCommand]
+    public async Task ChangePage(SegmentedItem selectedItem)
+    {
+        if (selectedItem.Tag == null)
+        {
+            return;
+        }
+
+        if (!Enum.TryParse<SegmentedItemTag>(selectedItem.Tag.ToString(), out var pageToGoTo))
+        {
+            return;
+        }
+
+        if (pageToGoTo == SegmentedItemTag.Account)
+        {
+            await ChangeToAccountPageAsync();
+            return;
+        }
+
+        if (pageToGoTo == SegmentedItemTag.URL)
+        {
+            ChangeToUrlPage();
+            return;
+        }
+
+        // enum did not match.  Don't change.
+        return;
+    }
 
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
@@ -293,6 +349,8 @@ public partial class AddRepoViewModel : ObservableObject
         get; set;
     }
 
+    public bool IsSettingUpLocalMachine => _setupFlowOrchestrator.IsSettingUpLocalMachine;
+
     private TypedEventHandler<IDeveloperIdProvider, IDeveloperId> _developerIdChangedEvent;
 
     private string _selectedRepoProvider = string.Empty;
@@ -335,6 +393,18 @@ public partial class AddRepoViewModel : ObservableObject
     private MenuFlyout _accountsToShow;
 
     /// <summary>
+    /// Used to show the login UI.
+    /// </summary>
+    [ObservableProperty]
+    private Frame _loginUiContent;
+
+    /// <summary>
+    /// Soley used to reset the account drop down when the account page is navigated to.
+    /// </summary>
+    [ObservableProperty]
+    private int _accountIndex;
+
+    /// <summary>
     /// Switches the repos shown to the account selected.
     /// </summary>
     [RelayCommand]
@@ -348,6 +418,13 @@ public partial class AddRepoViewModel : ObservableObject
             var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
             _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
         });
+    }
+
+    [RelayCommand]
+    private async Task OpenFolderPicker()
+    {
+        await FolderPickerViewModel.ChooseCloneLocation();
+        ToggleCloneButton();
     }
 
     /// <summary>
@@ -398,14 +475,14 @@ public partial class AddRepoViewModel : ObservableObject
             _previouslySelectedRepos.AddRange(EverythingToClone);
         }
 
-        ShowRepoPage = Visibility.Collapsed;
+        ShowRepoPage = false;
 
         // Store the logged in accounts to help figure out what account the user logged into.
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
-        await LogUserIn(_selectedRepoProvider, _addRepoDialog.GetLoginUiContent(), true);
+        await LogUserIn(_selectedRepoProvider, LoginUiContent, true);
         var loggedInAccountsWithNewAccount = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
 
-        ShowRepoPage = Visibility.Visible;
+        ShowRepoPage = true;
         Accounts = new ObservableCollection<string>(loggedInAccountsWithNewAccount.Select(x => x.LoginId));
         AccountsToShow = ConstructFlyout();
 
@@ -437,28 +514,59 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     public AddRepoViewModel(
+        SetupFlowOrchestrator setupFlowOrchestrator,
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
         IHost host,
         Guid activityId,
-        string defaultClonePath,
-        AddRepoDialog addRepoDialog)
+        AddRepoDialog addRepoDialog,
+        IDevDriveManager devDriveManager)
     {
         _addRepoDialog = addRepoDialog;
         _stringResource = stringResource;
         _host = host;
-        ChangeToUrlPage();
-
-        // override changes ChangeToUrlPage to correctly set the state.
-        UrlParsingError = string.Empty;
-        ShouldShowUrlError = Visibility.Collapsed;
-        ShowErrorTextBox = Visibility.Collapsed;
+        _loginUiContent = new Frame();
+        _setupFlowOrchestrator = setupFlowOrchestrator;
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
         _activityId = activityId;
-        FolderPickerViewModel = new FolderPickerViewModel(stringResource);
-        FolderPickerViewModel.CloneLocation = defaultClonePath;
+        FolderPickerViewModel = new FolderPickerViewModel(stringResource, setupFlowOrchestrator);
+        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager, setupFlowOrchestrator);
+
+        EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
+        {
+            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+            FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
+        };
+
+        ChangeToUrlPage();
+
+        // override changes ChangeToUrlPage to correctly set the state.
+        UrlParsingError = string.Empty;
+        ShouldShowUrlError = false;
+        ShowErrorTextBox = false;
+        _accountIndex = -1;
+    }
+
+    /// <summary>
+    /// Toggles the clone button.  Make sure other view models have correct information.
+    /// </summary>
+    public void ToggleCloneButton()
+    {
+        var isEverythingGood = ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
+        if (EditDevDriveViewModel.DevDrive != null && EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
+        {
+            isEverythingGood &= EditDevDriveViewModel.IsDevDriveValid();
+        }
+
+        ShouldEnablePrimaryButton = isEverythingGood;
+
+        // Fill in EverythingToClone with the location
+        if (isEverythingGood)
+        {
+            SetCloneLocation(FolderPickerViewModel.CloneLocation);
+        }
     }
 
     /// <summary>
@@ -469,8 +577,14 @@ public partial class AddRepoViewModel : ObservableObject
     /// </remarks>
     public void GetExtensions()
     {
+        // Don't use the repository extensions if we are in the setup target flow.
+        if (_setupFlowOrchestrator.IsSettingUpATargetMachine)
+        {
+            return;
+        }
+
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed extensions with Repository and DevId providers");
-        var extensionService = Application.Current.GetService<IExtensionService>();
+        var extensionService = _host.GetService<IExtensionService>();
         var extensionWrappers = extensionService.GetInstalledExtensionsAsync().Result;
 
         var extensions = extensionWrappers.Where(
@@ -495,34 +609,30 @@ public partial class AddRepoViewModel : ObservableObject
 
     public void ChangeToUrlPage()
     {
+        FolderPickerViewModel.ShowFolderPicker();
+        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Url page");
-        ShowUrlPage = Visibility.Visible;
-        ShowAccountPage = Visibility.Collapsed;
-        ShowRepoPage = Visibility.Collapsed;
+        ShowUrlPage = true;
+        ShowAccountPage = false;
+        ShowRepoPage = false;
         IsUrlAccountButtonChecked = true;
         IsAccountToggleButtonChecked = false;
         CurrentPage = PageKind.AddViaUrl;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
         ShouldShowLoginUi = false;
+
+        ToggleCloneButton();
     }
 
-    public void ChangeToAccountPage()
+    public async Task ChangeToAccountPageAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Account page");
-        ShouldShowUrlError = Visibility.Collapsed;
-        ShowUrlPage = Visibility.Collapsed;
-        ShowAccountPage = Visibility.Visible;
-        ShowRepoPage = Visibility.Collapsed;
-        IsUrlAccountButtonChecked = false;
-        IsAccountToggleButtonChecked = true;
-        CurrentPage = PageKind.AddViaAccount;
-        PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoAccountPagePrimaryButtonText);
-        ShouldShowLoginUi = false;
+        AccountIndex = -1;
 
         // List of extensions needs to be refreshed before accessing
         GetExtensions();
         if (ProviderNames.Count == 1)
         {
+            _selectedRepoProvider = ProviderNames[0];
             _providers.StartIfNotRunning(ProviderNames[0]);
             var accounts = _providers.GetAllLoggedInAccounts(ProviderNames[0]);
             if (accounts.Count() == 1)
@@ -530,14 +640,46 @@ public partial class AddRepoViewModel : ObservableObject
                 CanSkipAccountConnection = true;
             }
         }
+
+        FolderPickerViewModel.CloseFolderPicker();
+        EditDevDriveViewModel.HideDevDriveUI();
+
+        // If DevHome has 1 provider installed and the provider has 1 logged in account
+        // switch to the repo page.
+        if (CanSkipAccountConnection)
+        {
+            await ChangeToRepoPageAsync();
+            return;
+        }
+
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Account page");
+        ShouldShowUrlError = false;
+        ShowUrlPage = false;
+        ShowAccountPage = true;
+        ShowRepoPage = false;
+        IsUrlAccountButtonChecked = false;
+        IsAccountToggleButtonChecked = true;
+        CurrentPage = PageKind.AddViaAccount;
+        PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoAccountPagePrimaryButtonText);
+        ShouldShowLoginUi = false;
+        ToggleCloneButton();
     }
 
-    public void ChangeToRepoPage()
+    public async Task ChangeToRepoPageAsync()
     {
+        await GetAccountsAsync(_selectedRepoProvider, LoginUiContent);
+        if (Accounts.Any())
+        {
+            FolderPickerViewModel.ShowFolderPicker();
+            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+            SelectedAccount = Accounts.First();
+            ShouldEnablePrimaryButton = false;
+        }
+
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
-        ShowUrlPage = Visibility.Collapsed;
-        ShowAccountPage = Visibility.Collapsed;
-        ShowRepoPage = Visibility.Visible;
+        ShowUrlPage = false;
+        ShowAccountPage = false;
+        ShowRepoPage = true;
         CurrentPage = PageKind.Repositories;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
         ShouldShowLoginUi = false;
@@ -563,7 +705,7 @@ public partial class AddRepoViewModel : ObservableObject
             if (!Uri.TryCreate(Url, UriKind.RelativeOrAbsolute, out _))
             {
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
-                ShouldShowUrlError = Visibility.Visible;
+                ShouldShowUrlError = true;
                 return false;
             }
 
@@ -572,11 +714,11 @@ public partial class AddRepoViewModel : ObservableObject
             if (sshMatch.Success)
             {
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.SSHConnectionStringNotAllowed);
-                ShouldShowUrlError = Visibility.Visible;
+                ShouldShowUrlError = true;
                 return false;
             }
 
-            ShouldShowUrlError = Visibility.Collapsed;
+            ShouldShowUrlError = false;
             return true;
         }
         else if (CurrentPage == PageKind.AddViaAccount || CurrentPage == PageKind.Repositories)
@@ -650,7 +792,6 @@ public partial class AddRepoViewModel : ObservableObject
     /// Adds repositories to the list of repos to clone.
     /// Removes repositories from the list of repos to clone.
     /// </summary>
-    /// <param name="providerName">The provider that is used to do the cloning.</param>
     /// <param name="accountName">The account used to authenticate into the provider.</param>
     /// <param name="repositoriesToAdd">Repositories to add</param>
     /// <param name="repositoriesToRemove">Repositories to remove.</param>
@@ -659,7 +800,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// Repos will not be saved when filtering is taking place, or SelectRange is being called.
     /// Both filtering and SelectRange kicks off this event and EverythingToClone should not be altered at this time.
     /// </remarks>
-    public void AddOrRemoveRepository(string providerName, string accountName, IList<object> repositoriesToAdd, IList<object> repositoriesToRemove)
+    public void AddOrRemoveRepository(string accountName, IList<object> repositoriesToAdd, IList<object> repositoriesToRemove)
     {
         // return right away if this event is fired because of filtering or SelectRange is called.
         if (_isFiltering || IsCallingSelectRange)
@@ -668,7 +809,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding and removing repositories");
-        var developerId = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId == accountName);
+        var developerId = _providers.GetAllLoggedInAccounts(_selectedRepoProvider).FirstOrDefault(x => x.LoginId == accountName);
         foreach (RepoViewListItem repositoryToRemove in repositoriesToRemove)
         {
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {repositoryToRemove}");
@@ -680,7 +821,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
 
             var cloningInformation = new CloningInformation(repoToRemove);
-            cloningInformation.ProviderName = _providers.DisplayName(providerName);
+            cloningInformation.ProviderName = _providers.DisplayName(_selectedRepoProvider);
             cloningInformation.OwningAccount = developerId;
 
             EverythingToClone.Remove(cloningInformation);
@@ -696,11 +837,11 @@ public partial class AddRepoViewModel : ObservableObject
             }
 
             var cloningInformation = new CloningInformation(repoToAdd);
-            cloningInformation.RepositoryProvider = _providers.GetSDKProvider(providerName);
-            cloningInformation.ProviderName = _providers.DisplayName(providerName);
+            cloningInformation.RepositoryProvider = _providers.GetSDKProvider(_selectedRepoProvider);
+            cloningInformation.ProviderName = _providers.DisplayName(_selectedRepoProvider);
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
-            cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
+            cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{_selectedRepoProvider}/{repositoryToAdd}");
+            cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{_selectedRepoProvider}/{repositoryToAdd}");
             EverythingToClone.Add(cloningInformation);
         }
     }
@@ -713,11 +854,14 @@ public partial class AddRepoViewModel : ObservableObject
     /// <remarks>If the url is not valid this method sets UrlParsingError and ShouldShowUrlError to the correct values.</remarks>
     private void ValidateUriAndChangeUiIfBad(string url, out Uri uri)
     {
+        uri = null;
+
         // If the url isn't valid don't bother finding a provider.
-        if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
+        if (!Uri.IsWellFormedUriString(url, UriKind.Absolute) ||
+            !Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
         {
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
-            ShouldShowUrlError = Visibility.Visible;
+            ShouldShowUrlError = true;
             return;
         }
 
@@ -735,7 +879,7 @@ public partial class AddRepoViewModel : ObservableObject
             {
                 Log.Logger?.ReportError(Log.Component.RepoConfig, $"Invalid URL {uri.OriginalString}", e);
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
-                ShouldShowUrlError = Visibility.Visible;
+                ShouldShowUrlError = true;
                 return;
             }
         }
@@ -753,7 +897,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// If ShouldShowUrlError == Visible the repo is not added to the list of repos to clone.
     /// </remarks>
     /// <param name="cloneLocation">The location to clone the repo to</param>
-    public void AddRepositoryViaUri(string url, string cloneLocation, Frame loginFrame)
+    public void AddRepositoryViaUri(string url, string cloneLocation)
     {
         ShouldEnablePrimaryButton = false;
         Uri uri = null;
@@ -766,9 +910,9 @@ public partial class AddRepoViewModel : ObservableObject
 
         // This will return null even if the repo uri has a typo in it.
         // Causing GetCloningInformationFromURL to fall back to git.
-        var provider = _providers.CanAnyProviderSupportThisUri(uri);
+        var provider = _providers?.CanAnyProviderSupportThisUri(uri);
 
-        var cloningInformation = GetCloningInformationFromUrl(provider, cloneLocation, uri, loginFrame);
+        var cloningInformation = GetCloningInformationFromUrl(provider, cloneLocation, uri, LoginUiContent);
         if (cloningInformation == null)
         {
             // Error information is already set.
@@ -776,14 +920,14 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        ShouldShowUrlError = Visibility.Collapsed;
+        ShouldShowUrlError = false;
 
         // User could paste in a url of an already added repo.  Check for that here.
         if (_previouslySelectedRepos.Any(x => x.RepositoryToClone.OwningAccountName.Equals(cloningInformation.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase)
             && x.RepositoryToClone.DisplayName.Equals(cloningInformation.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase)))
         {
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
-            ShouldShowUrlError = Visibility.Visible;
+            ShouldShowUrlError = true;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repository has already been added.");
             TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RepoAlreadyAdded_Event", false, _activityId);
             return;
@@ -793,7 +937,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         EverythingToClone.Add(cloningInformation);
         ShouldEnablePrimaryButton = true;
-        ShouldShowUrlError = Visibility.Collapsed;
+        ShouldShowUrlError = false;
     }
 
     /// <summary>
@@ -854,7 +998,7 @@ public partial class AddRepoViewModel : ObservableObject
             // Should have a better error string.
             // TODO: Figure out a better error message?
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
-            ShouldShowUrlError = Visibility.Visible;
+            ShouldShowUrlError = true;
 
             InitiateAddAccountUserExperienceAsync(provider, loginFrame);
             return null;
@@ -866,10 +1010,28 @@ public partial class AddRepoViewModel : ObservableObject
         // Because DevHome cannot tell if a repo is private, or does not exist, prompt the user to log in.
         // Only ask if DevHome hasn't asked already.
         UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
-        ShouldShowUrlError = Visibility.Visible;
+        ShouldShowUrlError = true;
         IsLoggingIn = true;
         InitiateAddAccountUserExperienceAsync(provider, loginFrame);
         return null;
+    }
+
+    /// <summary>
+    /// Sets up the UI for dev drives.
+    /// </summary>
+    public async Task SetupDevDrivesAsync()
+    {
+        await Task.Run(() =>
+        {
+            EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
+
+            if (EditDevDriveViewModel.DevDrive != null &&
+                EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+            {
+                FolderPickerViewModel.InDevDriveScenario = true;
+                EditDevDriveViewModel.ClonePathUpdated();
+            }
+        });
     }
 
     /// <summary>

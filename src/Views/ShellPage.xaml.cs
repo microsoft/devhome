@@ -17,10 +17,7 @@ namespace DevHome.Views;
 
 public sealed partial class ShellPage : Page
 {
-    public ShellViewModel ViewModel
-    {
-        get;
-    }
+    public ShellViewModel ViewModel { get; }
 
     public ShellPage(ShellViewModel viewModel)
     {
@@ -59,6 +56,8 @@ public sealed partial class ShellPage : Page
         // Update the title bar if the system theme changes.
         TitleBarHelper.UpdateTitleBar(App.MainWindow, ActualTheme);
         AppTitleBar.Repaint();
+
+        ViewModel.NotifyActualThemeChanged();
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
@@ -150,12 +149,12 @@ public sealed partial class ShellPage : Page
 
     private void UpdateNavigationMenuItems()
     {
-        var expVM = App.Current.GetService<ExperimentalFeaturesViewModel>();
+        var expService = App.Current.GetService<IExperimentationService>();
         foreach (var group in App.NavConfig.NavMenu.Groups)
         {
             foreach (var tool in group.Tools)
             {
-                var expFeature = expVM.ExperimentalFeatures.FirstOrDefault(x => x.Id == tool.ExperimentalFeatureIdentity);
+                var expFeature = expService.ExperimentalFeatures.FirstOrDefault(x => x.Id == tool.ExperimentalFeatureIdentity);
 
                 var navigationViewItemString = $@"
                     <NavigationViewItem

@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
+using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
@@ -28,6 +29,10 @@ public class ConfigureTask : ISetupTask
     private readonly Guid _activityId;
 
     public event ISetupTask.ChangeMessageHandler AddMessage;
+
+#pragma warning disable 67
+    public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
+#pragma warning restore 67
 
     // Configuration files can run as either admin or as a regular user
     // depending on the user, make this settable.
@@ -90,7 +95,7 @@ public class ConfigureTask : ISetupTask
         {
             try
             {
-                AddMessage(_stringResource.GetLocalized(StringResourceKey.ApplyingConfigurationMessage));
+                AddMessage(_stringResource.GetLocalized(StringResourceKey.ApplyingConfigurationMessage), MessageSeverityKind.Info);
                 var result = await _dsc.ApplyConfigurationAsync(_file.Path, _activityId);
                 RequiresReboot = result.RequiresReboot;
                 UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
