@@ -69,8 +69,15 @@ internal sealed class RepositoryProvider
         // The task.run inside GetProvider makes a deadlock when .Result is called.
         // https://stackoverflow.com/a/17248813.  Solution is to wrap in Task.Run().
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider extensions");
-        _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
-        _repositoryProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
+        try
+        {
+            _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
+            _repositoryProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
+        }
+        catch (Exception ex)
+        {
+            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repository provider from extension.", ex);
+        }
     }
 
     public IRepositoryProvider GetProvider()
@@ -204,6 +211,9 @@ internal sealed class RepositoryProvider
             if (!string.IsNullOrEmpty(hostConfigContents))
             {
                 renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+
+                // Remove margins from selectAction.
+                renderer.AddSelectActionMargin = false;
             }
             else
             {

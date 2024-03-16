@@ -96,6 +96,11 @@
                                                     VerticalContentAlignment="Stretch" >
                                         <ContentControl.ContentTemplateSelector>
                                             <selectors:ReviewTabViewSelector>
+                                                <selectors:ReviewTabViewSelector.SetupTargetTabTemplate>
+                                                    <DataTemplate>
+                                                        <views:SetupTargetReviewView />
+                                                    </DataTemplate>
+                                                </selectors:ReviewTabViewSelector.SetupTargetTabTemplate>
                                                 <selectors:ReviewTabViewSelector.DevDriveTabTemplate>
                                                     <DataTemplate>
                                                         <views:DevDriveReviewView />
