@@ -1,6 +1,6 @@
-# What are Dev Environments in Dev Home
+# Dev Environments in Dev Home
 
-Dev Environments is the name Dev Home holistically gives a compute system and the dev projects it contains. These projects contain apps, packages and cloned repositories. The goal of Dev Environments is for developers to have a one stop shop for all their environments in a single place.
+Dev Environments is the name Dev Home holistically gives a compute system and the projects it contains. These projects can contain apps, packages and cloned repositories. The goal of Dev Environments within Dev Home is for developers to have a single place where they can easily switch between all their development related workflows.
 
 ## Terminology
 
@@ -42,7 +42,7 @@ Extensions should create objects that represent each compute system that their u
 
 Note: Only the creation operation can be limited by utilizing the [ComputeSystemProviderOperations](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L406) enum.
 
-## What is needed to create a Dev Environment extension?
+## What is needed to create a Dev Environments extension?
 
 First take a look at Dev Homes extensions documentation [here.](https://github.com/microsoft/devhome/blob/main/docs/extensions.md)
 Then see Dev Homes sample extension [here.](https://github.com/microsoft/devhome/tree/main/extensions/SampleExtension)
