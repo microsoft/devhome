@@ -234,9 +234,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private async Task UpdateThemeAsync()
     {
         // Update the icons for each available widget listed.
-        foreach (var providerItem in AddWidgetNavigationView.MenuItems.Cast<NavigationViewItem>())
+        foreach (var providerItem in AddWidgetNavigationView.MenuItems.OfType<NavigationViewItem>())
         {
-            foreach (var widgetItem in providerItem.MenuItems.Cast<NavigationViewItem>())
+            foreach (var widgetItem in providerItem.MenuItems.OfType<NavigationViewItem>())
             {
                 var widgetDefinition = widgetItem.Tag as WidgetDefinition;
                 var image = await _widgetIconService.GetWidgetIconForThemeAsync(widgetDefinition, ActualTheme);
@@ -291,9 +291,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
             // Remove the deleted WidgetDefinition from the list of available widgets.
             var menuItems = AddWidgetNavigationView.MenuItems;
-            foreach (var providerItem in menuItems.Cast<NavigationViewItem>())
+            foreach (var providerItem in menuItems.OfType<NavigationViewItem>())
             {
-                foreach (var widgetItem in providerItem.MenuItems.Cast<NavigationViewItem>())
+                foreach (var widgetItem in providerItem.MenuItems.OfType<NavigationViewItem>())
                 {
                     if (widgetItem.Tag is WidgetDefinition tagDefinition)
                     {
