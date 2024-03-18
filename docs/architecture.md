@@ -3,12 +3,40 @@
 Dev Home has a modular architecture that consists of multiple components. These components are:
 
 1. Dev Home Core
-2. Dev Home Common
-3. Settings
-4. Tools
-5. Extensions
+1. Dev Home Common
+1. Settings
+1. Tools
+1. Extensions
 
 ![image info](images/architecture.png)
+
+A more detailed look at how the projects are related:
+```mermaid
+graph TD;
+    DevHome.Logging-->DevHome.Common;
+    DevHome.Telemetry-->DevHome.Common;
+    DevHome.Common-->CoreWidgetProvider;
+    DevHome.Common-->DevHome;
+    DevHome.Common-->DevHome.Dashboard;
+    DevHome.Common-->DevHome.Experiments;
+    DevHome.Common-->DevHome.ExtensionLibrary;
+    DevHome.Common-->DevHome.Settings;
+    DevHome.Logging-->DevHome.SetupFlow.Common;
+    DevHome.Telemetry-->DevHome.SetupFlow.Common;
+    DevHome.SetupFlow.Common-->DevHome.SetupFlow;
+    DevHome.SetupFlow.Common-->DevHome.SetupFlow.ElevatedComponent;
+    DevHome.SetupFlow.Common-->DevHome.SetupFlow.ElevatedServer;
+    DevHome.SetupFlow.ElevatedComponent-->DevHome.SetupFlow.ElevatedServer;
+    DevHome.SetupFlow.ElevatedComponent.Projection-->DevHome.SetupFlow;
+    DevHome.Dashboard-->DevHome.SetupFlow;
+    DevHome.Settings-->DevHome.SetupFlow;
+    CoreWidgetProvider-->DevHome;
+    DevHome.Dashboard-->DevHome;
+    DevHome.Experiments-->DevHome;
+    DevHome.ExtensionLibrary-->DevHome;
+    DevHome.Settings-->DevHome;
+    DevHome.SetupFlow-->DevHome;
+```
 
 ## Dev Home Core
 
@@ -22,7 +50,7 @@ Dev Home Core is the central part of Dev Home where all the components come toge
 
 ## Dev Home Common
 
-The Dev Home Common component contains code that is shared among the tools, core, and settings component. It also imports libraries that are used across Dev Home. One such library is the **Dev Home Extension SDK** used to get references to out-of-process extensions.
+The Dev Home Common component contains code that is shared among the tools, core, and settings components. It also imports libraries that are used across Dev Home. One such library is the **Dev Home Extension SDK** used to get references to out-of-process extensions.
 
 Dev Home Common also provides logging and telemetry functionality.
 
@@ -42,10 +70,11 @@ Dev Home currently has the following tools:
 
 - [Dashboard](./tools.md#dashboard-tool)
 - [Setup flow](./tools.md#setup-flow-tool)
+- Extensions
 
 ## Extensions
 
-Extensions are separate packages living as out-of-process components that provide functionality and data used by the Core component and the tools. These extensions live outside of Dev Home's core codebase and they interact with Dev Home through a well-defined API or protocol.
+Extensions are separate packages living as out-of-process components that provide functionality and data used by the Core component and the tools. These extensions mostly live outside of Dev Home's core codebase and they interact with Dev Home through a well-defined API or protocol.
 
 Extensions can be developed by third-party developers or by Dev Home's core development team. These extensions allow Dev Home to be extended without modifying its core codebase.
 

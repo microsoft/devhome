@@ -52,5 +52,5 @@ In `navConfig.jsonc`, add the following in the tool's definition:
 
 ```csharp
 var experimentationService = Application.Current.GetService<IExperimentationService>();
-var isEnabled = experimentationService.IsEnabled("MyExperimentalFeature");
+var isEnabled = experimentationService.IsFeatureEnabled("MyExperimentalFeature");
 ```

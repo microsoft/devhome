@@ -39,7 +39,7 @@
     </Page.Resources>
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,22,0,0">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <commonviews:Banner x:Uid="ExtensionsBanner"
                                     TextWidth="350"
@@ -95,9 +95,7 @@
                                                            CornerRadius="0,0,3,3"
                                                            IsClickEnabled="{x:Bind HasSettingsProvider}"
                                                            Command="{x:Bind NavigateSettingsCommand}">
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                                <ToggleSwitch IsOn="{x:Bind IsExtensionEnabled, Mode=TwoWay}"/>
-                                            </StackPanel>
+                                            <ToggleSwitch IsOn="{x:Bind IsExtensionEnabled, Mode=TwoWay}"/>
                                         </ctControls:SettingsCard>
                                     </DataTemplate>
                                 </ctControls:SettingsExpander.ItemTemplate>

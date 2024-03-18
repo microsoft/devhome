@@ -15,7 +15,6 @@ namespace DevHome.Common.Views;
 
 // XAML element to contain a single instance of extension UI.
 // Use this element where extension UI is expected to pop up.
-// https://github.com/microsoft/devhome/issues/610
 public class ExtensionAdaptiveCardPanel : StackPanel
 {
     public event EventHandler<FrameworkElement>? UiUpdate;

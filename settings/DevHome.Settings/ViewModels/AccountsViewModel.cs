@@ -5,14 +5,20 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
+using DevHome.Settings.Models;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Settings.ViewModels;
 
-public class AccountsViewModel : ObservableObject
+public partial class AccountsViewModel : ObservableObject
 {
+    public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
+
     public ObservableCollection<AccountsProviderViewModel> AccountsProviders { get; } = new();
 
     public AccountsViewModel()
@@ -23,5 +29,22 @@ public class AccountsViewModel : ObservableObject
         {
             AccountsProviders.Add(new AccountsProviderViewModel(devIdProvider));
         });
+
+        var stringResource = new StringResource("DevHome.Settings/Resources");
+        Breadcrumbs = new ObservableCollection<Breadcrumb>
+        {
+            new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
+            new(stringResource.GetLocalized("Settings_Accounts_Header"), typeof(AccountsViewModel).FullName!),
+        };
+    }
+
+    [RelayCommand]
+    public void BreadcrumbBarItemClicked(BreadcrumbBarItemClickedEventArgs args)
+    {
+        if (args.Index < Breadcrumbs.Count - 1)
+        {
+            var crumb = (Breadcrumb)args.Item;
+            crumb.NavigateTo();
+        }
     }
 }

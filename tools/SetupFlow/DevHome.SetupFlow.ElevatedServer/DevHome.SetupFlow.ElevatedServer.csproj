@@ -5,7 +5,10 @@
   <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <ApplicationIcon>$(SolutionDir)\src\Assets\DevHome.ico</ApplicationIcon>
+    <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
+    <ApplicationIcon Condition="'$(BuildRing)'=='Dev'">$(SolutionDir)\src\Assets\Dev\DevHome_Dev.ico</ApplicationIcon>
+    <ApplicationIcon Condition="'$(BuildRing)'=='Canary'">$(SolutionDir)\src\Assets\Canary\DevHome_Canary.ico</ApplicationIcon>
+    <ApplicationIcon Condition="'$(BuildRing)'=='Stable'">$(SolutionDir)\src\Assets\Preview\DevHome_Preview.ico</ApplicationIcon>
     <Platforms>x86;x64;arm64</Platforms>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <PublishProfileFullPath Condition="'$(BuildingInsideVisualStudio)' != 'True'">$(SolutionDir)\src\Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfileFullPath>

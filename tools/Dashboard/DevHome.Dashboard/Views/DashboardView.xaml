@@ -91,6 +91,14 @@
                             <!-- Default margin is "0,0,4,4". Override since margins are set on the WidgetBoard instead. -->
                             <Setter Property="Margin" Value="0,0,0,0"/>
                             <Setter Property="AutomationProperties.AutomationId" Value="WidgetItem"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="GridViewItem">
+                                        <!-- Removes overlay over entire widget on hover -->
+                                        <ListViewItemPresenter PointerOverBackground="{ThemeResource ListViewItemBackground}"/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </GridView.ItemContainerStyle>
                 </GridView>

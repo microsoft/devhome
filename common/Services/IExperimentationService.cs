@@ -8,9 +8,11 @@ namespace DevHome.Common.Services;
 
 public interface IExperimentationService
 {
-    bool IsFeatureEnabled(string key);
-
     List<ExperimentalFeature> ExperimentalFeatures { get; }
 
+    bool IsFeatureEnabled(string key);
+
     void AddExperimentalFeature(ExperimentalFeature experimentalFeature);
+
+    bool IsExperimentEnabled(string key);
 }
