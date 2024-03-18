@@ -1,6 +1,6 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(2)]
+    [contractversion(3)]
     apicontract DevHomeContract {}
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -77,7 +77,7 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination, IDeveloperId developerId);
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IRepositoryProvider2
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)] interface IRepositoryProvider2
     requires IRepositoryProvider
     {
         String[] SearchFieldNames
@@ -131,7 +131,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass RepositoriesSearchResult 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)] runtimeclass RepositoriesSearchResult 
     {
         RepositoriesSearchResult(IIterable<IRepository> repositories);
         RepositoriesSearchResult(IIterable<IRepository> repositories, String SelectionsOptionLabel, String[] selectionOptions, String selectionOptionsName);
