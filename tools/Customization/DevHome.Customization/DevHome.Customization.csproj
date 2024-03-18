@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\..\..\settings\DevHome.Settings\DevHome.Settings.csproj" />
   </ItemGroup>
 
   <ItemGroup>
