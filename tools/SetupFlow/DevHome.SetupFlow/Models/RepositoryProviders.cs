@@ -196,21 +196,31 @@ internal sealed class RepositoryProviders
         return _providers.GetValueOrDefault(providerName)?.GetAuthenticationExperienceKind() ?? AuthenticationExperienceKind.CardSession;
     }
 
+    public RepositorySearchInformation SearchForRepos(string providerName, IDeveloperId developerId, Dictionary<string, string> searchInputs)
+    {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all repositories for repository provider {providerName}");
+        return _providers.GetValueOrDefault(providerName)?.SearchForRepositories(developerId, searchInputs) ?? new RepositorySearchInformation();
+    }
+
     /// <summary>
     /// Gets all the repositories for an account and provider.  The account will be logged in if they aren't already.
     /// </summary>
     /// <param name="providerName">The specific provider.  Must match the display name of a provider</param>
     /// <param name="developerId">The account to look for.  May not be logged in.</param>
-    /// <param name="searchInputs">The key/value pairs that the extension will use to search for repos.</param>
     /// <returns>All the repositories for an account and provider.</returns>
-    public IEnumerable<IRepository> GetAllRepositories(string providerName, IDeveloperId developerId, Dictionary<string, string> searchInputs)
+    public RepositorySearchInformation GetAllRepositories(string providerName, IDeveloperId developerId)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all repositories for repository provider {providerName}");
-        return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId, searchInputs) ?? new List<IRepository>();
+        return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId) ?? new RepositorySearchInformation();
     }
 
     public bool IsSearchingEnabled(string providerName)
     {
         return _providers.GetValueOrDefault(providerName)?.IsSearchingEnabled() ?? false;
+    }
+
+    public string GetAskChangeSearchFieldsLabel(string providerName)
+    {
+        return _providers.GetValueOrDefault(providerName)?.GetAskChangeSearchFieldsLabel() ?? string.Empty;
     }
 }

@@ -77,6 +77,30 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination, IDeveloperId developerId);
     };
 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IRepositoryProvider2
+    requires IRepositoryProvider
+    {
+        String[] SearchFieldNames
+        {
+            get;
+        };
+
+        Boolean IsSearchingSupported
+        {
+            get;
+        };
+
+        String AskToSearchLabel
+        {
+            get;
+        };
+
+        // This should return a list of suggestions given fieldValues.
+        // "Suggestions" is dependant on the extension and how it keeps track of repositories.
+        Windows.Foundation.IAsyncOperation<IVectorView<String> > GetValuesForSearchFieldAsync(IMapView<String, String> fieldValues, String requestedSearchField, IDeveloperId developerId);
+        Windows.Foundation.IAsyncOperation<RepositoriesSearchResult> GetRepositoriesAsync(IMapView<String, String> fieldValues, IDeveloperId developerId);
+    };
+
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     runtimeclass RepositoryResult {
         RepositoryResult(IRepository repository);
@@ -101,6 +125,38 @@ namespace Microsoft.Windows.DevHome.SDK
         {
             get;
         };
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass RepositoriesSearchResult 
+    {
+        RepositoriesSearchResult(IIterable<IRepository> repositories);
+        RepositoriesSearchResult(IIterable<IRepository> repositories, String SelectionsOptionLabel, String[] selectionOptions, String selectionOptionsName);
+        RepositoriesSearchResult(HRESULT e, String diagnosticText);
+
+        IIterable<IRepository> Repositories
+        {
+            get;
+        };
+
+        String SelectionsOptionLabel
+        {
+            get;
+        };
+
+        String[] SelectionOptions
+        {
+            get;
+        };
+
+        String SelectionOptionsName
+        {
+            get;
+        };
+
         ProviderOperationResult Result
         {
             get;

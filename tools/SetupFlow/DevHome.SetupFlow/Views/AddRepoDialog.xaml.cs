@@ -275,28 +275,10 @@ public partial class AddRepoDialog : ContentDialog
             }
 
             // switching to the repo page causes repos to be queried.
-            SwitchToRepoPage(AddRepoViewModel.ProviderNames[0], searchInput);
-        }
-    }
-
-    private void SwitchToSelectSearchTermsPage()
-    {
-        AddRepoViewModel.ChangeToSelectSearchTermsPage();
-        AddRepoViewModel.FolderPickerViewModel.ShouldShowFolderPicker = Visibility.Collapsed;
-        EditDevDriveViewModel.ShowDevDriveInformation = Visibility.Collapsed;
-        IsPrimaryButtonEnabled = true;
-    }
-
-    private async void SwitchToRepoPage(string repositoryProviderName, Dictionary<string, string> inputValues)
-    {
-        await AddRepoViewModel.GetAccountsAsync(repositoryProviderName, LoginUIContent);
-        if (AddRepoViewModel.Accounts.Any())
-        {
-            AddRepoViewModel.ChangeToRepoPage(inputValues);
-            AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
-            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-            AddRepoViewModel.SelectedAccount = AddRepoViewModel.Accounts.First();
-            AddRepoViewModel.ShouldEnablePrimaryButton = false;
+            var deferral = args.GetDeferral();
+            await AddRepoViewModel.ChangeToRepoPageAsync();
+            AddRepoViewModel.SearchForRepos(searchInput);
+            deferral.Complete();
         }
     }
 
@@ -372,5 +354,47 @@ public partial class AddRepoDialog : ContentDialog
         AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = AddRepoViewModel.EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
         AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario = true;
         AddRepoViewModel.EditDevDriveViewModel.IsDevDriveCheckboxChecked = true;
+    }
+
+    private void FilterSuggestions(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    {
+        sender.ItemsSource = _searchFieldsAndValues[sender.Header.ToString()].Where(x => x.Contains(sender.Text));
+        return;
+    }
+
+    private async void SwitchToSearchPage(object sender, RoutedEventArgs e)
+    {
+        AddRepoViewModel.ChangeToSelectSearchTermsPage();
+        _searchFieldsAndValues.Clear();
+        ShowingSearchTermsGrid.Children.Clear();
+        GatheringSearchValuesGrid.Visibility = Visibility.Visible;
+        ShowingSearchTermsGrid.Visibility = Visibility.Collapsed;
+
+        var loginId = (string)AddRepoViewModel.SelectedAccount;
+        var searchTerms = AddRepoViewModel.GetSearchTerms();
+        ShowingSearchTermsGrid.RowSpacing = 10;
+
+        // Set up the UI for searching.
+        var searchTermRow = 0;
+        for (var termIndex = 0; termIndex < searchTerms.Count; termIndex++)
+        {
+            var localTermIndex = termIndex;
+            ShowingSearchTermsGrid.RowDefinitions.Add(new RowDefinition());
+
+            var searchFieldName = string.Empty;
+            var searchFieldSuggestions = await Task.Run(() => AddRepoViewModel.GetSuggestionsFor(loginId, new(), searchTerms[localTermIndex]));
+
+            _searchFieldsAndValues.Add(searchTerms[localTermIndex], searchFieldSuggestions);
+            var suggestBox = new AutoSuggestBox();
+            suggestBox.Header = searchTerms[localTermIndex];
+            suggestBox.ItemsSource = searchFieldSuggestions;
+            suggestBox.Text = searchFieldName;
+            suggestBox.TextChanged += FilterSuggestions;
+            ShowingSearchTermsGrid.Children.Add(suggestBox);
+            Grid.SetRow(suggestBox, searchTermRow++);
+        }
+
+        GatheringSearchValuesGrid.Visibility = Visibility.Collapsed;
+        ShowingSearchTermsGrid.Visibility = Visibility.Visible;
     }
 }
