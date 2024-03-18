@@ -134,7 +134,7 @@ namespace Microsoft.Windows.DevHome.SDK
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass RepositoriesSearchResult 
     {
         RepositoriesSearchResult(IIterable<IRepository> repositories);
-        RepositoriesSearchResult(IIterable<IRepository> repositories, String SelectionsOptionsLabel, String[] selectionOptions, String selectionOptionsName);
+        RepositoriesSearchResult(IIterable<IRepository> repositories, String SelectionsOptionLabel, String[] selectionOptions, String selectionOptionsName);
         RepositoriesSearchResult(HRESULT e, String diagnosticText);
 
         IIterable<IRepository> Repositories
@@ -142,7 +142,7 @@ namespace Microsoft.Windows.DevHome.SDK
             get;
         };
 
-        String SelectionsOptionsLabel
+        String SelectionsOptionLabel
         {
             get;
         };
