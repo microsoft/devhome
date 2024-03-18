@@ -12,8 +12,8 @@ namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
 
 public partial class QuietBackgroundProcessesViewModel : ObservableObject
 {
-    private readonly TimeSpan _zero;
-    private readonly TimeSpan _oneSecond;
+    private readonly TimeSpan _zero = new TimeSpan(0, 0, 0);
+    private readonly TimeSpan _oneSecond = new TimeSpan(0, 0, 1);
 #nullable enable
     private DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession? _session;
 #nullable disable
@@ -53,9 +53,6 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
 
     public QuietBackgroundProcessesViewModel()
     {
-        _zero = new TimeSpan(0, 0, 0);
-        _oneSecond = new TimeSpan(0, 0, 1);
-
         IsFeaturePresent = DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager.IsFeaturePresent();
 
         var running = false;
