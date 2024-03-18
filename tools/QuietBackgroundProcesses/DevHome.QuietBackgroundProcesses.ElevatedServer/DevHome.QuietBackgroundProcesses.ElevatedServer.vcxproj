@@ -113,7 +113,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\DevHome.QuietBackgroundProcesses.Common\;$(ProjectDir)..\DevHome.QuietBackgroundProcesses.Common\$(GeneratedFilesDir)midl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\DevHome.QuietBackgroundProcesses.Common\;$(ProjectDir)..\DevHome.QuietBackgroundProcesses.Common\$(GeneratedFilesDir)midl;$(ProjectDir)..\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>onecore.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="PerformanceRecorderEngineWinrt.h" />
     <ClInclude Include="TimedQuietSession.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="QuietState.h" />
@@ -145,6 +146,7 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="PerformanceRecorderEngineWinrt.cpp" />
     <ClCompile Include="QuietBackgroundProcessesSession.cpp" />
     <ClCompile Include="QuietState.cpp" />
   </ItemGroup>
@@ -157,6 +159,9 @@
   <ItemGroup>
     <ProjectReference Include="..\DevHome.QuietBackgroundProcesses.Common\DevHome.QuietBackgroundProcesses.Common.vcxproj">
       <Project>{4b370e2f-fb1d-4887-90bf-3b72517485ce}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine.vcxproj">
+      <Project>{af5a7fa0-e3e8-44c8-8830-31dd08f583e8}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

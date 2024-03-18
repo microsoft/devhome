@@ -19,11 +19,13 @@
 #include "TimedQuietSession.h"
 
 #include "DevHome.QuietBackgroundProcesses.h"
+#include "PerformanceRecorderEngineWinrt.h"
 
 constexpr auto DEFAULT_QUIET_DURATION = std::chrono::hours(2);
 
 std::mutex g_mutex;
 std::unique_ptr<TimedQuietSession> g_activeTimer;
+wil::com_ptr<ABI::DevHome::QuietBackgroundProcesses::IPerformanceRecorderEngine> g_performanceRecorderEngine;
 
 namespace ABI::DevHome::QuietBackgroundProcesses
 {
@@ -61,15 +63,28 @@ namespace ABI::DevHome::QuietBackgroundProcesses
             // Start timer
             g_activeTimer.reset(new TimedQuietSession(duration));
 
+            // Start performance recorder
+            g_performanceRecorderEngine.reset();
+            THROW_IF_FAILED(Microsoft::WRL::MakeAndInitialize<PerformanceRecorderEngine>(&g_performanceRecorderEngine));
+            THROW_IF_FAILED(g_performanceRecorderEngine->Start(1000));
+
             // Return duration for showing countdown
             *result = g_activeTimer->TimeLeftInSeconds();
             return S_OK;
         }
         CATCH_RETURN()
 
-        STDMETHODIMP Stop() noexcept override try
+        STDMETHODIMP Stop(ABI::DevHome::QuietBackgroundProcesses::IProcessPerformanceTable** result) noexcept override
+        try
         {
             auto lock = std::scoped_lock(g_mutex);
+            *result = nullptr;
+
+            if (g_performanceRecorderEngine)
+            {
+                THROW_IF_FAILED(g_performanceRecorderEngine->Stop(result));
+                g_performanceRecorderEngine.reset();
+            }
 
             // Turn off quiet mode and cancel timer
             if (g_activeTimer)

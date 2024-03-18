@@ -39,7 +39,7 @@ struct UnelevatedServerReference
 };
 
 
-// TimedQuietSession is a 2 hour "Quiet Background Processes" timed window that disables quiet
+// TimedQuietSession is a 2 hour "Quiet background processes" timed window that disables quiet
 // mode when the timer expires or when explicitly cancelled.  It keeps also keeps the server alive.
 // 
 // TimedQuietSession maintains,

@@ -2,15 +2,63 @@
 // Licensed under the MIT License.
 
 import "inspectable.idl";
+import "windows.foundation.idl";
 
 namespace DevHome.QuietBackgroundProcesses
 {
+    // Performance Engine types
+    enum ProcessCategory
+    {
+        Unknown,
+        User,
+        System,
+        Developer,
+        Background,
+    };
+
+    [default_interface]
+    runtimeclass ProcessRow
+    {
+        Int64 Pid { get; };
+        String Name { get; };
+        String PackageFullName { get; };
+        String Aumid { get; };
+        String Path { get; };
+        ProcessCategory Category { get; };
+        Windows.Foundation.DateTime CreateTime { get; };
+        Windows.Foundation.DateTime ExitTime { get; };
+
+        UInt64 SampleCount { get; };
+        Single PercentCumulative { get; };
+        Single VarianceCumulative { get; };
+        Single Sigma4Cumulative { get; };
+        Single MaxPercent { get; };
+        UInt32 SamplesAboveThreshold { get; };
+
+        UInt64 TotalCpuTimeInMicroseconds { get; };
+    }
+
+    [default_interface]
+    runtimeclass ProcessPerformanceTable
+    {
+        ProcessRow[] Rows { get; };
+    }
+
+    [default_interface]
+    runtimeclass PerformanceRecorderEngine
+    {
+        PerformanceRecorderEngine();
+        void Start(Int32 periodInMs);
+        ProcessPerformanceTable Stop();
+    }
+
+    // Quiet background process types
     [default_interface]
     runtimeclass QuietBackgroundProcessesSession
     {
         static QuietBackgroundProcessesSession GetSingleton();
         Int64 Start();
-        void Stop();
+        ProcessPerformanceTable Stop();
         Boolean IsActive { get; };
         Int64 TimeLeftInSeconds { get; };
     }

@@ -12,30 +12,38 @@
 
             <!-- Header icon -->
             <ctControls:SettingsExpander.HeaderIcon>
-                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xec7a;"/>
+                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xefff;"/>
             </ctControls:SettingsExpander.HeaderIcon>
 
             <!-- Quiet session setting area -->
             <StackPanel Orientation="Horizontal">
                 <TextBlock
-                            Text="{x:Bind ViewModel.SessionStateText, Mode=OneWay}"
-                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                            Foreground="{StaticResource AccentTextFillColorTertiaryBrush}"
-                            Margin="{StaticResource MediumLeftRightMargin}"
-                            VerticalAlignment="Center"
-                            TextTrimming="CharacterEllipsis" />
+                    Text="{x:Bind ViewModel.SessionStateText, Mode=OneWay}"
+                    Foreground="{StaticResource AccentTextFillColorTertiaryBrush}"
+                    Margin="{StaticResource MediumLeftRightMargin}"
+                    VerticalAlignment="Center"
+                    TextTrimming="CharacterEllipsis" />
 
                 <!-- Start/Stop button -->
                 <ToggleButton
-                            Content="{x:Bind ViewModel.QuietButtonText, Mode=OneWay}"
-                            IsEnabled="{x:Bind ViewModel.IsFeaturePresent, Mode=OneWay}"
-                            IsChecked="{x:Bind ViewModel.QuietButtonChecked, Mode=OneWay}"
-                            Command="{x:Bind ViewModel.QuietButtonClickedCommand}" />
+                    Content="{x:Bind ViewModel.QuietButtonText, Mode=OneWay}"
+                    IsEnabled="{x:Bind ViewModel.IsFeaturePresent, Mode=OneWay}"
+                    IsChecked="{x:Bind ViewModel.QuietButtonChecked, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.QuietButtonClickedCommand}" />
             </StackPanel>
 
             <!-- Expander -->
             <ctControls:SettingsExpander.Items>
-                <ctControls:SettingsCard x:Uid="QuietBackgroundProcessesExplanation" HorizontalContentAlignment="Left" Margin="{ThemeResource SettingsCardMargin}">
+                <ctControls:SettingsCard x:Uid="QuietBackgroundProcessesExplanation" HorizontalContentAlignment="Left" ContentAlignment="Vertical">
+
+                    <!-- Analytic Summary button -->
+                    <Button
+                        x:Name="analyticSummaryButton"
+                        Content="Analytic summary"
+                        IsEnabled="{x:Bind ViewModel.IsAnalyticSummaryAvailable, Mode=OneWay}"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Click="ShowAnalyticSummaryButton_Click" />
+
                 </ctControls:SettingsCard>
             </ctControls:SettingsExpander.Items>
 

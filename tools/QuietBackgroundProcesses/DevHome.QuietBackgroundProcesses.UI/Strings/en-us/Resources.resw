@@ -59,28 +59,32 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="NavigationPane.Content" xml:space="preserve">
-    <value>Quiet Background Processes</value>
-    <comment>The name of the Quiet Background Processes page</comment>
+    <value>Quiet background processes</value>
+    <comment>The name of the Quiet background processes page</comment>
   </data>
   <data name="QuietBackgroundProcesses_QuietButton_Start" xml:space="preserve">
     <value>Start session</value>
     <comment>Button that starts a quiet background session</comment>
   </data>
   <data name="QuietBackgroundProcesses_QuietButton_Stop" xml:space="preserve">
-    <value>Stop session</value>
+    <value>End session</value>
     <comment>Button that stops a quiet background session</comment>
   </data>
+  <data name="QuietBackgroundProcesses_Time_LastSessionLength" xml:space="preserve">
+    <value>Last session length:</value>
+    <comment>Length of the previously run quiet session</comment>
+  </data>
   <data name="QuietBackgroundProcesses.Description" xml:space="preserve">
-    <value>Silence and track background processes that may hinder device performance</value>
-    <comment>Description of the Quiet Background Processes feature</comment>
+    <value>Quiet background processes allows you to free up resources while developing</value>
+    <comment>Description of the Quiet background processes feature</comment>
   </data>
   <data name="QuietBackgroundProcesses.Header" xml:space="preserve">
     <value>Quiet background processes</value>
-    <comment>Inline title of the Quiet Background Processes feature</comment>
+    <comment>Inline title of the Quiet background processes feature</comment>
   </data>
   <data name="QuietBackgroundProcessesExplanation.Description" xml:space="preserve">
-    <value>This feature can be activated for 2 hours.</value>
-    <comment>A description of the Quiet Background Processes time window</comment>
+    <value>This feature is 2 hours and makes resources available while developing.</value>
+    <comment>A description of the Quiet background processes time window</comment>
   </data>
   <data name="QuietBackgroundProcessesExplanation.Header" xml:space="preserve">
     <value>Quiet background processes beta feature description</value>
@@ -97,6 +101,62 @@
   <data name="QuietBackgroundProcessesExplanation_RelatedLinks.Text" xml:space="preserve">
     <value>Related links</value>
     <comment>Label for the doc links</comment>
+  </data>
+
+  <!-- Analytic Summary -->
+  <data name="AnalyticSummary_Title.Text" xml:space="preserve">
+    <value>Analytic Summary</value>
+    <comment>Title of the analytic summary page</comment>
+  </data>
+  <data name="AnalyticSummary_Description.Text" xml:space="preserve">
+    <value>Analytic summary description...</value>
+    <comment>Desciption of the analytic summary page</comment>
+  </data>
+  <data name="AnalyticSummary_SortBy_Label.Text" xml:space="preserve">
+    <value>Sort by</value>
+    <comment>Label for the combo box for sorting</comment>
+  </data>
+  <data name="ComboBox_SortBy_Process.Content" xml:space="preserve">
+    <value>Process</value>
+    <comment>Sortby dropdown option</comment>
+  </data>
+  <data name="ComboBox_SortBy_Type.Content" xml:space="preserve">
+    <value>Type</value>
+    <comment>Sortby dropdown option</comment>
+  </data>
+  <data name="ComboBox_SortBy_CpuAboveThreshold.Content" xml:space="preserve">
+    <value>CPU above threshold</value>
+    <comment>Sortby dropdown option</comment>
+  </data>
+  <data name="AnalyticSummary_FilterProcesses_PlaceholderText.PlaceholderText" xml:space="preserve">
+    <value>Search for a process</value>
+    <comment>Label for analytic summary save report button</comment>
+  </data>
+  <data name="AnalyticSummary_SaveReportButton.Text" xml:space="preserve">
+    <value>Save report</value>
+    <comment>Label for analytic summary save report button</comment>
+  </data>
+  <data name="AnalyticSummary_CloseButton.Text" xml:space="preserve">
+    <value>Close</value>
+    <comment>Label for analytic summary close button</comment>
+  </data>
+
+  <!-- Simple table control -->
+  <data name="SimpleTableControl_Heading_Process.Text" xml:space="preserve">
+    <value>Process</value>
+    <comment>Table heading for Process column</comment>
+  </data>
+  <data name="SimpleTableControl_Heading_ProcessType.Text" xml:space="preserve">
+    <value>Type</value>
+    <comment>Table heading for Type column</comment>
+  </data>
+  <data name="SimpleTableControl_Heading_CpuAboveThreshold.Text" xml:space="preserve">
+    <value>Process</value>
+    <comment>Table heading for 'CPU above threshold' column</comment>
+  </data>
+  <data name="MinutesAbbreviation.Text" xml:space="preserve">
+    <value>min</value>
+    <comment>Abbreviation for the word minutes</comment>
   </data>
 
   <!-- Status Messages -->
