@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
 using DevHome.Logging;
-using DevHome.Settings.Models;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 
