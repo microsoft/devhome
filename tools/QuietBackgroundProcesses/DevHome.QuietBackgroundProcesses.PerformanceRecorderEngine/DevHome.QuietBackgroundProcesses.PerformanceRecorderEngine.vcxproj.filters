@@ -18,6 +18,8 @@
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="priv.cpp" />
+    <ClCompile Include="procmon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -25,8 +27,12 @@
     <ClInclude Include="inc\include_crm.h">
       <Filter>inc</Filter>
     </ClInclude>
+    <ClInclude Include="a.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
 </Project>

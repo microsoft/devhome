@@ -129,6 +129,9 @@
     <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Common\DevHome.QuietBackgroundProcesses.winmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <PropertyGroup>

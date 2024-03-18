@@ -30,6 +30,9 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
     [ObservableProperty]
     private string _quietButtonText;
 
+    [ObservableProperty]
+    private string _cpuUsageCode;
+
     private DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession GetSession()
     {
         if (_session == null)
@@ -175,6 +178,10 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
 
     private void DispatcherTimer_Tick(object sender, object e)
     {
+        uint y = 17104;
+        var x = new DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine();
+        CpuUsageCode = y + ": " + x.GetProcessCpuUsage2(y);
+
         // Subtract 1 second
         _secondsLeft = _secondsLeft.Subtract(_oneSecond);
 

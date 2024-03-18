@@ -22,4 +22,13 @@ namespace DevHome.QuietBackgroundProcesses
         static QuietBackgroundProcessesSession GetSession();
         static QuietBackgroundProcessesSession TryGetSession();
     }
+
+    [default_interface]
+    runtimeclass PerformanceRecorderEngine
+    {
+        PerformanceRecorderEngine();
+        Int64 Start();
+        void Stop();
+        UInt64 GetProcessCpuUsage2(UInt32 processId);
+    }
 }

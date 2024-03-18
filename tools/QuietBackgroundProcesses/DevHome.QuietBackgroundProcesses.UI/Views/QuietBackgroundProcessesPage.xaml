@@ -18,6 +18,8 @@
 
                     <!-- Quiet session setting area -->
                     <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{x:Bind ViewModel.CpuUsageCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="16" Foreground="Red" />
+                        
                         <TextBlock
                             Text="{x:Bind ViewModel.SessionStateText, Mode=OneWay}"
                             Style="{StaticResource BodyStrongTextBlockStyle}"
