@@ -1,0 +1,36 @@
+LIBRARY "CrmDll.dll"
+
+EXPORTS
+    DllCanUnloadNow         PRIVATE
+
+    RegisterFunctions
+    ElectronLogA
+    ElectronLogW
+
+    RegisterCallbackFunctions
+
+    PerformanceState_SimulateCpuLoadStart
+    PerformanceState_SimulateCpuLoadStop
+    PerformanceState_SimulateCpuLoadAdd
+    PerformanceState_SimulateCpuLoadRemove
+
+    PerformanceState_GetProcessPidByName
+    PerformanceState_GetGameMode
+    PerformanceState_GetDeveloperQuietMode
+    PerformanceState_StartForProcess
+    PerformanceState_GetCpuUsageForProcess
+
+    PerformanceState_GetBatteryInfo_BatteryPresent
+    PerformanceState_GetBatteryInfo_AcOnLine
+    PerformanceState_GetBatteryInfo_BatteryPercent
+    PerformanceState_IsBatterySaverEnabled
+
+    PerformanceState_GetUserPresence
+    PerformanceState_SetUserPresence
+
+    CrmClient_RegisterQuietMode
+    CrmClient_Register
+    CrmClient_Start
+    CrmClient_Stop
+
+    AcClient_Register
