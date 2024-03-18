@@ -37,6 +37,6 @@ public class SettingChangedEvent : EventBase
 
     public static void Log(string settingName, string value)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Customization_SettingChanged_Event", LogLevel.Critical, new SettingChangedEvent(settingName, value));
+        TelemetryFactory.Get<ITelemetry>().Log("Customization_SettingChanged_Event", LogLevel.Measure, new SettingChangedEvent(settingName, value));
     }
 }

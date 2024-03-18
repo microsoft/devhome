@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Contracts;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Customization.Extensions;
 using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Settings.Extensions;
 using DevHome.ViewModels;
@@ -46,6 +47,7 @@ public class PageService : IPageService
 
         this.ConfigureExtensionLibraryPages();
         this.ConfigureSettingsPages();
+        this.ConfigureCustomizationPages();
 
         // Configure Experimental Feature pages
         ExperimentalFeature.LocalSettingsService = localSettingsService;

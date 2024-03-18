@@ -21,29 +21,9 @@ public sealed partial class MainPage : ToolPage
         get;
     }
 
-    public ObservableCollection<Breadcrumb> Breadcrumbs
-    {
-        get;
-    }
-
     public MainPage()
     {
         ViewModel = Application.Current.GetService<MainPageViewModel>();
         InitializeComponent();
-
-        var stringResource = new StringResource("DevHome.Customization/Resources");
-        Breadcrumbs = new ObservableCollection<Breadcrumb>
-        {
-            new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
-        };
-    }
-
-    private void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
-    {
-        if (args.Index < Breadcrumbs.Count - 1)
-        {
-            var crumb = (Breadcrumb)args.Item;
-            crumb.NavigateTo();
-        }
     }
 }

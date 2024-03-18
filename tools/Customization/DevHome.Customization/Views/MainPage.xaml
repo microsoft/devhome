@@ -10,7 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pg="using:DevHome.Common"
     xmlns:views="using:DevHome.Customization.Views"
-    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
+    behaviors:NavigationViewHeaderBehavior.HeaderMode="Always"
     mc:Ignorable="d">
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
@@ -18,12 +18,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
-        <BreadcrumbBar
-            x:Name="BreadcrumbBar"
-                Margin="0,0,0,16"
-            ItemClicked="BreadcrumbBar_ItemClicked"
-            ItemsSource="{x:Bind Breadcrumbs}" />
 
         <ScrollView Grid.Row="1" VerticalAlignment="Top">
             <!-- TODO: Replace with a ContentPresenter to enable swapping the root view with a search view, etc. -->

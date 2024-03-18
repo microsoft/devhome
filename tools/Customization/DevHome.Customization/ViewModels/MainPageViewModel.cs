@@ -14,8 +14,12 @@ namespace DevHome.Customization.ViewModels;
 
 public partial class MainPageViewModel : ObservableObject
 {
-    public MainPageViewModel()
+    private INavigationService NavigationService { get; }
+
+    public MainPageViewModel(
+        INavigationService navigationService)
     {
+        NavigationService = navigationService;
     }
 
     [RelayCommand]
@@ -27,7 +31,6 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand]
     private void NavigateToDeveloperFileExplorerPage()
     {
-        var navigationService = Application.Current.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(DeveloperFileExplorerViewModel).FullName!);
+        NavigationService.NavigateTo(typeof(DeveloperFileExplorerViewModel).FullName!);
     }
 }
