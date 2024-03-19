@@ -12,7 +12,6 @@ using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.ExtensionLibrary.Helpers;
-using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel;
@@ -208,6 +207,6 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     public void SendFeedbackClick()
     {
         var navigationService = Application.Current.GetService<INavigationService>();
-        _ = navigationService.NavigateTo(typeof(FeedbackViewModel).FullName!);
+        _ = navigationService.NavigateTo(KnownPageKeys.Feedback);
     }
 }

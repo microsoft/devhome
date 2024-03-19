@@ -13,8 +13,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
-using DevHome.Dashboard.ViewModels;
-using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
@@ -151,7 +149,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     public void GoToDashboard()
     {
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("Dashboard"), Orchestrator.ActivityId);
-        _host.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName);
+        _host.GetService<INavigationService>().NavigateTo(KnownPageKeys.Dashboard);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToDashboard");
     }
 
@@ -159,7 +157,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     public void GoToDevHomeSettings()
     {
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("DevHomeSettings"), Orchestrator.ActivityId);
-        _host.GetService<INavigationService>().NavigateTo(typeof(SettingsViewModel).FullName);
+        _host.GetService<INavigationService>().NavigateTo(KnownPageKeys.Settings);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToSettings");
     }
 

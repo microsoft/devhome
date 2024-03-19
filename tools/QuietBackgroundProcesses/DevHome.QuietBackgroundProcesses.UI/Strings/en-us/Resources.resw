@@ -62,6 +62,14 @@
     <value>Quiet Background Processes</value>
     <comment>The name of the Quiet Background Processes page</comment>
   </data>
+  <data name="QuietBackgroundProcesses_QuietButton_Start" xml:space="preserve">
+    <value>Start session</value>
+    <comment>Button that starts a quiet background session</comment>
+  </data>
+  <data name="QuietBackgroundProcesses_QuietButton_Stop" xml:space="preserve">
+    <value>Stop session</value>
+    <comment>Button that stops a quiet background session</comment>
+  </data>
   <data name="QuietBackgroundProcesses.Description" xml:space="preserve">
     <value>Silence and track background processes that may hinder device performance</value>
     <comment>Description of the Quiet Background Processes feature</comment>
