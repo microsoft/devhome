@@ -5,17 +5,17 @@
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     RepositoriesSearchResult::RepositoriesSearchResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository> const& repositories) :
-        _Repositories(std::make_shared<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository>>(repositories)), 
-        _SelectionsOptionsLabel(L""), 
-        _SelectionOptionsName(L""), 
+        _Repositories(std::make_shared<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository>>(repositories)),
+        _SelectionOptionsLabel(L""),
+        _SelectionOptionsName(L""),
         _SelectionOptions(std::vector<hstring>()),
         _Result(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring(""), winrt::to_hstring("")))
     {
     }
 
-    RepositoriesSearchResult::RepositoriesSearchResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository> const& repositories, hstring const& selectionsOptionsLabel, array_view<hstring const> selectionOptions, hstring const& selectionOptionsName) :
+    RepositoriesSearchResult::RepositoriesSearchResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository> const& repositories, hstring const& selectionOptionsLabel, array_view<hstring const> selectionOptions, hstring const& selectionOptionsName) :
         _Repositories(std::make_shared<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository>>(repositories)),
-        _SelectionsOptionsLabel(selectionsOptionsLabel),
+        _SelectionOptionsLabel(selectionOptionsLabel),
         _SelectionOptionsName(selectionOptionsName),
         _SelectionOptions(std::vector<hstring>{ selectionOptions.begin(), selectionOptions.end() }),
         _Result(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring(""), winrt::to_hstring("")))
@@ -24,7 +24,7 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 
     RepositoriesSearchResult::RepositoriesSearchResult(winrt::hresult const& e, hstring const& diagnosticText) :
         _Repositories(std::make_shared<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository>>(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository>())),
-        _SelectionsOptionsLabel(L""),
+        _SelectionOptionsLabel(L""),
         _SelectionOptionsName(L""),
         _SelectionOptions(std::vector<hstring>()),
         _Result(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), diagnosticText, diagnosticText))
@@ -36,9 +36,9 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
         return *_Repositories.get();
     }
 
-    hstring RepositoriesSearchResult::SelectionsOptionsLabel()
+    hstring RepositoriesSearchResult::SelectionOptionsLabel()
     {
-        return _SelectionsOptionsLabel;
+        return _SelectionOptionsLabel;
     }
 
     com_array<hstring> RepositoriesSearchResult::SelectionOptions()
