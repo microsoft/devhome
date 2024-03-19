@@ -59,28 +59,28 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="NavigationPane.Content" xml:space="preserve">
-    <value>Quiet Background Processes</value>
-    <comment>The name of the Quiet Background Processes page</comment>
+    <value>Quiet background processes</value>
+    <comment>The name of the Quiet background processes page</comment>
   </data>
   <data name="QuietBackgroundProcesses_QuietButton_Start" xml:space="preserve">
     <value>Start session</value>
     <comment>Button that starts a quiet background session</comment>
   </data>
   <data name="QuietBackgroundProcesses_QuietButton_Stop" xml:space="preserve">
-    <value>Stop session</value>
+    <value>End session</value>
     <comment>Button that stops a quiet background session</comment>
   </data>
   <data name="QuietBackgroundProcesses.Description" xml:space="preserve">
     <value>Silence and track background processes that may hinder device performance</value>
-    <comment>Description of the Quiet Background Processes feature</comment>
+    <comment>Description of the Quiet background processes feature</comment>
   </data>
   <data name="QuietBackgroundProcesses.Header" xml:space="preserve">
     <value>Quiet background processes</value>
-    <comment>Inline title of the Quiet Background Processes feature</comment>
+    <comment>Inline title of the Quiet background processes feature</comment>
   </data>
   <data name="QuietBackgroundProcessesExplanation.Description" xml:space="preserve">
     <value>This feature can be activated for 2 hours.</value>
-    <comment>A description of the Quiet Background Processes time window</comment>
+    <comment>A description of the Quiet background processes time window</comment>
   </data>
   <data name="QuietBackgroundProcessesExplanation.Header" xml:space="preserve">
     <value>Quiet background processes beta feature description</value>

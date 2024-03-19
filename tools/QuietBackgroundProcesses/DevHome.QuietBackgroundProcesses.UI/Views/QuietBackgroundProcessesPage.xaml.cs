@@ -11,7 +11,7 @@ namespace DevHome.QuietBackgroundProcesses.UI.Views;
 /// </summary>
 public sealed partial class QuietBackgroundProcessesPage : ToolPage
 {
-    public override string ShortName => "Quiet Background Processes";
+    public override string ShortName => "Quiet background processes";
 
     public QuietBackgroundProcessesViewModel ViewModel
     {
