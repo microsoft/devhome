@@ -203,7 +203,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             SetQuietSessionRunningState(false);
             var lastSessionLength = _sessionDuration - _secondsLeft;
             _secondsLeft = _zero;
-            SessionStateText = GetString("QuietBackgroundProcesses_Time_LastSessionLength") + " " + lastSessionLength.ToString();
+            SessionStateText = GetString("QuietBackgroundProcesses_Time_LastSessionLength") + " " + lastSessionLength.ToString("g", CultureInfo.CurrentCulture);
         }
         else
         {
