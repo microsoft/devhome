@@ -70,8 +70,12 @@
     <value>End session</value>
     <comment>Button that stops a quiet background session</comment>
   </data>
+  <data name="QuietBackgroundProcesses_Time_LastSessionLength" xml:space="preserve">
+    <value>Last session length:</value>
+    <comment>Length of the previously run quiet session</comment>
+  </data>
   <data name="QuietBackgroundProcesses.Description" xml:space="preserve">
-    <value>Silence and track background processes that may hinder device performance</value>
+    <value>Quiet background processes allows you to free up resources while developing</value>
     <comment>Description of the Quiet background processes feature</comment>
   </data>
   <data name="QuietBackgroundProcesses.Header" xml:space="preserve">
@@ -79,7 +83,7 @@
     <comment>Inline title of the Quiet background processes feature</comment>
   </data>
   <data name="QuietBackgroundProcessesExplanation.Description" xml:space="preserve">
-    <value>This feature can be activated for 2 hours.</value>
+    <value>This feature is 2 hours and makes resources available while developing.</value>
     <comment>A description of the Quiet background processes time window</comment>
   </data>
   <data name="QuietBackgroundProcessesExplanation.Header" xml:space="preserve">

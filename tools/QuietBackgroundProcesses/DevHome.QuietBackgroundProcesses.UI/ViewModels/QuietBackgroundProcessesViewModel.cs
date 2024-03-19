@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Helpers;
@@ -14,6 +15,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
 {
     private readonly TimeSpan _zero = new TimeSpan(0, 0, 0);
     private readonly TimeSpan _oneSecond = new TimeSpan(0, 0, 1);
+    private TimeSpan _sessionDuration;
 #nullable enable
     private DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession? _session;
 #nullable disable
@@ -97,6 +99,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             {
                 // Launch the server, which then elevates itself, showing a UAC prompt
                 var timeLeftInSeconds = GetSession().Start();
+                _sessionDuration = TimeSpan.FromSeconds(timeLeftInSeconds);
                 SetQuietSessionRunningState(true, timeLeftInSeconds);
             }
             catch (Exception ex)
@@ -111,7 +114,8 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             {
                 GetSession().Stop();
                 SetQuietSessionRunningState(false);
-                SessionStateText = GetStatusString("SessionEnded");
+                var lastSessionLength = _sessionDuration - _secondsLeft;
+                SessionStateText = GetString("QuietBackgroundProcesses_Time_LastSessionLength") + " " + lastSessionLength.ToString("g", CultureInfo.CurrentCulture);
             }
             catch (Exception ex)
             {
@@ -197,8 +201,9 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
         if (sessionEnded)
         {
             SetQuietSessionRunningState(false);
+            var lastSessionLength = _sessionDuration - _secondsLeft;
             _secondsLeft = _zero;
-            SessionStateText = GetStatusString("SessionEnded");
+            SessionStateText = GetString("QuietBackgroundProcesses_Time_LastSessionLength") + " " + lastSessionLength.ToString();
         }
         else
         {
