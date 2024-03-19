@@ -238,9 +238,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
         {
             foreach (var widgetItem in providerItem.MenuItems.OfType<NavigationViewItem>())
             {
-                var widgetDefinition = widgetItem.Tag as WidgetDefinition;
-                var image = await _widgetIconService.GetWidgetIconForThemeAsync(widgetDefinition, ActualTheme);
-                widgetItem.Content = BuildNavItem(image, widgetDefinition.DisplayTitle);
+                if (widgetItem.Tag is WidgetDefinition widgetDefinition)
+                {
+                    var image = await _widgetIconService.GetWidgetIconForThemeAsync(widgetDefinition, ActualTheme);
+                    widgetItem.Content = BuildNavItem(image, widgetDefinition.DisplayTitle);
+                }
             }
         }
     }
