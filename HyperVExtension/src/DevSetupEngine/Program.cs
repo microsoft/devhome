@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.ComponentModel;
-using HyperVExtension.DevSetupEngine;
+using System.Security.AccessControl;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
@@ -80,6 +80,18 @@ internal sealed class Program
 
         var appIdKey = Registry.LocalMachine.CreateSubKey(AppIdPath + appId, true) ?? throw new Win32Exception();
         appIdKey.SetValue("RunAs", "Interactive User", RegistryValueKind.String);
+
+        // O:PSG: BU Owner: principal self, Group: Built-in users
+        // (A; ; 0xB; ; ; SY)      Allow SYSTEM
+        // (A; ; 0xB; ; ; LS)      Allow Local Service
+        // (A; ; 0xB; ; ; PS)      Allow Principal self
+        // 0xB = (COM_RIGHTS_EXECUTE | COM_RIGHTS_EXECUTE_LOCAL | COM_RIGHTS_ACTIVATE_LOCAL
+        var permissions = "O:PSG:BUD:(A;;0xB;;;SY)(A;;0xB;;;LS)(A;;0xB;;;PS)";
+        RawSecurityDescriptor rawSd = new RawSecurityDescriptor(permissions);
+        var sdBinaryForm = new byte[rawSd.BinaryLength];
+        rawSd.GetBinaryForm(sdBinaryForm, 0);
+        appIdKey.SetValue("AccessPermission", sdBinaryForm, RegistryValueKind.Binary);
+        appIdKey.SetValue("LaunchPermission", sdBinaryForm, RegistryValueKind.Binary);
 
         var clsIdKey = Registry.LocalMachine.CreateSubKey(ClsIdIdPath + appId, true) ?? throw new Win32Exception();
         clsIdKey.SetValue("AppID", appId);
