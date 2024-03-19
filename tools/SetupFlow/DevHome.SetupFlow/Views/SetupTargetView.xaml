@@ -231,8 +231,8 @@
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
-    
-    <ScrollViewer >
+
+    <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}">
         <StackPanel Spacing="10">
             <!--- Show the "Setup a Target header on the page. -->
             <setupControls:SetupShell 

@@ -32,8 +32,8 @@ internal sealed class ConfigureRequest : RequestBase
 
     public override IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
     {
-        // DevSetupEngine needs to be started manually from command line in the test.
         var devSetupEnginePtr = IntPtr.Zero;
+        var devSetupEngine = default(IDevSetupEngine);
         try
         {
             var hr = PInvoke.CoCreateInstance(Guid.Parse("82E86C64-A8B9-44F9-9323-C37982F2D8BE"), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IDevSetupEngine).GUID, out var devSetupEngineObj);
@@ -44,7 +44,7 @@ internal sealed class ConfigureRequest : RequestBase
 
             devSetupEnginePtr = Marshal.GetIUnknownForObject(devSetupEngineObj);
 
-            var devSetupEngine = MarshalInterface<IDevSetupEngine>.FromAbi(devSetupEnginePtr);
+            devSetupEngine = MarshalInterface<IDevSetupEngine>.FromAbi(devSetupEnginePtr);
             var operation = devSetupEngine.ApplyConfigurationAsync(ConfigureData);
 
             uint progressCounter = 0;
@@ -65,6 +65,11 @@ internal sealed class ConfigureRequest : RequestBase
             if (devSetupEnginePtr != IntPtr.Zero)
             {
                 Marshal.Release(devSetupEnginePtr);
+            }
+
+            if (devSetupEngine != null)
+            {
+                devSetupEngine.Dispose();
             }
         }
     }

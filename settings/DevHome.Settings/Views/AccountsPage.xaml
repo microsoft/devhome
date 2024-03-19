@@ -51,10 +51,8 @@
         </DataTemplate>
     </behaviors:NavigationViewHeaderBehavior.HeaderTemplate>
 
-    <Grid
-        MaxWidth="{ThemeResource MaxPageContentWidth}"
-        Margin="{ThemeResource ContentPageMargin}">
-        <ScrollViewer VerticalAlignment="Top">
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+        <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <StackPanel>
                 <ctControls:SettingsCard x:Uid="Settings_Accounts_AddAccount">
                     <ctControls:SettingsCard.HeaderIcon>
@@ -84,6 +82,6 @@
                                HorizontalAlignment="Stretch" VerticalAlignment="Center">
                 </ItemsRepeater>
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>

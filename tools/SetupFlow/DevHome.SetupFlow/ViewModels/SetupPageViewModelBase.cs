@@ -4,8 +4,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
+using DevHome.Telemetry;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -138,6 +140,7 @@ public partial class SetupPageViewModelBase : ObservableObject
         {
             _hasExecutedFirstNavigateFrom = true;
             Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Executing pre-navigation tasks for page {this.GetType().Name}");
+            TelemetryFactory.Get<ITelemetry>().Log("PageNavigated", LogLevel.Critical, new PageNextSourceEvent(this.GetType().Name));
             await OnFirstNavigateFromAsync();
         }
     }

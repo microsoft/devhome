@@ -32,7 +32,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <setupControls:SetupShell 
+    <setupControls:SetupShell
             Description="{x:Bind ViewModel.PageSubTitle, Mode=OneWay}"
             Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
             Foreground="{ThemeResource TextFillColorSecondary}">
