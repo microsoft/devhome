@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Globalization;
 using System.Management;
-using System.Management.Automation;
-using System.Web.Services.Description;
 using HyperVExtension.Providers;
 using Windows.Win32.Foundation;
 

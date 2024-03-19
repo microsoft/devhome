@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Net;
-using System.Security;
 using HyperVExtension.CommunicationWithGuest;
 using HyperVExtension.Helpers;
 using HyperVExtension.Providers;

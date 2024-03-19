@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Globalization;
-using System.Management.Automation;
-using System.Security.Principal;
 using System.ServiceProcess;
 using DevHome.Logging;
 using HyperVExtension.Common.Extensions;

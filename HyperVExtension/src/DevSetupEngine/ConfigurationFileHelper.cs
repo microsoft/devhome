@@ -4,6 +4,7 @@
 using Microsoft.Management.Configuration;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
+using Microsoft.Management.Configuration.SetProcessorFactory;
 using Windows.Foundation;
 using Windows.Storage.Streams;
 using DevSetupEngineTypes = Microsoft.Windows.DevHome.DevSetupEngine;

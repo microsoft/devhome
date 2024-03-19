@@ -11,7 +11,6 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
 
