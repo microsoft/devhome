@@ -38,9 +38,9 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+    <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel>
+            <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <commonviews:Banner x:Uid="ExtensionsBanner"
                                     TextWidth="350"
                                     Visibility="{x:Bind BannerViewModel.ShowExtensionsBanner,Mode=OneWay}"
