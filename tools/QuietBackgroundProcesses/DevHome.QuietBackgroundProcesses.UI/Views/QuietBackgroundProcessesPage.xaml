@@ -20,7 +20,7 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock
                             Text="{x:Bind ViewModel.SessionStateText, Mode=OneWay}"
-                            Foreground="{StaticResource TextOnAccentFillColorSecondaryBrush}"
+                            Foreground="{StaticResource AccentTextFillColorTertiaryBrush}"
                             Margin="{StaticResource MediumLeftRightMargin}"
                             VerticalAlignment="Center"
                             TextTrimming="CharacterEllipsis" />
