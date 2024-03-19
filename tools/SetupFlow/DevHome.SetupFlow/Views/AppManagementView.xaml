@@ -28,6 +28,12 @@
 
     <i:Interaction.Behaviors >
         <behaviors:AppManagementBehavior />
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
+        </ic:EventTriggerBehavior>
+        <ic:EventTriggerBehavior EventName="Unloaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.UnloadedCommand}" />
+        </ic:EventTriggerBehavior>
     </i:Interaction.Behaviors>
 
     <!-- Page split layout -->
@@ -107,22 +113,36 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0">
-                <!-- Header text -->
-                <StackPanel Grid.Row="0" Padding="5 0" Orientation="Vertical" Spacing="4">
-                    <TextBlock x:Name="SidePanelTitle" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SelectedPackages" />
-                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind ViewModel.ApplicationsAddedText,Mode=OneWay}"/>
+            <StackPanel>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <!-- Header text -->
+                    <StackPanel Grid.Row="0" Padding="5 0" Orientation="Vertical" Spacing="4">
+                        <TextBlock x:Name="SidePanelTitle" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SelectedPackages" />
+                        <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind ViewModel.ApplicationsAddedText,Mode=OneWay}"/>
+                    </StackPanel>
+                    <!-- Remove all -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
+                        <HyperlinkButton
+                            AutomationProperties.AutomationControlType="Button"
+                            Command="{x:Bind ViewModel.RemoveAllPackagesCommand}"
+                            IsEnabled="{x:Bind ViewModel.EnableRemoveAll, Mode=OneWay}">
+                            <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RemoveAll" />
+                        </HyperlinkButton>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Padding="5"
+                            Margin="5"
+                            Visibility="{x:Bind ViewModel.ShowInstalledPackageWarning, Mode=OneWay}"
+                            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                            BorderBrush="{ThemeResource AccentAAFillColorDisabled}"
+                            BorderThickness="1">
+                    <TextBlock TextWrapping="WrapWholeWords">Installed applications can be added fro configuration file generation but will not get installed again during set up.</TextBlock>
                 </StackPanel>
-                <!-- Remove all -->
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <HyperlinkButton
-                        AutomationProperties.AutomationControlType="Button"
-                        Command="{x:Bind ViewModel.RemoveAllPackagesCommand}"
-                        IsEnabled="{x:Bind ViewModel.EnableRemoveAll, Mode=OneWay}">
-                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RemoveAll" />
-                    </HyperlinkButton>
-                </StackPanel>
-            </Grid>
+            </StackPanel>
 
             <!-- No package selected -->
             <TextBlock

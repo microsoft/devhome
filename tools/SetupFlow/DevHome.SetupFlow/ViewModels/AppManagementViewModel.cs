@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
-using Microsoft.UI.Dispatching;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -21,16 +19,16 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     private readonly ShimmerSearchViewModel _shimmerSearchViewModel;
     private readonly SearchViewModel _searchViewModel;
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
-    private readonly IWindowsPackageManager _wpm;
     private readonly PackageProvider _packageProvider;
-    private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-    private readonly IScreenReaderService _screenReaderService;
 
     /// <summary>
     /// Current view to display in the main content control
     /// </summary>
     [ObservableProperty]
     private ObservableObject _currentView;
+
+    [ObservableProperty]
+    private bool _showInstalledPackageWarning;
 
     public ReadOnlyObservableCollection<PackageViewModel> SelectedPackages => _packageProvider.SelectedPackages;
 
@@ -44,19 +42,13 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         IHost host,
-        IWindowsPackageManager wpm,
         PackageProvider packageProvider)
         : base(stringResource, orchestrator)
     {
-        _wpm = wpm;
         _packageProvider = packageProvider;
         _searchViewModel = host.GetService<SearchViewModel>();
         _shimmerSearchViewModel = host.GetService<ShimmerSearchViewModel>();
         _packageCatalogListViewModel = host.GetService<PackageCatalogListViewModel>();
-        _screenReaderService = host.GetService<IScreenReaderService>();
-
-        _packageProvider.PackageSelectionChanged += (_, _) => OnPropertyChanged(nameof(ApplicationsAddedText));
-        _packageProvider.PackageSelectionChanged += (_, _) => OnPropertyChanged(nameof(EnableRemoveAll));
 
         PageTitle = StringResource.GetLocalized(StringResourceKey.ApplicationsPageTitle);
 
@@ -110,5 +102,27 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         {
             package.IsSelected = false;
         }
+    }
+
+    [RelayCommand]
+    private void OnLoaded()
+    {
+        _packageProvider.PackageSelectionChanged += OnPackageSelectionChanged;
+    }
+
+    [RelayCommand]
+    private void OnUnloaded()
+    {
+        _packageProvider.PackageSelectionChanged -= OnPackageSelectionChanged;
+    }
+
+    private void OnPackageSelectionChanged(object sender, PackageViewModel package)
+    {
+        // Notify UI to update
+        OnPropertyChanged(nameof(ApplicationsAddedText));
+        OnPropertyChanged(nameof(EnableRemoveAll));
+
+        // Show warning if any selected package is installed
+        ShowInstalledPackageWarning = SelectedPackages.Any(p => p.IsInstalled);
     }
 }

@@ -3,16 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
@@ -46,7 +43,6 @@ public partial class PackageViewModel : ObservableObject
     private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
     private readonly IScreenReaderService _screenReaderService;
-    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
 
     /// <summary>
     /// Occurs after the package selection changes
@@ -63,10 +59,7 @@ public partial class PackageViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TooltipVersion))]
     [NotifyPropertyChangedFor(nameof(PackageFullDescription))]
-    [NotifyPropertyChangedFor(nameof(CanSelect))]
     private string _selectedVersion;
-
-    public bool CanSelect => IsSelectable();
 
     public bool ShowVersionList => IsVersioningSupported();
 
@@ -76,7 +69,6 @@ public partial class PackageViewModel : ObservableObject
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
         IScreenReaderService screenReaderService,
-        IHost host,
         SetupFlowOrchestrator orchestrator)
     {
         _stringResource = stringResource;
@@ -84,12 +76,11 @@ public partial class PackageViewModel : ObservableObject
         _package = package;
         _themeSelector = themeSelector;
         _screenReaderService = screenReaderService;
-        _setupFlowOrchestrator = orchestrator;
 
         // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
-        _installPackageTask = new Lazy<InstallPackageTask>(() => CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
+        _installPackageTask = new Lazy<InstallPackageTask>(() => CreateInstallTask(orchestrator.ActivityId));
 
         SelectedVersion = GetDefaultSelectedVersion();
     }
@@ -106,8 +97,7 @@ public partial class PackageViewModel : ObservableObject
 
     public IReadOnlyList<string> AvailableVersions => _package.AvailableVersions;
 
-    // When in setup target flow don't disable installed packaged.
-    public bool IsInstalled => _setupFlowOrchestrator.IsSettingUpATargetMachine ? false : _package.IsInstalled;
+    public bool IsInstalled => _package.IsInstalled;
 
     public string CatalogName => _package.CatalogName;
 
@@ -172,16 +162,6 @@ public partial class PackageViewModel : ObservableObject
     }
 
     partial void OnIsSelectedChanged(bool value) => SelectionChanged?.Invoke(null, this);
-
-    partial void OnSelectedVersionChanged(string value)
-    {
-        // If the selected version changed to a version that cannot be selected
-        // (e.g. installed version) then unselect the package
-        if (IsSelected && !IsSelectable())
-        {
-            IsSelected = false;
-        }
-    }
 
     /// <summary>
     /// Toggle package selection
@@ -274,28 +254,6 @@ public partial class PackageViewModel : ObservableObject
     {
         // Store packages have a single version
         return !_wpm.IsMsStorePackage(_package);
-    }
-
-    /// <summary>
-    /// Checks if the package is selectable
-    /// </summary>
-    /// <returns>True if the package is selectable</returns>
-    /// <remarks>Allow selecting a different version to install if the package is installed</remarks>
-    private bool IsSelectable()
-    {
-        if (!IsInstalled)
-        {
-            return true;
-        }
-
-        if (!IsVersioningSupported())
-        {
-            return false;
-        }
-
-        var isValidSelectedVersion = AvailableVersions.Contains(SelectedVersion);
-        var isNotInstalledVersion = SelectedVersion != InstalledVersion;
-        return isValidSelectedVersion && isNotInstalledVersion;
     }
 
     /// <summary>
