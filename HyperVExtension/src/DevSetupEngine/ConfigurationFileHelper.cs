@@ -128,7 +128,7 @@ public class ConfigurationFileHelper
 #else
             try
             {
-                await Task.Delay((int)TimeSpan.FromMinutes(15).TotalMilliseconds, cancellationToken.Token);
+                await Task.Delay(TimeSpan.FromMinutes(15), cancellationToken.Token);
             }
             catch (TaskCanceledException)
             {
