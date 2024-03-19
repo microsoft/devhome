@@ -158,7 +158,7 @@
                   "horizontalAlignment": "right"
                 },
                 {
-                  "text": "${Utilization}",
+                  "text": "${memUsage}",
                   "type": "TextBlock",
                   "size": "medium",
                   "horizontalAlignment": "right"
