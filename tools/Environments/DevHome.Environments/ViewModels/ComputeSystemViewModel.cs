@@ -34,6 +34,8 @@ public partial class ComputeSystemViewModel : ObservableObject
 
     public string AlternativeName { get; } = string.Empty;
 
+    public DateTime LastConnected { get; set; } = DateTime.Now;
+
     public string Type { get; }
 
     public bool IsOperationInProgress { get; set; }
@@ -132,6 +134,8 @@ public partial class ComputeSystemViewModel : ObservableObject
     [RelayCommand]
     public void LaunchAction()
     {
+        LastConnected = DateTime.Now;
+
         // We'll need to disable the card UI while the operation is in progress and handle failures.
         Task.Run(async () =>
         {

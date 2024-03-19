@@ -111,15 +111,15 @@
     <comment>Text for terminate button in the context menu that will turn off the virtual machine. This button turns off the power to the virtual machine without gracefully shutting it down first.</comment>
   </data>
   <data name="SortByName.Content" xml:space="preserve">
-    <value>Name</value>
-    <comment>Text for 1st option for sort by drop down box</comment>
+    <value>Name: A-Z</value>
+    <comment>Text for sorting in ascending order of name</comment>
   </data>
   <data name="SortByAltName.Content" xml:space="preserve">
-    <value>Alternative Name</value>
-    <comment>Text for 2nd option for sort by drop down box</comment>
+    <value>Alternative Name: A-Z</value>
+    <comment>Text for sorting by alternative name</comment>
   </data>
   <data name="SortByTextBlock.Text" xml:space="preserve">
-    <value>Sort By</value>
+    <value>Sort:</value>
     <comment>Text labelling sort by text block</comment>
   </data>
   <data name="SyncButtonTextBlock.Text" xml:space="preserve">
@@ -131,11 +131,35 @@
     <comment>Title text for the main landing page</comment>
   </data>
   <data name="SearchTextBox.PlaceholderText" xml:space="preserve">
-    <value>Search</value>
+    <value>Filter</value>
     <comment>Text for the search box</comment>
   </data>
   <data name="SortSelectionComboBox.PlaceholderText" xml:space="preserve">
     <value>None</value>
     <comment>Text for the default selection of the sort drop down</comment>
+  </data>
+  <data name="ProviderSelectionComboBox.PlaceholderText" xml:space="preserve">
+    <value>All</value>
+    <comment>Text for the default selection of the sort provider drop down</comment>
+  </data>
+  <data name="ProviderTextBlock.Text" xml:space="preserve">
+    <value>Provider:</value>
+    <comment>Text labelling provider text block</comment>
+  </data>
+  <data name="LastSyncTextBlock.Text" xml:space="preserve">
+    <value>Last Synced: </value>
+    <comment>Text for last synced text box</comment>
+  </data>
+  <data name="SortByNameDesc.Content" xml:space="preserve">
+    <value>Name: Z-A</value>
+    <comment>Text for sorting in descending order of name</comment>
+  </data>
+  <data name="SortByAltNameDesc.Content" xml:space="preserve">
+    <value>Alternative Name: Z-A</value>
+    <comment>Text for sorting by alternative name in descending order</comment>
+  </data>
+  <data name="SortByLastConnected.Content" xml:space="preserve">
+    <value>Last Connected</value>
+    <comment>Text for sorting by last connected time</comment>
   </data>
 </root>

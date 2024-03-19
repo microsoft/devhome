@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -26,7 +27,7 @@ namespace DevHome.Environments.ViewModels;
 /// <summary>
 /// The main view model for the landing page of the Environments tool.
 /// </summary>
-public partial class LandingPageViewModel : ObservableObject
+public partial class LandingPageViewModel : ObservableObject, IDisposable
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
@@ -49,12 +50,31 @@ public partial class LandingPageViewModel : ObservableObject
     [ObservableProperty]
     private bool _showLoadingShimmer = true;
 
+    [ObservableProperty]
+    private int _selectedProviderIndex;
+
+    [ObservableProperty]
+    private int _selectedSortIndex;
+
+    [ObservableProperty]
+    private string _lastSyncTime = "Moments ago...";
+
+    public ObservableCollection<string> Providers { get; set; } = new() { "All" };
+
+    private CancellationTokenSource _cancellationTokenSource = new();
+
     public LandingPageViewModel(IComputeSystemManager manager, EnvironmentsExtensionsService extensionsService, ToastNotificationService toastNotificationService)
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _extensionsService = extensionsService;
         _notificationService = toastNotificationService;
         _computeSystemManager = manager;
+
+        // Start a new sync timer
+        _ = Task.Run(async () =>
+        {
+            await RunSyncTimmer();
+        });
 
         ComputeSystemsView = new AdvancedCollectionView(ComputeSystems);
     }
@@ -65,7 +85,69 @@ public partial class LandingPageViewModel : ObservableObject
         // temporary, we'll need to give the users a way to disable this.
         // if they don't want to use hyper-v
         _notificationService.CheckIfUserIsAHyperVAdmin();
+
+        // Reset the sort and filter
+        SelectedSortIndex = -1;
+        Providers = new ObservableCollection<string> { "All" };
+        SelectedProviderIndex = 0;
+
+        // Reset the old sync timer
+        _cancellationTokenSource.Cancel();
+        await _dispatcher.EnqueueAsync(() => LastSyncTime = "Moments ago...");
+
         await LoadModelAsync();
+
+        // Start a new sync timer
+        _ = Task.Run(async () =>
+        {
+            await RunSyncTimmer();
+        });
+    }
+
+    // Updates the last sync time on the UI thread after set delay
+    private async Task UpdateLastSyncTimeUI(string time, TimeSpan delay, CancellationToken token)
+    {
+        await Task.Delay(delay, token);
+
+        if (!token.IsCancellationRequested)
+        {
+            await _dispatcher.EnqueueAsync(() => LastSyncTime = time);
+        }
+    }
+
+    private async Task RunSyncTimmer()
+    {
+        _cancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = _cancellationTokenSource.Token;
+
+        await UpdateLastSyncTimeUI("A minute ago...", TimeSpan.FromMinutes(1), cancellationToken);
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+
+        // For the first 2-5 minutes, in 1 minute increments
+        for (var i = 2; i <= 5; i++)
+        {
+            await UpdateLastSyncTimeUI($"{i} minutes ago...", TimeSpan.FromMinutes(1), cancellationToken);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+        }
+
+        // For the 10-55 minutes, in 5 minute increments
+        for (var i = 2; i <= 11; i++)
+        {
+            await UpdateLastSyncTimeUI($"{i * 5} minutes ago...", TimeSpan.FromMinutes(5), cancellationToken);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+        }
+
+        // For an hour and more
+        await UpdateLastSyncTimeUI("More than an hour ago...", TimeSpan.FromMinutes(5), cancellationToken);
     }
 
     /// <summary>
@@ -109,6 +191,7 @@ public partial class LandingPageViewModel : ObservableObject
 
         await _dispatcher.EnqueueAsync(async () =>
         {
+            Providers.Add(provider.DisplayName);
             try
             {
                 var computeSystemList = data.DevIdToComputeSystemMap.Values.SelectMany(x => x.ComputeSystems).ToList();
@@ -158,21 +241,60 @@ public partial class LandingPageViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Updates the view model to filter the compute systems according to the provider.
+    /// </summary>
+    [RelayCommand]
+    public void ProviderHandler()
+    {
+        var currentProvider = Providers[SelectedProviderIndex];
+        ComputeSystemsView.Filter = system =>
+        {
+            if (currentProvider == "All")
+            {
+                return true;
+            }
+
+            if (system is ComputeSystemViewModel computeSystemViewModel)
+            {
+                var type = computeSystemViewModel.Type;
+                return type.Contains(currentProvider, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return false;
+        };
+    }
+
+    /// <summary>
     /// Updates the view model to sort the compute systems according to the sort criteria.
     /// </summary>
     [RelayCommand]
-    public void SortHandler(string critieria)
+    public void SortHandler()
     {
         ComputeSystemsView.SortDescriptions.Clear();
-        if (critieria == "Name")
+
+        // Convert to switch case
+        switch (SelectedSortIndex)
         {
-            ComputeSystemsView.SortDescriptions.Add(new SortDescription("Name", SortDirection.Ascending));
-            return;
+            case 0:
+                ComputeSystemsView.SortDescriptions.Add(new SortDescription("Name", SortDirection.Ascending));
+                break;
+            case 1:
+                ComputeSystemsView.SortDescriptions.Add(new SortDescription("Name", SortDirection.Descending));
+                break;
+            case 2:
+                ComputeSystemsView.SortDescriptions.Add(new SortDescription("AlternativeName", SortDirection.Ascending));
+                break;
+            case 3:
+                ComputeSystemsView.SortDescriptions.Add(new SortDescription("AlternativeName", SortDirection.Descending));
+                break;
+            case 4:
+                ComputeSystemsView.SortDescriptions.Add(new SortDescription("LastConnected", SortDirection.Ascending));
+                break;
         }
-        else if (critieria == "Alternative Name")
-        {
-            ComputeSystemsView.SortDescriptions.Add(new SortDescription("AlternativeName", SortDirection.Ascending));
-            return;
-        }
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
     }
 }

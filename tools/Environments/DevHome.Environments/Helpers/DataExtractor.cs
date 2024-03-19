@@ -43,8 +43,8 @@ public class DataExtractor
         }
 
         // ToDo: Correct the function used
-        // operations.Add(new OperationsViewModel("Pin To Taskbar", "\uE718", computeSystem.DeleteAsync));
-        // operations.Add(new OperationsViewModel("Add to Start Menu", "\uF0DF", computeSystem.DeleteAsync));
+        // operations.Add(new OperationsViewModel("Pin To Taskbar", "\uE718", computeSystem.));
+        // operations.Add(new OperationsViewModel("Add to Start Menu", "\uE8A9", computeSystem.));
         return operations;
     }
 
@@ -85,12 +85,12 @@ public class DataExtractor
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Resume))
         {
-            operations.Add(new OperationsViewModel("Resume", "\uF2C6", computeSystem.ResumeAsync));
+            operations.Add(new OperationsViewModel("Resume", "\uE768", computeSystem.ResumeAsync));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Terminate))
         {
-            operations.Add(new OperationsViewModel("Terminate", "\uE71A", computeSystem.TerminateAsync));
+            operations.Add(new OperationsViewModel("Terminate", "\uEE95", computeSystem.TerminateAsync));
         }
 
         return operations;
