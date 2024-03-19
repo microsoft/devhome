@@ -5,27 +5,25 @@ extern alias Projection;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.SetupFlow.Common.Contracts;
-using DevHome.SetupFlow.Common.Elevation;
+using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
-using Microsoft.Extensions.Hosting;
-
-using Projection::DevHome.SetupFlow.ElevatedComponent;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ReviewViewModel : SetupPageViewModelBase
 {
-    private readonly IHost _host;
-
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+    private readonly ConfigurationFileBuilder _configFileBuilder;
+    private readonly WindowEx _mainWindow;
 
     [ObservableProperty]
     private IList<ReviewTabViewModelBase> _reviewTabs;
@@ -79,15 +77,16 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     public ReviewViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        IHost host)
+        ConfigurationFileBuilder configFileBuilder,
+        WindowEx mainWindow)
         : base(stringResource, orchestrator)
     {
-        _host = host;
-
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReviewPageTitle);
 
         _setupFlowOrchestrator = orchestrator;
+        _configFileBuilder = configFileBuilder;
+        _mainWindow = mainWindow;
     }
 
     protected async override Task OnEachNavigateToAsync()
@@ -140,5 +139,17 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         {
             Log.Logger?.ReportError(Log.Component.Review, $"Failed to initialize elevated process.", e);
         }
-   }
+    }
+
+    [RelayCommand]
+    private void DownloadConfiguration()
+    {
+        var result = _mainWindow.SaveFileDialog(null, ("*.winget", "YAML file"));
+        if (result != null)
+        {
+            var fileName = result.Value.Item1;
+            var configFile = _configFileBuilder.BuildConfigFileStringFromTaskGroups(Orchestrator.TaskGroups, ConfigurationFileKind.Normal);
+            File.WriteAllText(fileName, configFile);
+        }
+    }
 }

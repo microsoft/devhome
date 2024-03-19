@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Models.WingetConfigure;
@@ -22,13 +21,6 @@ public enum ConfigurationFileKind
 
 public class ConfigurationFileBuilder
 {
-    private readonly SetupFlowOrchestrator _orchestrator;
-
-    public ConfigurationFileBuilder(SetupFlowOrchestrator orchestrator)
-    {
-        _orchestrator = orchestrator;
-    }
-
     /// <summary>
     /// Builds an object that represents a config file that can be used by WinGet Configure to install
     /// apps and clone repositories.This is already formatted as valid yaml and can be written

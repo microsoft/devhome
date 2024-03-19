@@ -87,6 +87,23 @@ public static class WindowExExtensions
     /// <returns>Storage file or <c>null</c> if no file was selected</returns>
     public static async Task<StorageFile?> OpenFilePickerAsync(this WindowEx window, Logger? logger, params (string Type, string Name)[] filters)
     {
+        var filePicker = window.FileDialogInternal<FileOpenDialog>(logger, filters);
+        if (filePicker.HasValue)
+        {
+            var fileName = filePicker.Value.Item1;
+            return await StorageFile.GetFileFromPathAsync(fileName);
+        }
+
+        return null;
+    }
+
+    public static (string, int)? SaveFileDialog(this WindowEx window, Logger? logger, params (string Type, string Name)[] filters)
+    {
+        return window.FileDialogInternal<FileSaveDialog>(logger, filters);
+    }
+
+    public static (string, int)? FileDialogInternal<T>(this WindowEx window, Logger? logger, params (string Type, string Name)[] filters)
+    {
         try
         {
             if (filters.Length == 0)
@@ -95,6 +112,7 @@ public static class WindowExExtensions
             }
 
             string fileName;
+            int fileTypeIndex;
 
             // File picker fails when running the application as admin.
             // To workaround this issue, we instead use the Win32 picking APIs
@@ -112,11 +130,7 @@ public static class WindowExExtensions
             {
                 var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
 
-                var hr = PInvoke.CoCreateInstance<IFileOpenDialog>(
-                    typeof(FileOpenDialog).GUID,
-                    null,
-                    CLSCTX.CLSCTX_INPROC_SERVER,
-                    out var fsd);
+                var hr = PInvoke.CoCreateInstance<IFileDialog>(typeof(T).GUID, null, CLSCTX.CLSCTX_INPROC_SERVER, out var fileDialog);
                 Marshal.ThrowExceptionForHR(hr);
 
                 IShellItem ppsi;
@@ -133,10 +147,10 @@ public static class WindowExExtensions
                         extensions.Add(extension);
                     }
 
-                    fsd.SetFileTypes(CollectionsMarshal.AsSpan(extensions));
+                    fileDialog.SetFileTypes(CollectionsMarshal.AsSpan(extensions));
 
-                    fsd.Show(new HWND(hWnd));
-                    fsd.GetResult(out ppsi);
+                    fileDialog.Show(new HWND(hWnd));
+                    fileDialog.GetResult(out ppsi);
                 }
                 finally
                 {
@@ -156,19 +170,23 @@ public static class WindowExExtensions
                 ppsi.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out pFileName);
                 fileName = new string(pFileName);
                 Marshal.FreeCoTaskMem((IntPtr)pFileName.Value);
+
+                // Note  This is a one-based index rather than zero-based.
+                fileDialog.GetFileTypeIndex(out var uFileTypeIndex);
+                fileTypeIndex = (int)uFileTypeIndex - 1;
             }
 
-            return await StorageFile.GetFileFromPathAsync(fileName);
+            return (fileName, fileTypeIndex);
         }
         catch (COMException e) when (e.ErrorCode == FilePickerCanceledErrorCode)
         {
             // No-op: Operation was canceled by the user
-            return null;
         }
         catch (Exception e)
         {
             logger?.ReportError("File picker failed. Returning null.", e);
-            return null;
         }
+
+        return null;
     }
 }
