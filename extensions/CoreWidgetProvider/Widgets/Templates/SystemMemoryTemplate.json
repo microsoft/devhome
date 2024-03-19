@@ -1,6 +1,3 @@
-Here's the corrected Adaptive Card JSON with the brackets fixed:
-
-
 {
   "type": "AdaptiveCard",
   "body": [
