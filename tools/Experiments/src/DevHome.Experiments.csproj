@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(SolutionDir)ToolingVersions.props"/>
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup>
     <RootNamespace>DevHome.Experiments</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>
@@ -8,6 +8,9 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Views\TestExperimentPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.1299.435.1806" />
   </ItemGroup>
 
   <ItemGroup>

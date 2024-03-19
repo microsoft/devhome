@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.Common.Environments.CustomControls.OptimizeDevDriveDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DevHome.Common.Environments.CustomControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel>
+            <TextBlock Text="Choose Directory..." FontWeight="Bold" HorizontalAlignment="Left"/>
+            <TextBox PlaceholderText="Choose a directory"/>
+            <Button Content="Make the change" HorizontalAlignment="Center" Click="OKButton_Click"/>
+            <Button Content="Cancel" HorizontalAlignment="Center" Click="CancelButton_Click"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

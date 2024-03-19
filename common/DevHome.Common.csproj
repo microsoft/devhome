@@ -11,6 +11,8 @@
   <ItemGroup>
     <None Remove="Environments\CustomControls\CardBody.xaml" />
     <None Remove="Environments\CustomControls\CardHeader.xaml" />
+    <None Remove="Environments\CustomControls\DevDriveCardBody.xaml" />
+    <None Remove="Environments\CustomControls\UserControl1.xaml" />
     <None Remove="Environments\Styles\HorizontalCardStyles.xaml" />
     <None Remove="Environments\Templates\EnvironmentsTemplates.xaml" />
     <None Remove="Views\Banner.xaml" />
@@ -31,7 +33,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.200.427" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.1299.435.1806" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240311-x1907" />
@@ -93,6 +95,12 @@
     <Content Update="Assets\BannerBackgroundLight.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Environments\CustomControls\UserControl1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <PropertyGroup>

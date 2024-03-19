@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.Services;
 using DevHome.Customization.ViewModels;
 using DevHome.Customization.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,11 @@ public static class ServiceExtensions
 
         services.AddSingleton<DeveloperFileExplorerViewModel>();
         services.AddTransient<DeveloperFileExplorerPage>();
+
+        services.AddSingleton<DevDriveViewModelFactory>();
+        services.AddSingleton<DevDriveOptimizerViewModelFactory>();
+        services.AddSingleton<DevDriveInsightsViewModel>();
+        services.AddTransient<DevDriveInsightsPage>();
 
         return services;
     }
