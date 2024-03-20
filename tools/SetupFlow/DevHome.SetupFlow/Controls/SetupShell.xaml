@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Spacing="6" Visibility="{x:Bind HeaderVisibility, Mode=OneWay}"
-                    MaxWidth="{ThemeResource MaxPageContentWidth}">
+                    MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <!-- Title -->
             <TextBlock
                 Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -99,7 +99,8 @@
                             Content="{x:Bind SetupShellContent, Mode=OneWay}" >
                 <ContentControl.Template>
                     <ControlTemplate TargetType="ContentControl">
-                        <ContentPresenter Content="{TemplateBinding Content}" MaxWidth="{ThemeResource MaxPageContentWidth}" />
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}"/>
                     </ControlTemplate>
                 </ContentControl.Template>
             </ContentControl>
