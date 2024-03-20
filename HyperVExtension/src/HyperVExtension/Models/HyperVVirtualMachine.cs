@@ -527,7 +527,7 @@ public class HyperVVirtualMachine : IComputeSystem
                 {
                     ComputeSystemProperty.Create(ComputeSystemPropertyKind.CpuCount, ProcessorCount),
                     ComputeSystemProperty.Create(ComputeSystemPropertyKind.AssignedMemorySizeInBytes, MemoryAssigned),
-                    ComputeSystemProperty.Create(ComputeSystemPropertyKind.AssignedMemorySizeInBytes, totalDiskSize),
+                    ComputeSystemProperty.Create(ComputeSystemPropertyKind.StorageSizeInBytes, totalDiskSize),
                     ComputeSystemProperty.Create(ComputeSystemPropertyKind.UptimeIn100ns, Uptime),
                     ComputeSystemProperty.CreateCustom(ParentCheckpointName, _stringResource.GetLocalized(_currentCheckpointKey), null),
                 };
