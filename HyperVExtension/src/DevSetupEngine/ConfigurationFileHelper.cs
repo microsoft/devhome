@@ -1,12 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using Microsoft.Management.Configuration;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.Foundation;
-using Windows.Media.Playback;
 using Windows.Storage.Streams;
 using DevSetupEngineTypes = Microsoft.Windows.DevHome.DevSetupEngine;
 using WinGet = Microsoft.Management.Configuration;
