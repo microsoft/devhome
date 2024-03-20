@@ -41,9 +41,8 @@ public class PageService : IPageService
             }
         }
 
-        // Configure other pages
+        // Configure footer pages
         Configure<WhatsNewViewModel, WhatsNewPage>();
-
         this.ConfigureExtensionLibraryPages();
         this.ConfigureSettingsPages();
 
