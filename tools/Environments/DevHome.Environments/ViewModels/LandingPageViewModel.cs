@@ -37,6 +37,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly IComputeSystemManager _computeSystemManager;
 
+    private readonly StringResource _stringResource;
+
     private readonly object _lock = new();
 
     public bool IsLoading { get; set; }
@@ -57,20 +59,27 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private int _selectedSortIndex;
 
     [ObservableProperty]
-    private string _lastSyncTime = "Moments ago...";
+    private string _lastSyncTime;
 
-    public ObservableCollection<string> Providers { get; set; } = new() { "All" };
+    public ObservableCollection<string> Providers { get; set; }
 
     private CancellationTokenSource _cancellationTokenSource = new();
 
-    public LandingPageViewModel(IComputeSystemManager manager, EnvironmentsExtensionsService extensionsService, ToastNotificationService toastNotificationService)
+    public LandingPageViewModel(
+                IComputeSystemManager manager,
+                EnvironmentsExtensionsService extensionsService,
+                ToastNotificationService toastNotificationService)
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _extensionsService = extensionsService;
         _notificationService = toastNotificationService;
         _computeSystemManager = manager;
+        _stringResource = new StringResource("DevHome.Environments/Resources");
+
+        Providers = new() { _stringResource.GetLocalized("AllProviders") };
 
         // Start a new sync timer
+        _lastSyncTime = _stringResource.GetLocalized("MomentsAgo");
         _ = Task.Run(async () =>
         {
             await RunSyncTimmer();
@@ -88,12 +97,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         // Reset the sort and filter
         SelectedSortIndex = -1;
-        Providers = new ObservableCollection<string> { "All" };
+        Providers = new ObservableCollection<string> { _stringResource.GetLocalized("AllProviders") };
         SelectedProviderIndex = 0;
 
         // Reset the old sync timer
         _cancellationTokenSource.Cancel();
-        await _dispatcher.EnqueueAsync(() => LastSyncTime = "Moments ago...");
+        await _dispatcher.EnqueueAsync(() => LastSyncTime = _stringResource.GetLocalized("MomentsAgo"));
 
         await LoadModelAsync();
 
@@ -120,7 +129,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = _cancellationTokenSource.Token;
 
-        await UpdateLastSyncTimeUI("A minute ago...", TimeSpan.FromMinutes(1), cancellationToken);
+        await UpdateLastSyncTimeUI(_stringResource.GetLocalized("MinuteAgo"), TimeSpan.FromMinutes(1), cancellationToken);
         if (cancellationToken.IsCancellationRequested)
         {
             return;
@@ -129,7 +138,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         // For the first 2-5 minutes, in 1 minute increments
         for (var i = 2; i <= 5; i++)
         {
-            await UpdateLastSyncTimeUI($"{i} minutes ago...", TimeSpan.FromMinutes(1), cancellationToken);
+            await UpdateLastSyncTimeUI($"{i} {_stringResource.GetLocalized("MinutesAgo")}", TimeSpan.FromMinutes(1), cancellationToken);
             if (cancellationToken.IsCancellationRequested)
             {
                 return;
@@ -139,7 +148,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         // For the 10-55 minutes, in 5 minute increments
         for (var i = 2; i <= 11; i++)
         {
-            await UpdateLastSyncTimeUI($"{i * 5} minutes ago...", TimeSpan.FromMinutes(5), cancellationToken);
+            await UpdateLastSyncTimeUI($"{i * 5} {_stringResource.GetLocalized("MinutesAgo")}", TimeSpan.FromMinutes(5), cancellationToken);
             if (cancellationToken.IsCancellationRequested)
             {
                 return;
@@ -147,7 +156,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
 
         // For an hour and more
-        await UpdateLastSyncTimeUI("More than an hour ago...", TimeSpan.FromMinutes(5), cancellationToken);
+        await UpdateLastSyncTimeUI(_stringResource.GetLocalized("HourAgo"), TimeSpan.FromMinutes(5), cancellationToken);
     }
 
     /// <summary>
@@ -249,7 +258,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         var currentProvider = Providers[SelectedProviderIndex];
         ComputeSystemsView.Filter = system =>
         {
-            if (currentProvider == "All")
+            if (currentProvider == _stringResource.GetLocalized("AllProviders"))
             {
                 return true;
             }
