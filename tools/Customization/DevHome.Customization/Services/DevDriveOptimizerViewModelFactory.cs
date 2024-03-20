@@ -13,9 +13,9 @@ namespace DevHome.Common.Services;
 /// </summary>
 public class DevDriveOptimizerViewModelFactory
 {
-    public Task<DevDriveOptimizerCardViewModel> CreateOptimizerCardViewModel(string cacheToBeMoved, string cacheLocation, string optimizationDescription)
+    public Task<DevDriveOptimizerCardViewModel> CreateOptimizerCardViewModel(string cacheToBeMoved, string existingCacheLocation, string exampleLocationOnDevDrive, string environmentVariableToBeSet)
     {
-        var cardViewModel = new DevDriveOptimizerCardViewModel(cacheToBeMoved, cacheLocation, optimizationDescription);
+        var cardViewModel = new DevDriveOptimizerCardViewModel(cacheToBeMoved, existingCacheLocation, exampleLocationOnDevDrive, environmentVariableToBeSet);
         return Task.FromResult(cardViewModel);
     }
 }

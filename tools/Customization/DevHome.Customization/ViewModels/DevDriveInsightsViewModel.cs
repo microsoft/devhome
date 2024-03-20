@@ -450,7 +450,8 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
                 var card = await _devDriveOptimizerViewModelFactory.CreateOptimizerCardViewModel(
                     "Pip cache (Python)",
                     existingPipCacheLocation,
-                    "Global environment variable PIP_CACHE_DIR is set to " + existingPipCacheLocation + ", which is not located on dev drive. Move contents of this folder to a directory on dev drive such as D:\\packages\\pip\\cache and set PIP_CACHE_DIR to that folder");
+                    "D:\\packages\\pip\\cache" /*example location on dev drive to move cache to*/,
+                    "PIP_CACHE_DIR" /*environmentVariableToBeSet*/);
                 curOptimizerListViewModel.DevDriveOptimizerCardCollection.Add(card);
 
                 AddOptimizerListViewModelToList(curOptimizerListViewModel);
@@ -459,7 +460,7 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
             }
             else
             {
-                // Todo: Show the "Optimized" card
+                // TODO: Show the "Optimized" card
             }
         });
     }

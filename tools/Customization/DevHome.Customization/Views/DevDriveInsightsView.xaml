@@ -72,8 +72,9 @@
                             <devCustomizationsCustomControls:DevDriveOptimizerCardBody
                                 Grid.Row="1"
                                 CacheToBeMoved="{Binding CacheToBeMoved, Mode=OneWay}"
-                                CacheLocation="{Binding CacheLocation, Mode=OneWay}"
-                                OptimizationDescription="{Binding OptimizationDescription, Mode=OneWay}">
+                                ExistingCacheLocation="{Binding ExistingCacheLocation, Mode=OneWay}"
+                                ExampleLocationOnDevDrive="{Binding ExampleLocationOnDevDrive, Mode=OneWay}"
+                                EnvironmentVariableToBeSet="{Binding EnvironmentVariableToBeSet, Mode=OneWay}">
                             </devCustomizationsCustomControls:DevDriveOptimizerCardBody>
                         </Grid>
                     </Grid>
@@ -220,7 +221,7 @@
                 </ListView>
             </DataTemplate>
 
-            <!-- Listview Template for showing the info message when no EnvironmentCardViewModels were found. -->
+            <!-- Listview Template for showing the info message when no dev drives were found. -->
             <DataTemplate x:Key="DevDrivesNotFoundTemplate">
                 <ListView
                     AutomationProperties.Name="DevDriveInsightsNoDevDrivesFound"
@@ -308,31 +309,6 @@
                             ContentTemplate="{StaticResource DevDriveLoadingTemplate}"/>
                         </StackPanel>
                     </StackPanel>
-                    <StackPanel
-                        Visibility="{x:Bind ViewModel.ShouldShowCollectionView, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
-                        <!--- Show shimmers when list not loaded -->
-                        <StackPanel 
-                            Margin="-10"
-                            Visibility="{x:Bind ViewModel.DevDriveLoadingCompleted, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
-                            <ContentControl
-                                Content="{Binding}"
-                                VerticalAlignment="Stretch"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Stretch"
-                                ContentTemplate="{StaticResource DevDriveLoadingTemplate}"/>
-                        </StackPanel>
-                        <!--- Show the info message when no DevDrivesListViewModel objects were found. -->
-                        <StackPanel 
-                            Visibility="{x:Bind ViewModel.DevDriveLoadingCompleted, Mode=OneWay}"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Center"
-                            Margin="0 100 0 0">
-                            <TextBlock
-                                x:Uid="DevDriveInsightsNoDevDrivesFound"
-                                Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                                FontSize="15"/>
-                        </StackPanel>
-                    </StackPanel>
                 </StackPanel>
             </StackPanel>
             <StackPanel Spacing="0">
@@ -340,76 +316,52 @@
                 Margin="0 20 0 0"
                 Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
                 Text="Dev Drive Optimizers"
-                IsTextSelectionEnabled="True"/>     
+                IsTextSelectionEnabled="True"
+                Visibility="{x:Bind ViewModel.ShouldShowOptimizerCollectionView, Mode=OneWay}" />
                 <StackPanel
                     Margin="10">
                     <!--- List of DevDriveOptimizersListViewModel objects. -->
-                    <StackPanel
+                <StackPanel
                         Visibility="{x:Bind ViewModel.ShouldShowOptimizerCollectionView, Mode=OneWay}">
-                        <ListView 
+                    <ListView 
                             ItemsSource="{x:Bind ViewModel.DevDriveOptimizersCollectionView, Mode=OneWay}"
                             SelectionMode="None"
                             Margin="-10">
-                            <!-- 
+                        <!-- 
                             Prevent ListView from caching and recycling elements in the list by updating the Itemspanel.
                             This is needed because the listview is used to show multiple lists of DevDriveOptimizerCardViewModels.
                             If we don't do this, the listview will recycle the DevDriveOptimizerCardViewModels in the view 
                             which sometimes leads to weird UI artifacts, like the first item in the list being shown for every
                             item in the list after refreshing the list.
                             -->
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel></StackPanel>
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                            <ListView.ItemTemplateSelector>
-                                <devDriveSelectors:DevDriveOptimizersListViewModelSelector>
-                                    <devDriveSelectors:DevDriveOptimizersListViewModelSelector.DevDriveOptimizersListViewModelLoadedTemplate>
-                                        <DataTemplate>
-                                            <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveOptimizersLoadedTemplate}" />
-                                        </DataTemplate>
-                                    </devDriveSelectors:DevDriveOptimizersListViewModelSelector.DevDriveOptimizersListViewModelLoadedTemplate>
-                                    <devDriveSelectors:DevDriveOptimizersListViewModelSelector.DevDriveOptimizersListViewModelLoadingErrorTemplate/>
-                                </devDriveSelectors:DevDriveOptimizersListViewModelSelector>
-                            </ListView.ItemTemplateSelector>
-                        </ListView>
-                        <!--- Show shimmers when still loading items in list. -->
-                        <StackPanel
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel></StackPanel>
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemTemplateSelector>
+                            <devDriveSelectors:DevDriveOptimizersListViewModelSelector>
+                                <devDriveSelectors:DevDriveOptimizersListViewModelSelector.DevDriveOptimizersListViewModelLoadedTemplate>
+                                    <DataTemplate>
+                                        <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveOptimizersLoadedTemplate}" />
+                                    </DataTemplate>
+                                </devDriveSelectors:DevDriveOptimizersListViewModelSelector.DevDriveOptimizersListViewModelLoadedTemplate>
+                                <devDriveSelectors:DevDriveOptimizersListViewModelSelector.DevDriveOptimizersListViewModelLoadingErrorTemplate/>
+                            </devDriveSelectors:DevDriveOptimizersListViewModelSelector>
+                        </ListView.ItemTemplateSelector>
+                    </ListView>
+                    <!--- Show shimmers when still loading items in list. -->
+                    <StackPanel
                             Visibility="{x:Bind ViewModel.ShouldShowShimmerBelowOptimizerList, Mode=OneWay}">
-                            <ContentControl
+                        <ContentControl
                                 Content="{Binding}"
                                 VerticalAlignment="Stretch"
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"
                                 ContentTemplate="{StaticResource DevDriveLoadingTemplate}"/>
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel
-                        Visibility="{x:Bind ViewModel.ShouldShowOptimizerCollectionView, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
-                        <!--- Show shimmers when list not loaded -->
-                        <StackPanel 
-                        Margin="-10"
-                        Visibility="{x:Bind ViewModel.DevDriveOptimizerLoadingCompleted, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
-                            <ContentControl
-                            Content="{Binding}"
-                            VerticalAlignment="Stretch"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Stretch"
-                            ContentTemplate="{StaticResource DevDriveLoadingTemplate}"/>
-                        </StackPanel>
-                        <!--- Show the info message when no DevDrivesListViewModel objects were found. -->
-                        <StackPanel 
-                            Visibility="{x:Bind ViewModel.DevDriveOptimizerLoadingCompleted, Mode=OneWay}"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Center"
-                            Margin="0 100 0 0">
-                            <TextBlock
-                                x:Uid="DevDriveInsightsNoDevDrivesFound"
-                                Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                                FontSize="15"/>
-                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
+            </StackPanel>
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

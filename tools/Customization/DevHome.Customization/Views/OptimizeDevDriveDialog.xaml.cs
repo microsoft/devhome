@@ -92,28 +92,13 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
 
     private void OnDirectoryInputConfirmed(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        // Handle OK button click here
-        // string directoryPath = DirectoryPathTextBox.Text;
-        // Process the directory path (e.g., validate, save, etc.)
-        // ...
-        /*
-        var folderPicker = new FolderPicker();
-        folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
-        folderPicker.FileTypeFilter.Add("*");
-
-        // await OptimizeDevDriveDialog.ShowAsync();
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Microsoft.UI.Xaml.Application.Current.GetService<WindowEx>().GetWindowHandle());
-        var folder = await folderPicker.PickSingleFolderAsync();
-        */
-
         var directoryPath = DirectoryPathTextBox.Text;
 
         if (directoryPath != null)
         {
             // Handle the selected folder
             // TODO: If chosen folder not a dev drive location, display the error
-            // Else make the changes. TODO: Fix hardcode.
-            // MoveDirectory(CacheLocation, folder.Path);
+            // Else make the changes.
             MoveDirectory("C:\\Users\\sodas\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\Local\\pip\\Cache", directoryPath);
             SetEnvironmentVariable("PIP_CACHE_DIR", directoryPath);
         }
@@ -121,8 +106,5 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
 
     private void OnDirectoryInputCancelled(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        // Handle Cancel button click here
-        // You can close the dialog or perform any other action
-        // ...
     }
 }

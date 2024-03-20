@@ -5,8 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:devEnvConverters="using:DevHome.Common.Environments.Converters" 
-    xmlns:local="using:DevHome.Customization.CustomControls"
+    xmlns:devEnvConverters="using:DevHome.Common.Environments.Converters"
     mc:Ignorable="d">
     <UserControl.Resources>
         <devEnvConverters:CardStateColorToBrushConverter x:Key="CardStateColorToBrushConverter"/>
@@ -28,26 +27,46 @@
                 Grid.ColumnSpan="2"
                 Style="{StaticResource CardBodyStackPanelStyle}">
             <StackPanel Orientation="Vertical">
-                <TextBlock Margin="5"
-                    Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
-                    Text="{x:Bind CacheToBeMoved, Mode=OneWay}"
-                    IsTextSelectionEnabled="True"/>
-                <TextBlock Margin="50 10 10 10"
-                    Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
-                    Text="{x:Bind OptimizationDescription, Mode=OneWay}"
-                    IsTextSelectionEnabled="True"
-                    TextWrapping="Wrap"/>
+                <Grid Margin="50 10 50 10">
+                    <TextBlock Margin="5" Grid.Column="0"
+                        Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                        Text="{x:Bind CacheToBeMoved, Mode=OneWay}"
+                        IsTextSelectionEnabled="True"/>
+                    <Grid HorizontalAlignment="Right">
+                        <FontIcon HorizontalAlignment="Left" Margin="-10" Glyph="&#xE946;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="5 5 5 5" Grid.Column="1"
+                            Foreground="PowderBlue"
+                            Text="Suggestion"
+                            IsTextSelectionEnabled="True"/>
+                    </Grid>
+                </Grid>
+                <Line Margin="-5 10 -5 0" Stroke="Black" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" StrokeThickness="1"/>
+                <Grid Margin="50 10 10 10">
+                    <StackPanel>
+                        <TextBlock TextWrapping="Wrap" Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}">                            
+                            <Run>Global environment variable </Run>
+                            <Run Text="{Binding Path=EnvironmentVariableToBeSet, Mode=OneWay}" Foreground="PowderBlue"/>
+                            <Run> is set to </Run>
+                            <Run Text="{Binding Path=ExistingCacheLocation, Mode=OneWay}" Foreground="PowderBlue"/>
+                            <Run>, which is not located on dev drive. Move contents of this folder to a directory on dev drive such as </Run>
+                            <Run Text="D:\packages\pip\cache" Foreground="PowderBlue"/>
+                            <Run> and set </Run>
+                            <Run Text="{Binding Path=EnvironmentVariableToBeSet, Mode=OneWay}" Foreground="PowderBlue"/>
+                            <Run> to that chosen directory on dev drive</Run>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
                 <Button Margin="50 10 10 10"
                     Padding="25 4 25 6"
                     MinWidth="120"
-                    Content="Make the changes"
+                    Content="Make the change"
                     Command="{x:Bind OptimizeDevDriveCommand}" >
                 </Button>
-                <!--   Click="OpenPopup_Click" />
-                <Popup Name="popup" IsOpen="False" >
-                    <local:OptimizeDevDriveDialog/>
-                </Popup>
-                -->
+                <Line Margin="-5 10 -5 0" Stroke="Black" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" StrokeThickness="1"/>
+                <TextBlock Margin="50 10 50 10"
+                    Foreground="PowderBlue"
+                    Text="{x:Bind CacheToBeMoved, Mode=OneWay}"
+                    IsTextSelectionEnabled="True"/>
             </StackPanel>
         </StackPanel>
         <!--

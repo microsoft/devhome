@@ -12,7 +12,7 @@
         <devEnvConverters:CardStateToLocalizedTextConverter x:Key="CardStateToLocalizedTextConverter"/>
     </UserControl.Resources>
 
-    <Grid
+    <Grid Grid.ColumnSpan="3"
         Style="{StaticResource CardBodyContainerStyle}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -25,24 +25,23 @@
                 Style="{StaticResource ComputeSystemImageStyle}">
             <Grid>
                 <!-- Image for card body. -->
-                <FontIcon  Glyph="&#xEDA2;" FontFamily="{ThemeResource AmcFluentIcons}"/>
+                <FontIcon Glyph="&#xEDA2;" FontSize="12" FontFamily="{ThemeResource AmcFluentIcons}"/>
             </Grid>
         </Viewbox>
         <!--
-                Stackpanel containing name of dev drive, dot indicating status of dev drive, state of dev drive in text and a list of
-                the dev drive properties.
+                Stackpanel containing name of dev drive, state of dev drive in text and a list of the dev drive properties.
             -->
         
         <StackPanel
                 Grid.Column="1"
-                Grid.ColumnSpan="3"
+                Grid.ColumnSpan="2"
                 Style="{StaticResource CardBodyStackPanelStyle}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock
+                <TextBlock Grid.Column="0"
                         Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
                         Text="{x:Bind DevDriveLabel, Mode=OneWay}"
                         IsTextSelectionEnabled="True"/>
-                <StackPanel Grid.Column="2" Orientation="Vertical" Margin="500 0 0 0">
+                <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Vertical" Margin="500 0 0 0">
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5" >
                         <TextBlock 
                                 Text="Size - "
@@ -57,30 +56,36 @@
                                 IsTextSelectionEnabled="True"/>
                     </StackPanel>
                     <ProgressBar Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" />
-                    <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-                        <TextBlock
+                    <Grid Grid.ColumnSpan="2" Margin="0 0 0 10">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <TextBlock 
                             Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
                             Text="{x:Bind DevDriveUsedSize, Mode=OneWay}"
                             IsTextSelectionEnabled="True"/>
-                        <TextBlock
+                            <TextBlock 
                             Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
                             Text="{x:Bind DevDriveUnitOfMeasure, Mode=OneWay}"
                             IsTextSelectionEnabled="True"/>
-                        <TextBlock 
-                            Text=" used."
-                            IsTextSelectionEnabled="True"/>
-                        <TextBlock 
+                            <TextBlock 
+                            Text=" used"
                             Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
-                            Text="{x:Bind DevDriveFreeSize, Mode=OneWay}"
                             IsTextSelectionEnabled="True"/>
-                        <TextBlock
-                            Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
-                            Text="{x:Bind DevDriveUnitOfMeasure, Mode=OneWay}"
-                            IsTextSelectionEnabled="True"/>
-                        <TextBlock 
-                            Text=" free."
-                            IsTextSelectionEnabled="True"/>
-                    </StackPanel>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock Grid.Row="1" HorizontalAlignment="Right"
+                                Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                                Text="{x:Bind DevDriveFreeSize, Mode=OneWay}"
+                                IsTextSelectionEnabled="True"/>
+                            <TextBlock HorizontalAlignment="Right"
+                                Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                                Text="{x:Bind DevDriveUnitOfMeasure, Mode=OneWay}"
+                                IsTextSelectionEnabled="True"/>
+                            <TextBlock HorizontalAlignment="Right"
+                                Text=" free"
+                                Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                                IsTextSelectionEnabled="True"/>
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

@@ -20,9 +20,11 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
 
     public string CacheToBeMoved { get; set; }
 
-    public string CacheLocation { get; set; }
+    public string ExistingCacheLocation { get; set; }
 
-    public string OptimizationDescription { get; set; }
+    public string ExampleLocationOnDevDrive { get; set; }
+
+    public string EnvironmentVariableToBeSet { get; set; }
 
     [ObservableProperty]
     private bool _isSelected;
@@ -33,12 +35,13 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
     [ObservableProperty]
     private CardStateColor _stateColor;
 
-    public DevDriveOptimizerCardViewModel(string cacheToBeMoved, string cacheLocation, string optimizationDescription)
+    public DevDriveOptimizerCardViewModel(string cacheToBeMoved, string existingCacheLocation, string exampleLocationOnDevDrive, string environmentVariableToBeSet)
     {
         _dispatcher = Dispatching.DispatcherQueue.GetForCurrentThread();
 
         CacheToBeMoved = cacheToBeMoved;
-        CacheLocation = cacheLocation;
-        OptimizationDescription = optimizationDescription;
+        ExistingCacheLocation = existingCacheLocation;
+        ExampleLocationOnDevDrive = exampleLocationOnDevDrive;
+        EnvironmentVariableToBeSet = environmentVariableToBeSet;
     }
 }
