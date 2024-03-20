@@ -1,0 +1,26 @@
+<!-- Copyright (c) Microsoft Corporation.. -->
+<!-- Licensed under the MIT License. -->
+
+<ContentDialog
+    x:Class="DevHome.Customization.Views.OptimizeDevDriveDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Uid="ms-resource:///DevHome.Customization/Views/OptimizeDevDriveDialog"
+    mc:Ignorable="d"
+    CornerRadius="8"
+    Title="Choose directory on dev drive..."
+    PrimaryButtonText="Make changes"
+    SecondaryButtonText="Cancel"
+    PrimaryButtonClick="OnDirectoryInputConfirmed"
+    SecondaryButtonClick="OnDirectoryInputCancelled">
+    <StackPanel>
+        <TextBlock TextWrapping="Wrap" Text="Contents of Pip/Cache will be copied to chosen directory. And PIP_CACHE_DIR will be set to chosen directory."/>
+        <Grid Margin="0 10 0 0" Grid.ColumnSpan="2" >
+            <TextBox Width="Auto" Grid.Column="0" x:Name="DirectoryPathTextBox" PlaceholderText="Choose a directory"/>
+            <Button Margin="10 0 0 0" Grid.Column="1" HorizontalAlignment="Right" Content="Browse" Click="OnBrowseButtonClick"/>
+        </Grid>
+        <TextBlock Margin="0 10 0 10" TextWrapping="Wrap" Text="Example: E:\packages\pip"/>
+    </StackPanel>
+</ContentDialog>

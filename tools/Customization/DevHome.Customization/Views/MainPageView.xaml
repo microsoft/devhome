@@ -23,9 +23,12 @@
             AutomationProperties.AccessibilityView="Control"
             AutomationProperties.AutomationId="NavigateDevDriveInsightsCardButton"
             Command="{x:Bind ViewModel.NavigateToDevDriveInsightsPageCommand}"
-            HeaderIcon="{ui:FontIcon Glyph=&#xE3AF;}"
-            IsClickEnabled="True" />
-        <!--  More Windows settings  -->
+            IsClickEnabled="True" >
+            <controls:SettingsCard.HeaderIcon>
+                <FontIcon Glyph="&#xE3AF;" FontFamily="{ThemeResource AmcFluentIcons}"/>
+            </controls:SettingsCard.HeaderIcon>
+        </controls:SettingsCard>
+            <!--  More Windows settings  -->
         <StackPanel>
             <TextBlock x:Uid="MoreWindowsSettingsSectionHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
             <TextBlock x:Uid="MoreWindowsSettingsSectionDescription" Style="{StaticResource SettingsSectionCaptionTextBlockStyle}" />

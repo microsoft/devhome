@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <UserControl
-    x:Class="DevHome.Common.Environments.CustomControls.DevDriveCardBody"
+    x:Class="DevHome.Customization.CustomControls.DevDriveCardBody"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -13,7 +13,7 @@
     </UserControl.Resources>
 
     <Grid
-            Style="{StaticResource CardBodyContainerStyle}">
+        Style="{StaticResource CardBodyContainerStyle}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -25,29 +25,24 @@
                 Style="{StaticResource ComputeSystemImageStyle}">
             <Grid>
                 <!-- Image for card body. -->
-                <Border Style="{StaticResource ComputeSystemImageBorderStyle}">
-                    <Image
-                            Source="{x:Bind DevDriveImage, Mode=OneWay}"
-                            Width="{StaticResource ComputeSystemImage64px}"
-                            Height="{StaticResource ComputeSystemImage64px}"
-                            Stretch="Fill"/>
-                </Border>
+                <FontIcon  Glyph="&#xEDA2;" FontFamily="{ThemeResource AmcFluentIcons}"/>
             </Grid>
         </Viewbox>
         <!--
                 Stackpanel containing name of dev drive, dot indicating status of dev drive, state of dev drive in text and a list of
                 the dev drive properties.
             -->
+        
         <StackPanel
                 Grid.Column="1"
-                Grid.ColumnSpan="2"
+                Grid.ColumnSpan="3"
                 Style="{StaticResource CardBodyStackPanelStyle}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock
                         Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
                         Text="{x:Bind DevDriveLabel, Mode=OneWay}"
                         IsTextSelectionEnabled="True"/>
-                <StackPanel Orientation="Vertical" Margin="500 0 0 0">
+                <StackPanel Grid.Column="2" Orientation="Vertical" Margin="500 0 0 0">
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5" >
                         <TextBlock 
                                 Text="Size - "

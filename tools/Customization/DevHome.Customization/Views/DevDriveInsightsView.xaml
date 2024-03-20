@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"  
     xmlns:labs="using:CommunityToolkit.Labs.WinUI" 
-    xmlns:devEnvCustomControls="using:DevHome.Common.Environments.CustomControls" 
+    xmlns:devCustomizationsCustomControls="using:DevHome.Customization.CustomControls" 
     xmlns:devViewModels="using:DevHome.Customization.ViewModels.Environments" 
     xmlns:devDriveModels="using:DevHome.Customization.Models.Environments"
     xmlns:devDriveSelectors="using:DevHome.Customization.Selectors.Environments" 
@@ -40,7 +40,7 @@
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <devEnvCustomControls:DevDriveCardBody
+                            <devCustomizationsCustomControls:DevDriveCardBody
                                 Grid.Row="1"
                                 DevDriveLabel="{Binding DevDriveLabel, Mode=OneWay}"
                                 DevDriveSize="{Binding DevDriveSize, Mode=OneWay}"
@@ -48,7 +48,7 @@
                                 DevDriveFreeSize="{Binding DevDriveFreeSize, Mode=OneWay}"
                                 DevDriveFillPercentage="{Binding DevDriveFillPercentage, Mode=OneWay}"
                                 DevDriveUnitOfMeasure="{Binding DevDriveUnitOfMeasure, Mode=OneWay}">
-                            </devEnvCustomControls:DevDriveCardBody>
+                            </devCustomizationsCustomControls:DevDriveCardBody>
                         </Grid>
                     </Grid>
                 </ListViewItem>
@@ -69,12 +69,12 @@
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <devEnvCustomControls:DevDriveOptimizerCardBody
+                            <devCustomizationsCustomControls:DevDriveOptimizerCardBody
                                 Grid.Row="1"
                                 CacheToBeMoved="{Binding CacheToBeMoved, Mode=OneWay}"
                                 CacheLocation="{Binding CacheLocation, Mode=OneWay}"
                                 OptimizationDescription="{Binding OptimizationDescription, Mode=OneWay}">
-                            </devEnvCustomControls:DevDriveOptimizerCardBody>
+                            </devCustomizationsCustomControls:DevDriveOptimizerCardBody>
                         </Grid>
                     </Grid>
                 </ListViewItem>

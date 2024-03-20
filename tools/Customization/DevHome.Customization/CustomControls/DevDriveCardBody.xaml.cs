@@ -10,12 +10,10 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace DevHome.Common.Environments.CustomControls;
+namespace DevHome.Customization.CustomControls;
 
 public sealed partial class DevDriveCardBody : UserControl
 {
-    public const string DefaultDevDriveCardBodyImagePath = "ms-appx:///DevHome.Common/Environments/Assets/devDrive-64.png";
-
     public DevDriveCardBody()
     {
         this.InitializeComponent();
@@ -69,30 +67,10 @@ public sealed partial class DevDriveCardBody : UserControl
         set => SetValue(DevDriveAlternativeLabelProperty, value);
     }
 
-    public BitmapImage DevDriveImage
-    {
-        get => (BitmapImage)GetValue(DevDriveImageProperty);
-        set => SetValue(DevDriveImageProperty, value);
-    }
-
     public CardStateColor StateColor
     {
         get => (CardStateColor)GetValue(StateColorProperty);
         set => SetValue(StateColorProperty, value);
-    }
-
-    private static void OnDevDriveCardBodyChanged(DevDriveCardBody cardBody, BitmapImage args)
-    {
-        if (cardBody != null)
-        {
-            if (args == null)
-            {
-                cardBody.DevDriveImage = new BitmapImage(new Uri(DefaultDevDriveCardBodyImagePath));
-                return;
-            }
-
-            cardBody.DevDriveImage = args;
-        }
     }
 
     private static readonly DependencyProperty ActionControlTemplateProperty = DependencyProperty.Register(nameof(ActionControlTemplate), typeof(DataTemplate), typeof(DevDriveCardBody), new PropertyMetadata(null));
@@ -104,5 +82,4 @@ public sealed partial class DevDriveCardBody : UserControl
     private static readonly DependencyProperty DevDriveUnitOfMeasureProperty = DependencyProperty.Register(nameof(DevDriveUnitOfMeasure), typeof(string), typeof(DevDriveCardBody), new PropertyMetadata(null));
     private static readonly DependencyProperty DevDriveAlternativeLabelProperty = DependencyProperty.Register(nameof(DevDriveAlternativeLabel), typeof(string), typeof(DevDriveCardBody), new PropertyMetadata(null));
     private static readonly DependencyProperty StateColorProperty = DependencyProperty.Register(nameof(StateColor), typeof(CardStateColor), typeof(DevDriveCardBody), new PropertyMetadata(CardStateColor.Neutral));
-    private static readonly DependencyProperty DevDriveImageProperty = DependencyProperty.Register(nameof(DevDriveImage), typeof(BitmapImage), typeof(DevDriveCardBody), new PropertyMetadata(new BitmapImage { UriSource = new Uri(DefaultDevDriveCardBodyImagePath) }, (s, e) => OnDevDriveCardBodyChanged((DevDriveCardBody)s, (BitmapImage)e.NewValue)));
 }
