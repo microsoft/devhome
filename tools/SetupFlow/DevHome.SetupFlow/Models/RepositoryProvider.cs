@@ -292,7 +292,7 @@ internal sealed class RepositoryProvider
                 {
                     repoSearchInformation.Repositories = result.Repositories;
                     repoSearchInformation.SelectionOptionsPlaceHolderText = result.SelectionOptionsName;
-                    repoSearchInformation.SelectionOptionsLabel = result.SelectionsOptionsLabel;
+                    repoSearchInformation.SelectionOptionsLabel = result.SelectionOptionsLabel;
                     repoSearchInformation.SelectionOptions = result.SelectionOptions.ToList();
                 }
                 else
