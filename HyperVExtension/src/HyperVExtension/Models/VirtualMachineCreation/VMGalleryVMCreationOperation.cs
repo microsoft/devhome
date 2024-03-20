@@ -180,7 +180,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
         if (File.Exists(archivedFileAbsolutePath))
         {
             ArchivedFile = await StorageFile.GetFileFromPathAsync(archivedFileAbsolutePath);
-            if (true || await _vmGalleryService.ValidateFileSha256Hash(ArchivedFile))
+            if (await _vmGalleryService.ValidateFileSha256Hash(ArchivedFile))
             {
                 return;
             }
