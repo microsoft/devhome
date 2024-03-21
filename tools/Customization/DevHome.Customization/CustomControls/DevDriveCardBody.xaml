@@ -5,12 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:devEnvConverters="using:DevHome.Common.Environments.Converters" 
-    xmlns:System="clr-namespace:System;assembly=mscorlib"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <System:Double x:Key="ProgressBarWidth">200</System:Double>
-    </UserControl.Resources>
     <!--
         Grid containing name of dev drive, state of dev drive in text and a list of the dev drive properties.
     -->
@@ -43,7 +38,7 @@
                     <Run Text="{Binding Path=DevDriveSize, Mode=OneWay}" />
                     <Run Text="{Binding Path=DevDriveUnitOfMeasure, Mode=OneWay}" />
                 </TextBlock>
-            <ProgressBar Grid.Row="1" Width="{StaticResource ProgressBarWidth}" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
+            <ProgressBar Grid.Row="1" Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
             <Grid Grid.Row="2" Grid.ColumnSpan="2">
                 <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0">                        
                     <Run Text="{Binding Path=DevDriveUsedSize, Mode=OneWay}" />

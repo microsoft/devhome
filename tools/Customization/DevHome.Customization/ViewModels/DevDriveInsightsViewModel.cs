@@ -17,7 +17,6 @@ using DevHome.Customization.Models.Environments;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.UI.Xaml.Shapes;
 
 namespace DevHome.Customization.ViewModels;
 

@@ -1,14 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.ObjectModel;
 using DevHome.Common.Environments.Models;
-using DevHome.Common.Windows;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Customization.CustomControls;
 

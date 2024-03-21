@@ -7,7 +7,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Collections;
 using DevHome.Customization.ViewModels.Environments;
-using DevHome.SetupFlow.Models;
 
 namespace DevHome.Customization.Models.Environments;
 

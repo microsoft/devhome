@@ -2,18 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Extensions;
-using DevHome.Customization.ViewModels;
 using DevHome.Customization.Views;
-using DevHome.SetupFlow.ViewModels;
-using DevHome.SetupFlow.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Windows.Storage.Pickers;
-using WinUIEx;
 
 namespace DevHome.Customization.CustomControls;
 

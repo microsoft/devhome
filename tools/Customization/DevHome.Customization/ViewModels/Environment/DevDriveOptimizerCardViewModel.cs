@@ -4,8 +4,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Models;
-using DevHome.Common.Services;
-using DevHome.SetupFlow.Utilities;
 
 using Dispatching = Microsoft.UI.Dispatching;
 

@@ -89,7 +89,6 @@
                     IsSelected="{Binding IsSelected, Mode=OneWay}"
                     HorizontalAlignment="Stretch"
                     AutomationProperties.ItemStatus="Loaded">
-
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
@@ -114,38 +113,6 @@
             </DataTemplate>
 
             <DataTemplate x:Key="DevDriveContainerHeaderTemplate" x:DataType="devDriveModels:DevDrivesListViewModel">
-                <StackPanel Orientation="Horizontal"
-                    Margin="0 10 0 10"
-                    VerticalAlignment="Center">
-                    <TextBlock                         
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Margin=" 0 0 0 0"
-                        IsTextSelectionEnabled="True"/>
-                    <TextBlock 
-                        Margin="7 0 0 0"
-                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
-                        Style="{ThemeResource BodyTextBlockStyle}"
-                        IsTextSelectionEnabled="True"/>
-                </StackPanel>
-            </DataTemplate>
-
-            <DataTemplate x:Key="DevDriveOptimizersContainerHeaderTemplate" x:DataType="devDriveModels:DevDriveOptimizersListViewModel">
-                <StackPanel Orientation="Horizontal"
-                    Margin="0 10 0 10"
-                    VerticalAlignment="Center">
-                    <TextBlock                         
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Margin=" 0 0 0 0"
-                        IsTextSelectionEnabled="True"/>
-                    <TextBlock 
-                        Margin="7 0 0 0"
-                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
-                        Style="{ThemeResource BodyTextBlockStyle}"
-                        IsTextSelectionEnabled="True"/>
-                </StackPanel>
-            </DataTemplate>
-            
-            <DataTemplate x:Key="DevDriveOptimizedContainerHeaderTemplate" x:DataType="devDriveModels:DevDriveOptimizedListViewModel">
                 <StackPanel Orientation="Horizontal"
                     Margin="0 10 0 10"
                     VerticalAlignment="Center">
@@ -209,7 +176,7 @@
                 <ListView
                     x:Name="DevDriveOptimizersList"
                     AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"
-                    HeaderTemplate="{StaticResource DevDriveOptimizersContainerHeaderTemplate}"
+                    HeaderTemplate="{StaticResource DevDriveContainerHeaderTemplate}"
                     DataContext="{Binding}"
                     ItemsSource="{x:Bind DevDriveOptimizerCardAdvancedCollectionView, Mode=OneWay}"
                     SelectionMode="Single"
@@ -233,7 +200,7 @@
                 <ListView
                     x:Name="DevDriveOptimizedList"
                     AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"
-                    HeaderTemplate="{StaticResource DevDriveOptimizedContainerHeaderTemplate}"
+                    HeaderTemplate="{StaticResource DevDriveContainerHeaderTemplate}"
                     DataContext="{Binding}"
                     ItemsSource="{x:Bind DevDriveOptimizedCardAdvancedCollectionView, Mode=OneWay}"
                     SelectionMode="Single"
