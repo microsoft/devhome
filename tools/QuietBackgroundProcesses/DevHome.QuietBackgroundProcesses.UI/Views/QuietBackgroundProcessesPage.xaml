@@ -38,7 +38,21 @@
 
                     <!-- Expander -->
                     <ctControls:SettingsExpander.Items>
-                        <ctControls:SettingsCard x:Uid="QuietBackgroundProcessesExplanation" HorizontalContentAlignment="Left" >
+                        <ctControls:SettingsCard x:Uid="QuietBackgroundProcessesExplanation" HorizontalContentAlignment="Left" ContentAlignment="Vertical">
+                            
+                            <!-- Analytic Summary button -->
+                            <StackPanel Orientation="Vertical">
+                                <Button x:Name="analyticSummaryButton" AutomationProperties.Name="{Binding ElementName=StartButtonText, Path=Text}" IsTextScaleFactorEnabled="True" Style="{StaticResource AccentButtonStyle}">
+                                    <Grid ColumnSpacing="8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Analytic summary" Grid.Column="1" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                    </Grid>
+                                </Button>
+                            </StackPanel>
+                            
                         </ctControls:SettingsCard>
                     </ctControls:SettingsExpander.Items>
 
