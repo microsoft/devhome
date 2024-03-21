@@ -553,6 +553,10 @@
     <value>Remove all</value>
     <comment>Label for removing all items from selection</comment>
   </data>
+  <data name="AppAlreadyInstalledNotification.Text" xml:space="preserve">
+    <value>Applications that have been previously installed cannot be installed again. They will be included in your generated configuration files.</value>
+    <comment>Message displayed when a user selects an application that is already installed</comment>
+  </data>
   <data name="RemoveApplication" xml:space="preserve">
     <value>Remove</value>
     <comment>Text announced when screen readers focus on the 'Remove' button. The 'Remove' button allows users to remove an application from their cart</comment>

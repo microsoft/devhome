@@ -140,7 +140,7 @@
                             Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
                             BorderBrush="{ThemeResource AccentAAFillColorDisabled}"
                             BorderThickness="1">
-                    <TextBlock TextWrapping="WrapWholeWords">Installed applications can be added fro configuration file generation but will not get installed again during set up.</TextBlock>
+                    <TextBlock x:Uid="AppAlreadyInstalledNotification" TextWrapping="WrapWholeWords" />
                 </StackPanel>
             </StackPanel>
 
