@@ -15,29 +15,23 @@
             <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="File detected" FontWeight="Bold" Margin="0, 0, 0, 5"/>
-        <TextBlock Grid.Row="1" TextWrapping="Wrap">
-            <Run Text="Detected configuration file name '" Foreground="{ThemeResource TextFillColorSecondary}"/>
-            <Run Text="{x:Bind ViewModel.FileName}" FontWeight="Bold" Foreground="{ThemeResource TextFillColorSecondary}"/>
-            <Run Text="' while cloning '" Foreground="{ThemeResource TextFillColorSecondary}"/>
-            <Run Text="{x:Bind ViewModel.OwningAccount}" FontWeight="Bold" Foreground="{ThemeResource TextFillColorSecondary}"/>
-            <Run Text="/" FontWeight="Bold" Foreground="{ThemeResource TextFillColorSecondary}"/>
-            <Run Text="{x:Bind ViewModel.RepoName}" FontWeight="Bold" Foreground="{ThemeResource TextFillColorSecondary}"/>
-            <Run Text="'." Foreground="{ThemeResource TextFillColorSecondary}"/>
-        </TextBlock>
-        <Grid Grid.Row="2" HorizontalAlignment="Stretch">
+        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.FileFoundMessage}" FontWeight="Bold" Margin="0, 0, 0, 5"/>
+        <TextBlock Grid.Row="1" Text="{x:Bind ViewModel.FileDescription}" TextWrapping="Wrap"/>
+
+        <!-- Keep spacing at 24 px.  Hyperlink buttons use their own padding values to keep the colume spacing consistent.-->
+        <Grid Grid.Row="2" ColumnSpacing="24">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <HyperlinkButton Grid.Column="0" Command="{x:Bind ViewModel.OpenFileInExplorerCommand}" HorizontalAlignment="Left">
+            <HyperlinkButton Grid.Column="0" Command="{x:Bind ViewModel.OpenFileInExplorerCommand}" Padding="0, 8, 0, 8">
                 <HyperlinkButton.Content>
-                    <TextBlock Text="View file" TextDecorations="Underline"/>
+                    <TextBlock Text="{x:Bind ViewModel.ViewFileMessage}" TextDecorations="Underline"/>
                 </HyperlinkButton.Content>
             </HyperlinkButton>
-            <HyperlinkButton Grid.Column="1" Command="{x:Bind ViewModel.RunInAdminCommandPromptCommand}">
+            <HyperlinkButton Grid.Column="1" Command="{x:Bind ViewModel.RunInAdminCommandPromptCommand}" Margin="0, 8, 0, 8">
                 <HyperlinkButton.Content>
-                    <TextBlock Text="Run files" TextDecorations="Underline"/>
+                    <TextBlock Text="{x:Bind ViewModel.RunFileMessage}" TextDecorations="Underline"/>
                 </HyperlinkButton.Content>
             </HyperlinkButton>
         </Grid>

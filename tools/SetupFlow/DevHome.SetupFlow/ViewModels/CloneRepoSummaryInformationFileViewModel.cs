@@ -52,9 +52,27 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
 
     public string OwningAccount { get; set; } = string.Empty;
 
+    // Using the resource file for properties like .Text and .Content does not work in this case because
+    // the UserControl is inside a DataTemplate and does not have access to the string resource file.
+    // any x:Uid used is blank in the view.
+    // Set the strings here.
+    public string FileFoundMessage { get; } = string.Empty;
+
+    public string FileDescription { get; } = string.Empty;
+
+    public string ViewFileMessage { get; } = string.Empty;
+
+    public string RunFileMessage { get; } = string.Empty;
+
     public CloneRepoSummaryInformationViewModel(IHost host)
     {
         _relatedActivityId = host.GetService<SetupFlowOrchestrator>().ActivityId;
+
+        var stringResource = host.GetService<ISetupFlowStringResource>();
+        FileFoundMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoNextStepsFileFound);
+        FileDescription = stringResource.GetLocalized(StringResourceKey.CloneRepoNextStepsDescription);
+        ViewFileMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoNextStepsView);
+        RunFileMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoNextStepsRun);
     }
 
     [RelayCommand]
