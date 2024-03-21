@@ -150,7 +150,7 @@ public class HyperVProvider : IComputeSystemProvider
         }
         
          var exception = new NotImplementedException($"Unsupported ComputeSystemAdaptiveCardKind");
- return new ComputeSystemAdaptiveCardResult(exception, notImplementedException.Message, notImplementedException.Message);
+ return new ComputeSystemAdaptiveCardResult(exception, exception.Message, exception.Message);
 
     }
 
@@ -181,7 +181,7 @@ public class HyperVProvider : IComputeSystemProvider
         }
 
          var exception = new NotImplementedException($"Unsupported ComputeSystemAdaptiveCardKind");
- return new ComputeSystemAdaptiveCardResult(exception, notImplementedException.Message, notImplementedException.Message);
+ return new ComputeSystemAdaptiveCardResult(exception, exception.Message, exception.Message);
     }
 
     /// <summary> Creates a new Hyper-V compute system operation.
