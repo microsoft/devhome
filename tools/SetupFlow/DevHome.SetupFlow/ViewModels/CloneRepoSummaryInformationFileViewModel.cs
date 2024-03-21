@@ -4,6 +4,8 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
+using System.Globalization;
 using System.IO;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
@@ -24,6 +26,8 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
     private const string _viewOperation = "view";
 
     private readonly Guid _relatedActivityId;
+
+    private readonly ISetupFlowStringResource _stringResource;
 
     public string FileName
     {
@@ -58,7 +62,14 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
     // Set the strings here.
     public string FileFoundMessage { get; } = string.Empty;
 
-    public string FileDescription { get; } = string.Empty;
+    public string FileDescription
+    {
+        get
+        {
+            var repoPath = Path.Join(OwningAccount, RepoName);
+            return _stringResource.GetLocalized(StringResourceKey.CloneRepoNextStepsDescription, FileName, repoPath);
+        }
+    }
 
     public string ViewFileMessage { get; } = string.Empty;
 
@@ -67,12 +78,11 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
     public CloneRepoSummaryInformationViewModel(IHost host)
     {
         _relatedActivityId = host.GetService<SetupFlowOrchestrator>().ActivityId;
-
         var stringResource = host.GetService<ISetupFlowStringResource>();
         FileFoundMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoNextStepsFileFound);
-        FileDescription = stringResource.GetLocalized(StringResourceKey.CloneRepoNextStepsDescription);
         ViewFileMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoNextStepsView);
         RunFileMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoNextStepsRun);
+        _stringResource = stringResource;
     }
 
     [RelayCommand]
