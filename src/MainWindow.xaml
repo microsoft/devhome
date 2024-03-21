@@ -10,6 +10,7 @@
     MinHeight="480"
     PersistenceId="MainWindow"
     Closed="MainWindow_Closed"
+    Activated="MainWindow_Activated"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
         <MicaBackdrop />
