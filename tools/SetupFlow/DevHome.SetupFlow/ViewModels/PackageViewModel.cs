@@ -47,7 +47,12 @@ public partial class PackageViewModel : ObservableObject
     /// <summary>
     /// Occurs after the package selection changes
     /// </summary>
-    public event EventHandler<PackageViewModel> SelectionChanged;
+    public event EventHandler<bool> SelectionChanged;
+
+    /// <summary>
+    /// Occurs after the package version has changed
+    /// </summary>
+    public event EventHandler<string> VersionChanged;
 
     /// <summary>
     /// Indicates if a package is selected
@@ -121,6 +126,8 @@ public partial class PackageViewModel : ObservableObject
 
     public string TooltipPublisher => _stringResource.GetLocalized(StringResourceKey.PackagePublisherNameTooltip, PublisherName);
 
+    public bool CanInstall => !IsInstalled || _package.InstalledVersion != SelectedVersion;
+
     public string ButtonAutomationName => IsSelected ?
         _stringResource.GetLocalized(StringResourceKey.RemoveApplication) :
         _stringResource.GetLocalized(StringResourceKey.AddApplication);
@@ -161,7 +168,9 @@ public partial class PackageViewModel : ObservableObject
         return new Uri("https://github.com/microsoft/winget-pkgs");
     }
 
-    partial void OnIsSelectedChanged(bool value) => SelectionChanged?.Invoke(null, this);
+    partial void OnIsSelectedChanged(bool value) => SelectionChanged?.Invoke(this, value);
+
+    partial void OnSelectedVersionChanged(string value) => VersionChanged?.Invoke(this, SelectedVersion);
 
     /// <summary>
     /// Toggle package selection

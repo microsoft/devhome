@@ -107,13 +107,13 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void OnLoaded()
     {
-        _packageProvider.PackageSelectionChanged += OnPackageSelectionChanged;
+        _packageProvider.SelectedPackagesItemChanged += OnPackageSelectionChanged;
     }
 
     [RelayCommand]
     private void OnUnloaded()
     {
-        _packageProvider.PackageSelectionChanged -= OnPackageSelectionChanged;
+        _packageProvider.SelectedPackagesItemChanged -= OnPackageSelectionChanged;
     }
 
     private void OnPackageSelectionChanged(object sender, PackageViewModel package)
@@ -123,6 +123,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         OnPropertyChanged(nameof(EnableRemoveAll));
 
         // Show warning if any selected package is installed
-        ShowInstalledPackageWarning = SelectedPackages.Any(p => p.IsInstalled);
+        ShowInstalledPackageWarning = SelectedPackages.Any(p => !p.CanInstall);
     }
 }

@@ -71,7 +71,7 @@ public class PackageProvider
     /// <summary>
     /// Occurs when a package selection has changed
     /// </summary>
-    public event EventHandler<PackageViewModel> PackageSelectionChanged;
+    public event EventHandler<PackageViewModel> SelectedPackagesItemChanged;
 
     public PackageProvider(PackageViewModelFactory packageViewModelFactory)
     {
@@ -105,7 +105,7 @@ public class PackageProvider
             Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Creating view model for package [{package.Id}]");
             var viewModel = _packageViewModelFactory(package);
             viewModel.SelectionChanged += OnPackageSelectionChanged;
-            viewModel.SelectionChanged += (sender, package) => PackageSelectionChanged?.Invoke(sender, package);
+            viewModel.VersionChanged += OnSelectedPackageVersionChanged;
 
             // Cache if requested
             if (cachePermanently)
@@ -122,8 +122,19 @@ public class PackageProvider
         }
     }
 
-    public void OnPackageSelectionChanged(object sender, PackageViewModel packageViewModel)
+    private void OnSelectedPackageVersionChanged(object sender, string version)
     {
+        var packageViewModel = sender as PackageViewModel;
+        if (packageViewModel.IsSelected)
+        {
+            // Notify subscribers that an item in the list of selected packages has changed
+            SelectedPackagesItemChanged?.Invoke(null, sender as PackageViewModel);
+        }
+    }
+
+    private void OnPackageSelectionChanged(object sender, bool isSelected)
+    {
+        var packageViewModel = sender as PackageViewModel;
         lock (_lock)
         {
             if (packageViewModel.IsSelected)
@@ -152,12 +163,17 @@ public class PackageProvider
                 {
                     Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Removing package [{packageViewModel.Package.Id}] from cache");
                     _packageViewModelCache.Remove(packageViewModel.UniqueKey);
+                    packageViewModel.SelectionChanged -= OnPackageSelectionChanged;
+                    packageViewModel.VersionChanged -= OnSelectedPackageVersionChanged;
                 }
 
                 // Remove from the selected package collection
                 _selectedPackages.Remove(packageViewModel);
             }
         }
+
+        // Notify subscribers that an item in the list of selected packages has changed
+        SelectedPackagesItemChanged?.Invoke(null, packageViewModel);
     }
 
     /// <summary>
