@@ -17,6 +17,7 @@ using DevHome.Customization.Models.Environments;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using Microsoft.UI.Xaml.Shapes;
 
 namespace DevHome.Customization.ViewModels;
 
@@ -34,6 +35,8 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
     private readonly ObservableCollection<DevDriveOptimizersListViewModel> _devDriveOptimizerViewModelList = new();
 
+    private readonly ObservableCollection<DevDriveOptimizedListViewModel> _devDriveOptimizedViewModelList = new();
+
     private readonly ISetupFlowStringResource _setupFlowStringResource;
 
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
@@ -42,6 +45,8 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
     private readonly DevDriveOptimizerViewModelFactory _devDriveOptimizerViewModelFactory;
 
+    private readonly DevDriveOptimizedViewModelFactory _devDriveOptimizedViewModelFactory;
+
     [ObservableProperty]
     private bool _shouldShowCollectionView;
 
@@ -49,10 +54,16 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     private bool _shouldShowOptimizerCollectionView;
 
     [ObservableProperty]
+    private bool _shouldShowOptimizedCollectionView;
+
+    [ObservableProperty]
     private bool _shouldShowShimmerBelowList;
 
     [ObservableProperty]
     private bool _shouldShowShimmerBelowOptimizerList;
+
+    [ObservableProperty]
+    private bool _shouldShowShimmerBelowOptimizedList;
 
     [ObservableProperty]
     private ObservableCollection<string> _devDriveProviderComboBoxNames;
@@ -66,6 +77,9 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     private bool _devDriveOptimizerLoadingCompleted;
 
     [ObservableProperty]
+    private bool _devDriveOptimizedLoadingCompleted;
+
+    [ObservableProperty]
     private AdvancedCollectionView _providerComboBoxNamesCollectionView;
 
     public ObservableCollection<string> DevDrivesSortOptions { get; private set; }
@@ -73,6 +87,8 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     public AdvancedCollectionView DevDrivesCollectionView { get; private set; }
 
     public AdvancedCollectionView DevDriveOptimizersCollectionView { get; private set; }
+
+    public AdvancedCollectionView DevDriveOptimizedCollectionView { get; private set; }
 
     public IDevDriveManager DevDriveManagerObj { get; private set; }
 
@@ -87,6 +103,7 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         IDevDriveManager devDriveManager,
         DevDriveViewModelFactory devDriveViewModelFactory,
         DevDriveOptimizerViewModelFactory devDriveOptimizerViewModelFactory,
+        DevDriveOptimizedViewModelFactory devDriveOptimizedViewModelFactory,
         ToastNotificationService toastNotificationService)
         : base(stringResource, orchestrator)
     {
@@ -114,12 +131,16 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         // Add AdvancedCollectionView to make filtering and sorting the list of DevDrivesListViewModels easier.
         DevDrivesCollectionView = new AdvancedCollectionView(_devDriveViewModelList, true);
 
-        // Add AdvancedCollectionView to make filtering and sorting the list of DevDrivesListViewModels easier.
+        // Add AdvancedCollectionView to make filtering and sorting the list of DevDrivesOptimizersListViewModels easier.
         DevDriveOptimizersCollectionView = new AdvancedCollectionView(_devDriveOptimizerViewModelList, true);
+
+        // Add AdvancedCollectionView to make filtering and sorting the list of DevDrivesOptimizedListViewModels easier.
+        DevDriveOptimizedCollectionView = new AdvancedCollectionView(_devDriveOptimizedViewModelList, true);
 
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _devDriveViewModelFactory = devDriveViewModelFactory;
         _devDriveOptimizerViewModelFactory = devDriveOptimizerViewModelFactory;
+        _devDriveOptimizedViewModelFactory = devDriveOptimizedViewModelFactory;
         DevDriveManagerObj = devDriveManager;
         _setupFlowViewModel = setupflowModel;
 
@@ -237,6 +258,7 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
         GetDevDrives();
         GetDevDriveOptimizers();
+        GetDevDriveOptimizeds();
     }
 
     public void UpdateNextButtonState()
@@ -248,7 +270,7 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
-    /// Starts the process of getting the list of DevDrives from all providers. the sync and next
+    /// Starts the process of getting the list of DevDriveOptimizers. the sync and next
     /// buttons should be disabled when work is being done.
     /// </summary>
     private void GetDevDriveOptimizers()
@@ -258,23 +280,80 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         {
             await _dispatcher.EnqueueAsync(async () =>
             {
-                // Remove any existing DevDrivesListViewModels from the list if they exist. E.g when sync button is
-                // pressed.
-                // RemoveDevDrivesListViewModels();
+                // Remove any existing DevDriveOptimizersListViewModels from the list if they exist.
+                RemoveDevDriveOptimizersListViewModels();
 
                 // Disable the sync and next buttons while we're getting the dev drives.
                 DevDriveOptimizerLoadingCompleted = false;
-
-                // UpdateNextButtonState();
 
                 // load the dev drives so we can show them in the UI.
                 await LoadAllDevDriveOptimizersInTheUI();
 
                 // Enable the sync and next buttons when we're done getting the dev drives.
                 UpdateNextButtonState();
-                DevDrivesCollectionView.Refresh();
+
+                DevDriveOptimizersCollectionView.Refresh();
             });
         });
+    }
+
+    /// <summary>
+    /// Removes all DevDriveOptimizersListViewModels from the list view model list and removes the dev drive
+    /// selected to apply the configuration to. This should refresh the UI to show no dev drives.
+    /// </summary>
+    private void RemoveDevDriveOptimizersListViewModels()
+    {
+        var totalLists = _devDriveOptimizerViewModelList.Count;
+        for (var i = totalLists - 1; i >= 0; i--)
+        {
+            _devDriveOptimizerViewModelList.RemoveAt(i);
+        }
+
+        ShouldShowOptimizerCollectionView = false;
+        DevDriveOptimizersCollectionView.Refresh();
+    }
+
+    /// <summary>
+    /// Starts the process of getting the list of DevDriveOptimizedCards.
+    /// </summary>
+    private void GetDevDriveOptimizeds()
+    {
+        // We need to run this on a background thread so we don't block the UI thread.
+        Task.Run(async () =>
+        {
+            await _dispatcher.EnqueueAsync(async () =>
+            {
+                // Remove any existing DevDriveOptimizedListViewModels from the list if they exist.
+                RemoveDevDriveOptimizedListViewModels();
+
+                // Disable the sync and next buttons while we're getting the dev drives.
+                DevDriveOptimizedLoadingCompleted = false;
+
+                // load the dev drives so we can show them in the UI.
+                await LoadAllDevDriveOptimizedsInTheUI();
+
+                // Enable the sync and next buttons when we're done getting the dev drives.
+                UpdateNextButtonState();
+
+                DevDriveOptimizedCollectionView.Refresh();
+            });
+        });
+    }
+
+    /// <summary>
+    /// Removes all DevDriveOptimizedListViewModels from the list view model list and removes the dev drive
+    /// selected to apply the configuration to. This should refresh the UI to show no dev drives.
+    /// </summary>
+    private void RemoveDevDriveOptimizedListViewModels()
+    {
+        var totalLists = _devDriveOptimizedViewModelList.Count;
+        for (var i = totalLists - 1; i >= 0; i--)
+        {
+            _devDriveOptimizedViewModelList.RemoveAt(i);
+        }
+
+        ShouldShowOptimizedCollectionView = false;
+        DevDriveOptimizedCollectionView.Refresh();
     }
 
     /// <summary>
@@ -346,6 +425,16 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
+    /// Adds a DevDriveOptimizersListViewModel.
+    /// </summary>
+    private void AddOptimizedListViewModelToList(DevDriveOptimizedListViewModel listViewModel)
+    {
+        // listViewModel doesn't exist so add it to the list.
+        _devDriveOptimizedViewModelList.Add(listViewModel);
+        ShouldShowOptimizedCollectionView = true;
+    }
+
+    /// <summary>
     /// Loads all the DevDrives from all providers and updates the UI with the results.
     /// </summary>
     public async Task LoadAllDevDrivesInTheUI()
@@ -370,6 +459,11 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     {
         try
         {
+            if (!ExistingDevDrives.Any())
+            {
+                ExistingDevDrives = DevDriveManagerObj.GetAllDevDrivesThatExistOnSystem();
+            }
+
             await UpdateOptimizerListViewModelList();
         }
         catch (Exception /*ex*/)
@@ -378,6 +472,28 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         }
 
         ShouldShowShimmerBelowOptimizerList = false;
+    }
+
+    /// <summary>
+    /// Loads all the DevDriveOptimizedCards and updates the UI with the results.
+    /// </summary>
+    public async Task LoadAllDevDriveOptimizedsInTheUI()
+    {
+        try
+        {
+            if (!ExistingDevDrives.Any())
+            {
+                ExistingDevDrives = DevDriveManagerObj.GetAllDevDrivesThatExistOnSystem();
+            }
+
+            await UpdateOptimizedListViewModelList();
+        }
+        catch (Exception /*ex*/)
+        {
+            // Log.Logger?.ReportError(Log.Component.SetupTarget, $"Error loading DevDriveViewModels data", ex);
+        }
+
+        ShouldShowShimmerBelowOptimizedList = false;
     }
 
     private void RemoveSelectedItemIfNotInUI(DevDrivesListViewModel listViewModel)
@@ -443,6 +559,7 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         {
             var curOptimizerListViewModel = new DevDriveOptimizersListViewModel();
             var cacheSubDir = "\\pip\\cache";
+            var environmentVariable = "PIP_CACHE_DIR";
             var localAppDataDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var existingPipCacheLocation = GetExistingCacheLocation(localAppDataDir.ToString(), cacheSubDir);
             if (existingPipCacheLocation != null && !CacheInDevDrive(existingPipCacheLocation))
@@ -451,16 +568,38 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
                     "Pip cache (Python)",
                     existingPipCacheLocation,
                     "D:\\packages\\pip\\cache" /*example location on dev drive to move cache to*/,
-                    "PIP_CACHE_DIR" /*environmentVariableToBeSet*/);
+                    environmentVariable /*environmentVariableToBeSet*/);
                 curOptimizerListViewModel.DevDriveOptimizerCardCollection.Add(card);
 
                 AddOptimizerListViewModelToList(curOptimizerListViewModel);
                 DevDriveOptimizerLoadingCompleted = true;
                 ShouldShowShimmerBelowOptimizerList = true;
             }
-            else
+        });
+    }
+
+    public async Task UpdateOptimizedListViewModelList()
+    {
+        await _dispatcher.EnqueueAsync(async () =>
+        {
+            var curOptimizerListViewModel = new DevDriveOptimizersListViewModel();
+            var environmentVariable = "PIP_CACHE_DIR";
+
+            // We retrieve the cache location from environment variable, because if the cache might have already moved.
+            var movedPipCacheLocation = Environment.GetEnvironmentVariable(environmentVariable);
+            if (movedPipCacheLocation != null && CacheInDevDrive(movedPipCacheLocation))
             {
-                // TODO: Show the "Optimized" card
+                // Cache already in dev drive, show the "Optimized" card
+                var curOptimizedListViewModel = new DevDriveOptimizedListViewModel();
+                var card = await _devDriveOptimizedViewModelFactory.CreateOptimizedCardViewModel(
+                    "Pip cache (Python)",
+                    movedPipCacheLocation,
+                    "PIP_CACHE_DIR" /*environmentVariableSet*/);
+                curOptimizedListViewModel.DevDriveOptimizedCardCollection.Add(card);
+
+                AddOptimizedListViewModelToList(curOptimizedListViewModel);
+                DevDriveOptimizedLoadingCompleted = true;
+                ShouldShowShimmerBelowOptimizedList = true;
             }
         });
     }

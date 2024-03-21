@@ -11,7 +11,8 @@
     xmlns:devDriveSelectors="using:DevHome.Customization.Selectors.Environments" 
     xmlns:converters="using:CommunityToolkit.WinUI.Converters" 
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core" 
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:i="using:Microsoft.Xaml.Interactivity" 
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -81,6 +82,37 @@
                 </ListViewItem>
             </DataTemplate>
 
+            <!--- Template for optimized cards on the dev insights page. -->
+            <DataTemplate x:Key="HorizontalCardForDevDriveOptimizedInsightsPage" x:DataType="devViewModels:DevDriveOptimizedCardViewModel">
+                <ListViewItem
+                    DataContext="{Binding}"
+                    IsSelected="{Binding IsSelected, Mode=OneWay}"
+                    HorizontalAlignment="Stretch"
+                    AutomationProperties.ItemStatus="Loaded">
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <controls:SettingsCard Grid.Row="1" Header="{x:Bind CacheMoved, Mode=OneWay}">
+                            <controls:SettingsCard.Description>
+                                <TextBlock TextWrapping="Wrap" Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}">                            
+                                        <Run>The environment variable </Run>
+                                        <Run Text="{Binding Path=EnvironmentVariableSet, Mode=OneWay}" Foreground="PowderBlue"/>
+                                        <Run> is set to </Run>
+                                        <Run Text="{Binding Path=OptimizedCacheLocation, Mode=OneWay}" Foreground="PowderBlue"/>
+                                </TextBlock>
+                            </controls:SettingsCard.Description>
+                            <StackPanel Orientation="Horizontal">
+                                <FontIcon HorizontalAlignment="Left" Margin="-10" Glyph="&#xE73E;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                                <TextBlock Text="Optimized" Foreground="Green" />
+                            </StackPanel>
+                        </controls:SettingsCard>
+                    </Grid>
+                </ListViewItem>
+            </DataTemplate>
+
             <DataTemplate x:Key="DevDriveContainerHeaderTemplate" x:DataType="devDriveModels:DevDrivesListViewModel">
                 <StackPanel Orientation="Horizontal"
                     Margin="0 10 0 10"
@@ -98,6 +130,22 @@
             </DataTemplate>
 
             <DataTemplate x:Key="DevDriveOptimizersContainerHeaderTemplate" x:DataType="devDriveModels:DevDriveOptimizersListViewModel">
+                <StackPanel Orientation="Horizontal"
+                    Margin="0 10 0 10"
+                    VerticalAlignment="Center">
+                    <TextBlock                         
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Margin=" 0 0 0 0"
+                        IsTextSelectionEnabled="True"/>
+                    <TextBlock 
+                        Margin="7 0 0 0"
+                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                        Style="{ThemeResource BodyTextBlockStyle}"
+                        IsTextSelectionEnabled="True"/>
+                </StackPanel>
+            </DataTemplate>
+            
+            <DataTemplate x:Key="DevDriveOptimizedContainerHeaderTemplate" x:DataType="devDriveModels:DevDriveOptimizedListViewModel">
                 <StackPanel Orientation="Horizontal"
                     Margin="0 10 0 10"
                     VerticalAlignment="Center">
@@ -175,6 +223,30 @@
                                         <ic:InvokeCommandAction  
                     Command="{Binding ContainerSelectionChangedCommand}"  
                     CommandParameter="{Binding SelectedItem, ElementName=DevDriveOptimizersList}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ListView>
+            </DataTemplate>
+
+            <!-- Listview Template for showing the Dev Drive optimized cards within a DevDriveOptimizedListViewModel object. -->
+            <DataTemplate x:Key="DevDriveOptimizedLoadedTemplate" x:DataType="devDriveModels:DevDriveOptimizedListViewModel">
+                <ListView
+                    x:Name="DevDriveOptimizedList"
+                    AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"
+                    HeaderTemplate="{StaticResource DevDriveOptimizedContainerHeaderTemplate}"
+                    DataContext="{Binding}"
+                    ItemsSource="{x:Bind DevDriveOptimizedCardAdvancedCollectionView, Mode=OneWay}"
+                    SelectionMode="Single"
+                    ItemTemplate="{StaticResource HorizontalCardForDevDriveOptimizedInsightsPage}"
+                    Margin="0 0 0 10"
+                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}"
+                    IsMultiSelectCheckBoxEnabled="False"
+                    SelectedItem="{x:Bind SelectedItem, Mode=OneWay}">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="SelectionChanged">
+                            <ic:InvokeCommandAction  
+                    Command="{Binding ContainerSelectionChangedCommand}"  
+                    CommandParameter="{Binding SelectedItem, ElementName=DevDriveOptimizedList}"/>
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ListView>
@@ -362,7 +434,53 @@
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
-            </StackPanel>
+                <StackPanel Spacing="0">
+                    <StackPanel
+                        Margin="10">
+                        <!--- List of DevDriveOptimizedListViewModel objects. -->
+                        <StackPanel
+                            Visibility="{x:Bind ViewModel.ShouldShowOptimizedCollectionView, Mode=OneWay}">
+                            <ListView 
+                                ItemsSource="{x:Bind ViewModel.DevDriveOptimizedCollectionView, Mode=OneWay}"
+                                SelectionMode="None"
+                                Margin="-10">
+                                                <!-- 
+                                Prevent ListView from caching and recycling elements in the list by updating the Itemspanel.
+                                This is needed because the listview is used to show multiple lists of DevDriveOptimizedCardViewModels.
+                                If we don't do this, the listview will recycle the DevDriveOptimizedCardViewModels in the view 
+                                which sometimes leads to weird UI artifacts, like the first item in the list being shown for every
+                                item in the list after refreshing the list.
+                                -->
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel></StackPanel>
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                                <ListView.ItemTemplateSelector>
+                                    <devDriveSelectors:DevDriveOptimizedListViewModelSelector>
+                                        <devDriveSelectors:DevDriveOptimizedListViewModelSelector.DevDriveOptimizedListViewModelLoadedTemplate>
+                                            <DataTemplate>
+                                                <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveOptimizedLoadedTemplate}" />
+                                            </DataTemplate>
+                                        </devDriveSelectors:DevDriveOptimizedListViewModelSelector.DevDriveOptimizedListViewModelLoadedTemplate>
+                                        <devDriveSelectors:DevDriveOptimizedListViewModelSelector.DevDriveOptimizedListViewModelLoadingErrorTemplate/>
+                                    </devDriveSelectors:DevDriveOptimizedListViewModelSelector>
+                                </ListView.ItemTemplateSelector>
+                            </ListView>
+                            <!--- Show shimmers when still loading items in list. -->
+                            <StackPanel
+                                Visibility="{x:Bind ViewModel.ShouldShowShimmerBelowOptimizedList, Mode=OneWay}">
+                                <ContentControl
+                                    Content="{Binding}"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    ContentTemplate="{StaticResource DevDriveLoadingTemplate}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>    
         </StackPanel>
     </ScrollViewer>
 </UserControl>

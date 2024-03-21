@@ -18,8 +18,8 @@
     <StackPanel>
         <TextBlock TextWrapping="Wrap" Text="Contents of Pip/Cache will be copied to chosen directory. And PIP_CACHE_DIR will be set to chosen directory."/>
         <Grid Margin="0 10 0 0" Grid.ColumnSpan="2" >
-            <TextBox Width="Auto" Grid.Column="0" x:Name="DirectoryPathTextBox" PlaceholderText="Choose a directory"/>
-            <Button Margin="10 0 0 0" Grid.Column="1" HorizontalAlignment="Right" Content="Browse" Click="OnBrowseButtonClick"/>
+            <TextBox HorizontalAlignment="Left" Width="300" Grid.Column="0" x:Name="DirectoryPathTextBox" PlaceholderText="Choose a directory"/>
+            <Button HorizontalAlignment="Right" Margin="10 0 0 0" Grid.Column="1" Content="Browse" Click="OnBrowseButtonClick"/>
         </Grid>
         <TextBlock Margin="0 10 0 10" TextWrapping="Wrap" Text="Example: E:\packages\pip"/>
     </StackPanel>
