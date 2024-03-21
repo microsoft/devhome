@@ -5,8 +5,8 @@
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
-    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
-    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}">
+    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
         <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
