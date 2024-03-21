@@ -36,13 +36,13 @@ public partial class PackageViewModel : ObservableObject
 
     private readonly Lazy<BitmapImage> _packageDarkThemeIcon;
     private readonly Lazy<BitmapImage> _packageLightThemeIcon;
-    private readonly Lazy<InstallPackageTask> _installPackageTask;
 
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IWinGetPackage _package;
     private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
     private readonly IScreenReaderService _screenReaderService;
+    private readonly SetupFlowOrchestrator _orchestrator;
 
     /// <summary>
     /// Occurs after the package selection changes
@@ -81,13 +81,14 @@ public partial class PackageViewModel : ObservableObject
         _package = package;
         _themeSelector = themeSelector;
         _screenReaderService = screenReaderService;
+        _orchestrator = orchestrator;
 
         // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
-        _installPackageTask = new Lazy<InstallPackageTask>(() => CreateInstallTask(orchestrator.ActivityId));
 
         SelectedVersion = GetDefaultSelectedVersion();
+        InstallPackageTask = CreateInstallTask();
     }
 
     public PackageUniqueKey UniqueKey => _package.UniqueKey;
@@ -132,7 +133,7 @@ public partial class PackageViewModel : ObservableObject
         _stringResource.GetLocalized(StringResourceKey.RemoveApplication) :
         _stringResource.GetLocalized(StringResourceKey.AddApplication);
 
-    public InstallPackageTask InstallPackageTask => _installPackageTask.Value;
+    public InstallPackageTask InstallPackageTask { get; private set; }
 
     /// <summary>
     /// Gets the URI for the "Learn more" button
@@ -170,7 +171,13 @@ public partial class PackageViewModel : ObservableObject
 
     partial void OnIsSelectedChanged(bool value) => SelectionChanged?.Invoke(this, value);
 
-    partial void OnSelectedVersionChanged(string value) => VersionChanged?.Invoke(this, SelectedVersion);
+    partial void OnSelectedVersionChanged(string value)
+    {
+        // Update the install task with the new selected version
+        InstallPackageTask = CreateInstallTask();
+
+        VersionChanged?.Invoke(this, SelectedVersion);
+    }
 
     /// <summary>
     /// Toggle package selection
@@ -214,9 +221,9 @@ public partial class PackageViewModel : ObservableObject
         return bitmapImage;
     }
 
-    private InstallPackageTask CreateInstallTask(Guid activityId)
+    private InstallPackageTask CreateInstallTask()
     {
-        return _package.CreateInstallTask(_wpm, _stringResource, SelectedVersion, activityId);
+        return _package.CreateInstallTask(_wpm, _stringResource, SelectedVersion, _orchestrator.ActivityId);
     }
 
     private string GetPackageShortDescription()
