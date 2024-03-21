@@ -97,7 +97,7 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
         if (directoryPath != null)
         {
             // Handle the selected folder
-            // TODO: If chosen folder not a dev drive location, display the error
+            // TODO: If chosen folder not a dev drive location, currently we no-op. Instead we should display the error.
             // Else make the changes.
             MoveDirectory("C:\\Users\\sodas\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\Local\\pip\\Cache", directoryPath);
             SetEnvironmentVariable("PIP_CACHE_DIR", directoryPath);
