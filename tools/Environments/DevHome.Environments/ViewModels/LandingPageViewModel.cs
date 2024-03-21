@@ -76,6 +76,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _computeSystemManager = manager;
         _stringResource = new StringResource("DevHome.Environments/Resources");
 
+        SelectedSortIndex = -1;
         Providers = new() { _stringResource.GetLocalized("AllProviders") };
 
         // Start a new sync timer
