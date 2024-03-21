@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using HyperVExtension.DevSetupEngine.ConfigurationResultTypes;
-using Microsoft.CodeAnalysis.Emit;
 using Windows.Foundation;
 
 using DevSetupEngineTypes = Microsoft.Windows.DevHome.DevSetupEngine;
@@ -23,6 +22,14 @@ internal sealed class ApplyConfigurationProgressWatcher
     public ApplyConfigurationProgressWatcher(IProgress<DevSetupEngineTypes.IConfigurationSetChangeData> progress)
     {
         _progress = progress;
+    }
+
+    public void Report(ConfigurationSetChangeData configurationSetChangeData)
+    {
+        if (_progress != null)
+        {
+            _progress.Report(configurationSetChangeData);
+        }
     }
 
     internal void Watcher(IAsyncOperationWithProgress<WinGet.ApplyConfigurationSetResult, WinGet.ConfigurationSetChangeData> operation, WinGet.ConfigurationSetChangeData data)

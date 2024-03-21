@@ -14,21 +14,22 @@
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
 
-    <Grid
-        MaxWidth="{ThemeResource MaxPageContentWidth}"
-        Margin="{ThemeResource ContentPageMargin}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <BreadcrumbBar
+            MaxWidth="{ThemeResource MaxPageContentWidth}"
+            Padding="{ThemeResource ContentPageMargin}"
             x:Name="BreadcrumbBar"
             Margin="0,0,0,16"
             ItemClicked="BreadcrumbBar_ItemClicked"
             ItemsSource="{x:Bind ViewModel.Breadcrumbs}" />
 
-        <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
+        <ScrollViewer Grid.Row="1" VerticalAlignment="Top"
+                      MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <StackPanel>
                 <views:ExtensionAdaptiveCardPanel x:Name="SettingsContent">
                     <i:Interaction.Behaviors>
