@@ -12,8 +12,6 @@ namespace DevHome.SetupFlow.Views;
 
 public sealed partial class SummaryView : UserControl
 {
-    private readonly List<UserControl> _nextSteps = new();
-
     public SummaryView()
     {
         this.InitializeComponent();

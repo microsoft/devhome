@@ -43,6 +43,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     private readonly List<UserControl> _cloneRepoNextSteps;
 
+    // Holds all the UI to display for "Next Steps".
     public List<UserControl> NextSteps => _cloneRepoNextSteps;
 
     [ObservableProperty]

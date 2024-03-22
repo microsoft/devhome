@@ -101,7 +101,7 @@ public class ConfigureTargetTask : ISetupTask
 
     public IAsyncOperation<ApplyConfigurationResult> ApplyConfigurationAsyncOperation { get; private set; }
 
-    public ISummaryInformationViewModel SummaryScreenInformation => throw new NotImplementedException();
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
 
     public ConfigureTargetTask(
         ISetupFlowStringResource stringResource,

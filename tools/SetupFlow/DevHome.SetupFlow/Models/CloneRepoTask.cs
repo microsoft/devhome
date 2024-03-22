@@ -33,7 +33,7 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloneRepoTask : ObservableObject, ISetupTask
 {
-    private const string _configurationFileName = ".configurations";
+    private const string _configurationFolderName = ".configurations";
 
     private const string _configurationFileYamlExtension = ".dsc.yaml";
 
@@ -250,7 +250,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             SummaryScreenInformation = _host.GetService<CloneRepoSummaryInformationViewModel>();
 
             // Search for a configuration file.
-            var configurationDirectory = Path.Join(_cloneLocation.FullName, _configurationFileName);
+            var configurationDirectory = Path.Join(_cloneLocation.FullName, _configurationFolderName);
             if (Directory.Exists(configurationDirectory))
             {
                 var fileToUse = Directory.EnumerateFiles(configurationDirectory)
