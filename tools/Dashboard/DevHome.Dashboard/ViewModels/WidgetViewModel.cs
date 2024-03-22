@@ -8,6 +8,7 @@ using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Renderers;
+using DevHome.Common.Services;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
@@ -249,7 +250,7 @@ public partial class WidgetViewModel : ObservableObject
 
     private Grid GetErrorCard(string error, string subError = null)
     {
-        var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+        var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
 
         var grid = new Grid
         {
@@ -267,7 +268,7 @@ public partial class WidgetViewModel : ObservableObject
             HorizontalAlignment = HorizontalAlignment.Center,
             TextWrapping = TextWrapping.WrapWholeWords,
             FontWeight = FontWeights.Bold,
-            Text = resourceLoader.GetString(error),
+            Text = stringResource.GetLocalized(error),
         };
         sp.Children.Add(errorText);
 
@@ -277,7 +278,7 @@ public partial class WidgetViewModel : ObservableObject
             {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextWrapping = TextWrapping.WrapWholeWords,
-                Text = resourceLoader.GetString(subError),
+                Text = stringResource.GetLocalized(subError),
                 Margin = new Thickness(0, 12, 0, 0),
             };
 
