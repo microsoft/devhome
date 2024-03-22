@@ -14,6 +14,7 @@ using DevHome.Common.Services;
 using DevHome.SetupFlow.Behaviors;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
+using DevHome.Telemetry;
 using Microsoft.UI.Dispatching;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -138,6 +139,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void ViewAllPackages(PackageCatalogViewModel catalog)
     {
+        TelemetryFactory.Get<ITelemetry>().LogCritical("Apps_ViewAll_Event");
         AppManagementBehavior.SetHeaderVisibility(false);
         ViewAllCatalog = catalog;
     }

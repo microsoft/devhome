@@ -3,6 +3,7 @@
 
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <Import Project="$(SolutionDir)Directory.CppBuild.props" />
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -60,6 +61,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240311-x1907" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
       <PrivateAssets>all</PrivateAssets>
@@ -75,10 +77,15 @@
     <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
     <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
+    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
+    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
+    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.Server\DevHome.QuietBackgroundProcesses.Server.vcxproj" />
+    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.UI\DevHome.QuietBackgroundProcesses.UI.csproj" />
     <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
     <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
     <ProjectReference Include="..\HyperVExtension\src\HyperVExtensionServer\HyperVExtensionServer.csproj" />
     <ProjectReference Include="..\tools\Environments\DevHome.Environments\DevHome.Environments.csproj" />
+    <ProjectReference Include="..\tools\Customization\DevHome.Customization\DevHome.Customization.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -103,9 +110,31 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
+  
+  <!-- Quiet Background Processes bins -->
+  <PropertyGroup>
+    <_DevHomeInternal_CppPlatform>$(Platform)</_DevHomeInternal_CppPlatform>
+    <_DevHomeInternal_CppPlatform Condition="'$(Platform)' == 'x86'">Win32</_DevHomeInternal_CppPlatform>
+    <DevHomeInternal_Win32RuntimePath Condition="$(DevHomeInternal_Win32RuntimePath.EndsWith('native\\'))">$(DevHomeInternal_Win32RuntimePath)$(_DevHomeInternal_CppPlatform)\</DevHomeInternal_Win32RuntimePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="$(DevHomeInternal_Win32RuntimePath)Microsoft.Internal.Windows.DevHome.Helpers.QuietBackgroundProcesses.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Server\DevHome.QuietBackgroundProcesses.Server.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Common\DevHome.QuietBackgroundProcesses.winmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <PropertyGroup>
     <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
     <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
   </PropertyGroup>
+
 </Project>

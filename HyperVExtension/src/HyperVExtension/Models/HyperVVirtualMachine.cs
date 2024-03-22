@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Data;
 using System.Globalization;
 using System.Management.Automation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using System.Threading;
 using HyperVExtension.Common;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.CommunicationWithGuest;
@@ -527,7 +525,7 @@ public class HyperVVirtualMachine : IComputeSystem
                 {
                     ComputeSystemProperty.Create(ComputeSystemPropertyKind.CpuCount, ProcessorCount),
                     ComputeSystemProperty.Create(ComputeSystemPropertyKind.AssignedMemorySizeInBytes, MemoryAssigned),
-                    ComputeSystemProperty.Create(ComputeSystemPropertyKind.AssignedMemorySizeInBytes, totalDiskSize),
+                    ComputeSystemProperty.Create(ComputeSystemPropertyKind.StorageSizeInBytes, totalDiskSize),
                     ComputeSystemProperty.Create(ComputeSystemPropertyKind.UptimeIn100ns, Uptime),
                     ComputeSystemProperty.CreateCustom(ParentCheckpointName, _stringResource.GetLocalized(_currentCheckpointKey), null),
                 };

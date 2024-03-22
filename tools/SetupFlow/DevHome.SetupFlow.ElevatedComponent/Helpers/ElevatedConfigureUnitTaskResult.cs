@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Microsoft.Management.Configuration;
-
 namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
 
 /// <summary>

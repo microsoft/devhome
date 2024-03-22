@@ -9,7 +9,6 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel;
 using Windows.System;

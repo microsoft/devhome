@@ -10,7 +10,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI.Collections;
 using CommunityToolkit.WinUI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
@@ -26,6 +25,7 @@ using DevHome.SetupFlow.Views;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
@@ -52,6 +52,15 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
+    private readonly DispatcherQueue _dispatcherQueue;
+
+    /// <summary>
+    /// Holds all the currently executing tasks to GetRepositories.
+    /// Used to match a Task against _taskToUseForResults to make sure the results of the most recently executed task
+    /// is shows in the UI.
+    /// </summary>
+    private readonly List<Task> _runningGetReposTasks = new();
+
     /// <summary>
     /// Because logic is split between the back-end and the view model, migrating code from the view
     /// in one PR to the view model is too much work.
@@ -63,6 +72,20 @@ public partial class AddRepoViewModel : ObservableObject
     /// this class.
     /// </remarks>
     private readonly AddRepoDialog _addRepoDialog;
+
+    private readonly object _setRepositoriesLock = new();
+
+    private List<RepoViewListItem> _allRepositories = new();
+
+    /// <summary>
+    /// Hold the task of the most recently ran GetRepos request.
+    /// </summary>
+    private Task _taskToUseForResults;
+
+    /// <summary>
+    /// Used to store the search fields and their values when querying for repos.
+    /// </summary>
+    private Dictionary<string, string> _repoSearchInputs = new();
 
     /// <summary>
     /// Gets the folder picker view model.
@@ -128,7 +151,6 @@ public partial class AddRepoViewModel : ObservableObject
     /// Names of all accounts the user has logged into for a particular provider.
     /// </summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsAccountComboBoxEnabled))]
     private ObservableCollection<string> _accounts = new();
 
     /// <summary>
@@ -141,7 +163,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// All repositories currently shown on the screen.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<RepoViewListItem> _repositories = new();
+    private ObservableCollection<RepoViewListItem> _repositoriesToDisplay = new();
 
     /// <summary>
     /// Should the URL page be visible?
@@ -162,6 +184,13 @@ public partial class AddRepoViewModel : ObservableObject
     private bool _showRepoPage;
 
     /// <summary>
+    /// If the extension implements IRepositoryProvider2 users can navigate to this page
+    /// allowing users to define a simple search query to narrow down the repos returned from the extension.
+    /// </summary>
+    [ObservableProperty]
+    private bool _shouldShowSelectingSearchTerms;
+
+    /// <summary>
     /// Should the error text be shown?
     /// </summary>
     [ObservableProperty]
@@ -173,6 +202,9 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private bool? _isAccountToggleButtonChecked;
 
+    /// <summary>
+    /// Possible the user is not logged in.  In that case, disable the account button.
+    /// </summary>
     [ObservableProperty]
     private bool _isAccountButtonEnabled;
 
@@ -182,34 +214,80 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private bool? _isUrlAccountButtonChecked;
 
+    /// <summary>
+    /// The text of the primary button is different on different pages.
+    /// </summary>
     [ObservableProperty]
     private string _primaryButtonText;
 
+    /// <summary>
+    /// The string to show the user if the url can't be parsed.
+    /// </summary>
     [ObservableProperty]
     private string _urlParsingError;
 
-    public bool IsAccountComboBoxEnabled => Accounts.Count > 1;
-
+    /// <summary>
+    /// If the URL parsing error should be shown.
+    /// </summary>
     [ObservableProperty]
     private bool _shouldShowUrlError;
 
+    /// <summary>
+    /// If DevHome is getting repos from the extension.
+    /// Used to change the UI.
+    /// </summary>
     [ObservableProperty]
     private bool _isFetchingRepos;
 
+    /// <summary>
+    /// PRimary button should not be enabled if not all information is entered.
+    /// </summary>
     [ObservableProperty]
     private bool _shouldEnablePrimaryButton;
 
+    /// <summary>
+    /// Depending on the page shown, the primary button style will be different.
+    /// </summary>
     [ObservableProperty]
     private Style _styleForPrimaryButton;
 
+    /// <summary>
+    /// If a UI should be shown to ask theuser to log in.
+    /// </summary>
     [ObservableProperty]
     private bool _shouldShowLoginUi;
 
+    /// <summary>
+    /// For some log in scenarios, no in-house cancel button is on the UI.
+    /// In that case, add our own.
+    /// </summary>
     [ObservableProperty]
     private bool _shouldShowXButtonInLoginUi;
 
+    /// <summary>
+    /// DevHome waits when a UI prompt is open.  This is used to exit the wait
+    /// early if the user cancel the log in.
+    /// </summary>
     [ObservableProperty]
     private bool _isCancelling;
+
+    /// <summary>
+    /// What to display to the left of the combobox.
+    /// </summary>
+    [ObservableProperty]
+    private string _selectionOptionsPrefix;
+
+    /// <summary>
+    /// The options a user can pick from for a granular search.
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<string> _selectionOptions;
+
+    /// <summary>
+    /// The placeholder text for the selection options combobox
+    /// </summary>
+    [ObservableProperty]
+    private string _selectionOptionsPlaceholderText;
 
     /// <summary>
     /// Used to figure out what button is pressed for the split button.
@@ -271,61 +349,6 @@ public partial class AddRepoViewModel : ObservableObject
     /// This flag is to prevent adding duplicate items are being re-selected.
     /// </summary>
     public bool IsCallingSelectRange { get; set; }
-
-    /// <summary>
-    /// Filters all repos down to any that start with text.
-    /// A side-effect of filtering is that SelectionChanged fires for every selected repo but only on removal.
-    /// SelectionChanged isn't fired for re-adding because repos are removed, not added.  To prevent the RepoTool from forgetting the repos that were selected
-    /// the flag _isFiltering is used to prevent modifications to EverythingToClone.
-    /// Once filtering is done SelectRange is called on each item in EverythingToClone to re-select them.
-    /// </summary>
-    /// <param name="text">The text to use with .Contains</param>
-    public void FilterRepositories(string text)
-    {
-        IEnumerable<IRepository> filteredRepositories;
-        if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
-        {
-            filteredRepositories = _repositoriesForAccount;
-        }
-        else
-        {
-            filteredRepositories = _repositoriesForAccount
-                .Where(x => x.DisplayName.Contains(text, StringComparison.OrdinalIgnoreCase));
-        }
-
-        _isFiltering = true;
-        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(filteredRepositories));
-        _isFiltering = false;
-    }
-
-    /// <summary>
-    /// Order repos in a particular order.  The order is
-    /// 1. User Private repos
-    /// 2. Org repos
-    /// 3. User Public repos.
-    /// Each section is ordered by the most recently updated.
-    /// </summary>
-    /// <param name="repos">The list of repos to order.</param>
-    /// <returns>An enumerable collection of items ready to be put into the ListView</returns>
-    private IEnumerable<RepoViewListItem> OrderRepos(IEnumerable<IRepository> repos)
-    {
-        var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase))
-            .OrderByDescending(x => x.LastUpdated)
-            .Select(x => new RepoViewListItem(x));
-
-        var userRepos = repos.Where(x => x.OwningAccountName.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase));
-        var userPublicRepos = userRepos.Where(x => !x.IsPrivate)
-            .OrderByDescending(x => x.LastUpdated)
-            .Select(x => new RepoViewListItem(x));
-
-        var userPrivateRepos = userRepos.Where(x => x.IsPrivate)
-            .OrderByDescending(x => x.LastUpdated)
-            .Select(x => new RepoViewListItem(x));
-
-        return userPrivateRepos
-            .Concat(organizationRepos)
-            .Concat(userPublicRepos);
-    }
 
     /// <summary>
     /// Gets a value indicating whether the UI can skip the account page and switch to the repo page.
@@ -405,15 +428,47 @@ public partial class AddRepoViewModel : ObservableObject
     private int _accountIndex;
 
     /// <summary>
+    /// Text that prompts the user if they want to add search inputs.
+    /// </summary>
+    [ObservableProperty]
+    private string _askToChangeLabel;
+
+    /// <summary>
+    /// If the extension allows users to further filter repo results.
+    /// </summary>
+    [ObservableProperty]
+    private bool _shouldShowGranularSearch;
+
+    /// <summary>
+    /// Controls if the hyperlink button that allows switching to the search terms page is visible.
+    /// </summary>
+    [ObservableProperty]
+    private bool _shouldShowChangeSearchTermsHyperlinkButton;
+
+    /// <summary>
     /// Switches the repos shown to the account selected.
     /// </summary>
     [RelayCommand]
     private void MenuItemClick(string selectedItemName)
     {
-        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(async () =>
+        _dispatcherQueue.TryEnqueue(async () =>
         {
             SelectedAccount = selectedItemName;
             await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
+
+            var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
+            _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
+        });
+    }
+
+    /// <summary>
+    /// Uses search inputs to search for repos.
+    /// </summary>
+    private void SearchRepos()
+    {
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            await SearchForRepos(_selectedRepoProvider, SelectedAccount);
 
             var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
             _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
@@ -428,33 +483,32 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Makes the MenuFlyout object used to display multple accounts in the repo tool.
+    /// If granular search is enabled, this method handles the "SelectionChanged" event on the
+    /// combo box.
     /// </summary>
-    /// <returns>The MenuFlyout to display.</returns>
-    /// <remarks>
-    /// The layout is a list of added accounts.  A line seperator.  One menu item to add an account.
-    /// </remarks>
-    private MenuFlyout ConstructFlyout()
+    /// <param name="selectedItem">The selection option the user chose.</param>
+    [RelayCommand]
+    private void SelectionOptionsChanged(string selectedItem)
     {
-        AccountsToShow = new MenuFlyout();
-        var newMenu = new MenuFlyout();
-        foreach (var account in Accounts)
+        if (selectedItem == null)
         {
-            var accountMenuItem = new MenuFlyoutItem();
-            accountMenuItem.Name = account;
-            accountMenuItem.Text = account;
-            accountMenuItem.Command = MenuItemClickCommand;
-            accountMenuItem.CommandParameter = accountMenuItem.Text;
-            newMenu.Items.Add(accountMenuItem);
+            return;
         }
 
-        newMenu.Items.Add(new MenuFlyoutSeparator());
-        var addAccountMenuItem = new MenuFlyoutItem();
-        addAccountMenuItem.Text = _stringResource.GetLocalized("RepoToolAddAnotherAccount");
-        addAccountMenuItem.Command = AddAccountClickedCommand;
-        newMenu.Items.Add(addAccountMenuItem);
+        List<RepoViewListItem> reposWithPathPart = new();
+        foreach (var repo in _allRepositories)
+        {
+            var pathParts = repo.OwningAccountName.Split(Path.DirectorySeparatorChar);
+            var partToCompareAgainst = pathParts[pathParts.Length - 1];
+#pragma warning disable CA1309 // Use ordinal string comparison
+            if (selectedItem.Equals(partToCompareAgainst))
+            {
+                reposWithPathPart.Add(repo);
+            }
+#pragma warning restore CA1309 // Use ordinal string comparison
+        }
 
-        return newMenu;
+        RepositoriesToDisplay = new ObservableCollection<RepoViewListItem>(reposWithPathPart);
     }
 
     /// <summary>
@@ -513,6 +567,61 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Filters all repos down to any that start with text.
+    /// A side-effect of filtering is that SelectionChanged fires for every selected repo but only on removal.
+    /// SelectionChanged isn't fired for re-adding because repos are removed, not added.  To prevent the RepoTool from forgetting the repos that were selected
+    /// the flag _isFiltering is used to prevent modifications to EverythingToClone.
+    /// Once filtering is done SelectRange is called on each item in EverythingToClone to re-select them.
+    /// </summary>
+    /// <param name="text">The text to use with .Contains</param>
+    public void FilterRepositories(string text)
+    {
+        IEnumerable<RepoViewListItem> filteredRepositories;
+        if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
+        {
+            filteredRepositories = _allRepositories;
+        }
+        else
+        {
+            filteredRepositories = _allRepositories
+                .Where(x => x.RepoDisplayName.Contains(text, StringComparison.OrdinalIgnoreCase));
+        }
+
+        _isFiltering = true;
+        RepositoriesToDisplay = new ObservableCollection<RepoViewListItem>(filteredRepositories);
+        _isFiltering = false;
+    }
+
+    /// <summary>
+    /// Makes the MenuFlyout object used to display multple accounts in the repo tool.
+    /// </summary>
+    /// <returns>The MenuFlyout to display.</returns>
+    /// <remarks>
+    /// The layout is a list of added accounts.  A line seperator.  One menu item to add an account.
+    /// </remarks>
+    private MenuFlyout ConstructFlyout()
+    {
+        var newMenu = new MenuFlyout();
+        foreach (var account in Accounts)
+        {
+            var accountMenuItem = new MenuFlyoutItem();
+            accountMenuItem.Name = account;
+            accountMenuItem.Text = account;
+            accountMenuItem.Command = MenuItemClickCommand;
+            accountMenuItem.CommandParameter = accountMenuItem.Text;
+            newMenu.Items.Add(accountMenuItem);
+        }
+
+        newMenu.Items.Add(new MenuFlyoutSeparator());
+        var addAccountMenuItem = new MenuFlyoutItem();
+        addAccountMenuItem.Text = _stringResource.GetLocalized("RepoToolAddAnotherAccount");
+        addAccountMenuItem.Command = AddAccountClickedCommand;
+        newMenu.Items.Add(addAccountMenuItem);
+
+        return newMenu;
+    }
+
     public AddRepoViewModel(
         SetupFlowOrchestrator setupFlowOrchestrator,
         ISetupFlowStringResource stringResource,
@@ -525,6 +634,7 @@ public partial class AddRepoViewModel : ObservableObject
         _addRepoDialog = addRepoDialog;
         _stringResource = stringResource;
         _host = host;
+        _dispatcherQueue = host.GetService<WindowEx>().DispatcherQueue;
         _loginUiContent = new Frame();
         _setupFlowOrchestrator = setupFlowOrchestrator;
 
@@ -674,18 +784,77 @@ public partial class AddRepoViewModel : ObservableObject
             EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
             SelectedAccount = Accounts.First();
             ShouldEnablePrimaryButton = false;
+            MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
         }
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
         ShowUrlPage = false;
         ShowAccountPage = false;
         ShowRepoPage = true;
+
+        ShouldShowSelectingSearchTerms = false;
+        ShouldShowGranularSearch = false;
+        ShouldShowChangeSearchTermsHyperlinkButton = _providers.IsSearchingEnabled(_selectedRepoProvider);
+        AskToChangeLabel = _providers.GetAskChangeSearchFieldsLabel(_selectedRepoProvider);
+
         CurrentPage = PageKind.Repositories;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
         ShouldShowLoginUi = false;
 
         // The only way to get the repo page is through the account page.
-        // No need to change toggle buttons.
+        // No need to toggle the clone button.
+    }
+
+    /// <summary>
+    /// Sends out a request to search for repos using searchInputs.
+    /// </summary>
+    /// <param name="searchInputs">The values to search for repos with.</param>
+    public void SearchForRepos(Dictionary<string, string> searchInputs)
+    {
+        _repoSearchInputs = searchInputs;
+        SearchRepos();
+    }
+
+    public void ChangeToSelectSearchTermsPage()
+    {
+        CurrentPage = PageKind.SearchFields;
+        IsFetchingRepos = false;
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to select search terms page");
+        ShowUrlPage = false;
+        ShowAccountPage = false;
+        ShowRepoPage = false;
+        ShouldShowSelectingSearchTerms = true;
+        FolderPickerViewModel.ShouldShowFolderPicker = false;
+        EditDevDriveViewModel.ShowDevDriveInformation = false;
+        PrimaryButtonText = "Connect";
+        ShouldEnablePrimaryButton = true;
+    }
+
+    /// <summary>
+    /// Asks the provider for search terms for querying repositories.
+    /// </summary>
+    /// <param name="providerName">The provider to ask</param>
+    /// <returns>The names of the search fields.</returns>
+    public List<string> GetSearchTerms()
+    {
+        return _providers.GetSearchTerms(_selectedRepoProvider);
+    }
+
+    /// <summary>
+    /// Asks the provider for a list of suggestions, given values of other search terms.
+    /// </summary>
+    /// <param name="loginId">The account of the user</param>
+    /// <param name="inputFields">All information found in the search grid</param>
+    /// <param name="fieldName">The field to request data for</param>
+    /// <remarks>
+    /// uses _selectedRepoProvider.
+    /// </remarks>
+    /// <returns>A list of names that can be used for the field.</returns>
+    public List<string> GetSuggestionsFor(string loginId, Dictionary<string, string> inputFields, string fieldName)
+    {
+        var loggedInDeveloper = _providers.GetAllLoggedInAccounts(_selectedRepoProvider).FirstOrDefault(x => x.LoginId == loginId);
+
+        return _providers.GetValuesFor(_selectedRepoProvider, loggedInDeveloper, inputFields, fieldName);
     }
 
     /// <summary>
@@ -723,7 +892,13 @@ public partial class AddRepoViewModel : ObservableObject
         }
         else if (CurrentPage == PageKind.AddViaAccount || CurrentPage == PageKind.Repositories)
         {
-             return EverythingToClone.Count > 0;
+            return EverythingToClone.Count > 0;
+        }
+        else if (CurrentPage == PageKind.SearchFields)
+        {
+            // IRepositoryProvider2 does not impose a structure to the search terms.
+            // Any combination of search terms, including empty, is accepted.
+            return true;
         }
         else
         {
@@ -778,14 +953,6 @@ public partial class AddRepoViewModel : ObservableObject
         // To avoid this, just store the login id.
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId));
         AccountsToShow = ConstructFlyout();
-
-        // The dialog makes a user log in if they have no accounts.
-        // keep this here just in case.
-        if (Accounts.Any())
-        {
-            SelectedAccount = Accounts.First();
-            MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
-        }
     }
 
     /// <summary>
@@ -1074,26 +1241,130 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Starts the task to search for repos.
+    /// </summary>
+    /// <param name="repositoryProvider">The name of the selected repository Provider.</param>
+    /// <param name="loginId">The loginId of the user.</param>
+    /// <returns>An awaitable task.</returns>
+    private Task<RepositorySearchInformation> StartSearchingForRepos(string repositoryProvider, string loginId)
+    {
+        return Task.Run(
+              () =>
+              {
+                  TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllLoggedInAccounts"), _activityId);
+                  var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
+
+                  TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllRepos"), _activityId);
+                  return _providers.SearchForRepos(repositoryProvider, loggedInDeveloper, _repoSearchInputs);
+              });
+    }
+
+    /// <summary>
+    /// Starts the task to get all repos.
+    /// </summary>
+    /// <param name="repositoryProvider">The name of the selected repository Provider.</param>
+    /// <param name="loginId">The loginId of the user.</param>
+    /// <returns>An awaitable task.</returns>
+    private Task<RepositorySearchInformation> StartGettingAllRepos(string repositoryProvider, string loginId)
+    {
+        return Task.Run(
+      () =>
+      {
+          TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllLoggedInAccounts"), _activityId);
+          var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
+
+          TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllRepos"), _activityId);
+          return _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
+      });
+    }
+
+    /// <summary>
+    /// Takes a task of getting repositories and makes sure only the most recent request is used.
+    /// </summary>
+    /// <param name="loginId">The loginId of the user</param>
+    /// <param name="runningTask">The running task that is getting repos.</param>
+    /// <returns>An awaitable task.</returns>
+    private async Task CoordinateTasks(string loginId, Task<RepositorySearchInformation> runningTask)
+    {
+        _dispatcherQueue.TryEnqueue(() =>
+        {
+            SelectedAccount = loginId;
+            IsFetchingRepos = true;
+        });
+
+        // Multiple calls can execute at the same time.  DevHome uses the results of the
+        // most recent query.  A list of tasks is used to keep track of all running queries.
+        // When a query is done, it is compared with the id of the most recently executed task.
+        // if a match, DevHome uses that.
+        // Using locks here to control access to non-thread safe collections.
+        lock (_setRepositoriesLock)
+        {
+            _taskToUseForResults = runningTask;
+            _runningGetReposTasks.Add(runningTask);
+        }
+
+        await runningTask;
+        RepositorySearchInformation repoSearchInformation;
+        lock (_setRepositoriesLock)
+        {
+            _runningGetReposTasks.Remove(runningTask);
+            if (runningTask.Id != _taskToUseForResults.Id)
+            {
+                _repositoriesForAccount ??= new List<IRepository>();
+                return;
+            }
+
+            repoSearchInformation = runningTask.Result;
+            _repositoriesForAccount = repoSearchInformation.Repositories;
+            try
+            {
+                _allRepositories = repoSearchInformation.Repositories.Select(x => new RepoViewListItem(x)).ToList();
+            }
+            catch (Exception ex)
+            {
+                GlobalLog.Logger?.ReportError($"Exception thrown while selecting repositories from the return object", ex);
+                _allRepositories = new();
+            }
+        }
+
+        // Update the UI.
+        _dispatcherQueue.TryEnqueue(() =>
+        {
+            ShouldShowGranularSearch = DoesTheExtensionUseGranularSearch(repoSearchInformation);
+            SelectionOptionsPrefix = repoSearchInformation.SelectionOptionsLabel;
+            SelectionOptions = new ObservableCollection<string>(repoSearchInformation.SelectionOptions);
+            SelectionOptionsPlaceholderText = repoSearchInformation.SelectionOptionsPlaceHolderText;
+
+            IsFetchingRepos = false;
+        });
+    }
+
+    private bool DoesTheExtensionUseGranularSearch(RepositorySearchInformation repoSearchInformation)
+    {
+        return !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsLabel) &&
+                        !string.IsNullOrEmpty(repoSearchInformation.SelectionOptionsPlaceHolderText) &&
+                        repoSearchInformation.SelectionOptions.Count != 0;
+    }
+
+    public async Task SearchForRepos(string repositoryProvider, string loginId)
+    {
+        var localTask = StartSearchingForRepos(repositoryProvider, loginId);
+        await CoordinateTasks(loginId, localTask);
+    }
+
+    /// <summary>
     /// Gets all the repositories for the specified provider and account.
     /// </summary>
     /// <remarks>
     /// The side effect of this method is _repositoriesForAccount is populated with repositories.
+    /// If _isSearchingEnabled is true, the path string, and combobox will be populated with values.
     /// </remarks>
     /// <param name="repositoryProvider">The provider.  This should match the display name of the extension</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
     public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
     {
-        SelectedAccount = loginId;
-        IsFetchingRepos = true;
-        await Task.Run(() =>
-        {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllLoggedInAccounts"), _activityId);
-            var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
-
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllRepos"), _activityId);
-            _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
-        });
-        IsFetchingRepos = false;
+        var localTask = StartGettingAllRepos(repositoryProvider, loginId);
+        await CoordinateTasks(loginId, localTask);
     }
 
     /// <summary>
@@ -1104,7 +1375,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <returns>All previously selected repos excluding any added via URL.</returns>
     public IEnumerable<RepoViewListItem> SetRepositories(string repositoryProvider, string loginId)
     {
-        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
+        RepositoriesToDisplay = new ObservableCollection<RepoViewListItem>(_repositoriesForAccount.Select(x => new RepoViewListItem(x)));
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
             .Where(x => x.ProviderName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
@@ -1121,7 +1392,7 @@ public partial class AddRepoViewModel : ObservableObject
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Setting the clone location for all repositories to {cloneLocation}");
         foreach (var cloningInformation in EverythingToClone)
         {
-            // N^2 algorithm.  Shouldn't be too slow unless at least 100 repos are added.
+            // N^2 algorithm.  Should change to something else when the number of repos is large.
             if (!_previouslySelectedRepos.Any(x => x == cloningInformation))
             {
                 cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);

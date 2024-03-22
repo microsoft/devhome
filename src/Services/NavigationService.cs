@@ -3,7 +3,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using DevHome.Common.Services;
-using DevHome.Contracts.Services;
 using DevHome.Contracts.ViewModels;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Helpers;

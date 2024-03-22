@@ -23,7 +23,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
 using Moq;
 using Windows.Storage;
-using Communication = HyperVExtension.CommunicationWithGuest;
 
 namespace HyperVExtension.UnitTest.HyperVExtensionTests.Services;
 

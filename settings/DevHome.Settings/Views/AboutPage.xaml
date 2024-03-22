@@ -26,11 +26,8 @@
         </DataTemplate>
     </behaviors:NavigationViewHeaderBehavior.HeaderTemplate>
 
-    <Grid
-        MaxWidth="{ThemeResource MaxPageContentWidth}"
-        Margin="{ThemeResource ContentPageMargin}">
-
-        <ScrollViewer VerticalAlignment="Top">
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+        <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <ctControls:SettingsExpander x:Uid="Settings_About_Card" IsExpanded="True">
                 <ctControls:SettingsExpander.HeaderIcon>
                     <BitmapIcon ShowAsMonochrome="False" UriSource="/Assets/DevHome.ico" />
@@ -57,6 +54,6 @@
                         ActionIcon="{ui:FontIcon Glyph=&#xE8A7;}" />
                 </ctControls:SettingsExpander.Items>
             </ctControls:SettingsExpander>
-        </ScrollViewer>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>

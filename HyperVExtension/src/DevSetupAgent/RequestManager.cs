@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using static System.Reflection.Metadata.BlobBuilder;
-
 namespace HyperVExtension.DevSetupAgent;
 
 /// <summary>

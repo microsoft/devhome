@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.ObjectModel;
 using System.Management.Automation;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.ServiceProcess;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Helpers;
@@ -12,7 +9,6 @@ using HyperVExtension.Models;
 using HyperVExtension.Services;
 using HyperVExtension.UnitTest.Mocks;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.System;
 
 namespace HyperVExtension.UnitTest.HyperVExtensionTests.Services;
 

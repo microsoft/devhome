@@ -1,17 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using HyperVExtension.Common;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Extensions;
 using HyperVExtension.ExtensionServer;
-using HyperVExtension.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.AppLifecycle;
-using Microsoft.Windows.AppNotifications;
 using Windows.ApplicationModel.Activation;
-using Windows.Management.Deployment;
 
 namespace HyperVExtension;
 

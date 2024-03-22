@@ -2,12 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DevHome.Common.Contracts;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Helpers;
@@ -15,8 +10,6 @@ using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using Windows.ApplicationModel.Activation;
-using Windows.Media.AppBroadcasting;
-using WinUIEx.Messaging;
 
 namespace DevHome.Common.Services;
 
