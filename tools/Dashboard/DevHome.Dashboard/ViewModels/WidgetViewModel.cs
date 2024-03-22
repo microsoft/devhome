@@ -9,7 +9,6 @@ using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
-using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.UI.Text;

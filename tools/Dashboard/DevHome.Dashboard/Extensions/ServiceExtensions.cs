@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.Services;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
