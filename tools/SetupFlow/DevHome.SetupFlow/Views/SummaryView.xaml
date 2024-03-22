@@ -194,7 +194,7 @@
 
                     <!-- Numbers of tasks ran and next steps.-->
                     <!-- Or, if any tasks failed, failed tasks and next steps.-->
-                    <Grid RowSpacing="10">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="auto" />
