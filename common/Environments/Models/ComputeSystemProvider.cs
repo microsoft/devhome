@@ -2,18 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Helpers;
-using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.Foundation;
-using Windows.Foundation.Metadata;
 
 namespace DevHome.Common.Environments.Models;
 

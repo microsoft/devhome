@@ -3,14 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Helpers;
 using DevHome.Common.Models;
-using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 

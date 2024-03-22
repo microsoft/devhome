@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json;
-
 namespace HyperVExtension.DevSetupAgent;
 
 internal sealed class TooManyRequestsResponse : ResponseBase

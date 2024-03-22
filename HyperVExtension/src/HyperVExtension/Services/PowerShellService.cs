@@ -1,14 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
-using System.Threading;
 using DevHome.Logging;
 using HyperVExtension.Common;
 using HyperVExtension.Models;
-using Microsoft.Extensions.Hosting;
 
 namespace HyperVExtension.Services;
 

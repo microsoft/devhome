@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Common.Services;
 using DevHome.SetupFlow.Models.Environments;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

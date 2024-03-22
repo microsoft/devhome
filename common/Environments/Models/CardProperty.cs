@@ -4,14 +4,11 @@
 using System;
 using System.Globalization;
 using System.IO;
-using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Helpers;
-using DevHome.Common.Services;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
-using Newtonsoft.Json.Linq;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;

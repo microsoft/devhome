@@ -1,14 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics.PerformanceData;
 using System.Runtime.InteropServices;
 using System.Text;
-using DevHome.Logging;
 using HyperVExtension.HostGuestCommunication;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
-using Windows.Foundation.Collections;
 
 namespace HyperVExtension.DevSetupAgent;
 
