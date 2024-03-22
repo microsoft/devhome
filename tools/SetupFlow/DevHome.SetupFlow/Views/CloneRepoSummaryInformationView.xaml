@@ -9,13 +9,13 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid HorizontalAlignment="Stretch">
+    <Grid RowSpacing="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.FileFoundMessage}" FontWeight="Bold" Margin="0, 0, 0, 5"/>
+        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.FileFoundMessage}" FontWeight="Bold"/>
         <TextBlock Grid.Row="1" Text="{x:Bind ViewModel.FileDescription, Mode=OneWay}" TextWrapping="Wrap"/>
 
         <!-- Keep spacing at 24 px.  Hyperlink buttons use their own padding values to keep the colume spacing consistent.-->
