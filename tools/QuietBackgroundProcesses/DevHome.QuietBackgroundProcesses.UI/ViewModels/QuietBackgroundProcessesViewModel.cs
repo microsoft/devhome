@@ -42,7 +42,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
 
     private string GetString(string id)
     {
-        var stringResource = new StringResource("DevHome.QuietBackgroundProcesses.UI/Resources");
+        var stringResource = new StringResource("DevHome.QuietBackgroundProcesses.UI.pri", "DevHome.QuietBackgroundProcesses.UI/Resources");
         return stringResource.GetLocalized(id);
     }
 

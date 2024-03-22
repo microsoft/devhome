@@ -27,7 +27,7 @@ public partial class PreferencesViewModel : ObservableObject
         _themeSelectorService = themeSelectorService;
         _elementTheme = _themeSelectorService.Theme;
 
-        var stringResource = new StringResource("DevHome.Settings/Resources");
+        var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
         Breadcrumbs = new ObservableCollection<Breadcrumb>
         {
             new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),

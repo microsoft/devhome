@@ -15,9 +15,9 @@ public class StringResource : IStringResource
         _resourceLoader = new ResourceLoader("HyperVExtension/Resources");
     }
 
-    public StringResource(string name)
+    public StringResource(string name, string path)
     {
-        _resourceLoader = new ResourceLoader(name);
+        _resourceLoader = new ResourceLoader(name, path);
     }
 
     /// <summary> Gets the localized string of a resource key.</summary>
