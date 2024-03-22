@@ -120,9 +120,8 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
         {
             // Handle the selected folder
             // TODO: If chosen folder not a dev drive location, currently we no-op. Instead we should display the error.
-            // Else make the changes.
             MoveDirectory(ExistingCacheLocation, directoryPath);
-            SetEnvironmentVariable("PIP_CACHE_DIR", directoryPath);
+            SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
         }
     }
 

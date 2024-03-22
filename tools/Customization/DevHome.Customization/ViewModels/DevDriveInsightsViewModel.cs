@@ -566,7 +566,7 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
                 var card = await _devDriveOptimizerViewModelFactory.CreateOptimizerCardViewModel(
                     "Pip cache (Python)",
                     existingPipCacheLocation,
-                    "D:\\packages\\pip\\cache" /*example location on dev drive to move cache to*/,
+                    "D:\\packages" + cacheSubDir /*example location on dev drive to move cache to*/,
                     environmentVariable /*environmentVariableToBeSet*/);
                 curOptimizerListViewModel.DevDriveOptimizerCardCollection.Add(card);
 
@@ -593,7 +593,7 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
                 var card = await _devDriveOptimizedViewModelFactory.CreateOptimizedCardViewModel(
                     "Pip cache (Python)",
                     movedPipCacheLocation,
-                    "PIP_CACHE_DIR" /*environmentVariableSet*/);
+                    environmentVariable);
                 curOptimizedListViewModel.DevDriveOptimizedCardCollection.Add(card);
 
                 AddOptimizedListViewModelToList(curOptimizedListViewModel);
