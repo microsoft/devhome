@@ -69,6 +69,7 @@ Dev Home currently has the following tools:
 - [Dashboard](./tools.md#dashboard-tool)
 - [Setup flow](./tools.md#setup-flow-tool)
 - Extensions
+- [Windows customization](../tools/Customization/DevHome.Customization/Customization.md)
 
 ## Extensions
 
