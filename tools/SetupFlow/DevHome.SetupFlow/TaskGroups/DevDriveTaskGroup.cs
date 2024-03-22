@@ -78,6 +78,8 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         }
     }
 
+    public IEnumerable<ISetupTask> DSCTasks => SetupTasks;
+
     public SetupPageViewModelBase GetSetupPageViewModel() => null;
 
     // Only show this tab when actually creating a dev drive

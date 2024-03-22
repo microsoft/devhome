@@ -29,6 +29,9 @@ public class AppManagementTaskGroup : ISetupTaskGroup
         .Where(sp => sp.CanInstall)
         .Select(sp => sp.InstallPackageTask);
 
+    public IEnumerable<ISetupTask> DSCTasks => _packageProvider.SelectedPackages
+        .Select(sp => sp.InstallPackageTask);
+
     public SetupPageViewModelBase GetSetupPageViewModel() => _appManagementViewModel;
 
     public ReviewTabViewModelBase GetReviewTabViewModel() => _appManagementReviewViewModel;

@@ -107,7 +107,7 @@ public class ConfigurationFileBuilder
     private List<WinGetConfigResource> GetResourcesForCloneTaskGroup(RepoConfigTaskGroup repoConfigGroup, ConfigurationFileKind configurationFileKind)
     {
         var listOfResources = new List<WinGetConfigResource>();
-        var repoConfigTasks = repoConfigGroup.SetupTasks
+        var repoConfigTasks = repoConfigGroup.DSCTasks
             .Where(task => task is CloneRepoTask)
             .Select(task => task as CloneRepoTask)
             .ToList();
@@ -136,7 +136,7 @@ public class ConfigurationFileBuilder
     private List<WinGetConfigResource> GetResourcesForAppManagementTaskGroup(AppManagementTaskGroup appManagementGroup, ConfigurationFileKind configurationFileKind)
     {
         var listOfResources = new List<WinGetConfigResource>();
-        var installList = appManagementGroup.SetupTasks
+        var installList = appManagementGroup.DSCTasks
             .Where(task => task is InstallPackageTask)
             .Select(task => task as InstallPackageTask)
             .ToList();

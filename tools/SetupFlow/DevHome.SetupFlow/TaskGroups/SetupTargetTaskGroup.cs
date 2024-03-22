@@ -54,6 +54,8 @@ public class SetupTargetTaskGroup : ISetupTaskGroup
 
     public IEnumerable<ISetupTask> SetupTasks => new List<ISetupTask>() { _setupTargetTaskGroup };
 
+    public IEnumerable<ISetupTask> DSCTasks { get; } = [];
+
     public SetupPageViewModelBase GetSetupPageViewModel() => _setupTargetViewModel;
 
     public ReviewTabViewModelBase GetReviewTabViewModel() => _setupTargetReviewViewModel;
