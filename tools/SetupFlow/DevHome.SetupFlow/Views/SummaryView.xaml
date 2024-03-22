@@ -119,7 +119,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Configuration unit results -->
-                    <Grid RowSpacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" >
+                    <Grid RowSpacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0, 1, 0, 2" >
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="*" />
@@ -206,7 +206,7 @@
                             HorizontalAlignment="Stretch" 
                             Padding="0,15,0,30"
                             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
+                            BorderThickness="0, 1, 0, 2">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"/>
