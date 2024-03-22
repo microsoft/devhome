@@ -29,21 +29,33 @@ public class ConfigurationFileBuilder
     /// <returns>The config file object representing the yaml file.</returns>
     public WinGetConfigFile BuildConfigFileObjectFromTaskGroups(IList<ISetupTaskGroup> taskGroups, ConfigurationFileKind configurationFileKind)
     {
-        var listOfResources = new List<WinGetConfigResource>();
-
+        List<WinGetConfigResource> repoResources = [];
+        List<WinGetConfigResource> appResources = [];
         foreach (var taskGroup in taskGroups)
         {
             if (taskGroup is RepoConfigTaskGroup repoConfigGroup)
             {
                 // Add the GitDSC resource blocks to yaml
-                listOfResources.AddRange(GetResourcesForCloneTaskGroup(repoConfigGroup, configurationFileKind));
+                repoResources.AddRange(GetResourcesForCloneTaskGroup(repoConfigGroup, configurationFileKind));
             }
             else if (taskGroup is AppManagementTaskGroup appManagementGroup)
             {
                 // Add the WinGetDsc resource blocks to yaml
-                listOfResources.AddRange(GetResourcesForAppManagementTaskGroup(appManagementGroup, configurationFileKind));
+                appResources.AddRange(GetResourcesForAppManagementTaskGroup(appManagementGroup, configurationFileKind));
             }
         }
+
+        // If Git is not added to the apps to install and there are
+        // repositories to clone, add Git as a pre-requisite
+        var isGitAdded = appResources
+            .Select(r => r.Settings as WinGetDscSettings)
+            .Any(s => s.Id == DscHelpers.GitWinGetPackageId);
+        if (!isGitAdded && repoResources.Count > 0)
+        {
+            appResources.Add(CreateWinGetInstallForGitPreReq());
+        }
+
+        List<WinGetConfigResource> listOfResources = [..appResources, ..repoResources];
 
         if (listOfResources.Count == 0)
         {
@@ -112,16 +124,15 @@ public class ConfigurationFileBuilder
             .Select(task => task as CloneRepoTask)
             .ToList();
 
-        if (repoConfigTasks.Count != 0)
-        {
-            listOfResources.Add(CreateWinGetInstallForGitPreReq());
-        }
-
         foreach (var repoConfigTask in repoConfigTasks)
         {
-            if (repoConfigTask.RepositoryToClone is GenericRepository genericRepository)
+            try
             {
-                listOfResources.Add(CreateResourceFromTaskForGitDsc(repoConfigTask, genericRepository.RepoUri, configurationFileKind));
+                listOfResources.Add(CreateResourceFromTaskForGitDsc(repoConfigTask, repoConfigTask.RepositoryToClone.RepoUri, configurationFileKind));
+            }
+            catch
+            {
+                // Fail to access repo OOP object
             }
         }
 
@@ -191,16 +202,13 @@ public class ConfigurationFileBuilder
     /// <returns>The WinGetConfigResource object that represents the block of yaml needed by GitDsc to clone the repository. </returns>
     private WinGetConfigResource CreateResourceFromTaskForGitDsc(CloneRepoTask task, Uri webAddress, ConfigurationFileKind configurationFileKind)
     {
-        // For normal cases, the Id will be null. This can be changed in the future when a use case for this Dsc File builder is needed outside the setup
-        // setup target flow. We can likely drop the if statement and just use whats in its body.
-        string id = null;
+        // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
+        // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
+        var id = $"Clone {task.RepositoryName}: {task.CloneLocation.FullName}";
         var gitDependsOnId = DscHelpers.GitWinGetPackageId;
 
         if (configurationFileKind == ConfigurationFileKind.SetupTarget)
         {
-            // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
-            // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
-            id = $"Clone {task.RepositoryName}" + ": " + task.CloneLocation.FullName;
             gitDependsOnId = $"{DscHelpers.GitWinGetPackageId} | Install: {DscHelpers.GitName}";
         }
 
