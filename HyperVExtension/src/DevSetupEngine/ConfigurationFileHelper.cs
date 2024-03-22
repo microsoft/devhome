@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Microsoft.Management.Configuration;
-using Microsoft.Management.Configuration.SetProcessorFactory;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.Foundation;
