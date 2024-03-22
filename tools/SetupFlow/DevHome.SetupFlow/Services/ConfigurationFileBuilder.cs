@@ -128,7 +128,10 @@ public class ConfigurationFileBuilder
         {
             try
             {
-                listOfResources.Add(CreateResourceFromTaskForGitDsc(repoConfigTask, repoConfigTask.RepositoryToClone.RepoUri, configurationFileKind));
+                if (!repoConfigTask.RepositoryToClone.IsPrivate)
+                {
+                    listOfResources.Add(CreateResourceFromTaskForGitDsc(repoConfigTask, repoConfigTask.RepositoryToClone.RepoUri, configurationFileKind));
+                }
             }
             catch
             {
