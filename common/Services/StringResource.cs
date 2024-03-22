@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Globalization;
-using Windows.ApplicationModel.Resources;
+using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace DevHome.Common.Services;
 
