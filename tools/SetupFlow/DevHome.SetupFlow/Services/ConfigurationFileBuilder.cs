@@ -170,8 +170,16 @@ public class ConfigurationFileBuilder
         {
             Resource = DscHelpers.WinGetDscResource,
             Id = id,
-            Directives = new() { AllowPrerelease = true, Description = $"Installing {arguments.PackageId}" },
-            Settings = new WinGetDscSettings() { Id = arguments.PackageId, Source = DscHelpers.DscSourceNameForWinGet },
+            Directives = new()
+            {
+                AllowPrerelease = true,
+                Description = $"Installing {arguments.PackageId}",
+            },
+            Settings = new WinGetDscSettings()
+            {
+                Id = arguments.PackageId,
+                Source = arguments.CatalogName,
+            },
         };
     }
 
