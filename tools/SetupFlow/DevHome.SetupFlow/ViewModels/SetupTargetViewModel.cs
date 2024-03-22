@@ -2,10 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,13 +10,10 @@ using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.ViewModels;

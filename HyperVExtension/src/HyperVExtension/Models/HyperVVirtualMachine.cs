@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Data;
 using System.Globalization;
 using System.Management.Automation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using System.Threading;
 using HyperVExtension.Common;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.CommunicationWithGuest;

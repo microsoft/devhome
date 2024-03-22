@@ -10,7 +10,6 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.TaskGroups;

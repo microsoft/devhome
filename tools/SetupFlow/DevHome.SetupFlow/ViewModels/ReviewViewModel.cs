@@ -9,15 +9,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.SetupFlow.Common.Contracts;
-using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using Microsoft.Extensions.Hosting;
-
-using Projection::DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.ViewModels;
 

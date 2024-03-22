@@ -5,16 +5,12 @@ extern alias Projection;
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.WinUI;
-using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Renderers;
 using DevHome.Common.Views;
 using DevHome.Contracts.Services;
 using DevHome.Logging;
@@ -30,8 +26,6 @@ using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 using Windows.Storage;
-using Windows.Win32;
-using WinUIEx;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
