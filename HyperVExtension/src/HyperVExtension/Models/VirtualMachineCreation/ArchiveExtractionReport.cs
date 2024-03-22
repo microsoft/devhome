@@ -3,17 +3,20 @@
 
 namespace HyperVExtension.Models.VirtualMachineCreation;
 
-public class DownloadOperation : IOperationReport
+/// <summary>
+/// Represents an operation to extract an archive file.
+/// </summary>
+public sealed class ArchiveExtractionReport : IOperationReport
 {
-    public ReportKind ReportKind => ReportKind.Download;
+    public ReportKind ReportKind => ReportKind.ArchiveExtraction;
 
-    public string LocalizationKey => "DownloadInProgress";
+    public string LocalizationKey => "ExtractingFile";
 
     public ulong BytesReceived { get; private set; }
 
     public ulong TotalBytesToReceive { get; private set; }
 
-    public DownloadOperation(ulong bytesReceived, ulong totalBytesToReceive)
+    public ArchiveExtractionReport(ulong bytesReceived, ulong totalBytesToReceive)
     {
         BytesReceived = bytesReceived;
         TotalBytesToReceive = totalBytesToReceive;

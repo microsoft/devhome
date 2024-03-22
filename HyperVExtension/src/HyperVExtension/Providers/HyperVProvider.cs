@@ -89,12 +89,9 @@ public class HyperVProvider : IComputeSystemProvider
     {
         try
         {
-            if (JsonSerializer.Deserialize(inputJson, typeof(VMGalleryCreationUserInput)) is not VMGalleryCreationUserInput userInput)
-            {
-                throw new InvalidOperationException($"Failed to deserialize the input json {inputJson} to {nameof(VMGalleryCreationUserInput)} object.");
-            }
-
-            return _vmGalleryCreationOperationFactory(userInput);
+            var deserializedObject = JsonSerializer.Deserialize(inputJson, typeof(VMGalleryCreationUserInput));
+            var inputForGalleryOperation = deserializedObject as VMGalleryCreationUserInput ?? throw new InvalidOperationException($"Json deserialization failed for input Json: {inputJson}");
+            return _vmGalleryCreationOperationFactory(inputForGalleryOperation);
         }
         catch (Exception ex)
         {

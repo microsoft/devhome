@@ -419,17 +419,31 @@ properties:
         {
             var hyperVManager = TestHost!.GetService<IHyperVManager>();
             var virtualMachine = computeSystem as HyperVVirtualMachine;
-            var hardDisk = virtualMachine!.GetHardDrives().First();
-
-            // remove extracted VHD
-            File.Delete(hardDisk!.Path!);
             var temp = Path.GetTempPath();
-
-            // remove extracted archive
             var archiveFileExtension = Path.GetExtension(image.Disk.ArchiveRelativePath);
             var fileName = image.Disk.Hash.Split(":").Last();
             var archiveFilePath = Path.Combine(temp, $"{fileName}.{archiveFileExtension}");
-            File.Delete(archiveFilePath);
+
+            try
+            {
+                // remove extracted VHD file
+                var hardDisk = virtualMachine!.GetHardDrives().First();
+                File.Delete(hardDisk!.Path!);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to stop virtual machine with name VHD from default Hyper-V path: {ex}");
+            }
+
+            try
+            {
+                // remove archive file
+                File.Delete(archiveFilePath);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to remove archive file from {temp}  {virtualMachineName}: {ex}");
+            }
 
             // remove virtual machine
             hyperVManager.RemoveVirtualMachine(Guid.Parse(computeSystem.Id));
@@ -452,6 +466,10 @@ properties:
             var totalSizeOfDisk = response.Content.Headers.ContentLength ?? 0L;
             if (ulong.TryParse(imageList.Images[i].Requirements.DiskSpace, CultureInfo.InvariantCulture, out var requiredDiskSpace))
             {
+                // The Hype-V Quick Create feature in the Hyper-V Manager in Windows uses the size of the archive file and the size of the required disk space
+                // value in the VM gallery Json to determin the size of the download. We'll use the same logic here to determine the smallest size.
+                // I'm not sure why this is done in this way, but we'll do the same here. In the Quick Create window the 'Download' text shows the size of both
+                // the archive file to be downloaded and the required disk space value added together.
                 if ((requiredDiskSpace + (ulong)totalSizeOfDisk) < smallestSize)
                 {
                     smallestSize = requiredDiskSpace + (ulong)totalSizeOfDisk;

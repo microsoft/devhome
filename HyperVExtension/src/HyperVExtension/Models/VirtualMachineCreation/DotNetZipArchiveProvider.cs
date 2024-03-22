@@ -30,8 +30,7 @@ public sealed class DotNetZipArchiveProvider : IArchiveProvider
 
         var fileExtractionProgress = new Progress<long>(bytesCopied =>
         {
-            var percentage = (uint)(bytesCopied / (double)totalBytesToExtract * 100D);
-            progressProvider.Report(new ArchiveExtractionOperation((ulong)bytesCopied, (ulong)totalBytesToExtract));
+            progressProvider.Report(new ArchiveExtractionReport((ulong)bytesCopied, (ulong)totalBytesToExtract));
         });
 
         outputFileStream.SetLength(totalBytesToExtract);

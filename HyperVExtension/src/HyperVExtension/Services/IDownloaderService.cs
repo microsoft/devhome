@@ -17,7 +17,7 @@ public interface IDownloaderService
     /// <param name="sourceWebUri">The web uri that points to the location of the file</param>
     /// <param name="destinationFile">The file path that the downloaded file should be downloaded into</param>
     /// <param name="cancellationToken">A token that can allow the operation to be cancelled while it is running</param>
-    /// <returns>A wrapper for the DownloadOperation which contains the status of the operation</returns>
+    /// <returns>A Task to start the download operation <returns>
     public Task StartDownloadAsync(IProgress<IOperationReport> progressProvider, Uri sourceWebUri, string destinationFile, CancellationToken cancellationToken);
 
     /// <summary>

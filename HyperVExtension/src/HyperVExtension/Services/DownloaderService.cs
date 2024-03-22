@@ -35,7 +35,7 @@ public class DownloaderService : IDownloaderService
         var downloadProgress = new Progress<long>(bytesCopied =>
         {
             var percentage = (uint)(bytesCopied / (double)totalBytesToReceive * 100D);
-            progressProvider.Report(new DownloadOperation((ulong)bytesCopied, (ulong)totalBytesToReceive));
+            progressProvider.Report(new DownloadOperationReport((ulong)bytesCopied, (ulong)totalBytesToReceive));
         });
 
         await webFileStream.CopyToAsync(outputFileStream, downloadProgress, _transferBufferSize, cancellationToken);

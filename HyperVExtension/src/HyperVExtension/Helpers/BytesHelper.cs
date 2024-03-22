@@ -11,6 +11,8 @@ namespace HyperVExtension.Helpers;
 
 public static class BytesHelper
 {
+    private const int ByteToStringBufferSize = 16;
+
     public const decimal OneKbInBytes = 1ul << 10;
 
     public const decimal OneMbInBytes = 1ul << 20;
@@ -54,7 +56,7 @@ public static class BytesHelper
         unsafe
         {
             // 15 characters + null terminator.
-            var buffer = new string(' ', 16);
+            var buffer = new string(' ', ByteToStringBufferSize);
             fixed (char* tempPath = buffer)
             {
                 var result =
@@ -62,8 +64,8 @@ public static class BytesHelper
                         sizeInBytes,
                         SFBS_FLAGS.SFBS_FLAGS_TRUNCATE_UNDISPLAYED_DECIMAL_DIGITS,
                         tempPath,
-                        PInvoke.MAX_PATH);
-                if (result != 0)
+                        ByteToStringBufferSize);
+                if (result != HRESULT.S_OK)
                 {
                     // Fallback to using non localized version which is in english.
                     return ConvertFromBytes(sizeInBytes);
