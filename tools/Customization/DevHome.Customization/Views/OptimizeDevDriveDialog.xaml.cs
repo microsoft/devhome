@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Customization.CustomControls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
@@ -17,9 +18,30 @@ namespace DevHome.Customization.Views;
 
 public sealed partial class OptimizeDevDriveDialog : ContentDialog
 {
-    public OptimizeDevDriveDialog()
+    public OptimizeDevDriveDialog(string cacheToBeMoved, string existingCacheLocation, string environmentVariableToBeSet)
     {
         this.InitializeComponent();
+        CacheToBeMoved = cacheToBeMoved;
+        ExistingCacheLocation = existingCacheLocation;
+        EnvironmentVariableToBeSet = environmentVariableToBeSet;
+    }
+
+    public string CacheToBeMoved
+    {
+        get => (string)GetValue(CacheToBeMovedProperty);
+        set => SetValue(CacheToBeMovedProperty, value);
+    }
+
+    public string ExistingCacheLocation
+    {
+        get => (string)GetValue(ExistingCacheLocationProperty);
+        set => SetValue(ExistingCacheLocationProperty, value);
+    }
+
+    public string EnvironmentVariableToBeSet
+    {
+        get => (string)GetValue(EnvironmentVariableToBeSetProperty);
+        set => SetValue(EnvironmentVariableToBeSetProperty, value);
     }
 
     private async void OnBrowseButtonClick(object sender, RoutedEventArgs e)
@@ -99,7 +121,7 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
             // Handle the selected folder
             // TODO: If chosen folder not a dev drive location, currently we no-op. Instead we should display the error.
             // Else make the changes.
-            MoveDirectory("C:\\Users\\sodas\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\Local\\pip\\Cache", directoryPath);
+            MoveDirectory(ExistingCacheLocation, directoryPath);
             SetEnvironmentVariable("PIP_CACHE_DIR", directoryPath);
         }
     }
@@ -107,4 +129,8 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
     private void OnDirectoryInputCancelled(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
     }
+
+    private static readonly DependencyProperty CacheToBeMovedProperty = DependencyProperty.Register(nameof(CacheToBeMoved), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
+    private static readonly DependencyProperty ExistingCacheLocationProperty = DependencyProperty.Register(nameof(ExistingCacheLocation), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
+    private static readonly DependencyProperty EnvironmentVariableToBeSetProperty = DependencyProperty.Register(nameof(EnvironmentVariableToBeSet), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
 }

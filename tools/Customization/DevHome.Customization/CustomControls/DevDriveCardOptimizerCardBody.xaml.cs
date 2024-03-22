@@ -59,7 +59,7 @@ public sealed partial class DevDriveOptimizerCardBody : UserControl
     [RelayCommand]
     private async Task OptimizeDevDriveAsync()
     {
-        OptimizeDevDriveDialog = new OptimizeDevDriveDialog();
+        OptimizeDevDriveDialog = new OptimizeDevDriveDialog(CacheToBeMoved, ExistingCacheLocation, EnvironmentVariableToBeSet);
         OptimizeDevDriveDialog.XamlRoot = this.Content.XamlRoot;
         OptimizeDevDriveDialog.RequestedTheme = ActualTheme;
 
