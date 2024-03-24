@@ -18,43 +18,43 @@ public class DevHomeAdaptiveSettingsCardParser : IAdaptiveElementParser
     {
         var adaptiveSettingsCard = new DevHomeAdaptiveSettingsCard();
 
-        adaptiveSettingsCard.Id = inputJson.GetNamedString("id");
-        adaptiveSettingsCard.Description = inputJson.GetNamedString("Description");
-        adaptiveSettingsCard.Header = inputJson.GetNamedString("Header");
-        adaptiveSettingsCard.HeaderIcon = inputJson.GetNamedString("HeaderIcon");
-        adaptiveSettingsCard.ShouldShowActionItem = inputJson.GetNamedBoolean("ShouldShowActionItem");
-
         if (inputJson.ContainsKey("id"))
         {
             adaptiveSettingsCard.Id = inputJson.GetNamedString("id");
         }
 
-        if (inputJson.ContainsKey("Description"))
+        if (inputJson.ContainsKey("SettingsCardDescription"))
         {
             adaptiveSettingsCard.Description = inputJson.GetNamedString("Description");
         }
 
-        if (inputJson.ContainsKey("Header"))
+        if (inputJson.ContainsKey("SettingsCardHeader"))
         {
             adaptiveSettingsCard.Header = inputJson.GetNamedString("Header");
         }
 
-        if (inputJson.ContainsKey("HeaderIcon"))
+        if (inputJson.ContainsKey("SettingsCardHeaderIcon"))
         {
             adaptiveSettingsCard.HeaderIcon = inputJson.GetNamedString("HeaderIcon");
         }
 
-        if (inputJson.ContainsKey("ShouldShowActionItem"))
+        if (inputJson.ContainsKey("SettingsCardActionElement"))
         {
-            adaptiveSettingsCard.ShouldShowActionItem = inputJson.GetNamedBoolean("ShouldShowActionItem");
-        }
+            var actionElementJson = inputJson.GetNamedObject("SettingsCardActionElement");
+            var actionElementType = actionElementJson.GetNamedString("type");
 
-        if (inputJson.ContainsKey("ActionElement"))
-        {
-            var actionElementJson = inputJson.GetNamedObject("ActionElement");
-            adaptiveSettingsCard.ActionElement = (IDevHomeAdaptiveSettingsCardAction)actionParsers.Get("ActionElement").FromJson(actionElementJson, elementParsers, actionParsers, warnings);
+            if (string.Equals(actionElementType, DevHomeAdaptiveSettingsCardLaunchContentDialogButton.AdaptiveSettingsCardActionType, StringComparison.OrdinalIgnoreCase))
+            {
+                adaptiveSettingsCard.ActionElement = CreateLaunchContentDialogButton(actionElementJson, elementParsers, actionParsers, warnings);
+            }
         }
 
         return adaptiveSettingsCard;
+    }
+
+    private DevHomeAdaptiveSettingsCardLaunchContentDialogButton CreateLaunchContentDialogButton(JsonObject inputJson, AdaptiveElementParserRegistration elementParsers, AdaptiveActionParserRegistration actionParsers, IList<AdaptiveWarning> warnings)
+    {
+        var parser = actionParsers.Get(DevHomeAdaptiveSettingsCardLaunchContentDialogButton.AdaptiveSettingsCardActionType);
+        return (DevHomeAdaptiveSettingsCardLaunchContentDialogButton)parser.FromJson(inputJson, elementParsers, actionParsers, warnings);
     }
 }
