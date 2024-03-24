@@ -16,7 +16,7 @@ public class ItemsViewInputValue : IAdaptiveInputValue
 {
     private readonly ItemsView _itemsView;
 
-    public ItemsViewInputValue(AdaptiveChoiceSetInput input, ItemsView itemsView)
+    public ItemsViewInputValue(IAdaptiveInputElement input, ItemsView itemsView)
     {
         InputElement = input;
         _itemsView = itemsView;

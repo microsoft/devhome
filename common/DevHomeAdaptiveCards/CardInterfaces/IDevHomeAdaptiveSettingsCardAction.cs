@@ -13,15 +13,22 @@ namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
 public enum AdaptiveSettingsCardActionKind
 {
-    None,
+    Unknown,
     LaunchContentDialog,
 }
 
-public interface IAdaptiveSettingsCardAction : IAdaptiveActionElement
+public enum DevHomeAdaptiveSettingsCardActionControl
 {
-    public string ActionButtonText { get; set; }
+    Button,
+}
 
-    public AdaptiveSettingsCardActionKind ActionKind { get; set; }
+public interface IDevHomeAdaptiveSettingsCardAction : IAdaptiveActionElement
+{
+    public string ActionItemText { get; }
 
-    public void LaunchContentDialog(AdaptiveCardRenderer adaptiveCardRenderer, );
+    public AdaptiveSettingsCardActionKind ActionKind { get; }
+
+    public void InvokeAction(AdaptiveCardRenderer adaptiveCardRenderer, IAdaptiveCardElement element);
+
+    public void InvokeAction();
 }
