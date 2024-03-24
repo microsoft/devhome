@@ -3,13 +3,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
-using DevHome.Common.AdaptiveCardInputValues;
+using CommunityToolkit.WinUI.Controls;
+using DevHome.Common.DevHomeAdaptiveCards.CardModels;
+using DevHome.Common.DevHomeAdaptiveCards.InputValues;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Storage.Streams;
 
 namespace DevHome.Common.Renderers;
+
+public enum DevHomeChoiceSetKind
+{
+    Unknown,
+    ItemsViewChoiceSet,
+}
 
 /// <summary>
 /// Renders a list of expanded choice set items as an ItemsView
@@ -47,58 +58,67 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
 
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
-        var choiceSet = element as AdaptiveChoiceSetInput;
-
-        // We'll only allow this renderer to be used if the choice set is expanded.
-        // If it's not expanded, we'll just use the default renderer. (Note: expanded is visually a list of radio buttons)
-        // we'' use the custom renderer to show these as a list of items, instead of radio buttons.
-        if (choiceSet != null && choiceSet.ChoiceSetStyle == ChoiceSetStyle.Expanded)
+        if (element is DevHomeAdaptiveSettingsCardItemsViewChoiceSet choiceSet)
         {
-            if (choiceSet.Choices.Count != ListViewItemsForItemsView.Count)
-            {
-                throw new ArgumentException("The number of items in the choice set must match the number of items in the ItemsViewChoiceSet.");
-            }
-
-            // Check if the choice set is multi-select, and if it is make sure the ItemsView is set to allow multiple selection.
-            if (choiceSet.IsMultiSelect)
-            {
-                ChoiceSetItemsView.SelectionMode = ItemsViewSelectionMode.Multiple;
-            }
-
-            // Go through all the items in the choice set and make an item for each one.
-            for (var i = 0; i < choiceSet.Choices.Count; i++)
-            {
-                choiceSet.AdditionalProperties.TryGetValue("value", out var value);
-                ListViewItemsForItemsView.Add(new ListViewItem() { Content = _originalItems[i] });
-            }
-
-            // Set upp the ItemsSource for the ItemsView and add the input value to the context.
-            // the input value is used to get the current index of the items view in relation
-            // to the item in the choice set.
-            ChoiceSetItemsView.ItemsSource = ListViewItemsForItemsView;
-            context.AddInputValue(new ItemsViewInputValue(choiceSet, ChoiceSetItemsView), renderArgs);
-
-            // Return the ItemsView.
-            return ChoiceSetItemsView;
-        }
-
-        if (element is AdaptiveActionSet actionSet)
-        {
-            actionSet.Actions.ForEach(action =>
-            {
-                if (action is AdaptiveExecuteAction executeAction)
-                {
-                    LinkSubmitActionToCard(executeAction, context, renderArgs);
-                }
-                else if (action is AdaptiveSubmitAction submitAction)
-                {
-                    LinkSubmitActionToCard(submitAction, context, renderArgs);
-                }
-            });
+            return GetItemsViewElement(choiceSet, context, renderArgs);
         }
 
         // Use default render for all other cases.
         var renderer = new AdaptiveChoiceSetInputRenderer();
         return renderer.Render(element, context, renderArgs);
+    }
+
+    private ItemsView GetItemsViewElement(DevHomeAdaptiveSettingsCardItemsViewChoiceSet choiceSet, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
+    {
+        // Check if the choice set is multi-select, and if it is make sure the ItemsView is set to allow multiple selection.
+        if (choiceSet.IsMultiSelect)
+        {
+            ChoiceSetItemsView.SelectionMode = ItemsViewSelectionMode.Multiple;
+        }
+
+        // Go through all the items in the choice set and make an item for each one.
+        for (var i = 0; i < choiceSet.SettingsCards.Count; i++)
+        {
+            var communityToolKitCard = new SettingsCard();
+            var devHomeAdaptiveSettingsCard = choiceSet.SettingsCards[i];
+            communityToolKitCard.Description = devHomeAdaptiveSettingsCard.Description;
+            communityToolKitCard.Header = devHomeAdaptiveSettingsCard.Header;
+            communityToolKitCard.HeaderIcon = ConvertBase64StringToImageSource(devHomeAdaptiveSettingsCard.HeaderIcon);
+
+            ListViewItemsForItemsView.Add(new ListViewItem() { Content = communityToolKitCard });
+        }
+
+        // Set upp the ItemsSource for the ItemsView and add the input value to the context.
+        // the input value is used to get the current index of the items view in relation
+        // to the item in the choice set.
+        ChoiceSetItemsView.ItemsSource = ListViewItemsForItemsView;
+        context.AddInputValue(new ItemsViewInputValue(choiceSet, ChoiceSetItemsView), renderArgs);
+
+        // Return the ItemsView.
+        return ChoiceSetItemsView;
+    }
+
+    // convert base64 string to image that can be used in a imageIcon control
+    public static ImageIcon ConvertBase64StringToImageSource(string base64String)
+    {
+        var bytes = Convert.FromBase64String(base64String);
+        var bitmapImage = new BitmapImage();
+
+        using (var stream = new InMemoryRandomAccessStream())
+        {
+            using (var writer = new DataWriter(stream))
+            {
+                writer.WriteBytes(bytes);
+                writer.StoreAsync().GetAwaiter().GetResult();
+                writer.FlushAsync().GetAwaiter().GetResult();
+                writer.DetachStream();
+            }
+
+            stream.Seek(0);
+            bitmapImage.SetSource(stream);
+        }
+
+        var icon = new ImageIcon() { Source = bitmapImage };
+        return icon;
     }
 }
