@@ -7,7 +7,7 @@ using AdaptiveCards.Rendering.WinUI3;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.Common.AdaptiveCardInputValues;
+namespace DevHome.Common.DevHomeAdaptiveCards.InputValues;
 
 /// <summary>
 /// Represents the current value of an ItemsView input element.

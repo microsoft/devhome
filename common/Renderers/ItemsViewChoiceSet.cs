@@ -68,6 +68,7 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
             // Go through all the items in the choice set and make an item for each one.
             for (var i = 0; i < choiceSet.Choices.Count; i++)
             {
+                choiceSet.AdditionalProperties.TryGetValue("value", out var value);
                 ListViewItemsForItemsView.Add(new ListViewItem() { Content = _originalItems[i] });
             }
 
@@ -79,6 +80,21 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
 
             // Return the ItemsView.
             return ChoiceSetItemsView;
+        }
+
+        if (element is AdaptiveActionSet actionSet)
+        {
+            actionSet.Actions.ForEach(action =>
+            {
+                if (action is AdaptiveExecuteAction executeAction)
+                {
+                    LinkSubmitActionToCard(executeAction, context, renderArgs);
+                }
+                else if (action is AdaptiveSubmitAction submitAction)
+                {
+                    LinkSubmitActionToCard(submitAction, context, renderArgs);
+                }
+            });
         }
 
         // Use default render for all other cases.

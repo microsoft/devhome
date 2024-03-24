@@ -10,7 +10,9 @@ using Microsoft.UI.Xaml;
 namespace DevHome.Common.Renderers;
 
 /// <summary>
-/// Represents whether the action is visible or hidden in Dev Home's UI.
+/// Represents whether the adaptive card button in an action set should be visible or hidden in Dev Home's UI.
+/// Although adaptive cards can natively hide elements, this is used on the Dev Home side to hide the action set
+/// in cases where a page in Dev Home wants its own button to invoke the action in the adaptive card.
 /// </summary>
 public enum TopLevelCardActionSetVisibility
 {
@@ -19,7 +21,10 @@ public enum TopLevelCardActionSetVisibility
 }
 
 /// <summary>
-/// Represents the button at the top level of the card that will invoke the action.
+/// Represents a button in the top level action set in the adaptive card json.
+/// We'll provide guidance to adaptive card creators to put one or two actions in the top level action set.
+/// if they want to give Dev Home the ability to submit/execute their adaptive card button from 
+/// within Dev Home.
 /// </summary>
 public enum ActionButtonToInvoke
 {
@@ -88,9 +93,9 @@ public class DevHomeActionSet : IDevHomeActionRender
             if (_actionVisibility == TopLevelCardActionSetVisibility.Hidden)
             {
                 // the page in Dev Home does not want to show the action set in the card.
-                // but needed to link a button in Dev Home to the action. So we return null.
+                // but needed to link a button in Dev Home to the action. So we return null,
                 // so we don't render the action set. Invoking the button from Dev Home will
-                // then trigger the action in the adaptive card
+                // then trigger the action in the adaptive card.
                 return null;
             }
         }
