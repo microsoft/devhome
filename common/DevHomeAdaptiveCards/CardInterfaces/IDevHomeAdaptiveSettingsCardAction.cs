@@ -28,7 +28,5 @@ public interface IDevHomeAdaptiveSettingsCardAction : IAdaptiveActionElement
 
     public AdaptiveSettingsCardActionKind ActionKind { get; }
 
-    public void InvokeAction(AdaptiveCardRenderer adaptiveCardRenderer, IAdaptiveCardElement element);
-
     public void InvokeAction();
 }

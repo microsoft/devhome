@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
-public class DevHomeAdaptiveContentDialog : IDevHomeAdaptiveContentDialog
+public class DevHomeAdaptiveContentDialog : DevHomeAdaptiveCardElementBase, IDevHomeAdaptiveContentDialog
 {
     public string Title { get; set; } = string.Empty;
 
@@ -20,4 +20,9 @@ public class DevHomeAdaptiveContentDialog : IDevHomeAdaptiveContentDialog
     public string PrimaryButtonText { get; set; } = string.Empty;
 
     public string SecondaryButtonText { get; set; } = string.Empty;
+
+
+    public new string ElementTypeString { get; set; } = AdaptiveSettingsCardType;
+
+    public static string AdaptiveSettingsCardType => "DevHome.AdaptiveContentDialog";
 }

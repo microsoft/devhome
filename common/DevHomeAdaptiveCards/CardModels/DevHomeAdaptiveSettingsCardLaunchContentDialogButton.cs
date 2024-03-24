@@ -22,7 +22,7 @@ public class DevHomeAdaptiveSettingsCardLaunchContentDialogButton : DevHomeAdapt
     {
     }
 
-    public void InvokeAction(AdaptiveCardRenderer adaptiveCardRenderer, IAdaptiveCardElement element) => throw new NotImplementedException();
+    public IDevHomeAdaptiveContentDialog? ContentDialogAdaptiveCard { get; set; }
 
     public new string ActionTypeString { get; set; } = AdaptiveSettingsCardActionType;
 

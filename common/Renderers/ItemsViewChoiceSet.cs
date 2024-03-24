@@ -58,9 +58,10 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
 
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
-        if (element is DevHomeAdaptiveSettingsCardItemsViewChoiceSet choiceSet)
+        // As we add more types of choice sets, we can add more cases here.
+        if (element is DevHomeAdaptiveSettingsCardItemsViewChoiceSet settingsCardChoiceSet)
         {
-            return GetItemsViewElement(choiceSet, context, renderArgs);
+            return GetItemsViewElement(settingsCardChoiceSet, context, renderArgs);
         }
 
         // Use default render for all other cases.
@@ -68,19 +69,19 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
         return renderer.Render(element, context, renderArgs);
     }
 
-    private ItemsView GetItemsViewElement(DevHomeAdaptiveSettingsCardItemsViewChoiceSet choiceSet, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
+    private ItemsView GetItemsViewElement(DevHomeAdaptiveSettingsCardItemsViewChoiceSet settingsCardChoiceSet, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
         // Check if the choice set is multi-select, and if it is make sure the ItemsView is set to allow multiple selection.
-        if (choiceSet.IsMultiSelect)
+        if (settingsCardChoiceSet.IsMultiSelect)
         {
             ChoiceSetItemsView.SelectionMode = ItemsViewSelectionMode.Multiple;
         }
 
         // Go through all the items in the choice set and make an item for each one.
-        for (var i = 0; i < choiceSet.SettingsCards.Count; i++)
+        for (var i = 0; i < settingsCardChoiceSet.SettingsCards.Count; i++)
         {
             var communityToolKitCard = new SettingsCard();
-            var devHomeAdaptiveSettingsCard = choiceSet.SettingsCards[i];
+            var devHomeAdaptiveSettingsCard = settingsCardChoiceSet.SettingsCards[i];
             communityToolKitCard.Description = devHomeAdaptiveSettingsCard.Description;
             communityToolKitCard.Header = devHomeAdaptiveSettingsCard.Header;
             communityToolKitCard.HeaderIcon = ConvertBase64StringToImageSource(devHomeAdaptiveSettingsCard.HeaderIcon);
@@ -92,7 +93,7 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
         // the input value is used to get the current index of the items view in relation
         // to the item in the choice set.
         ChoiceSetItemsView.ItemsSource = ListViewItemsForItemsView;
-        context.AddInputValue(new ItemsViewInputValue(choiceSet, ChoiceSetItemsView), renderArgs);
+        context.AddInputValue(new ItemsViewInputValue(settingsCardChoiceSet, ChoiceSetItemsView), renderArgs);
 
         // Return the ItemsView.
         return ChoiceSetItemsView;
