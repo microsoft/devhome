@@ -93,20 +93,19 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <controls:SettingsCard Grid.Row="1" Header="{x:Bind CacheMoved, Mode=OneWay}">
-                            <controls:SettingsCard.Description>
-                                <TextBlock TextWrapping="Wrap" Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}">                            
-                                        <Run>The environment variable </Run>
-                                        <Run Text="{Binding Path=EnvironmentVariableSet, Mode=OneWay}" Foreground="PowderBlue"/>
-                                        <Run> is set to </Run>
-                                        <Run Text="{Binding Path=OptimizedCacheLocation, Mode=OneWay}" Foreground="PowderBlue"/>
-                                </TextBlock>
-                            </controls:SettingsCard.Description>
-                            <StackPanel Orientation="Horizontal">
-                                <FontIcon HorizontalAlignment="Left" Margin="-10" Glyph="&#xE73E;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                                <TextBlock Text="Optimized" Foreground="Green" />
+                        <Grid>
+                            <TextBlock Margin="0 15 0 5" Text = "{x:Bind CacheMoved, Mode=OneWay}"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 20 0 0">
+                                <FontIcon HorizontalAlignment="Left" Margin="0 0 5 0" Glyph="&#xE73E;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                                <TextBlock Margin="0 5 20 0" Text="Optimized" Foreground="Green" />
                             </StackPanel>
-                        </controls:SettingsCard>
+                        </Grid>
+                        <TextBlock Grid.Row="1" Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" Margin="0 -5 0 15">                            
+                            <Run>The environment variable </Run>
+                            <Run Text="{Binding Path=EnvironmentVariableSet, Mode=OneWay}" Foreground="PowderBlue"/>
+                            <Run> is set to </Run>
+                            <Run Text="{Binding Path=OptimizedCacheLocation, Mode=OneWay}" Foreground="PowderBlue"/>
+                        </TextBlock>
                     </Grid>
                 </ListViewItem>
             </DataTemplate>
@@ -210,8 +209,8 @@
                     SelectedItem="{x:Bind SelectedItem, Mode=OneWay}">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="SelectionChanged">
-                            <ic:InvokeCommandAction  
-                    Command="{Binding ContainerSelectionChangedCommand}"  
+                            <ic:InvokeCommandAction
+                    Command="{Binding ContainerSelectionChangedCommand}"
                     CommandParameter="{Binding SelectedItem, ElementName=DevDriveOptimizedList}"/>
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
