@@ -12,7 +12,7 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 
     RepositoryUriSupportResult::RepositoryUriSupportResult(winrt::hresult const& e, hstring const& diagnosticText)
     {
-        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), winrt::to_hstring("Something went wrong"), diagnosticText);
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), diagnosticText, diagnosticText);
         _IsSupported = false;
     }
 

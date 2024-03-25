@@ -14,7 +14,6 @@ using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.UI.Xaml.Controls;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.Services;
@@ -116,6 +115,8 @@ public partial class SetupFlowOrchestrator : ObservableObject
     public IEnumerable<SetupPageViewModelBase> SetupStepPages => FlowPages.Where(page => page.IsStepPage);
 
     public bool HasPreviousPage => _currentPageIndex > 0;
+
+    public bool IsMachineConfigurationInProgress => FlowPages.Count > 1;
 
     /// <summary>
     /// Gets or sets a value indicating whether the done button should be shown. When false, the cancel

@@ -8,7 +8,6 @@ using HyperVExtension.Helpers;
 using HyperVExtension.Models;
 using HyperVExtension.Services;
 using HyperVExtension.UnitTest.Mocks;
-using Moq;
 using TimeoutException = System.ServiceProcess.TimeoutException;
 
 namespace HyperVExtension.UnitTest.HyperVExtensionTests.Services;

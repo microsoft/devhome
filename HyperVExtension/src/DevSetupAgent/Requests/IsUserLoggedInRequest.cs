@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Diagnostics;
 using System.Security.Principal;
-using System.Text.Json.Nodes;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security.Authentication.Identity;

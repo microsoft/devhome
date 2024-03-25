@@ -66,10 +66,6 @@ public partial class DashboardView : ToolPage, IDisposable
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
 
-        ActualThemeChanged += OnActualThemeChanged;
-
-        Loaded += OnLoaded;
-
 #if DEBUG
         Loaded += AddResetButton;
 #endif
@@ -102,11 +98,8 @@ public partial class DashboardView : ToolPage, IDisposable
         return true;
     }
 
-    private async void OnActualThemeChanged(FrameworkElement sender, object args)
+    private async void HandleRendererUpdated(object sender, object args)
     {
-        // A different host config is used to render widgets (adaptive cards) in light and dark themes.
-        await Application.Current.GetService<IAdaptiveCardRenderingService>().UpdateHostConfig();
-
         // Re-render the widgets with the new theme and renderer.
         foreach (var widget in PinnedWidgets)
         {
@@ -114,9 +107,17 @@ public partial class DashboardView : ToolPage, IDisposable
         }
     }
 
-    private async void OnLoaded(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    private async Task OnLoadedAsync()
     {
+        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
         await InitializeDashboard();
+    }
+
+    [RelayCommand]
+    private void OnUnloaded()
+    {
+        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
     }
 
     private async Task InitializeDashboard()
@@ -358,11 +359,10 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     public async Task AddWidgetClickAsync()
     {
-        var dialog = new AddWidgetDialog(_dispatcher, ActualTheme)
+        var dialog = new AddWidgetDialog()
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
-            RequestedTheme = this.ActualTheme,
         };
 
         _ = await dialog.ShowAsync();

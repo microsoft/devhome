@@ -26,10 +26,19 @@
 
     <!--  Style (inc. the correct spacing) of a section header  -->
     <Style x:Key="SettingsSectionHeaderTextBlockStyle"
-               BasedOn="{StaticResource BodyStrongTextBlockStyle}"
-               TargetType="TextBlock">
+        BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+        TargetType="TextBlock">
         <Style.Setters>
             <Setter Property="Margin" Value="1,28,0,4" />
+        </Style.Setters>
+    </Style>
+
+    <Style
+        x:Key="SettingsSectionCaptionTextBlockStyle"
+        BasedOn="{StaticResource CaptionTextBlockStyle}"
+        TargetType="TextBlock">
+        <Style.Setters>
+            <Setter Property="Margin" Value="1,0,0,8" />
         </Style.Setters>
     </Style>
 

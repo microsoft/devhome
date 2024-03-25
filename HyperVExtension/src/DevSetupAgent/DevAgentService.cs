@@ -1,9 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using HyperVExtension.Telemetry;
-using Microsoft.Windows.AppLifecycle;
-
 namespace HyperVExtension.DevSetupAgent;
 
 /// <summary>

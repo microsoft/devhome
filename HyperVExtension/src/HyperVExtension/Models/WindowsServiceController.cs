@@ -3,7 +3,6 @@
 
 using System.ServiceProcess;
 using DevHome.Logging;
-using HyperVExtension.Services;
 
 namespace HyperVExtension.Models;
 
