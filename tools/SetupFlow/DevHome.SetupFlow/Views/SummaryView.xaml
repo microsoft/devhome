@@ -27,7 +27,7 @@
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter"  TrueValue="Collapsed" FalseValue="Visible" />
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
                     <ControlTemplate x:Key="LinksTemplate">
-                        <StackPanel Orientation="Vertical">
+                        <StackPanel>
                             <StackPanel.Resources>
                                 <Style TargetType="HyperlinkButton" BasedOn="{StaticResource TextBlockButtonStyle}"/>
                             </StackPanel.Resources>
@@ -47,6 +47,7 @@
                         <Setter Property="Margin" Value="0" />
                         <Setter Property="Padding" Value="0" />
                     </Style>
+                    <Thickness x:Key="TopLeftQuadrantThickness">0, 1, 0, 2</Thickness>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -119,7 +120,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Configuration unit results -->
-                    <Grid RowSpacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0, 1, 0, 2" >
+                    <Grid RowSpacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopLeftQuadrantThickness}" >
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="*" />
@@ -206,7 +207,7 @@
                             HorizontalAlignment="Stretch" 
                             Padding="0,15,0,30"
                             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="0, 1, 0, 2">
+                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"/>
@@ -260,7 +261,7 @@
                             HorizontalAlignment="Stretch" 
                             Padding="0,15,0,30"
                             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="0, 1, 0, 2">
+                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
                                 <ColumnDefinition Width="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>

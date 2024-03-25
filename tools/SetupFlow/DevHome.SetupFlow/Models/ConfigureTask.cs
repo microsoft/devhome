@@ -12,7 +12,6 @@ using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.Extensions.Hosting;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 using Windows.Storage;
@@ -51,8 +50,7 @@ public class ConfigureTask : ISetupTask
         ISetupFlowStringResource stringResource,
         IDesiredStateConfiguration dsc,
         StorageFile file,
-        Guid activityId,
-        IHost host)
+        Guid activityId)
     {
         _stringResource = stringResource;
         _dsc = dsc;

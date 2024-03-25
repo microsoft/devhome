@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
-using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.Windows;
 using Microsoft.UI.Xaml;
