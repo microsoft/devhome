@@ -133,7 +133,7 @@
 
         <!-- Search and sort -->
         <StackPanel Grid.Row="1" Orientation="Horizontal"
-                    MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="0,0,0,22">
+                    MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource HeaderMargin}">
             <!-- Search field -->
             <AutoSuggestBox x:Uid="SearchTextBox" x:Name="SearchTextBox" MinWidth="350" MinHeight="35" QueryIcon="Find">
                 <i:Interaction.Behaviors>
@@ -161,7 +161,7 @@
 
         <!-- Per VM/Compute System card -->
         <ScrollViewer Grid.Row="2" Style="{StaticResource EnvironmentScrollViewerStyle}">
-            <StackPanel>
+            <StackPanel Margin="{ThemeResource ContentPageMargin}">
                 <ListView
                     MaxWidth="{ThemeResource MaxPageContentWidth}"
                     ItemsSource="{x:Bind ViewModel.ComputeSystemsView}" SelectionMode="None"
