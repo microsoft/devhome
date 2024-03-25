@@ -29,7 +29,7 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
 {
     public ItemsView ChoiceSetItemsView { get; private set; } = new();
 
-    public List<ListViewItem> ListViewItemsForItemsView { get; private set; } = new();
+    public List<ItemContainer> ItemsContainerList { get; private set; } = new();
 
     public ItemsViewChoiceSet(DataTemplate itemsTemplate)
     {
@@ -70,14 +70,15 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
             communityToolKitCard.Description = devHomeAdaptiveSettingsCard.Description;
             communityToolKitCard.Header = devHomeAdaptiveSettingsCard.Header;
             communityToolKitCard.HeaderIcon = ConvertBase64StringToImageSource(devHomeAdaptiveSettingsCard.HeaderIcon);
-
-            ListViewItemsForItemsView.Add(new ListViewItem() { Content = communityToolKitCard });
+            var itemContainer = new ItemContainer();
+            itemContainer.Child = communityToolKitCard;
+            ItemsContainerList.Add(itemContainer);
         }
 
         // Set upp the ItemsSource for the ItemsView and add the input value to the context.
         // the input value is used to get the current index of the items view in relation
         // to the item in the choice set.
-        ChoiceSetItemsView.ItemsSource = ListViewItemsForItemsView;
+        ChoiceSetItemsView.ItemsSource = ItemsContainerList;
         context.AddInputValue(new ItemsViewInputValue(settingsCardChoiceSet, ChoiceSetItemsView), renderArgs);
 
         // Return the ItemsView.

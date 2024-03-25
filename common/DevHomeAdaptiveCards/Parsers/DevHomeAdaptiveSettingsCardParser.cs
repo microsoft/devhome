@@ -23,24 +23,24 @@ public class DevHomeAdaptiveSettingsCardParser : IAdaptiveElementParser
             adaptiveSettingsCard.Id = inputJson.GetNamedString("id");
         }
 
-        if (inputJson.ContainsKey("SettingsCardDescription"))
+        if (inputJson.ContainsKey("Description"))
         {
             adaptiveSettingsCard.Description = inputJson.GetNamedString("Description");
         }
 
-        if (inputJson.ContainsKey("SettingsCardHeader"))
+        if (inputJson.ContainsKey("Header"))
         {
             adaptiveSettingsCard.Header = inputJson.GetNamedString("Header");
         }
 
-        if (inputJson.ContainsKey("SettingsCardHeaderIcon"))
+        if (inputJson.ContainsKey("HeaderIcon"))
         {
             adaptiveSettingsCard.HeaderIcon = inputJson.GetNamedString("HeaderIcon");
         }
 
-        if (inputJson.ContainsKey("SettingsCardActionElement"))
+        if (inputJson.ContainsKey("ActionElement"))
         {
-            var actionElementJson = inputJson.GetNamedObject("SettingsCardActionElement");
+            var actionElementJson = inputJson.GetNamedObject("ActionElement");
             var actionElementType = actionElementJson.GetNamedString("type");
 
             if (string.Equals(actionElementType, DevHomeAdaptiveSettingsCardLaunchContentDialogButton.AdaptiveSettingsCardActionType, StringComparison.OrdinalIgnoreCase))
