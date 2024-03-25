@@ -9,13 +9,13 @@ All strings shown to the user must be localized. The `StringResource` service pr
 The project you are working in should have a directory under `Strings\en-us`, containing a file called `Resources.resw`.
 If it does not, see [Writing a tool](../tools.md#writing-a-tool).
 For information about adding strings to this file, refer to 
-[Store strings in a resources file](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/mrtcore/localize-strings#store-strings-in-a-resources-file).
+[Store strings in a resources file](https://learn.microsoft.com/windows/apps/windows-app-sdk/mrtcore/localize-strings#store-strings-in-a-resources-file).
 Dev Home will take care of getting localized versions of these strings.
 
 ### Referencing your localized string from XAML
 
 To learn how to reference your string from XAML, see 
-[Refer to a string resource identifier from XAML](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/mrtcore/localize-strings#refer-to-a-string-resource-identifier-from-xaml).
+[Refer to a string resource identifier from XAML](https://learn.microsoft.com/windows/apps/windows-app-sdk/mrtcore/localize-strings#refer-to-a-string-resource-identifier-from-xaml).
 
 ### Referencing your localized string from code
 
@@ -24,7 +24,7 @@ You can obtain a reference to the StringResource service with the following code
 ```cs
 var stringResource = new StringResource("<your_project_name>.pri", "<your_project_name>/Resources");
 ```
-For example, the DevHome.Settings project woud use
+For example, the DevHome.Settings project would use
 ```cs
 var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
 ```
