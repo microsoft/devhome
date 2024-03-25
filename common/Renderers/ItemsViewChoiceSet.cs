@@ -27,33 +27,18 @@ public enum DevHomeChoiceSetKind
 /// </summary>
 public class ItemsViewChoiceSet : IAdaptiveElementRenderer
 {
-    /// <summary>
-    /// The DataTemplate to be used for the ItemsView. This will be used to allow consumers to specify how the items
-    /// look within the ItemsView.
-    /// </summary>
-    private readonly DataTemplate _itemsTemplate;
-
-    /// <summary>
-    /// The items to be displayed in the ItemsView. The items are objects which will be used as the Content
-    /// of the ListViewItems we add to the ItemsView. The datatemplate should use Binding to display values from
-    /// these objects.
-    /// </summary>
-    /// <remarks>
-    /// The order of the items in this list will should be the same order as the items in the choice set.
-    /// </remarks>
-    private readonly List<object> _originalItems;
-
     public ItemsView ChoiceSetItemsView { get; private set; } = new();
 
     public List<ListViewItem> ListViewItemsForItemsView { get; private set; } = new();
 
-    public ItemsViewChoiceSet(DataTemplate itemsTemplate, List<object> objectList)
+    public ItemsViewChoiceSet(DataTemplate itemsTemplate)
     {
-        _itemsTemplate = itemsTemplate;
-        _originalItems = objectList;
-
         // set the template for the items view.
-        ChoiceSetItemsView.ItemTemplate = _itemsTemplate;
+        ChoiceSetItemsView.ItemTemplate = itemsTemplate;
+    }
+
+    public ItemsViewChoiceSet()
+    {
     }
 
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)

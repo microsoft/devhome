@@ -6,6 +6,9 @@
     xmlns:local="using:DevHome.SetupFlow.Views.Environments"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:setupControls="using:DevHome.SetupFlow.Controls"
+    Loaded="ViewLoaded"
+    Unloaded="ViewUnloaded"
     mc:Ignorable="d">
 
     <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}">

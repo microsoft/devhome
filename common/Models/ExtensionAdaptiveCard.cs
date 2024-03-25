@@ -12,6 +12,10 @@ namespace DevHome.Common.Models;
 
 public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 {
+    private readonly AdaptiveElementParserRegistration? _elementParserRegistration;
+
+    private readonly AdaptiveActionParserRegistration? _actionParserRegistration;
+
     public event EventHandler<AdaptiveCard>? UiUpdate;
 
     public string DataJson { get; private set; }
@@ -27,6 +31,13 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
         State = string.Empty;
     }
 
+    public ExtensionAdaptiveCard(AdaptiveElementParserRegistration elementParserRegistration, AdaptiveActionParserRegistration actionParserRegistration)
+        : this()
+    {
+        _elementParserRegistration = elementParserRegistration;
+        _actionParserRegistration = actionParserRegistration;
+    }
+
     public ProviderOperationResult Update(string templateJson, string dataJson, string state)
     {
         var template = new AdaptiveCardTemplate(templateJson ?? TemplateJson);
@@ -36,7 +47,16 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
         // an empty string.
         var adaptiveCardString = template.Expand(Newtonsoft.Json.JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(dataJson ?? DataJson));
 
-        var parseResult = AdaptiveCard.FromJsonString(adaptiveCardString);
+        AdaptiveCardParseResult parseResult;
+
+        if (_actionParserRegistration != null && _elementParserRegistration != null)
+        {
+            parseResult = AdaptiveCard.FromJsonString(adaptiveCardString, _elementParserRegistration, _actionParserRegistration);
+        }
+        else
+        {
+            parseResult = AdaptiveCard.FromJsonString(adaptiveCardString);
+        }
 
         if (parseResult.AdaptiveCard is null)
         {

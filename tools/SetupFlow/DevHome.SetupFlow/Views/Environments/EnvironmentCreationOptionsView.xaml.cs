@@ -27,4 +27,17 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl
     {
         this.InitializeComponent();
     }
+
+    private void ViewLoaded(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel != null && ViewModel.ExtensionAdaptiveCardPanel != null)
+        {
+            CreationAdaptiveCardUI.Content = ViewModel.ExtensionAdaptiveCardPanel;
+        }
+    }
+
+    private void ViewUnloaded(object sender, RoutedEventArgs e)
+    {
+        CreationAdaptiveCardUI.Content = null;
+    }
 }

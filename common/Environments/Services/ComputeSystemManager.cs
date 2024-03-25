@@ -95,7 +95,7 @@ public class ComputeSystemManager : IComputeSystemManager
         ComputeSystemStateChanged(sender, state);
     }
 
-    public void Receive(CreationOperationRetrievedMessage message)
+    public void Receive(CreationOperationReceivedMessage message)
     {
         _createComputeSystemOperations.Add(message.Value);
     }

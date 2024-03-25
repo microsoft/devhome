@@ -27,11 +27,11 @@ public class DevHomeAdaptiveSettingsCardItemsViewChoiceSet : DevHomeAdaptiveCard
     public string Label { get; set; } = string.Empty;
 
     // Specific properties for DevHomeAdaptiveSettingsCardItemsViewChoiceSet
-    public IList<DevHomeAdaptiveSettingsCard> SettingsCards { get; } = [];
+    public IList<DevHomeAdaptiveSettingsCard> SettingsCards { get; set; } = [];
 
     public bool IsMultiSelect { get; set; }
 
     public string GroupDescription { get; set; } = string.Empty;
 
-    public string SelectedValue { get; set; } = string.Empty;
+    public int SelectedValue { get; set; } = -1;
 }

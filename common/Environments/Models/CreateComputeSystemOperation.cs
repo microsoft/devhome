@@ -7,13 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Windows.DevHome.SDK;
-using DevHome.Common.Helpers;
-using Windows.Foundation;
-using DevHome.Common.Environments.Helpers;
-using CommunityToolkit.Mvvm.Messaging;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.Mvvm.Messaging;
+using DevHome.Common.Environments.Helpers;
+using DevHome.Common.Helpers;
 using DevHome.SetupFlow.Models.Environments;
+using Microsoft.Windows.DevHome.SDK;
+using Windows.Foundation;
 
 namespace DevHome.Common.Environments.Models;
 

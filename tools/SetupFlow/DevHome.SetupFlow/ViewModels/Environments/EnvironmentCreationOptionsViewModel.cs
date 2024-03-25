@@ -6,9 +6,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Messaging;
+using DevHome.Common.DevHomeAdaptiveCards.CardModels;
+using DevHome.Common.DevHomeAdaptiveCards.Parsers;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Models;
+using DevHome.Common.Renderers;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
 using DevHome.Contracts.Services;
@@ -36,6 +41,12 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
 
     public ExtensionAdaptiveCardPanel ExtensionAdaptiveCardPanel { get; private set; }
 
+    public ExtensionAdaptiveCardSession ExtensionAdaptiveCardSession { get; private set; }
+
+    public AdaptiveElementParserRegistration ElementRegistration { get; set; } = new();
+
+    public AdaptiveActionParserRegistration ActionRegistration { get; set; } = new();
+
     public string ResultJson { get; private set; }
 
     public EnvironmentCreationOptionsViewModel(
@@ -52,8 +63,16 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
         // Register for changes to the selected provider. This will be triggered when the user selects a provider.
         // from the SelectEnvironmentProviderViewModel. This is a weak reference so that the recipient can be garbage collected.
         WeakReferenceMessenger.Default.Register<CreationProviderChangedMessage>(this);
+
+        // Register to receive the CreationOptionsReviewPageRequestMessage so that we can populate the review page with the current
+        // adaptive card information.
+        WeakReferenceMessenger.Default.Register<EnvironmentCreationOptionsViewModel, CreationOptionsReviewPageRequestMessage>(this, OnReviewPageRequestReceived);
+
         _themeSelectorService = themeSelectorService;
         _themeSelectorService.ThemeChanged += OnThemeChanged;
+
+        // register the supported element and action parsers
+        RegisterAllSupportedDevHomeParsers();
     }
 
     public void Receive(CreationProviderChangedMessage message)
@@ -64,10 +83,9 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
 
     private void OnEndSetupFlow(object sender, EventArgs e)
     {
-        WeakReferenceMessenger.Default.Unregister<CreationProviderChangedMessage>(this);
+        WeakReferenceMessenger.Default.UnregisterAll(this);
         _setupFlowViewModel.EndSetupFlow -= OnEndSetupFlow;
     }
-
 
     /// <summary>
     /// Make sure we only get the list of ComputeSystems from the ComputeSystemManager once when the page is first navigated to.
@@ -82,15 +100,14 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
         {
             CurProviderDetails = UpcomingProviderDetails;
             CurAdaptiveCardRenderer = UpcomingAdaptiveCardRenderer;
+            UpdateExtensionAdaptiveCardPanel();
         }
     }
 
     /// <summary>
     /// Gets and configures the UI to show to the user for logging them in.
     /// </summary>
-    /// <param name="elementTheme">The theme to use.</param>
-    /// <returns>The adaptive panel to show to the user.  Can be null.</returns>
-    public ExtensionAdaptiveCardPanel GetAndUpdateExtensionAdaptiveCardPanel()
+    public void UpdateExtensionAdaptiveCardPanel()
     {
         try
         {
@@ -99,24 +116,27 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
             if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
             {
                 GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
-                return null;
+                return;
             }
 
-            var creationSession = adaptiveCardSessionResult.ComputeSystemCardSession;
+            if (ExtensionAdaptiveCardSession != null)
+            {
+                ExtensionAdaptiveCardSession.Stopped -= OnAdaptiveCardSessionStopped;
+            }
+
+            ExtensionAdaptiveCardSession = new ExtensionAdaptiveCardSession(adaptiveCardSessionResult.ComputeSystemCardSession);
+            ExtensionAdaptiveCardSession.Stopped += OnAdaptiveCardSessionStopped;
+            CurAdaptiveCardRenderer.ElementRenderers.Set(DevHomeAdaptiveSettingsCardItemsViewChoiceSet.AdaptiveSettingsCardType, new ItemsViewChoiceSet());
             CurAdaptiveCardRenderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
 
             ExtensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
-            ExtensionAdaptiveCardPanel.Bind(creationSession, CurAdaptiveCardRenderer);
+            ExtensionAdaptiveCardPanel.Bind(ExtensionAdaptiveCardSession.Session, CurAdaptiveCardRenderer, ElementRegistration, ActionRegistration);
             ExtensionAdaptiveCardPanel.RequestedTheme = _themeSelectorService.GetActualTheme();
-
-            return ExtensionAdaptiveCardPanel;
         }
         catch (Exception ex)
         {
             GlobalLog.Logger?.ReportError($"GetAndUpdateExtensionAdaptiveCardPanel(): getting creation adaptive card failed.", ex);
         }
-
-        return null;
     }
 
     private void OnThemeChanged(object sender, ElementTheme elementTheme)
@@ -125,5 +145,26 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
         {
             ExtensionAdaptiveCardPanel.RequestedTheme = elementTheme;
         }
+    }
+
+    private void OnReviewPageRequestReceived(EnvironmentCreationOptionsViewModel recipient, CreationOptionsReviewPageRequestMessage message)
+    {
+        message.Reply(new CreationOptionsReviewPageRequestData(ExtensionAdaptiveCardPanel));
+    }
+
+    private void OnAdaptiveCardSessionStopped(ExtensionAdaptiveCardSession sender, ExtensionAdaptiveCardSessionStoppedEventArgs args)
+    {
+        ResultJson = args.ResultJson;
+
+        // Send message to the EnvironmentCreationOptionsTaskGroup to let it know that the adaptive card session has ended.
+        // the task group will use the ResultJson to create the compute system.
+        WeakReferenceMessenger.Default.Send(new CreationAdaptiveCardSessionEndedMessage(new CreationAdaptiveCardSessionEndedData(ResultJson, CurProviderDetails)));
+        sender.Stopped -= OnAdaptiveCardSessionStopped;
+    }
+
+    private void RegisterAllSupportedDevHomeParsers()
+    {
+        ElementRegistration.Set(DevHomeAdaptiveSettingsCard.AdaptiveSettingsCardType, new DevHomeAdaptiveSettingsCardParser());
+        ElementRegistration.Set(DevHomeAdaptiveSettingsCardItemsViewChoiceSet.AdaptiveSettingsCardType, new DevHomeAdaptiveSettingsCardItemsViewChoiceSetParser());
     }
 }
