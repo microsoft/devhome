@@ -31,5 +31,6 @@ var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Setting
 
 Then, to get a specific string, use `StringResource.GetLocalized()`.
 ```cs
+// Here, MyString is the "Name" of the string to be localized that you specified in the Resources.resw file
 var str = stringResource.GetLocalized("MyString");
 ```
