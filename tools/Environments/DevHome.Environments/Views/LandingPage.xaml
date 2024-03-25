@@ -39,10 +39,10 @@
                         Command="{x:Bind LaunchActionCommand}"
                         x:Uid="ms-resource:///DevHome.Environments/Resources/LaunchButton"
                         Style="{StaticResource CardBodySplitButtonStyle}">
-                        <SplitButton.Flyout>
-                            <customControls:CardFlyout ItemsViewModels="{x:Bind LaunchOperations}"/>
-                        </SplitButton.Flyout>
-                    </SplitButton>
+                    <SplitButton.Flyout>
+                        <customControls:CardFlyout ItemsViewModels="{x:Bind LaunchOperations}"/>
+                    </SplitButton.Flyout>
+                </SplitButton>
             </DataTemplate>
 
             <!-- Three Dot Button template -->
@@ -99,22 +99,23 @@
                 </Grid>
             </DataTemplate>
 
-        <!-- Shimmer template from SetupFlow/SetupTargetView.xaml -->
-        <DataTemplate x:Key="ComputeSystemLoadingTemplate">
-            <ListView
-                SelectionMode="None"
-                ItemTemplate="{StaticResource HorizontalCardRootShimmerTemplate}"
-                ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
-                <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
-                <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
-            </ListView>
-        </DataTemplate>
+            <!-- Shimmer template from SetupFlow/SetupTargetView.xaml -->
+            <DataTemplate x:Key="ComputeSystemLoadingTemplate">
+                <ListView
+                    SelectionMode="None"
+                    ItemTemplate="{StaticResource HorizontalCardRootShimmerTemplate}"
+                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
+                    <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
+                    <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
+                </ListView>
+            </DataTemplate>
 
         </Grid.Resources>
         <!-- Templates end here -->
 
 
-        <Grid Grid.Row="0" Margin="0,0,0,22" x:Name="TitleGrid">
+        <Grid Grid.Row="0" x:Name="TitleGrid"
+              MaxWidth="{ThemeResource MaxPageContentWidth}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
@@ -129,51 +130,50 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <!-- Search field -->
-            <AutoSuggestBox  Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="250" Margin="17 0 0 0" HorizontalAlignment="Left">
-                <i:Interaction.Behaviors>
-                    <ic:EventTriggerBehavior EventName="TextChanged">
-                        <ic:InvokeCommandAction
+                <!-- Search field -->
+                <AutoSuggestBox Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="250" Margin="17 0 0 0" HorizontalAlignment="Left">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="TextChanged">
+                            <ic:InvokeCommandAction
                             Command="{x:Bind ViewModel.SearchHandlerCommand, Mode=OneWay}"
                             CommandParameter="{Binding Text, ElementName=SearchTextBox}"/>
-                    </ic:EventTriggerBehavior>
-                </i:Interaction.Behaviors>
-            </AutoSuggestBox>
-            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                <!-- Provider field -->
-                <TextBlock x:Uid="ProviderTextBlock" VerticalAlignment="Center" Margin="50 0 5 0"/>
-                <ComboBox x:Uid="ProviderSelectionComboBox" x:Name="ProviderSelectionComboBox" Margin="0 3 5 0"
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </AutoSuggestBox>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <!-- Provider field -->
+                    <TextBlock x:Uid="ProviderTextBlock" VerticalAlignment="Center" Margin="50 0 5 0"/>
+                    <ComboBox x:Uid="ProviderSelectionComboBox" x:Name="ProviderSelectionComboBox" Margin="0 3 5 0"
                           ItemsSource="{x:Bind ViewModel.Providers}" SelectedIndex="{x:Bind ViewModel.SelectedProviderIndex, Mode=TwoWay}">
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="SelectionChanged">
-                            <ic:InvokeCommandAction Command="{x:Bind ViewModel.ProviderHandlerCommand}" />
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </ComboBox>
-                <!-- Sort field -->
-                <TextBlock x:Uid="SortByTextBlock" VerticalAlignment="Center" Margin="10 0 5 0"/>
-                <ComboBox x:Uid="SortSelectionComboBox" x:Name="SortSelectionComboBox" Margin="0 3 13 0"
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="SelectionChanged">
+                                <ic:InvokeCommandAction Command="{x:Bind ViewModel.ProviderHandlerCommand}" />
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </ComboBox>
+                    <!-- Sort field -->
+                    <TextBlock x:Uid="SortByTextBlock" VerticalAlignment="Center" Margin="10 0 5 0"/>
+                    <ComboBox x:Uid="SortSelectionComboBox" x:Name="SortSelectionComboBox" Margin="0 3 13 0"
                           SelectedIndex="{x:Bind ViewModel.SelectedSortIndex, Mode=TwoWay}">
-                    <ComboBoxItem x:Uid="SortByName"/>
-                    <ComboBoxItem x:Uid="SortByNameDesc"/>
-                    <ComboBoxItem x:Uid="SortByAltName"/>
-                    <ComboBoxItem x:Uid="SortByAltNameDesc"/>
-                    <ComboBoxItem x:Uid="SortByLastConnected"/>
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="SelectionChanged">
-                            <ic:InvokeCommandAction Command="{x:Bind ViewModel.SortHandlerCommand}"/>
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </ComboBox>
-                <!--  'Sync' button -->
-    <!-- ToDo: Revisit after confirming glyphs to be used -->
-                <Button Padding="40 5 30 8" Command="{x:Bind ViewModel.SyncButtonCommand}" Margin="0 3 13 0">
-                    <StackPanel Orientation="Horizontal">
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
-                        <TextBlock x:Uid="SyncButtonTextBlock" Margin="8 0 0 0"/>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
+                        <ComboBoxItem x:Uid="SortByName"/>
+                        <ComboBoxItem x:Uid="SortByNameDesc"/>
+                        <ComboBoxItem x:Uid="SortByAltName"/>
+                        <ComboBoxItem x:Uid="SortByAltNameDesc"/>
+                        <ComboBoxItem x:Uid="SortByLastConnected"/>
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="SelectionChanged">
+                                <ic:InvokeCommandAction Command="{x:Bind ViewModel.SortHandlerCommand}"/>
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </ComboBox>
+                    <!--  'Sync' button -->
+                    <Button Padding="40 5 30 8" Command="{x:Bind ViewModel.SyncButtonCommand}" Margin="0 3 13 0">
+                        <StackPanel Orientation="Horizontal">
+                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
+                            <TextBlock x:Uid="SyncButtonTextBlock" Margin="8 0 0 0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
         </Grid>
 
         <!-- Last synced text block-->
@@ -190,8 +190,9 @@
         <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}">
             <StackPanel>
                 <ListView
-                    ItemsSource="{x:Bind ViewModel.ComputeSystemsView}" SelectionMode="None"
-                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
+                      MaxWidth="{ThemeResource MaxPageContentWidth}"
+                      ItemsSource="{x:Bind ViewModel.ComputeSystemsView}" SelectionMode="None"
+                      ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel></StackPanel>

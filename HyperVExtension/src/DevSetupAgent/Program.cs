@@ -3,7 +3,6 @@
 
 using System.Runtime.InteropServices;
 using HyperVExtension.DevSetupAgent;
-using Microsoft.Windows.DevHome.DevSetupEngine;
 using Windows.Win32;
 using Windows.Win32.Security;
 using Windows.Win32.System.Com;

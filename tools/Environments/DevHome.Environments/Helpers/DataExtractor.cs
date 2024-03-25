@@ -1,20 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Runtime.Intrinsics.Arm;
-using System.Threading.Tasks;
-using CommunityToolkit.WinUI.Animations;
 using DevHome.Common.Environments.Models;
 using DevHome.Environments.ViewModels;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
 
 namespace DevHome.Environments.Helpers;
 

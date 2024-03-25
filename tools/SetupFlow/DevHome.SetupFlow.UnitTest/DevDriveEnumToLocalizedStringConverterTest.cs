@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Linq;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.Utilities;
 
 namespace DevHome.SetupFlow.UnitTest;

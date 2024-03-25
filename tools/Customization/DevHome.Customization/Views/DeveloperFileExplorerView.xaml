@@ -1,0 +1,29 @@
+<UserControl
+    x:Class="DevHome.Customization.Views.DeveloperFileExplorerView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <StackPanel>
+        <controls:SettingsCard x:Uid="ShowFileExtensionsCard">
+            <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.ShowFileExtensions, Mode=TwoWay}" />
+        </controls:SettingsCard>
+        <controls:SettingsCard x:Uid="ShowHiddenAndSystemFilesCard">
+            <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.ShowHiddenAndSystemFiles, Mode=TwoWay}" />
+        </controls:SettingsCard>
+        <controls:SettingsCard x:Uid="ShowFullPathInTitleBarCard">
+            <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.ShowFullPathInTitleBar, Mode=TwoWay}" />
+        </controls:SettingsCard>
+        <controls:SettingsCard x:Uid="ShowFilesAfterExtractCard">
+            <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.ShowFilesAfterExtraction, Mode=TwoWay}" />
+        </controls:SettingsCard>
+        <controls:SettingsCard x:Uid="ShowEmptyDrivesCard">
+            <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.ShowEmptyDrives, Mode=TwoWay}" />
+        </controls:SettingsCard>
+        <controls:SettingsCard x:Uid="EndTaskOnTaskBar">
+            <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.EndTaskOnTaskBarEnabled, Mode=TwoWay}" />
+        </controls:SettingsCard>
+    </StackPanel>
+</UserControl>

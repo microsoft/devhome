@@ -11,6 +11,7 @@ public static class PageExtensions
 {
     public static void ConfigureExtensionLibraryPages(this IPageService pageService)
     {
+        pageService.Configure<ExtensionLibraryViewModel, ExtensionLibraryView>();
         pageService.Configure<ExtensionSettingsViewModel, ExtensionSettingsPage>();
     }
 }

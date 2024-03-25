@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using HyperVExtension.Common;
-using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Services;
 using Microsoft.Windows.DevHome.SDK;
