@@ -2,8 +2,6 @@
     x:Class="DevHome.Environments.Views.LandingPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pg="using:DevHome.Common"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:vm="using:DevHome.Environments.ViewModels"
@@ -14,7 +12,6 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-    mc:Ignorable="d"
     Loaded="OnLoaded">
 
     <pg:ToolPage.Resources>
@@ -124,14 +121,14 @@
             <TextBlock Grid.Column="0" x:Uid="Titlebar" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Left" x:Name="Titlebar"/>
         </Grid>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="10*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
                 <!-- Search field -->
-                <AutoSuggestBox Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="250" Margin="17 0 0 0" HorizontalAlignment="Left">
+                <AutoSuggestBox Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="250" HorizontalAlignment="Left">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="TextChanged">
                             <ic:InvokeCommandAction
@@ -177,17 +174,17 @@
         </Grid>
 
         <!-- Last synced text block-->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 12 15 0" >
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <TextBlock x:Uid="LastSyncTextBlock"
                        VerticalAlignment="Center"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                       Margin="0 0 3 0"/>
+                       Margin="0 12 3 12" />
             <TextBlock Text="{x:Bind ViewModel.LastSyncTime, Mode=TwoWay}"
                        VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
         </StackPanel>
 
         <!-- Per VM/Compute System card -->
-        <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}">
+        <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <StackPanel>
                 <ListView
                       MaxWidth="{ThemeResource MaxPageContentWidth}"
