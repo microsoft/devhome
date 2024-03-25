@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Xaml.Interactivity;
@@ -25,5 +26,10 @@ public class BreadcrumbNavigationBehavior : Behavior<BreadcrumbBar>
     {
         var crumb = args.Item as Breadcrumb;
         crumb?.NavigateTo();
+
+        if (crumb == null)
+        {
+            Log.Logger()?.ReportError("BreadcrumbNavigationBehavior", "BreadcrumbBarItemClickedEventArgs.Item is not a Breadcrumb");
+        }
     }
 }
