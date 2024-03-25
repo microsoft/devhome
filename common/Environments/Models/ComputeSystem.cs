@@ -183,6 +183,20 @@ public class ComputeSystem
         }
     }
 
+    public async Task<ComputeSystemOperationResult> ScheduleAsync(string options)
+    {
+        try
+        {
+            // placeholder until ComputerSystem.ScheduleAsync is implemented in the sdk
+            return await _computeSystem.ShutDownAsync(options);
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError(_componentName, $"ScheduleAsync for: {this} failed due to exception", ex);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
     public async Task<ComputeSystemOperationResult> CreateSnapshotAsync(string options)
     {
         try

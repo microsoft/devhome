@@ -58,6 +58,12 @@ public class DataExtractor
             operations.Add(new OperationsViewModel("Stop", "\uE71A", computeSystem.TerminateAsync));
         }
 
+        // if (supportedOperations.HasFlag(ComputeSystemOperations.Schedule))
+        // {
+        //    operations.Add(new OperationsViewModel("Schedule", "\uEC92", computeSystem.ScheduleAsync));
+        // }
+        operations.Add(new OperationsViewModel("Schedule", "\uEC92", computeSystem.ScheduleAsync));
+
         if (supportedOperations.HasFlag(ComputeSystemOperations.CreateSnapshot))
         {
             operations.Add(new OperationsViewModel("Checkpoint", "\uE7C1", computeSystem.CreateSnapshotAsync));
