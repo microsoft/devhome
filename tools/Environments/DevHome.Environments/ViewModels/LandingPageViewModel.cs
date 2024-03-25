@@ -133,7 +133,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         // For the first 2-5 minutes, in 1 minute increments
         for (var i = 2; i <= 5; i++)
         {
-            await UpdateLastSyncTimeUI($"{i} {_stringResource.GetLocalized("MinutesAgo")}", TimeSpan.FromMinutes(1), cancellationToken);
+            await UpdateLastSyncTimeUI(_stringResource.GetLocalized("MinutesAgo", i), TimeSpan.FromMinutes(1), cancellationToken);
             if (cancellationToken.IsCancellationRequested)
             {
                 return;
@@ -143,7 +143,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         // For the 10-55 minutes, in 5 minute increments
         for (var i = 2; i <= 11; i++)
         {
-            await UpdateLastSyncTimeUI($"{i * 5} {_stringResource.GetLocalized("MinutesAgo")}", TimeSpan.FromMinutes(5), cancellationToken);
+            await UpdateLastSyncTimeUI(_stringResource.GetLocalized("MinutesAgo", i * 5), TimeSpan.FromMinutes(5), cancellationToken);
             if (cancellationToken.IsCancellationRequested)
             {
                 return;

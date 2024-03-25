@@ -179,7 +179,7 @@
     <comment>Text denoting a minute has passed</comment>
   </data>
   <data name="MinutesAgo" xml:space="preserve">
-    <value>minutes ago...</value>
+    <value>{0} minutes ago...</value>
     <comment>Text denoting multiple minutes have passed</comment>
   </data>
   <data name="MomentsAgo" xml:space="preserve">
