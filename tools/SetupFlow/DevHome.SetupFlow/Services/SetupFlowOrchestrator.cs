@@ -116,6 +116,8 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
     public bool HasPreviousPage => _currentPageIndex > 0;
 
+    public bool IsMachineConfigurationInProgress => FlowPages.Count > 1;
+
     /// <summary>
     /// Gets or sets a value indicating whether the done button should be shown. When false, the cancel
     /// hyperlink button will be shown in the UI.
