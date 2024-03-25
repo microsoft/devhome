@@ -23,7 +23,7 @@ public enum TopLevelCardActionSetVisibility
 /// <summary>
 /// Represents a button in the top level action set in the adaptive card json.
 /// We'll provide guidance to adaptive card creators to put one or two actions in the top level action set.
-/// if they want to give Dev Home the ability to submit/execute their adaptive card button from 
+/// if they want to give Dev Home the ability to submit/execute their adaptive card button from
 /// within Dev Home.
 /// </summary>
 public enum ActionButtonToInvoke

@@ -21,7 +21,6 @@ public class DevHomeAdaptiveContentDialog : DevHomeAdaptiveCardElementBase, IDev
 
     public string SecondaryButtonText { get; set; } = string.Empty;
 
-
     public new string ElementTypeString { get; set; } = AdaptiveSettingsCardType;
 
     public static string AdaptiveSettingsCardType => "DevHome.AdaptiveContentDialog";

@@ -13,6 +13,7 @@
     <None Remove="Environments\CustomControls\CardHeader.xaml" />
     <None Remove="Environments\Styles\HorizontalCardStyles.xaml" />
     <None Remove="Environments\Templates\EnvironmentsTemplates.xaml" />
+    <None Remove="Views\AdaptiveCardViews\ContentDialogWithNonInteractiveContent.xaml" />
     <None Remove="Views\Banner.xaml" />
     <None Remove="Views\CloseButton.xaml" />
     <None Remove="Views\HyperlinkTextBlock.xaml" />
@@ -93,6 +94,12 @@
     <Content Update="Assets\BannerBackgroundLight.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\AdaptiveCardViews\ContentDialogWithNonInteractiveContent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <PropertyGroup>

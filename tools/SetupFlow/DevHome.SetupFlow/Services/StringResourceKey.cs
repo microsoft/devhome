@@ -250,4 +250,8 @@ public static class StringResourceKey
     public static readonly string SetupTargetConfigurationProgressUpdate = nameof(SetupTargetConfigurationProgressUpdate);
     public static readonly string SetupTargetConfigurationUnitProgressErrorWithMsg = nameof(SetupTargetConfigurationUnitProgressErrorWithMsg);
     public static readonly string SetupTargetConfigurationUnitUnknown = nameof(SetupTargetConfigurationUnitUnknown);
+
+    // Create Environment flor
+    public static readonly string SelectEnvironmentPageTitle = nameof(SelectEnvironmentPageTitle);
+    public static readonly string ConfigureEnvironmentPageTitle = nameof(ConfigureEnvironmentPageTitle);
 }
