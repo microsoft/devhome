@@ -79,7 +79,7 @@ public class DSCFileActivationHandler : ActivationHandler<FileActivatedEventArgs
         try
         {
             // Don't interrupt the user if the machine configuration is in progress
-            if (_setupFlowOrchestrator.FlowPages.Count > 1)
+            if (_setupFlowOrchestrator.IsMachineConfigurationInProgress)
             {
                 Log.Logger?.ReportWarn("Cannot activate the DSC flow because the machine configuration is in progress");
                 await _mainWindow.ShowErrorMessageDialogAsync(
