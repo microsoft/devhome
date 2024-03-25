@@ -14,7 +14,7 @@ namespace DevHome.SetupFlow.ViewModels.Environments;
 
 public class CreateEnvironmentReviewViewModel : ReviewTabViewModelBase
 {
-    public override bool HasItems => throw new NotImplementedException();
+    public override bool HasItems => true;
 
     public CreateEnvironmentReviewViewModel()
     {
