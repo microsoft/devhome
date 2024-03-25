@@ -31,7 +31,7 @@
 
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
         <Grid>
-            <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}" BorderBrush="Yellow" BorderThickness="1">
+            <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <ContentDialog x:Name="reportBugDialog" x:Uid="Settings_Feedback_ReportBug_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
                     <Grid>
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
