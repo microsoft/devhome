@@ -253,7 +253,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         var currentProvider = Providers[SelectedProviderIndex];
         ComputeSystemsView.Filter = system =>
         {
-            if (currentProvider == _stringResource.GetLocalized("AllProviders"))
+            if (currentProvider.Equals(_stringResource.GetLocalized("AllProviders"), StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }

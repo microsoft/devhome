@@ -18,7 +18,7 @@
         <ResourceDictionary Source="ms-appx:///DevHome.Common/Environments/Templates/EnvironmentsTemplates.xaml" />
     </pg:ToolPage.Resources>
 
-    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
@@ -112,7 +112,7 @@
 
 
         <Grid Grid.Row="0" x:Name="TitleGrid"
-              MaxWidth="{ThemeResource MaxPageContentWidth}">
+              MaxWidth="{ThemeResource MaxPageContentWidth}"  Margin="{ThemeResource HeaderMargin}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
@@ -179,7 +179,7 @@
                        VerticalAlignment="Center"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                        Margin="0 12 3 12" />
-            <TextBlock Text="{x:Bind ViewModel.LastSyncTime, Mode=TwoWay}"
+            <TextBlock Text="{x:Bind ViewModel.LastSyncTime, Mode=OneWay}"
                        VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
         </StackPanel>
 
