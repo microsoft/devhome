@@ -217,6 +217,10 @@
     <value>Uptime:</value>
     <comment>Title for the uptime property of a compute system. (The amount of time its been running)</comment>
   </data>
+  <data name="CreateComputeSystemOperationError" xml:space="preserve">
+    <value>We couldn't start the operation to create your environment. Please check the extensions logs for more information</value>
+    <comment>Error text to be displayed when we're unable to start the operation to create a new environment. An environment can be a cloud or virtual machine.</comment>
+  </data>
   <data name="UserNotInHyperAdminGroupButton" xml:space="preserve">
     <value>Launch computer management</value>
     <comment>Button text for the user to click, in order for us to add them to the Hyper-V admin group</comment>
