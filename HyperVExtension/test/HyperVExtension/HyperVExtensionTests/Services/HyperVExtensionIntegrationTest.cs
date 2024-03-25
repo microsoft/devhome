@@ -17,8 +17,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
 using Moq;
 
-using Communication = HyperVExtension.CommunicationWithGuest;
-
 namespace HyperVExtension.UnitTest.HyperVExtensionTests.Services;
 
 /// <summary>

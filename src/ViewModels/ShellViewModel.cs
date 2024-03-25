@@ -15,21 +15,16 @@ public partial class ShellViewModel : ObservableObject
 {
     private readonly ILocalSettingsService _localSettingsService;
     private readonly IAppInfoService _appInfoService;
+    private readonly IThemeSelectorService _themeSelectorService;
 
     [ObservableProperty]
     private string? _announcementText;
 
     public string Title => _appInfoService.GetAppNameLocalized();
 
-    public INavigationService NavigationService
-    {
-        get;
-    }
+    public INavigationService NavigationService { get; }
 
-    public INavigationViewService NavigationViewService
-    {
-        get;
-    }
+    public INavigationViewService NavigationViewService { get; }
 
     [ObservableProperty]
     private object? _selected;
@@ -42,13 +37,15 @@ public partial class ShellViewModel : ObservableObject
         INavigationViewService navigationViewService,
         ILocalSettingsService localSettingsService,
         IScreenReaderService screenReaderService,
-        IAppInfoService appInfoService)
+        IAppInfoService appInfoService,
+        IThemeSelectorService themeSelectorService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
         _localSettingsService = localSettingsService;
         _appInfoService = appInfoService;
+        _themeSelectorService = themeSelectorService;
 
         screenReaderService.AnnouncementTextChanged += OnAnnouncementTextChanged;
     }
@@ -101,5 +98,10 @@ public partial class ShellViewModel : ObservableObject
 
         // Set new announcement title
         AnnouncementText = text;
+    }
+
+    internal void NotifyActualThemeChanged()
+    {
+        _themeSelectorService.SetRequestedTheme();
     }
 }

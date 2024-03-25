@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
 using Microsoft.Windows.DevHome.SDK;

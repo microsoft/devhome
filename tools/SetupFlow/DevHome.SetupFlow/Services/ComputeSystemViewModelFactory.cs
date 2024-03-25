@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;

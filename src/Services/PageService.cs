@@ -5,11 +5,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Contracts;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Contracts.Services;
-using DevHome.ExtensionLibrary.ViewModels;
-using DevHome.ExtensionLibrary.Views;
-using DevHome.Settings.ViewModels;
-using DevHome.Settings.Views;
+using DevHome.Customization.Extensions;
+using DevHome.ExtensionLibrary.Extensions;
+using DevHome.Settings.Extensions;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.UI.Xaml.Controls;
@@ -30,15 +28,7 @@ public class PageService : IPageService
 
     public PageService(ILocalSettingsService localSettingsService, IExperimentationService experimentationService)
     {
-        Configure<SettingsViewModel, SettingsPage>();
-        Configure<PreferencesViewModel, PreferencesPage>();
-        Configure<AccountsViewModel, AccountsPage>();
-        Configure<AboutViewModel, AboutPage>();
-        Configure<FeedbackViewModel, FeedbackPage>();
-        Configure<WhatsNewViewModel, WhatsNewPage>();
-        Configure<ExtensionSettingsViewModel, ExtensionSettingsPage>();
-        Configure<ExperimentalFeaturesViewModel, ExperimentalFeaturesPage>();
-
+        // Configure top-level pages from registered tools
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var group in App.NavConfig.NavMenu.Groups)
         {
@@ -52,6 +42,13 @@ public class PageService : IPageService
             }
         }
 
+        // Configure footer pages
+        Configure<WhatsNewViewModel, WhatsNewPage>();
+        this.ConfigureExtensionLibraryPages();
+        this.ConfigureSettingsPages();
+        this.ConfigureCustomizationPages();
+
+        // Configure Experimental Feature pages
         ExperimentalFeature.LocalSettingsService = localSettingsService;
         foreach (var experimentalFeature in App.NavConfig.ExperimentFeatures ?? Array.Empty<DevHome.Helpers.ExperimentalFeatures>())
         {
@@ -85,7 +82,7 @@ public class PageService : IPageService
         return pageType;
     }
 
-    private void Configure<T_VM, T_V>()
+    public void Configure<T_VM, T_V>()
         where T_VM : ObservableObject
         where T_V : Page
     {

@@ -4,9 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.Foundation;
 
 namespace DevHome.Environments.ViewModels;
 

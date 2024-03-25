@@ -8,7 +8,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Settings.Models;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Settings.ViewModels;

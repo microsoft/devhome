@@ -28,8 +28,6 @@ graph TD;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow.ElevatedServer;
     DevHome.SetupFlow.ElevatedComponent-->DevHome.SetupFlow.ElevatedServer;
     DevHome.SetupFlow.ElevatedComponent.Projection-->DevHome.SetupFlow;
-    DevHome.Dashboard-->DevHome.SetupFlow;
-    DevHome.Settings-->DevHome.SetupFlow;
     CoreWidgetProvider-->DevHome;
     DevHome.Dashboard-->DevHome;
     DevHome.Experiments-->DevHome;
@@ -71,6 +69,7 @@ Dev Home currently has the following tools:
 - [Dashboard](./tools.md#dashboard-tool)
 - [Setup flow](./tools.md#setup-flow-tool)
 - Extensions
+- [Windows customization](../tools/Customization/DevHome.Customization/Customization.md)
 
 ## Extensions
 

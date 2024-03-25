@@ -14,7 +14,6 @@ using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.UI.Xaml.Controls;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.Services;

@@ -5,7 +5,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 
-namespace DevHome.Settings.Models;
+namespace DevHome.Common.Models;
 
 public class Breadcrumb
 {

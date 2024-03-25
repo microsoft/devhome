@@ -4,12 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Helpers;
-using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 

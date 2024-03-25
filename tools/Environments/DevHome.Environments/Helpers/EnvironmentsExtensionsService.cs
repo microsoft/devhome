@@ -3,18 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
-using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
-using DevHome.Common.Services;
 using DevHome.Environments.TestModels;
-using DevHome.Environments.ViewModels;
-using DevHome.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 

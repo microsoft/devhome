@@ -75,7 +75,7 @@
 
         <!-- Main content -->
         <controls:SetupShell Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid>
                 <StackPanel>
                     <commonviews:Banner
                         TextWidth="345"
@@ -217,7 +217,7 @@
                         </ctControls:SettingsCard>
                     </StackPanel>
                 </StackPanel>
-            </ScrollViewer>
+            </Grid>
         </controls:SetupShell>
     </Grid>
 </UserControl>

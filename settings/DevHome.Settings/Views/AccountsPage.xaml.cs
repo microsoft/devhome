@@ -66,7 +66,7 @@ public sealed partial class AccountsPage : Page
     private void FindExtensions()
     {
         var navigationService = Application.Current.GetService<INavigationService>();
-        navigationService.NavigateTo("DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel");
+        navigationService.NavigateTo(KnownPageKeys.Extensions);
     }
 
     private async void AddDeveloperId_Click(object sender, RoutedEventArgs e)
@@ -152,6 +152,9 @@ public sealed partial class AccountsPage : Page
             if (!string.IsNullOrEmpty(hostConfigContents))
             {
                 renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+
+                // Remove margins from selectAction.
+                renderer.AddSelectActionMargin = false;
             }
             else
             {

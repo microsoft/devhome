@@ -12,7 +12,6 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;

@@ -2,14 +2,8 @@
 // Licensed under the MIT License.
 
 using System.ComponentModel;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using DevHome.Logging;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
 using Microsoft.Win32;
-using Windows.Devices.Geolocation;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Registry;
