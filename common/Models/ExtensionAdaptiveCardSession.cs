@@ -20,15 +20,15 @@ public class ExtensionAdaptiveCardSession
 {
     private readonly string _componentName = "ExtensionAdaptiveCardSession";
 
-    private readonly IExtensionAdaptiveCardSession _cardSession;
+    public IExtensionAdaptiveCardSession Session { get; private set; }
 
     public event TypedEventHandler<ExtensionAdaptiveCardSession, ExtensionAdaptiveCardSessionStoppedEventArgs>? Stopped;
 
     public ExtensionAdaptiveCardSession(IExtensionAdaptiveCardSession cardSession)
     {
-        _cardSession = cardSession;
+        Session = cardSession;
 
-        if (_cardSession is IExtensionAdaptiveCardSession2 cardSession2)
+        if (Session is IExtensionAdaptiveCardSession2 cardSession2)
         {
             cardSession2.Stopped += OnSessionStopped;
         }
@@ -38,7 +38,7 @@ public class ExtensionAdaptiveCardSession
     {
         try
         {
-            return _cardSession.Initialize(extensionUI);
+            return Session.Initialize(extensionUI);
         }
         catch (Exception ex)
         {
@@ -51,14 +51,14 @@ public class ExtensionAdaptiveCardSession
     {
         try
         {
-            _cardSession.Dispose();
+            Session.Dispose();
         }
         catch (Exception ex)
         {
             Log.Logger()?.ReportError(_componentName, $"Dispose failed due to exception", ex);
         }
 
-        if (_cardSession is IExtensionAdaptiveCardSession2 cardSession2)
+        if (Session is IExtensionAdaptiveCardSession2 cardSession2)
         {
             cardSession2.Stopped -= OnSessionStopped;
         }
@@ -68,7 +68,7 @@ public class ExtensionAdaptiveCardSession
     {
         try
         {
-            return await _cardSession.OnAction(action, inputs);
+            return await Session.OnAction(action, inputs);
         }
         catch (Exception ex)
         {

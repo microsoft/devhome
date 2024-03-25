@@ -78,6 +78,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
             // In the future if we support a multi-instance setup flow, we can use a custom channel/a message broker to send messages.
             // For now, we are using the default channel.
             WeakReferenceMessenger.Default.Send(new CreationProviderChangedMessage(new CreationProviderChangedData(SelectedProvider, new AdaptiveCardRenderer())));
+            CanGoToNextPage = true;
         }
     }
 }

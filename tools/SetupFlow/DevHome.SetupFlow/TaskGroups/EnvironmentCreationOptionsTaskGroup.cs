@@ -48,7 +48,6 @@ public class EnvironmentCreationOptionsTaskGroup : ISetupTaskGroup, IRecipient<C
 
     public void Receive(CreationAdaptiveCardSessionEndedMessage message)
     {
-
     }
 
     private void OnEndSetupFlow(object sender, EventArgs e)
