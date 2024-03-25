@@ -235,7 +235,7 @@ public class ConfigurationFileBuilder
         return new WinGetConfigResource()
         {
             Resource = DscHelpers.WinGetDscResource,
-            Id = $"{DscHelpers.GitWinGetPackageId} | Install: {DscHelpers.GitName}",
+            Id = DscHelpers.GitWinGetPackageId,
             Directives = new() { AllowPrerelease = true, Description = $"Installing {DscHelpers.GitName}" },
             Settings = new WinGetDscSettings() { Id = DscHelpers.GitWinGetPackageId, Source = DscHelpers.DscSourceNameForWinGet },
         };
