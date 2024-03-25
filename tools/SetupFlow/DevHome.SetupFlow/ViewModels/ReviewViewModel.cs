@@ -74,6 +74,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     public bool HasTasksToSetUp => Orchestrator.TaskGroups.Any(g => g.SetupTasks.Any());
 
+    public bool HasDSCTasksToDownload => Orchestrator.TaskGroups.Any(g => g.DSCTasks.Any());
+
     public ReviewViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
@@ -141,10 +143,10 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(HasDSCTasksToDownload))]
     private void DownloadConfiguration()
     {
-        var result = _mainWindow.SaveFileDialog(null, ("*.winget", "YAML file"));
+        var result = _mainWindow.SaveFileDialog(null, ("*.winget", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
         if (result != null)
         {
             var fileName = result.Value.Item1;

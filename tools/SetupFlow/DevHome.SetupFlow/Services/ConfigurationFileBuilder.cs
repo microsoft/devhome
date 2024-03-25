@@ -133,9 +133,9 @@ public class ConfigurationFileBuilder
                     listOfResources.Add(CreateResourceFromTaskForGitDsc(repoConfigTask, repoConfigTask.RepositoryToClone.RepoUri, configurationFileKind));
                 }
             }
-            catch
+            catch (Exception e)
             {
-                // Fail to access repo OOP object
+                Log.Logger?.ReportError($"Error creating a repository resource entry", e);
             }
         }
 

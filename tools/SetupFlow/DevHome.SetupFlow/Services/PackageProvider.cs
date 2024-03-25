@@ -71,7 +71,7 @@ public class PackageProvider
     /// <summary>
     /// Occurs when a package selection has changed
     /// </summary>
-    public event EventHandler<PackageViewModel> SelectedPackagesItemChanged;
+    public event EventHandler SelectedPackagesItemChanged;
 
     public PackageProvider(PackageViewModelFactory packageViewModelFactory)
     {
@@ -125,16 +125,20 @@ public class PackageProvider
     private void OnSelectedPackageVersionChanged(object sender, string version)
     {
         var packageViewModel = sender as PackageViewModel;
-        if (packageViewModel.IsSelected)
+        if (packageViewModel?.IsSelected == true)
         {
             // Notify subscribers that an item in the list of selected packages has changed
-            SelectedPackagesItemChanged?.Invoke(null, sender as PackageViewModel);
+            SelectedPackagesItemChanged?.Invoke(packageViewModel, EventArgs.Empty);
         }
     }
 
     private void OnPackageSelectionChanged(object sender, bool isSelected)
     {
-        var packageViewModel = sender as PackageViewModel;
+        if (sender is not PackageViewModel packageViewModel)
+        {
+            return;
+        }
+
         lock (_lock)
         {
             if (packageViewModel.IsSelected)
@@ -173,7 +177,7 @@ public class PackageProvider
         }
 
         // Notify subscribers that an item in the list of selected packages has changed
-        SelectedPackagesItemChanged?.Invoke(null, packageViewModel);
+        SelectedPackagesItemChanged?.Invoke(packageViewModel, EventArgs.Empty);
     }
 
     /// <summary>

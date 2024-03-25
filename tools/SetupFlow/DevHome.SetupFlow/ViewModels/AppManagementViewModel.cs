@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -116,7 +117,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         _packageProvider.SelectedPackagesItemChanged -= OnPackageSelectionChanged;
     }
 
-    private void OnPackageSelectionChanged(object sender, PackageViewModel package)
+    private void OnPackageSelectionChanged(object sender, EventArgs args)
     {
         // Notify UI to update
         OnPropertyChanged(nameof(ApplicationsAddedText));

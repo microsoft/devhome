@@ -70,15 +70,16 @@
                                        Style="{StaticResource BodyStrongTextBlockStyle}"
                                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_SetUpDetails" />
                             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
-                                <Button Command="{x:Bind ViewModel.DownloadConfigurationCommand}">Download file</Button>
+                                <Button Command="{x:Bind ViewModel.DownloadConfigurationCommand}"
+                                        x:Uid="Review_DownloadFileButton"/>
+                                <!-- Info icon -->
                                 <TextBlock Text="&#xE946;"
                                            FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                            VerticalAlignment="Center">
                                     <ToolTipService.ToolTip>
                                         <ToolTip>
-                                            <StackPanel>
-                                                <TextBlock TextWrapping="WrapWholeWords">Save setup as WinGet Configuration file (.winget) to repeat this set up in the future or share it with others.</TextBlock>
-                                            </StackPanel>
+                                            <TextBlock TextWrapping="WrapWholeWords"
+                                                       x:Uid="Review_DownloadFileTooltip"/>
                                         </ToolTip>
                                     </ToolTipService.ToolTip>
                                 </TextBlock>
