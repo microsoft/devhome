@@ -8,7 +8,6 @@
     xmlns:devCustomizationsCustomControls="using:DevHome.Customization.CustomControls" 
     xmlns:devViewModels="using:DevHome.Customization.ViewModels.Environments" 
     xmlns:devDriveModels="using:DevHome.Customization.Models.Environments"
-    xmlns:devDriveSelectors="using:DevHome.Customization.Selectors.Environments" 
     xmlns:converters="using:CommunityToolkit.WinUI.Converters" 
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core" 
     xmlns:i="using:Microsoft.Xaml.Interactivity" 
@@ -233,58 +232,6 @@
                     <x:String>Empty value for list since it doesn't need to use any bindings.</x:String>
                 </ListView>
             </DataTemplate>
-
-            <!-- Listview Template for showing the error message associated with loading DevDrivesListViewModel object. -->
-            <DataTemplate x:Key="DevDriveLoadingErrorTemplate" x:DataType="devDriveModels:DevDrivesListViewModel">
-                <ListView
-                    AutomationProperties.Name="{x:Bind ErrorText, Mode=OneWay}"
-                    HeaderTemplate="{StaticResource DevDriveContainerHeaderTemplate}"
-                    SelectionMode="None"
-                    Margin="0 0 0 10"
-                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}">
-                    <ListViewItem
-                        IsTabStop="False"
-                        DataContext="{Binding}">
-                        <StackPanel
-                            Margin="0 50 0 50"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
-                            <TextBlock
-                                Text="{x:Bind ErrorText}"
-                                Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                                Margin="0 0 0 10"
-                                HorizontalAlignment="Center"
-                                IsTextSelectionEnabled="True"/>
-                        </StackPanel>
-                    </ListViewItem>
-                </ListView>
-            </DataTemplate>
-
-            <!-- Listview Template for showing the info message when no dev drives were found. -->
-            <DataTemplate x:Key="DevDrivesNotFoundTemplate">
-                <ListView
-                    AutomationProperties.Name="DevDriveInsightsNoDevDrivesFound"
-                    AutomationProperties.LiveSetting="Polite"
-                    HeaderTemplate="{StaticResource DevDriveContainerHeaderTemplate}"
-                    SelectionMode="None"
-                    Margin="0 0 0 10"
-                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}">
-                    <ListViewItem
-                        IsTabStop="False"
-                        DataContext="{Binding}">
-                        <StackPanel
-                            Margin="0 50 0 50"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
-                            <TextBlock
-                                x:Uid="DevDriveInsightsNoDevDrivesFound"
-                                Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                                FontSize="15"
-                                Margin="0 0 0 10"/>
-                        </StackPanel>
-                    </ListViewItem>
-                </ListView>
-            </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -317,25 +264,11 @@
                                     <StackPanel></StackPanel>
                                 </ItemsPanelTemplate>
                             </ListView.ItemsPanel>
-                            <ListView.ItemTemplateSelector>
-                                <devDriveSelectors:DevDrivesListViewModelSelector>
-                                    <devDriveSelectors:DevDrivesListViewModelSelector.DevDrivesListViewModelLoadedTemplate>
-                                        <DataTemplate>
-                                            <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveLoadedTemplate}" />
-                                        </DataTemplate>
-                                    </devDriveSelectors:DevDrivesListViewModelSelector.DevDrivesListViewModelLoadedTemplate>
-                                    <devDriveSelectors:DevDrivesListViewModelSelector.DevDrivesListViewModelLoadingErrorTemplate>
-                                        <DataTemplate>
-                                            <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveLoadingErrorTemplate}" />
-                                        </DataTemplate>
-                                    </devDriveSelectors:DevDrivesListViewModelSelector.DevDrivesListViewModelLoadingErrorTemplate>
-                                    <devDriveSelectors:DevDrivesListViewModelSelector.NoDevDriveCardViewModelsAvailableTemplate>
-                                        <DataTemplate>
-                                            <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDrivesNotFoundTemplate}" />
-                                        </DataTemplate>
-                                    </devDriveSelectors:DevDrivesListViewModelSelector.NoDevDriveCardViewModelsAvailableTemplate>
-                                </devDriveSelectors:DevDrivesListViewModelSelector>
-                            </ListView.ItemTemplateSelector>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveLoadedTemplate}" />
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
                         </ListView>
                         <!--- Show shimmers when still loading items in list. -->
                         <StackPanel
@@ -378,17 +311,12 @@
                                 <StackPanel></StackPanel>
                             </ItemsPanelTemplate>
                         </ListView.ItemsPanel>
-                        <ListView.ItemTemplateSelector>
-                            <devDriveSelectors:DevDriveOptimizersListViewModelSelector>
-                                <devDriveSelectors:DevDriveOptimizersListViewModelSelector.DevDriveOptimizersListViewModelLoadedTemplate>
-                                    <DataTemplate>
-                                        <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveOptimizersLoadedTemplate}" />
-                                    </DataTemplate>
-                                </devDriveSelectors:DevDriveOptimizersListViewModelSelector.DevDriveOptimizersListViewModelLoadedTemplate>
-                                <devDriveSelectors:DevDriveOptimizersListViewModelSelector.DevDriveOptimizersListViewModelLoadingErrorTemplate/>
-                            </devDriveSelectors:DevDriveOptimizersListViewModelSelector>
-                        </ListView.ItemTemplateSelector>
-                    </ListView>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveOptimizersLoadedTemplate}" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                        </ListView>
                     <!--- Show shimmers when still loading items in list. -->
                     <StackPanel
                             Visibility="{x:Bind ViewModel.ShouldShowShimmerBelowOptimizerList, Mode=OneWay}">
@@ -423,16 +351,11 @@
                                         <StackPanel></StackPanel>
                                     </ItemsPanelTemplate>
                                 </ListView.ItemsPanel>
-                                <ListView.ItemTemplateSelector>
-                                    <devDriveSelectors:DevDriveOptimizedListViewModelSelector>
-                                        <devDriveSelectors:DevDriveOptimizedListViewModelSelector.DevDriveOptimizedListViewModelLoadedTemplate>
-                                            <DataTemplate>
-                                                <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveOptimizedLoadedTemplate}" />
-                                            </DataTemplate>
-                                        </devDriveSelectors:DevDriveOptimizedListViewModelSelector.DevDriveOptimizedListViewModelLoadedTemplate>
-                                        <devDriveSelectors:DevDriveOptimizedListViewModelSelector.DevDriveOptimizedListViewModelLoadingErrorTemplate/>
-                                    </devDriveSelectors:DevDriveOptimizedListViewModelSelector>
-                                </ListView.ItemTemplateSelector>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveOptimizedLoadedTemplate}" />
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
                             </ListView>
                             <!--- Show shimmers when still loading items in list. -->
                             <StackPanel

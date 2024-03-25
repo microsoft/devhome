@@ -66,7 +66,7 @@ public partial class DevDriveOptimizedListViewModel : ObservableObject
     /// </summary>
     /// <param name="viewModel">Environments card selected by the user.</param>
     [RelayCommand]
-    public void ContainerSelectionChanged(DevDriveCardViewModel viewModel)
+    public void ContainerSelectionChanged(DevDriveOptimizedCardViewModel viewModel)
     {
         if (viewModel == null)
         {
