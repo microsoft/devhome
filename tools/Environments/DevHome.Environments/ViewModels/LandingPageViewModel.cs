@@ -78,13 +78,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         SelectedSortIndex = -1;
         Providers = new() { _stringResource.GetLocalized("AllProviders") };
-
-        // Start a new sync timer
         _lastSyncTime = _stringResource.GetLocalized("MomentsAgo");
-        _ = Task.Run(async () =>
-        {
-            await RunSyncTimmer();
-        });
 
         ComputeSystemsView = new AdvancedCollectionView(ComputeSystems);
     }
@@ -175,6 +169,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             HasPageLoadedForTheFirstTime = true;
             IsLoading = true;
         }
+
+        // Start a new sync timer
+        _ = Task.Run(async () =>
+        {
+            await RunSyncTimmer();
+        });
 
         // temporary, we'll need to give the users a way to disable this.
         // if they don't want to use hyper-v
@@ -267,7 +267,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             if (system is ComputeSystemViewModel computeSystemViewModel)
             {
                 var type = computeSystemViewModel.Type;
-                return type.Contains(currentProvider, StringComparison.OrdinalIgnoreCase);
+                return type.Equals(currentProvider, StringComparison.OrdinalIgnoreCase);
             }
 
             return false;
@@ -282,7 +282,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     {
         ComputeSystemsView.SortDescriptions.Clear();
 
-        // Convert to switch case
         switch (SelectedSortIndex)
         {
             case 0:
