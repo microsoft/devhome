@@ -41,6 +41,7 @@ public class PageService : IPageService
         Configure<ExtensionSettingsViewModel, ExtensionSettingsPage>();
         Configure<ExperimentalFeaturesViewModel, ExperimentalFeaturesPage>();
         Configure<DeveloperFileExplorerViewModel, DeveloperFileExplorerPage>();
+        Configure<DevDriveInsightsViewModel, DevDriveInsightsPage>();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var group in App.NavConfig.NavMenu.Groups)

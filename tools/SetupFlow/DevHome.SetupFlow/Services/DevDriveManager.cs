@@ -186,6 +186,7 @@ public class DevDriveManager : IDevDriveManager
                 var volumeLabel = queryObj.CimInstanceProperties["FileSystemLabel"].Value as string;
                 var volumeSize = queryObj.CimInstanceProperties["Size"].Value;
                 var volumeLetter = queryObj.CimInstanceProperties["DriveLetter"].Value;
+                var volumeSizeRemaining = queryObj.CimInstanceProperties["SizeRemaining"].Value;
                 uint outputSize;
                 var volumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
                 var inputVolumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
@@ -224,13 +225,15 @@ public class DevDriveManager : IDevDriveManager
                     }
 
                     if ((volumeInfo.VolumeFlags & _devDriveVolumeStateFlag) > 0 &&
-                        volumeLetter is char newLetter && volumeSize is ulong newSize)
+                        volumeLetter is char newLetter && volumeSize is ulong newSize &&
+                        volumeSizeRemaining is ulong newSizeRemaining)
                     {
                         var isInTerabytes = newSize >= DevDriveUtil.OneTbInBytes;
                         var newDevDrive = new Models.DevDrive
                         {
                             DriveLetter = newLetter,
                             DriveSizeInBytes = newSize,
+                            DriveSizeRemainingInBytes = newSizeRemaining,
                             DriveUnitOfMeasure = isInTerabytes ? ByteUnit.TB : ByteUnit.GB,
                             DriveLocation = string.Empty,
                             DriveLabel = volumeLabel,
@@ -301,7 +304,7 @@ public class DevDriveManager : IDevDriveManager
         }
 
         var devDriveState = validationSuccessful ? DevDriveState.New : DevDriveState.Invalid;
-        return new Models.DevDrive(driveLetter, DevDriveUtil.MinDevDriveSizeInBytes, ByteUnit.GB, DefaultDevDriveLocation, fileName, devDriveState, Guid.NewGuid());
+        return new Models.DevDrive(driveLetter, DevDriveUtil.MinDevDriveSizeInBytes, DevDriveUtil.MinDevDriveSizeInBytes, ByteUnit.GB, DefaultDevDriveLocation, fileName, devDriveState, Guid.NewGuid());
     }
 
     /// <inheritdoc/>

@@ -30,4 +30,11 @@ public partial class MainPageViewModel : ObservableObject
         var navigationService = Application.Current.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(DeveloperFileExplorerViewModel).FullName!);
     }
+
+    [RelayCommand]
+    private void NavigateToDevDriveInsightsPage()
+    {
+        var navigationService = Application.Current.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(DevDriveInsightsViewModel).FullName!);
+    }
 }

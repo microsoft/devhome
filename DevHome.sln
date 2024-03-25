@@ -117,6 +117,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Customization", "Customization", "{623998FD-B0A6-4980-95D5-A5072301CA10}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Customization", "tools\Customization\DevHome.Customization\DevHome.Customization.csproj", "{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0901B260-1B88-4B99-A9F8-477ED0A74FBD} = {0901B260-1B88-4B99-A9F8-477ED0A74FBD}
+		{54082587-A435-423F-AE1B-01B906FFA7C5} = {54082587-A435-423F-AE1B-01B906FFA7C5}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
