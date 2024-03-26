@@ -12,8 +12,8 @@ namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
 
 public partial class QuietBackgroundProcessesViewModel : ObservableObject
 {
-    private readonly TimeSpan _zero = new TimeSpan(0, 0, 0);
-    private readonly TimeSpan _oneSecond = new TimeSpan(0, 0, 1);
+    private readonly TimeSpan _zero = new(0, 0, 0);
+    private readonly TimeSpan _oneSecond = new(0, 0, 1);
 #nullable enable
     private DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession? _session;
 #nullable disable

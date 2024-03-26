@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
@@ -298,23 +299,36 @@ public partial class WidgetViewModel : ObservableObject
         }
         else if (args.Action is AdaptiveExecuteAction executeAction)
         {
-            var dataToSend = string.Empty;
-            var dataType = executeAction.DataJson.ValueType;
-            if (dataType != Windows.Data.Json.JsonValueType.Null)
+            if (executeAction.Verb == "OpenApp")
             {
-                dataToSend = executeAction.DataJson.Stringify();
+                var jsonObject = executeAction.DataJson.GetObject();
+                var path = jsonObject.GetNamedString("path");
+
+                var info = new ProcessStartInfo();
+                info.FileName = path;
+                info.UseShellExecute = true;
+                Process.Start(info);
             }
             else
             {
-                var inputType = args.Inputs.AsJson().ValueType;
-                if (inputType != Windows.Data.Json.JsonValueType.Null)
+                var dataToSend = string.Empty;
+                var dataType = executeAction.DataJson.ValueType;
+                if (dataType != Windows.Data.Json.JsonValueType.Null)
                 {
-                    dataToSend = args.Inputs.AsJson().Stringify();
+                    dataToSend = executeAction.DataJson.Stringify();
                 }
-            }
+                else
+                {
+                    var inputType = args.Inputs.AsJson().ValueType;
+                    if (inputType != Windows.Data.Json.JsonValueType.Null)
+                    {
+                        dataToSend = args.Inputs.AsJson().Stringify();
+                    }
+                }
 
-            Log.Logger()?.ReportInfo("WidgetViewModel", $"Verb = {executeAction.Verb}, Data = {dataToSend}");
-            await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
+                Log.Logger()?.ReportInfo("WidgetViewModel", $"Verb = {executeAction.Verb}, Data = {dataToSend}");
+                await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
+            }
         }
 
         TelemetryFactory.Get<ITelemetry>().Log(
