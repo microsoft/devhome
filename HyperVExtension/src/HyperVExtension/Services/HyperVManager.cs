@@ -2,13 +2,12 @@
 // Licensed under the MIT License.
 
 using System.ServiceProcess;
-using DevHome.Logging;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Models;
-using HyperVExtension.Providers;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace HyperVExtension.Services;
 
@@ -18,6 +17,8 @@ namespace HyperVExtension.Services;
 /// </summary>
 public class HyperVManager : IHyperVManager, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(HyperVManager));
+
     private readonly IPowerShellService _powerShellService;
 
     private readonly HyperVVirtualMachineFactory _hyperVVirtualMachineFactory;
@@ -77,7 +78,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         if (!moduleFound)
         {
-            Logging.Logger()?.ReportWarn($"PowerShell could not find the Hyper-V module in the list of modules loaded into the current session: {result.CommandOutputErrorMessage}");
+            _log.Warning($"PowerShell could not find the Hyper-V module in the list of modules loaded into the current session: {result.CommandOutputErrorMessage}");
         }
 
         return moduleFound;
@@ -101,7 +102,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
         {
-            Logging.Logger()?.ReportWarn($"PowerShell returned an error while attempting to get the Hyper-V module on the first try: {result.CommandOutputErrorMessage}");
+            _log.Warning($"PowerShell returned an error while attempting to get the Hyper-V module on the first try: {result.CommandOutputErrorMessage}");
         }
     }
 
@@ -117,7 +118,7 @@ public class HyperVManager : IHyperVManager, IDisposable
         {
             // we won't throw an exception here. If there is a cmdlet failure due to the module not being loaded, we'll let the
             // PowerShell cmdlet throw the exception.
-            Logging.Logger()?.ReportError("The Hyper-V PowerShell Module is not Loaded");
+            _log.Error("The Hyper-V PowerShell Module is not Loaded");
         }
 
         var serviceController = _host.GetService<IWindowsServiceController>();
@@ -169,8 +170,7 @@ public class HyperVManager : IHyperVManager, IDisposable
         if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
         {
             // Note: errors here could be about retrieving 1 out of N virtual machines, so we log this and return the rest.
-            Logging.Logger()?
-                .ReportWarn($"Unable to get all VMs due to PowerShell error: {result.CommandOutputErrorMessage}");
+            _log.Warning($"Unable to get all VMs due to PowerShell error: {result.CommandOutputErrorMessage}");
         }
 
         var returnList = result.PsObjects?
@@ -479,8 +479,7 @@ public class HyperVManager : IHyperVManager, IDisposable
             if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
             {
                 // Note: errors here could be about retrieving 1 out of N checkpoints, so we log this and return the rest.
-                Logging.Logger()?
-                    .ReportWarn($"Unable to get all checkpoints for VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
+                _log.Warning($"Unable to get all checkpoints for VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
             }
 
             var checkpointList = result.PsObjects?.Select(psObject =>
@@ -726,7 +725,7 @@ public class HyperVManager : IHyperVManager, IDisposable
         var psObject = result.PsObjects.FirstOrDefault();
         if (psObject == null)
         {
-            Logging.Logger()?.ReportError($"Unable to create {nameof(T)} due to PowerShell error: {result.CommandOutputErrorMessage}");
+            _log.Error($"Unable to create {nameof(T)} due to PowerShell error: {result.CommandOutputErrorMessage}");
             return default(T);
         }
 
@@ -801,12 +800,7 @@ public class HyperVManager : IHyperVManager, IDisposable
     {
         if (!_disposed)
         {
-            LogEvent.Create(
-                nameof(HyperVManager),
-                string.Empty,
-                SeverityLevel.Debug,
-                "Disposing HyperVManager");
-
+            _log.Debug("Disposing HyperVManager");
             if (disposing)
             {
                 _operationEventForVirtualMachine.Dispose();

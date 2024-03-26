@@ -1,9 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using CoreWidgetProvider.Helpers;
-using DevHome.Logging;
 using Microsoft.Windows.Widgets.Providers;
+using Serilog;
 
 namespace CoreWidgetProvider.Widgets;
 
@@ -17,18 +16,22 @@ public abstract class WidgetImpl
 
     public WidgetImpl()
     {
+        _log = new(() => Serilog.Log.ForContext("SourceContext", SourceName));
     }
 
-    protected Logger? Logger()
-    {
-        return Log.Logger();
-    }
+    private readonly Lazy<ILogger> _log;
+
+    protected ILogger Log => _log.Value;
+
+    protected string Name => GetType().Name;
 
     protected string Id { get; set; } = string.Empty;
 
     // This is not a unique identifier, but is easier to read in a log and highly unlikely to
     // match another running widget.
     protected string ShortId => Id.Length > SHORT_ID_LENGTH ? Id[..SHORT_ID_LENGTH] : Id;
+
+    protected string SourceName => string.IsNullOrEmpty(ShortId) ? Name : $"{Name}/{ShortId}";
 
     public string State()
     {

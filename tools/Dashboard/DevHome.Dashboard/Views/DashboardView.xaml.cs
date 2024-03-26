@@ -25,14 +25,16 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 using Windows.System;
 using WinUIEx;
-using Log = DevHome.Dashboard.Helpers.Log;
 
 namespace DevHome.Dashboard.Views;
 
 public partial class DashboardView : ToolPage, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DashboardView));
+
     public override string ShortName => "Dashboard";
 
     public DashboardViewModel ViewModel { get; }
@@ -73,7 +75,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private async Task<bool> SubscribeToWidgetCatalogEventsAsync()
     {
-        Log.Logger()?.ReportInfo("DashboardView", "SubscribeToWidgetCatalogEvents");
+        _log.Information("SubscribeToWidgetCatalogEvents");
 
         try
         {
@@ -91,7 +93,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError("DashboardView", "Exception in SubscribeToWidgetCatalogEvents:", ex);
+            _log.Error("Exception in SubscribeToWidgetCatalogEvents:", ex);
             return false;
         }
 
@@ -134,7 +136,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 await ViewModel.WidgetIconService.CacheAllWidgetIconsAsync();
 
                 var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun));
-                Log.Logger()?.ReportInfo("DashboardView", $"Is first dashboard run = {isFirstDashboardRun}");
+                _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
                 if (isFirstDashboardRun)
                 {
                     await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
@@ -144,7 +146,7 @@ public partial class DashboardView : ToolPage, IDisposable
             }
             else
             {
-                Log.Logger()?.ReportError("DashboardView", $"Catalog event subscriptions failed, show error");
+                _log.Error($"Catalog event subscriptions failed, show error");
                 RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
             }
         }
@@ -159,7 +161,7 @@ public partial class DashboardView : ToolPage, IDisposable
             }
             else
             {
-                Log.Logger()?.ReportError("DashboardView", $"Initialization failed, WidgetServiceState unknown");
+                _log.Error($"Initialization failed, WidgetServiceState unknown");
                 RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
             }
         }
@@ -176,7 +178,7 @@ public partial class DashboardView : ToolPage, IDisposable
         {
             // If it's the first time the Dashboard has been displayed and we have no other widgets pinned to a
             // different version of Dev Home, pin some default widgets.
-            Log.Logger()?.ReportInfo("DashboardView", $"Pin default widgets");
+            _log.Information($"Pin default widgets");
             await PinDefaultWidgetsAsync();
         }
         else if (hostWidgets != null)
@@ -187,17 +189,17 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private async Task<Widget[]> GetPreviouslyPinnedWidgets()
     {
-        Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
+        _log.Information("Get widgets for current host");
         var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
         var hostWidgets = await Task.Run(() => widgetHost?.GetWidgets());
 
         if (hostWidgets == null)
         {
-            Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
+            _log.Information($"Found 0 widgets for this host");
             return null;
         }
 
-        Log.Logger()?.ReportInfo("DashboardView", $"Found {hostWidgets.Length} widgets for this host");
+        _log.Information($"Found {hostWidgets.Length} widgets for this host");
 
         return hostWidgets;
     }
@@ -216,7 +218,7 @@ public partial class DashboardView : ToolPage, IDisposable
             try
             {
                 var stateStr = await widget.GetCustomStateAsync();
-                Log.Logger()?.ReportInfo("DashboardView", $"GetWidgetCustomState: {stateStr}");
+                _log.Information($"GetWidgetCustomState: {stateStr}");
 
                 if (string.IsNullOrEmpty(stateStr))
                 {
@@ -230,7 +232,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 if (stateObj.Host != WidgetHelpers.DevHomeHostName)
                 {
                     // This shouldn't be able to be reached
-                    Log.Logger()?.ReportError("DashboardView", $"Widget has custom state but no HostName.");
+                    _log.Error($"Widget has custom state but no HostName.");
                     continue;
                 }
 
@@ -252,7 +254,7 @@ public partial class DashboardView : ToolPage, IDisposable
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError("DashboardView", $"RestorePinnedWidgets(): ", ex);
+                _log.Error($"RestorePinnedWidgets(): ", ex);
             }
         }
 
@@ -284,14 +286,14 @@ public partial class DashboardView : ToolPage, IDisposable
         var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
 
         var length = await Task.Run(() => widgetHost!.GetWidgets().Length);
-        Log.Logger()?.ReportInfo("DashboardView", $"Found abandoned widget, try to delete it...");
-        Log.Logger()?.ReportInfo("DashboardView", $"Before delete, {length} widgets for this host");
+        _log.Information($"Found abandoned widget, try to delete it...");
+        _log.Information($"Before delete, {length} widgets for this host");
 
         await widget.DeleteAsync();
 
         var newWidgetList = await Task.Run(() => widgetHost.GetWidgets());
         length = (newWidgetList == null) ? 0 : newWidgetList.Length;
-        Log.Logger()?.ReportInfo("DashboardView", $"After delete, {length} widgets for this host");
+        _log.Information($"After delete, {length} widgets for this host");
     }
 
     private async Task PinDefaultWidgetsAsync()
@@ -300,7 +302,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
         if (catalog is null)
         {
-            Log.Logger()?.ReportError("AddWidgetDialog", $"Trying to pin default widgets, but WidgetCatalog is null.");
+            _log.Error($"Trying to pin default widgets, but WidgetCatalog is null.");
             return;
         }
 
@@ -310,7 +312,7 @@ public partial class DashboardView : ToolPage, IDisposable
             var id = widgetDefinition.Id;
             if (WidgetHelpers.DefaultWidgetDefinitionIds.Contains(id))
             {
-                Log.Logger()?.ReportInfo("DashboardView", $"Found default widget {id}");
+                _log.Information($"Found default widget {id}");
                 await PinDefaultWidgetAsync(widgetDefinition);
             }
         }
@@ -325,21 +327,21 @@ public partial class DashboardView : ToolPage, IDisposable
             var size = WidgetHelpers.GetDefaultWidgetSize(defaultWidgetDefinition.GetWidgetCapabilities());
             var id = defaultWidgetDefinition.Id;
             var newWidget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(id, size));
-            Log.Logger()?.ReportInfo("DashboardView", $"Created default widget {id}");
+            _log.Information($"Created default widget {id}");
 
             // Set custom state on new widget.
             var position = PinnedWidgets.Count;
             var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
-            Log.Logger()?.ReportDebug("DashboardView", $"SetCustomState: {newCustomState}");
+            _log.Debug($"SetCustomState: {newCustomState}");
             await newWidget.SetCustomStateAsync(newCustomState);
 
             // Put new widget on the Dashboard.
             await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
-            Log.Logger()?.ReportInfo("DashboardView", $"Inserted default widget {id} at position {position}");
+            _log.Information($"Inserted default widget {id} at position {position}");
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError("AddWidgetDialog", $"PinDefaultWidget failed: ", ex);
+            _log.Error($"PinDefaultWidget failed: ", ex);
         }
     }
 
@@ -381,7 +383,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 // Set custom state on new widget.
                 var position = PinnedWidgets.Count;
                 var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
-                Log.Logger()?.ReportDebug("DashboardView", $"SetCustomState: {newCustomState}");
+                _log.Debug($"SetCustomState: {newCustomState}");
                 await newWidget.SetCustomStateAsync(newCustomState);
 
                 // Put new widget on the Dashboard.
@@ -389,7 +391,7 @@ public partial class DashboardView : ToolPage, IDisposable
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportWarn("AddWidgetDialog", $"Creating widget failed: ", ex);
+                _log.Warning($"Creating widget failed: ", ex);
                 var mainWindow = Application.Current.GetService<WindowEx>();
                 var resourceLoader =
                     new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader(
@@ -414,7 +416,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
             if (widgetDefinition != null)
             {
-                Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
+                _log.Information($"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
 
                 TelemetryFactory.Get<ITelemetry>().Log(
                     "Dashboard_ReportPinnedWidget",
@@ -432,14 +434,14 @@ public partial class DashboardView : ToolPage, IDisposable
                     {
                         // TODO Support concurrency in dashboard. Today concurrent async execution can cause insertion errors.
                         // https://github.com/microsoft/devhome/issues/1215
-                        Log.Logger()?.ReportWarn("DashboardView", $"Couldn't insert pinned widget", ex);
+                        _log.Warning($"Couldn't insert pinned widget", ex);
                     }
                 });
             }
             else
             {
                 // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
-                Log.Logger()?.ReportInfo("DashboardView", $"No widget definition '{widgetDefinitionId}', delete widget {widgetId} with that definition");
+                _log.Information($"No widget definition '{widgetDefinitionId}', delete widget {widgetId} with that definition");
                 try
                 {
                     await widget.SetCustomStateAsync(string.Empty);
@@ -447,28 +449,28 @@ public partial class DashboardView : ToolPage, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger()?.ReportInfo("DashboardView", $"Error deleting widget", ex);
+                    _log.Information($"Error deleting widget", ex);
                 }
             }
         });
     }
 
     private void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args)
-        => Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetProviderDefinitionAdded {args.ProviderDefinition.Id}");
+        => _log.Information($"WidgetCatalog_WidgetProviderDefinitionAdded {args.ProviderDefinition.Id}");
 
     private void WidgetCatalog_WidgetProviderDefinitionDeleted(WidgetCatalog sender, WidgetProviderDefinitionDeletedEventArgs args)
-        => Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetProviderDefinitionDeleted {args.ProviderDefinitionId}");
+        => _log.Information($"WidgetCatalog_WidgetProviderDefinitionDeleted {args.ProviderDefinitionId}");
 
     private async void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args)
     {
-        Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetDefinitionAdded {args.Definition.Id}");
+        _log.Information($"WidgetCatalog_WidgetDefinitionAdded {args.Definition.Id}");
         await ViewModel.WidgetIconService.AddIconsToCacheAsync(args.Definition);
     }
 
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
     {
         var updatedDefinitionId = args.Definition.Id;
-        Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetDefinitionUpdated {updatedDefinitionId}");
+        _log.Information($"WidgetCatalog_WidgetDefinitionUpdated {updatedDefinitionId}");
 
         foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
         {
@@ -482,11 +484,11 @@ public partial class DashboardView : ToolPage, IDisposable
             {
                 _dispatcher.TryEnqueue(async () =>
                 {
-                    Log.Logger()?.ReportInfo("DashboardView", $"No longer allowed to have multiple of widget {newDef.Id}");
-                    Log.Logger()?.ReportInfo("DashboardView", $"Delete widget {widgetToUpdate.Widget.Id}");
+                    _log.Information($"No longer allowed to have multiple of widget {newDef.Id}");
+                    _log.Information($"Delete widget {widgetToUpdate.Widget.Id}");
                     PinnedWidgets.Remove(widgetToUpdate);
                     await widgetToUpdate.Widget.DeleteAsync();
-                    Log.Logger()?.ReportInfo("DashboardView", $"Deleted Widget {widgetToUpdate.Widget.Id}");
+                    _log.Information($"Deleted Widget {widgetToUpdate.Widget.Id}");
                 });
             }
             else
@@ -522,10 +524,10 @@ public partial class DashboardView : ToolPage, IDisposable
         var definitionId = args.DefinitionId;
         _dispatcher.TryEnqueue(async () =>
         {
-            Log.Logger()?.ReportInfo("DashboardView", $"WidgetDefinitionDeleted {definitionId}");
+            _log.Information($"WidgetDefinitionDeleted {definitionId}");
             foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
             {
-                Log.Logger()?.ReportInfo("DashboardView", $"Remove widget {widgetToRemove.Widget.Id}");
+                _log.Information($"Remove widget {widgetToRemove.Widget.Id}");
                 PinnedWidgets.Remove(widgetToRemove);
 
                 // The widget definition is gone, so delete widgets with that definition.
@@ -548,10 +550,10 @@ public partial class DashboardView : ToolPage, IDisposable
             try
             {
                 var removedIndex = e.OldStartingIndex;
-                Log.Logger()?.ReportDebug("DashboardView", $"Removed widget at index {removedIndex}");
+                _log.Debug($"Removed widget at index {removedIndex}");
                 for (var i = removedIndex; i < PinnedWidgets.Count; i++)
                 {
-                    Log.Logger()?.ReportDebug("DashboardView", $"Updatingg widget position for widget now at {i}");
+                    _log.Debug($"Updating widget position for widget now at {i}");
                     var widgetToUpdate = PinnedWidgets.ElementAt(i);
                     await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
                 }
@@ -565,7 +567,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private void WidgetGridView_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
     {
-        Log.Logger()?.ReportDebug("DashboardView", $"Drag starting");
+        _log.Debug($"Drag starting");
 
         // When drag starts, save the WidgetViewModel and the original index of the widget being dragged.
         var draggedObject = e.Items.FirstOrDefault();
@@ -590,7 +592,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private async void WidgetControl_Drop(object sender, DragEventArgs e)
     {
-        Log.Logger()?.ReportDebug("DashboardView", $"Drop starting");
+        _log.Debug($"Drop starting");
 
         // If the the thing we're dragging isn't a widget, it might not have a DataPackage and we shouldn't do anything with it.
         if (e.Data == null)
@@ -611,7 +613,7 @@ public partial class DashboardView : ToolPage, IDisposable
         // and this widget and all subsequent widgets will move over to the right.
         var droppedControl = sender as WidgetControl;
         var droppedIndex = WidgetGridView.Items.IndexOf(droppedControl.WidgetSource);
-        Log.Logger()?.ReportInfo("DashboardView", $"Widget dragged from index {draggedIndex} to {droppedIndex}");
+        _log.Information($"Widget dragged from index {draggedIndex} to {droppedIndex}");
 
         // If the widget is dropped at the position it's already at, there's nothing to do.
         if (draggedIndex == droppedIndex)
@@ -650,12 +652,12 @@ public partial class DashboardView : ToolPage, IDisposable
 
         PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
 
-        Log.Logger()?.ReportDebug("DashboardView", $"Drop ended");
+        _log.Debug($"Drop ended");
     }
 
     protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
     {
-        Log.Logger()?.ReportDebug("DashboardView", $"Leaving Dashboard, deactivating widgets.");
+        _log.Debug($"Leaving Dashboard, deactivating widgets.");
 
         // Deactivate widgets if we're not on the Dashboard.
         foreach (var widget in PinnedWidgets)

@@ -5,6 +5,7 @@ using HyperVExtension.Common;
 using HyperVExtension.Helpers;
 using HyperVExtension.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
 
 namespace HyperVExtension.Providers;
@@ -12,6 +13,8 @@ namespace HyperVExtension.Providers;
 /// <summary> Class that provides compute system information for Hyper-V Virtual machines. </summary>
 public class HyperVProvider : IComputeSystemProvider
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(HyperVProvider));
+
     private readonly string errorResourceKey = "ErrorPerformingOperation";
 
     private readonly IStringResource _stringResource;
@@ -55,7 +58,7 @@ public class HyperVProvider : IComputeSystemProvider
     public ICreateComputeSystemOperation? CreateComputeSystem(IDeveloperId developerId, string options)
     {
         // This is temporary until we have a proper implementation for this.
-        Logging.Logger()?.ReportError($"creation not supported yet for hyper-v");
+        _log.Error($"creation not supported yet for hyper-v");
         return null;
     }
 
@@ -67,12 +70,12 @@ public class HyperVProvider : IComputeSystemProvider
             try
             {
                 var computeSystems = _hyperVManager.GetAllVirtualMachines();
-                Logging.Logger()?.ReportInfo($"Successfully retrieved all virtual machines on: {DateTime.Now}");
+                _log.Information($"Successfully retrieved all virtual machines on: {DateTime.Now}");
                 return new ComputeSystemsResult(computeSystems);
             }
             catch (Exception ex)
             {
-                Logging.Logger()?.ReportError($"Failed to retrieved all virtual machines on: {DateTime.Now}", ex);
+                _log.Error($"Failed to retrieved all virtual machines on: {DateTime.Now}", ex);
                 return new ComputeSystemsResult(ex, OperationErrorString, ex.Message);
             }
         }).AsAsyncOperation();

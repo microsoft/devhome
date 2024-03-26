@@ -8,7 +8,6 @@ using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Renderers;
-using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Telemetry;
@@ -17,6 +16,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 using Windows.Data.Json;
 using Windows.System;
 using WinUIEx;
@@ -37,6 +37,8 @@ public delegate WidgetViewModel WidgetViewModelFactory(
 
 public partial class WidgetViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetViewModel));
+
     private readonly WindowEx _windowEx;
     private readonly IAdaptiveCardRenderingService _renderingService;
 
@@ -119,14 +121,14 @@ public partial class WidgetViewModel : ObservableObject
 
             if (string.IsNullOrEmpty(cardData) || string.IsNullOrEmpty(cardTemplate))
             {
-                Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
+                _log.Warning("Widget.GetCardDataAsync returned empty, cannot render card.");
                 ShowErrorCard("WidgetErrorCardDisplayText");
                 return;
             }
 
             // Uncomment for extra debugging output
-            // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
-            // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
+            // _log.Debug($"cardTemplate = {cardTemplate}");
+            // _log.Debug($"cardData = {cardData}");
 
             // Use the data to fill in the template.
             AdaptiveCardParseResult card;
@@ -152,7 +154,7 @@ public partial class WidgetViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
+                _log.Warning("There was an error expanding the Widget template with data: ", ex);
                 ShowErrorCard("WidgetErrorCardDisplayText");
                 return;
             }
@@ -164,7 +166,7 @@ public partial class WidgetViewModel : ObservableObject
 
             if (card == null || card.AdaptiveCard == null)
             {
-                Log.Logger()?.ReportError("WidgetViewModel", "Error in AdaptiveCardParseResult");
+                _log.Error("Error in AdaptiveCardParseResult");
                 ShowErrorCard("WidgetErrorCardDisplayText");
                 return;
             }
@@ -183,13 +185,13 @@ public partial class WidgetViewModel : ObservableObject
                     }
                     else
                     {
-                        Log.Logger()?.ReportError("WidgetViewModel", "Error in RenderedAdaptiveCard");
+                        _log.Error("Error in RenderedAdaptiveCard");
                         WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card: ", ex);
+                    _log.Error("Error rendering widget card: ", ex);
                     WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
                 }
             });
@@ -205,11 +207,11 @@ public partial class WidgetViewModel : ObservableObject
 
             if (string.IsNullOrEmpty(cardTemplate) || string.IsNullOrEmpty(cardData))
             {
-                Log.Logger()?.ReportDebug("WidgetViewModel", "Widget content not available yet.");
+                _log.Debug("Widget content not available yet.");
                 return false;
             }
 
-            Log.Logger()?.ReportDebug("WidgetViewModel", "Widget content available.");
+            _log.Debug("Widget content available.");
             return true;
         });
     }
@@ -231,7 +233,7 @@ public partial class WidgetViewModel : ObservableObject
     // Used to show a loading ring when we don't have widget content.
     public void ShowLoadingCard()
     {
-        Log.Logger()?.ReportDebug("WidgetViewModel", "Show loading card.");
+        _log.Debug("Show loading card.");
         _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             WidgetFrameworkElement = new ProgressRing();
@@ -290,10 +292,10 @@ public partial class WidgetViewModel : ObservableObject
 
     private async void HandleAdaptiveAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
     {
-        Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction {args.Action.ActionTypeString} for widget {Widget.Id}");
+        _log.Information($"HandleInvokedAction {args.Action.ActionTypeString} for widget {Widget.Id}");
         if (args.Action is AdaptiveOpenUrlAction openUrlAction)
         {
-            Log.Logger()?.ReportInfo("WidgetViewModel", $"Url = {openUrlAction.Url}");
+            _log.Information($"Url = {openUrlAction.Url}");
             await Launcher.LaunchUriAsync(openUrlAction.Url);
         }
         else if (args.Action is AdaptiveExecuteAction executeAction)
@@ -313,7 +315,7 @@ public partial class WidgetViewModel : ObservableObject
                 }
             }
 
-            Log.Logger()?.ReportInfo("WidgetViewModel", $"Verb = {executeAction.Verb}, Data = {dataToSend}");
+            _log.Information($"Verb = {executeAction.Verb}, Data = {dataToSend}");
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
         }
 
@@ -328,7 +330,7 @@ public partial class WidgetViewModel : ObservableObject
 
     private async void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
     {
-        Log.Logger()?.ReportDebug("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
+        _log.Debug($"HandleWidgetUpdated for widget {sender.Id}");
         await RenderWidgetFrameworkElementAsync();
     }
 

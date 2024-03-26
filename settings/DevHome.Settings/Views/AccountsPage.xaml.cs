@@ -10,7 +10,6 @@ using DevHome.Common.Renderers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.Views;
-using DevHome.Logging;
 using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
 using DevHome.Telemetry;
@@ -19,6 +18,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Storage;
 using WinUIEx;
 
@@ -26,6 +26,8 @@ namespace DevHome.Settings.Views;
 
 public sealed partial class AccountsPage : Page
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AccountsPage));
+
     public AccountsViewModel ViewModel { get; }
 
     public AccountsPage()
@@ -79,7 +81,7 @@ public sealed partial class AccountsPage : Page
             }
             else
             {
-                GlobalLog.Logger?.ReportInfo($"AddAccount_Click(): addAccountButton.Tag is not AccountsProviderViewModel - Sender: {sender} RoutedEventArgs: {e}");
+                _log.Information($"AddAccount_Click(): addAccountButton.Tag is not AccountsProviderViewModel - Sender: {sender} RoutedEventArgs: {e}");
                 return;
             }
         }
@@ -92,7 +94,7 @@ public sealed partial class AccountsPage : Page
             var adaptiveCardSessionResult = accountProvider.DeveloperIdProvider.GetLoginAdaptiveCardSession();
             if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
             {
-                GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                _log.Error($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
                 return;
             }
 
@@ -119,7 +121,7 @@ public sealed partial class AccountsPage : Page
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
+            _log.Error($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
         }
 
         accountProvider.RefreshLoggedInAccounts();
@@ -143,7 +145,7 @@ public sealed partial class AccountsPage : Page
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file - HostConfigFileName: {hostConfigFileName}.", ex);
+            _log.Error($"Failure occurred while retrieving the HostConfig file - HostConfigFileName: {hostConfigFileName}.", ex);
         }
 
         // Add host config for current theme to renderer
@@ -158,7 +160,7 @@ public sealed partial class AccountsPage : Page
             }
             else
             {
-                GlobalLog.Logger?.ReportInfo($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
+                _log.Information($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
             }
         });
         return;
@@ -224,13 +226,13 @@ public sealed partial class AccountsPage : Page
                 var developerIdResult = await accountProvider.DeveloperIdProvider.ShowLogonSession(windowPtr);
                 if (developerIdResult.Result.Status == ProviderOperationStatus.Failure)
                 {
-                    GlobalLog.Logger?.ReportError($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
+                    _log.Error($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
                     return;
                 }
             }
             catch (Exception ex)
             {
-                GlobalLog.Logger?.ReportError($"Exception thrown while calling {nameof(accountProvider.DeveloperIdProvider)}.{nameof(accountProvider.DeveloperIdProvider.ShowLogonSession)}: ", ex);
+                _log.Error($"Exception thrown while calling {nameof(accountProvider.DeveloperIdProvider)}.{nameof(accountProvider.DeveloperIdProvider.ShowLogonSession)}: ", ex);
             }
 
             accountProvider.RefreshLoggedInAccounts();

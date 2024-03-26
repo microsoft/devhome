@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Security.Principal;
-using DevHome.Logging;
+using Serilog;
 
 namespace DevHome.SetupFlow.Common.Helpers;
 
