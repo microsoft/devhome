@@ -10,7 +10,6 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Settings.ViewModels;
 
@@ -38,16 +37,6 @@ public partial class FeedbackViewModel : ObservableObject
             new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
             new(stringResource.GetLocalized("Settings_Feedback_Header"), typeof(FeedbackViewModel).FullName!),
         };
-    }
-
-    [RelayCommand]
-    public void BreadcrumbBarItemClicked(BreadcrumbBarItemClickedEventArgs args)
-    {
-        if (args.Index < Breadcrumbs.Count - 1)
-        {
-            var crumb = (Breadcrumb)args.Item;
-            crumb.NavigateTo();
-        }
     }
 
     [RelayCommand]

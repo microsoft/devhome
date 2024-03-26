@@ -31,16 +31,6 @@ public partial class AboutViewModel : ObservableObject
         };
     }
 
-    [RelayCommand]
-    public void BreadcrumbBarItemClicked(BreadcrumbBarItemClickedEventArgs args)
-    {
-        if (args.Index < Breadcrumbs.Count - 1)
-        {
-            var crumb = (Breadcrumb)args.Item;
-            crumb.NavigateTo();
-        }
-    }
-
     private static string GetVersionDescription()
     {
         var appInfoService = Application.Current.GetService<IAppInfoService>();

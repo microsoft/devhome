@@ -4,27 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:viewmodels="using:DevHome.Settings.ViewModels"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
+    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
-
-    <behaviors:NavigationViewHeaderBehavior.HeaderTemplate>
-        <DataTemplate x:DataType="viewmodels:AboutViewModel">
-            <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-                <BreadcrumbBar
-                    x:Name="BreadcrumbBar"
-                    ItemsSource="{x:Bind Breadcrumbs}">
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="ItemClicked">
-                            <ic:InvokeCommandAction Command="{x:Bind BreadcrumbBarItemClickedCommand}" />
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </BreadcrumbBar>
-            </Grid>
-        </DataTemplate>
-    </behaviors:NavigationViewHeaderBehavior.HeaderTemplate>
 
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
         <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
