@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Contracts;
+using DevHome.Common.Contracts.Services;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
 using DevHome.Environments.Models;
@@ -21,7 +22,6 @@ public static class ServiceExtensions
 
         // Services
         services.AddSingleton<EnvironmentsExtensionsService>();
-        services.AddSingleton<ToastNotificationService>();
         services.AddSingleton<IWindowsIdentityService, WindowsIdentityService>();
 
 #if DEBUG
