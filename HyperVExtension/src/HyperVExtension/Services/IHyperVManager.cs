@@ -98,4 +98,13 @@ public interface IHyperVManager
     /// <param name="diskPath"> The path to the virtual disk.</param>
     /// <returns> The size in bytes of the virtual disk.</returns>
     public ulong GetVhdSize(string diskPath);
+
+    /// <summary> Gets the host information for the Hyper-V host.</summary>
+    /// <returns> An object that represents the host information for the Hyper-V host.</returns>
+    public HyperVVirtualMachineHost GetVirtualMachineHost();
+
+    /// <summary> Creates a new virtual machine from the Hyper-V VM Gallery</summary>
+    /// <param name="parameters"> The parameters for creating a new virtual machine.</param>
+    /// <returns> A new virtual machine object.</returns>
+    public HyperVVirtualMachine CreateVirtualMachineFromGallery(VirtualMachineCreationParameters parameters);
 }

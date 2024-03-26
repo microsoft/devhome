@@ -5,8 +5,8 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Settings.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -23,7 +23,7 @@ public partial class AboutViewModel : ObservableObject
     {
         _versionDescription = GetVersionDescription();
 
-        var stringResource = new StringResource("DevHome.Settings/Resources");
+        var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
         Breadcrumbs = new ObservableCollection<Breadcrumb>
         {
             new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),

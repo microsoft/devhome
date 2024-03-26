@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
 using DevHome.Logging;
-using DevHome.Settings.Models;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 
@@ -67,7 +67,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
 
     public void FillBreadcrumbBar(string lastCrumbName)
     {
-        var stringResource = new StringResource("DevHome.Settings/Resources");
+        var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
         Breadcrumbs.Add(new(stringResource.GetLocalized("Settings_Extensions_Header"), typeof(ExtensionLibraryViewModel).FullName!));
         Breadcrumbs.Add(new Breadcrumb(lastCrumbName, typeof(ExtensionSettingsViewModel).FullName!));
     }

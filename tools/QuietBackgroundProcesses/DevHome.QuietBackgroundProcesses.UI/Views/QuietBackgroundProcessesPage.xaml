@@ -16,18 +16,22 @@
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xec7a;"/>
                     </ctControls:SettingsExpander.HeaderIcon>
 
-                    <!-- Toggle switch -->
+                    <!-- Quiet session setting area -->
                     <StackPanel Orientation="Horizontal">
                         <TextBlock
-                            Text="{x:Bind ViewModel.SessionStateText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Text="{x:Bind ViewModel.SessionStateText, Mode=OneWay}"
                             Style="{StaticResource BodyStrongTextBlockStyle}"
                             Foreground="{StaticResource AccentTextFillColorTertiaryBrush}"
                             Margin="{StaticResource MediumLeftRightMargin}"
                             VerticalAlignment="Center"
                             TextTrimming="CharacterEllipsis" />
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <ToggleSwitch IsOn="{x:Bind ViewModel.IsToggleOn, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.IsToggleEnabled, Mode=OneWay}" />
-                        </StackPanel>
+
+                        <!-- Start/Stop button -->
+                        <ToggleButton
+                            Content="{x:Bind ViewModel.QuietButtonText, Mode=OneWay}"
+                            IsEnabled="{x:Bind ViewModel.IsFeaturePresent, Mode=OneWay}"
+                            IsChecked="{x:Bind ViewModel.QuietButtonChecked, Mode=OneWay}"
+                            Command="{x:Bind ViewModel.QuietButtonClickedCommand}" />
                     </StackPanel>
 
                     <!-- Expander -->

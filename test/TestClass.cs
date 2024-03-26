@@ -3,8 +3,6 @@
 
 using System.Diagnostics;
 
-using Microsoft.UI.Xaml.Controls;
-
 namespace DevHome.Test;
 
 /*

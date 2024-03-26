@@ -15,7 +15,7 @@ namespace DevHome.Common.Environments.Converters;
 /// </summary>
 public class CardStateToLocalizedTextConverter : IValueConverter
 {
-    private static readonly StringResource _stringResource = new("DevHome.Common/Resources");
+    private static readonly StringResource _stringResource = new("DevHome.Common.pri", "DevHome.Common/Resources");
     private const string Prefix = "ComputeSystem";
 
     public object Convert(object value, Type targetType, object parameter, string language)

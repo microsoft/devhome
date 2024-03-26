@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Views;
-using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
 

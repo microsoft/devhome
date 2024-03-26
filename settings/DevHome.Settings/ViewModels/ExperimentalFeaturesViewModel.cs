@@ -8,7 +8,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Settings.Models;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Settings.ViewModels;
@@ -23,7 +22,7 @@ public partial class ExperimentalFeaturesViewModel : ObservableObject
     {
         ExperimentalFeatures = experimentationService!.ExperimentalFeatures.Where(x => x.IsVisible).OrderBy(x => x.Id).ToList();
 
-        var stringResource = new StringResource("DevHome.Settings/Resources");
+        var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
         Breadcrumbs = new ObservableCollection<Breadcrumb>
         {
             new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
