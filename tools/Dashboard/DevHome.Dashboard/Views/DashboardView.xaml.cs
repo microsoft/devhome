@@ -13,6 +13,7 @@ using DevHome.Common;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
+using DevHome.Common.Services;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
@@ -391,14 +392,11 @@ public partial class DashboardView : ToolPage, IDisposable
             {
                 Log.Logger()?.ReportWarn("AddWidgetDialog", $"Creating widget failed: ", ex);
                 var mainWindow = Application.Current.GetService<WindowEx>();
-                var resourceLoader =
-                    new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader(
-                        "DevHome.Dashboard.pri",
-                        "DevHome.Dashboard/Resources");
+                var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
                 await mainWindow.ShowErrorMessageDialogAsync(
                     title: string.Empty,
-                    content: resourceLoader.GetString("CouldNotCreateWidgetError"),
-                    buttonText: resourceLoader.GetString("CloseButtonText"));
+                    content: stringResource.GetLocalized("CouldNotCreateWidgetError"),
+                    buttonText: stringResource.GetLocalized("CloseButtonText"));
             }
         }
     }
