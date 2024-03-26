@@ -127,6 +127,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IComputeSystemService, ComputeSystemService>();
             services.AddSingleton<IComputeSystemManager, ComputeSystemManager>();
             services.AddTransient<NotificationService>();
+            services.AddSingleton<AdaptiveCardRenderingService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
