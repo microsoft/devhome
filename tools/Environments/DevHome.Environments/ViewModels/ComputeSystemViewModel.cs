@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -30,6 +31,8 @@ public partial class ComputeSystemViewModel : ObservableObject
     public ComputeSystem ComputeSystem { get; }
 
     public string AlternativeName { get; } = string.Empty;
+
+    public DateTime LastConnected { get; set; } = DateTime.Now;
 
     public string Type { get; }
 
@@ -129,6 +132,8 @@ public partial class ComputeSystemViewModel : ObservableObject
     [RelayCommand]
     public void LaunchAction()
     {
+        LastConnected = DateTime.Now;
+
         // We'll need to disable the card UI while the operation is in progress and handle failures.
         Task.Run(async () =>
         {
