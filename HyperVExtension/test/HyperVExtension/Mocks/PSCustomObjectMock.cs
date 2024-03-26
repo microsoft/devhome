@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.ServiceProcess;
+using HyperVExtension.Helpers;
+
 namespace HyperVExtension.UnitTest.Mocks;
 
 public enum HyperVState
@@ -34,4 +37,14 @@ public class PSCustomObjectMock
     public string Date { get; set; } = string.Empty;
 
     public bool IsDeleted { get; set; }
+
+    public uint LogicalProcessorCount { get; set; }
+
+    public string VirtualHardDiskPath { get; set; } = string.Empty;
+
+    public string VirtualMachinePath { get; set; } = string.Empty;
+
+    public long MemoryMaximum { get; set; }
+
+    public long MemoryMinimum { get; set; }
 }
