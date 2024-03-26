@@ -3,10 +3,8 @@
 
 using System;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.Common.Renderers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.Views;
@@ -18,7 +16,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using Windows.Storage;
 using WinUIEx;
 
 namespace DevHome.Settings.Views;
@@ -99,9 +96,8 @@ public sealed partial class AccountsPage : Page
 
             var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
             var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
-            var renderer = new AdaptiveCardRenderer();
-            await ConfigureLoginUIRenderer(renderer);
-            renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+            var renderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
+            var renderer = await renderingService.GetRenderer();
 
             extensionAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
             extensionAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
@@ -124,45 +120,6 @@ public sealed partial class AccountsPage : Page
         }
 
         accountProvider.RefreshLoggedInAccounts();
-    }
-
-    private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer)
-    {
-        var dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-
-        // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
-        renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
-        renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
-
-        var hostConfigContents = string.Empty;
-        var hostConfigFileName = (ActualTheme == ElementTheme.Light) ? "LightHostConfig.json" : "DarkHostConfig.json";
-        try
-        {
-            var uri = new Uri($"ms-appx:////DevHome.Settings/Assets/{hostConfigFileName}");
-            var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
-            hostConfigContents = await FileIO.ReadTextAsync(file);
-        }
-        catch (Exception ex)
-        {
-            _log.Error($"Failure occurred while retrieving the HostConfig file - HostConfigFileName: {hostConfigFileName}.", ex);
-        }
-
-        // Add host config for current theme to renderer
-        dispatcher.TryEnqueue(() =>
-        {
-            if (!string.IsNullOrEmpty(hostConfigContents))
-            {
-                renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
-
-                // Remove margins from selectAction.
-                renderer.AddSelectActionMargin = false;
-            }
-            else
-            {
-                _log.Information($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
-            }
-        });
-        return;
     }
 
     private async void Logout_Click(object sender, RoutedEventArgs e)
