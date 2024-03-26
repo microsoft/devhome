@@ -145,7 +145,7 @@ public class ConfigureTargetTask : ISetupTask
 
     public void OnActionRequired(IApplyConfigurationOperation operation, SDK.ApplyConfigurationActionRequiredEventArgs actionRequiredEventArgs)
     {
-        Log.Logger?.ReportInfo(Log.Component.ConfigurationTarget, $"adaptive card receieved from extension");
+        Log.Logger?.ReportInfo(Log.Component.ConfigurationTarget, $"adaptive card received from extension");
         var correctiveCard = actionRequiredEventArgs?.CorrectiveActionCardSession;
 
         if (correctiveCard != null)
@@ -162,7 +162,7 @@ public class ConfigureTargetTask : ISetupTask
 
             CreateCorrectiveActionPanel(ExtensionAdaptiveCardSession).GetAwaiter().GetResult();
 
-            AddMessage(_stringResource.GetLocalized(StringResourceKey.ConfigureTargetApplyConfigurationActionNeeded, UserNumberOfAttempts++, UserMaxNumberOfAttempts), MessageSeverityKind.Warning);
+            AddMessage(_stringResource.GetLocalized(StringResourceKey.ConfigureTargetApplyConfigurationActionNeeded, UserNumberOfAttempts++), MessageSeverityKind.Warning);
         }
         else
         {
