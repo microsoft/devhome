@@ -105,7 +105,10 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
     }
 
     /// <summary>
-    /// Gets and configures the UI to show to the user for logging them in.
+    /// Gets and configures the adaptive card that will be displayed on the configure environment page.
+    /// This adaptive card will be used through out the flow until either the user changes compute system
+    /// providers, cancels the flow, or completes the flow. We use message passing to send the extension
+    /// adaptive card panel to the next page of the flow when the user moves from one page to the next.
     /// </summary>
     public void UpdateExtensionAdaptiveCardPanel()
     {
@@ -126,7 +129,8 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
 
             ExtensionAdaptiveCardSession = new ExtensionAdaptiveCardSession(adaptiveCardSessionResult.ComputeSystemCardSession);
             ExtensionAdaptiveCardSession.Stopped += OnAdaptiveCardSessionStopped;
-            CurAdaptiveCardRenderer.ElementRenderers.Set(DevHomeAdaptiveSettingsCardItemsViewChoiceSet.AdaptiveSettingsCardType, new ItemsViewChoiceSet());
+            CurAdaptiveCardRenderer.ElementRenderers.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new ItemsViewChoiceSet());
+            CurAdaptiveCardRenderer.ElementRenderers.Set("Adaptive.ActionSet", new DevHomeActionSet(TopLevelCardActionSetVisibility.Hidden));
             CurAdaptiveCardRenderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
 
             ExtensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
@@ -164,7 +168,9 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
 
     private void RegisterAllSupportedDevHomeParsers()
     {
-        ElementRegistration.Set(DevHomeAdaptiveSettingsCard.AdaptiveSettingsCardType, new DevHomeAdaptiveSettingsCardParser());
-        ElementRegistration.Set(DevHomeAdaptiveSettingsCardItemsViewChoiceSet.AdaptiveSettingsCardType, new DevHomeAdaptiveSettingsCardItemsViewChoiceSetParser());
+        ElementRegistration.Set(DevHomeSettingsCard.AdaptiveElementType, new DevHomeSettingsCardParser());
+        ElementRegistration.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new DevHomeSettingsCardChoiceSetParser());
+        ElementRegistration.Set(DevHomeLaunchContentDialogButton.AdaptiveElementType, new DevHomeLaunchContentDialogButtonParser());
+        ElementRegistration.Set(DevHomeContentDialogContent.AdaptiveElementType, new DevHomeContentDialogContentParser());
     }
 }

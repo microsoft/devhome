@@ -7,17 +7,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
+using AdaptiveCards.Rendering.WinUI3;
 using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
-public abstract class DevHomeAdaptiveCardElementBase : IAdaptiveCardElement
+public class DevHomeSettingsCard : IDevHomeSettingsCard
 {
+    // These properties relate to the Windows Community Toolkit's SettingsCard control.
+    // We'll allow extensions to provide the data for the SettingsCard control from an Adaptive Card.
+    // Then we'll render the actual SettingsCard control in the DevHome app.
+    public string Description { get; set; } = string.Empty;
+
+    public string Header { get; set; } = string.Empty;
+
+    public string HeaderIcon { get; set; } = string.Empty;
+
+    public IAdaptiveCardElement? NonActionElement { get; set; }
+
+    public IAdaptiveActionElement? ActionElement { get; set; }
+
+    // Properties for IAdaptiveCardElement
+    public string ElementTypeString { get; set; } = AdaptiveElementType;
+
+    public static string AdaptiveElementType => "DevHome.SettingsCard";
+
     public JsonObject AdditionalProperties { get; set; } = new();
 
     public ElementType ElementType { get; set; } = ElementType.Custom;
-
-    public string ElementTypeString { get; set; } = string.Empty;
 
     public IAdaptiveCardElement? FallbackContent { get; set; }
 

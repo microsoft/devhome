@@ -6,16 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AdaptiveCards.ObjectModel.WinUI3;
+using AdaptiveCards.Rendering.WinUI3;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
-public interface IDevHomeAdaptiveSettingsCard
+public interface IDevHomeSettingsCardAction : IAdaptiveCardElement
 {
-    public string Description { get; set; }
-
-    public string Header { get; set; }
-
-    public string HeaderIcon { get; set; }
-
-    public IDevHomeAdaptiveSettingsCardAction? ActionElement { get; set; }
+    public string ActionText { get; }
 }

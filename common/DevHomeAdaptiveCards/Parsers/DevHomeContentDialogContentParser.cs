@@ -12,33 +12,30 @@ using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.Parsers;
 
-public class DevHomeAdaptiveContentDialogParser : IAdaptiveElementParser
+public class DevHomeContentDialogContentParser : IAdaptiveElementParser
 {
     public IAdaptiveCardElement FromJson(JsonObject inputJson, AdaptiveElementParserRegistration elementParsers, AdaptiveActionParserRegistration actionParsers, IList<AdaptiveWarning> warnings)
     {
-        var dialog = new DevHomeAdaptiveContentDialog();
+        var dialog = new DevHomeContentDialogContent();
 
-        if (inputJson.TryGetValue("title", out var titleJsonValue))
+        if (inputJson.TryGetValue("DevHomeContentDialogTitle", out var titleJsonValue))
         {
             dialog.Title = titleJsonValue.GetString();
         }
 
-        if (inputJson.TryGetValue("adaptiveCardJsonTemplate", out var adaptiveCardJsonTemplateJsonValue))
+        if (inputJson.TryGetValue("DevHomeContentDialogContainerElement", out var adaptiveCardContainerElement))
         {
-            dialog.AdaptiveCardJsonTemplate = adaptiveCardJsonTemplateJsonValue.GetString();
+            // Parse the container element and pass it to the dialog. This will be the content of the dialog.
+            var containerElementParser = elementParsers.Get("Adaptive.Container");
+            dialog.ContainerElement = containerElementParser.FromJson(adaptiveCardContainerElement.GetObject(), elementParsers, actionParsers, warnings);
         }
 
-        if (inputJson.TryGetValue("adaptiveCardJsonData", out var adaptiveCardJsonDataJsonValue))
-        {
-            dialog.AdaptiveCardJsonData = adaptiveCardJsonDataJsonValue.GetString();
-        }
-
-        if (inputJson.TryGetValue("primaryButtonText", out var primaryButtonTextJsonValue))
+        if (inputJson.TryGetValue("DevHomeContentDialogPrimaryButtonText", out var primaryButtonTextJsonValue))
         {
             dialog.PrimaryButtonText = primaryButtonTextJsonValue.GetString();
         }
 
-        if (inputJson.TryGetValue("secondaryButtonText", out var secondaryButtonTextJsonValue))
+        if (inputJson.TryGetValue("DevHomeContentDialogSecondaryButtonText", out var secondaryButtonTextJsonValue))
         {
             dialog.SecondaryButtonText = secondaryButtonTextJsonValue.GetString();
         }

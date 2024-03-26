@@ -11,13 +11,13 @@ using AdaptiveCards.ObjectModel.WinUI3;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
-public interface IDevHomeAdaptiveContentDialog : IAdaptiveCardElement
+public interface IDevHomeContentDialog : IAdaptiveCardElement
 {
     public string Title { get; set; }
 
-    public string AdaptiveCardJsonTemplate { get; set; }
-
-    public string AdaptiveCardJsonData { get; set; }
+    // This should always be the container adaptive card element.
+    // We'll use the container element as the content of the content dialog.
+    public IAdaptiveCardElement? ContainerElement { get; set; }
 
     public string PrimaryButtonText { get; set; }
 

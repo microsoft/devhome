@@ -13,14 +13,16 @@ using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
-public class DevHomeAdaptiveSettingsCardItemsViewChoiceSet : IAdaptiveCardElement, IAdaptiveInputElement
+public class DevHomeSettingsCardChoiceSet : IAdaptiveCardElement, IAdaptiveInputElement
 {
     public ElementType ElementType { get; set; } = ElementType.Custom;
 
     // Specific properties for IAdaptiveCardElement
-    public string ElementTypeString { get; set; } = AdaptiveSettingsCardType;
+    public string ElementTypeString { get; set; } = AdaptiveElementType;
 
-    public static string AdaptiveSettingsCardType => "DevHome.DevHomeAdaptiveSettingsCardItemsViewChoiceSet";
+    public static string AdaptiveElementType => "DevHome.SettingsCardChoiceSet";
+
+    public const int UnselectedIndex = -1;
 
     // Specific properties for IAdaptiveInputElement
     public string ErrorMessage { get; set; } = string.Empty;
@@ -30,9 +32,11 @@ public class DevHomeAdaptiveSettingsCardItemsViewChoiceSet : IAdaptiveCardElemen
     public string Label { get; set; } = string.Empty;
 
     // Specific properties for DevHomeAdaptiveSettingsCardItemsViewChoiceSet
-    public IList<DevHomeAdaptiveSettingsCard> SettingsCards { get; set; } = [];
+    public IList<DevHomeSettingsCard> SettingsCards { get; set; } = [];
 
     public bool IsMultiSelect { get; set; }
+
+    public bool IsSelectionDisabled { get; set; }
 
     public string GroupDescription { get; set; } = string.Empty;
 
