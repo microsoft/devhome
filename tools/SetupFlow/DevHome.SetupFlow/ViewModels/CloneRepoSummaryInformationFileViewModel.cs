@@ -4,16 +4,13 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Globalization;
 using System.IO;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow.SummaryPage;
 using DevHome.Logging;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
-using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -60,10 +57,10 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
 
     public string RunFileMessage { get; } = string.Empty;
 
-    public CloneRepoSummaryInformationViewModel(IHost host)
+    public CloneRepoSummaryInformationViewModel(SetupFlowOrchestrator setupFlowOrchestrator, ISetupFlowStringResource stringResource)
     {
-        _relatedActivityId = host.GetService<SetupFlowOrchestrator>().ActivityId;
-        _stringResource = host.GetService<ISetupFlowStringResource>();
+        _relatedActivityId = setupFlowOrchestrator.ActivityId;
+        _stringResource = stringResource;
         FileFoundMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoNextStepsFileFound);
         ViewFileMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoNextStepsView);
         RunFileMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoNextStepsRun);
@@ -86,7 +83,7 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
                 new CloneRepoNextStepError(_viewOperation, new ArgumentNullException(nameof(FilePathAndName)).ToString(), RepoName),
                 _relatedActivityId);
 
-            GlobalLog.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FilePathAndName)} is null when trying to view file.");
+            Log.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FilePathAndName)} is null when trying to view file.");
             return;
         }
 
@@ -98,7 +95,7 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
                 new CloneRepoNextStepError(_viewOperation, new ArgumentException($"{nameof(FilePathAndName)} is empty.").ToString(), RepoName),
                 _relatedActivityId);
 
-            GlobalLog.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FilePathAndName)} is empty when trying to view file.");
+            Log.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FilePathAndName)} is empty when trying to view file.");
             return;
         }
 
@@ -109,6 +106,17 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
         {
             processStartInfo.FileName = Path.GetDirectoryName(FilePathAndName);
         }
+        catch (ArgumentException ex)
+        {
+            TelemetryFactory.Get<ITelemetry>().Log(
+            _eventName,
+            LogLevel.Critical,
+            new CloneRepoNextStepError(_viewOperation, ex.ToString(), RepoName),
+            _relatedActivityId);
+
+            Log.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FilePathAndName)} is either empty, contains only white spaces, or contains invalid characters.");
+            return;
+        }
         catch (PathTooLongException ex)
         {
             TelemetryFactory.Get<ITelemetry>().Log(
@@ -117,7 +125,7 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
                 new CloneRepoNextStepError(_viewOperation, ex.ToString(), RepoName),
                 _relatedActivityId);
 
-            GlobalLog.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FilePathAndName)} is too long.");
+            Log.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FilePathAndName)} is too long.");
             return;
         }
 
@@ -141,7 +149,7 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
                 new CloneRepoNextStepError(_runOperation, new ArgumentNullException(nameof(FileName)).ToString(), RepoName),
                 _relatedActivityId);
 
-            GlobalLog.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FileName)} is null when trying to run file.");
+            Log.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FileName)} is null when trying to run file.");
             return;
         }
 
@@ -153,7 +161,7 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
                 new CloneRepoNextStepError(_runOperation, new ArgumentException(nameof(FileName)).ToString(), RepoName),
                 _relatedActivityId);
 
-            GlobalLog.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FileName)} is null when trying to run file.");
+            Log.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(FileName)} is null when trying to run file.");
             return;
         }
 
@@ -177,7 +185,7 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
                 new CloneRepoNextStepError(operation, new ArgumentNullException(nameof(processStartInfo)).ToString(), RepoName),
                 _relatedActivityId);
 
-            GlobalLog.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(Process)} is null.  Operation {operation}");
+            Log.Logger?.ReportWarn("CloneRepoSummaryInformationViewModel", $"{nameof(Process)} is null.  Operation {operation}");
             return;
         }
 
@@ -194,7 +202,7 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
                 new CloneRepoNextStepError(operation, win32Exception.ToString(), RepoName),
                 _relatedActivityId);
 
-            GlobalLog.Logger?.ReportError($"An error happened when starting the process.  Operation {operation}", win32Exception);
+            Log.Logger?.ReportError($"An error happened when starting the process.  Operation {operation}", win32Exception);
         }
         catch (ObjectDisposedException objectDisposedException)
         {
@@ -204,7 +212,7 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
                 new CloneRepoNextStepError(operation, objectDisposedException.ToString(), RepoName),
                 _relatedActivityId);
 
-            GlobalLog.Logger?.ReportError($"The process object was disposed before it could start.  Operation {operation}", objectDisposedException);
+            Log.Logger?.ReportError($"The process object was disposed before it could start.  Operation {operation}", objectDisposedException);
         }
         catch (InvalidOperationException invalidOperationException)
         {
@@ -214,7 +222,7 @@ public partial class CloneRepoSummaryInformationViewModel : ISummaryInformationV
                 new CloneRepoNextStepError(operation, invalidOperationException.ToString(), RepoName),
                 _relatedActivityId);
 
-            GlobalLog.Logger?.ReportError($"An error happened when starting the process.  Operation {operation}", invalidOperationException);
+            Log.Logger?.ReportError($"An error happened when starting the process.  Operation {operation}", invalidOperationException);
         }
     }
 }
