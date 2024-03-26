@@ -174,14 +174,17 @@
         </Grid>
 
         <!-- Last synced text block-->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-            <TextBlock x:Uid="LastSyncTextBlock"
-                       VerticalAlignment="Center"
-                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                       Margin="0 12 3 12" />
-            <TextBlock Text="{x:Bind ViewModel.LastSyncTime, Mode=OneWay}"
-                       VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-        </StackPanel>
+        <Grid Grid.Row="2" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                <TextBlock x:Uid="LastSyncTextBlock"
+                           VerticalAlignment="Center"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Margin="0 12 3 12" />
+                <TextBlock Text="{x:Bind ViewModel.LastSyncTime, Mode=OneWay}"
+                           VerticalAlignment="Center"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+            </StackPanel>
+        </Grid>
 
         <!-- Per VM/Compute System card -->
         <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
