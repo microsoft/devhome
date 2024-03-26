@@ -100,12 +100,10 @@ public sealed partial class AccountsPage : Page
             var renderer = await renderingService.GetRenderer();
 
             extensionAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
-            extensionAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
 
             var loginUIContentDialog = new LoginUIDialog(extensionAdaptiveCardPanel)
             {
                 XamlRoot = parentPage.XamlRoot,
-                RequestedTheme = parentPage.ActualTheme,
             };
 
             await loginUIContentDialog.ShowAsync();

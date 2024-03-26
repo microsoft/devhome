@@ -181,7 +181,7 @@ internal sealed class RepositoryProvider
     /// </summary>
     /// <param name="elementTheme">The theme to use.</param>
     /// <returns>The adaptive panel to show to the user.  Can be null.</returns>
-    public async Task<ExtensionAdaptiveCardPanel> GetLoginUiAsync(ElementTheme elementTheme)
+    public async Task<ExtensionAdaptiveCardPanel> GetLoginUiAsync()
     {
         try
         {
@@ -197,7 +197,6 @@ internal sealed class RepositoryProvider
 
             var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
             extensionAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
-            extensionAdaptiveCardPanel.RequestedTheme = elementTheme;
 
             return extensionAdaptiveCardPanel;
         }

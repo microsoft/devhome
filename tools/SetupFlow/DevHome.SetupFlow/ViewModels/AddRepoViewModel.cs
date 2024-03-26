@@ -1224,7 +1224,7 @@ public partial class AddRepoViewModel : ObservableObject
         var authenticationFlow = provider.GetAuthenticationExperienceKind();
         if (authenticationFlow == AuthenticationExperienceKind.CardSession)
         {
-            var loginUi = await _providers.GetLoginUiAsync(provider.ExtensionDisplayName, SelectedTheme);
+            var loginUi = await _providers.GetLoginUiAsync(provider.ExtensionDisplayName);
             loginFrame.Content = loginUi;
         }
         else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)

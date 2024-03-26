@@ -141,16 +141,15 @@ internal sealed class RepositoryProviders
     /// Gets the login UI for the provider with the name providerName
     /// </summary>
     /// <param name="providerName">The provider to search for.</param>
-    /// <param name="elementTheme">The theme to use for the UI.</param>
     /// <returns>The UI to show. Can be null.</returns>
-    public async Task<ExtensionAdaptiveCardPanel> GetLoginUiAsync(string providerName, ElementTheme elementTheme)
+    public async Task<ExtensionAdaptiveCardPanel> GetLoginUiAsync(string providerName)
     {
         TelemetryFactory.Get<ITelemetry>().Log(
                                                 "EntryPoint_DevId_Event",
                                                 LogLevel.Critical,
                                                 new EntryPointEvent(EntryPointEvent.EntryPoint.SetupFlow));
         _log.Information($"Getting login UI {providerName}");
-        return await _providers.GetValueOrDefault(providerName)?.GetLoginUiAsync(elementTheme);
+        return await _providers.GetValueOrDefault(providerName)?.GetLoginUiAsync();
     }
 
     /// <summary>

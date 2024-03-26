@@ -21,24 +21,7 @@ public class ExtensionAdaptiveCardPanel : StackPanel
 {
     public event EventHandler<FrameworkElement>? UiUpdate;
 
-    private readonly IThemeSelectorService _themeSelectorService;
-
     private RenderedAdaptiveCard? _renderedAdaptiveCard;
-
-    public ExtensionAdaptiveCardPanel()
-    {
-        _themeSelectorService = Application.Current.GetService<IThemeSelectorService>();
-        _themeSelectorService.ThemeChanged += HandleThemeChanged;
-    }
-
-    private void HandleThemeChanged(object? sender, ElementTheme e)
-    {
-        RequestedTheme = _themeSelectorService.GetActualTheme();
-        if (_renderedAdaptiveCard != null && _renderedAdaptiveCard.FrameworkElement != null)
-        {
-            UiUpdate?.Invoke(this, _renderedAdaptiveCard.FrameworkElement);
-        }
-    }
 
     public void Bind(IExtensionAdaptiveCardSession extensionAdaptiveCardSession, AdaptiveCardRenderer? customRenderer)
     {
