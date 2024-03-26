@@ -68,7 +68,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _extensionsService = extensionsService;
         _notificationService = toastNotificationService;
         _computeSystemManager = manager;
-        _stringResource = new StringResource("DevHome.Environments/Resources");
+        _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
         SelectedSortIndex = -1;
         Providers = new() { _stringResource.GetLocalized("AllProviders") };
