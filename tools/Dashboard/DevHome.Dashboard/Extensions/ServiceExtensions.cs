@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Common.Services;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +27,7 @@ public static class ServiceExtensions
         services.AddSingleton<IWidgetHostingService, WidgetHostingService>();
         services.AddSingleton<IWidgetIconService, WidgetIconService>();
         services.AddSingleton<IWidgetScreenshotService, WidgetScreenshotService>();
-        services.AddSingleton<IAdaptiveCardRenderingService, AdaptiveCardRenderingService>();
+        services.AddSingleton<WidgetAdaptiveCardRenderingService>();
 
         return services;
     }

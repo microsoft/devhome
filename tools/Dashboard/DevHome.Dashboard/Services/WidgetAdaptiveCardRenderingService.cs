@@ -15,7 +15,7 @@ using WinUIEx;
 
 namespace DevHome.Dashboard.Services;
 
-public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisposable
+public class WidgetAdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AdaptiveCardRenderingService));
 
@@ -31,7 +31,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
 
     private bool _disposedValue;
 
-    public AdaptiveCardRenderingService(WindowEx windowEx, IThemeSelectorService themeSelectorService)
+    public WidgetAdaptiveCardRenderingService(WindowEx windowEx, IThemeSelectorService themeSelectorService)
     {
         _windowEx = windowEx;
         _themeSelectorService = themeSelectorService;
