@@ -221,6 +221,14 @@
     <value>View {0}</value>
     <comment>{Locked="{0}"}Title for the page showing the contents of a configuration file. {0} is replaced by the configuration file name.</comment>
   </data>
+  <data name="ConfigurationActivationFailedDisabled" xml:space="preserve">
+    <value>Winget configuration is currently disabled on your machine. We are initiating the enablement process, which may take a few minutes. Please try again soon.</value>
+    <comment>Message displayed to the user when they attempt to activate Dev Home from a file but the Winget configuration feature is disabled.</comment>
+  </data>
+  <data name="ConfigurationActivationFailedBusy" xml:space="preserve">
+    <value>The DSC flow cannot be activated while machine configuration is in progress. Please complete your current configuration tasks and then try again.</value>
+    <comment>Message displayed to the user when they attempt to activate Dev Home from a file but the machine configuration flow is currently in progress.</comment>
+  </data>
   <data name="ConfigurationUnitSuccess" xml:space="preserve">
     <value>Configuration successfully applied</value>
     <comment>Message displayed when applying a configuration unit succeeds.</comment>

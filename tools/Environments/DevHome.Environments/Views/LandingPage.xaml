@@ -11,6 +11,7 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     Loaded="OnLoaded">
 
     <pg:ToolPage.Resources>
@@ -21,6 +22,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -29,9 +31,9 @@
 
             <!-- Launch Button template -->
             <DataTemplate x:Key="LaunchButton" x:DataType="vm:ComputeSystemViewModel">
-                <SplitButton 
-                        VerticalAlignment="Top" 
-                        Command="{x:Bind LaunchActionCommand}" 
+                <SplitButton
+                        VerticalAlignment="Top"
+                        Command="{x:Bind LaunchActionCommand}"
                         x:Uid="ms-resource:///DevHome.Environments/Resources/LaunchButton"
                         Style="{StaticResource CardBodySplitButtonStyle}">
                     <SplitButton.Flyout>
@@ -80,7 +82,8 @@
                         TextTrimming="CharacterEllipsis"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        IsTextSelectionEnabled="True"/>
+                        IsTextSelectionEnabled="True"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                     <TextBlock
                         Grid.Column="2"
                         Visibility="{x:Bind Value, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
@@ -88,7 +91,8 @@
                         TextTrimming="CharacterEllipsis"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        IsTextSelectionEnabled="True"/>
+                        IsTextSelectionEnabled="True"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                 </Grid>
             </DataTemplate>
 
@@ -106,66 +110,89 @@
         </Grid.Resources>
         <!-- Templates end here -->
 
-        <!-- Header -->
-        <Grid Grid.Row="0" x:Name="SyncButtonGrid"
-              MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource HeaderMargin}">
+
+        <Grid Grid.Row="0" x:Name="TitleGrid"
+              MaxWidth="{ThemeResource MaxPageContentWidth}"  Margin="{ThemeResource HeaderMargin}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" x:Uid="Titlebar" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Left" x:Name="Titlebar"/>
+        </Grid>
+
+        <Grid Grid.Row="1" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" x:Uid="Titlebar" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Left" x:Name="Titlebar"/>
-            <!-- Top right 'Sync' button -->
-            <!-- ToDo: Revisit after confirming glyphs to be used -->
-            <Button Grid.Column="4" HorizontalAlignment="Right" Padding="45 5 30 5" Command="{x:Bind ViewModel.SyncButtonCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;" FontSize="11">
-                        <FontIcon.RenderTransform>
-                            <ScaleTransform ScaleX="-1"/>
-                        </FontIcon.RenderTransform>
-                    </FontIcon>
-                    <TextBlock x:Uid="SyncButtonTextBlock" Margin="-5 0 0 0"/>
-                </StackPanel>
-            </Button>
-        </Grid>
-
-        <!-- Search and sort -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal"
-                    MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="0,0,0,22">
-            <!-- Search field -->
-            <AutoSuggestBox x:Uid="SearchTextBox" x:Name="SearchTextBox" MinWidth="350" MinHeight="35" QueryIcon="Find">
-                <i:Interaction.Behaviors>
-                    <ic:EventTriggerBehavior EventName="TextChanged">
-                        <ic:InvokeCommandAction
+                <!-- Search field -->
+                <AutoSuggestBox Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="250" HorizontalAlignment="Left">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="TextChanged">
+                            <ic:InvokeCommandAction
                             Command="{x:Bind ViewModel.SearchHandlerCommand, Mode=OneWay}"
                             CommandParameter="{Binding Text, ElementName=SearchTextBox}"/>
-                    </ic:EventTriggerBehavior>
-                </i:Interaction.Behaviors>
-            </AutoSuggestBox>
-            <!-- Sort field -->
-            <TextBlock x:Uid="SortByTextBlock" VerticalAlignment="Center" Margin="50 0 10 0"/>
-            <ComboBox x:Uid="SortSelectionComboBox" x:Name="SortSelectionComboBox" Margin="0 3 0 0" MinHeight="35">
-                <ComboBoxItem x:Uid="SortByName"/>
-                <ComboBoxItem x:Uid="SortByAltName"/>
-                <i:Interaction.Behaviors>
-                    <ic:EventTriggerBehavior EventName="SelectionChanged">
-                        <ic:InvokeCommandAction
-                            Command="{x:Bind ViewModel.SortHandlerCommand}"
-                            CommandParameter="{x:Bind ((ComboBoxItem)SortSelectionComboBox.SelectedItem).Content, Mode=OneWay}" />
-                    </ic:EventTriggerBehavior>
-                </i:Interaction.Behaviors>
-            </ComboBox>
-        </StackPanel>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </AutoSuggestBox>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <!-- Provider field -->
+                    <TextBlock x:Uid="ProviderTextBlock" VerticalAlignment="Center" Margin="50 0 5 0"/>
+                    <ComboBox x:Uid="ProviderSelectionComboBox" x:Name="ProviderSelectionComboBox" Margin="0 3 5 0"
+                          ItemsSource="{x:Bind ViewModel.Providers}" SelectedIndex="{x:Bind ViewModel.SelectedProviderIndex, Mode=TwoWay}">
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="SelectionChanged">
+                                <ic:InvokeCommandAction Command="{x:Bind ViewModel.ProviderHandlerCommand}" />
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </ComboBox>
+                    <!-- Sort field -->
+                    <TextBlock x:Uid="SortByTextBlock" VerticalAlignment="Center" Margin="10 0 5 0"/>
+                    <ComboBox x:Uid="SortSelectionComboBox" x:Name="SortSelectionComboBox" Margin="0 3 13 0"
+                          SelectedIndex="{x:Bind ViewModel.SelectedSortIndex, Mode=TwoWay}">
+                        <ComboBoxItem x:Uid="SortByName"/>
+                        <ComboBoxItem x:Uid="SortByNameDesc"/>
+                        <ComboBoxItem x:Uid="SortByAltName"/>
+                        <ComboBoxItem x:Uid="SortByAltNameDesc"/>
+                        <ComboBoxItem x:Uid="SortByLastConnected"/>
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="SelectionChanged">
+                                <ic:InvokeCommandAction Command="{x:Bind ViewModel.SortHandlerCommand}"/>
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </ComboBox>
+                    <!--  'Sync' button -->
+                    <Button Padding="40 5 30 8" Command="{x:Bind ViewModel.SyncButtonCommand}" Margin="0 3 13 0">
+                        <StackPanel Orientation="Horizontal">
+                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
+                            <TextBlock x:Uid="SyncButtonTextBlock" Margin="8 0 0 0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+        </Grid>
+
+        <!-- Last synced text block-->
+        <Grid Grid.Row="2" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                <TextBlock x:Uid="LastSyncTextBlock"
+                           VerticalAlignment="Center"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Margin="0 12 3 12" />
+                <TextBlock Text="{x:Bind ViewModel.LastSyncTime, Mode=OneWay}"
+                           VerticalAlignment="Center"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+            </StackPanel>
+        </Grid>
 
         <!-- Per VM/Compute System card -->
-        <ScrollViewer Grid.Row="2" Style="{StaticResource EnvironmentScrollViewerStyle}">
+        <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <StackPanel>
                 <ListView
-                    MaxWidth="{ThemeResource MaxPageContentWidth}"
-                    ItemsSource="{x:Bind ViewModel.ComputeSystemsView}" SelectionMode="None"
-                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
+                      MaxWidth="{ThemeResource MaxPageContentWidth}"
+                      ItemsSource="{x:Bind ViewModel.ComputeSystemsView}" SelectionMode="None"
+                      ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel></StackPanel>

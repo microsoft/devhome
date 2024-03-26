@@ -38,33 +38,16 @@ public sealed partial class LandingPage : ToolPage
             Command = LocalLoadButtonCommand,
         };
 
-        SyncButtonGrid.Children.Add(onlyLocalButton);
-
-        var onlyRemoteButton = new Button
-        {
-            Content = "Load real extension values",
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Margin = new Thickness(3, 0, 0, 0),
-            Command = RemoteLoadButtonCommand,
-        };
-
-        SyncButtonGrid.Children.Add(onlyRemoteButton);
+        TitleGrid.Children.Add(onlyLocalButton);
 
         var column = Grid.GetColumn(Titlebar);
         Grid.SetColumn(onlyLocalButton, column + 1);
-        Grid.SetColumn(onlyRemoteButton, column + 2);
     }
 
     [RelayCommand]
     private async Task LocalLoadButton()
     {
         await ViewModel.LoadModelAsync(true);
-    }
-
-    [RelayCommand]
-    private async Task RemoteLoadButton()
-    {
-        await ViewModel.LoadModelAsync(false);
     }
 #endif
 

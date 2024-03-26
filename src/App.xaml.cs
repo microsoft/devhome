@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using CommunityToolkit.WinUI;
 using DevHome.Activation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Contracts.Services;
@@ -84,10 +85,11 @@ public partial class App : Application, IApp
         ConfigureServices((context, services) =>
         {
             // Default Activation Handler
-            services.AddTransient<ActivationHandler<Microsoft.UI.Xaml.LaunchActivatedEventArgs>, DefaultActivationHandler>();
+            services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
 
             // Other Activation Handlers
             services.AddTransient<IActivationHandler, ProtocolActivationHandler>();
+            services.AddTransient<IActivationHandler, DSCFileActivationHandler>();
 
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
@@ -185,7 +187,7 @@ public partial class App : Application, IApp
             GetService<IAppManagementInitializer>().InitializeAsync());
     }
 
-    private void OnActivated(object? sender, AppActivationArguments args)
+    private async void OnActivated(object? sender, AppActivationArguments args)
     {
         if (args.Kind == ExtendedActivationKind.ToastNotification)
         {
@@ -193,9 +195,11 @@ public partial class App : Application, IApp
             return;
         }
 
-        _dispatcherQueue.TryEnqueue(async () =>
-        {
-            await GetService<IActivationService>().ActivateAsync(args.Data);
-        });
+        // Note: Keep the reference to 'args.Data' object, as 'args' may be
+        // disposed before the async operation completes (RpcCallFailed: 0x800706be)
+        var localArgsDataReference = args.Data;
+
+        // Activate the app and ensure the appropriate handlers are called.
+        await _dispatcherQueue.EnqueueAsync(async () => await GetService<IActivationService>().ActivateAsync(localArgsDataReference));
     }
 }
