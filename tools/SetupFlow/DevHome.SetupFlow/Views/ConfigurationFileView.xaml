@@ -125,21 +125,14 @@
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:DSCConfigurationUnitViewModel">
                             <Expander
-                                IsExpanded="True"
+                                IsExpanded="False"
                                 Tag="{x:Bind Id}"
                                 HorizontalContentAlignment="Left"
                                 HorizontalAlignment="Stretch">
 
                                 <!-- Header -->
                                 <Expander.Header>
-                                    <StackPanel>
-                                        <TextBlock Text="{x:Bind Title}" />
-                                        <TextBlock
-                                            Visibility="{x:Bind Title, Converter={StaticResource StringVisibilityConverter}}"
-                                            Style="{ThemeResource CaptionTextBlockStyle}"
-                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                            Text="{x:Bind SubTitle}" />
-                                    </StackPanel>
+                                    <TextBlock Text="{x:Bind Title}" />
                                 </Expander.Header>
                                 
                                 <!-- Content -->
@@ -174,7 +167,7 @@
                                     
                                     <!-- Metadata -->
                                     <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Metadata, Converter={StaticResource CollectionVisibilityConverter}}">
-                                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Metadata</TextBlock>
+                                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Resource metadata</TextBlock>
                                         <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{ThemeResource KeyValueTemplate}" ItemsSource="{x:Bind Metadata}"/>
                                     </StackPanel>
 
@@ -192,13 +185,11 @@
                                             <local:ConfigurationUnitDataEntry Key="Unit description" Value="{x:Bind UnitDescription}" />
                                             <local:ConfigurationUnitDataEntry Key="Unit documentation uri" Value="{x:Bind UnitDocumentationUri}" />
                                             <local:ConfigurationUnitDataEntry Key="Module name" Value="{x:Bind ModuleName}" />
-                                            <local:ConfigurationUnitDataEntry Key="Module type" Value="{x:Bind ModuleType}" />
                                             <local:ConfigurationUnitDataEntry Key="Module source" Value="{x:Bind ModuleSource}" />
                                             <local:ConfigurationUnitDataEntry Key="Module description" Value="{x:Bind ModuleDescription}" />
                                             <local:ConfigurationUnitDataEntry Key="Module documentation uri" Value="{x:Bind ModuleDocumentationUri}" />
                                             <local:ConfigurationUnitDataEntry Key="Published module uri" Value="{x:Bind PublishedModuleUri}" />
                                             <local:ConfigurationUnitDataEntry Key="Version" Value="{x:Bind Version}" />
-                                            <local:ConfigurationUnitDataEntry Key="Published date" Value="{x:Bind PublishedDate}" />
                                             <local:ConfigurationUnitDataEntry Key="Is local" Value="{x:Bind IsLocal}" />
                                             <local:ConfigurationUnitDataEntry Key="Author" Value="{x:Bind Author}" />
                                             <local:ConfigurationUnitDataEntry Key="Publisher" Value="{x:Bind Publisher}" />

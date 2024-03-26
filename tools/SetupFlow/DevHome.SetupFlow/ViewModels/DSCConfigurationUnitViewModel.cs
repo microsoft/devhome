@@ -19,8 +19,6 @@ public class DSCConfigurationUnitViewModel
 
     public string Title => GetTitle();
 
-    public string SubTitle => GetSubTitle();
-
     public string Type => _configurationUnit.Type;
 
     public string Description => _configurationUnit.Description;
@@ -63,13 +61,18 @@ public class DSCConfigurationUnitViewModel
 
     public bool IsPublic => _configurationUnit.IsPublic;
 
-    public string GetTitle()
+    private string GetTitle()
     {
-        return $"Resource: {Type}/{ModuleName}";
-    }
+        if (!string.IsNullOrEmpty(Description))
+        {
+            return Description;
+        }
 
-    public string GetSubTitle()
-    {
-        return $"Description: {Description}";
+        if (!string.IsNullOrEmpty(ModuleDescription))
+        {
+            return ModuleDescription;
+        }
+
+        return $"{ModuleName}/{Type}";
     }
 }

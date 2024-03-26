@@ -20,7 +20,7 @@ public class DSCConfigurationUnit
         Dependencies = [.. unit.Dependencies];
 
         // Get description from settings
-        unit.Settings.TryGetValue(DescriptionSettingsKey, out var descriptionObj);
+        unit.Metadata.TryGetValue(DescriptionSettingsKey, out var descriptionObj);
         Description = descriptionObj?.ToString() ?? string.Empty;
 
         // Get module name from metadata
