@@ -13,7 +13,7 @@ public interface IWidgetIconService
 {
     public void RemoveIconsFromCache(string definitionId);
 
-    public Task<BitmapImage> GetIconFromCache(WidgetDefinition widgetDefinition, ElementTheme theme);
+    public Task<BitmapImage> GetIconFromCacheAsync(WidgetDefinition widgetDefinition, ElementTheme theme);
 
     public Task<Brush> GetBrushForWidgetIconAsync(WidgetDefinition widgetDefinition, ElementTheme theme);
 }

@@ -37,7 +37,7 @@ public class WidgetIconService : IWidgetIconService
         _widgetDarkIconCache.Remove(definitionId);
     }
 
-    public async Task<BitmapImage> GetIconFromCache(WidgetDefinition widgetDefinition, ElementTheme theme)
+    public async Task<BitmapImage> GetIconFromCacheAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
         BitmapImage bitmapImage;
@@ -74,7 +74,7 @@ public class WidgetIconService : IWidgetIconService
 
     public async Task<Brush> GetBrushForWidgetIconAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
     {
-        var image = await GetIconFromCache(widgetDefinition, theme);
+        var image = await GetIconFromCacheAsync(widgetDefinition, theme);
 
         var brush = new ImageBrush
         {

@@ -34,7 +34,7 @@ public class WidgetScreenshotService : IWidgetScreenshotService
         _widgetDarkScreenshotCache.Remove(definitionId);
     }
 
-    public async Task<BitmapImage> GetScreenshotFromCache(WidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    public async Task<BitmapImage> GetScreenshotFromCacheAsync(WidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
         BitmapImage bitmapImage;

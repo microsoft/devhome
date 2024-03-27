@@ -12,5 +12,5 @@ public interface IWidgetScreenshotService
 {
     public void RemoveScreenshotsFromCache(string definitionId);
 
-    public Task<BitmapImage> GetScreenshotFromCache(WidgetDefinition widgetDefinition, ElementTheme actualTheme);
+    public Task<BitmapImage> GetScreenshotFromCacheAsync(WidgetDefinition widgetDefinition, ElementTheme actualTheme);
 }
