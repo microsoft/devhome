@@ -100,14 +100,10 @@ public class NotificationService
                 startInfo.FileName = "cmd.exe";
 
                 // Restart the computer
-                // To Do: Remove countdown in production code
-                startInfo.Arguments = "/C shutdown -r -t 300";
+                startInfo.Arguments = "/C shutdown -r -t 0";
                 startInfo.Verb = string.Empty;
                 process.StartInfo = startInfo;
                 process.Start();
-
-                // Close the notification
-                CloseNotification(notification);
             });
 
             _dispatcher.EnqueueAsync(() =>
