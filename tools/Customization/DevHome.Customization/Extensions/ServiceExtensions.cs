@@ -19,9 +19,6 @@ public static class ServiceExtensions
         services.AddSingleton<DeveloperFileExplorerViewModel>();
         services.AddTransient<DeveloperFileExplorerPage>();
 
-        services.AddSingleton<DevDriveViewModelFactory>();
-        services.AddSingleton<DevDriveOptimizerViewModelFactory>();
-        services.AddSingleton<DevDriveOptimizedViewModelFactory>();
         services.AddSingleton<DevDriveInsightsViewModel>();
         services.AddTransient<DevDriveInsightsPage>();
 

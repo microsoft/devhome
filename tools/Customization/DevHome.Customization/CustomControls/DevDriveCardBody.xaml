@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <!--
-        Grid containing name of dev drive, state of dev drive in text and a list of the dev drive properties.
+        Contains name of dev drive, state of dev drive in text and a list of the dev drive properties.
     -->
     <Grid Grid.ColumnSpan="3" Style="{StaticResource CardBodyContainerStyle}">
         <Grid.ColumnDefinitions>
@@ -18,10 +18,8 @@
         <!-- 64x64 image for the dev drive. -->
         <Viewbox HorizontalAlignment="Left"
                 Grid.Column="0">
-            <Grid>
-                <!-- Image for card body. -->
-                <FontIcon Glyph="&#xEDA2;" FontSize="25" FontFamily="{ThemeResource AmcFluentIcons}"/>
-            </Grid>
+            <!-- Image for card body. -->
+            <FontIcon Glyph="&#xEDA2;" FontSize="25" FontFamily="{ThemeResource AmcFluentIcons}"/>
         </Viewbox>
         <TextBlock Grid.Column="1" Margin="0 5 0 0"
                 Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
@@ -34,21 +32,15 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
                 <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 115 5">
-                    <Run> Size - </Run>
-                    <Run Text="{Binding Path=DevDriveSize, Mode=OneWay}" />
-                    <Run Text="{Binding Path=DevDriveUnitOfMeasure, Mode=OneWay}" />
+                    <Run Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
                 </TextBlock>
             <ProgressBar Grid.Row="1" Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
-            <Grid Grid.Row="2" Grid.ColumnSpan="2">
+            <Grid Grid.Row="2">
                 <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0">                        
-                    <Run Text="{Binding Path=DevDriveUsedSize, Mode=OneWay}" />
-                    <Run Text="{Binding Path=DevDriveUnitOfMeasure, Mode=OneWay}" />
-                    <Run> used</Run>
-                </TextBlock>
+                    <Run Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
+                </TextBlock>                
                 <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right">                        
-                    <Run Text="{Binding Path=DevDriveFreeSize, Mode=OneWay}" />
-                    <Run Text="{Binding Path=DevDriveUnitOfMeasure, Mode=OneWay}" />
-                    <Run> free</Run>
+                    <Run Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
                 </TextBlock>
             </Grid>
         </Grid>

@@ -13,7 +13,7 @@ namespace DevHome.Common.Models;
 /// 2. DriveSizeInBytes
 /// 3. DriveLocation
 /// 4. DriveLabel
-/// 5. DriveSizeInBytes
+/// 5. DriveSizeRemainingInBytes
 /// </summary>
 public enum DevDriveState
 {

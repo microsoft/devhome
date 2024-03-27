@@ -13,7 +13,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         
         <BreadcrumbBar
@@ -22,7 +21,7 @@
             ItemClicked="BreadcrumbBar_ItemClicked"
             ItemsSource="{x:Bind Breadcrumbs}" />
 
-        <ScrollView Grid.Row="2" VerticalAlignment="Top">
+        <ScrollView Grid.Row="1" VerticalAlignment="Top">
             <views:DevDriveInsightsView />
         </ScrollView>
     </Grid>

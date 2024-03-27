@@ -14,8 +14,11 @@ namespace DevHome.Customization.ViewModels;
 
 public partial class MainPageViewModel : ObservableObject
 {
+    private readonly INavigationService _navigationService;
+
     public MainPageViewModel()
     {
+        _navigationService = Application.Current.GetService<INavigationService>();
     }
 
     [RelayCommand]
@@ -27,14 +30,12 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand]
     private void NavigateToDeveloperFileExplorerPage()
     {
-        var navigationService = Application.Current.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(DeveloperFileExplorerViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(DeveloperFileExplorerViewModel).FullName!);
     }
 
     [RelayCommand]
     private void NavigateToDevDriveInsightsPage()
     {
-        var navigationService = Application.Current.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(DevDriveInsightsViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(DevDriveInsightsViewModel).FullName!);
     }
 }

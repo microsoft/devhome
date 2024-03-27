@@ -14,9 +14,12 @@ using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Customization.Models.Environments;
+using DevHome.Customization.ViewModels.Environments;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.Customization.ViewModels;
 
@@ -24,27 +27,11 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
-    private readonly ToastNotificationService _toastNotificationService;
-
-    private readonly string _allKeyWordLocalized;
-
-    private readonly SetupFlowViewModel _setupFlowViewModel;
-
     private readonly ObservableCollection<DevDrivesListViewModel> _devDriveViewModelList = new();
 
     private readonly ObservableCollection<DevDriveOptimizersListViewModel> _devDriveOptimizerViewModelList = new();
 
     private readonly ObservableCollection<DevDriveOptimizedListViewModel> _devDriveOptimizedViewModelList = new();
-
-    private readonly ISetupFlowStringResource _setupFlowStringResource;
-
-    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
-
-    private readonly DevDriveViewModelFactory _devDriveViewModelFactory;
-
-    private readonly DevDriveOptimizerViewModelFactory _devDriveOptimizerViewModelFactory;
-
-    private readonly DevDriveOptimizedViewModelFactory _devDriveOptimizedViewModelFactory;
 
     [ObservableProperty]
     private bool _shouldShowCollectionView;
@@ -65,11 +52,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     private bool _shouldShowShimmerBelowOptimizedList;
 
     [ObservableProperty]
-    private ObservableCollection<string> _devDriveProviderComboBoxNames;
-
-    [NotifyPropertyChangedFor(nameof(ProviderComboBoxNamesCollectionView))]
-    [NotifyCanExecuteChangedFor(nameof(SyncDevDrivesCommand))]
-    [ObservableProperty]
     private bool _devDriveLoadingCompleted;
 
     [ObservableProperty]
@@ -77,11 +59,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private bool _devDriveOptimizedLoadingCompleted;
-
-    [ObservableProperty]
-    private AdvancedCollectionView _providerComboBoxNamesCollectionView;
-
-    public ObservableCollection<string> DevDrivesSortOptions { get; private set; }
 
     public AdvancedCollectionView DevDrivesCollectionView { get; private set; }
 
@@ -91,8 +68,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
     public IDevDriveManager DevDriveManagerObj { get; private set; }
 
-    public string SelectedDevDriveProviderComboBoxName { get; set; }
-
     private IEnumerable<IDevDrive> ExistingDevDrives { get; set; } = Enumerable.Empty<IDevDrive>();
 
     public DevDriveInsightsViewModel(
@@ -100,33 +75,9 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         SetupFlowViewModel setupflowModel,
         SetupFlowOrchestrator orchestrator,
         IDevDriveManager devDriveManager,
-        DevDriveViewModelFactory devDriveViewModelFactory,
-        DevDriveOptimizerViewModelFactory devDriveOptimizerViewModelFactory,
-        DevDriveOptimizedViewModelFactory devDriveOptimizedViewModelFactory,
         ToastNotificationService toastNotificationService)
         : base(stringResource, orchestrator)
     {
-        // Setup initial state for page.
-        _setupFlowOrchestrator = orchestrator;
-        _setupFlowOrchestrator.CurrentSetupFlowKind = SetupFlowKind.SetupTarget;
-        _setupFlowStringResource = stringResource;
-
-        PageTitle = _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetPageTitle);
-        _allKeyWordLocalized = _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetAllComboBoxOption);
-
-        // Add the "All" option to the combo box and make sure its always sorted.
-        SelectedDevDriveProviderComboBoxName = _allKeyWordLocalized;
-        _devDriveProviderComboBoxNames = new() { SelectedDevDriveProviderComboBoxName, };
-        ProviderComboBoxNamesCollectionView = new AdvancedCollectionView(_devDriveProviderComboBoxNames, true);
-        ProviderComboBoxNamesCollectionView.SortDescriptions.Add(new SortDescription(SortDirection.Ascending));
-
-        // Add sort options like A-Z, Z-A, etc.
-        DevDrivesSortOptions = new ObservableCollection<string>
-        {
-            _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetSortAToZLabel),
-            _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetSortZToALabel),
-        };
-
         // Add AdvancedCollectionView to make filtering and sorting the list of DevDrivesListViewModels easier.
         DevDrivesCollectionView = new AdvancedCollectionView(_devDriveViewModelList, true);
 
@@ -137,85 +88,9 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         DevDriveOptimizedCollectionView = new AdvancedCollectionView(_devDriveOptimizedViewModelList, true);
 
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-        _devDriveViewModelFactory = devDriveViewModelFactory;
-        _devDriveOptimizerViewModelFactory = devDriveOptimizerViewModelFactory;
-        _devDriveOptimizedViewModelFactory = devDriveOptimizedViewModelFactory;
         DevDriveManagerObj = devDriveManager;
-        _setupFlowViewModel = setupflowModel;
-
-        _toastNotificationService = toastNotificationService;
 
         _ = this.OnFirstNavigateToAsync();
-    }
-
-    /// <summary>
-    /// When the user types in the filter text box, we want to filter the list of DevDrivesListViewModels and the list of DevDriveCardViewModels
-    /// that they contain.
-    /// </summary>
-    /// <param name="text">Text that the user enters into the filter textbox.</param>
-    [RelayCommand]
-    public void FilterTextChanged(string text)
-    {
-        DevDrivesCollectionView.Filter = item =>
-        {
-            if (item is DevDrivesListViewModel listViewModel)
-            {
-                return ShouldShowListInUI(listViewModel, text);
-            }
-
-            return false;
-        };
-
-        DevDrivesCollectionView.Refresh();
-    }
-
-    /// <summary>
-    /// When the user selects a provider from the combo box, we want to filter the list of DevDrivesListViewModels and the list of DevDriveCardViewModels
-    /// that they contain.
-    /// </summary>
-    /// <param name="text">The DevDriveProvider display name.</param>
-    [RelayCommand]
-    public void FilterComboBoxChanged(string text)
-    {
-        // FilterTextChangedCommand.Execute(DevDriveFilterText);
-    }
-
-    /// <summary>
-    /// Filters the list of DevDrivesListViewModels and the list of DevDriveCardViewModels that they contain. Based
-    /// on the text entered in the filter textbox and the provider selected in the combo box.
-    /// </summary>
-    private bool ShouldShowListInUI(DevDrivesListViewModel listViewModel, string text)
-    {
-        try
-        {
-            var shouldShowAllProviders = CompareStrings(_allKeyWordLocalized, SelectedDevDriveProviderComboBoxName);
-            if (!shouldShowAllProviders)
-            {
-                RemoveSelectedItemIfNotInUI(listViewModel);
-                return false;
-            }
-
-            // we need to filter the DevDriveCardViewModels so only those that contain the text show up in the UI.
-            listViewModel.FilterDevDriveCards(text);
-            if (listViewModel.DevDriveCardAdvancedCollectionView.Count == 0)
-            {
-                RemoveSelectedItemIfNotInUI(listViewModel);
-
-                // We still want to show the DevDrivesListViewModel in the UI if we're showing all providers or if the provider name matches the current provider.
-                if (shouldShowAllProviders)
-                {
-                    return true;
-                }
-
-                return false;
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Logger?.ReportError(Log.Component.SetupTarget, $"Error filtering DevDrivesListViewModel", ex);
-        }
-
-        return true;
     }
 
     /// <summary>
@@ -236,9 +111,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     [RelayCommand(CanExecute = nameof(CanEnableSyncButton))]
     public void SyncDevDrives()
     {
-        // temporary, we'll need to give the users a way to disable this.
-        // if they don't want to use hyper-v
-        _toastNotificationService.CheckIfUserIsAHyperVAdmin();
         GetDevDrives();
     }
 
@@ -251,10 +123,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         // Do nothing, but we need to override this as the base expects a task to be returned.
         await Task.CompletedTask;
 
-        // temporary, we'll need to give the users a way to disable this.
-        // if they don't want to use hyper-v
-        _toastNotificationService.CheckIfUserIsAHyperVAdmin();
-
         GetDevDrives();
         GetDevDriveOptimizers();
         GetDevDriveOptimizeds();
@@ -262,9 +130,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
     public void UpdateNextButtonState()
     {
-        // Only enable the next button if the DevDriveManager has a DevDrive selected to apply the configuration to.
-        // and if the DevDriveManager has finished loading the dev drives.
-        _setupFlowOrchestrator.NotifyNavigationCanExecuteChanged();
         SyncDevDrivesCommand.NotifyCanExecuteChanged();
     }
 
@@ -274,26 +139,19 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     /// </summary>
     private void GetDevDriveOptimizers()
     {
-        // We need to run this on a background thread so we don't block the UI thread.
-        Task.Run(async () =>
-        {
-            await _dispatcher.EnqueueAsync(async () =>
-            {
-                // Remove any existing DevDriveOptimizersListViewModels from the list if they exist.
-                RemoveDevDriveOptimizersListViewModels();
+        // Remove any existing DevDriveOptimizersListViewModels from the list if they exist.
+        RemoveDevDriveOptimizersListViewModels();
 
-                // Disable the sync and next buttons while we're getting the dev drives.
-                DevDriveOptimizerLoadingCompleted = false;
+        // Disable the sync and next buttons while we're getting the dev drives.
+        DevDriveOptimizerLoadingCompleted = false;
 
-                // load the dev drives so we can show them in the UI.
-                await LoadAllDevDriveOptimizersInTheUI();
+        // load the dev drives so we can show them in the UI.
+        LoadAllDevDriveOptimizersInTheUI();
 
-                // Enable the sync and next buttons when we're done getting the dev drives.
-                UpdateNextButtonState();
+        // Enable the sync and next buttons when we're done getting the dev drives.
+        UpdateNextButtonState();
 
-                DevDriveOptimizersCollectionView.Refresh();
-            });
-        });
+        DevDriveOptimizersCollectionView.Refresh();
     }
 
     /// <summary>
@@ -317,26 +175,19 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     /// </summary>
     private void GetDevDriveOptimizeds()
     {
-        // We need to run this on a background thread so we don't block the UI thread.
-        Task.Run(async () =>
-        {
-            await _dispatcher.EnqueueAsync(async () =>
-            {
-                // Remove any existing DevDriveOptimizedListViewModels from the list if they exist.
-                RemoveDevDriveOptimizedListViewModels();
+        // Remove any existing DevDriveOptimizedListViewModels from the list if they exist.
+        RemoveDevDriveOptimizedListViewModels();
 
-                // Disable the sync and next buttons while we're getting the dev drives.
-                DevDriveOptimizedLoadingCompleted = false;
+        // Disable the sync and next buttons while we're getting the dev drives.
+        DevDriveOptimizedLoadingCompleted = false;
 
-                // load the dev drives so we can show them in the UI.
-                await LoadAllDevDriveOptimizedsInTheUI();
+        // load the dev drives so we can show them in the UI.
+        LoadAllDevDriveOptimizedsInTheUI();
 
-                // Enable the sync and next buttons when we're done getting the dev drives.
-                UpdateNextButtonState();
+        // Enable the sync and next buttons when we're done getting the dev drives.
+        UpdateNextButtonState();
 
-                DevDriveOptimizedCollectionView.Refresh();
-            });
-        });
+        DevDriveOptimizedCollectionView.Refresh();
     }
 
     /// <summary>
@@ -361,27 +212,20 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     /// </summary>
     private void GetDevDrives()
     {
-        // We need to run this on a background thread so we don't block the UI thread.
-        Task.Run(async () =>
-        {
-            await _dispatcher.EnqueueAsync(async () =>
-            {
-                // Remove any existing DevDrivesListViewModels from the list if they exist. E.g when sync button is
-                // pressed.
-                RemoveDevDrivesListViewModels();
+        // Remove any existing DevDrivesListViewModels from the list if they exist. E.g when sync button is
+        // pressed.
+        RemoveDevDrivesListViewModels();
 
-                // Disable the sync and next buttons while we're getting the dev drives.
-                DevDriveLoadingCompleted = false;
-                UpdateNextButtonState();
+        // Disable the sync and next buttons while we're getting the dev drives.
+        DevDriveLoadingCompleted = false;
+        UpdateNextButtonState();
 
-                // load the dev drives so we can show them in the UI.
-                await LoadAllDevDrivesInTheUI();
+        // load the dev drives so we can show them in the UI.
+        LoadAllDevDrivesInTheUI();
 
-                // Enable the sync and next buttons when we're done getting the dev drives.
-                UpdateNextButtonState();
-                DevDrivesCollectionView.Refresh();
-            });
-        });
+        // Enable the sync and next buttons when we're done getting the dev drives.
+        UpdateNextButtonState();
+        DevDrivesCollectionView.Refresh();
     }
 
     /// <summary>
@@ -397,10 +241,8 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         }
 
         // Reset the filter text and the selected provider name.
-        SelectedDevDriveProviderComboBoxName = _allKeyWordLocalized;
         ShouldShowCollectionView = false;
         DevDrivesCollectionView.Refresh();
-        ProviderComboBoxNamesCollectionView.Refresh();
     }
 
     /// <summary>
@@ -436,12 +278,12 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     /// <summary>
     /// Loads all the DevDrives from all providers and updates the UI with the results.
     /// </summary>
-    public async Task LoadAllDevDrivesInTheUI()
+    public void LoadAllDevDrivesInTheUI()
     {
         try
         {
             ExistingDevDrives = DevDriveManagerObj.GetAllDevDrivesThatExistOnSystem();
-            await UpdateListViewModelList();
+            UpdateListViewModelList();
         }
         catch (Exception /*ex*/)
         {
@@ -454,7 +296,7 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     /// <summary>
     /// Loads all the DevDriveOptimizers and updates the UI with the results.
     /// </summary>
-    public async Task LoadAllDevDriveOptimizersInTheUI()
+    public void LoadAllDevDriveOptimizersInTheUI()
     {
         try
         {
@@ -463,7 +305,7 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
                 ExistingDevDrives = DevDriveManagerObj.GetAllDevDrivesThatExistOnSystem();
             }
 
-            await UpdateOptimizerListViewModelList();
+            UpdateOptimizerListViewModelList();
         }
         catch (Exception /*ex*/)
         {
@@ -476,7 +318,7 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     /// <summary>
     /// Loads all the DevDriveOptimizedCards and updates the UI with the results.
     /// </summary>
-    public async Task LoadAllDevDriveOptimizedsInTheUI()
+    public void LoadAllDevDriveOptimizedsInTheUI()
     {
         try
         {
@@ -485,7 +327,7 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
                 ExistingDevDrives = DevDriveManagerObj.GetAllDevDrivesThatExistOnSystem();
             }
 
-            await UpdateOptimizedListViewModelList();
+            UpdateOptimizedListViewModelList();
         }
         catch (Exception /*ex*/)
         {
@@ -500,21 +342,18 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         UpdateNextButtonState();
     }
 
-    public async Task UpdateListViewModelList()
+    public void UpdateListViewModelList()
     {
-        await _dispatcher.EnqueueAsync(async () =>
+        var curListViewModel = new DevDrivesListViewModel();
+        foreach (var existingDevDrive in ExistingDevDrives)
         {
-            var curListViewModel = new DevDrivesListViewModel();
-            foreach (var existingDevDrive in ExistingDevDrives)
-            {
-                var card = await _devDriveViewModelFactory.CreateCardViewModel(DevDriveManagerObj, existingDevDrive);
-                curListViewModel.DevDriveCardCollection.Add(card);
-            }
+            var card = new DevDriveCardViewModel(existingDevDrive, DevDriveManagerObj);
+            curListViewModel.DevDriveCardCollection.Add(card);
+        }
 
-            AddListViewModelToList(curListViewModel);
-            DevDriveLoadingCompleted = true;
-            ShouldShowShimmerBelowList = true;
-        });
+        AddListViewModelToList(curListViewModel);
+        DevDriveLoadingCompleted = true;
+        ShouldShowShimmerBelowList = true;
     }
 
     private string? GetExistingCacheLocation(string rootDirectory, string targetDirectoryName)
@@ -552,54 +391,44 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         return false;
     }
 
-    public async Task UpdateOptimizerListViewModelList()
+    public void UpdateOptimizerListViewModelList()
     {
-        await _dispatcher.EnqueueAsync(async () =>
+        var curOptimizerListViewModel = new DevDriveOptimizersListViewModel();
+        var cacheSubDir = "\\pip\\cache";
+        var environmentVariable = "PIP_CACHE_DIR";
+        var localAppDataDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var existingPipCacheLocation = GetExistingCacheLocation(localAppDataDir.ToString(), cacheSubDir);
+        if (existingPipCacheLocation != null && !CacheInDevDrive(existingPipCacheLocation))
         {
-            var curOptimizerListViewModel = new DevDriveOptimizersListViewModel();
-            var cacheSubDir = "\\pip\\cache";
-            var environmentVariable = "PIP_CACHE_DIR";
-            var localAppDataDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var existingPipCacheLocation = GetExistingCacheLocation(localAppDataDir.ToString(), cacheSubDir);
-            if (existingPipCacheLocation != null && !CacheInDevDrive(existingPipCacheLocation))
-            {
-                var card = await _devDriveOptimizerViewModelFactory.CreateOptimizerCardViewModel(
-                    "Pip cache (Python)",
-                    existingPipCacheLocation,
-                    "D:\\packages" + cacheSubDir /*example location on dev drive to move cache to*/,
-                    environmentVariable /*environmentVariableToBeSet*/);
-                curOptimizerListViewModel.DevDriveOptimizerCardCollection.Add(card);
+            var card = new DevDriveOptimizerCardViewModel(
+                "Pip cache (Python)",
+                existingPipCacheLocation,
+                "D:\\packages" + cacheSubDir /*example location on dev drive to move cache to*/,
+                environmentVariable /*environmentVariableToBeSet*/);
+            curOptimizerListViewModel.DevDriveOptimizerCardCollection.Add(card);
 
-                AddOptimizerListViewModelToList(curOptimizerListViewModel);
-                DevDriveOptimizerLoadingCompleted = true;
-                ShouldShowShimmerBelowOptimizerList = true;
-            }
-        });
+            AddOptimizerListViewModelToList(curOptimizerListViewModel);
+            DevDriveOptimizerLoadingCompleted = true;
+            ShouldShowShimmerBelowOptimizerList = true;
+        }
     }
 
-    public async Task UpdateOptimizedListViewModelList()
+    public void UpdateOptimizedListViewModelList()
     {
-        await _dispatcher.EnqueueAsync(async () =>
+        var environmentVariable = "PIP_CACHE_DIR";
+
+        // We retrieve the cache location from environment variable, because if the cache might have already moved.
+        var movedPipCacheLocation = Environment.GetEnvironmentVariable(environmentVariable);
+        if (!string.IsNullOrEmpty(movedPipCacheLocation) && CacheInDevDrive(movedPipCacheLocation))
         {
-            var curOptimizerListViewModel = new DevDriveOptimizersListViewModel();
-            var environmentVariable = "PIP_CACHE_DIR";
+            // Cache already in dev drive, show the "Optimized" card
+            var curOptimizedListViewModel = new DevDriveOptimizedListViewModel();
+            var card = new DevDriveOptimizedCardViewModel("Pip cache (Python)", movedPipCacheLocation, environmentVariable);
+            curOptimizedListViewModel.DevDriveOptimizedCardCollection.Add(card);
 
-            // We retrieve the cache location from environment variable, because if the cache might have already moved.
-            var movedPipCacheLocation = Environment.GetEnvironmentVariable(environmentVariable);
-            if (movedPipCacheLocation != null && CacheInDevDrive(movedPipCacheLocation))
-            {
-                // Cache already in dev drive, show the "Optimized" card
-                var curOptimizedListViewModel = new DevDriveOptimizedListViewModel();
-                var card = await _devDriveOptimizedViewModelFactory.CreateOptimizedCardViewModel(
-                    "Pip cache (Python)",
-                    movedPipCacheLocation,
-                    environmentVariable);
-                curOptimizedListViewModel.DevDriveOptimizedCardCollection.Add(card);
-
-                AddOptimizedListViewModelToList(curOptimizedListViewModel);
-                DevDriveOptimizedLoadingCompleted = true;
-                ShouldShowShimmerBelowOptimizedList = true;
-            }
-        });
+            AddOptimizedListViewModelToList(curOptimizedListViewModel);
+            DevDriveOptimizedLoadingCompleted = true;
+            ShouldShowShimmerBelowOptimizedList = true;
+        }
     }
 }

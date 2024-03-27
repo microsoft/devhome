@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
@@ -32,14 +33,11 @@ public partial class DevDriveCardViewModel : ObservableObject
 
     public string DevDriveUnitOfMeasure { get; set; }
 
-    [ObservableProperty]
-    private bool _isSelected;
+    public string DevDriveSizeText { get; set; }
 
-    [ObservableProperty]
-    private DevDriveState _cardState;
+    public string DevDriveUsedSizeText { get; set; }
 
-    [ObservableProperty]
-    private CardStateColor _stateColor;
+    public string DevDriveFreeSizeText { get; set; }
 
     public DevDriveCardViewModel(IDevDrive devDrive, IDevDriveManager manager)
     {
@@ -53,5 +51,9 @@ public partial class DevDriveCardViewModel : ObservableObject
         DevDriveUsedSize = DevDriveSize - DevDriveFreeSize;
         DevDriveUnitOfMeasure = (devDrive.DriveUnitOfMeasure == ByteUnit.TB) ? "TB" : "GB";
         DevDriveFillPercentage = ((DevDriveSize - DevDriveFreeSize) * 100) / DevDriveSize;
+        var stringResource = new StringResource("DevHome.Customization/Resources");
+        DevDriveSizeText = stringResource.GetLocalized("DevDriveSizeText", DevDriveSize, DevDriveUnitOfMeasure);
+        DevDriveUsedSizeText = stringResource.GetLocalized("DevDriveUsedSizeText", DevDriveUsedSize, DevDriveUnitOfMeasure);
+        DevDriveFreeSizeText = stringResource.GetLocalized("DevDriveFreeSizeText", DevDriveFreeSize, DevDriveUnitOfMeasure);
     }
 }

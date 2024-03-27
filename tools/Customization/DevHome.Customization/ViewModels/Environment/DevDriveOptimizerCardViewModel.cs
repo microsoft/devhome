@@ -14,8 +14,6 @@ namespace DevHome.Customization.ViewModels.Environments;
 /// </summary>
 public partial class DevDriveOptimizerCardViewModel : ObservableObject
 {
-    private readonly Dispatching.DispatcherQueue _dispatcher;
-
     public string CacheToBeMoved { get; set; }
 
     public string ExistingCacheLocation { get; set; }
@@ -24,19 +22,8 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
 
     public string EnvironmentVariableToBeSet { get; set; }
 
-    [ObservableProperty]
-    private bool _isSelected;
-
-    [ObservableProperty]
-    private DevDriveState _cardState;
-
-    [ObservableProperty]
-    private CardStateColor _stateColor;
-
     public DevDriveOptimizerCardViewModel(string cacheToBeMoved, string existingCacheLocation, string exampleLocationOnDevDrive, string environmentVariableToBeSet)
     {
-        _dispatcher = Dispatching.DispatcherQueue.GetForCurrentThread();
-
         CacheToBeMoved = cacheToBeMoved;
         ExistingCacheLocation = existingCacheLocation;
         ExampleLocationOnDevDrive = exampleLocationOnDevDrive;

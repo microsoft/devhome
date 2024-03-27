@@ -14,27 +14,14 @@ namespace DevHome.Customization.ViewModels.Environments;
 /// </summary>
 public partial class DevDriveOptimizedCardViewModel : ObservableObject
 {
-    private readonly Dispatching.DispatcherQueue _dispatcher;
-
     public string CacheMoved { get; set; }
 
     public string OptimizedCacheLocation { get; set; }
 
     public string EnvironmentVariableSet { get; set; }
 
-    [ObservableProperty]
-    private bool _isSelected;
-
-    [ObservableProperty]
-    private DevDriveState _cardState;
-
-    [ObservableProperty]
-    private CardStateColor _stateColor;
-
     public DevDriveOptimizedCardViewModel(string cacheMoved, string optimizedCacheLocation, string environmentVariableSet)
     {
-        _dispatcher = Dispatching.DispatcherQueue.GetForCurrentThread();
-
         CacheMoved = cacheMoved;
         OptimizedCacheLocation = optimizedCacheLocation;
         EnvironmentVariableSet = environmentVariableSet;

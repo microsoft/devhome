@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -9,6 +10,22 @@ namespace DevHome.Customization.CustomControls;
 
 public sealed partial class DevDriveCardBody : UserControl
 {
+    private static readonly DependencyProperty ActionControlTemplateProperty = DependencyProperty.Register(nameof(ActionControlTemplate), typeof(DataTemplate), typeof(DevDriveCardBody), new PropertyMetadata(null));
+
+    private static readonly DependencyProperty DevDriveLabelProperty = DependencyProperty.Register(nameof(DevDriveLabel), typeof(string), typeof(DevDriveCardBody), new PropertyMetadata(null));
+
+    private static readonly DependencyProperty DevDriveFillPercentageProperty = DependencyProperty.Register(nameof(DevDriveFillPercentage), typeof(double), typeof(DevDriveCardBody), new PropertyMetadata(null));
+
+    private static readonly DependencyProperty DevDriveAlternativeLabelProperty = DependencyProperty.Register(nameof(DevDriveAlternativeLabel), typeof(string), typeof(DevDriveCardBody), new PropertyMetadata(null));
+
+    private static readonly DependencyProperty StateColorProperty = DependencyProperty.Register(nameof(StateColor), typeof(CardStateColor), typeof(DevDriveCardBody), new PropertyMetadata(CardStateColor.Neutral));
+
+    private static readonly DependencyProperty DevDriveSizeTextProperty = DependencyProperty.Register(nameof(DevDriveSizeText), typeof(string), typeof(DevDriveCardBody), new PropertyMetadata(null));
+
+    private static readonly DependencyProperty DevDriveUsedSizeTextProperty = DependencyProperty.Register(nameof(DevDriveUsedSizeText), typeof(string), typeof(DevDriveCardBody), new PropertyMetadata(null));
+
+    private static readonly DependencyProperty DevDriveFreeSizeTextProperty = DependencyProperty.Register(nameof(DevDriveFreeSizeText), typeof(string), typeof(DevDriveCardBody), new PropertyMetadata(null));
+
     public DevDriveCardBody()
     {
         this.InitializeComponent();
@@ -26,34 +43,10 @@ public sealed partial class DevDriveCardBody : UserControl
         set => SetValue(DevDriveLabelProperty, value);
     }
 
-    public ulong DevDriveSize
-    {
-        get => (ulong)GetValue(DevDriveSizeProperty);
-        set => SetValue(DevDriveSizeProperty, value);
-    }
-
-    public ulong DevDriveFreeSize
-    {
-        get => (ulong)GetValue(DevDriveFreeSizeProperty);
-        set => SetValue(DevDriveFreeSizeProperty, value);
-    }
-
-    public ulong DevDriveUsedSize
-    {
-        get => (ulong)GetValue(DevDriveUsedSizeProperty);
-        set => SetValue(DevDriveUsedSizeProperty, value);
-    }
-
     public double DevDriveFillPercentage
     {
         get => (double)GetValue(DevDriveFillPercentageProperty);
         set => SetValue(DevDriveFillPercentageProperty, value);
-    }
-
-    public string DevDriveUnitOfMeasure
-    {
-        get => (string)GetValue(DevDriveUnitOfMeasureProperty);
-        set => SetValue(DevDriveUnitOfMeasureProperty, value);
     }
 
     public string DevDriveAlternativeLabel
@@ -68,13 +61,21 @@ public sealed partial class DevDriveCardBody : UserControl
         set => SetValue(StateColorProperty, value);
     }
 
-    private static readonly DependencyProperty ActionControlTemplateProperty = DependencyProperty.Register(nameof(ActionControlTemplate), typeof(DataTemplate), typeof(DevDriveCardBody), new PropertyMetadata(null));
-    private static readonly DependencyProperty DevDriveLabelProperty = DependencyProperty.Register(nameof(DevDriveLabel), typeof(string), typeof(DevDriveCardBody), new PropertyMetadata(null));
-    private static readonly DependencyProperty DevDriveSizeProperty = DependencyProperty.Register(nameof(DevDriveSize), typeof(ulong), typeof(DevDriveCardBody), new PropertyMetadata(null));
-    private static readonly DependencyProperty DevDriveFreeSizeProperty = DependencyProperty.Register(nameof(DevDriveFreeSize), typeof(ulong), typeof(DevDriveCardBody), new PropertyMetadata(null));
-    private static readonly DependencyProperty DevDriveUsedSizeProperty = DependencyProperty.Register(nameof(DevDriveUsedSize), typeof(ulong), typeof(DevDriveCardBody), new PropertyMetadata(null));
-    private static readonly DependencyProperty DevDriveFillPercentageProperty = DependencyProperty.Register(nameof(DevDriveFillPercentage), typeof(double), typeof(DevDriveCardBody), new PropertyMetadata(null));
-    private static readonly DependencyProperty DevDriveUnitOfMeasureProperty = DependencyProperty.Register(nameof(DevDriveUnitOfMeasure), typeof(string), typeof(DevDriveCardBody), new PropertyMetadata(null));
-    private static readonly DependencyProperty DevDriveAlternativeLabelProperty = DependencyProperty.Register(nameof(DevDriveAlternativeLabel), typeof(string), typeof(DevDriveCardBody), new PropertyMetadata(null));
-    private static readonly DependencyProperty StateColorProperty = DependencyProperty.Register(nameof(StateColor), typeof(CardStateColor), typeof(DevDriveCardBody), new PropertyMetadata(CardStateColor.Neutral));
+    public string DevDriveSizeText
+    {
+        get => (string)GetValue(DevDriveSizeTextProperty);
+        set => SetValue(DevDriveSizeTextProperty, value);
+    }
+
+    public string DevDriveUsedSizeText
+    {
+        get => (string)GetValue(DevDriveUsedSizeTextProperty);
+        set => SetValue(DevDriveUsedSizeTextProperty, value);
+    }
+
+    public string DevDriveFreeSizeText
+    {
+        get => (string)GetValue(DevDriveFreeSizeTextProperty);
+        set => SetValue(DevDriveFreeSizeTextProperty, value);
+    }
 }

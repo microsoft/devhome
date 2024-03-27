@@ -117,17 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DeveloperFileExplorerCard.Description" xml:space="preserve">
-    <value>Adjust these settings for a more developer-friendly experience using File Explorer</value>
-    <comment>The description for the Developer File Explorer settings card</comment>
-  </data>
-  <data name="DeveloperFileExplorerCard.Header" xml:space="preserve">
-    <value>Developer File Explorer</value>
-    <comment>The header for the Developer File Explorer settings card</comment>
-  </data>
-  <data name="DeveloperFileExplorer_Header" xml:space="preserve">
-    <value>Developer File Explorer</value>
-    <comment>Header for Developer File Explorer page in the breadcrumb bar</comment>
+  <data name="DevDriveFreeSizeText" xml:space="preserve">
+    <value>{0} {1} free</value>
+    <comment>Dev drive size free</comment>
   </data>
   <data name="DevDriveInsightsCard.Description" xml:space="preserve">
     <value>All things, dev drives, optimizations, etc.</value>
@@ -140,6 +132,26 @@
   <data name="DevDriveInsights_Header" xml:space="preserve">
     <value>Dev Drive Insights</value>
     <comment>Header for Dev Drive insights page in the breadcrumb bar</comment>
+  </data>
+  <data name="DevDriveSizeText" xml:space="preserve">
+    <value>Size - {0} {1}</value>
+    <comment>Dev drive size</comment>
+  </data>
+  <data name="DevDriveUsedSizeText" xml:space="preserve">
+    <value>{0} {1} used</value>
+    <comment>Dev drive size used</comment>
+  </data>
+  <data name="DeveloperFileExplorerCard.Description" xml:space="preserve">
+    <value>Adjust these settings for a more developer-friendly experience using File Explorer</value>
+    <comment>The description for the Developer File Explorer settings card</comment>
+  </data>
+  <data name="DeveloperFileExplorerCard.Header" xml:space="preserve">
+    <value>Developer File Explorer</value>
+    <comment>The header for the Developer File Explorer settings card</comment>
+  </data>
+  <data name="DeveloperFileExplorer_Header" xml:space="preserve">
+    <value>Developer File Explorer</value>
+    <comment>Header for Developer File Explorer page in the breadcrumb bar</comment>
   </data>
   <data name="EndTaskOnTaskBar.Description" xml:space="preserve">
     <value>Enable end task in taskbar by right click</value>

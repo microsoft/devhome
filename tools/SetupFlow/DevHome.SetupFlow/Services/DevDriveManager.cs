@@ -304,7 +304,7 @@ public class DevDriveManager : IDevDriveManager
         }
 
         var devDriveState = validationSuccessful ? DevDriveState.New : DevDriveState.Invalid;
-        return new Models.DevDrive(driveLetter, DevDriveUtil.MinDevDriveSizeInBytes, DevDriveUtil.MinDevDriveSizeInBytes, ByteUnit.GB, DefaultDevDriveLocation, fileName, devDriveState, Guid.NewGuid());
+        return new Models.DevDrive(driveLetter, DevDriveUtil.MinDevDriveSizeInBytes, DevDriveUtil.MinDevDriveSizeInBytes /*size remaining*/, ByteUnit.GB, DefaultDevDriveLocation, fileName, devDriveState, Guid.NewGuid());
     }
 
     /// <inheritdoc/>

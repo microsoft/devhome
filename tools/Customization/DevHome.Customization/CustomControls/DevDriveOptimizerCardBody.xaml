@@ -20,21 +20,21 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <!--
-                Stackpanel containing name of cache to be optimized and a description.
+                Contains name of cache to be optimized and a description.
             -->
         <StackPanel
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
                 Style="{StaticResource CardBodyStackPanelStyle}">
-            <StackPanel Orientation="Vertical">
+            <StackPanel>
                 <Grid Margin="50 10 50 10">
-                    <TextBlock Margin="5" Grid.Column="0"
+                    <TextBlock Margin="-50 0 0 0" Grid.Column="0"
                         Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
                         Text="{x:Bind CacheToBeMoved, Mode=OneWay}"
                         IsTextSelectionEnabled="True"/>
                     <Grid HorizontalAlignment="Right">
                         <FontIcon HorizontalAlignment="Left" Margin="-10" Glyph="&#xE946;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="5 5 5 5" Grid.Column="1"
+                        <TextBlock HorizontalAlignment="Left" Margin="5 5 5 5"
                             Foreground="PowderBlue"
                             Text="Suggestion"
                             IsTextSelectionEnabled="True"/>
@@ -58,7 +58,6 @@
                 </Grid>
                 <Button Margin="50 10 10 10"
                     Padding="25 4 25 6"
-                    MinWidth="120"
                     Content="Make the change"
                     Command="{x:Bind OptimizeDevDriveCommand}" >
                 </Button>
