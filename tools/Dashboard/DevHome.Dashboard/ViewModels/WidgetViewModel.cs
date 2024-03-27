@@ -114,87 +114,87 @@ public partial class WidgetViewModel : ObservableObject
     {
         await Task.Run(async () =>
         {
-        var cardTemplate = await Widget.GetCardTemplateAsync();
-        var cardData = await Widget.GetCardDataAsync();
+            var cardTemplate = await Widget.GetCardTemplateAsync();
+            var cardData = await Widget.GetCardDataAsync();
 
-        if (string.IsNullOrEmpty(cardData) || string.IsNullOrEmpty(cardTemplate))
-        {
-            Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
-            ShowErrorCard("WidgetErrorCardDisplayText");
-            return;
-        }
+            if (string.IsNullOrEmpty(cardData) || string.IsNullOrEmpty(cardTemplate))
+            {
+                Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
+                ShowErrorCard("WidgetErrorCardDisplayText");
+                return;
+            }
 
-        // Uncomment for extra debugging output
-        // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
-        // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
+            // Uncomment for extra debugging output
+            // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
+            // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
 
-        // Use the data to fill in the template.
-        AdaptiveCardParseResult card;
-        try
-        {
-            var template = new AdaptiveCardTemplate(cardTemplate);
+            // Use the data to fill in the template.
+            AdaptiveCardParseResult card;
+            try
+            {
+                var template = new AdaptiveCardTemplate(cardTemplate);
 
-            var hostData = new JsonObject
+                var hostData = new JsonObject
             {
                 // TODO Add support to host theme in hostData
                 { "widgetSize", JsonValue.CreateStringValue(WidgetSize.ToString().ToLowerInvariant()) }, // "small", "medium" or "large"
             }.ToString();
 
-            var context = new EvaluationContext(cardData, hostData);
-            var json = template.Expand(context);
+                var context = new EvaluationContext(cardData, hostData);
+                var json = template.Expand(context);
 
-            // Use custom parser.
-            var elementParser = new AdaptiveElementParserRegistration();
-            var actionParser = new AdaptiveActionParserRegistration();
-            elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
-            actionParser.Set(FilePickerAction.CustomTypeString, new FilePickerParser());
+                // Use custom parser.
+                var elementParser = new AdaptiveElementParserRegistration();
+                var actionParser = new AdaptiveActionParserRegistration();
+                elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
+                actionParser.Set(FilePickerAction.CustomTypeString, new FilePickerParser());
 
-            // Create adaptive card.
-            card = AdaptiveCard.FromJsonString(json, elementParser, actionParser);
-        }
-        catch (Exception ex)
-        {
-            Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
-            ShowErrorCard("WidgetErrorCardDisplayText");
-            return;
-        }
-
-        if (_renderedCard != null)
-        {
-            _renderedCard.Action -= HandleAdaptiveAction;
-        }
-
-        if (card == null || card.AdaptiveCard == null)
-        {
-            Log.Logger()?.ReportError("WidgetViewModel", "Error in AdaptiveCardParseResult");
-            ShowErrorCard("WidgetErrorCardDisplayText");
-            return;
-        }
-
-        // Render card on the UI thread.
-        _windowEx.DispatcherQueue.TryEnqueue(async () =>
+                // Create adaptive card.
+                card = AdaptiveCard.FromJsonString(json, elementParser, actionParser);
+            }
+            catch (Exception ex)
             {
-                try
+                Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
+                ShowErrorCard("WidgetErrorCardDisplayText");
+                return;
+            }
+
+            if (_renderedCard != null)
+            {
+                _renderedCard.Action -= HandleAdaptiveAction;
+            }
+
+            if (card == null || card.AdaptiveCard == null)
+            {
+                Log.Logger()?.ReportError("WidgetViewModel", "Error in AdaptiveCardParseResult");
+                ShowErrorCard("WidgetErrorCardDisplayText");
+                return;
+            }
+
+            // Render card on the UI thread.
+            _windowEx.DispatcherQueue.TryEnqueue(async () =>
                 {
-                    var renderer = await _renderingService.GetRenderer();
-                    _renderedCard = renderer.RenderAdaptiveCard(card.AdaptiveCard);
-                    if (_renderedCard != null && _renderedCard.FrameworkElement != null)
+                    try
                     {
-                        _renderedCard.Action += HandleAdaptiveAction;
-                        WidgetFrameworkElement = _renderedCard.FrameworkElement;
+                        var renderer = await _renderingService.GetRenderer();
+                        _renderedCard = renderer.RenderAdaptiveCard(card.AdaptiveCard);
+                        if (_renderedCard != null && _renderedCard.FrameworkElement != null)
+                        {
+                            _renderedCard.Action += HandleAdaptiveAction;
+                            WidgetFrameworkElement = _renderedCard.FrameworkElement;
+                        }
+                        else
+                        {
+                            Log.Logger()?.ReportError("WidgetViewModel", "Error in RenderedAdaptiveCard");
+                            WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        Log.Logger()?.ReportError("WidgetViewModel", "Error in RenderedAdaptiveCard");
+                        Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card: ", ex);
                         WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
                     }
-                }
-                catch (Exception ex)
-                {
-                    Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card: ", ex);
-                    WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
-                }
-            });
+                });
         });
     }
 
