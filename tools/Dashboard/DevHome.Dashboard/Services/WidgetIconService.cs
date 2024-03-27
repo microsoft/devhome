@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
@@ -20,21 +20,21 @@ public class WidgetIconService : IWidgetIconService
 
     private readonly WindowEx _windowEx;
 
-    private readonly Dictionary<string, BitmapImage> _widgetLightIconCache;
-    private readonly Dictionary<string, BitmapImage> _widgetDarkIconCache;
+    private readonly ConcurrentDictionary<string, BitmapImage> _widgetLightIconCache;
+    private readonly ConcurrentDictionary<string, BitmapImage> _widgetDarkIconCache;
 
     public WidgetIconService(WindowEx windowEx)
     {
         _windowEx = windowEx;
 
-        _widgetLightIconCache = new Dictionary<string, BitmapImage>();
-        _widgetDarkIconCache = new Dictionary<string, BitmapImage>();
+        _widgetLightIconCache = new ConcurrentDictionary<string, BitmapImage>();
+        _widgetDarkIconCache = new ConcurrentDictionary<string, BitmapImage>();
     }
 
     public void RemoveIconsFromCache(string definitionId)
     {
-        _widgetLightIconCache.Remove(definitionId);
-        _widgetDarkIconCache.Remove(definitionId);
+        _widgetLightIconCache.TryRemove(definitionId, out _);
+        _widgetDarkIconCache.TryRemove(definitionId, out _);
     }
 
     public async Task<BitmapImage> GetIconFromCacheAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
