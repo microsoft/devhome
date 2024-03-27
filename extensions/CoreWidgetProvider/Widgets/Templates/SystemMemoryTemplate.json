@@ -23,6 +23,7 @@
           "url": "${memGraphUrl}",
           "height": "${chartHeight}",
           "width": "${chartWidth}",
+          "$when": "${$host.widgetSize != \"small\"}",
           "horizontalAlignment": "center"
         },
         {
@@ -40,7 +41,7 @@
                 {
                   "text": "${usedMem}",
                   "type": "TextBlock",
-                  "size": "large",
+                  "size": "${if($host.widgetSize == \"small\", \"medium\", \"large\")}",
                   "weight": "bolder"
                 }
               ]
@@ -58,7 +59,7 @@
                 {
                   "text": "${allMem}",
                   "type": "TextBlock",
-                  "size": "large",
+                  "size": "${if($host.widgetSize == \"small\", \"medium\", \"large\")}",
                   "weight": "bolder",
                   "horizontalAlignment": "right"
                 }
@@ -107,6 +108,7 @@
         },
         {
           "type": "ColumnSet",
+          "$when": "${$host.widgetSize == \"large\"}",
           "columns": [
             {
               "type": "Column",
@@ -146,6 +148,7 @@
         },
         {
           "type": "ColumnSet",
+          "$when": "${$host.widgetSize != \"small\"}",
           "columns": [
             {
               "type": "Column",
