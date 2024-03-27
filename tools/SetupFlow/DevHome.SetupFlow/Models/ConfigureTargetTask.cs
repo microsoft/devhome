@@ -68,7 +68,7 @@ public class ConfigureTargetTask : ISetupTask
         { ElementTheme.Light, "LightHostConfig.json" },
     };
 
-    public ActionCenterMessages ActionCenterMessages { get; set; } = new();
+    public ActionCenterMessages ActionCenterMessages { get; set; } = new() { ExtensionAdaptiveCardPanel = new(), };
 
     public string ComputeSystemName { get; private set; } = string.Empty;
 
