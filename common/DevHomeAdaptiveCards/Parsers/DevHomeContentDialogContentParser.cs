@@ -26,7 +26,7 @@ public class DevHomeContentDialogContentParser : IAdaptiveElementParser
         if (inputJson.TryGetValue("DevHomeContentDialogContainerElement", out var adaptiveCardContainerElement))
         {
             // Parse the container element and pass it to the dialog. This will be the content of the dialog.
-            var containerElementParser = elementParsers.Get("Adaptive.Container");
+            var containerElementParser = elementParsers.Get("Container");
             dialog.ContainerElement = containerElementParser.FromJson(adaptiveCardContainerElement.GetObject(), elementParsers, actionParsers, warnings);
         }
 

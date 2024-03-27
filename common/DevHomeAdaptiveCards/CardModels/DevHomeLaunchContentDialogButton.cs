@@ -12,7 +12,7 @@ using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
-public class DevHomeLaunchContentDialogButton : IDevHomeSettingsCardAction
+public class DevHomeLaunchContentDialogButton : IAdaptiveCardElement
 {
     public string ActionText { get; set; } = string.Empty;
 

@@ -8,10 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
 using DevHome.Common.DevHomeAdaptiveCards.Parsers;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
@@ -25,19 +27,19 @@ using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
-public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IRecipient<CreationProviderChangedMessage>
+public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IRecipient<CreationProviderChangedMessage>
 {
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+
     private readonly IThemeSelectorService _themeSelectorService;
 
     private readonly SetupFlowViewModel _setupFlowViewModel;
 
     public ComputeSystemProviderDetails CurProviderDetails { get; private set; }
 
-    public AdaptiveCardRenderer CurAdaptiveCardRenderer { get; set; }
+    public AdaptiveCardRenderer AdaptiveCardRenderer { get; set; }
 
     public ComputeSystemProviderDetails UpcomingProviderDetails { get; private set; }
-
-    public AdaptiveCardRenderer UpcomingAdaptiveCardRenderer { get; set; }
 
     public ExtensionAdaptiveCardPanel ExtensionAdaptiveCardPanel { get; private set; }
 
@@ -46,6 +48,9 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
     public AdaptiveElementParserRegistration ElementRegistration { get; set; } = new();
 
     public AdaptiveActionParserRegistration ActionRegistration { get; set; } = new();
+
+    [ObservableProperty]
+    private bool _isAdaptiveCardSessionLoaded;
 
     public string ResultJson { get; private set; }
 
@@ -59,6 +64,7 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
         PageTitle = stringResource.GetLocalized(StringResourceKey.ConfigureEnvironmentPageTitle);
         _setupFlowViewModel = setupFlow;
         _setupFlowViewModel.EndSetupFlow += OnEndSetupFlow;
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         // Register for changes to the selected provider. This will be triggered when the user selects a provider.
         // from the SelectEnvironmentProviderViewModel. This is a weak reference so that the recipient can be garbage collected.
@@ -73,11 +79,11 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
 
         // register the supported element and action parsers
         RegisterAllSupportedDevHomeParsers();
+        AdaptiveCardRenderer = new AdaptiveCardRenderer();
     }
 
     public void Receive(CreationProviderChangedMessage message)
     {
-        UpcomingAdaptiveCardRenderer = message.Value.AdaptiveCardRenderer;
         UpcomingProviderDetails = message.Value.ProviderDetails;
     }
 
@@ -93,14 +99,27 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
     /// </summary>
     protected async override Task OnFirstNavigateToAsync()
     {
-        // Do nothing, but we need to override this as the base expects a task to be returned.
+        // This doesn't do any awaitable work, but we're overriding the method to ensure that it's called.
+        // when we navigate to this page in the setup flow.
         await Task.CompletedTask;
 
         if (CurProviderDetails != UpcomingProviderDetails)
         {
+            // Selected compute system provider changed so we need to update the adaptive card panel.
+            // with new a adaptive card session from the new provider.
             CurProviderDetails = UpcomingProviderDetails;
-            CurAdaptiveCardRenderer = UpcomingAdaptiveCardRenderer;
-            UpdateExtensionAdaptiveCardPanel();
+            IsAdaptiveCardSessionLoaded = false;
+
+            // Its possible that an extension could take a long time to load the adaptive card session.
+            // So we run this on a background thread to prevent the UI from freezing.
+            _ = Task.Run(() =>
+            {
+                _dispatcher.TryEnqueue(() =>
+                {
+                    UpdateExtensionAdaptiveCardPanel();
+                    IsAdaptiveCardSessionLoaded = true;
+                });
+            });
         }
     }
 
@@ -118,7 +137,7 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
             var adaptiveCardSessionResult = CurProviderDetails.ComputeSystemProvider.CreateAdaptiveCardSessionForDeveloperId(developerIdWrapper.DeveloperId, ComputeSystemAdaptiveCardKind.CreateComputeSystem);
             if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
             {
-                GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                Log.Logger()?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
                 return;
             }
 
@@ -129,23 +148,18 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
 
             ExtensionAdaptiveCardSession = new ExtensionAdaptiveCardSession(adaptiveCardSessionResult.ComputeSystemCardSession);
             ExtensionAdaptiveCardSession.Stopped += OnAdaptiveCardSessionStopped;
-            CurAdaptiveCardRenderer.ElementRenderers.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new ItemsViewChoiceSet());
-            CurAdaptiveCardRenderer.ElementRenderers.Set("Adaptive.ActionSet", new DevHomeActionSet(TopLevelCardActionSetVisibility.Hidden));
-            CurAdaptiveCardRenderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
-
-            ExtensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
-            ExtensionAdaptiveCardPanel.Bind(ExtensionAdaptiveCardSession.Session, CurAdaptiveCardRenderer, ElementRegistration, ActionRegistration);
-            ExtensionAdaptiveCardPanel.RequestedTheme = _themeSelectorService.GetActualTheme();
+            AdaptiveCardRenderer = GetAdaptiveCardRenderer();
+            ExtensionAdaptiveCardPanel = GetExtensionAdaptiveCardPanel(ExtensionAdaptiveCardSession, AdaptiveCardRenderer);
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportError($"GetAndUpdateExtensionAdaptiveCardPanel(): getting creation adaptive card failed.", ex);
+            Log.Logger()?.ReportError("EnvironmentCreationOptionsViewModel", $"Failed to get creation options adaptive card from provider {CurProviderDetails.ComputeSystemProvider.Id}.", ex);
         }
     }
 
     private void OnThemeChanged(object sender, ElementTheme elementTheme)
     {
-        if (CurAdaptiveCardRenderer != null)
+        if (ExtensionAdaptiveCardPanel != null)
         {
             ExtensionAdaptiveCardPanel.RequestedTheme = elementTheme;
         }
@@ -153,7 +167,9 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
 
     private void OnReviewPageRequestReceived(EnvironmentCreationOptionsViewModel recipient, CreationOptionsReviewPageRequestMessage message)
     {
-        message.Reply(new CreationOptionsReviewPageRequestData(ExtensionAdaptiveCardPanel));
+        var renderer = GetAdaptiveCardRenderer();
+        var extensionPanel = GetExtensionAdaptiveCardPanel(ExtensionAdaptiveCardSession, renderer);
+        message.Reply(new CreationOptionsReviewPageRequestData(extensionPanel));
     }
 
     private void OnAdaptiveCardSessionStopped(ExtensionAdaptiveCardSession sender, ExtensionAdaptiveCardSessionStoppedEventArgs args)
@@ -172,5 +188,22 @@ public class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IReci
         ElementRegistration.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new DevHomeSettingsCardChoiceSetParser());
         ElementRegistration.Set(DevHomeLaunchContentDialogButton.AdaptiveElementType, new DevHomeLaunchContentDialogButtonParser());
         ElementRegistration.Set(DevHomeContentDialogContent.AdaptiveElementType, new DevHomeContentDialogContentParser());
+    }
+
+    private AdaptiveCardRenderer GetAdaptiveCardRenderer()
+    {
+        var renderer = new AdaptiveCardRenderer();
+        renderer.ElementRenderers.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new ItemsViewChoiceSet());
+        renderer.ElementRenderers.Set("Adaptive.ActionSet", new DevHomeActionSet(TopLevelCardActionSetVisibility.Hidden));
+        renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+        return renderer;
+    }
+
+    private ExtensionAdaptiveCardPanel GetExtensionAdaptiveCardPanel(ExtensionAdaptiveCardSession cardSession, AdaptiveCardRenderer renderer)
+    {
+        var extensionPanel = new ExtensionAdaptiveCardPanel();
+        extensionPanel.Bind(cardSession.Session, renderer, ElementRegistration, ActionRegistration);
+        extensionPanel.RequestedTheme = _themeSelectorService.GetActualTheme();
+        return extensionPanel;
     }
 }

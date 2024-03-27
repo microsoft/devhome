@@ -15,11 +15,8 @@ public class CreationProviderChangedData
 {
     public ComputeSystemProviderDetails ProviderDetails { get; private set; }
 
-    public AdaptiveCardRenderer AdaptiveCardRenderer { get; private set; }
-
-    public CreationProviderChangedData(ComputeSystemProviderDetails computeSystemProviderDetails, AdaptiveCardRenderer adaptiveCardRenderer)
+    public CreationProviderChangedData(ComputeSystemProviderDetails computeSystemProviderDetails)
     {
         ProviderDetails = computeSystemProviderDetails;
-        AdaptiveCardRenderer = adaptiveCardRenderer;
     }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.SetupFlow.Views.Environments.CreateEnvironmentReviewView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Loaded="ViewLoaded"
+    Unloaded="ViewUnloaded">
+    
+    <!-- Xaml for create environment view tab in the create environment flow-->
+    <Grid>
+        <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}">
+            <StackPanel Spacing="10">
+                <!--- 
+                    Show the adaptive card frame on the page. 
+                    Note: The frame adds an extra padding of 20 pixels on all sides so we are setting it to -20 to remove it.
+                -->
+                <Frame 
+                    x:Name="ReviewTabAdaptiveCardUI"
+                    Padding="-20"
+                    Unloaded="ViewUnloaded"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

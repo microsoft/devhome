@@ -1,0 +1,66 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "DevHome.SettingsCardChoiceSet",
+      "id": "HyperVVmGalleryImageList",
+      "label": "${SettingsCardLabel}",
+      "DevHomeSettingsCards": [
+        {
+          "type": "DevHome.SettingsCard",
+          "$data": "${GalleryImages}",
+          "DevHomeSettingsCardDescription": "${SubDescription}",
+          "DevHomeSettingsCardHeader": "${Header}",
+          "DevHomeSettingsCardHeaderIcon": "${HeaderIcon}",
+          "DevHomeSettingsCardActionElement": {
+            "type": "DevHome.LaunchContentDialogButton",
+            "ActionText": "${ActionButtonText}",
+            "DevHomeContentDialogContent": {
+              "DevHomeContentDialogContainerElement": {
+                "type": "Container",
+                "$data": "${ContentDialogInfo}",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "${ImageDescription}"
+                  },
+                  {
+                    "$data": "${GalleryImageFacts}",
+                    "type": "FactSet",
+                    "facts": [
+                      {
+                        "title": "${title}",
+                        "value": "${value}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DevHomeContentDialogPrimaryButtonText": "${ContentDialogPrimaryButtonText}",
+              "DevHomeContentDialogSecondaryButtonText": "${ContentDialogSecondaryButtonText}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "id": "VmGalleryPrimaryButtonId",
+          "type": "Action.Submit",
+          "title": "${SecondaryButtonLabel}",
+          "ActionMode": "Primary"
+        },
+        {
+          "id": "VmGallerySecondaryButtonId",
+          "type": "Action.Submit",
+          "title": "${PrimaryButtonLabel}",
+          "ActionMode": "Secondary"
+        }
+      ]
+    }
+  ]
+}

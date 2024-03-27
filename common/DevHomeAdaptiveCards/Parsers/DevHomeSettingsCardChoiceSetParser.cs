@@ -23,9 +23,9 @@ public class DevHomeSettingsCardChoiceSetParser : IAdaptiveElementParser
             adaptiveSettingsCardChoiceSet.Id = inputJson.GetNamedString("id");
         }
 
-        if (inputJson.ContainsKey("DevHomeContentGroupDescription"))
+        if (inputJson.ContainsKey("label"))
         {
-            adaptiveSettingsCardChoiceSet.GroupDescription = inputJson.GetNamedString("GroupDescription");
+            adaptiveSettingsCardChoiceSet.Label = inputJson.GetNamedString("label");
         }
 
         if (inputJson.ContainsKey("SelectedValue"))

@@ -16,29 +16,28 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using WinUIEx.Messaging;
 
 namespace DevHome.SetupFlow.Views.Environments;
 
-public sealed partial class EnvironmentCreationOptionsView : UserControl
+public sealed partial class CreateEnvironmentReviewView : UserControl
 {
-    public EnvironmentCreationOptionsViewModel ViewModel => (EnvironmentCreationOptionsViewModel)this.DataContext;
+    public CreateEnvironmentReviewViewModel ViewModel => (CreateEnvironmentReviewViewModel)this.DataContext;
 
-    public EnvironmentCreationOptionsView()
+    public CreateEnvironmentReviewView()
     {
         this.InitializeComponent();
     }
 
     private void ViewLoaded(object sender, RoutedEventArgs e)
     {
-        if (ViewModel != null)
+        if (ViewModel != null && ReviewTabAdaptiveCardUI.Content == null)
         {
-            CreationOptionsAdaptiveCardUI.Content = ViewModel.ExtensionAdaptiveCardPanel;
+            ReviewTabAdaptiveCardUI.Content = ViewModel.LoadAdaptiveCardPanel();
         }
     }
 
     private void ViewUnloaded(object sender, RoutedEventArgs e)
     {
-        CreationOptionsAdaptiveCardUI.Content = null;
+        ReviewTabAdaptiveCardUI.Content = null;
     }
 }

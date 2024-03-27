@@ -67,7 +67,7 @@ public class DevHomeSettingsCardParser : IAdaptiveElementParser
 
     private DevHomeLaunchContentDialogButton? CreateLaunchContentDialogButton(JsonObject inputJson, AdaptiveElementParserRegistration elementParsers, AdaptiveActionParserRegistration actionParsers, IList<AdaptiveWarning> warnings)
     {
-        var parser = actionParsers.Get(DevHomeLaunchContentDialogButton.AdaptiveElementType);
+        var parser = elementParsers.Get(DevHomeLaunchContentDialogButton.AdaptiveElementType);
         return parser.FromJson(inputJson, elementParsers, actionParsers, warnings) as DevHomeLaunchContentDialogButton;
     }
 }

@@ -28,6 +28,9 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     public ComputeSystemProviderDetails SelectedProvider { get; private set; }
 
     [ObservableProperty]
+    private bool _areProvidersLoaded;
+
+    [ObservableProperty]
     private ObservableCollection<ComputeSystemProviderViewModel> _providersViewModels;
 
     public SelectEnvironmentProviderViewModel(
@@ -47,6 +50,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         {
             _dispatcher.TryEnqueue(async () =>
             {
+                AreProvidersLoaded = false;
                 var providerDetails = await _computeSystemService.GetComputeSystemProvidersAsync();
                 ProvidersViewModels = new();
 
@@ -54,6 +58,8 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
                 {
                     ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
                 }
+
+                AreProvidersLoaded = true;
             });
         });
     }
@@ -77,7 +83,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
             // Using the default channel to send the message to the recipient. In this case, the EnvironmentCreationOptionsViewModel.
             // In the future if we support a multi-instance setup flow, we can use a custom channel/a message broker to send messages.
             // For now, we are using the default channel.
-            WeakReferenceMessenger.Default.Send(new CreationProviderChangedMessage(new CreationProviderChangedData(SelectedProvider, new AdaptiveCardRenderer())));
+            WeakReferenceMessenger.Default.Send(new CreationProviderChangedMessage(new CreationProviderChangedData(SelectedProvider)));
             CanGoToNextPage = true;
         }
     }

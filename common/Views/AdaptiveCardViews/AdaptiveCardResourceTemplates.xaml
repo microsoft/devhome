@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DevHome.Common.Views.AdaptiveCardViews">
+    
+    <!--- Data templates for custom adaptive card renders can go here -->
+
+    <DataTemplate x:Key="ItemsViewTemplate">
+    </DataTemplate>
+</ResourceDictionary>

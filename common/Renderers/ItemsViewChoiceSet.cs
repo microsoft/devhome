@@ -11,6 +11,7 @@ using DevHome.Common.DevHomeAdaptiveCards.CardModels;
 using DevHome.Common.DevHomeAdaptiveCards.InputValues;
 using DevHome.Common.Helpers;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
@@ -28,6 +29,10 @@ public enum DevHomeChoiceSetKind
 /// </summary>
 public class ItemsViewChoiceSet : IAdaptiveElementRenderer
 {
+    private readonly double _defaultSpacing = 5;
+
+    private readonly StackLayout _defaultLayout = new();
+
     public ItemsView ChoiceSetItemsView { get; private set; } = new();
 
     public List<ItemContainer> ItemsContainerList { get; private set; } = new();
@@ -38,8 +43,11 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
         ChoiceSetItemsView.ItemTemplate = itemsTemplate;
     }
 
+    // Default template for the ItemsView will be used
     public ItemsViewChoiceSet()
     {
+        _defaultLayout.Spacing = _defaultSpacing;
+        ChoiceSetItemsView.Layout = _defaultLayout;
     }
 
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
@@ -63,6 +71,7 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
             ChoiceSetItemsView.SelectionMode = ItemsViewSelectionMode.Multiple;
         }
 
+        // If selection is disabled, set the ItemsView to not allow selection of items in the items view.
         if (settingsCardChoiceSet.IsSelectionDisabled)
         {
             ChoiceSetItemsView.SelectionMode = ItemsViewSelectionMode.None;
@@ -72,12 +81,15 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
         for (var i = 0; i < settingsCardChoiceSet.SettingsCards.Count; i++)
         {
             var communityToolKitCard = new SettingsCard();
-            var devHomeAdaptiveSettingsCard = settingsCardChoiceSet.SettingsCards[i];
-            communityToolKitCard.Description = devHomeAdaptiveSettingsCard.Description;
-            communityToolKitCard.Header = devHomeAdaptiveSettingsCard.Header;
-            communityToolKitCard.HeaderIcon = AdaptiveCardHelpers.ConvertBase64StringToImageSource(devHomeAdaptiveSettingsCard.HeaderIcon);
+            var devHomeSettingsCard = settingsCardChoiceSet.SettingsCards[i];
+            communityToolKitCard.Description = devHomeSettingsCard.Description;
+            communityToolKitCard.Header = devHomeSettingsCard.Header;
+            communityToolKitCard.HeaderIcon = AdaptiveCardHelpers.ConvertBase64StringToImageSource(devHomeSettingsCard.HeaderIcon);
             var itemContainer = new ItemContainer();
             itemContainer.Child = communityToolKitCard;
+
+            // Set the automation name of the card to be the header of the card.
+            AutomationProperties.SetName(itemContainer, devHomeSettingsCard.Header);
             ItemsContainerList.Add(itemContainer);
         }
 
@@ -85,7 +97,10 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
         // the input value is used to get the current index of the items view in relation
         // to the item in the choice set.
         ChoiceSetItemsView.ItemsSource = ItemsContainerList;
+
+        // Set the automation name of the list to be the label of the choice set.
         context.AddInputValue(new ItemsViewInputValue(settingsCardChoiceSet, ChoiceSetItemsView), renderArgs);
+        AutomationProperties.SetName(ChoiceSetItemsView, settingsCardChoiceSet.Label);
 
         // Return the ItemsView.
         return ChoiceSetItemsView;
