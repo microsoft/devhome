@@ -1,4 +1,5 @@
-# What is the `IComputeSystem` interfacee
+# `IComputeSystem` interface
+
 A compute system is considered to be any one of the following:
 
 1. Local machine
@@ -6,7 +7,7 @@ A compute system is considered to be any one of the following:
 1. Remote machine
 1. Container
 
-Dev Home uses the [IComputeSystem](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L757) interface to interact with these types of software/hardware systems. Extension developers should create and return an `IComputeSystem` for every compute system they want Dev Home to interact with. The following management operations can be performed by the interface.
+Dev Home uses the [IComputeSystem](https://github.com/microsoft/devhome/blob/3dc0dd739b0175357cc3e74c713d305c09248537/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L812) interface to interact with these types of software/hardware systems. Extension developers should create and return an `IComputeSystem` for every compute system they want Dev Home to interact with. The following management operations can be performed by the interface.
 
 Operations:
 
