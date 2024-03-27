@@ -20,11 +20,14 @@ using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
 using DevHome.Views;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
+using Serilog;
+using Serilog.Extensions.Logging;
 
 namespace DevHome;
 
@@ -74,6 +77,15 @@ public partial class App : Application, IApp
         InitializeComponent();
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
+        // Setup Logging
+        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHome"));
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
         UseContentRoot(AppContext.BaseDirectory).
@@ -83,6 +95,9 @@ public partial class App : Application, IApp
         }).
         ConfigureServices((context, services) =>
         {
+            // Add Serilog logging for ILogger.
+            services.AddLogging(lb => lb.AddSerilog(dispose: true));
+
             // Default Activation Handler
             services.AddTransient<ActivationHandler<Microsoft.UI.Xaml.LaunchActivatedEventArgs>, DefaultActivationHandler>();
 
@@ -197,5 +212,10 @@ public partial class App : Application, IApp
         {
             await GetService<IActivationService>().ActivateAsync(args.Data);
         });
+    }
+
+    private void Window_Closed(object sender, EventArgs e)
+    {
+        Log.CloseAndFlush();
     }
 }

@@ -3,15 +3,17 @@
 
 using System;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Helpers;
 using LibGit2Sharp;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
 
 internal sealed class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(GenericRepository));
+
     private readonly string _displayName;
 
     public string DisplayName => _displayName;
@@ -49,22 +51,22 @@ internal sealed class GenericRepository : Microsoft.Windows.DevHome.SDK.IReposit
                 }
                 catch (RecurseSubmodulesException recurseException)
                 {
-                    Log.Logger?.ReportError("GenericRepository", "Could not clone all sub modules", recurseException);
+                    _log.Error("Could not clone all sub modules", recurseException);
                     throw;
                 }
                 catch (UserCancelledException userCancelledException)
                 {
-                    Log.Logger?.ReportError("GenericRepository", "The user stoped the clone operation", userCancelledException);
+                    _log.Error("The user stoped the clone operation", userCancelledException);
                     throw;
                 }
                 catch (NameConflictException nameConflictException)
                 {
-                    Log.Logger?.ReportError("GenericRepository", string.Empty, nameConflictException);
+                    _log.Error(string.Empty, nameConflictException);
                     throw;
                 }
                 catch (Exception e)
                 {
-                    Log.Logger?.ReportError("GenericRepository", "Could not clone the repository", e);
+                    _log.Error("Could not clone the repository", e);
                     throw;
                 }
             }

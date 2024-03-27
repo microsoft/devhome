@@ -17,7 +17,7 @@ public sealed class Program
         // Setup Logging
         Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(DevHome.Common.Logging.LogFolderRoot, "CoreWidgets"));
         var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile("corewidgets_appsettings.json")
             .Build();
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)

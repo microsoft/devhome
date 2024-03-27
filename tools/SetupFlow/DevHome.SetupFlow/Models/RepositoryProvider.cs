@@ -10,12 +10,11 @@ using DevHome.Common.Renderers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Views;
-using DevHome.Logging;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
 
@@ -27,6 +26,8 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 internal sealed class RepositoryProvider
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryProvider));
+
     /// <summary>
     /// Wrapper for the extension that is providing a repository and developer id.
     /// </summary>
@@ -67,7 +68,7 @@ internal sealed class RepositoryProvider
     {
         // The task.run inside GetProvider makes a deadlock when .Result is called.
         // https://stackoverflow.com/a/17248813.  Solution is to wrap in Task.Run().
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider extensions");
+        _log.Information("Starting DevId and Repository provider extensions");
         try
         {
             _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
@@ -75,7 +76,7 @@ internal sealed class RepositoryProvider
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repository provider from extension.", ex);
+            _log.Error($"Could not get repository provider from extension.", ex);
         }
     }
 
@@ -147,8 +148,8 @@ internal sealed class RepositoryProvider
 
         if (getResult.Result.Status == ProviderOperationStatus.Failure)
         {
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Could not get repo from Uri.");
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, getResult.Result.DisplayMessage);
+            _log.Information("Could not get repo from Uri.");
+            _log.Information(getResult.Result.DisplayMessage);
             return null;
         }
 
@@ -183,7 +184,7 @@ internal sealed class RepositoryProvider
             var adaptiveCardSessionResult = _devIdProvider.GetLoginAdaptiveCardSession();
             if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
             {
-                GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                _log.Error($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
                 return null;
             }
 
@@ -200,7 +201,7 @@ internal sealed class RepositoryProvider
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
+            _log.Error($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
         }
 
         return null;
@@ -230,7 +231,7 @@ internal sealed class RepositoryProvider
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file - HostConfigFileName: {hostConfigFileName}.", ex);
+            _log.Error($"Failure occurred while retrieving the HostConfig file - HostConfigFileName: {hostConfigFileName}.", ex);
         }
 
         // Add host config for current theme to renderer
@@ -245,7 +246,7 @@ internal sealed class RepositoryProvider
             }
             else
             {
-                GlobalLog.Logger?.ReportInfo($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
+                _log.Information($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
             }
         });
         return;
@@ -270,7 +271,7 @@ internal sealed class RepositoryProvider
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
         if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
         {
-            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}", developerIdsResult.Result.ExtendedError);
+            _log.Error($"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}", developerIdsResult.Result.ExtendedError);
             return new List<IDeveloperId>();
         }
 
@@ -297,7 +298,7 @@ internal sealed class RepositoryProvider
                 }
                 else
                 {
-                    Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
+                    _log.Error($"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
                 }
             }
             else
@@ -310,7 +311,7 @@ internal sealed class RepositoryProvider
                 }
                 else
                 {
-                    Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
+                    _log.Error($"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
                 }
             }
         }
@@ -319,16 +320,16 @@ internal sealed class RepositoryProvider
             // Because tasks can be canceled DevHome should emit different logs.
             if (aggregateException.InnerException is OperationCanceledException)
             {
-                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Get Repos operation was cancalled.");
+                _log.Information($"Get Repos operation was cancalled.");
             }
             else
             {
-                Log.Logger?.ReportInfo(Log.Component.RepoConfig, aggregateException.ToString());
+                _log.Information(aggregateException.ToString());
             }
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {ex}");
+            _log.Error($"Could not get repositories.  Message: {ex}");
         }
 
         _repositories[developerId] = repoSearchInformation.Repositories;
@@ -350,7 +351,7 @@ internal sealed class RepositoryProvider
             }
             else
             {
-                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
+                _log.Error($"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
             }
         }
         catch (AggregateException aggregateException)
@@ -358,16 +359,16 @@ internal sealed class RepositoryProvider
             // Because tasks can be canceled DevHome should emit different logs.
             if (aggregateException.InnerException is OperationCanceledException)
             {
-                GlobalLog.Logger?.ReportInfo($"Get Repos operation was cancalled.");
+                _log.Information($"Get Repos operation was cancalled.");
             }
             else
             {
-                GlobalLog.Logger?.ReportError($"{aggregateException}");
+                _log.Error(aggregateException.Message, aggregateException);
             }
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {ex}");
+            _log.Error($"Could not get repositories.  Message: {ex}", ex);
         }
 
         _repositories[developerId] = repoSearchInformation.Repositories;

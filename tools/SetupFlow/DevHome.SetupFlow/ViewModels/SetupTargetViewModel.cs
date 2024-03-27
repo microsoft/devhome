@@ -11,15 +11,17 @@ using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class SetupTargetViewModel : SetupPageViewModelBase
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupTargetViewModel));
+
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     private readonly ToastNotificationService _toastNotificationService;
@@ -192,7 +194,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.SetupTarget, $"Error filtering ComputeSystemsListViewModel", ex);
+            _log.Error($"Error filtering ComputeSystemsListViewModel", ex);
         }
 
         return true;
@@ -362,7 +364,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.SetupTarget, $"Error loading ComputeSystemViewModels data", ex);
+            _log.Error($"Error loading ComputeSystemViewModels data", ex);
         }
 
         ShouldShowShimmerBelowList = false;

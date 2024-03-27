@@ -9,17 +9,18 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Exceptions;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
+using Serilog;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileViewModel));
     private readonly IDesiredStateConfiguration _dsc;
 
     public List<ConfigureTask> TaskList { get; } = new List<ConfigureTask>();
@@ -54,7 +55,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
     partial void OnReadAndAgreeChanged(bool value)
     {
-        Log.Logger?.ReportInfo(Log.Component.Configuration, $"Read and agree changed. Value: {value}");
+        _log.Information($"Read and agree changed. Value: {value}");
         CanGoToNextPage = value;
         Orchestrator.NotifyNavigationCanExecuteChanged();
     }
@@ -80,7 +81,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to initialize elevated process.", e);
+            _log.Error($"Failed to initialize elevated process.", e);
         }
     }
 
@@ -101,19 +102,19 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         var mainWindow = Application.Current.GetService<WindowEx>();
 
         // Create and configure file picker
-        Log.Logger?.ReportInfo(Log.Component.Configuration, "Launching file picker to select configuration file");
-        var file = await mainWindow.OpenFilePickerAsync(Log.Logger, ("*.yaml;*.yml", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
+        _log.Information("Launching file picker to select configuration file");
+        var file = await mainWindow.OpenFilePickerAsync(_log, ("*.yaml;*.yml", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
 
         // Check if a file was selected
         if (file == null)
         {
-            Log.Logger?.ReportInfo(Log.Component.Configuration, "No configuration file selected");
+            _log.Information("No configuration file selected");
         }
         else
         {
             try
             {
-                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
+                _log.Information($"Selected file: {file.Path}");
                 Configuration = new(file.Path);
                 Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
                 await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
@@ -122,7 +123,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             }
             catch (OpenConfigurationSetException e)
             {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Opening configuration set failed.", e);
+                _log.Error($"Opening configuration set failed.", e);
                 await mainWindow.ShowErrorMessageDialogAsync(
                     StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
                     GetErrorMessage(e),
@@ -130,7 +131,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Unknown error while opening configuration set.", e);
+                _log.Error($"Unknown error while opening configuration set.", e);
 
                 await mainWindow.ShowErrorMessageDialogAsync(
                     file.Name,

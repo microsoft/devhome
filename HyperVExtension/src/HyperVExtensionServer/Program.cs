@@ -26,7 +26,7 @@ public sealed class Program
         // Setup Logging
         Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(DevHome.Common.Logging.LogFolderRoot, "HyperV"));
         var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile("hyperv_appsettings.json")
             .Build();
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
