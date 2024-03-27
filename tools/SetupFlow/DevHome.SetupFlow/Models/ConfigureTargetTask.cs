@@ -94,7 +94,7 @@ public class ConfigureTargetTask : ISetupTask
     public SDKApplyConfigurationResult Result { get; private set; }
 
     public IAsyncOperation<ApplyConfigurationResult> ApplyConfigurationAsyncOperation { get; private set; }
-    
+
     public ISummaryInformationViewModel SummaryScreenInformation { get; }
 
     public ConfigureTargetTask(
