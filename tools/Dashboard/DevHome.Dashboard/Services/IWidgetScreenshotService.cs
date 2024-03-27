@@ -10,5 +10,7 @@ namespace DevHome.Dashboard.Services;
 
 public interface IWidgetScreenshotService
 {
+    public void RemoveScreenshotsFromCache(string definitionId);
+
     public Task<BitmapImage> GetScreenshotFromCache(WidgetDefinition widgetDefinition, ElementTheme actualTheme);
 }

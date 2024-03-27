@@ -28,6 +28,12 @@ public class WidgetScreenshotService : IWidgetScreenshotService
         _widgetDarkScreenshotCache = new Dictionary<string, BitmapImage>();
     }
 
+    public void RemoveScreenshotsFromCache(string definitionId)
+    {
+        _widgetLightScreenshotCache.Remove(definitionId);
+        _widgetDarkScreenshotCache.Remove(definitionId);
+    }
+
     public async Task<BitmapImage> GetScreenshotFromCache(WidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
@@ -61,12 +67,6 @@ public class WidgetScreenshotService : IWidgetScreenshotService
         }
 
         return bitmapImage;
-    }
-
-    public void RemoveScreenshotsFromCache(string definitionId)
-    {
-        _widgetLightScreenshotCache.Remove(definitionId);
-        _widgetDarkScreenshotCache.Remove(definitionId);
     }
 
     private async Task<BitmapImage> WidgetScreenshotToBitmapImageAsync(IRandomAccessStreamReference iconStreamRef)

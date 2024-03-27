@@ -13,6 +13,8 @@ public partial class DashboardViewModel : ObservableObject
 
     public IWidgetIconService WidgetIconService { get; }
 
+    public IWidgetScreenshotService WidgetScreenshotService { get; }
+
     [ObservableProperty]
     private bool _isLoading;
 
@@ -21,10 +23,12 @@ public partial class DashboardViewModel : ObservableObject
 
     public DashboardViewModel(
         IWidgetHostingService widgetHostingService,
-        IWidgetIconService widgetIconService)
+        IWidgetIconService widgetIconService,
+        IWidgetScreenshotService widgetScreenshotService)
     {
-        WidgetIconService = widgetIconService;
         WidgetHostingService = widgetHostingService;
+        WidgetIconService = widgetIconService;
+        WidgetScreenshotService = widgetScreenshotService;
     }
 
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
