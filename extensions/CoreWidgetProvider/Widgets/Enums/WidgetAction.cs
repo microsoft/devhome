@@ -48,4 +48,6 @@ public enum WidgetAction
     Save,
 
     Cancel,
+
+    Upload,
 }

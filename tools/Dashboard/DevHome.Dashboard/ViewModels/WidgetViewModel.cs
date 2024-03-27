@@ -114,63 +114,65 @@ public partial class WidgetViewModel : ObservableObject
     {
         await Task.Run(async () =>
         {
-            var cardTemplate = await Widget.GetCardTemplateAsync();
-            var cardData = await Widget.GetCardDataAsync();
+        var cardTemplate = await Widget.GetCardTemplateAsync();
+        var cardData = await Widget.GetCardDataAsync();
 
-            if (string.IsNullOrEmpty(cardData) || string.IsNullOrEmpty(cardTemplate))
+        if (string.IsNullOrEmpty(cardData) || string.IsNullOrEmpty(cardTemplate))
+        {
+            Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
+            ShowErrorCard("WidgetErrorCardDisplayText");
+            return;
+        }
+
+        // Uncomment for extra debugging output
+        // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
+        // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
+
+        // Use the data to fill in the template.
+        AdaptiveCardParseResult card;
+        try
+        {
+            var template = new AdaptiveCardTemplate(cardTemplate);
+
+            var hostData = new JsonObject
             {
-                Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
-                ShowErrorCard("WidgetErrorCardDisplayText");
-                return;
-            }
+                // TODO Add support to host theme in hostData
+                { "widgetSize", JsonValue.CreateStringValue(WidgetSize.ToString().ToLowerInvariant()) }, // "small", "medium" or "large"
+            }.ToString();
 
-            // Uncomment for extra debugging output
-            // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
-            // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
+            var context = new EvaluationContext(cardData, hostData);
+            var json = template.Expand(context);
 
-            // Use the data to fill in the template.
-            AdaptiveCardParseResult card;
-            try
-            {
-                var template = new AdaptiveCardTemplate(cardTemplate);
+            // Use custom parser.
+            var elementParser = new AdaptiveElementParserRegistration();
+            var actionParser = new AdaptiveActionParserRegistration();
+            elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
+            actionParser.Set(FilePickerAction.CustomTypeString, new FilePickerParser());
 
-                var hostData = new JsonObject
-                {
-                    // TODO Add support to host theme in hostData
-                    { "widgetSize", JsonValue.CreateStringValue(WidgetSize.ToString().ToLowerInvariant()) }, // "small", "medium" or "large"
-                }.ToString();
+            // Create adaptive card.
+            card = AdaptiveCard.FromJsonString(json, elementParser, actionParser);
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
+            ShowErrorCard("WidgetErrorCardDisplayText");
+            return;
+        }
 
-                var context = new EvaluationContext(cardData, hostData);
-                var json = template.Expand(context);
+        if (_renderedCard != null)
+        {
+            _renderedCard.Action -= HandleAdaptiveAction;
+        }
 
-                // Use custom parser.
-                var elementParser = new AdaptiveElementParserRegistration();
-                elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
+        if (card == null || card.AdaptiveCard == null)
+        {
+            Log.Logger()?.ReportError("WidgetViewModel", "Error in AdaptiveCardParseResult");
+            ShowErrorCard("WidgetErrorCardDisplayText");
+            return;
+        }
 
-                // Create adaptive card.
-                card = AdaptiveCard.FromJsonString(json, elementParser, new AdaptiveActionParserRegistration());
-            }
-            catch (Exception ex)
-            {
-                Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
-                ShowErrorCard("WidgetErrorCardDisplayText");
-                return;
-            }
-
-            if (_renderedCard != null)
-            {
-                _renderedCard.Action -= HandleAdaptiveAction;
-            }
-
-            if (card == null || card.AdaptiveCard == null)
-            {
-                Log.Logger()?.ReportError("WidgetViewModel", "Error in AdaptiveCardParseResult");
-                ShowErrorCard("WidgetErrorCardDisplayText");
-                return;
-            }
-
-            // Render card on the UI thread.
-            _windowEx.DispatcherQueue.TryEnqueue(async () =>
+        // Render card on the UI thread.
+        _windowEx.DispatcherQueue.TryEnqueue(async () =>
             {
                 try
                 {
@@ -315,6 +317,27 @@ public partial class WidgetViewModel : ObservableObject
 
             Log.Logger()?.ReportInfo("WidgetViewModel", $"Verb = {executeAction.Verb}, Data = {dataToSend}");
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
+        }
+        else if (args.Action is FilePickerAction filePickerAction)
+        {
+            var dataToSend = string.Empty;
+            filePickerAction.LaunchFilePicker();
+            var dataType = filePickerAction.ToJson().ValueType;
+            if (dataType != Windows.Data.Json.JsonValueType.Null)
+            {
+                dataToSend = filePickerAction.ToJson().Stringify();
+            }
+            else
+            {
+                var inputType = args.Inputs.AsJson().ValueType;
+                if (inputType != Windows.Data.Json.JsonValueType.Null)
+                {
+                    dataToSend = args.Inputs.AsJson().Stringify();
+                }
+            }
+
+            Log.Logger()?.ReportInfo("WidgetViewModel", $"Verb = {filePickerAction.Verb}, Data = {dataToSend}");
+            await Widget.NotifyActionInvokedAsync(filePickerAction.Verb, dataToSend);
         }
 
         TelemetryFactory.Get<ITelemetry>().Log(
