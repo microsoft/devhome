@@ -1,46 +1,64 @@
 # `IComputeSystem` interface
 
-A compute system is considered to be any one of the following:
+## Terminology
+
+A **compute system** is considered to be any one of the following:
 
 1. Local machine
-1. Virtual machine
-1. Remote machine
-1. Container
+2. Virtual machine
+3. Remote machine
+4. Container
 
-Dev Home uses the [IComputeSystem](https://github.com/microsoft/devhome/blob/3dc0dd739b0175357cc3e74c713d305c09248537/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L812) interface to interact with these types of software/hardware systems. Extension developers should create and return an `IComputeSystem` for every compute system they want Dev Home to interact with. The following management operations can be performed by the interface.
+Dev Home uses the [IComputeSystem](https://github.com/microsoft/devhome/blob/3dc0dd739b0175357cc3e74c713d305c09248537/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L812) interface to interact with these types of software/hardware systems. 
 
-Operations:
+## Operations supported by `IComputeSystem`
 
 1. Start the system
-1. ShutDown the system
-1. Terminate the system
-1. Delete the system
-1. Save the state of the system
-1. Pause the system
-1. Resume the system
-1. Restart the system
-1. Create a Snapshot of the system
-1. Revert to the last Snapshot of the system
-1. Delete a Snapshot on the system
-1. Apply a configuration file onto a system
-1. Modify the properties of the system
+2. Shut down the system
+3. Terminate the system
+4. Delete the system
+5. Save the state of the system
+6. Pause the system
+7. Resume the system
+8. Restart the system
+9. Create a Snapshot of the system
+10. Revert to the last Snapshot of the system
+11. Delete a Snapshot on the system
+12. Apply a configuration file onto a system
+13. Modify the properties of the system
 
-Note: Extension developers can limit which operations each `IComputeSystem` supports by utilizing the [ComputeSystemOperations](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L510) enum.
+## Implementing `IComputeSystem`
 
-Extensions should create objects that represent each compute system that their underlaying platform manages. These objects would implement the `IComputeSystem` interface, contain data about the software/hardware system and have methods to interact with them. For example, The Hyper-V extension interacts directly with the Hyper-V virtual machine management service to perform the above operations on the virtual machine. So, to provide Dev Home the ability to initiate one of these operations, we have created the `IComputeSystem` interface. Extensions are expected to map their software/hardware system to the `IComputeSystem` interface and send these back to Dev Home. Dev Home can initiate one of these operations via a method call in the `IComputeSystem` interface, based on user input. The extension can then interact with its underlaying platform to perform that operation.
+Extension developers should create and return an `IComputeSystem` for every compute system they want Dev Home to interact with. The operations listed above can be performed by the interface. Extension developers can limit which operations each `IComputeSystem` supports by utilizing the [ComputeSystemOperations](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L510) enum.
+
+Extensions should create objects that represent each compute system that their underlying platform manages. These objects must: 
+1. Implement the `IComputeSystem` interface
+2. Contain data about the software/hardware system and have methods to interact with them. 
+
+### Example
+
+The [Hyper-V extension](https://github.com/microsoft/devhome/tree/main/HyperVExtension) interacts directly with the Hyper-V virtual machine management service to perform the above operations on the virtual machine. 
+
+To provide Dev Home the ability to initiate one of these operations, we have created the `IComputeSystem` interface. Extensions are expected to map their software/hardware system to the `IComputeSystem` interface and send these operations back to Dev Home. Dev Home can initiate one of these operations via a method call in the `IComputeSystem` interface, based on user input. The extension can then interact with its underlying hardware/software system to perform that operation.
 
 ### Why do some of the `IComputeSystem` methods take an `options` string parameter
 
-Since the extension interacts with Dev Home and not the user directly, there may be cases where an extension may want to customize the behavior of the method based on user input. The thinking here is that an extension can provide Dev Home with an adaptive card with an action button. When the action button is invoked a Json string is generated with user input. This user input can then be passed to a method in the extension who can then use this input when performing an operation. Since the extension is the originator of the adaptive card, it will know what key/value pairs to expect within the Json, and can deserialize it accordingly. Dev Home in this case just acts the intermediary between the extension and the user, with its only role being to:
+Since the extension interacts with Dev Home and not the user directly, there may be cases where an extension may want to customize the behavior of the method based on user input. 
 
-1. Render the adaptive card for the extension
-1. Pass the inputs to appropriate interface method.
+An extension can provide Dev Home with an [Adaptive card](https://learn.microsoft.com/adaptive-cards/) (with an action button).
 
-This is how the creation of a compute system works (example tbd).
+1. When the action button is invoked, a JSON string is generated with user input
+2. This user input can then be passed to a method in the extension
+3. The extension can then use this input when performing an operation. 
+
+Since the extension is the originator of the adaptive card, it will know what key/value pairs to expect within the JSON, and can deserialize it accordingly. Dev Home is simply an intermediary between the extension and the user, with its only role being to:
+
+1. Render the [Adaptive card](https://learn.microsoft.com/adaptive-cards/) for the extension
+2. Pass the inputs to appropriate interface method.
 
 **Note:** It is not required to implement the interface method and use the options string. It is optional for all the operations of the `IComputeSystem`, however your `ModifyPropertiesAsync` method implementation will likely need to utilize it to know which properties to modify. These properties can be different from what is sent via the `IComputeSysten.GetComputeSystemPropertiesAsync` method.
 
-## Examples
+## Detailed Examples
 
 ### Implementing a class that implements IComputeSystem
 

@@ -4,16 +4,18 @@
 
 ## Terminology
 
-**Compute System:** A compute system is considered to be any one of the following:
+**Compute system:** A compute system is considered to be any one of the following:
 
 1. Local machine
 2. Virtual machine
 3. Remote machine
 4. Container
 
-Dev Home uses the [IComputeSystem](https://github.com/microsoft/devhome/blob/3dc0dd739b0175357cc3e74c713d305c09248537/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L812) interface to interact with Compute Systems.
+Dev Home uses the [IComputeSystem](https://github.com/microsoft/devhome/blob/3dc0dd739b0175357cc3e74c713d305c09248537/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L812) interface to interact with compute systems.
 
 **Compute system provider:** A compute system provider is the provider type that Dev Home will query for when initially interacting with an extension. The compute system provider is used to perform general operations that are not specific to a ComputeSystem. Extension developers should implement the [IComputeSystemProvider](https://github.com/microsoft/devhome/blob/3dc0dd739b0175357cc3e74c713d305c09248537/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L513) for their environment types.
+
+**Adaptive cards:** [Adaptive cards](https://learn.microsoft.com/adaptive-cards/) are an open card exchange format enabling developers to exchange UI content in a common and consistent way.
 
 ## How to create an environment extension
 

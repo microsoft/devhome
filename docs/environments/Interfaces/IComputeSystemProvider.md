@@ -1,13 +1,13 @@
 # What is the `IComputeSystemProvider` interface
 
-A compute system provider is the provider type that Dev Home will query for when initially interacting with an extension. The compute system provider is used to perform general operations that are not specific to a ComputeSystem. Extension developers should implement the [IComputeSystemProvider](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L458) to perform the following operations:
+A **compute system provider** is the provider type that Dev Home will query when initially interacting with an environment extension. The compute system provider is used to perform general operations that are not specific to a compute system. Extension developers should implement the [IComputeSystemProvider](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L458) to perform the following operations:
 
 1. Retrieve a list of `IComputeSystem`s
-1. Create a new compute system
-1. Provide Dev Home with an Adaptive card for the creation of a new compute system
-1. Provide Dev Home with an Adaptive card for the modification of a compute systems properties
+2. Create a new compute system
+3. Provide Dev Home with an [Adaptive card](https://learn.microsoft.com/en-us/adaptive-cards/) for the creation of a new compute system
+4. Provide Dev Home with an Adaptive card for the modification of a compute systems properties
 
-Note: Only the creation operation can be limited by utilizing the [ComputeSystemProviderOperations](https://github.com/microsoft/devhome/blob/1fbd2c1375846b949dd3cc03b2553b8b8efa1f64/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L406) enum.
+Dev Home will look at the [ComputeSystemProviderOperations](https://github.com/microsoft/devhome/blob/3dc0dd739b0175357cc3e74c713d305c09248537/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L461) enum to determine what operations the provider supports.
 
 ## Examples
 
