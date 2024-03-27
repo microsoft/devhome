@@ -91,6 +91,12 @@
                   "type": "ActionSet",
                   "actions": [
                     {
+                      "type": "Action.FilePicker",
+                      "title": "%SSH_Widget_Template/Upload%",
+                      "verb": "Upload",
+                      "isEnabled": "${$root.hasConfiguration}"
+                    },
+                    {
                       "type": "Action.Execute",
                       "title": "%Widget_Template_Button/Save%",
                       "verb": "Save",

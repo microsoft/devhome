@@ -133,6 +133,10 @@ internal sealed class SSHWalletWidget : CoreWidget
                 ContentData = _savedContentData;
                 SetActive();
                 break;
+
+            case WidgetAction.Upload:
+                HandleCheckPath(actionInvokedArgs);
+                break;
         }
     }
 
@@ -172,6 +176,19 @@ internal sealed class SSHWalletWidget : CoreWidget
             var updateRequestOptions = new WidgetUpdateRequestOptions(Id)
             {
                 Data = GetConfiguration(dataObject.ConfigFile),
+                CustomState = ConfigFile,
+                Template = GetTemplateForPage(Page),
+            };
+
+            WidgetManager.GetDefault().UpdateWidget(updateRequestOptions);
+        }
+
+        // This is the action when the user uses the File Picker to select a file "filePath" in the Configure state.
+        if (dataObject != null && dataObject.FilePath != null)
+        {
+            var updateRequestOptions = new WidgetUpdateRequestOptions(Id)
+            {
+                Data = GetConfiguration(dataObject.FilePath),
                 CustomState = ConfigFile,
                 Template = GetTemplateForPage(Page),
             };
@@ -406,6 +423,12 @@ internal sealed class SSHWalletWidget : CoreWidget
 internal sealed class DataPayload
 {
     public string? ConfigFile
+    {
+        get; set;
+    }
+
+    [JsonPropertyName("filePath")]
+    public string? FilePath
     {
         get; set;
     }
