@@ -32,6 +32,7 @@ public static class ServiceExtensions
         services.AddRepoConfig();
         services.AddReview();
         services.AddSummary();
+        services.AddSummaryInformation();
 
         // View-models
         services.AddSingleton<SetupFlowViewModel>();
@@ -114,6 +115,14 @@ public static class ServiceExtensions
         return services;
     }
 
+    private static IServiceCollection AddSummaryInformation(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<CloneRepoSummaryInformationViewModel>();
+
+        return services;
+    }
+
     private static IServiceCollection AddDevDrive(this IServiceCollection services)
     {
         // View models
@@ -133,6 +142,7 @@ public static class ServiceExtensions
     {
         // View models
         services.AddTransient<LoadingViewModel>();
+        services.AddTransient<LoadingMessageViewModel>();
 
         return services;
     }

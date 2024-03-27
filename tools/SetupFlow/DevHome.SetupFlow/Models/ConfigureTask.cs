@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;
 using Windows.Foundation;
@@ -43,6 +44,8 @@ public class ConfigureTask : ISetupTask
     {
         get; private set;
     }
+
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
 
     public ConfigureTask(
         ISetupFlowStringResource stringResource,

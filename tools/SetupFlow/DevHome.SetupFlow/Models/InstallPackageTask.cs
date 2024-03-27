@@ -10,6 +10,7 @@ using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
@@ -54,6 +55,8 @@ public class InstallPackageTask : ISetupTask
     {
         get;
     }
+
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
 
     public string PackageName => _package.Name;
 

@@ -15,7 +15,8 @@ public partial class LoadingMessageViewModel : ObservableObject
     /// <summary>
     /// Gets the message to display in the loading screen.
     /// </summary>
-    public string MessageToShow { get; }
+    [ObservableProperty]
+    private string _messageToShow;
 
     /// <summary>
     /// If the progress ring should be shown.  Only show a progress ring when the task is running.
@@ -43,10 +44,5 @@ public partial class LoadingMessageViewModel : ObservableObject
     public void TextTrimmed()
     {
         IsRepoNameTrimmed = true;
-    }
-
-    public LoadingMessageViewModel(string messageToShow)
-    {
-        MessageToShow = messageToShow;
     }
 }

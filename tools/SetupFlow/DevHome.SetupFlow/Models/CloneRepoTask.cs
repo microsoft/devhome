@@ -6,14 +6,18 @@ extern alias Projection;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;
@@ -27,6 +31,14 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloneRepoTask : ObservableObject, ISetupTask
 {
+    private const string _configurationFolderName = ".configurations";
+
+    private const string _configurationFileYamlExtension = ".dsc.yaml";
+
+    private const string _configurationFileWingetExtension = ".winget";
+
+    private readonly IHost _host;
+
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CloneRepoTask));
 
     private readonly Guid _activityId;
@@ -131,13 +143,15 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         get; set;
     }
 
+    public ISummaryInformationViewModel SummaryScreenInformation { get; private set; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CloneRepoTask"/> class.
     /// </summary>
     /// <param name="cloneLocation">Repository will be placed here. at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
     /// <param name="developerId">Credentials needed to clone a private repo</param>
-    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName, Guid activityId)
+    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName, Guid activityId, IHost host)
     {
         _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
@@ -147,6 +161,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         _stringResource = stringResource;
         _repositoryProvider = repositoryProvider;
         _activityId = activityId;
+        _host = host;
     }
 
     /// <summary>
@@ -155,7 +170,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// </summary>
     /// <param name="cloneLocation">Repository will be placed here, at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
-    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName, Guid activityId)
+    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName, Guid activityId, IHost host)
     {
         _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
@@ -165,6 +180,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         _stringResource = stringResource;
         _repositoryProvider = repositoryProvider;
         _activityId = activityId;
+        _host = host;
     }
 
     private void SetMessages(IStringResource stringResource)
@@ -232,7 +248,28 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                 return TaskFinishedState.Failure;
             }
 
+            SummaryScreenInformation = _host.GetService<CloneRepoSummaryInformationViewModel>();
+
+            // Search for a configuration file.
+            var configurationDirectory = Path.Join(_cloneLocation.FullName, _configurationFolderName);
+            if (Directory.Exists(configurationDirectory))
+            {
+                var fileToUse = Directory.EnumerateFiles(configurationDirectory)
+                .Where(file => file.EndsWith(_configurationFileYamlExtension, StringComparison.OrdinalIgnoreCase) ||
+                               file.EndsWith(_configurationFileWingetExtension, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(configurationFile => File.GetLastWriteTime(configurationFile))
+                .FirstOrDefault();
+
+                if (fileToUse != null)
+                {
+                    (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).FilePathAndName = fileToUse;
+                    (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).RepoName = RepositoryName;
+                    (SummaryScreenInformation as CloneRepoSummaryInformationViewModel).OwningAccount = RepositoryToClone.OwningAccountName ?? string.Empty;
+                }
+            }
+
             WasCloningSuccessful = true;
+
             return TaskFinishedState.Success;
         }).AsAsyncOperation();
     }

@@ -45,6 +45,9 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\CloneRepoSummaryInformationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\SetupTargetReviewView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -87,6 +90,7 @@
     <None Remove="Styles\SetupFlow_ThemeResources.xaml" />
     <None Remove="Styles\SetupToolStyles.xaml" />
     <None Remove="Views\AddRepoDialog.xaml" />
+    <None Remove="Views\CloneRepoSummaryInformationView.xaml" />
     <None Remove="Views\DevDriveReviewView.xaml" />
     <None Remove="Views\DevDriveView.xaml" />
     <None Remove="Views\EditClonePathDialog.xaml" />
