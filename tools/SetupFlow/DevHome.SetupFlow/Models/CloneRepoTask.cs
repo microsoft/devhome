@@ -31,7 +31,6 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloneRepoTask : ObservableObject, ISetupTask
 {
-
     private const string _configurationFolderName = ".configurations";
 
     private const string _configurationFileYamlExtension = ".dsc.yaml";
