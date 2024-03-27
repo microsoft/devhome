@@ -137,7 +137,8 @@ public class ConfigurationFileHelper
             }
 
             var installStatus = installItem.GetCurrentStatus();
-            _log.Information($"{AppInstallerPackageName} installation status: {installStatus}");
+            var log = Log.ForContext("SourceContext", nameof(ConfigurationFileHelper));
+            log.Information($"{AppInstallerPackageName} installation status: {installStatus}");
             if (installStatus.InstallState != AppInstallState.Completed)
             {
                 throw new PackageOperationException(PackageOperationException.ErrorCode.DevSetupErrorMsStoreInstallFailed, $"Failed to install {AppInstallerPackageName} updates");
