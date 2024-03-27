@@ -78,7 +78,7 @@ public partial class App : Application, IApp
         InitializeComponent();
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-        // Setup Logging
+        // Set up Logging
         Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHome"));
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")

@@ -23,7 +23,7 @@ public sealed class Program
     [MTAThread]
     public static void Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
     {
-        // Setup Logging
+        // Set up Logging
         Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(DevHome.Common.Logging.LogFolderRoot, "HyperV"));
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("hyperv_appsettings.json")

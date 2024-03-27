@@ -27,7 +27,7 @@ unsafe
     }
 }
 
-// Setup Logging
+// Set up Logging
 Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(DevHome.Common.Logging.LogFolderRoot, "HyperV"));
 var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")

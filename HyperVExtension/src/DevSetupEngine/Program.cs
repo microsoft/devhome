@@ -24,7 +24,7 @@ internal sealed class Program
     [MTAThread]
     public static int Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
     {
-        // Setup Logging
+        // Set up Logging
         Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(DevHome.Common.Logging.LogFolderRoot, "HyperV"));
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
