@@ -91,12 +91,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public void Initialize(StackedNotificationsBehavior notificationQueue)
     {
         _notificationService.Initialize(notificationQueue);
-
-        // To Do: Need to give the users a way to disable this, if they don't want to use Hyper-V
-        _ = Task.Run(() =>
-        {
-            _notificationService.CheckIfUserIsAHyperVAdminAndShowNotification();
-        });
     }
 
     [RelayCommand]
@@ -186,11 +180,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _ = Task.Run(async () =>
         {
             await RunSyncTimmer();
+
+            // To Do: Need to give the users a way to disable this, if they don't want to use Hyper-V
+            _notificationService.CheckIfUserIsAHyperVAdminAndShowNotification();
         });
 
-        // temporary, we'll need to give the users a way to disable this.
-        // if they don't want to use hyper-v
-        _notificationService.CheckIfUserIsAHyperVAdmin();
         for (var i = ComputeSystems.Count - 1; i >= 0; i--)
         {
             ComputeSystems[i].RemoveStateChangedHandler();

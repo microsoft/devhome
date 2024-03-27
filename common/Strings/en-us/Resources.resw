@@ -205,6 +205,21 @@
     <value>Uptime:</value>
     <comment>Title for the uptime property of a compute system. (The amount of time its been running)</comment>
   </data>
+  <data name="HyperVAdminAddUser" xml:space="preserve">
+    <value>Add User to Hyper-V admin group</value>
+  </data>
+  <data name="HyperVErrorTitle" xml:space="preserve">
+    <value>Microsoft Hyper-V</value>
+    <comment>Title text for the UI showing errors for user not part of Hyper-V admin group</comment>
+  </data>
+  <data name="RestartButton" xml:space="preserve">
+    <value>Restart Now</value>
+    <comment>Text for button that restarts the system.</comment>
+  </data>
+  <data name="RestartMessage" xml:space="preserve">
+    <value>You must restart the computer after adding the user to the Hyper-V admin group for changes to take effect.</value>
+    <comment>Text explaining that a restart is needed after a user is added to the Hyper-V group.</comment>
+  </data>
   <data name="UserNotInHyperAdminGroupButton" xml:space="preserve">
     <value>Launch computer management</value>
     <comment>Button text for the user to click, in order for us to add them to the Hyper-V admin group</comment>

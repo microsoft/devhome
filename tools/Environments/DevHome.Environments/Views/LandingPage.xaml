@@ -165,7 +165,7 @@
                         </i:Interaction.Behaviors>
                     </ComboBox>
                     <!--  'Sync' button -->
-                    <Button Padding="40 5 30 8" Command="{x:Bind ViewModel.SyncButtonCommand}" Margin="0 3 13 0">
+                    <Button Padding="40 5 30 8" Command="{x:Bind ViewModel.SyncButtonCommand}" Margin="0 3 0 0">
                         <StackPanel Orientation="Horizontal">
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
                             <TextBlock x:Uid="SyncButtonTextBlock" Margin="8 0 0 0"/>
