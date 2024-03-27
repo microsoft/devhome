@@ -10,9 +10,9 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Models;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.SetupFlow.Models.Environments;
 
@@ -26,6 +26,8 @@ public enum SortByKind
 /// </summary>
 public partial class ComputeSystemsListViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemsListViewModel));
+
     private const string SortByComputeSystemTitle = "ComputeSystemTitle";
 
     private const string HyperVExtensionProviderName = "Microsoft.HyperV";
@@ -86,7 +88,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
             var result = CurrentResult.Result;
             if (result?.Status == ProviderOperationStatus.Failure)
             {
-                Log.Logger.ReportError(Log.Component.ComputeSystemsListViewModel, $"Failed to get Compute system due to error. Display: {result.DisplayMessage}, DiagnosticText: {result.DiagnosticText}, ExtendedError: {result.ExtendedError}");
+                _log.Error($"Failed to get Compute system due to error. Display: {result.DisplayMessage}, DiagnosticText: {result.DiagnosticText}, ExtendedError: {result.ExtendedError}");
                 return string.IsNullOrEmpty(result.DisplayMessage) ? result.DiagnosticText : result.DisplayMessage;
             }
 
@@ -144,7 +146,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                Log.Logger.ReportError(Log.Component.ComputeSystemsListViewModel, $"Failed to filter Compute system cards. Error: {ex.Message}");
+                _log.Error($"Failed to filter Compute system cards. Error: {ex.Message}");
             }
 
             return true;

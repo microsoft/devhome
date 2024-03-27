@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Dashboard.Views;
@@ -16,11 +15,14 @@ using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
+using Serilog;
 
 namespace DevHome.Dashboard.Controls;
 
 public sealed partial class WidgetControl : UserControl
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetControl));
+
     private readonly StringResource _stringResource;
 
     private SelectableMenuFlyoutItem _currentSelectedSize;
@@ -102,16 +104,16 @@ public sealed partial class WidgetControl : UserControl
                 // have changed and the collection won't be able to find it to remove it.
                 var widgetIdToDelete = widgetViewModel.Widget.Id;
                 var widgetToDelete = widgetViewModel.Widget;
-                Log.Logger()?.ReportDebug("WidgetControl", $"User removed widget, delete widget {widgetIdToDelete}");
+                _log.Debug($"User removed widget, delete widget {widgetIdToDelete}");
                 DashboardView.PinnedWidgets.Remove(widgetViewModel);
                 try
                 {
                     await widgetToDelete.DeleteAsync();
-                    Log.Logger()?.ReportInfo("WidgetControl", $"Deleted Widget {widgetIdToDelete}");
+                    _log.Information($"Deleted Widget {widgetIdToDelete}");
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger()?.ReportError("WidgetControl", $"Didn't delete Widget {widgetIdToDelete}", ex);
+                    _log.Error($"Didn't delete Widget {widgetIdToDelete}", ex);
                 }
             }
         }

@@ -9,9 +9,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 using Dispatching = Microsoft.UI.Dispatching;
 
@@ -22,6 +22,8 @@ namespace DevHome.SetupFlow.ViewModels.Environments;
 /// </summary>
 public partial class ComputeSystemCardViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemCardViewModel));
+
     private readonly Dispatching.DispatcherQueue _dispatcher;
 
     private readonly IComputeSystemManager _computeSystemManager;
@@ -100,7 +102,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
         if (result.Result.Status == ProviderOperationStatus.Failure)
         {
-            Log.Logger.ReportError(Log.Component.ComputeSystemCardViewModel, $"Failed to get state for compute system {ComputeSystemWrapper.DisplayName} from provider {ComputeSystemWrapper.AssociatedProviderId}. Error: {result.Result.DiagnosticText}");
+            _log.Error($"Failed to get state for compute system {ComputeSystemWrapper.DisplayName} from provider {ComputeSystemWrapper.AssociatedProviderId}. Error: {result.Result.DiagnosticText}");
         }
 
         StateColor = ComputeSystemHelpers.GetColorBasedOnState(result.State);

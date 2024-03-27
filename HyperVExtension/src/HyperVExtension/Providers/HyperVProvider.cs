@@ -7,6 +7,7 @@ using HyperVExtension.Helpers;
 using HyperVExtension.Models.VirtualMachineCreation;
 using HyperVExtension.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
 
 namespace HyperVExtension.Providers;
@@ -14,6 +15,8 @@ namespace HyperVExtension.Providers;
 /// <summary> Class that provides compute system information for Hyper-V Virtual machines. </summary>
 public class HyperVProvider : IComputeSystemProvider
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(HyperVProvider));
+
     private readonly string errorResourceKey = "ErrorPerformingOperation";
 
     private readonly IStringResource _stringResource;
@@ -59,12 +62,12 @@ public class HyperVProvider : IComputeSystemProvider
             try
             {
                 var computeSystems = _hyperVManager.GetAllVirtualMachines();
-                Logging.Logger()?.ReportInfo($"Successfully retrieved all virtual machines on: {DateTime.Now}");
+                _log.Information($"Successfully retrieved all virtual machines on: {DateTime.Now}");
                 return new ComputeSystemsResult(computeSystems);
             }
             catch (Exception ex)
             {
-                Logging.Logger()?.ReportError($"Failed to retrieved all virtual machines on: {DateTime.Now}", ex);
+                _log.Error($"Failed to retrieved all virtual machines on: {DateTime.Now}", ex);
                 return new ComputeSystemsResult(ex, OperationErrorString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -95,7 +98,7 @@ public class HyperVProvider : IComputeSystemProvider
         }
         catch (Exception ex)
         {
-            Logging.Logger()?.ReportError($"Failed to create a new virtual machine on: {DateTime.Now}", ex);
+            _log.Error($"Failed to create a new virtual machine on: {DateTime.Now}", ex);
 
             // Dev Home will handle null values as failed operations. We can't throw because this is an out of proc
             // COM call, so we'll lose the error information. We'll log the error and return null.

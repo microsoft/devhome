@@ -11,10 +11,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Elevation;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
+using Serilog;
 
 namespace DevHome.SetupFlow.Services;
 
@@ -29,6 +29,8 @@ public enum SetupFlowKind
 /// </summary>
 public partial class SetupFlowOrchestrator : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupFlowOrchestrator));
+
     private readonly List<SetupPageViewModelBase> _flowPages = new();
 
     /// <summary>
@@ -198,7 +200,7 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
     public async Task InitializeElevatedServerAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Initializing elevated server");
+        _log.Information($"Initializing elevated server");
         var elevatedTasks = TaskGroups.SelectMany(taskGroup => taskGroup.SetupTasks.Where(task => task.RequiresAdmin));
 
         // If there are no elevated tasks, we don't need to create the remote object.
@@ -214,7 +216,7 @@ public partial class SetupFlowOrchestrator : ObservableObject
         }
         else
         {
-            Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Skipping elevated process initialization because no elevated tasks were found");
+            _log.Information($"Skipping elevated process initialization because no elevated tasks were found");
         }
     }
 
@@ -227,7 +229,7 @@ public partial class SetupFlowOrchestrator : ObservableObject
         // Update current page
         _currentPageIndex = index;
         CurrentPageViewModel = FlowPages.Any() ? FlowPages[_currentPageIndex] : null;
-        Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Moving to {CurrentPageViewModel?.GetType().Name}");
+        _log.Information($"Moving to {CurrentPageViewModel?.GetType().Name}");
 
         // Last page in the setup flow should always be the summary page. The summary page is the only page where we show
         // the user the "Done" button.

@@ -9,12 +9,14 @@ using DevHome.Common.Services;
 using DevHome.Dashboard.Helpers;
 using DevHome.Services;
 using Microsoft.Windows.Widgets.Hosts;
-using Log = DevHome.Dashboard.Helpers.Log;
+using Serilog;
 
 namespace DevHome.Dashboard.Services;
 
 public class WidgetHostingService : IWidgetHostingService
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetHostingService));
+
     private readonly IPackageDeploymentService _packageDeploymentService;
     private readonly IAppInstallManagerService _appInstallManagerService;
 
@@ -47,13 +49,13 @@ public class WidgetHostingService : IWidgetHostingService
         {
             if (HasValidWebExperiencePack())
             {
-                Log.Logger()?.ReportInfo("WidgetHostingService", "On Windows 11, HasWebExperienceGoodVersion");
+                _log.Information("On Windows 11, HasWebExperienceGoodVersion");
                 _widgetServiceState = WidgetServiceStates.HasWebExperienceGoodVersion;
                 return true;
             }
             else
             {
-                Log.Logger()?.ReportInfo("WidgetHostingService", "On Windows 11, HasWebExperienceNoOrBadVersion");
+                _log.Information("On Windows 11, HasWebExperienceNoOrBadVersion");
                 _widgetServiceState = WidgetServiceStates.HasWebExperienceNoOrBadVersion;
                 return false;
             }
@@ -63,13 +65,13 @@ public class WidgetHostingService : IWidgetHostingService
             // If we're on Windows 10, check if we have the store version installed.
             if (HasValidWidgetServicePackage())
             {
-                Log.Logger()?.ReportInfo("WidgetHostingService", "On Windows 10, HasStoreWidgetServiceGoodVersion");
+                _log.Information("On Windows 10, HasStoreWidgetServiceGoodVersion");
                 _widgetServiceState = WidgetServiceStates.HasStoreWidgetServiceGoodVersion;
                 return true;
             }
             else
             {
-                Log.Logger()?.ReportInfo("WidgetHostingService", "On Windows 10, HasStoreWidgetServiceNoOrBadVersion");
+                _log.Information("On Windows 10, HasStoreWidgetServiceNoOrBadVersion");
                 _widgetServiceState = WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion;
                 return false;
             }
@@ -78,10 +80,10 @@ public class WidgetHostingService : IWidgetHostingService
 
     public async Task<bool> TryInstallingWidgetService()
     {
-        Log.Logger()?.ReportInfo("WidgetHostingService", "Try installing widget service...");
+        _log.Information("Try installing widget service...");
         var installedSuccessfully = await _appInstallManagerService.TryInstallPackageAsync(WidgetHelpers.WidgetServiceStorePackageId);
         _widgetServiceState = installedSuccessfully ? WidgetServiceStates.HasStoreWidgetServiceGoodVersion : WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion;
-        Log.Logger()?.ReportInfo("WidgetHostingService", $"InstalledSuccessfully == {installedSuccessfully}, {_widgetServiceState}");
+        _log.Information($"InstalledSuccessfully == {installedSuccessfully}, {_widgetServiceState}");
         return installedSuccessfully;
     }
 
@@ -117,7 +119,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError("WidgetHostingService", "Exception in WidgetHost.Register:", ex);
+                _log.Error("Exception in WidgetHost.Register:", ex);
             }
         }
 
@@ -134,7 +136,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError("WidgetHostingService", "Exception in WidgetCatalog.GetDefault:", ex);
+                _log.Error("Exception in WidgetCatalog.GetDefault:", ex);
             }
         }
 
