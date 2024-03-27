@@ -6,9 +6,9 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
+using Serilog;
 using Windows.Storage.Pickers;
 using WinUIEx;
 
@@ -19,6 +19,8 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class FolderPickerViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(FolderPickerViewModel));
+
     private readonly ISetupFlowStringResource _stringResource;
 
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
@@ -77,13 +79,13 @@ public partial class FolderPickerViewModel : ObservableObject
 
     public void ShowFolderPicker()
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Showing folder picker");
+        _log.Information("Showing folder picker");
         ShouldShowFolderPicker = true;
     }
 
     public void CloseFolderPicker()
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Closing folder picker");
+        _log.Information("Closing folder picker");
         ShouldShowFolderPicker = false;
     }
 
@@ -125,7 +127,7 @@ public partial class FolderPickerViewModel : ObservableObject
     /// <returns>An awaitable task.</returns>
     private async Task<DirectoryInfo> PickCloneDirectoryAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Opening folder picker to select clone directory");
+        _log.Information("Opening folder picker to select clone directory");
         var folderPicker = new FolderPicker();
         WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Application.Current.GetService<WindowEx>().GetWindowHandle());
         folderPicker.FileTypeFilter.Add("*");
@@ -133,12 +135,12 @@ public partial class FolderPickerViewModel : ObservableObject
         var locationToCloneTo = await folderPicker.PickSingleFolderAsync();
         if (locationToCloneTo != null && locationToCloneTo.Path.Length > 0)
         {
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Selected '{locationToCloneTo.Path}' as location to clone to");
+            _log.Information($"Selected '{locationToCloneTo.Path}' as location to clone to");
             return new DirectoryInfo(locationToCloneTo.Path);
         }
         else
         {
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Didn't select a location to clone to");
+            _log.Information("Didn't select a location to clone to");
             return null;
         }
     }

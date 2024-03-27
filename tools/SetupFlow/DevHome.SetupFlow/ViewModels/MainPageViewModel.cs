@@ -10,13 +10,13 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using Windows.Storage;
 using Windows.System;
 
@@ -30,6 +30,8 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class MainPageViewModel : SetupPageViewModelBase
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(EnvironmentsSetupFlowFeatureName));
+
     private const string EnvironmentsSetupFlowFeatureName = "EnvironmentsSetupTargetFlow";
 
     private readonly IHost _host;
@@ -84,11 +86,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     public async Task StartConfigurationFileAsync(StorageFile file)
     {
-        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching configuration file flow");
+        _log.Information("Launching configuration file flow");
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
         if (await configFileSetupFlow.LoadFromLocalFileAsync(file))
         {
-            Log.Logger?.ReportInfo(Log.Component.MainPage, "Started flow from file activation");
+            _log.Information("Started flow from file activation");
             StartSetupFlowForTaskGroups(null, "ConfigurationFile", configFileSetupFlow);
         }
     }
@@ -97,12 +99,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     {
         if (await ValidateAppInstallerAsync())
         {
-            Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");
+            _log.Information($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");
             ShowAppInstallerUpdateNotification = await _wpm.IsUpdateAvailableAsync();
         }
         else
         {
-            Log.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available. Package install item is hidden.");
+            _log.Warning($"{nameof(WindowsPackageManager)} COM Server is not available. Package install item is hidden.");
         }
     }
 
@@ -126,7 +128,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
         // Report this after setting the flow pages as that will set an ActivityId
         // we can later use to correlate with the flow termination.
-        Log.Logger?.ReportInfo($"Starting setup flow with ActivityId={Orchestrator.ActivityId}");
+        _log.Information($"Starting setup flow with ActivityId={Orchestrator.ActivityId}");
         TelemetryFactory.Get<ITelemetry>().Log(
             "MainPage_StartFlow_Event",
             LogLevel.Critical,
@@ -140,7 +142,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartSetup(string flowTitle)
     {
-        Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting end-to-end setup");
+        _log.Information("Starting end-to-end setup");
         StartSetupFlowForTaskGroups(
             flowTitle,
             "EndToEnd",
@@ -155,7 +157,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartSetupForTargetEnvironment(string flowTitle)
     {
-        Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting setup for target environment");
+        _log.Information("Starting setup for target environment");
         StartSetupFlowForTaskGroups(
             flowTitle,
             "SetupTargetEnvironment",
@@ -170,7 +172,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartRepoConfig(string flowTitle)
     {
-        Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for repo config");
+        _log.Information("Starting flow for repo config");
         StartSetupFlowForTaskGroups(
             flowTitle,
             "RepoConfig",
@@ -184,7 +186,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartAppManagement(string flowTitle)
     {
-        Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for app management");
+        _log.Information("Starting flow for app management");
         StartSetupFlowForTaskGroups(flowTitle, "AppManagement", _host.GetService<AppManagementTaskGroup>());
     }
 
@@ -195,7 +197,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private async Task LaunchDisksAndVolumesSettingsPageAsync()
     {
         // Critical level approved by subhasan
-        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
+        _log.Information("Launching settings on Disks and Volumes page");
         TelemetryFactory.Get<ITelemetry>().Log(
             "LaunchDisksAndVolumesSettingsPageTriggered",
             LogLevel.Critical,
@@ -211,11 +213,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task StartConfigurationFileAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching configuration file flow");
+        _log.Information("Launching configuration file flow");
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
         if (await configFileSetupFlow.PickConfigurationFileAsync())
         {
-            Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for Configuration file");
+            _log.Information("Starting flow for Configuration file");
             StartSetupFlowForTaskGroups(null, "ConfigurationFile", configFileSetupFlow);
         }
     }
@@ -223,7 +225,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void HideAppInstallerUpdateNotification()
     {
-        Log.Logger?.ReportInfo(Log.Component.MainPage, "Hiding AppInstaller update notification");
+        _log.Information("Hiding AppInstaller update notification");
         ShowAppInstallerUpdateNotification = false;
     }
 
@@ -231,7 +233,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private async Task UpdateAppInstallerAsync()
     {
         HideAppInstallerUpdateNotification();
-        Log.Logger?.ReportInfo(Log.Component.MainPage, "Opening AppInstaller in the Store app");
+        _log.Information("Opening AppInstaller in the Store app");
         await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?productid={WindowsPackageManager.AppInstallerProductId}"));
     }
 

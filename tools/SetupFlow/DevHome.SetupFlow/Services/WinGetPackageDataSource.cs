@@ -4,8 +4,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
+using Serilog;
 
 namespace DevHome.SetupFlow.Services;
 
@@ -14,6 +14,8 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public abstract class WinGetPackageDataSource
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WinGetPackageDataSource));
+
     /// <summary>
     /// Gets the total number of package catalogs available in this data source
     /// </summary>
@@ -50,7 +52,7 @@ public abstract class WinGetPackageDataSource
         // Skip search if package data source is empty
         if (!packageUris.Any())
         {
-            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"{nameof(GetPackagesAsync)} received an empty list of items. Skipping search.");
+            _log.Warning($"{nameof(GetPackagesAsync)} received an empty list of items. Skipping search.");
             return result;
         }
 

@@ -10,9 +10,9 @@ using HyperVExtension.Common;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.CommunicationWithGuest;
 using HyperVExtension.Helpers;
-using HyperVExtension.Providers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
 
 namespace HyperVExtension.Models;
@@ -20,6 +20,7 @@ namespace HyperVExtension.Models;
 public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSession2, IDisposable
 {
     private const int MaxAttempts = 3;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(VmCredentialAdaptiveCardSession));
 
     private sealed class InputPayload
     {
@@ -131,14 +132,14 @@ public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSess
             ProviderOperationResult operationResult;
             try
             {
-                Logging.Logger()?.ReportInfo($"OnAction() called with state:{_extensionAdaptiveCard?.State}");
-                Logging.Logger()?.ReportDebug($"action: {action}");
+                _log.Information($"OnAction() called with state:{_extensionAdaptiveCard?.State}");
+                _log.Debug($"action: {action}");
 
                 switch (_extensionAdaptiveCard?.State)
                 {
                     case "VmCredential":
                         {
-                            Logging.Logger()?.ReportDebug($"inputs: {inputs}");
+                            _log.Debug($"inputs: {inputs}");
                             var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action) ?? throw new InvalidOperationException("Invalid action");
                             if (actionPayload.IsOkAction())
                             {
@@ -154,7 +155,7 @@ public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSess
 
                     default:
                         {
-                            Logging.Logger()?.ReportError($"Unexpected state:{_extensionAdaptiveCard?.State}");
+                            _log.Error($"Unexpected state:{_extensionAdaptiveCard?.State}");
                             operationResult = new ProviderOperationResult(ProviderOperationStatus.Failure, null, "Something went wrong", $"Unexpected state:{_extensionAdaptiveCard?.State}");
                             break;
                         }
@@ -162,7 +163,7 @@ public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSess
             }
             catch (Exception ex)
             {
-                Logging.Logger()?.ReportError($"Exception in OnAction: {ex}");
+                _log.Error($"Exception in OnAction: {ex}");
                 operationResult = new ProviderOperationResult(ProviderOperationStatus.Failure, ex, "Something went wrong", ex.Message);
             }
 

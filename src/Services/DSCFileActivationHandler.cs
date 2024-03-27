@@ -5,10 +5,10 @@ using System.Diagnostics;
 using DevHome.Activation;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
+using Serilog;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
 
@@ -19,6 +19,7 @@ namespace DevHome.Services;
 /// </summary>
 public class DSCFileActivationHandler : ActivationHandler<FileActivatedEventArgs>
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DSCFileActivationHandler));
     private const string WinGetFileExtension = ".winget";
     private readonly ISetupFlowStringResource _setupFlowStringResource;
     private readonly INavigationService _navigationService;
@@ -60,7 +61,7 @@ public class DSCFileActivationHandler : ActivationHandler<FileActivatedEventArgs
         if (_navigationService.Frame.XamlRoot == null)
         {
             // Wait until the frame is loaded before starting the flow
-            Log.Logger?.ReportInfo("DSC flow activated from a file but the application is not yet ready. Activation will start once the page is loaded.");
+            _log.Information("DSC flow activated from a file but the application is not yet ready. Activation will start once the page is loaded.");
             _navigationService.Frame!.Loaded += DSCActivationFlowHandlerAsync;
         }
         else
@@ -81,7 +82,7 @@ public class DSCFileActivationHandler : ActivationHandler<FileActivatedEventArgs
             // Don't interrupt the user if the machine configuration is in progress
             if (_setupFlowOrchestrator.IsMachineConfigurationInProgress)
             {
-                Log.Logger?.ReportWarn("Cannot activate the DSC flow because the machine configuration is in progress");
+                _log.Warning("Cannot activate the DSC flow because the machine configuration is in progress");
                 await _mainWindow.ShowErrorMessageDialogAsync(
                     _setupFlowStringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
                     _setupFlowStringResource.GetLocalized(StringResourceKey.ConfigurationActivationFailedBusy),
@@ -90,14 +91,14 @@ public class DSCFileActivationHandler : ActivationHandler<FileActivatedEventArgs
             else
             {
                 // Start the setup flow with the DSC file
-                Log.Logger?.ReportInfo("Starting DSC file activation");
+                _log.Information("Starting DSC file activation");
                 _navigationService.NavigateTo(typeof(SetupFlowViewModel).FullName!);
                 await _setupFlowViewModel.StartFileActivationFlowAsync(file);
             }
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError("Error executing the DSC activation flow", ex);
+            _log.Error("Error executing the DSC activation flow", ex);
         }
     }
 }

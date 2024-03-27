@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using Serilog;
 
 namespace DevHome.Common.Environments.Helpers;
 
@@ -26,7 +26,7 @@ public static class StringResourceHelper
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError($"Failed to get resource for key {key}.", ex);
+            Log.Error($"Failed to get resource for key {key}.", ex);
             return key;
         }
     }

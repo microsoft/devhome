@@ -9,10 +9,10 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Helpers;
 using DevHome.Environments.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -22,6 +22,8 @@ namespace DevHome.Environments.ViewModels;
 /// </summary>
 public partial class ComputeSystemViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
+
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     public string Name => ComputeSystem.DisplayName;
@@ -91,7 +93,7 @@ public partial class ComputeSystemViewModel : ObservableObject
         var result = await ComputeSystem.GetStateAsync();
         if (result.Result.Status == ProviderOperationStatus.Failure)
         {
-            Log.Logger()?.ReportError($"Failed to get state for {ComputeSystem.DisplayName} due to {result.Result.DiagnosticText}");
+            _log.Error($"Failed to get state for {ComputeSystem.DisplayName} due to {result.Result.DiagnosticText}");
         }
 
         State = result.State;

@@ -4,14 +4,16 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
+using Serilog;
 
 namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
 
 public partial class QuietBackgroundProcessesViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(QuietBackgroundProcessesViewModel));
+
     private readonly TimeSpan _zero = new TimeSpan(0, 0, 0);
     private readonly TimeSpan _oneSecond = new TimeSpan(0, 0, 1);
 #nullable enable
@@ -102,7 +104,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             catch (Exception ex)
             {
                 SessionStateText = GetStatusString("SessionError");
-                Log.Logger()?.ReportError("QuietBackgroundProcessesSession::Start failed", ex);
+                _log.Error("QuietBackgroundProcessesSession::Start failed", ex);
             }
         }
         else
@@ -116,7 +118,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             catch (Exception ex)
             {
                 SessionStateText = GetStatusString("UnableToCancelSession");
-                Log.Logger()?.ReportError("QuietBackgroundProcessesSession::Stop failed", ex);
+                _log.Error("QuietBackgroundProcessesSession::Stop failed", ex);
             }
         }
     }
@@ -134,7 +136,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
         catch (Exception ex)
         {
             SessionStateText = GetStatusString("SessionError");
-            Log.Logger()?.ReportError("QuietBackgroundProcessesSession::IsActive failed", ex);
+            _log.Error("QuietBackgroundProcessesSession::IsActive failed", ex);
         }
 
         return false;
@@ -149,7 +151,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
         catch (Exception ex)
         {
             SessionStateText = GetStatusString("SessionError");
-            Log.Logger()?.ReportError("QuietBackgroundProcessesSession::TimeLeftInSeconds failed", ex);
+            _log.Error("QuietBackgroundProcessesSession::TimeLeftInSeconds failed", ex);
             return 0;
         }
     }

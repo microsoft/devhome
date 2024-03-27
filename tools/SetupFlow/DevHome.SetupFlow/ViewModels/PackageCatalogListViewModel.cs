@@ -12,15 +12,16 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Behaviors;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Dispatching;
+using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(PackageCatalogListViewModel));
     private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
     private readonly IExtensionService _extensionService;
     private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
@@ -91,7 +92,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to load catalogs.", e);
+            _log.Error($"Failed to load catalogs.", e);
         }
         finally
         {

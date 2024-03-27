@@ -10,17 +10,18 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using Windows.Storage;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class SetupFlowViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupFlowViewModel));
     private readonly IHost _host;
     private readonly MainPageViewModel _mainPageViewModel;
     private readonly PackageProvider _packageProvider;
@@ -74,7 +75,7 @@ public partial class SetupFlowViewModel : ObservableObject
         }
         else
         {
-            Log.Logger?.ReportInfo(Log.Component.Orchestrator, "Review page will be skipped for this flow");
+            _log.Information("Review page will be skipped for this flow");
         }
 
         // The Loading page can advance to the next page
@@ -102,7 +103,7 @@ public partial class SetupFlowViewModel : ObservableObject
     public void TerminateCurrentFlow(string callerNameForTelemetry)
     {
         // Report this before touching the pages so the current Activity ID can be obtained.
-        Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Terminating Setup flow by caller [{callerNameForTelemetry}]. ActivityId={Orchestrator.ActivityId}");
+        _log.Information($"Terminating Setup flow by caller [{callerNameForTelemetry}]. ActivityId={Orchestrator.ActivityId}");
         TelemetryFactory.Get<ITelemetry>().Log("SetupFlow_Termination", LogLevel.Critical, new EndFlowEvent(callerNameForTelemetry), relatedActivityId: Orchestrator.ActivityId);
 
         Orchestrator.ReleaseRemoteOperationObject();

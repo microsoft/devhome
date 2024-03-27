@@ -13,7 +13,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -21,6 +20,7 @@ using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Serilog;
 using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -30,6 +30,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
     private static readonly BitmapImage LightError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
 
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SummaryViewModel));
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly SetupFlowViewModel _setupFlowViewModel;
     private readonly IHost _host;
@@ -49,7 +50,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     {
         await Task.Run(() =>
         {
-            var folderToOpen = Log.Logger.Options.LogFileFolderPath;
+            var folderToOpen = DevHome.Common.Logging.LogFolderRoot;
             var startInfo = new ProcessStartInfo();
             startInfo.UseShellExecute = true;
             startInfo.FileName = folderToOpen;
@@ -236,7 +237,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     {
         // After installing packages, reconnect to catalogs to
         // reflect the latest changes when new Package COM objects are created
-        Log.Logger?.ReportInfo(Log.Component.Summary, $"Checking if a new catalog connections should be established");
+        _log.Information($"Checking if a new catalog connections should be established");
         if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
         {
             await _appManagementInitializer.ReinitializeAsync();

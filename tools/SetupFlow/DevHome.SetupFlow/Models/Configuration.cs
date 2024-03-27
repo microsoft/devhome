@@ -3,7 +3,7 @@
 
 using System;
 using System.IO;
-using DevHome.SetupFlow.Common.Helpers;
+using Serilog;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -12,6 +12,7 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public class Configuration
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(Configuration));
     private readonly FileInfo _fileInfo;
     private readonly Lazy<string> _lazyContent;
 
@@ -37,7 +38,7 @@ public class Configuration
     /// <returns>Configuration file content</returns>
     private string LoadContent()
     {
-        Log.Logger?.ReportInfo(Log.Component.Configuration, $"Loading configuration file content from {_fileInfo.FullName}");
+        _log.Information($"Loading configuration file content from {_fileInfo.FullName}");
         using var text = _fileInfo.OpenText();
         return text.ReadToEnd();
     }
