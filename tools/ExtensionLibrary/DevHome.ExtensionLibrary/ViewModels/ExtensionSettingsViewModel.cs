@@ -9,14 +9,16 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
-using DevHome.Logging;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
 
 public partial class ExtensionSettingsViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExtensionSettingsViewModel));
+
     private readonly IExtensionService _extensionService;
     private readonly INavigationService _navigationService;
 
@@ -48,7 +50,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                     var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
                     if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
                     {
-                        GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage}" +
+                        _log.Error($"{adaptiveCardSessionResult.Result.DisplayMessage}" +
                             $" - {adaptiveCardSessionResult.Result.DiagnosticText}");
                         await Task.CompletedTask;
                     }
@@ -67,7 +69,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
 
     public void FillBreadcrumbBar(string lastCrumbName)
     {
-        var stringResource = new StringResource("DevHome.Settings/Resources");
+        var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
         Breadcrumbs.Add(new(stringResource.GetLocalized("Settings_Extensions_Header"), typeof(ExtensionLibraryViewModel).FullName!));
         Breadcrumbs.Add(new Breadcrumb(lastCrumbName, typeof(ExtensionSettingsViewModel).FullName!));
     }

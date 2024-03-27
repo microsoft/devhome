@@ -12,9 +12,9 @@ using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
+using Serilog;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -23,6 +23,8 @@ namespace DevHome.Environments.ViewModels;
 /// </summary>
 public partial class LandingPageViewModel : ObservableObject, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(LandingPageViewModel));
+
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     private readonly EnvironmentsExtensionsService _extensionsService;
@@ -68,7 +70,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _extensionsService = extensionsService;
         _notificationService = toastNotificationService;
         _computeSystemManager = manager;
-        _stringResource = new StringResource("DevHome.Environments/Resources");
+        _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
         SelectedSortIndex = -1;
         Providers = new() { _stringResource.GetLocalized("AllProviders") };
@@ -206,7 +208,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
                 if (computeSystemList == null || computeSystemList.Count == 0)
                 {
-                    Log.Logger()?.ReportError($"No Compute systems found for provider: {provider.Id}");
+                    _log.Error($"No Compute systems found for provider: {provider.Id}");
                     return;
                 }
 
@@ -220,7 +222,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError($"Error occurred while adding Compute systems to environments page for provider: {provider.Id}", ex);
+                _log.Error($"Error occurred while adding Compute systems to environments page for provider: {provider.Id}", ex);
             }
         });
     }

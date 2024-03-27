@@ -4,6 +4,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
+using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Registry;
@@ -19,6 +20,8 @@ internal delegate void RegistryChangedEventHandler();
 /// </summary>
 internal sealed class RegistryWatcher : IDisposable
 {
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(RegistryWatcher));
+
     public event RegistryChangedEventHandler RegistryChanged;
 
     private readonly AutoResetEvent _waitEvent;
@@ -32,13 +35,13 @@ internal sealed class RegistryWatcher : IDisposable
         _key = key.CreateSubKey(keyPath);
         if (_key == null)
         {
-            Logging.Logger()?.ReportError($"Cannot open {keyPath} registry key. Error: {Marshal.GetLastWin32Error()}");
+            _log.Error($"Cannot open {keyPath} registry key. Error: {Marshal.GetLastWin32Error()}");
             throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
         RegistryChanged += callback;
 
-        Logging.Logger()?.ReportInfo("Registry Watcher created.");
+        _log.Information("Registry Watcher created.");
     }
 
     public void Start()
@@ -73,17 +76,17 @@ internal sealed class RegistryWatcher : IDisposable
                                 }
                                 catch (Exception ex)
                                 {
-                                    Logging.Logger()?.ReportError("RegistryChanged delegate failed.", ex);
+                                    _log.Error("RegistryChanged delegate failed.", ex);
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        Logging.Logger()?.ReportError("Registry Watcher thread failed.", ex);
+                        _log.Error("Registry Watcher thread failed.", ex);
                     }
                 });
-                Logging.Logger()?.ReportInfo("Registry Watcher thread started.");
+                _log.Information("Registry Watcher thread started.");
             }
         }
     }
@@ -96,16 +99,16 @@ internal sealed class RegistryWatcher : IDisposable
             {
                 _started = false;
                 _waitEvent.Set();
-                Logging.Logger()?.ReportInfo("Registry Watcher thread stopped.");
+                _log.Information("Registry Watcher thread stopped.");
             }
         }
     }
 
     public void WaitForRegistryChange()
     {
-        Logging.Logger()?.ReportInfo("Waiting for registry change.");
+        _log.Information("Waiting for registry change.");
         _waitEvent.WaitOne();
-        Logging.Logger()?.ReportInfo("Registry change detected.");
+        _log.Information("Registry change detected.");
         RegistryChanged?.Invoke();
     }
 

@@ -14,13 +14,13 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
+using Serilog;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
@@ -31,6 +31,7 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloneRepoTask : ObservableObject, ISetupTask
 {
+
     private const string _configurationFolderName = ".configurations";
 
     private const string _configurationFileYamlExtension = ".dsc.yaml";
@@ -38,6 +39,8 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     private const string _configurationFileWingetExtension = ".winget";
 
     private readonly IHost _host;
+
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CloneRepoTask));
 
     private readonly Guid _activityId;
 
@@ -208,7 +211,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             try
             {
                 ProviderOperationResult result;
-                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
+                _log.Information($"Cloning repository {RepositoryToClone.DisplayName}");
                 TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Critical, new RepoCloneEvent(ProviderName, _developerId), _activityId);
 
                 if (RepositoryToClone.GetType() == typeof(GenericRepository))
@@ -239,7 +242,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}", e);
+                _log.Error($"Could not clone {RepositoryToClone.DisplayName}", e);
                 _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, e.HResult.ToString("X", CultureInfo.CurrentCulture));
                 TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_CouldNotClone_Event", LogLevel.Critical, new ExceptionEvent(e.HResult));
                 return TaskFinishedState.Failure;

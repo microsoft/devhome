@@ -8,6 +8,7 @@ using HyperVExtension.Models.VMGalleryJsonToClasses;
 using HyperVExtension.Providers;
 using HyperVExtension.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
 
@@ -20,6 +21,8 @@ public delegate VMGalleryVMCreationOperation VmGalleryCreationOperationFactory(V
 /// </summary>
 public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", ComponentName);
+
     private const string ComponentName = nameof(VMGalleryVMCreationOperation);
 
     private readonly IArchiveProviderFactory _archiveProviderFactory;
@@ -142,7 +145,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
             }
             catch (Exception ex)
             {
-                Logging.Logger()?.ReportError(ComponentName, "Operation to create compute system failed", ex);
+                _log.Error("Operation to create compute system failed", ex);
                 ComputeSystemResult = new CreateComputeSystemResult(ex, ex.Message, ex.Message);
             }
 
@@ -186,7 +189,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
             }
 
             // hash is not valid, so we'll delete/overwrite the file and download it again.
-            Logging.Logger()?.ReportInfo(ComponentName, "File already exists but hash is not valid. Deleting file and downloading again.");
+            _log.Information("File already exists but hash is not valid. Deleting file and downloading again.");
             await DeleteFileIfExists(ArchivedFile!);
         }
 
@@ -211,7 +214,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
         }
         catch (Exception ex)
         {
-            Logging.Logger()?.ReportError(ComponentName, $"Failed to delete file {file.Path}", ex);
+            _log.Error($"Failed to delete file {file.Path}", ex);
         }
     }
 

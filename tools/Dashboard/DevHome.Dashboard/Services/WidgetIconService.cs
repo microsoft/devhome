@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 using Windows.Storage.Streams;
 using WinUIEx;
 
@@ -16,6 +17,8 @@ namespace DevHome.Dashboard.Services;
 
 public class WidgetIconService : IWidgetIconService
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetIconService));
+
     private readonly WindowEx _windowEx;
 
     private readonly IWidgetHostingService _widgetHostingService;
@@ -60,7 +63,7 @@ public class WidgetIconService : IWidgetIconService
             var widgetDefId = widgetDef.Id;
             try
             {
-                Log.Logger()?.ReportDebug("WidgetIconCache", $"Cache widget icons for {widgetDefId}");
+                _log.Debug($"Cache widget icons for {widgetDefId}");
                 var itemLightImage = await WidgetIconToBitmapImageAsync(widgetDef.GetThemeResource(WidgetTheme.Light).Icon);
                 var itemDarkImage = await WidgetIconToBitmapImageAsync(widgetDef.GetThemeResource(WidgetTheme.Dark).Icon);
 
@@ -74,7 +77,7 @@ public class WidgetIconService : IWidgetIconService
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError("WidgetIconCache", $"Exception in AddIconsToCacheAsync:", ex);
+                _log.Error($"Exception in AddIconsToCacheAsync:", ex);
                 _widgetLightIconCache.Add(widgetDefId, null);
                 _widgetDarkIconCache.Add(widgetDefId, null);
             }

@@ -13,7 +13,6 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -21,12 +20,15 @@ using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Serilog;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class LoadingViewModel : SetupPageViewModelBase
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileViewModel));
+
     private readonly IHost _host;
 
     private readonly ElementTheme _currentTheme;
@@ -149,7 +151,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     public async Task RestartFailedTasksAsync()
     {
         TelemetryFactory.Get<ITelemetry>().LogCritical("Loading_RestartFailedTasks_Event");
-        Log.Logger?.ReportInfo(Log.Component.Loading, "Restarting all failed tasks");
+        _log.Information("Restarting all failed tasks");
 
         // Keep the number of successful tasks and needs attention tasks the same.
         // Change failed tasks to 0 because, once restarted, all tasks haven't failed yet.
@@ -259,7 +261,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     private void FetchTaskInformation()
     {
-        Log.Logger?.ReportDebug(Log.Component.Loading, "Fetching task information");
+        _log.Debug("Fetching task information");
         var taskIndex = 0;
 
         if (Orchestrator.IsSettingUpATargetMachine)
@@ -315,7 +317,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </remarks>
     private void ChangeMessage(TaskInformation information, LoadingMessageViewModel loadingMessage, TaskFinishedState taskFinishedState)
     {
-        Log.Logger?.ReportDebug(Log.Component.Loading, $"Updating message for task {information.MessageToShow} with state {taskFinishedState}");
+        _log.Debug($"Updating message for task {information.MessageToShow} with state {taskFinishedState}");
         var stringToReplace = string.Empty;
         BitmapImage statusSymbolIcon = null;
 
@@ -326,14 +328,14 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             if (information.TaskToExecute.RequiresReboot)
             {
-                Log.Logger?.ReportDebug(Log.Component.Loading, "Task succeeded but requires reboot; adding to action center");
+                _log.Debug("Task succeeded but requires reboot; adding to action center");
                 stringToReplace = information.TaskToExecute.GetLoadingMessages().NeedsReboot;
                 statusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkCaution : LightCaution;
                 ActionCenterItems.Insert(0, information.TaskToExecute.GetRebootMessage());
             }
             else
             {
-                Log.Logger?.ReportDebug(Log.Component.Loading, "Task succeeded");
+                _log.Debug("Task succeeded");
                 stringToReplace = information.TaskToExecute.GetLoadingMessages().Finished;
                 statusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkSuccess : LightSuccess;
             }
@@ -342,13 +344,13 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         }
         else if (taskFinishedState == TaskFinishedState.Failure)
         {
-            Log.Logger?.ReportDebug(Log.Component.Loading, "Task failed");
+            _log.Debug("Task failed");
             stringToReplace = information.TaskToExecute.GetLoadingMessages().Error;
             statusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkError : LightError;
             ActionCenterItems.Insert(0, information.TaskToExecute.GetErrorMessages());
             TasksFailed++;
 
-            Log.Logger?.ReportDebug(Log.Component.Loading, "Adding task to list for retry");
+            _log.Debug("Adding task to list for retry");
             _failedTasks.Add(information);
         }
 
@@ -390,7 +392,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// <returns>An awaitable task</returns>
     private async Task StartAllTasks(ObservableCollection<TaskInformation> tasks)
     {
-        Log.Logger?.ReportInfo(Log.Component.Loading, "Starting all tasks");
+        _log.Information("Starting all tasks");
         var window = Application.Current.GetService<WindowEx>();
         await Task.Run(async () =>
         {
@@ -428,18 +430,18 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // All the tasks are done.  Re-try logic follows.
         if (_failedTasks.Count == 0)
         {
-            Log.Logger?.ReportInfo(Log.Component.Loading, "All tasks succeeded.  Moving to next page");
+            _log.Information("All tasks succeeded.  Moving to next page");
             ExecutionFinished.Invoke(null, null);
         }
         else if (_retryCount >= MAX_RETRIES)
         {
-            Log.Logger?.ReportInfo(Log.Component.Loading, "Max number of retries reached; moving to next page");
+            _log.Information("Max number of retries reached; moving to next page");
             ShowOutOfRetriesBanner = true;
             ShowRetryButton = Visibility.Collapsed;
         }
         else
         {
-            Log.Logger?.ReportInfo(Log.Component.Loading, "Some tasks failed; showing retry button");
+            _log.Information("Some tasks failed; showing retry button");
 
             // At this point some tasks ran into an error.
             // Give the user the option to re try them all or move to the next screen.
@@ -481,7 +483,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             TaskFinishedState taskFinishedState;
             if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedOperation != null)
             {
-                Log.Logger?.ReportInfo(Log.Component.Loading, "Starting task as admin");
+                _log.Information("Starting task as admin");
                 taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedOperation.Value);
             }
             else

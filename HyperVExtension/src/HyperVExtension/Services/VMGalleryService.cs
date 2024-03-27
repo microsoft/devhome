@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using HyperVExtension.Models.VMGalleryJsonToClasses;
 using HyperVExtension.Providers;
+using Serilog;
 using Windows.Storage;
 
 namespace HyperVExtension.Services;
@@ -14,6 +15,8 @@ namespace HyperVExtension.Services;
 /// </summary>
 public sealed class VMGalleryService : IVMGalleryService
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", ComponentName);
+
     private const string ComponentName = "VMGalleryService";
 
     private readonly IDownloaderService _downloaderService;
@@ -64,7 +67,7 @@ public sealed class VMGalleryService : IVMGalleryService
                     var byteArray = await _downloaderService.DownloadByteArrayAsync(image.Symbol.Uri, cancellationTokenSource.Token);
                     if (!ValidateFileSha256Hash(byteArray, image.Symbol.Hash))
                     {
-                        Logging.Logger()?.ReportError(ComponentName, $"Symbol Hash '{image.Symbol.Hash}' validation failed for image with name '{image}'. Symbol uri: '{image.Symbol}'");
+                        _log.Error($"Symbol Hash '{image.Symbol.Hash}' validation failed for image with name '{image}'. Symbol uri: '{image.Symbol}'");
                         continue;
                     }
 
@@ -74,7 +77,7 @@ public sealed class VMGalleryService : IVMGalleryService
         }
         catch (Exception ex)
         {
-            Logging.Logger()?.ReportError(ComponentName, $"Unable to retrieve VM gallery images", ex);
+            _log.Error($"Unable to retrieve VM gallery images", ex);
         }
 
         return _imageList;

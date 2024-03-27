@@ -3,6 +3,7 @@
 
 using System.Text;
 using Microsoft.Win32;
+using Serilog;
 
 namespace HyperVExtension.HostGuestCommunication;
 
@@ -108,7 +109,8 @@ public static class MessageHelper
             }
             catch (Exception ex)
             {
-                Logging.Logger()?.ReportError($"Could not read guest message {valueName}", ex);
+                var log = Serilog.Log.ForContext("SourceContext", nameof(MessageHelper));
+                log.Error($"Could not read guest message {valueName}", ex);
             }
 
             messages.Add(name, value);
