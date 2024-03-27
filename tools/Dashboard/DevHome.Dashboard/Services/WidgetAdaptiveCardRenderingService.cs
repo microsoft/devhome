@@ -17,7 +17,7 @@ namespace DevHome.Dashboard.Services;
 
 public class WidgetAdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisposable
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AdaptiveCardRenderingService));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetAdaptiveCardRenderingService));
 
     public event EventHandler RendererUpdated = (_, _) => { };
 

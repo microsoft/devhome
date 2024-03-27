@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
 using DevHome.Contracts.Services;
-using DevHome.Logging;
 using Microsoft.UI.Xaml;
+using Serilog;
 using Windows.Storage;
 using WinUIEx;
 
@@ -16,6 +16,8 @@ namespace DevHome.Common.Services;
 
 public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AdaptiveCardRenderingService));
+
     public event EventHandler RendererUpdated = (_, _) => { };
 
     private readonly WindowEx _windowEx;
@@ -110,14 +112,14 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
             var hostConfigFileName = _themeSelectorService.IsDarkTheme() ? "DarkHostConfig.json" : "LightHostConfig.json";
             try
             {
-                GlobalLog.Logger?.ReportError($"Get HostConfig file '{hostConfigFileName}'");
+                _log.Error($"Get HostConfig file '{hostConfigFileName}'");
                 var uri = new Uri($"ms-appx:///DevHome.Settings/Assets/{hostConfigFileName}");
                 var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
                 hostConfigContents = await FileIO.ReadTextAsync(file);
             }
             catch (Exception ex)
             {
-                GlobalLog.Logger?.ReportError("Error retrieving HostConfig", ex);
+                _log.Error("Error retrieving HostConfig", ex);
             }
 
             _windowEx.DispatcherQueue.TryEnqueue(() =>
@@ -133,7 +135,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
                 }
                 else
                 {
-                    GlobalLog.Logger?.ReportError($"HostConfig contents are {hostConfigContents}");
+                    _log.Error($"HostConfig contents are {hostConfigContents}");
                 }
             });
 
