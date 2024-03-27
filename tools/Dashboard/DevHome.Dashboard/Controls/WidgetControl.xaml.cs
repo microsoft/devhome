@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Dashboard.Views;
@@ -13,7 +14,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Widgets;
 using Serilog;
 
@@ -22,6 +22,8 @@ namespace DevHome.Dashboard.Controls;
 public sealed partial class WidgetControl : UserControl
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetControl));
+
+    private readonly StringResource _stringResource;
 
     private SelectableMenuFlyoutItem _currentSelectedSize;
 
@@ -47,6 +49,7 @@ public sealed partial class WidgetControl : UserControl
     public WidgetControl()
     {
         this.InitializeComponent();
+        _stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
         ActualThemeChanged += OnActualThemeChanged;
     }
 
@@ -61,20 +64,18 @@ public sealed partial class WidgetControl : UserControl
                 var widgetControl = widgetMenuButton.Tag as WidgetControl;
                 if (widgetControl != null && widgetControl.WidgetSource is WidgetViewModel widgetViewModel)
                 {
-                    var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-
-                    await AddSizesToWidgetMenuAsync(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                    await AddSizesToWidgetMenuAsync(widgetMenuFlyout, widgetViewModel);
                     widgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
-                    AddCustomizeToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
-                    AddRemoveToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                    AddCustomizeToWidgetMenu(widgetMenuFlyout, widgetViewModel);
+                    AddRemoveToWidgetMenu(widgetMenuFlyout, widgetViewModel);
                 }
             }
         }
     }
 
-    private void AddRemoveToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    private void AddRemoveToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel)
     {
-        var removeWidgetText = resourceLoader.GetString("RemoveWidgetMenuText");
+        var removeWidgetText = _stringResource.GetLocalized("RemoveWidgetMenuText");
         var icon = new FontIcon()
         {
             Glyph = "\xE77A",
@@ -118,7 +119,7 @@ public sealed partial class WidgetControl : UserControl
         }
     }
 
-    private async Task AddSizesToWidgetMenuAsync(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    private async Task AddSizesToWidgetMenuAsync(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel)
     {
         var widgetCatalog = await Application.Current.GetService<IWidgetHostingService>().GetWidgetCatalogAsync();
         var widgetDefinition = await Task.Run(() => widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId));
@@ -131,7 +132,7 @@ public sealed partial class WidgetControl : UserControl
             var menuItemSmall = new SelectableMenuFlyoutItem
             {
                 Tag = WidgetSize.Small,
-                Text = resourceLoader.GetString("SmallWidgetMenuText"),
+                Text = _stringResource.GetLocalized("SmallWidgetMenuText"),
             };
             menuItemSmall.Click += OnMenuItemSizeClick;
             widgetMenuFlyout.Items.Add(menuItemSmall);
@@ -143,7 +144,7 @@ public sealed partial class WidgetControl : UserControl
             var menuItemMedium = new SelectableMenuFlyoutItem
             {
                 Tag = WidgetSize.Medium,
-                Text = resourceLoader.GetString("MediumWidgetMenuText"),
+                Text = _stringResource.GetLocalized("MediumWidgetMenuText"),
             };
             menuItemMedium.Click += OnMenuItemSizeClick;
             widgetMenuFlyout.Items.Add(menuItemMedium);
@@ -155,7 +156,7 @@ public sealed partial class WidgetControl : UserControl
             var menuItemLarge = new SelectableMenuFlyoutItem
             {
                 Tag = WidgetSize.Large,
-                Text = resourceLoader.GetString("LargeWidgetMenuText"),
+                Text = _stringResource.GetLocalized("LargeWidgetMenuText"),
             };
             menuItemLarge.Click += OnMenuItemSizeClick;
             widgetMenuFlyout.Items.Add(menuItemLarge);
@@ -204,11 +205,11 @@ public sealed partial class WidgetControl : UserControl
         peer.Select();
     }
 
-    private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel)
     {
         if (widgetViewModel.IsCustomizable)
         {
-            var customizeWidgetText = resourceLoader.GetString("CustomizeWidgetMenuText");
+            var customizeWidgetText = _stringResource.GetLocalized("CustomizeWidgetMenuText");
             var icon = new FontIcon()
             {
                 Glyph = "\xE70F",

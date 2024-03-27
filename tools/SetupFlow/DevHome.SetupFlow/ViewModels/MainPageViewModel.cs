@@ -17,6 +17,7 @@ using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Windows.Storage;
 using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -81,6 +82,17 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
 
         BannerViewModel = bannerViewModel;
+    }
+
+    public async Task StartConfigurationFileAsync(StorageFile file)
+    {
+        _log.Information("Launching configuration file flow");
+        var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
+        if (await configFileSetupFlow.LoadFromLocalFileAsync(file))
+        {
+            _log.Information("Started flow from file activation");
+            StartSetupFlowForTaskGroups(null, "ConfigurationFile", configFileSetupFlow);
+        }
     }
 
     protected async override Task OnFirstNavigateToAsync()

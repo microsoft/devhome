@@ -14,7 +14,7 @@ namespace DevHome.SetupFlow.Services;
 public class SetupFlowStringResource : StringResource, ISetupFlowStringResource
 {
     public SetupFlowStringResource(IOptions<SetupFlowOptions> setupFlowOptions)
-        : base(setupFlowOptions.Value.StringResourcePath)
+        : base(setupFlowOptions.Value.StringResourceName, setupFlowOptions.Value.StringResourcePath)
     {
     }
 
