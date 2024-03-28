@@ -113,14 +113,14 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     private async Task OnLoadedAsync()
     {
-        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
+        Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
         await InitializeDashboard();
     }
 
     [RelayCommand]
     private void OnUnloaded()
     {
-        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
+        Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
     }
 
     private async Task InitializeDashboard()

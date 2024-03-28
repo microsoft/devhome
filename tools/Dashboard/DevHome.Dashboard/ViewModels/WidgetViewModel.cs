@@ -41,7 +41,7 @@ public partial class WidgetViewModel : ObservableObject
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetViewModel));
 
     private readonly WindowEx _windowEx;
-    private readonly IAdaptiveCardRenderingService _renderingService;
+    private readonly WidgetAdaptiveCardRenderingService _renderingService;
 
     private RenderedAdaptiveCard _renderedCard;
 
@@ -97,7 +97,7 @@ public partial class WidgetViewModel : ObservableObject
         Widget widget,
         WidgetSize widgetSize,
         WidgetDefinition widgetDefinition,
-        IAdaptiveCardRenderingService adaptiveCardRenderingService,
+        WidgetAdaptiveCardRenderingService adaptiveCardRenderingService,
         WindowEx windowEx)
     {
         _renderingService = adaptiveCardRenderingService;
@@ -177,7 +177,7 @@ public partial class WidgetViewModel : ObservableObject
             {
                 try
                 {
-                    var renderer = await _renderingService.GetRenderer();
+                    var renderer = await _renderingService.GetRendererAsync();
                     _renderedCard = renderer.RenderAdaptiveCard(card.AdaptiveCard);
                     if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                     {

@@ -5,11 +5,11 @@ using System;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 
-namespace DevHome.Dashboard.Services;
+namespace DevHome.Common.Services;
 
 public interface IAdaptiveCardRenderingService
 {
-    public Task<AdaptiveCardRenderer> GetRenderer();
+    public Task<AdaptiveCardRenderer> GetRendererAsync();
 
     public event EventHandler RendererUpdated;
 }

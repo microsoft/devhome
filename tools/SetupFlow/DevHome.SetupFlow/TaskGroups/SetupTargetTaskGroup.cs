@@ -23,8 +23,7 @@ public class SetupTargetTaskGroup : ISetupTaskGroup
         ISetupFlowStringResource stringResource,
         IComputeSystemManager computeSystemManager,
         ConfigurationFileBuilder configurationFileBuilder,
-        SetupFlowOrchestrator setupFlowOrchestrator,
-        IThemeSelectorService themeSelectorService)
+        SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _setupTargetViewModel = setupTargetViewModel;
         _setupTargetReviewViewModel = setupTargetReviewViewModel;
@@ -33,8 +32,7 @@ public class SetupTargetTaskGroup : ISetupTaskGroup
             stringResource,
             computeSystemManager,
             configurationFileBuilder,
-            setupFlowOrchestrator,
-            themeSelectorService);
+            setupFlowOrchestrator);
     }
 
     /// <summary>

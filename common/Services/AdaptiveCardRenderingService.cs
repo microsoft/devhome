@@ -12,7 +12,7 @@ using Serilog;
 using Windows.Storage;
 using WinUIEx;
 
-namespace DevHome.Dashboard.Services;
+namespace DevHome.Common.Services;
 
 public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisposable
 {
@@ -26,7 +26,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
 
     private readonly SemaphoreSlim _rendererLock = new(1, 1);
 
-    private AdaptiveCardRenderer _renderer;
+    private AdaptiveCardRenderer? _renderer;
 
     private bool _disposedValue;
 
@@ -56,7 +56,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
         }
     }
 
-    public async Task<AdaptiveCardRenderer> GetRenderer()
+    public async Task<AdaptiveCardRenderer> GetRendererAsync()
     {
         // We need to lock the renderer, otherwise another widget could come in after the renderer
         // is created but before it is configured and render the widget without configuration.
@@ -66,7 +66,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
             if (_renderer == null)
             {
                 _renderer = new AdaptiveCardRenderer();
-                await ConfigureWidgetRenderer();
+                await ConfigureAdaptiveCardRendererAsync();
             }
 
             return _renderer;
@@ -77,8 +77,13 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
         }
     }
 
-    private async Task ConfigureWidgetRenderer()
+    private async Task ConfigureAdaptiveCardRendererAsync()
     {
+        if (_renderer == null)
+        {
+            return;
+        }
+
         // Add custom Adaptive Card renderer.
         _renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
         _renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
@@ -104,11 +109,11 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
         {
             // Add host config for current theme.
             var hostConfigContents = string.Empty;
-            var hostConfigFileName = _themeSelectorService.IsDarkTheme() ? "HostConfigDark.json" : "HostConfigLight.json";
+            var hostConfigFileName = _themeSelectorService.IsDarkTheme() ? "DarkHostConfig.json" : "LightHostConfig.json";
             try
             {
-                _log.Information($"Get HostConfig file '{hostConfigFileName}'");
-                var uri = new Uri($"ms-appx:///DevHome.Dashboard/Assets/{hostConfigFileName}");
+                _log.Error($"Get HostConfig file '{hostConfigFileName}'");
+                var uri = new Uri($"ms-appx:///DevHome.Settings/Assets/{hostConfigFileName}");
                 var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
                 hostConfigContents = await FileIO.ReadTextAsync(file);
             }
@@ -125,6 +130,8 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
 
                     // Remove margins from selectAction.
                     _renderer.AddSelectActionMargin = false;
+
+                    _renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
                 }
                 else
                 {
@@ -132,9 +139,9 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
                 }
             });
 
-            RendererUpdated(this, null);
+            RendererUpdated(this, new EventArgs());
         }
     }
 
-    private async void OnThemeChanged(object sender, ElementTheme e) => await UpdateHostConfig();
+    private async void OnThemeChanged(object? sender, ElementTheme e) => await UpdateHostConfig();
 }
