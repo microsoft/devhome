@@ -9,10 +9,10 @@
     <!--
         Contains name of dev drive, state of dev drive in text and a list of the dev drive properties.
     -->
-    <Grid Grid.ColumnSpan="3" Style="{StaticResource CardBodyContainerStyle}">
+    <Grid Style="{StaticResource CardBodyContainerStyle}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <!-- 64x64 image for the dev drive. -->
@@ -25,7 +25,7 @@
                 Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
                 Text="{x:Bind DevDriveLabel, Mode=OneWay}"
                 IsTextSelectionEnabled="True"/>
-        <Grid Grid.RowSpan="3" Grid.Column="2" HorizontalAlignment="Stretch">
+        <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"  />
                 <RowDefinition Height="Auto" />

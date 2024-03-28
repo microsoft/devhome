@@ -11,7 +11,7 @@ using DevHome.Customization.ViewModels.Environments;
 namespace DevHome.Customization.Models.Environments;
 
 /// <summary>
-/// The view model for the list of dev drives retrieved from a single dev drive provider.
+/// The view model for the list of optimized caches.
 /// </summary>
 public partial class DevDriveOptimizedListViewModel : ObservableObject
 {

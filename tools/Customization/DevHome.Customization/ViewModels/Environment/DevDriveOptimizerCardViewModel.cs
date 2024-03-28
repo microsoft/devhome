@@ -2,15 +2,12 @@
 // Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Environments.Models;
-using DevHome.Common.Models;
-
-using Dispatching = Microsoft.UI.Dispatching;
+using DevHome.Common.Services;
 
 namespace DevHome.Customization.ViewModels.Environments;
 
 /// <summary>
-/// View model for the card that represents a dev drive on the setup target page.
+/// View model for the card that represents a dev drive optimizer on the dev drive insights page.
 /// </summary>
 public partial class DevDriveOptimizerCardViewModel : ObservableObject
 {

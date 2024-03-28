@@ -13,7 +13,7 @@
     </UserControl.Resources>
 
     <Grid
-            Style="{StaticResource CardBodyContainerStyle}">
+        Style="{StaticResource CardBodyContainerStyle}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -35,7 +35,7 @@
                     <Grid HorizontalAlignment="Right">
                         <FontIcon HorizontalAlignment="Left" Margin="-10" Glyph="&#xE946;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
                         <TextBlock HorizontalAlignment="Left" Margin="5 5 5 5"
-                            Foreground="PowderBlue"
+                            Foreground="{ThemeResource HyperlinkButtonForeground}"
                             Text="Suggestion"
                             IsTextSelectionEnabled="True"/>
                     </Grid>

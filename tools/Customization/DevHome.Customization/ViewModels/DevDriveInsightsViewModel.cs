@@ -9,17 +9,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Customization.Models.Environments;
 using DevHome.Customization.ViewModels.Environments;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.Customization.ViewModels;
 
@@ -41,15 +37,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private bool _shouldShowOptimizedCollectionView;
-
-    [ObservableProperty]
-    private bool _shouldShowShimmerBelowList;
-
-    [ObservableProperty]
-    private bool _shouldShowShimmerBelowOptimizerList;
-
-    [ObservableProperty]
-    private bool _shouldShowShimmerBelowOptimizedList;
 
     [ObservableProperty]
     private bool _devDriveLoadingCompleted;
@@ -128,11 +115,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         GetDevDriveOptimizeds();
     }
 
-    public void UpdateNextButtonState()
-    {
-        SyncDevDrivesCommand.NotifyCanExecuteChanged();
-    }
-
     /// <summary>
     /// Starts the process of getting the list of DevDriveOptimizers. the sync and next
     /// buttons should be disabled when work is being done.
@@ -147,9 +129,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
         // load the dev drives so we can show them in the UI.
         LoadAllDevDriveOptimizersInTheUI();
-
-        // Enable the sync and next buttons when we're done getting the dev drives.
-        UpdateNextButtonState();
 
         DevDriveOptimizersCollectionView.Refresh();
     }
@@ -184,9 +163,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         // load the dev drives so we can show them in the UI.
         LoadAllDevDriveOptimizedsInTheUI();
 
-        // Enable the sync and next buttons when we're done getting the dev drives.
-        UpdateNextButtonState();
-
         DevDriveOptimizedCollectionView.Refresh();
     }
 
@@ -218,13 +194,11 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
         // Disable the sync and next buttons while we're getting the dev drives.
         DevDriveLoadingCompleted = false;
-        UpdateNextButtonState();
 
         // load the dev drives so we can show them in the UI.
         LoadAllDevDrivesInTheUI();
 
         // Enable the sync and next buttons when we're done getting the dev drives.
-        UpdateNextButtonState();
         DevDrivesCollectionView.Refresh();
     }
 
@@ -289,8 +263,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         {
             // Log.Logger?.ReportError(Log.Component.SetupTarget, $"Error loading DevDriveViewModels data", ex);
         }
-
-        ShouldShowShimmerBelowList = false;
     }
 
     /// <summary>
@@ -311,8 +283,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         {
             // Log.Logger?.ReportError(Log.Component.SetupTarget, $"Error loading DevDriveViewModels data", ex);
         }
-
-        ShouldShowShimmerBelowOptimizerList = false;
     }
 
     /// <summary>
@@ -333,13 +303,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         {
             // Log.Logger?.ReportError(Log.Component.SetupTarget, $"Error loading DevDriveViewModels data", ex);
         }
-
-        ShouldShowShimmerBelowOptimizedList = false;
-    }
-
-    private void RemoveSelectedItemIfNotInUI(DevDrivesListViewModel listViewModel)
-    {
-        UpdateNextButtonState();
     }
 
     public void UpdateListViewModelList()
@@ -353,7 +316,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
         AddListViewModelToList(curListViewModel);
         DevDriveLoadingCompleted = true;
-        ShouldShowShimmerBelowList = true;
     }
 
     private string? GetExistingCacheLocation(string rootDirectory, string targetDirectoryName)
@@ -409,7 +371,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
             AddOptimizerListViewModelToList(curOptimizerListViewModel);
             DevDriveOptimizerLoadingCompleted = true;
-            ShouldShowShimmerBelowOptimizerList = true;
         }
     }
 
@@ -428,7 +389,6 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
             AddOptimizedListViewModelToList(curOptimizedListViewModel);
             DevDriveOptimizedLoadingCompleted = true;
-            ShouldShowShimmerBelowOptimizedList = true;
         }
     }
 }

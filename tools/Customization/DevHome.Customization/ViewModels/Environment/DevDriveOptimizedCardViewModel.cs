@@ -10,7 +10,7 @@ using Dispatching = Microsoft.UI.Dispatching;
 namespace DevHome.Customization.ViewModels.Environments;
 
 /// <summary>
-/// View model for the card that represents a dev drive on the setup target page.
+/// View model for the card that represents an optimized cache on the dev drive insights page.
 /// </summary>
 public partial class DevDriveOptimizedCardViewModel : ObservableObject
 {
