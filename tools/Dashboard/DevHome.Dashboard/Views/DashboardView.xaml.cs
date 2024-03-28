@@ -120,6 +120,7 @@ public partial class DashboardView : ToolPage, IDisposable
     {
         Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
 
+        Log.Logger()?.ReportDebug("DashboardView", $"Leaving Dashboard, deactivating widgets.");
         UnsubscribeFromWidgets();
     }
 
@@ -659,14 +660,6 @@ public partial class DashboardView : ToolPage, IDisposable
         PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
 
         Log.Logger()?.ReportDebug("DashboardView", $"Drop ended");
-    }
-
-    protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
-    {
-        Log.Logger()?.ReportDebug("DashboardView", $"Leaving Dashboard, deactivating widgets.");
-
-        // Deactivate widgets if we're not on the Dashboard.
-        UnsubscribeFromWidgets();
     }
 
     public void Dispose()
