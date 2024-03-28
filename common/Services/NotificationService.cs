@@ -161,9 +161,16 @@ public class NotificationService
                     // To Do: Check process exit code
                     process.WaitForExit();
 
-                    // Close the notification
                     CloseNotification(notification);
-                    ShowRestartNotification();
+
+                    if (process.ExitCode == 0)
+                    {
+                        ShowRestartNotification();
+                    }
+                    else
+                    {
+                        ShowNotificationAsync(_stringResource.GetLocalized("HyperVErrorTitle"), _stringResource.GetLocalized("UserAddHyperVAdminFailed"), InfoBarSeverity.Warning).Wait();
+                    }
                 });
 
                 _dispatcher.EnqueueAsync(() =>
@@ -197,14 +204,17 @@ public class NotificationService
 
     public async Task ShowNotificationAsync(string title, string message, InfoBarSeverity severity)
     {
-        var notification = new Notification
+        await _dispatcher.EnqueueAsync(() =>
         {
-            Title = title,
-            Message = message,
-            Severity = severity,
-        };
+            var notification = new Notification
+            {
+                Title = title,
+                Message = message,
+                Severity = severity,
+            };
 
-        await _dispatcher.EnqueueAsync(() => _notificationQueue?.Show(notification));
+            _notificationQueue?.Show(notification);
+        });
     }
 
     public void CheckIfUserIsAHyperVAdmin()

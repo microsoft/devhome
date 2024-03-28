@@ -205,13 +205,15 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     {
         var provider = data.ProviderDetails.ComputeSystemProvider;
 
-        var computeSystemResult = data.DevIdToComputeSystemMap.Values.FirstOrDefault();
-        if (computeSystemResult?.Result.Status == Microsoft.Windows.DevHome.SDK.ProviderOperationStatus.Failure)
+        // Show error notifications for failed provider/developer id combinations
+        foreach (var mapping in data.DevIdToComputeSystemMap.Where(kv =>
+            kv.Value.Result.Status == Microsoft.Windows.DevHome.SDK.ProviderOperationStatus.Failure).ToList())
         {
-            var result = computeSystemResult.Result;
+            var result = mapping.Value.Result;
             await _notificationService.ShowNotificationAsync(provider.DisplayName, result.DisplayMessage, InfoBarSeverity.Error);
+
             _log.Error($"Error occurred while adding Compute systems to environments page for provider: {provider.Id}", result.DiagnosticText, result.ExtendedError);
-            return;
+            data.DevIdToComputeSystemMap.Remove(mapping.Key);
         }
 
         await _dispatcher.EnqueueAsync(async () =>
@@ -219,7 +221,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             Providers.Add(provider.DisplayName);
             try
             {
-                // To Do: Fix; throws in case of error, eats up actual error
                 var computeSystemList = data.DevIdToComputeSystemMap.Values.SelectMany(x => x.ComputeSystems).ToList();
 
                 // In the future when we support switching between accounts in the environments page, we will need to handle this differently.
