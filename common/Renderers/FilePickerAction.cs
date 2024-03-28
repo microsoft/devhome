@@ -19,7 +19,6 @@ public class FilePickerAction : IAdaptiveActionElement
 {
     public FilePickerAction()
     {
-        ButtonText = "Choose File";
     }
 
     public ActionType ActionType => ActionType.Custom;
@@ -30,15 +29,13 @@ public class FilePickerAction : IAdaptiveActionElement
 
     public ActionRole Role { get; set; }
 
-    public string ButtonText { get; set; }
-
     public string FilePath { get; set; } = string.Empty;
 
     public string Verb { get; set; } = string.Empty;
 
     public bool RoundedCorners { get; set; } = true;
 
-    public static readonly string CustomTypeString = "Action.FilePicker";
+    public static readonly string CustomTypeString = "Action.ChooseFile";
 
     public JsonObject ToJson()
     {
@@ -46,7 +43,6 @@ public class FilePickerAction : IAdaptiveActionElement
         {
             ["type"] = JsonValue.CreateStringValue(ActionTypeString),
             ["title"] = JsonValue.CreateStringValue(Title),
-            ["buttonText"] = JsonValue.CreateStringValue(ButtonText),
             ["filePath"] = JsonValue.CreateStringValue(FilePath),
             ["roundedCorners"] = JsonValue.CreateBooleanValue(RoundedCorners),
             ["isVisible"] = JsonValue.CreateBooleanValue(IsVisible),
@@ -121,9 +117,10 @@ public class FilePickerParser : IAdaptiveActionParser
     {
         var filePickerAction = new FilePickerAction();
 
-        // Parse your custom properties here, e.g., ButtonText
-        filePickerAction.ButtonText = inputJson.GetNamedString("text", "Choose File");
+        // Parse the JSON properties of the action
         filePickerAction.Verb = inputJson.GetNamedString("verb", string.Empty);
+        filePickerAction.Title = inputJson.GetNamedString("title", "%FilePickerTitle%");
+        filePickerAction.Tooltip = inputJson.GetNamedString("tooltip", "%FilePickerToolTip%");
 
         return filePickerAction;
     }
@@ -186,10 +183,13 @@ public class FilePickerExecuteAction : IAdaptiveActionRenderer
                 return null;
             }
 
+            /*
             button.Content = "Choose File";
             button.HorizontalAlignment = HorizontalAlignment.Stretch;
             button.VerticalAlignment = VerticalAlignment.Center;
             button.Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 0);
+            */
+
             /*
             button.Click += async (sender, args) =>
             {

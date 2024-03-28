@@ -317,4 +317,10 @@
     <value>Go to extensions library</value>
     <comment>Text for when the environment page in Dev Home is empty and the user has no extensions installed that support environments</comment>
   </data>
+  <data name="FilePickerTitle" xml:space="preserve">
+    <value>Choose file</value>
+  </data>
+  <data name="FilePickerToolTip" xml:space="preserve">
+    <value>Choose file</value>
+  </data>
 </root>

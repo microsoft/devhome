@@ -88,7 +88,6 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
         _renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
         _renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
         _renderer.ActionRenderers.Set(FilePickerAction.CustomTypeString, new FilePickerExecuteAction());
-        _renderer.ActionRenderers.Set("Action.Execute", new ActionExecuteAlternative());
 
         // A different host config is used to render widgets (adaptive cards) in light and dark themes.
         await UpdateHostConfig();
