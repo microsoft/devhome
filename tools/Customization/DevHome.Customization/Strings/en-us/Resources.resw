@@ -172,6 +172,18 @@
   <data name="NavigationPane.Content" xml:space="preserve">
     <value>Windows customization</value>
     <comment>Navigation pane content</comment>
+  </data>  
+  <data name="OptimizedDevDriveDescription" xml:space="preserve">
+    <value>The environment variable {0} is set to {1}</value>
+    <comment>Optimized dev drive description</comment>
+  </data>
+  <data name="OptimizeDevDriveDialogDescription" xml:space="preserve">
+    <value>Contents of {0} will be copied to chosen directory. And {1} will be set to chosen directory.</value>
+    <comment>Optimize dev drive dialog description</comment>
+  </data>
+  <data name="OptimizerDevDriveDescription" xml:space="preserve">
+    <value>Global environment variable {0} is set to {1}, which is not located on dev drive. Move contents of this folder to a directory on dev drive such as {2} and set {3} to that chosen directory on dev drive</value>
+    <comment>Optimizer dev drive description</comment>
   </data>
   <data name="SettingsAutoSuggestBox.PlaceholderText" xml:space="preserve">
     <value>Search</value>
@@ -196,6 +208,14 @@
   <data name="ShowHiddenAndSystemFilesCard.Header" xml:space="preserve">
     <value>Show hidden and system files</value>
     <comment>The header for the show hidden and system files setting.</comment>
+  </data>
+  <data name="DevDriveOptimizationSuggestion" xml:space="preserve">
+    <value>Suggestion</value>
+    <comment>Dev drive optimization suggestion</comment>
+  </data>
+  <data name="DevDriveOptimized" xml:space="preserve">
+    <value>Optimized</value>
+    <comment>Dev drive optimized indicator</comment>
   </data>
   <data name="MainPage_Header" xml:space="preserve">
     <value>Windows customization</value>

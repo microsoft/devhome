@@ -68,7 +68,8 @@
                                 CacheToBeMoved="{Binding CacheToBeMoved, Mode=OneWay}"
                                 ExistingCacheLocation="{Binding ExistingCacheLocation, Mode=OneWay}"
                                 ExampleLocationOnDevDrive="{Binding ExampleLocationOnDevDrive, Mode=OneWay}"
-                                EnvironmentVariableToBeSet="{Binding EnvironmentVariableToBeSet, Mode=OneWay}">
+                                EnvironmentVariableToBeSet="{Binding EnvironmentVariableToBeSet, Mode=OneWay}"
+                                DevDriveOptimizationSuggestion="{Binding DevDriveOptimizationSuggestion, Mode=OneWay}">
                             </devCustomizationsCustomControls:DevDriveOptimizerCardBody>
                         </Grid>
                     </Grid>
@@ -91,14 +92,11 @@
                             <TextBlock Margin="0 15 0 5" Text = "{x:Bind CacheMoved, Mode=OneWay}"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 20 0 0">
                                 <FontIcon HorizontalAlignment="Left" Margin="0 0 5 0" Glyph="&#xE73E;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                                <TextBlock Margin="0 5 20 0" Text="Optimized" Foreground="Green" />
+                                <TextBlock Margin="0 5 20 0" Text="{Binding Path=DevDriveOptimized, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorSuccess}" />
                             </StackPanel>
                         </Grid>
-                        <TextBlock Grid.Row="1" Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" Margin="0 -5 0 15">                            
-                            <Run>The environment variable </Run>
-                            <Run Text="{Binding Path=EnvironmentVariableSet, Mode=OneWay}" Foreground="PowderBlue"/>
-                            <Run> is set to </Run>
-                            <Run Text="{Binding Path=OptimizedCacheLocation, Mode=OneWay}" Foreground="PowderBlue"/>
+                        <TextBlock Grid.Row="1" Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" Margin="0 -5 0 15">
+                            <Run Text="{Binding Path=OptimizedDevDriveDescription, Mode=OneWay}" />
                         </TextBlock>
                     </Grid>
                 </ListViewItem>
@@ -216,12 +214,6 @@
                 </Grid>
             </StackPanel>
             <StackPanel Spacing="0">
-                <TextBlock
-                    Margin="0 20 0 0"
-                    Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
-                    Text="Dev Drive Optimizers"
-                    IsTextSelectionEnabled="True"
-                    Visibility="{x:Bind ViewModel.ShouldShowOptimizerCollectionView, Mode=OneWay}" />
                 <StackPanel Margin="0">
                     <!--- List of DevDriveOptimizersListViewModel objects. -->
                     <Grid HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.ShouldShowOptimizerCollectionView, Mode=OneWay}">

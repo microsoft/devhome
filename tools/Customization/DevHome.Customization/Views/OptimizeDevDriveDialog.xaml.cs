@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Customization.CustomControls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -24,6 +25,8 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
         CacheToBeMoved = cacheToBeMoved;
         ExistingCacheLocation = existingCacheLocation;
         EnvironmentVariableToBeSet = environmentVariableToBeSet;
+        var stringResource = new StringResource("DevHome.Customization/Resources");
+        OptimizeDevDriveDialogDescription = stringResource.GetLocalized("OptimizeDevDriveDialogDescription", ExistingCacheLocation, EnvironmentVariableToBeSet);
     }
 
     public string CacheToBeMoved
@@ -42,6 +45,12 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
     {
         get => (string)GetValue(EnvironmentVariableToBeSetProperty);
         set => SetValue(EnvironmentVariableToBeSetProperty, value);
+    }
+
+    public string OptimizeDevDriveDialogDescription
+    {
+        get => (string)GetValue(OptimizeDevDriveDialogDescriptionProperty);
+        set => SetValue(OptimizeDevDriveDialogDescriptionProperty, value);
     }
 
     private async void OnBrowseButtonClick(object sender, RoutedEventArgs e)
@@ -132,4 +141,5 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
     private static readonly DependencyProperty CacheToBeMovedProperty = DependencyProperty.Register(nameof(CacheToBeMoved), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
     private static readonly DependencyProperty ExistingCacheLocationProperty = DependencyProperty.Register(nameof(ExistingCacheLocation), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
     private static readonly DependencyProperty EnvironmentVariableToBeSetProperty = DependencyProperty.Register(nameof(EnvironmentVariableToBeSet), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
+    private static readonly DependencyProperty OptimizeDevDriveDialogDescriptionProperty = DependencyProperty.Register(nameof(OptimizeDevDriveDialogDescription), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
 }

@@ -35,8 +35,8 @@
                     <Grid HorizontalAlignment="Right">
                         <FontIcon HorizontalAlignment="Left" Margin="-10" Glyph="&#xE946;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
                         <TextBlock HorizontalAlignment="Left" Margin="5 5 5 5"
-                            Foreground="{ThemeResource HyperlinkButtonForeground}"
-                            Text="Suggestion"
+                            Foreground="{ThemeResource SystemFillColorAttentionBrush}"                                   
+                            Text="{x:Bind DevDriveOptimizationSuggestion, Mode=OneWay}"
                             IsTextSelectionEnabled="True"/>
                     </Grid>
                 </Grid>
@@ -44,7 +44,7 @@
                 <Grid Margin="50 10 10 10">
                     <StackPanel>
                         <TextBlock TextWrapping="Wrap" Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}">                            
-                            <Run>Global environment variable </Run>
+                            <!--- <Run>Global environment variable </Run>
                             <Run Text="{Binding Path=EnvironmentVariableToBeSet, Mode=OneWay}" Foreground="PowderBlue"/>
                             <Run> is set to </Run>
                             <Run Text="{Binding Path=ExistingCacheLocation, Mode=OneWay}" Foreground="PowderBlue"/>
@@ -52,7 +52,8 @@
                             <Run Text="D:\packages\pip\cache" Foreground="PowderBlue"/>
                             <Run> and set </Run>
                             <Run Text="{Binding Path=EnvironmentVariableToBeSet, Mode=OneWay}" Foreground="PowderBlue"/>
-                            <Run> to that chosen directory on dev drive</Run>
+                            <Run> to that chosen directory on dev drive</Run> -->
+                            <Run Text="{Binding Path=OptimizerDevDriveDescription, Mode=OneWay}"/>                            
                         </TextBlock>
                     </StackPanel>
                 </Grid>
@@ -63,7 +64,7 @@
                 </Button>
                 <Line Margin="-5 10 -5 0" Stroke="Black" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" StrokeThickness="1"/>
                 <TextBlock Margin="50 10 50 10"
-                    Foreground="PowderBlue"
+                    Foreground="{ThemeResource HyperlinkButtonForeground}"
                     Text="{x:Bind CacheToBeMoved, Mode=OneWay}"
                     IsTextSelectionEnabled="True"/>
             </StackPanel>

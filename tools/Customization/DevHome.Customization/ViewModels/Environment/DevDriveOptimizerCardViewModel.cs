@@ -13,11 +13,15 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
 {
     public string CacheToBeMoved { get; set; }
 
+    public string DevDriveOptimizationSuggestion { get; set; }
+
     public string ExistingCacheLocation { get; set; }
 
     public string ExampleLocationOnDevDrive { get; set; }
 
     public string EnvironmentVariableToBeSet { get; set; }
+
+    public string OptimizerDevDriveDescription { get; set; }
 
     public DevDriveOptimizerCardViewModel(string cacheToBeMoved, string existingCacheLocation, string exampleLocationOnDevDrive, string environmentVariableToBeSet)
     {
@@ -25,5 +29,8 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
         ExistingCacheLocation = existingCacheLocation;
         ExampleLocationOnDevDrive = exampleLocationOnDevDrive;
         EnvironmentVariableToBeSet = environmentVariableToBeSet;
+        var stringResource = new StringResource("DevHome.Customization/Resources");
+        OptimizerDevDriveDescription = stringResource.GetLocalized("OptimizerDevDriveDescription", EnvironmentVariableToBeSet, ExistingCacheLocation, ExampleLocationOnDevDrive, EnvironmentVariableToBeSet);
+        DevDriveOptimizationSuggestion = stringResource.GetLocalized("DevDriveOptimizationSuggestion");
     }
 }

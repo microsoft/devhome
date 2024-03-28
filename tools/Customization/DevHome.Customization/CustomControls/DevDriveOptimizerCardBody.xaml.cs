@@ -29,6 +29,12 @@ public sealed partial class DevDriveOptimizerCardBody : UserControl
         set => SetValue(CacheToBeMovedProperty, value);
     }
 
+    public string DevDriveOptimizationSuggestion
+    {
+        get => (string)GetValue(DevDriveOptimizationSuggestionProperty);
+        set => SetValue(DevDriveOptimizationSuggestionProperty, value);
+    }
+
     public string ExistingCacheLocation
     {
         get => (string)GetValue(ExistingCacheLocationProperty);
@@ -45,6 +51,12 @@ public sealed partial class DevDriveOptimizerCardBody : UserControl
     {
         get => (string)GetValue(EnvironmentVariableToBeSetProperty);
         set => SetValue(EnvironmentVariableToBeSetProperty, value);
+    }
+
+    public string OptimizerDevDriveDescription
+    {
+        get => (string)GetValue(OptimizerDevDriveDescriptionProperty);
+        set => SetValue(OptimizerDevDriveDescriptionProperty, value);
     }
 
     public OptimizeDevDriveDialog OptimizeDevDriveDialog
@@ -68,7 +80,10 @@ public sealed partial class DevDriveOptimizerCardBody : UserControl
 
     private static readonly DependencyProperty ActionControlTemplateProperty = DependencyProperty.Register(nameof(ActionControlTemplate), typeof(DataTemplate), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
     private static readonly DependencyProperty CacheToBeMovedProperty = DependencyProperty.Register(nameof(CacheToBeMoved), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
+    private static readonly DependencyProperty DevDriveOptimizationSuggestionProperty = DependencyProperty.Register(nameof(DevDriveOptimizationSuggestion), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
     private static readonly DependencyProperty ExistingCacheLocationProperty = DependencyProperty.Register(nameof(ExistingCacheLocation), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
     private static readonly DependencyProperty ExampleLocationOnDevDriveProperty = DependencyProperty.Register(nameof(ExampleLocationOnDevDrive), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
-    private static readonly DependencyProperty EnvironmentVariableToBeSetProperty = DependencyProperty.Register(nameof(EnvironmentVariableToBeSet), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));    private static readonly DependencyProperty OptimizeDevDriveDialogProperty = DependencyProperty.Register(nameof(OptimizeDevDriveDialog), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
+    private static readonly DependencyProperty EnvironmentVariableToBeSetProperty = DependencyProperty.Register(nameof(EnvironmentVariableToBeSet), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
+    private static readonly DependencyProperty OptimizerDevDriveDescriptionProperty = DependencyProperty.Register(nameof(OptimizerDevDriveDescription), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
+    private static readonly DependencyProperty OptimizeDevDriveDialogProperty = DependencyProperty.Register(nameof(OptimizeDevDriveDialog), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
 }
