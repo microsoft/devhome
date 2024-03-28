@@ -6,10 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Contracts.Services;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
@@ -17,13 +17,16 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
+using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
 
 public sealed partial class AddWidgetDialog : ContentDialog
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AddWidgetDialog));
+
     private WidgetDefinition _selectedWidget;
-    private static DispatcherQueue _dispatcher;
 
     public WidgetDefinition AddedWidget { get; private set; }
 
@@ -31,10 +34,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private readonly IWidgetHostingService _hostingService;
     private readonly IWidgetIconService _widgetIconService;
+    private readonly WindowEx _windowEx;
 
-    public AddWidgetDialog(
-        DispatcherQueue dispatcher,
-        ElementTheme theme)
+    public AddWidgetDialog()
     {
         ViewModel = Application.Current.GetService<AddWidgetViewModel>();
         _hostingService = Application.Current.GetService<IWidgetHostingService>();
@@ -42,11 +44,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         this.InitializeComponent();
 
-        _dispatcher = dispatcher;
+        _windowEx = Application.Current.GetService<WindowEx>();
 
-        // Strange behavior: just setting the requested theme when we new-up the dialog results in
-        // the wrong theme's resources being used. Setting RequestedTheme here fixes the problem.
-        RequestedTheme = theme;
+        RequestedTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
     }
 
     [RelayCommand]
@@ -69,7 +69,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         if (catalog is null || host is null)
         {
             // We should never have gotten here if we don't have a WidgetCatalog.
-            Log.Logger()?.ReportError("AddWidgetDialog", $"Opened the AddWidgetDialog, but WidgetCatalog is null.");
+            _log.Error($"Opened the AddWidgetDialog, but WidgetCatalog is null.");
             return;
         }
 
@@ -77,7 +77,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         var providerDefinitions = await Task.Run(() => catalog!.GetProviderDefinitions().OrderBy(x => x.DisplayName));
         var widgetDefinitions = await Task.Run(() => catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle));
 
-        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
+        _log.Information($"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
 
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
@@ -124,13 +124,13 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // This should never happen since Dev Home's core widgets are always available.
         if (!AddWidgetNavigationView.MenuItems.Any())
         {
-            Log.Logger()?.ReportError("AddWidgetDialog", $"FillAvailableWidgetsAsync found no available widgets.");
+            _log.Error($"FillAvailableWidgetsAsync found no available widgets.");
         }
     }
 
     private async Task<StackPanel> BuildWidgetNavItem(WidgetDefinition widgetDefinition)
     {
-        var image = await _widgetIconService.GetWidgetIconForThemeAsync(widgetDefinition, ActualTheme);
+        var image = await _widgetIconService.GetIconFromCacheAsync(widgetDefinition, ActualTheme);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
     }
 
@@ -216,7 +216,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         var selectedTag = (sender.SelectedItem as NavigationViewItem).Tag;
         if (selectedTag is null)
         {
-            Log.Logger()?.ReportError("AddWidgetDialog", $"Selected widget description did not have a tag");
+            _log.Error($"Selected widget description did not have a tag");
             ViewModel.Clear();
             return;
         }
@@ -225,7 +225,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         if (selectedTag as WidgetDefinition is WidgetDefinition selectedWidgetDefinition)
         {
             _selectedWidget = selectedWidgetDefinition;
-            await ViewModel.SetWidgetDefinition(selectedWidgetDefinition, ActualTheme);
+            await ViewModel.SetWidgetDefinition(selectedWidgetDefinition);
         }
         else if (selectedTag as WidgetProviderDefinition is not null)
         {
@@ -234,9 +234,26 @@ public sealed partial class AddWidgetDialog : ContentDialog
     }
 
     [RelayCommand]
+    private async Task UpdateThemeAsync()
+    {
+        // Update the icons for each available widget listed.
+        foreach (var providerItem in AddWidgetNavigationView.MenuItems.OfType<NavigationViewItem>())
+        {
+            foreach (var widgetItem in providerItem.MenuItems.OfType<NavigationViewItem>())
+            {
+                if (widgetItem.Tag is WidgetDefinition widgetDefinition)
+                {
+                    var image = await _widgetIconService.GetIconFromCacheAsync(widgetDefinition, ActualTheme);
+                    widgetItem.Content = BuildNavItem(image, widgetDefinition.DisplayTitle);
+                }
+            }
+        }
+    }
+
+    [RelayCommand]
     private void PinButtonClick()
     {
-        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Pin selected");
+        _log.Debug($"Pin selected");
         AddedWidget = _selectedWidget;
 
         HideDialogAsync();
@@ -245,7 +262,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     [RelayCommand]
     private void CancelButtonClick()
     {
-        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Canceled dialog");
+        _log.Debug($"Canceled dialog");
         AddedWidget = null;
 
         HideDialogAsync();
@@ -266,22 +283,22 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         var deletedDefinitionId = args.DefinitionId;
 
-        _dispatcher.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             // If we currently have the deleted widget open, un-select it.
             if (_selectedWidget is not null &&
                 _selectedWidget.Id.Equals(deletedDefinitionId, StringComparison.Ordinal))
             {
-                Log.Logger()?.ReportInfo("AddWidgetDialog", $"Widget definition deleted while selected.");
+                _log.Information($"Widget definition deleted while selected.");
                 ViewModel.Clear();
                 AddWidgetNavigationView.SelectedItem = null;
             }
 
             // Remove the deleted WidgetDefinition from the list of available widgets.
             var menuItems = AddWidgetNavigationView.MenuItems;
-            foreach (var providerItem in menuItems.Cast<NavigationViewItem>())
+            foreach (var providerItem in menuItems.OfType<NavigationViewItem>())
             {
-                foreach (var widgetItem in providerItem.MenuItems.Cast<NavigationViewItem>())
+                foreach (var widgetItem in providerItem.MenuItems.OfType<NavigationViewItem>())
                 {
                     if (widgetItem.Tag is WidgetDefinition tagDefinition)
                     {
@@ -298,9 +315,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
                                 // This should never happen since Dev Home's core widgets are always available.
                                 if (!menuItems.Any())
                                 {
-                                    Log.Logger()?.ReportError("AddWidgetDialog", $"WidgetCatalog_WidgetDefinitionDeleted found no available widgets.");
+                                    _log.Error($"WidgetCatalog_WidgetDefinitionDeleted found no available widgets.");
                                 }
                             }
+
+                            return;
                         }
                     }
                 }

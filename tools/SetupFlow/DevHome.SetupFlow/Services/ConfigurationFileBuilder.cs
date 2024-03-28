@@ -8,6 +8,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Models.WingetConfigure;
 using DevHome.SetupFlow.TaskGroups;
+using Serilog;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -21,6 +22,8 @@ public enum ConfigurationFileKind
 
 public class ConfigurationFileBuilder
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileBuilder));
+
     /// <summary>
     /// Builds an object that represents a config file that can be used by WinGet Configure to install
     /// apps and clone repositories.This is already formatted as valid yaml and can be written
@@ -135,7 +138,7 @@ public class ConfigurationFileBuilder
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError($"Error creating a repository resource entry", e);
+                _log.Error($"Error creating a repository resource entry", e);
             }
         }
 

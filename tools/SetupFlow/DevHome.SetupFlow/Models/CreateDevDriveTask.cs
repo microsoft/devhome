@@ -12,7 +12,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.ResultHelper;
 using DevHome.Common.Services;
-using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
@@ -20,12 +19,14 @@ using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
+using Serilog;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
 
 internal sealed class CreateDevDriveTask : ISetupTask
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CreateDevDriveTask));
     private readonly TaskMessages _taskMessages;
     private readonly ActionCenterMessages _actionCenterMessages = new();
     private readonly ISetupFlowStringResource _stringResource;
@@ -125,8 +126,8 @@ internal sealed class CreateDevDriveTask : ISetupTask
             catch (Exception ex)
             {
                 result = ex.HResult;
-                Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to create Dev Drive.", ex);
-                _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, _stringResource.GetLocalizedErrorMsg(ex.HResult, Log.Component.DevDrive));
+                _log.Error($"Failed to create Dev Drive.", ex);
+                _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, _stringResource.GetLocalizedErrorMsg(ex.HResult, Identity.Component.DevDrive));
                 TelemetryFactory.Get<ITelemetry>().LogException("CreatingDevDriveException", ex);
                 return TaskFinishedState.Failure;
             }

@@ -11,16 +11,18 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using Serilog;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ReviewViewModel : SetupPageViewModelBase
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ReviewViewModel));
+
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
     private readonly ConfigurationFileBuilder _configFileBuilder;
     private readonly WindowEx _mainWindow;
@@ -139,7 +141,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.Review, $"Failed to initialize elevated process.", e);
+            _log.Error($"Failed to initialize elevated process.", e);
         }
     }
 
@@ -165,7 +167,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.Review, $"Failed to download configuration file.", e);
+            _log.Error($"Failed to download configuration file.", e);
         }
     }
 }

@@ -19,13 +19,6 @@
             "icon": "f156"
           },
           {
-            "identity": "DevHome.ExtensionLibrary",
-            "assembly": "DevHome.ExtensionLibrary",
-            "viewFullName": "DevHome.ExtensionLibrary.Views.ExtensionLibraryView",
-            "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
-            "icon": "ea86"
-          },
-          {
             "experimentalFeatureIdentity": "EnvironmentsManagementPage",
             "identity": "DevHome.Environments",
             "assembly": "DevHome.Environments",
@@ -40,6 +33,13 @@
             "viewModelFullName": "DevHome.QuietBackgroundProcesses.UI.ViewModels.QuietBackgroundProcessesViewModel",
             "icon": "f5b0",
             "experimentalFeatureIdentity": "QuietBackgroundProcessesExperiment"
+          },
+          {
+            "identity": "DevHome.Customization",
+            "assembly": "DevHome.Customization",
+            "viewFullName": "DevHome.Customization.Views.MainPage",
+            "viewModelFullName": "DevHome.Customization.ViewModels.MainPageViewModel",
+            "icon": "e9f5"
           }
         ]
       }
@@ -57,8 +57,8 @@
         },
         {
           "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": false
+          "enabledByDefault": true,
+          "visible": true
         },
         {
           "buildType": "release",

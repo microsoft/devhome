@@ -37,7 +37,7 @@
     </i:Interaction.Behaviors>
 
     <!-- Page split layout -->
-    <Grid ColumnSpacing="10">
+    <Grid ColumnSpacing="10" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*" MaxWidth="318"/>

@@ -1,18 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Globalization;
-using System.Linq;
 using System.Management;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using System.Xml;
-using System.Xml.Linq;
 using System.Xml.XPath;
 using HyperVExtension.HostGuestCommunication;
-using HyperVExtension.Providers;
-using Microsoft.Win32;
+using Serilog;
 
 namespace HyperVExtension.CommunicationWithGuest;
 
@@ -21,6 +14,8 @@ namespace HyperVExtension.CommunicationWithGuest;
 /// </summary>
 internal sealed class GuestKvpChannel : IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(GuestKvpChannel));
+
     // Public documentation doesn't say that there is a limit on the size of the value
     // smaller than registry key values. But in the sample code for linux integration services
     // HV_KVP_EXCHANGE_MAX_KEY_SIZE is used as a limit. In Windows code it's defined as 2048 (bytes).
@@ -89,7 +84,7 @@ internal sealed class GuestKvpChannel : IDisposable
         }
         else
         {
-            Logging.Logger()?.ReportInfo($"Sent message to '{_vmId.ToString("D")}' VM. Message ID: '{name}'.");
+            _log.Information($"Sent message to '{_vmId.ToString("D")}' VM. Message ID: '{name}'.");
         }
     }
 

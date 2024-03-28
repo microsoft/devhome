@@ -23,6 +23,7 @@
           "url": "${netGraphUrl}",
           "height": "${chartHeight}",
           "width": "${chartWidth}",
+          "$when": "${$host.widgetSize != \"small\"}",
           "horizontalAlignment": "center"
         },
         {

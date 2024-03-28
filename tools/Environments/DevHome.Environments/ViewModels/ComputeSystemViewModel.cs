@@ -2,19 +2,17 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Helpers;
 using DevHome.Environments.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -24,6 +22,8 @@ namespace DevHome.Environments.ViewModels;
 /// </summary>
 public partial class ComputeSystemViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
+
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     public string Name => ComputeSystem.DisplayName;
@@ -33,6 +33,8 @@ public partial class ComputeSystemViewModel : ObservableObject
     public ComputeSystem ComputeSystem { get; }
 
     public string AlternativeName { get; } = string.Empty;
+
+    public DateTime LastConnected { get; set; } = DateTime.Now;
 
     public string Type { get; }
 
@@ -91,7 +93,7 @@ public partial class ComputeSystemViewModel : ObservableObject
         var result = await ComputeSystem.GetStateAsync();
         if (result.Result.Status == ProviderOperationStatus.Failure)
         {
-            Log.Logger()?.ReportError($"Failed to get state for {ComputeSystem.DisplayName} due to {result.Result.DiagnosticText}");
+            _log.Error($"Failed to get state for {ComputeSystem.DisplayName} due to {result.Result.DiagnosticText}");
         }
 
         State = result.State;
@@ -132,6 +134,8 @@ public partial class ComputeSystemViewModel : ObservableObject
     [RelayCommand]
     public void LaunchAction()
     {
+        LastConnected = DateTime.Now;
+
         // We'll need to disable the card UI while the operation is in progress and handle failures.
         Task.Run(async () =>
         {

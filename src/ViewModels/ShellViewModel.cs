@@ -7,6 +7,7 @@ using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.Windows.AppLifecycle;
 
 namespace DevHome.ViewModels;
 
@@ -51,13 +52,16 @@ public partial class ShellViewModel : ObservableObject
 
     public async Task OnLoaded()
     {
-        if (await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun))
+        switch (AppInstance.GetCurrent().GetActivatedEventArgs().Kind)
         {
-            NavigationService.NavigateTo(NavigationService.DefaultPage);
-        }
-        else
-        {
-            NavigationService.NavigateTo(typeof(WhatsNewViewModel).FullName!);
+            case ExtendedActivationKind.File:
+                // Allow the file activation handler to navigate to the appropriate page.
+                break;
+            case ExtendedActivationKind.Launch:
+            default:
+                var isNotFirstRun = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun);
+                NavigationService.NavigateTo(isNotFirstRun ? NavigationService.DefaultPage : typeof(WhatsNewViewModel).FullName!);
+                break;
         }
     }
 

@@ -33,6 +33,8 @@ public static class StringResourceKey
     public static readonly string ConfigurationUnitSummaryNoId = nameof(ConfigurationUnitSummaryNoId);
     public static readonly string ConfigurationUnitStats = nameof(ConfigurationUnitStats);
     public static readonly string ConfigurationViewTitle = nameof(ConfigurationViewTitle);
+    public static readonly string ConfigurationActivationFailedDisabled = nameof(ConfigurationActivationFailedDisabled);
+    public static readonly string ConfigurationActivationFailedBusy = nameof(ConfigurationActivationFailedBusy);
     public static readonly string DevDriveReviewTitle = nameof(DevDriveReviewTitle);
     public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
     public static readonly string DevDriveDefaultFolderName = nameof(DevDriveDefaultFolderName);

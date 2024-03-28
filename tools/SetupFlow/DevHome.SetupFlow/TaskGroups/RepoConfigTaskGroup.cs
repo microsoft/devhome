@@ -6,12 +6,11 @@ using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace DevHome.SetupFlow.TaskGroups;
 
@@ -20,6 +19,7 @@ namespace DevHome.SetupFlow.TaskGroups;
 /// </summary>
 public class RepoConfigTaskGroup : ISetupTaskGroup
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepoConfigTaskGroup));
     private readonly IHost _host;
     private readonly Lazy<RepoConfigReviewViewModel> _repoConfigReviewViewModel;
     private readonly Lazy<RepoConfigViewModel> _repoConfigViewModel;
@@ -60,7 +60,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     /// <param name="cloningInformations">all repositories the user wants to clone.</param>
     public void SaveSetupTaskInformation(List<CloningInformation> cloningInformations)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Saving cloning information to task group");
+        _log.Information("Saving cloning information to task group");
         CloneTasks.Clear();
 
         List<FinalRepoResult> allAddedRepos = new();

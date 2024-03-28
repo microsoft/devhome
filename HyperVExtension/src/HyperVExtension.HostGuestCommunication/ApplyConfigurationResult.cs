@@ -1,13 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Text.Json.Serialization;
-using Windows.Foundation.Collections;
-
 namespace HyperVExtension.HostGuestCommunication;
 
 // Helper class to convert from the DevSetupEngine COM types to the .NET types and use them

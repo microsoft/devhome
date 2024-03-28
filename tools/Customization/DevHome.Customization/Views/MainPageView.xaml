@@ -1,0 +1,35 @@
+<UserControl
+    x:Class="DevHome.Customization.Views.MainPageView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    mc:Ignorable="d">
+
+    <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+        <!--  Primary settings group (untitled)  -->
+        <controls:SettingsCard
+            x:Uid="DeveloperFileExplorerCard"
+            AutomationProperties.AccessibilityView="Control"
+            AutomationProperties.AutomationId="NavigateDeveloperFileExplorerCardButton"
+            Command="{x:Bind ViewModel.NavigateToDeveloperFileExplorerPageCommand}"
+            HeaderIcon="{ui:FontIcon Glyph=&#xEC50;}"
+            IsClickEnabled="True" />
+
+        <!--  More Windows settings  -->
+        <StackPanel>
+            <TextBlock x:Uid="MoreWindowsSettingsSectionHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
+            <TextBlock x:Uid="MoreWindowsSettingsSectionDescription" Style="{StaticResource SettingsSectionCaptionTextBlockStyle}" />
+            <controls:SettingsCard
+                x:Uid="WindowsDeveloperCard"
+                ActionIcon="{ui:FontIcon Glyph=&#xE8A7;}"
+                AutomationProperties.AccessibilityView="Control"
+                AutomationProperties.AutomationId="LaunchWindowsDeveloperSettingsButton"
+                Command="{x:Bind ViewModel.LaunchWindowsDeveloperSettingsCommand}"
+                HeaderIcon="{ui:FontIcon Glyph=&#xEC7A;}"
+                IsClickEnabled="True" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

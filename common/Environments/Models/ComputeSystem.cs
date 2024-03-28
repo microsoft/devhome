@@ -4,13 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Helpers;
-using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
 
 namespace DevHome.Common.Environments.Models;
@@ -22,9 +21,9 @@ namespace DevHome.Common.Environments.Models;
 /// </summary>
 public class ComputeSystem
 {
-    private readonly string errorString;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystem));
 
-    private readonly string _componentName = "ComputeSystem";
+    private readonly string errorString;
 
     private readonly IComputeSystem _computeSystem;
 
@@ -59,12 +58,12 @@ public class ComputeSystem
     {
         try
         {
-            Log.Logger()?.ReportInfo(_componentName, $"Compute System State Changed for: {Id} to {state}");
+            _log.Information($"Compute System State Changed for: {Id} to {state}");
             StateChanged(this, state);
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"OnComputeSystemStateChanged for: {this} failed due to exception", ex);
+            _log.Error($"OnComputeSystemStateChanged for: {this} failed due to exception", ex);
         }
     }
 
@@ -76,7 +75,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"GetStateAsync for: {this} failed due to exception", ex);
+            _log.Error($"GetStateAsync for: {this} failed due to exception", ex);
             return new ComputeSystemStateResult(ex, errorString, ex.Message);
         }
     }
@@ -89,7 +88,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"StartAsync for: {this} failed due to exception", ex);
+            _log.Error($"StartAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -102,7 +101,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"ShutDownAsync for: {this} failed due to exception", ex);
+            _log.Error($"ShutDownAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -115,7 +114,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"RestartAsync for: {this} failed due to exception", ex);
+            _log.Error($"RestartAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -128,7 +127,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"TerminateAsync for: {this} failed due to exception", ex);
+            _log.Error($"TerminateAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -141,7 +140,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"DeleteAsync for: {this} failed due to exception", ex);
+            _log.Error($"DeleteAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -154,7 +153,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"SaveAsync for: {this} failed due to exception", ex);
+            _log.Error($"SaveAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -167,7 +166,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"PauseAsync for: {this} failed due to exception", ex);
+            _log.Error($"PauseAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -180,7 +179,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"ResumeAsync for: {this} failed due to exception", ex);
+            _log.Error($"ResumeAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -193,7 +192,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"CreateSnapshotAsync for: {this} failed due to exception", ex);
+            _log.Error($"CreateSnapshotAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -206,7 +205,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"RevertSnapshotAsync for: {this} failed due to exception", ex);
+            _log.Error($"RevertSnapshotAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -219,7 +218,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"DeleteSnapshotAsync for: {this} failed due to exception", ex);
+            _log.Error($"DeleteSnapshotAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -232,7 +231,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"ModifyPropertiesAsync for: {this} failed due to exception", ex);
+            _log.Error($"ModifyPropertiesAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -245,7 +244,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"GetComputeSystemThumbnailAsync for: {this} failed due to exception", ex);
+            _log.Error($"GetComputeSystemThumbnailAsync for: {this} failed due to exception", ex);
             return new ComputeSystemThumbnailResult(ex, errorString, ex.Message);
         }
     }
@@ -258,7 +257,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"GetComputeSystemPropertiesAsync for: {this} failed due to exception", ex);
+            _log.Error($"GetComputeSystemPropertiesAsync for: {this} failed due to exception", ex);
             return new List<ComputeSystemProperty>();
         }
     }
@@ -271,7 +270,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"ConnectAsync for: {this} failed due to exception", ex);
+            _log.Error($"ConnectAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -284,7 +283,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"ApplyConfiguration for: {this} failed due to exception", ex);
+            _log.Error($"ApplyConfiguration for: {this} failed due to exception", ex);
             throw;
         }
     }

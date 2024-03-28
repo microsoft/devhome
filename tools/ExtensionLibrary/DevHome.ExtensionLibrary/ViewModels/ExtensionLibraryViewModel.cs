@@ -11,9 +11,9 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.ExtensionLibrary.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.ApplicationModel;
 using Windows.Data.Json;
 using Windows.Storage;
@@ -23,6 +23,8 @@ namespace DevHome.ExtensionLibrary.ViewModels;
 
 public partial class ExtensionLibraryViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExtensionLibraryViewModel));
+
     private readonly string devHomeProductId = "9N8MHTPHNGVV";
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
@@ -114,14 +116,14 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         var packagesFileName = "extensionResult.json";
         try
         {
-            Log.Logger()?.ReportInfo("ExtensionLibraryViewModel", $"Get packages file '{packagesFileName}'");
+            _log.Information($"Get packages file '{packagesFileName}'");
             var uri = new Uri($"ms-appx:///DevHome.ExtensionLibrary/Assets/{packagesFileName}");
             var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
             packagesFileContents = await FileIO.ReadTextAsync(file);
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError("ExtensionLibraryViewModel", "Error retrieving packages", ex);
+            _log.Error("Error retrieving packages", ex);
             ShouldShowStoreError = true;
         }
 
@@ -135,7 +137,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         var storeData = await GetStoreData();
         if (string.IsNullOrEmpty(storeData))
         {
-            Log.Logger()?.ReportError("ExtensionLibraryViewModel", "No package data found");
+            _log.Error("No package data found");
             ShouldShowStoreError = true;
             return;
         }
@@ -177,7 +179,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
                     continue;
                 }
 
-                Log.Logger()?.ReportError("ExtensionLibraryViewModel", $"Found package: {productId}, {packageFamilyName}");
+                _log.Error($"Found package: {productId}, {packageFamilyName}");
                 var storePackage = new StorePackageViewModel(productId, title, publisher, packageFamilyName);
                 tempStorePackagesList.Add(storePackage);
             }

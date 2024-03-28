@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using HyperVExtension.Models;
+using HyperVExtension.Models.VirtualMachineCreation;
 using HyperVExtension.Providers;
 using HyperVExtension.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,15 +19,20 @@ public static class ServiceExtensions
         services.AddTransient<IWindowsServiceController, WindowsServiceController>();
 
         // Services
+        services.AddHttpClient();
         services.AddSingleton<IComputeSystemProvider, HyperVProvider>();
         services.AddSingleton<HyperVExtension>();
         services.AddSingleton<IHyperVManager, HyperVManager>();
         services.AddSingleton<IWindowsIdentityService, WindowsIdentityService>();
+        services.AddSingleton<IVMGalleryService, VMGalleryService>();
+        services.AddSingleton<IArchiveProviderFactory, ArchiveProviderFactory>();
+        services.AddSingleton<IDownloaderService, DownloaderService>();
 
         // Pattern to allow multiple non-service registered interfaces to be used with registered interfaces during construction.
         services.AddSingleton<IPowerShellService>(psService =>
             ActivatorUtilities.CreateInstance<PowerShellService>(psService, new PowerShellSession()));
-        services.AddSingleton<HyperVVirtualMachineFactory>(sp => psObject => ActivatorUtilities.CreateInstance<HyperVVirtualMachine>(sp, psObject));
+        services.AddSingleton<HyperVVirtualMachineFactory>(serviceProvider => psObject => ActivatorUtilities.CreateInstance<HyperVVirtualMachine>(serviceProvider, psObject));
+        services.AddSingleton<VmGalleryCreationOperationFactory>(serviceProvider => parameters => ActivatorUtilities.CreateInstance<VMGalleryVMCreationOperation>(serviceProvider, parameters));
 
         return services;
     }

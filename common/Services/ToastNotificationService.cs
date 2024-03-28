@@ -2,29 +2,22 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DevHome.Common.Contracts;
 using DevHome.Common.Environments.Helpers;
-using DevHome.Common.Helpers;
 using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
+using Serilog;
 using Windows.ApplicationModel.Activation;
-using Windows.Media.AppBroadcasting;
-using WinUIEx.Messaging;
 
 namespace DevHome.Common.Services;
 
 public class ToastNotificationService
 {
-    private readonly IWindowsIdentityService _windowsIdentityService;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ToastNotificationService));
 
-    private readonly string _componentName = "ToastNotificationService";
+    private readonly IWindowsIdentityService _windowsIdentityService;
 
     public bool WasHyperVAddToAdminGroupSuccessful { get; private set; }
 
@@ -65,7 +58,7 @@ public class ToastNotificationService
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError(_componentName, $"Unable to launch computer management due to exception", ex);
+                _log.Error($"Unable to launch computer management due to exception", ex);
             }
         }
     }

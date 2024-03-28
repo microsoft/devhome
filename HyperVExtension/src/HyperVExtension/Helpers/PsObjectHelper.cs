@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Management.Automation;
-using HyperVExtension.Providers;
+using Serilog;
 
 namespace HyperVExtension.Helpers;
 
@@ -70,8 +70,8 @@ public class PsObjectHelper
         }
         catch (Exception ex)
         {
-            Logging.Logger()?
-                .ReportError($"Failed to get property value with name {propertyName} from object with type {type}.", ex);
+            var log = Log.ForContext("SourceContext", nameof(PsObjectHelper));
+            log.Error($"Failed to get property value with name {propertyName} from object with type {type}.", ex);
         }
 
         return default(T);

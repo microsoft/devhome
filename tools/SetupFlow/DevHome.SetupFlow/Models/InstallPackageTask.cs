@@ -6,7 +6,6 @@ extern alias Projection;
 using System;
 using System.Threading.Tasks;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Exceptions;
@@ -14,6 +13,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
+using Serilog;
 using Windows.Foundation;
 using Windows.Win32.Foundation;
 
@@ -21,6 +21,7 @@ namespace DevHome.SetupFlow.Models;
 
 public class InstallPackageTask : ISetupTask
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(InstallPackageTask));
     private static readonly string MSStoreCatalogId = "StoreEdgeFD";
 
     private readonly IWindowsPackageManager _wpm;
@@ -124,7 +125,7 @@ public class InstallPackageTask : ISetupTask
         {
             try
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
+                _log.Information($"Starting installation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id), MessageSeverityKind.Info);
                 var packageUri = _package.GetUri(_installVersion);
                 var installResult = await _wpm.InstallPackageAsync(packageUri);
@@ -143,13 +144,13 @@ public class InstallPackageTask : ISetupTask
                 _extendedErrorCode = e.ExtendedErrorCode;
                 _installerErrorCode = e.InstallerErrorCode;
                 ReportAppInstallFailedEvent();
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
+                _log.Error($"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
                 return TaskFinishedState.Failure;
             }
             catch (Exception e)
             {
                 ReportAppInstallFailedEvent();
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package.", e);
+                _log.Error($"Exception thrown while installing package.", e);
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -162,7 +163,7 @@ public class InstallPackageTask : ISetupTask
         {
             try
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
+                _log.Information($"Starting installation with elevation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id), MessageSeverityKind.Info);
                 var elevatedResult = await elevatedComponentOperation.InstallPackageAsync(_package.Id, _package.CatalogName, _installVersion);
                 WasInstallSuccessful = elevatedResult.TaskSucceeded;
@@ -185,7 +186,7 @@ public class InstallPackageTask : ISetupTask
             catch (Exception e)
             {
                 ReportAppInstallFailedEvent();
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package.", e);
+                _log.Error($"Exception thrown while installing package.", e);
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -225,7 +226,7 @@ public class InstallPackageTask : ISetupTask
         var packageName = _package.Name;
         if (!IsAppInstallerErrorFacility(_extendedErrorCode))
         {
-            var errorMessage = _stringResource.GetLocalizedErrorMsg(_extendedErrorCode, Log.Component.AppManagement);
+            var errorMessage = _stringResource.GetLocalizedErrorMsg(_extendedErrorCode, Identity.Component.AppManagement);
             return _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageSystemMessage, packageName, errorMessage);
         }
 

@@ -3,7 +3,6 @@
 
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Helpers;
 using DevHome.Telemetry;
 using DevHome.TelemetryEvents;
 using Microsoft.UI.Xaml;

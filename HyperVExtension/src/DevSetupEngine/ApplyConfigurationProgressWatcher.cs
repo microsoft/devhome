@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using HyperVExtension.DevSetupEngine.ConfigurationResultTypes;
-using Microsoft.CodeAnalysis.Emit;
+using Serilog;
 using Windows.Foundation;
 
 using DevSetupEngineTypes = Microsoft.Windows.DevHome.DevSetupEngine;
@@ -17,12 +17,21 @@ namespace HyperVExtension.DevSetupEngine;
 /// </summary>
 internal sealed class ApplyConfigurationProgressWatcher
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ApplyConfigurationProgressWatcher));
     private readonly IProgress<DevSetupEngineTypes.IConfigurationSetChangeData> _progress;
     private bool _isFirstProgress = true;
 
     public ApplyConfigurationProgressWatcher(IProgress<DevSetupEngineTypes.IConfigurationSetChangeData> progress)
     {
         _progress = progress;
+    }
+
+    public void Report(ConfigurationSetChangeData configurationSetChangeData)
+    {
+        if (_progress != null)
+        {
+            _progress.Report(configurationSetChangeData);
+        }
     }
 
     internal void Watcher(IAsyncOperationWithProgress<WinGet.ApplyConfigurationSetResult, WinGet.ConfigurationSetChangeData> operation, WinGet.ConfigurationSetChangeData data)
@@ -43,7 +52,8 @@ internal sealed class ApplyConfigurationProgressWatcher
         switch (data.Change)
         {
             case WinGet.ConfigurationSetChangeEventType.SetStateChanged:
-                Logging.Logger()?.ReportInfo($"  - Set State: {data.SetState}");
+
+                _log.Information($"  - Set State: {data.SetState}");
                 break;
             case WinGet.ConfigurationSetChangeEventType.UnitStateChanged:
                 HandleUnitProgress(data.Unit, data.UnitState, data.ResultInformation);
@@ -60,12 +70,12 @@ internal sealed class ApplyConfigurationProgressWatcher
             case WinGet.ConfigurationUnitState.InProgress:
             case WinGet.ConfigurationUnitState.Completed:
             case WinGet.ConfigurationUnitState.Skipped:
-                Logging.Logger()?.ReportInfo($"  - Unit: {unit.Identifier} [{unit.InstanceIdentifier}]");
-                Logging.Logger()?.ReportInfo($"    Unit State: {unitState}");
+                _log.Information($"  - Unit: {unit.Identifier} [{unit.InstanceIdentifier}]");
+                _log.Information($"    Unit State: {unitState}");
                 if (resultInformation.ResultCode != null)
                 {
-                    Logging.Logger()?.ReportInfo($"    HRESULT: [0x{resultInformation.ResultCode.HResult:X8}]");
-                    Logging.Logger()?.ReportInfo($"    Reason: {resultInformation.Description}");
+                    _log.Information($"    HRESULT: [0x{resultInformation.ResultCode.HResult:X8}]");
+                    _log.Information($"    Reason: {resultInformation.Description}");
                 }
 
                 break;

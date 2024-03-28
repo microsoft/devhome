@@ -9,14 +9,15 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class AppManagementViewModel : SetupPageViewModelBase
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AppManagementViewModel));
     private readonly ShimmerSearchViewModel _shimmerSearchViewModel;
     private readonly SearchViewModel _searchViewModel;
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
@@ -85,7 +86,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
                 break;
             case SearchViewModel.SearchResultStatus.CatalogNotConnect:
             case SearchViewModel.SearchResultStatus.ExceptionThrown:
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Search failed with status: {searchResultStatus}");
+                _log.Error($"Search failed with status: {searchResultStatus}");
                 CurrentView = _packageCatalogListViewModel;
                 break;
             case SearchViewModel.SearchResultStatus.Canceled:
@@ -98,7 +99,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void RemoveAllPackages()
     {
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Removing all packages from selected applications for installation");
+        _log.Information($"Removing all packages from selected applications for installation");
         foreach (var package in SelectedPackages.ToList())
         {
             package.IsSelected = false;

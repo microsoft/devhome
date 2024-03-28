@@ -3,7 +3,7 @@
 
 using System.Runtime.InteropServices;
 using HyperVExtension.DevSetupAgent;
-using Microsoft.Windows.DevHome.DevSetupEngine;
+using Serilog;
 using Windows.Win32;
 using Windows.Win32.Security;
 using Windows.Win32.System.Com;
@@ -27,6 +27,15 @@ unsafe
     }
 }
 
+// Set up Logging
+Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(DevHome.Common.Logging.LogFolderRoot, "HyperV"));
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .Build();
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(configuration)
+    .CreateLogger();
+
 var host = Host.CreateDefaultBuilder(args)
     .UseWindowsService(options =>
     {
@@ -44,3 +53,4 @@ var host = Host.CreateDefaultBuilder(args)
     .Build();
 
 host.Run();
+Log.CloseAndFlush();
