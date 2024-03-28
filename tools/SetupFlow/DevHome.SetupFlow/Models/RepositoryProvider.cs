@@ -5,9 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Extensions;
-using DevHome.Common.Renderers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Views;
@@ -17,7 +15,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation;
-using Windows.Storage;
 
 namespace DevHome.SetupFlow.Models;
 
