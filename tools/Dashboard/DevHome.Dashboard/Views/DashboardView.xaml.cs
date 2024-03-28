@@ -120,6 +120,16 @@ public partial class DashboardView : ToolPage, IDisposable
     private void OnUnloaded()
     {
         Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
+
+        UnsubscribeFromWidgets();
+    }
+
+    private void UnsubscribeFromWidgets()
+    {
+        foreach (var widget in PinnedWidgets)
+        {
+            widget.UnsubscribeFromWidgetUpdates();
+        }
     }
 
     private async Task InitializeDashboard()
@@ -653,10 +663,7 @@ public partial class DashboardView : ToolPage, IDisposable
         _log.Debug($"Leaving Dashboard, deactivating widgets.");
 
         // Deactivate widgets if we're not on the Dashboard.
-        foreach (var widget in PinnedWidgets)
-        {
-            widget.UnsubscribeFromWidgetUpdates();
-        }
+        UnsubscribeFromWidgets();
     }
 
     public void Dispose()
