@@ -1,6 +1,7 @@
 ﻿EnableWindow
 CoCreateInstance
 FileOpenDialog
+FileSaveDialog
 IFileOpenDialog
 SHCreateItemFromParsingName
 GetCurrentPackageFullName

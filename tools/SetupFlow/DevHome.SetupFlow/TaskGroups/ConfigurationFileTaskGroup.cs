@@ -25,6 +25,8 @@ public class ConfigurationFileTaskGroup : ISetupTaskGroup
 
     public IEnumerable<ISetupTask> SetupTasks => _viewModel.TaskList;
 
+    public IEnumerable<ISetupTask> DSCTasks => SetupTasks;
+
     /// <summary>
     /// Gets the task corresponding to the configuration file to apply
     /// </summary>

@@ -43,6 +43,8 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     /// </summary>
     public IEnumerable<ISetupTask> SetupTasks => CloneTasks;
 
+    public IEnumerable<ISetupTask> DSCTasks => SetupTasks;
+
     /// <summary>
     /// Gets all tasks that need to be ran.
     /// </summary>

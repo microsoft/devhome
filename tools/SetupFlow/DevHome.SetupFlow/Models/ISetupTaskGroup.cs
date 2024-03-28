@@ -29,9 +29,17 @@ public interface ISetupTaskGroup
     public ReviewTabViewModelBase GetReviewTabViewModel();
 
     /// <summary>
-    /// Gets all the individual setup tasks that make up this group
+    /// Gets all the setup tasks that make up this group
     /// </summary>
     public IEnumerable<ISetupTask> SetupTasks
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets all the DSC tasks that make up this group
+    /// </summary>
+    public IEnumerable<ISetupTask> DSCTasks
     {
         get;
     }
