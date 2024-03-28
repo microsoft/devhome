@@ -3,17 +3,14 @@
 
 using System;
 using System.IO;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Customization.CustomControls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinUIEx;
-using static System.Net.Mime.MediaTypeNames;
+using Log = DevHome.Customization.Helpers.Log;
 
 namespace DevHome.Customization.Views;
 
@@ -105,8 +102,9 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
             // Delete the source directory
             Directory.Delete(sourceDirectory, true);
         }
-        catch (Exception /*ex*/)
+        catch (Exception ex)
         {
+            Log.Logger()?.ReportError("Customization", $"Error in MoveDirectory", ex);
         }
     }
 
@@ -116,8 +114,9 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
         {
             Environment.SetEnvironmentVariable(variableName, value, EnvironmentVariableTarget.User);
         }
-        catch (Exception /*ex*/)
+        catch (Exception ex)
         {
+            Log.Logger()?.ReportError("Customization", $"Error in SetEnvironmentVariable", ex);
         }
     }
 

@@ -32,47 +32,4 @@ public partial class DevDrivesListViewModel : ObservableObject
         // Create a new AdvancedCollectionView for the DevDriveCards collection.
         DevDriveCardAdvancedCollectionView = new(DevDriveCardCollection);
     }
-
-    /// <summary>
-    /// Filter the cards based on the text entered in the search box. Cards will be filtered by the DevDriveTitle.
-    /// </summary>
-    /// <param name="text">Text the user enters into the textbox</param>
-    public void FilterDevDriveCards(string text)
-    {
-        DevDriveCardAdvancedCollectionView.Filter = item =>
-        {
-            try
-            {
-                if (item is DevDriveCardViewModel card)
-                {
-                    return string.IsNullOrEmpty(text);
-                }
-
-                return false;
-            }
-            catch (Exception /*ex*/)
-            {
-                // Log.Logger.ReportError(Log.Component.DevDrivesListViewModel, $"Failed to filter Compute system cards. Error: {ex.Message}");
-            }
-
-            return true;
-        };
-
-        DevDriveCardAdvancedCollectionView.RefreshFilter();
-    }
-
-    /// <summary>
-    /// Update subscriber with the dev drive wrapper that is currently selected in the UI.
-    /// </summary>
-    /// <param name="viewModel">Environments card selected by the user.</param>
-    [RelayCommand]
-    public void ContainerSelectionChanged(DevDriveCardViewModel viewModel)
-    {
-        if (viewModel == null)
-        {
-            return;
-        }
-
-        SelectedItem = viewModel;
-    }
 }

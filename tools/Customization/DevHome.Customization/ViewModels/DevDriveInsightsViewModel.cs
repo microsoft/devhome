@@ -16,6 +16,7 @@ using DevHome.Customization.Models.Environments;
 using DevHome.Customization.ViewModels.Environments;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using Log = DevHome.Customization.Helpers.Log;
 
 namespace DevHome.Customization.ViewModels;
 
@@ -259,9 +260,9 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
             ExistingDevDrives = DevDriveManagerObj.GetAllDevDrivesThatExistOnSystem();
             UpdateListViewModelList();
         }
-        catch (Exception /*ex*/)
+        catch (Exception ex)
         {
-            // Log.Logger?.ReportError(Log.Component.SetupTarget, $"Error loading DevDriveViewModels data", ex);
+            Log.Logger()?.ReportError("Customization", $"Error loading Dev Drives data", ex);
         }
     }
 
@@ -279,9 +280,9 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
             UpdateOptimizerListViewModelList();
         }
-        catch (Exception /*ex*/)
+        catch (Exception ex)
         {
-            // Log.Logger?.ReportError(Log.Component.SetupTarget, $"Error loading DevDriveViewModels data", ex);
+            Log.Logger()?.ReportError("Customization", $"Error loading Dev Drive Optimizers data", ex);
         }
     }
 
@@ -299,9 +300,9 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
             UpdateOptimizedListViewModelList();
         }
-        catch (Exception /*ex*/)
+        catch (Exception ex)
         {
-            // Log.Logger?.ReportError(Log.Component.SetupTarget, $"Error loading DevDriveViewModels data", ex);
+            Log.Logger()?.ReportError("Customization", $"Error loading Dev Drive Optimized data", ex);
         }
     }
 

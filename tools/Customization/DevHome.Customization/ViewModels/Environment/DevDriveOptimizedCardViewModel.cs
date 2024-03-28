@@ -2,10 +2,7 @@
 // Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Environments.Models;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
-using Dispatching = Microsoft.UI.Dispatching;
 
 namespace DevHome.Customization.ViewModels.Environments;
 

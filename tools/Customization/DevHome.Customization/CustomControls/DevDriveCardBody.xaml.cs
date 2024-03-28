@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
