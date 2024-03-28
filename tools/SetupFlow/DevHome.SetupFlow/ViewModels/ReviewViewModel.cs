@@ -144,14 +144,28 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(HasDSCTasksToDownload))]
-    private void DownloadConfiguration()
+    private async Task DownloadConfigurationAsync()
     {
-        var result = _mainWindow.SaveFileDialog(null, ("*.winget", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
-        if (result != null)
+        try
         {
-            var fileName = result.Value.Item1;
-            var configFile = _configFileBuilder.BuildConfigFileStringFromTaskGroups(Orchestrator.TaskGroups, ConfigurationFileKind.Normal);
-            File.WriteAllText(fileName, configFile);
+            // Save `.winget` configuration file
+            var wingetFileType = "winget";
+            var result = _mainWindow.SaveFileDialog(Log.Logger, ($"*.{wingetFileType}", StringResource.GetLocalized(StringResourceKey.FilePickerSingleFileTypeOption, "YAML")));
+            if (result != null)
+            {
+                var fileName = result.Value.Item1;
+                if (!fileName.EndsWith($".{wingetFileType}", StringComparison.OrdinalIgnoreCase))
+                {
+                    fileName += $".{wingetFileType}";
+                }
+
+                var configFile = _configFileBuilder.BuildConfigFileStringFromTaskGroups(Orchestrator.TaskGroups, ConfigurationFileKind.Normal);
+                await File.WriteAllTextAsync(fileName, configFile);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.Review, $"Failed to download configuration file.", e);
         }
     }
 }
