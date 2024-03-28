@@ -526,7 +526,7 @@
     <comment>Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
   </data>
   <data name="MainPage_SetupFlow.Description" xml:space="preserve">
-    <value>Clone repositories and install applications at once</value>
+    <value>Clone repositories, install applications, and generate Winget Configuration files together</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_SetupFlow.Header" xml:space="preserve">
@@ -641,12 +641,13 @@
     <value>Restore</value>
     <comment>Label for restore button</comment>
   </data>
-  <data name="Review_DownloadFileButton.Content" xml:space="preserve">
-    <value>Download file</value>
-    <comment>Text for a download file button</comment>
+  <data name="Review_GenerateConfigurationFileButton.Content" xml:space="preserve">
+    <value>Generate Configuration file</value>
+    <comment>Text for a generating configuration file button</comment>
   </data>
   <data name="Review_DownloadFileTooltip.Text" xml:space="preserve">
-    <value>Save setup as WinGet Configuration file (.winget) to repeat this set up in the future or share it with others.</value>
+    <value>Generate a WinGet Configuration file (.winget) to repeat this set up in the future or 
+share it with others.</value>
     <comment>{Locked="WinGet",".winget"}Tooltip text about the generated configuration file</comment>
   </data>
   <data name="Review_SetupDetails.Text" xml:space="preserve">

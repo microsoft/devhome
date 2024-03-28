@@ -71,7 +71,7 @@
                                        x:Uid="Review_SetUpDetails" />
                             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
                                 <Button Command="{x:Bind ViewModel.DownloadConfigurationCommand}"
-                                        x:Uid="Review_DownloadFileButton"/>
+                                        x:Uid="Review_GenerateConfigurationFileButton"/>
                                 <!-- Info icon -->
                                 <TextBlock Text="&#xE946;"
                                            FontFamily="{ThemeResource SymbolThemeFontFamily}"

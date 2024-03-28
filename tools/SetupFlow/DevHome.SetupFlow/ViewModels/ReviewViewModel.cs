@@ -150,17 +150,30 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     {
         try
         {
-            // Save `.winget` configuration file
-            var wingetFileType = "winget";
-            var result = _mainWindow.SaveFileDialog(Log.Logger, ($"*.{wingetFileType}", StringResource.GetLocalized(StringResourceKey.FilePickerSingleFileTypeOption, "YAML")));
+            // Supported save file types
+            var wingetFileType = ".winget";
+            var dscFileType = ".dsc.yaml";
+            var filterTypes = new List<(string, string)>()
+            {
+                ($"*{wingetFileType}", StringResource.GetLocalized(StringResourceKey.FilePickerSingleFileTypeOption, "YAML")),
+                ($"*{dscFileType}", StringResource.GetLocalized(StringResourceKey.FilePickerSingleFileTypeOption, "YAML")),
+            };
+
+            // Show the save file dialog
+            var result = _mainWindow.SaveFileDialog(Log.Logger, filterTypes.ToArray());
             if (result != null)
             {
+                // Append the file extension if it's not already there
                 var fileName = result.Value.Item1;
-                if (!fileName.EndsWith($".{wingetFileType}", StringComparison.OrdinalIgnoreCase))
+                var filterIndex = result.Value.Item2;
+                var filterType = filterTypes.ElementAtOrDefault(filterIndex);
+                var fileType = filterType.Item1?[1..]; // remove the leading "*"
+                if (!string.IsNullOrEmpty(fileType) && !fileName.EndsWith(fileType, StringComparison.OrdinalIgnoreCase))
                 {
-                    fileName += $".{wingetFileType}";
+                    fileName += fileType;
                 }
 
+                // Write the configuration file to the selected location
                 var configFile = _configFileBuilder.BuildConfigFileStringFromTaskGroups(Orchestrator.TaskGroups, ConfigurationFileKind.Normal);
                 await File.WriteAllTextAsync(fileName, configFile);
             }
