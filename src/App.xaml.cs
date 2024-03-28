@@ -126,7 +126,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IScreenReaderService, ScreenReaderService>();
             services.AddSingleton<IComputeSystemService, ComputeSystemService>();
             services.AddSingleton<IComputeSystemManager, ComputeSystemManager>();
-            services.AddSingleton<NotificationService>();
+            services.AddTransient<NotificationService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();

@@ -85,8 +85,6 @@ public class NotificationService
     {
         if (_notificationQueue != null)
         {
-            var notification = new Notification();
-
             var command = new RelayCommand(() =>
             {
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
@@ -102,8 +100,7 @@ public class NotificationService
             });
 
             _dispatcher.EnqueueAsync(() =>
-            {
-                notification = new Notification
+                _notificationQueue?.Show(new Notification
                 {
                     Title = _stringResource.GetLocalized("HyperVErrorTitle"),
                     Message = _stringResource.GetLocalized("RestartMessage"),
@@ -113,10 +110,7 @@ public class NotificationService
                         Content = _stringResource.GetLocalized("RestartButton"),
                         Command = command,
                     },
-                };
-
-                _notificationQueue?.Show(notification);
-            });
+                }));
         }
         else
         {
@@ -152,8 +146,6 @@ public class NotificationService
                     startInfo.Verb = "runas";
                     process.StartInfo = startInfo;
                     process.Start();
-
-                    // To Do: Check process exit code
                     process.WaitForExit();
 
                     CloseNotification(notification);
