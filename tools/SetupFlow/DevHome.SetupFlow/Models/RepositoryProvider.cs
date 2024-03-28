@@ -193,7 +193,7 @@ internal sealed class RepositoryProvider
             }
 
             var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
-            var renderer = await _renderingService.GetRenderer();
+            var renderer = await _renderingService.GetRendererAsync();
 
             var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
             extensionAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);

@@ -97,7 +97,7 @@ public sealed partial class AccountsPage : Page
             var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
             var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
             var renderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
-            var renderer = await renderingService.GetRenderer();
+            var renderer = await renderingService.GetRendererAsync();
 
             extensionAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
 

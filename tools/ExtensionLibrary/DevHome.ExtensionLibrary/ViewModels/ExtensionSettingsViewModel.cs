@@ -60,7 +60,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                     }
 
                     var adaptiveCardSession = adaptiveCardSessionResult.AdaptiveCardSession;
-                    var renderer = await _adaptiveCardRenderingService.GetRenderer();
+                    var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
                     renderer.HostConfig.Actions.ActionAlignment = ActionAlignment.Left;
 
                     extensionAdaptiveCardPanel.Bind(adaptiveCardSession, renderer);

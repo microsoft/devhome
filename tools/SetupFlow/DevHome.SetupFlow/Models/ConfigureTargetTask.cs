@@ -415,7 +415,7 @@ public class ConfigureTargetTask : ISetupTask
     {
         await _dispatcherQueue.EnqueueAsync(async () =>
         {
-            var renderer = await _adaptiveCardRenderingService.GetRenderer();
+            var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
 
             var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
             extensionAdaptiveCardPanel.Bind(session, renderer);

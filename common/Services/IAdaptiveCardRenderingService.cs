@@ -9,7 +9,7 @@ namespace DevHome.Common.Services;
 
 public interface IAdaptiveCardRenderingService
 {
-    public Task<AdaptiveCardRenderer> GetRenderer();
+    public Task<AdaptiveCardRenderer> GetRendererAsync();
 
     public event EventHandler RendererUpdated;
 }

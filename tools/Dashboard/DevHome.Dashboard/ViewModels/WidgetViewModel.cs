@@ -177,7 +177,7 @@ public partial class WidgetViewModel : ObservableObject
             {
                 try
                 {
-                    var renderer = await _renderingService.GetRenderer();
+                    var renderer = await _renderingService.GetRendererAsync();
                     _renderedCard = renderer.RenderAdaptiveCard(card.AdaptiveCard);
                     if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                     {

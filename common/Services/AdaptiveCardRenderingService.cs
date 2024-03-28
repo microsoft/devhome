@@ -56,7 +56,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
         }
     }
 
-    public async Task<AdaptiveCardRenderer> GetRenderer()
+    public async Task<AdaptiveCardRenderer> GetRendererAsync()
     {
         // We need to lock the renderer, otherwise another widget could come in after the renderer
         // is created but before it is configured and render the widget without configuration.
@@ -66,7 +66,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
             if (_renderer == null)
             {
                 _renderer = new AdaptiveCardRenderer();
-                await ConfigureWidgetRenderer();
+                await ConfigureAdaptiveCardRendererAsync();
             }
 
             return _renderer;
@@ -77,7 +77,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
         }
     }
 
-    private async Task ConfigureWidgetRenderer()
+    private async Task ConfigureAdaptiveCardRendererAsync()
     {
         if (_renderer == null)
         {
