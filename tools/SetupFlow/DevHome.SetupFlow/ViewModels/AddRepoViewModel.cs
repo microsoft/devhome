@@ -17,8 +17,6 @@ using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
-using DevHome.Logging;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.Views;
@@ -29,6 +27,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
 using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
@@ -42,6 +41,8 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class AddRepoViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AddRepoViewModel));
+
     private readonly IHost _host;
 
     private readonly Guid _activityId;
@@ -549,7 +550,7 @@ public partial class AddRepoViewModel : ObservableObject
             // Logging in should allow only one account to log in at a time.
             if (newAccount.Count() > 1)
             {
-                Log.Logger?.ReportError(Log.Component.RepoConfig, $"{newAccount.Count()} accounts logged in at once.  Choosing the first alphabetically");
+                _log.Error($"{newAccount.Count()} accounts logged in at once.  Choosing the first alphabetically");
             }
 
             if (newAccount.Any())
@@ -693,7 +694,7 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed extensions with Repository and DevId providers");
+        _log.Information("Getting installed extensions with Repository and DevId providers");
         var extensionService = _host.GetService<IExtensionService>();
         var extensionWrappers = extensionService.GetInstalledExtensionsAsync().Result;
 
@@ -721,7 +722,7 @@ public partial class AddRepoViewModel : ObservableObject
     {
         FolderPickerViewModel.ShowFolderPicker();
         EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Url page");
+        _log.Information("Changing to Url page");
         ShowUrlPage = true;
         ShowAccountPage = false;
         ShowRepoPage = false;
@@ -762,7 +763,7 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Account page");
+        _log.Information("Changing to Account page");
         ShouldShowUrlError = false;
         ShowUrlPage = false;
         ShowAccountPage = true;
@@ -787,7 +788,7 @@ public partial class AddRepoViewModel : ObservableObject
             MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
         }
 
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
+        _log.Information("Changing to Repo page");
         ShowUrlPage = false;
         ShowAccountPage = false;
         ShowRepoPage = true;
@@ -819,7 +820,7 @@ public partial class AddRepoViewModel : ObservableObject
     {
         CurrentPage = PageKind.SearchFields;
         IsFetchingRepos = false;
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to select search terms page");
+        _log.Information("Changing to select search terms page");
         ShowUrlPage = false;
         ShowAccountPage = false;
         ShowRepoPage = false;
@@ -975,11 +976,11 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding and removing repositories");
+        _log.Information($"Adding and removing repositories");
         var developerId = _providers.GetAllLoggedInAccounts(_selectedRepoProvider).FirstOrDefault(x => x.LoginId == accountName);
         foreach (RepoViewListItem repositoryToRemove in repositoriesToRemove)
         {
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {repositoryToRemove}");
+            _log.Information($"Removing repository {repositoryToRemove}");
 
             var repoToRemove = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToRemove.RepoName, StringComparison.OrdinalIgnoreCase));
             if (repoToRemove == null)
@@ -996,7 +997,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         foreach (RepoViewListItem repositoryToAdd in repositoriesToAdd)
         {
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository {repositoryToAdd}");
+            _log.Information($"Adding repository {repositoryToAdd}");
             var repoToAdd = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToAdd.RepoName, StringComparison.OrdinalIgnoreCase));
             if (repoToAdd == null)
             {
@@ -1044,7 +1045,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Invalid URL {uri.OriginalString}", e);
+                _log.Error($"Invalid URL {uri.OriginalString}", e);
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
                 ShouldShowUrlError = true;
                 return;
@@ -1095,12 +1096,12 @@ public partial class AddRepoViewModel : ObservableObject
         {
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
             ShouldShowUrlError = true;
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repository has already been added.");
+            _log.Information("Repository has already been added.");
             TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RepoAlreadyAdded_Event", false, _activityId);
             return;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
+        _log.Information($"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
 
         EverythingToClone.Add(cloningInformation);
         ShouldEnablePrimaryButton = true;
@@ -1229,13 +1230,13 @@ public partial class AddRepoViewModel : ObservableObject
                 var developerIdResult = provider.ShowLogonBehavior(windowPtr).AsTask().Result;
                 if (developerIdResult.Result.Status == ProviderOperationStatus.Failure)
                 {
-                    GlobalLog.Logger?.ReportError($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
+                    _log.Error($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
                     return;
                 }
             }
             catch (Exception ex)
             {
-                GlobalLog.Logger?.ReportError($"Exception thrown while calling show logon session", ex);
+                _log.Error($"Exception thrown while calling show logon session", ex);
             }
         }
     }
@@ -1322,7 +1323,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                GlobalLog.Logger?.ReportError($"Exception thrown while selecting repositories from the return object", ex);
+                _log.Error($"Exception thrown while selecting repositories from the return object", ex);
                 _allRepositories = new();
             }
         }
@@ -1389,7 +1390,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="cloneLocation">The location to clone all repositories to.</param>
     public void SetCloneLocation(string cloneLocation)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Setting the clone location for all repositories to {cloneLocation}");
+        _log.Information($"Setting the clone location for all repositories to {cloneLocation}");
         foreach (var cloningInformation in EverythingToClone)
         {
             // N^2 algorithm.  Should change to something else when the number of repos is large.

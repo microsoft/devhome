@@ -25,7 +25,7 @@
       </OutOfProcessServer>
     </Extension>
   </Extensions>
-  <Identity Name="Microsoft.Windows.DevHome.Dev" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.0.0.0" />
+  <Identity Name="Microsoft.Windows.DevHome.Dev" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.1299.449.658" />
   <Properties>
     <DisplayName>Dev Home (Dev)</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>

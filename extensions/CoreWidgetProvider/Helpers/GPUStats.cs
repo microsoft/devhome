@@ -4,6 +4,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Management.Infrastructure;
+using Serilog;
 
 namespace CoreWidgetProvider.Helpers;
 
@@ -112,8 +113,8 @@ internal sealed class GPUStats : IDisposable
                 }
                 catch (InvalidOperationException ex)
                 {
-                    Log.Logger()?.ReportWarn("GPUStats", "Failed to get next value", ex);
-                    Log.Logger()?.ReportInfo("GPUStats", "Calling GetGPUPerfCounters again");
+                    Log.Warning("GPUStats", "Failed to get next value", ex);
+                    Log.Information("GPUStats", "Calling GetGPUPerfCounters again");
                     GetGPUPerfCounters();
                 }
             }

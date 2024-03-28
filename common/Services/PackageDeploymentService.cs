@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Exceptions;
-using DevHome.Common.Helpers;
+using Serilog;
 using Windows.ApplicationModel;
 using Windows.Management.Deployment;
 
@@ -14,6 +14,8 @@ namespace DevHome.Common.Services;
 
 public class PackageDeploymentService : IPackageDeploymentService
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(PackageDeploymentService));
+
     private readonly PackageManager _packageManager = new();
 
     /// <inheritdoc />
@@ -50,7 +52,7 @@ public class PackageDeploymentService : IPackageDeploymentService
                 var build = version.Build;
                 var revision = version.Revision;
 
-                Log.Logger()?.ReportInfo("PackageDeploymentService", $"Found package {package.Id.FullName}");
+                _log.Information($"Found package {package.Id.FullName}");
 
                 // Create System.Version type from PackageVersion to test. System.Version supports CompareTo() for easy comparisons.
                 if (IsVersionSupported(new(major, minor, build, revision), ranges))
@@ -64,7 +66,7 @@ public class PackageDeploymentService : IPackageDeploymentService
         else
         {
             // If there is no version installed at all, return the empty enumerable.
-            Log.Logger()?.ReportInfo("PackageDeploymentService", $"Found no installed version of {packageFamilyName}");
+            _log.Information($"Found no installed version of {packageFamilyName}");
             return packages;
         }
     }

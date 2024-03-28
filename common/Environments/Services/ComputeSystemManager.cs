@@ -7,9 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
-using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
 
 namespace DevHome.Common.Environments.Services;
@@ -20,6 +20,8 @@ namespace DevHome.Common.Environments.Services;
 /// </summary>
 public class ComputeSystemManager : IComputeSystemManager
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemManager));
+
     private readonly IComputeSystemService _computeSystemService;
 
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> ComputeSystemStateChanged = (sender, state) => { };
@@ -70,17 +72,17 @@ public class ComputeSystemManager : IComputeSystemManager
             {
                 if (innerEx is TaskCanceledException)
                 {
-                    Log.Logger()?.ReportError($"Failed to get retrieve all compute systems from all compute system providers due to cancellation", innerEx);
+                    _log.Error($"Failed to get retrieve all compute systems from all compute system providers due to cancellation", innerEx);
                 }
                 else
                 {
-                    Log.Logger()?.ReportError($"Failed to get retrieve all compute systems from all compute system providers ", innerEx);
+                    _log.Error($"Failed to get retrieve all compute systems from all compute system providers ", innerEx);
                 }
             }
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError($"Failed to get retrieve all compute systems from all compute system providers ", ex);
+            _log.Error($"Failed to get retrieve all compute systems from all compute system providers ", ex);
         }
     }
 

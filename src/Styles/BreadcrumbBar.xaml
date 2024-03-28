@@ -1,6 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:behaviors="using:DevHome.Common.Behaviors">
 
     <x:Double x:Key="BreadcrumbBarChevronFontSize">12</x:Double>
 
@@ -15,5 +17,17 @@
 
     <!-- Applies to all items but the last (current) item -->
     <ThemeResource x:Key="BreadcrumbBarNormalForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
+
+    <DataTemplate x:Key="BreadcrumbBarDataTemplate">
+        <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <BreadcrumbBar
+                    x:Name="BreadcrumbBar"
+                    ItemsSource="{Binding Breadcrumbs}">
+                <i:Interaction.Behaviors>
+                    <behaviors:BreadcrumbNavigationBehavior />
+                </i:Interaction.Behaviors>
+            </BreadcrumbBar>
+        </Grid>
+    </DataTemplate>
 
 </ResourceDictionary>

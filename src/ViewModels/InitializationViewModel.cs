@@ -6,15 +6,17 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Dashboard.Services;
-using DevHome.Logging;
 using DevHome.Services;
 using DevHome.Views;
 using Microsoft.UI.Xaml;
+using Serilog;
 
 namespace DevHome.ViewModels;
 
 public class InitializationViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(InitializationViewModel));
+
     private readonly IThemeSelectorService _themeSelector;
     private readonly IWidgetHostingService _widgetHostingService;
     private readonly IAppInstallManagerService _appInstallManagerService;
@@ -50,7 +52,7 @@ public class InitializationViewModel : ObservableObject
         {
             if (_widgetHostingService.CheckForWidgetServiceAsync())
             {
-                GlobalLog.Logger?.ReportInfo("InitializationViewModel", "Skipping installing WidgetService, already installed.");
+                _log.Information("Skipping installing WidgetService, already installed.");
             }
             else
             {
@@ -63,24 +65,24 @@ public class InitializationViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportInfo("InitializationViewModel", "Installing WidgetService failed: ", ex);
+            _log.Information("Installing WidgetService failed: ", ex);
         }
 
         // Install the DevHomeGitHubExtension, unless it's already installed or a dev build is running.
         if (string.IsNullOrEmpty(GitHubExtensionStorePackageId) || HasDevHomeGitHubExtensionInstalled())
         {
-            GlobalLog.Logger?.ReportInfo("InitializationViewModel", "Skipping installing DevHomeGitHubExtension.");
+            _log.Information("Skipping installing DevHomeGitHubExtension.");
         }
         else
         {
             try
             {
-                GlobalLog.Logger?.ReportInfo("InitializationViewModel", "Installing DevHomeGitHubExtension...");
+                _log.Information("Installing DevHomeGitHubExtension...");
                 await _appInstallManagerService.TryInstallPackageAsync(GitHubExtensionStorePackageId);
             }
             catch (Exception ex)
             {
-                GlobalLog.Logger?.ReportInfo("InitializationViewModel", "Installing DevHomeGitHubExtension failed: ", ex);
+                _log.Information("Installing DevHomeGitHubExtension failed: ", ex);
             }
         }
 
