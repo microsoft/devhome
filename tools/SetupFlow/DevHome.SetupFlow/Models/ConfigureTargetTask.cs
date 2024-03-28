@@ -156,7 +156,7 @@ public class ConfigureTargetTask : ISetupTask
 
             CreateCorrectiveActionPanel(ExtensionAdaptiveCardSession).GetAwaiter().GetResult();
 
-            AddMessage(_stringResource.GetLocalized(StringResourceKey.ConfigureTargetApplyConfigurationActionNeeded, UserNumberOfAttempts++, UserMaxNumberOfAttempts), MessageSeverityKind.Warning);
+            AddMessage(_stringResource.GetLocalized(StringResourceKey.ConfigureTargetApplyConfigurationActionNeeded, UserNumberOfAttempts++), MessageSeverityKind.Warning);
         }
         else
         {

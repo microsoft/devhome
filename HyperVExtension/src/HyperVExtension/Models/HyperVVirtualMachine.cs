@@ -551,7 +551,8 @@ public class HyperVVirtualMachine : IComputeSystem
 
     public SDK.ApplyConfigurationResult ApplyConfiguration(ApplyConfigurationOperation operation)
     {
-        const int MaxRetryAttempts = 3;
+        // The UX will dictate the actual number of re-tries and will return "cancel" after max. Just in case we'll set a max here too.
+        const int MaxRetryAttempts = 7;
 
         try
         {
@@ -594,7 +595,7 @@ public class HyperVVirtualMachine : IComputeSystem
                 {
                     try
                     {
-                        if (!DeployDevSetupAgent(operation))
+                        if (!DeployDevSetupAgent(operation, i + 1))
                         {
                             // User canceled the operation.
                             return operation.CompleteOperation(new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_ABORT, "User canceled the operation"));
@@ -626,7 +627,7 @@ public class HyperVVirtualMachine : IComputeSystem
                     {
                         if (!userLoggedInResponse.IsUserLoggedIn)
                         {
-                            if (!WaitForUserToLogin(operation))
+                            if (!WaitForUserToLogin(operation, i + 1))
                             {
                                 // User canceled the operation.
                                 return operation.CompleteOperation(new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_ABORT, "User canceled the operation"));
@@ -725,10 +726,10 @@ public class HyperVVirtualMachine : IComputeSystem
         }
     }
 
-    private bool DeployDevSetupAgent(ApplyConfigurationOperation operation)
+    private bool DeployDevSetupAgent(ApplyConfigurationOperation operation, int attemptNumber)
     {
         var powerShell = _host.GetService<IPowerShellService>();
-        var credentialsAdaptiveCardSession = new VmCredentialAdaptiveCardSession(operation);
+        var credentialsAdaptiveCardSession = new VmCredentialAdaptiveCardSession(_host, operation, attemptNumber);
 
         operation.SetProgress(ConfigurationSetState.WaitingForAdminUserLogon, null, credentialsAdaptiveCardSession);
 
@@ -746,10 +747,10 @@ public class HyperVVirtualMachine : IComputeSystem
         }
     }
 
-    private bool WaitForUserToLogin(ApplyConfigurationOperation operation)
+    private bool WaitForUserToLogin(ApplyConfigurationOperation operation, int attemptNumber)
     {
         // Ask user to login to the VM and wait for confirmation.
-        var waitForLoginAdaptiveCardSession = new WaitForLoginAdaptiveCardSession(operation);
+        var waitForLoginAdaptiveCardSession = new WaitForLoginAdaptiveCardSession(_host, operation, attemptNumber);
 
         operation.SetProgress(ConfigurationSetState.WaitingForUserLogon, null, waitForLoginAdaptiveCardSession);
 
