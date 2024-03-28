@@ -113,7 +113,6 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     private async Task OnLoadedAsync()
     {
-        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
         await InitializeDashboard();
     }
 
@@ -133,9 +132,6 @@ public partial class DashboardView : ToolPage, IDisposable
             ViewModel.HasWidgetService = true;
             if (await SubscribeToWidgetCatalogEventsAsync())
             {
-                // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
-                await ViewModel.WidgetIconService.CacheAllWidgetIconsAsync();
-
                 var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun));
                 _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
                 if (isFirstDashboardRun)
@@ -167,6 +163,7 @@ public partial class DashboardView : ToolPage, IDisposable
             }
         }
 
+        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
         LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
         ViewModel.IsLoading = false;
     }
@@ -453,17 +450,14 @@ public partial class DashboardView : ToolPage, IDisposable
         });
     }
 
-    private void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args)
-        => _log.Information($"WidgetCatalog_WidgetProviderDefinitionAdded {args.ProviderDefinition.Id}");
+    private void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args) =>
+        _log.Information("DashboardView", $"WidgetCatalog_WidgetProviderDefinitionAdded {args.ProviderDefinition.Id}");
 
-    private void WidgetCatalog_WidgetProviderDefinitionDeleted(WidgetCatalog sender, WidgetProviderDefinitionDeletedEventArgs args)
-        => _log.Information($"WidgetCatalog_WidgetProviderDefinitionDeleted {args.ProviderDefinitionId}");
+    private void WidgetCatalog_WidgetProviderDefinitionDeleted(WidgetCatalog sender, WidgetProviderDefinitionDeletedEventArgs args) =>
+        _log.Information("DashboardView", $"WidgetCatalog_WidgetProviderDefinitionDeleted {args.ProviderDefinitionId}");
 
-    private async void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args)
-    {
-        _log.Information($"WidgetCatalog_WidgetDefinitionAdded {args.Definition.Id}");
-        await ViewModel.WidgetIconService.AddIconsToCacheAsync(args.Definition);
-    }
+    private void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args) =>
+        _log.Information("DashboardView", $"WidgetCatalog_WidgetDefinitionAdded {args.Definition.Id}");
 
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
     {
@@ -534,6 +528,7 @@ public partial class DashboardView : ToolPage, IDisposable
         });
 
         ViewModel.WidgetIconService.RemoveIconsFromCache(definitionId);
+        ViewModel.WidgetScreenshotService.RemoveScreenshotsFromCache(definitionId);
     }
 
     // If a widget is removed from the list, update the saved positions of the following widgets.
