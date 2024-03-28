@@ -4,12 +4,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:devCustomizationsCustomControls="using:DevHome.Customization.CustomControls"
     xmlns:devViewModels="using:DevHome.Customization.ViewModels.Environments"
     xmlns:devDriveModels="using:DevHome.Customization.Models.Environments"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
-    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -26,80 +24,60 @@
 
             <!--- Template for dev drive horizontal cards on the dev insights page. -->
             <DataTemplate x:Key="HorizontalCardForDevDriveInsightsPage" x:DataType="devViewModels:DevDriveCardViewModel">
-                <ListViewItem
-                    DataContext="{Binding}"
-                    IsSelected="{Binding IsSelected, Mode=OneWay}"
-                    HorizontalAlignment="Stretch"
-                    AutomationProperties.ItemStatus="Loaded">
-                    <Grid Style="{StaticResource HorizontalCardRootForSetupTargetFlow}">
+                <ctControls:SettingsExpander Header="{Binding DevDriveLabel, Mode=OneWay}">
+                    <ctControls:SettingsExpander.HeaderIcon>
+                        <FontIcon Glyph="&#xEDA2;" FontSize="25" FontFamily="{ThemeResource AmcFluentIcons}"/>
+                    </ctControls:SettingsExpander.HeaderIcon>
+                    <Grid Grid.Column="2">
                         <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
+                            <RowDefinition Height="Auto"  />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <devCustomizationsCustomControls:DevDriveCardBody
-                            Grid.Row="1"
-                            DevDriveLabel="{Binding DevDriveLabel, Mode=OneWay}"
-                            DevDriveFillPercentage="{Binding DevDriveFillPercentage, Mode=OneWay}"
-                            DevDriveSizeText="{Binding DevDriveSizeText, Mode=OneWay}"
-                            DevDriveUsedSizeText="{Binding DevDriveUsedSizeText, Mode=OneWay}"
-                            DevDriveFreeSizeText="{Binding DevDriveFreeSizeText, Mode=OneWay}">
-                        </devCustomizationsCustomControls:DevDriveCardBody>
+                        <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 115 5">
+                                <Run Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
+                        </TextBlock>
+                        <ProgressBar Grid.Row="1" Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
+                        <Grid Grid.Row="2">
+                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0">                        
+                                    <Run Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right">                        
+                                    <Run Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
+                            </TextBlock>
+                        </Grid>
                     </Grid>
-                </ListViewItem>
+                </ctControls:SettingsExpander>
             </DataTemplate>
 
 
             <!--- Template for optimization suggestion cards on the dev insights page. -->
             <DataTemplate x:Key="HorizontalCardForDevDriveOptimizerInsightsPage" x:DataType="devViewModels:DevDriveOptimizerCardViewModel">
-                <ListViewItem
-                    DataContext="{Binding}"
-                    IsSelected="{Binding IsSelected, Mode=OneWay}"
-                    HorizontalAlignment="Stretch"
-                    AutomationProperties.ItemStatus="Loaded">
-                    <Grid
-                        Style="{StaticResource HorizontalCardRootForSetupTargetFlow}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <devCustomizationsCustomControls:DevDriveOptimizerCardBody
-                                Grid.Row="1"
-                                CacheToBeMoved="{Binding CacheToBeMoved, Mode=OneWay}"
-                                ExistingCacheLocation="{Binding ExistingCacheLocation, Mode=OneWay}"
-                                ExampleLocationOnDevDrive="{Binding ExampleLocationOnDevDrive, Mode=OneWay}"
-                                EnvironmentVariableToBeSet="{Binding EnvironmentVariableToBeSet, Mode=OneWay}"
-                                DevDriveOptimizationSuggestion="{Binding DevDriveOptimizationSuggestion, Mode=OneWay}">
-                            </devCustomizationsCustomControls:DevDriveOptimizerCardBody>
+                <ctControls:SettingsExpander Header="{Binding CacheToBeMoved, Mode=OneWay}">
+                        <Grid HorizontalAlignment="Right">
+                            <FontIcon HorizontalAlignment="Left" Margin="-10" Glyph="&#xE946;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                            <TextBlock HorizontalAlignment="Left" Margin="5 5 5 5"
+                                Foreground="{ThemeResource SystemFillColorAttentionBrush}"                                   
+                                Text="{x:Bind DevDriveOptimizationSuggestion, Mode=OneWay}"
+                                IsTextSelectionEnabled="True"/>
                         </Grid>
-                    </Grid>
-                </ListViewItem>
+                        <ctControls:SettingsExpander.Items>
+                            <ctControls:SettingsCard Description="{Binding Path=OptimizerDevDriveDescription, Mode=OneWay}">
+                            <Button x:Name="OptimizerDialogLauncher" Content="Make the change" Command="{Binding OptimizeDevDriveCommand}" CommandParameter="{Binding ElementName=OptimizerDialogLauncher}"/>
+                            </ctControls:SettingsCard>
+                            <ctControls:SettingsCard Header="{Binding Path=CacheToBeMoved, Mode=OneWay}" Foreground="{ThemeResource HyperlinkButtonForeground}"/>
+                        </ctControls:SettingsExpander.Items>
+                    </ctControls:SettingsExpander>
             </DataTemplate>
 
             <!--- Template for optimized cards on the dev insights page. -->
             <DataTemplate x:Key="HorizontalCardForDevDriveOptimizedInsightsPage" x:DataType="devViewModels:DevDriveOptimizedCardViewModel">
-                <ListViewItem
-                    DataContext="{Binding}"
-                    IsSelected="{Binding IsSelected, Mode=OneWay}"
-                    HorizontalAlignment="Stretch"
-                    AutomationProperties.ItemStatus="Loaded">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid>
-                            <TextBlock Margin="0 15 0 5" Text = "{x:Bind CacheMoved, Mode=OneWay}"/>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 20 0 0">
-                                <FontIcon HorizontalAlignment="Left" Margin="0 0 5 0" Glyph="&#xE73E;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                                <TextBlock Margin="0 5 20 0" Text="{Binding Path=DevDriveOptimized, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorSuccess}" />
-                            </StackPanel>
-                        </Grid>
-                        <TextBlock Grid.Row="1" Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" Margin="0 -5 0 15">
-                            <Run Text="{Binding Path=OptimizedDevDriveDescription, Mode=OneWay}" />
-                        </TextBlock>
-                    </Grid>
-                </ListViewItem>
+                <ctControls:SettingsCard Header="{Binding CacheMoved, Mode=OneWay}" Description="{Binding Path=OptimizedDevDriveDescription, Mode=OneWay}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <FontIcon HorizontalAlignment="Left" Margin="0 0 5 0" Glyph="&#xE73E;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                        <TextBlock Text="{Binding Path=DevDriveOptimized, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorSuccess}" />
+                    </StackPanel>
+                </ctControls:SettingsCard>
             </DataTemplate>
 
             <DataTemplate x:Key="DevDriveContainerHeaderTemplate" x:DataType="devDriveModels:DevDrivesListViewModel">
@@ -117,136 +95,52 @@
                         IsTextSelectionEnabled="True"/>
                 </StackPanel>
             </DataTemplate>
-
-            <!-- Listview Template for showing the Dev Drive cards within a DevDrivesListViewModel object. -->
-            <DataTemplate x:Key="DevDriveLoadedTemplate" x:DataType="devDriveModels:DevDrivesListViewModel">
-                <ListView
-                    x:Name="DevDrivesList"
-                    AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"
-                    HeaderTemplate="{StaticResource DevDriveContainerHeaderTemplate}"
-                    DataContext="{Binding}"
-                    ItemsSource="{x:Bind DevDriveCardAdvancedCollectionView, Mode=OneWay}"
-                    SelectionMode="Single"
-                    ItemTemplate="{StaticResource HorizontalCardForDevDriveInsightsPage}"
-                    Margin="0 0 0 10"
-                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}"
-                    IsMultiSelectCheckBoxEnabled="False"
-                    SelectedItem="{x:Bind SelectedItem, Mode=OneWay}">
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="SelectionChanged">
-                            <ic:InvokeCommandAction  
-                                Command="{Binding ContainerSelectionChangedCommand}"  
-                                CommandParameter="{Binding SelectedItem, ElementName=DevDrivesList}"/>
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </ListView>
-            </DataTemplate>
-
-            <!-- Listview Template for showing the Dev Drive optimizer cards within a DevDriveOptimizersListViewModel object. -->
-            <DataTemplate x:Key="DevDriveOptimizersLoadedTemplate" x:DataType="devDriveModels:DevDriveOptimizersListViewModel">
-                <ListView
-                    x:Name="DevDriveOptimizersList"
-                    AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"
-                    HeaderTemplate="{StaticResource DevDriveContainerHeaderTemplate}"
-                    DataContext="{Binding}"
-                    ItemsSource="{x:Bind DevDriveOptimizerCardAdvancedCollectionView, Mode=OneWay}"
-                    SelectionMode="Single"
-                    ItemTemplate="{StaticResource HorizontalCardForDevDriveOptimizerInsightsPage}"
-                    Margin="0 0 0 10"
-                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}"
-                    IsMultiSelectCheckBoxEnabled="False">
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="SelectionChanged">
-                            <ic:InvokeCommandAction  
-                                Command="{Binding ContainerSelectionChangedCommand}"  
-                                CommandParameter="{Binding SelectedItem, ElementName=DevDriveOptimizersList}"/>
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </ListView>
-            </DataTemplate>
-
-            <!-- Listview Template for showing the Dev Drive optimized cards within a DevDriveOptimizedListViewModel object. -->
-            <DataTemplate x:Key="DevDriveOptimizedLoadedTemplate" x:DataType="devDriveModels:DevDriveOptimizedListViewModel">
-                <ListView
-                    x:Name="DevDriveOptimizedList"
-                    AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"
-                    HeaderTemplate="{StaticResource DevDriveContainerHeaderTemplate}"
-                    DataContext="{Binding}"
-                    ItemsSource="{x:Bind DevDriveOptimizedCardAdvancedCollectionView, Mode=OneWay}"
-                    SelectionMode="Single"
-                    ItemTemplate="{StaticResource HorizontalCardForDevDriveOptimizedInsightsPage}"
-                    Margin="0 0 0 10"
-                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerStyle}"
-                    IsMultiSelectCheckBoxEnabled="False"
-                    SelectedItem="{x:Bind SelectedItem, Mode=OneWay}">
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="SelectionChanged">
-                            <ic:InvokeCommandAction
-                                Command="{Binding ContainerSelectionChangedCommand}"
-                                CommandParameter="{Binding SelectedItem, ElementName=DevDriveOptimizedList}"/>
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </ListView>
-            </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <ScrollViewer >
-        <StackPanel>
-            <StackPanel Spacing="1">
-                <TextBlock
-                    Margin="0 20 0 -10"
-                    Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
-                    Text="Dev Drive Volumes"
-                    IsTextSelectionEnabled="True"/>
-                <!--- List of DevDrivesListViewModel objects. -->
-                <Grid Visibility="{x:Bind ViewModel.ShouldShowCollectionView, Mode=OneWay}">
-                    <GridView 
-                        ItemsSource="{x:Bind ViewModel.DevDrivesCollectionView, Mode=OneWay}"
-                        SelectionMode="None"
-                        Margin="-10">
-                        <GridView.ItemTemplate>
-                            <DataTemplate>
-                                <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveLoadedTemplate}" />
-                            </DataTemplate>
-                        </GridView.ItemTemplate>
-                    </GridView>
-                </Grid>
-            </StackPanel>
-            <StackPanel Spacing="0">
-                <StackPanel Margin="0">
-                    <!--- List of DevDriveOptimizersListViewModel objects. -->
-                    <Grid HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.ShouldShowOptimizerCollectionView, Mode=OneWay}">
-                        <GridView 
-                            ItemsSource="{x:Bind ViewModel.DevDriveOptimizersCollectionView, Mode=OneWay}"
-                            SelectionMode="None"
-                            Margin="-10">
-                            <GridView.ItemTemplate>
-                                <DataTemplate>
-                                    <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveOptimizersLoadedTemplate}" />
-                                </DataTemplate>
-                            </GridView.ItemTemplate>
-                        </GridView>
-                    </Grid>
-                </StackPanel>
-                <StackPanel Spacing="0">
-                    <StackPanel Margin="0">
-                        <!--- List of DevDriveOptimizedsListViewModel objects. -->
-                        <Grid HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.ShouldShowOptimizedCollectionView, Mode=OneWay}">
-                            <GridView 
-                                ItemsSource="{x:Bind ViewModel.DevDriveOptimizedCollectionView, Mode=OneWay}"
-                                SelectionMode="None"
-                                Margin="-10">
-                                <GridView.ItemTemplate>
-                                    <DataTemplate>
-                                        <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DevDriveOptimizedLoadedTemplate}" />
-                                    </DataTemplate>
-                                </GridView.ItemTemplate>
-                            </GridView>
-                        </Grid>
-                    </StackPanel>
-                </StackPanel>
-            </StackPanel>    
+    <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}">
+        <StackPanel Spacing="1">
+            <TextBlock
+                Margin="0 20 0 -10"
+                Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
+                Text="Dev Drive Volumes"
+                IsTextSelectionEnabled="True"/>
+            <ListView
+                x:Name="DevDrivesList"
+                AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"
+                HeaderTemplate="{StaticResource DevDriveContainerHeaderTemplate}"
+                DataContext="{Binding}"
+                ItemsSource="{x:Bind ViewModel.DevDriveCardCollection, Mode=OneWay}"
+                SelectionMode="None"
+                ItemTemplate="{StaticResource HorizontalCardForDevDriveInsightsPage}"
+                Margin="0 0 0 10"
+                IsMultiSelectCheckBoxEnabled="False"
+                HorizontalContentAlignment="Stretch">
+            </ListView>
+            <!--- List of DevDriveOptimizersListViewModel objects. -->
+            <ListView
+                x:Name="DevDriveOptimizersList"
+                AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"
+                HeaderTemplate="{StaticResource DevDriveContainerHeaderTemplate}"
+                DataContext="{Binding}"
+                ItemsSource="{x:Bind ViewModel.DevDriveOptimizerCardCollection, Mode=OneWay}"
+                SelectionMode="None"
+                ItemTemplate="{StaticResource HorizontalCardForDevDriveOptimizerInsightsPage}"
+                Margin="0 0 0 10"
+                IsMultiSelectCheckBoxEnabled="False">
+            </ListView>
+            <!--- List of DevDriveOptimizedsListViewModel objects. -->
+            <ListView
+                x:Name="DevDriveOptimizedList"
+                AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"
+                HeaderTemplate="{StaticResource DevDriveContainerHeaderTemplate}"
+                DataContext="{Binding}"
+                ItemsSource="{x:Bind ViewModel.DevDriveOptimizedCardCollection, Mode=OneWay}"
+                SelectionMode="None"
+                ItemTemplate="{StaticResource HorizontalCardForDevDriveOptimizedInsightsPage}"
+                Margin="0 0 0 10"
+                IsMultiSelectCheckBoxEnabled="False">
+            </ListView>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

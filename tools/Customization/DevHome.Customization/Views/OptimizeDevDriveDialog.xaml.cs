@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Customization.CustomControls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Storage.Pickers;
@@ -137,8 +136,8 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
     {
     }
 
-    private static readonly DependencyProperty CacheToBeMovedProperty = DependencyProperty.Register(nameof(CacheToBeMoved), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
-    private static readonly DependencyProperty ExistingCacheLocationProperty = DependencyProperty.Register(nameof(ExistingCacheLocation), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
-    private static readonly DependencyProperty EnvironmentVariableToBeSetProperty = DependencyProperty.Register(nameof(EnvironmentVariableToBeSet), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
-    private static readonly DependencyProperty OptimizeDevDriveDialogDescriptionProperty = DependencyProperty.Register(nameof(OptimizeDevDriveDialogDescription), typeof(string), typeof(DevDriveOptimizerCardBody), new PropertyMetadata(null));
+    private static readonly DependencyProperty CacheToBeMovedProperty = DependencyProperty.Register(nameof(CacheToBeMoved), typeof(string), typeof(OptimizeDevDriveDialog), new PropertyMetadata(null));
+    private static readonly DependencyProperty ExistingCacheLocationProperty = DependencyProperty.Register(nameof(ExistingCacheLocation), typeof(string), typeof(OptimizeDevDriveDialog), new PropertyMetadata(null));
+    private static readonly DependencyProperty EnvironmentVariableToBeSetProperty = DependencyProperty.Register(nameof(EnvironmentVariableToBeSet), typeof(string), typeof(OptimizeDevDriveDialog), new PropertyMetadata(null));
+    private static readonly DependencyProperty OptimizeDevDriveDialogDescriptionProperty = DependencyProperty.Register(nameof(OptimizeDevDriveDialogDescription), typeof(string), typeof(OptimizeDevDriveDialog), new PropertyMetadata(null));
 }
