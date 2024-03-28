@@ -1484,7 +1484,7 @@
     <value>The entire configuration is still pending</value>
     <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
   </data>
-    <data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
+  <data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
     <value>This part of the configuration is still pending</value>
     <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
@@ -1607,5 +1607,13 @@
   <data name="SetupTargetLoadingCard" xml:space="preserve">
     <value>Loading your environments</value>
     <comment>Test that tells the user that we're still loading their environments. These environments can be virtual or remote machines</comment>
+  </data>
+  <data name="MainPageEnvironmentSetupGroup" xml:space="preserve">
+    <value>Set up development environment</value>
+    <comment>Header text for a group of controls giving multiple choices to set up the environment/machine</comment>
+  </data>
+  <data name="MainPageQuickConfigurationGroup" xml:space="preserve">
+    <value>Quick steps</value>
+    <comment>Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
   </data>
 </root>
