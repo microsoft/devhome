@@ -121,8 +121,8 @@ public class FilePickerParser : IAdaptiveActionParser
 
         // Parse the JSON properties of the action
         filePickerAction.Verb = inputJson.GetNamedString("verb", string.Empty);
-        filePickerAction.Title = inputJson.GetNamedString("title", "%FilePickerTitle%");
-        filePickerAction.Tooltip = inputJson.GetNamedString("tooltip","%FilePickerToolTip%");
+        filePickerAction.Title = inputJson.GetNamedString("title", "Choose File");
+        filePickerAction.Tooltip = inputJson.GetNamedString("tooltip", "Choose File");
 
         return filePickerAction;
     }
