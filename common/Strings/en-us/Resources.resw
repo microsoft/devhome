@@ -205,6 +205,12 @@
     <value>Uptime:</value>
     <comment>Title for the uptime property of a compute system. (The amount of time its been running)</comment>
   </data>
+  <data name="FilePickerTitle" xml:space="preserve">
+    <value>Choose File</value>
+  </data>
+  <data name="FilePickerToolTip" xml:space="preserve">
+    <value>Choose File</value>
+  </data>
   <data name="UserNotInHyperAdminGroupButton" xml:space="preserve">
     <value>Launch computer management</value>
     <comment>Button text for the user to click, in order for us to add them to the Hyper-V admin group</comment>
