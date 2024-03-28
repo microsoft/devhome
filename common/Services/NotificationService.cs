@@ -2,31 +2,26 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
 using DevHome.Common.Contracts;
 using DevHome.Common.Environments.Helpers;
-using DevHome.Common.Helpers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
+using Serilog;
 using Windows.ApplicationModel.Activation;
-using Windows.Media.AppBroadcasting;
-using WinUIEx.Messaging;
 
 namespace DevHome.Common.Services;
 
 public class NotificationService
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ToastNotificationService));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(NotificationService));
+
     private readonly IWindowsIdentityService _windowsIdentityService;
 
     private readonly string _componentName = "NotificationService";
@@ -125,7 +120,7 @@ public class NotificationService
         }
         else
         {
-            Log.Logger()?.ReportError(_componentName, "Notification queue is not initialized");
+            _log.Error(_componentName, "Notification queue is not initialized");
         }
     }
 
@@ -147,7 +142,7 @@ public class NotificationService
                     var user = _windowsIdentityService.GetCurrentUserName();
                     if (user == null)
                     {
-                        Log.Logger()?.ReportError(_componentName, "Unable to get the current user name");
+                        _log.Error(_componentName, "Unable to get the current user name");
                         return;
                     }
 
@@ -192,7 +187,7 @@ public class NotificationService
             }
             else
             {
-                Log.Logger()?.ReportError(_componentName, "Notification queue is not initialized");
+                _log.Error(_componentName, "Notification queue is not initialized");
             }
         }
     }
@@ -225,4 +220,3 @@ public class NotificationService
         }
     }
 }
->>>>>>> be7ce1de (Added InfoBar):common/Services/NotificationService.cs
