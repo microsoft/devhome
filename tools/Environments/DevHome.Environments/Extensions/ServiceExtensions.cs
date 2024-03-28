@@ -21,7 +21,6 @@ public static class ServiceExtensions
 
         // Services
         services.AddSingleton<EnvironmentsExtensionsService>();
-        services.AddSingleton<ToastNotificationService>();
         services.AddSingleton<IWindowsIdentityService, WindowsIdentityService>();
 
 #if DEBUG

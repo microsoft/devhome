@@ -23,4 +23,9 @@ public class WindowsIdentityService : IWindowsIdentityService
         var wasHyperVSidFound = _currentUserIdentity?.Groups?.Any(sid => sid.Value == HyperVAdminSid);
         return wasHyperVSidFound ?? false;
     }
+
+    public string? GetCurrentUserName()
+    {
+        return _currentUserIdentity?.Name;
+    }
 }

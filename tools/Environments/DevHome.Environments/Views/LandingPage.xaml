@@ -10,8 +10,9 @@
     xmlns:commonModels="using:DevHome.Common.Environments.Models"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     Loaded="OnLoaded">
 
     <pg:ToolPage.Resources>
@@ -164,7 +165,7 @@
                         </i:Interaction.Behaviors>
                     </ComboBox>
                     <!--  'Sync' button -->
-                    <Button Padding="40 5 30 8" Command="{x:Bind ViewModel.SyncButtonCommand}" Margin="0 3 13 0">
+                    <Button Padding="40 5 30 8" Command="{x:Bind ViewModel.SyncButtonCommand}" Margin="0 3 0 0">
                         <StackPanel Orientation="Horizontal">
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
                             <TextBlock x:Uid="SyncButtonTextBlock" Margin="8 0 0 0"/>
@@ -236,6 +237,16 @@
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
+
+        <muxc:InfoBar MaxWidth="480"
+                      Margin="24"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Bottom"
+                      Grid.Row="3">
+            <i:Interaction.Behaviors>
+                <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
+            </i:Interaction.Behaviors>
+        </muxc:InfoBar>
 
     </Grid>
 </pg:ToolPage>

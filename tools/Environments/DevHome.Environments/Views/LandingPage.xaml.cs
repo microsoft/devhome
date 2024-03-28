@@ -21,6 +21,7 @@ public sealed partial class LandingPage : ToolPage
     {
         ViewModel = Application.Current.GetService<LandingPageViewModel>();
         InitializeComponent();
+        ViewModel.Initialize(NotificationQueue);
 
 #if DEBUG
         Loaded += AddDebugButtons;

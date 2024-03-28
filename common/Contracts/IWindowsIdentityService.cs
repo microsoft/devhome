@@ -5,5 +5,7 @@ namespace DevHome.Common.Contracts;
 
 public interface IWindowsIdentityService
 {
-    public bool IsUserHyperVAdmin();
+    string? GetCurrentUserName();
+
+    bool IsUserHyperVAdmin();
 }
