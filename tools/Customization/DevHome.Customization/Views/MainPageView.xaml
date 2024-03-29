@@ -17,7 +17,17 @@
             Command="{x:Bind ViewModel.NavigateToDeveloperFileExplorerPageCommand}"
             HeaderIcon="{ui:FontIcon Glyph=&#xEC50;}"
             IsClickEnabled="True" />
-
+        <!--  Dev Drive Insights  -->
+        <controls:SettingsCard
+            x:Uid="DevDriveInsightsCard"
+            AutomationProperties.AccessibilityView="Control"
+            AutomationProperties.AutomationId="NavigateDevDriveInsightsCardButton"
+            Command="{x:Bind ViewModel.NavigateToDevDriveInsightsPageCommand}"
+            IsClickEnabled="True" >
+            <controls:SettingsCard.HeaderIcon>
+                <FontIcon Glyph="&#xE3AF;" FontFamily="{ThemeResource AmcFluentIcons}"/>
+            </controls:SettingsCard.HeaderIcon>
+        </controls:SettingsCard>
         <!--  More Windows settings  -->
         <StackPanel>
             <TextBlock x:Uid="MoreWindowsSettingsSectionHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />

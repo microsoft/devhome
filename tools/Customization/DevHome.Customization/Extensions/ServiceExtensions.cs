@@ -18,6 +18,9 @@ public static class ServiceExtensions
         services.AddSingleton<DeveloperFileExplorerViewModel>();
         services.AddTransient<DeveloperFileExplorerPage>();
 
+        services.AddSingleton<DevDriveInsightsViewModel>();
+        services.AddTransient<DevDriveInsightsPage>();
+
         return services;
     }
 }

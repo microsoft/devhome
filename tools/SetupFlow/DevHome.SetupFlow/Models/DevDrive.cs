@@ -15,6 +15,7 @@ public class DevDrive : IDevDrive
     public DevDrive(
         char driveLetter,
         ulong driveSizeInBytes,
+        ulong driveSizeRemainingInBytes,
         ByteUnit driveUnitOfMeasure,
         string driveLocation,
         string driveLabel,
@@ -24,6 +25,7 @@ public class DevDrive : IDevDrive
     {
         DriveLetter = driveLetter;
         DriveSizeInBytes = driveSizeInBytes;
+        DriveSizeRemainingInBytes = driveSizeRemainingInBytes;
         DriveUnitOfMeasure = driveUnitOfMeasure;
         DriveLocation = driveLocation;
         DriveLabel = driveLabel;
@@ -35,6 +37,7 @@ public class DevDrive : IDevDrive
     {
         DriveLetter = devDrive.DriveLetter;
         DriveSizeInBytes = devDrive.DriveSizeInBytes;
+        DriveSizeRemainingInBytes = devDrive.DriveSizeRemainingInBytes;
         DriveUnitOfMeasure = devDrive.DriveUnitOfMeasure;
         DriveLocation = devDrive.DriveLocation;
         DriveLabel = devDrive.DriveLabel;
@@ -47,6 +50,7 @@ public class DevDrive : IDevDrive
     {
         DriveLetter = devDrive.DriveLetter;
         DriveSizeInBytes = devDrive.DriveSizeInBytes;
+        DriveSizeRemainingInBytes = devDrive.DriveSizeRemainingInBytes;
         DriveLocation = devDrive.DriveLocation;
         DriveLabel = devDrive.DriveLabel;
         State = devDrive.State;
@@ -90,6 +94,15 @@ public class DevDrive : IDevDrive
     /// 1024 bytes.
     /// </summary>
     public ulong DriveSizeInBytes
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the size remaining for the Dev Drive. This size is represented in base2 where one kilobyte is
+    /// 1024 bytes.
+    /// </summary>
+    public ulong DriveSizeRemainingInBytes
     {
         get; set;
     }
