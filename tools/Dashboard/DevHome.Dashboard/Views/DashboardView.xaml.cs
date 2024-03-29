@@ -116,12 +116,13 @@ public partial class DashboardView : ToolPage, IDisposable
     }
 
     [RelayCommand]
-    private void OnUnloaded()
+    private async Task OnUnloadedAsync()
     {
         Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
 
         Log.Logger()?.ReportDebug("DashboardView", $"Leaving Dashboard, deactivating widgets.");
-        UnsubscribeFromWidgets();
+
+        await Task.Run(() => UnsubscribeFromWidgets());
     }
 
     private void UnsubscribeFromWidgets()
