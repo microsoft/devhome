@@ -3,7 +3,10 @@
 
 using System.Linq;
 using System.Threading.Tasks;
+using AdaptiveCards.ObjectModel.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.DevHomeAdaptiveCards.CardModels;
+using DevHome.Common.DevHomeAdaptiveCards.Parsers;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -17,6 +20,10 @@ namespace DevHome.SetupFlow.ViewModels;
 public partial class SetupPageViewModelBase : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupPageViewModelBase));
+
+    public AdaptiveElementParserRegistration ElementRegistration { get; private set; } = new();
+
+    public AdaptiveActionParserRegistration ActionRegistration { get; private set; } = new();
 
     /// <summary>
     /// Indicates whether this page has already executed <see cref="OnFirstNavigateToAsync"/>.
@@ -106,6 +113,12 @@ public partial class SetupPageViewModelBase : ObservableObject
         StringResource = stringResource;
         Orchestrator = orchestrator;
         _nextPageButtonText = StringResource.GetLocalized(StringResourceKey.Next);
+
+        // register the supported element and action parsers
+        ElementRegistration.Set(DevHomeSettingsCard.AdaptiveElementType, new DevHomeSettingsCardParser());
+        ElementRegistration.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new DevHomeSettingsCardChoiceSetParser());
+        ElementRegistration.Set(DevHomeLaunchContentDialogButton.AdaptiveElementType, new DevHomeLaunchContentDialogButtonParser());
+        ElementRegistration.Set(DevHomeContentDialogContent.AdaptiveElementType, new DevHomeContentDialogContentParser());
     }
 
     /// <summary>

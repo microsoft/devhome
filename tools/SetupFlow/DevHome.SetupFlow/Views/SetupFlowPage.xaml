@@ -9,6 +9,7 @@
     xmlns:pg="using:DevHome.Common"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
+    xmlns:environmentViews="using:DevHome.SetupFlow.Views.Environments"
     xmlns:selectors="using:DevHome.SetupFlow.Selectors"
     xmlns:views="using:DevHome.SetupFlow.Views"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
@@ -73,6 +74,16 @@
                             <views:ConfigurationFileView/>
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.ConfigurationFileTemplate>
+                    <selectors:SetupFlowViewSelector.SelectEnvironmentsProviderTemplate>
+                        <DataTemplate>
+                            <environmentViews:SelectEnvironmentProviderView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.SelectEnvironmentsProviderTemplate>
+                    <selectors:SetupFlowViewSelector.EnvironmentCreationOptionsTemplate>
+                        <DataTemplate>
+                            <environmentViews:EnvironmentCreationOptionsView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.EnvironmentCreationOptionsTemplate>
                 </selectors:SetupFlowViewSelector>
             </ContentControl.ContentTemplateSelector>
         </ContentControl>
