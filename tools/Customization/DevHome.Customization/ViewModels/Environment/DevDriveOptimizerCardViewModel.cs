@@ -16,6 +16,8 @@ namespace DevHome.Customization.ViewModels.Environments;
 /// </summary>
 public partial class DevDriveOptimizerCardViewModel : ObservableObject
 {
+    public OptimizeDevDriveDialogViewModelFactory OptimizeDevDriveDialogViewModelFactory { get; set; }
+
     public string CacheToBeMoved { get; set; }
 
     public string DevDriveOptimizationSuggestion { get; set; }
@@ -37,15 +39,17 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
         var settingsCard = sender as Button;
         if (settingsCard != null)
         {
-            var optimizeDevDriveDialog = new OptimizeDevDriveDialog(CacheToBeMoved, ExistingCacheLocation, EnvironmentVariableToBeSet);
+            var optimizeDevDriveViewModel = OptimizeDevDriveDialogViewModelFactory(ExistingCacheLocation, EnvironmentVariableToBeSet);
+            var optimizeDevDriveDialog = new OptimizeDevDriveDialog(optimizeDevDriveViewModel);
             optimizeDevDriveDialog.XamlRoot = settingsCard.XamlRoot;
             optimizeDevDriveDialog.RequestedTheme = settingsCard.ActualTheme;
             await optimizeDevDriveDialog.ShowAsync();
         }
     }
 
-    public DevDriveOptimizerCardViewModel(string cacheToBeMoved, string existingCacheLocation, string exampleLocationOnDevDrive, string environmentVariableToBeSet)
+    public DevDriveOptimizerCardViewModel(OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory, string cacheToBeMoved, string existingCacheLocation, string exampleLocationOnDevDrive, string environmentVariableToBeSet)
     {
+        OptimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
         CacheToBeMoved = cacheToBeMoved;
         ExistingCacheLocation = existingCacheLocation;
         ExampleLocationOnDevDrive = exampleLocationOnDevDrive;

@@ -12,13 +12,14 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Customization.ViewModels.Environments;
+using DevHome.Customization.Views;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Serilog;
 
 namespace DevHome.Customization.ViewModels;
 
-public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
+public partial class DevDriveInsightsViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
@@ -27,6 +28,8 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
     public ObservableCollection<DevDriveOptimizerCardViewModel> DevDriveOptimizerCardCollection { get; private set; } = new();
 
     public ObservableCollection<DevDriveOptimizedCardViewModel> DevDriveOptimizedCardCollection { get; private set; } = new();
+
+    private readonly OptimizeDevDriveDialogViewModelFactory _optimizeDevDriveDialogViewModelFactory;
 
     [ObservableProperty]
     private bool _shouldShowCollectionView;
@@ -50,50 +53,19 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
 
     private IEnumerable<IDevDrive> ExistingDevDrives { get; set; } = Enumerable.Empty<IDevDrive>();
 
-    public DevDriveInsightsViewModel(
-        ISetupFlowStringResource stringResource,
-        SetupFlowViewModel setupflowModel,
-        SetupFlowOrchestrator orchestrator,
-        IDevDriveManager devDriveManager,
-        ToastNotificationService toastNotificationService)
-        : base(stringResource, orchestrator)
+    public DevDriveInsightsViewModel(IDevDriveManager devDriveManager, OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory)
     {
+        _optimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         DevDriveManagerObj = devDriveManager;
-
-        _ = this.OnFirstNavigateToAsync();
-    }
-
-    /// <summary>
-    /// Compares two strings and returns true if they are equal. This method is case insensitive.
-    /// </summary>
-    /// <param name="text">First string to use in comparison</param>
-    /// <param name="text2">Second string to use in comparison</param>
-    private bool CompareStrings(string text, string text2)
-    {
-        return string.Equals(text, text2, StringComparison.OrdinalIgnoreCase);
-    }
-
-    public bool CanEnableSyncButton()
-    {
-        return DevDriveLoadingCompleted;
-    }
-
-    [RelayCommand(CanExecute = nameof(CanEnableSyncButton))]
-    public void SyncDevDrives()
-    {
-        GetDevDrives();
     }
 
     /// <summary>
     /// Make sure we only get the list of DevDrives from the DevDriveManager once when the page is first navigated to.
     /// All other times will be through the use of the sync button.
     /// </summary>
-    protected async override Task OnFirstNavigateToAsync()
+    public void OnFirstNavigateTo()
     {
-        // Do nothing, but we need to override this as the base expects a task to be returned.
-        await Task.CompletedTask;
-
         GetDevDrives();
         GetDevDriveOptimizers();
         GetDevDriveOptimizeds();
@@ -303,6 +275,7 @@ public partial class DevDriveInsightsViewModel : SetupPageViewModelBase
         if (existingPipCacheLocation != null && !CacheInDevDrive(existingPipCacheLocation))
         {
             var card = new DevDriveOptimizerCardViewModel(
+                _optimizeDevDriveDialogViewModelFactory,
                 "Pip cache (Python)",
                 existingPipCacheLocation,
                 "D:\\packages" + cacheSubDir /*example location on dev drive to move cache to*/,

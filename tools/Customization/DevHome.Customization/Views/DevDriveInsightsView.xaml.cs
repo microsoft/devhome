@@ -20,4 +20,9 @@ public sealed partial class DevDriveInsightsView : UserControl
         ViewModel = Application.Current.GetService<DevDriveInsightsViewModel>();
         this.InitializeComponent();
     }
+
+    private void UserControl_Loaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.OnFirstNavigateTo();
+    }
 }

@@ -8,21 +8,22 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:environments="using:DevHome.Customization.ViewModels.Environments" 
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     d:DataContext="{d:DesignInstance Type=environments:DevDriveOptimizerCardViewModel}"
     x:Uid="ms-resource:///DevHome.Customization/Views/OptimizeDevDriveDialog"
     mc:Ignorable="d"
     Style="{StaticResource DefaultContentDialogStyle}"
-    Title="{x:Bind ChooseDirectoryPromptText}"
+    Title="{x:Bind ViewModel.ChooseDirectoryPromptText}"
     PrimaryButtonText="Make changes"
-    SecondaryButtonText="Cancel"
-    PrimaryButtonClick="OnDirectoryInputConfirmed"
-    SecondaryButtonClick="OnDirectoryInputCancelled">
+    PrimaryButtonCommand="{x:Bind ViewModel.DirectoryInputConfirmedCommand}"
+    SecondaryButtonText="Cancel">
     <StackPanel>
-        <TextBlock x:Uid="OptimizeDevDriveDialogDescription" TextWrapping="Wrap"/>
+        <TextBlock Text="{x:Bind ViewModel.OptimizeDevDriveDialogDescription}" TextWrapping="Wrap"/>
         <Grid Margin="0 10 0 0">
-            <TextBox HorizontalAlignment="Left" Width="300" Grid.Column="0" x:Name="DirectoryPathTextBox" PlaceholderText="Choose a directory"/>
-            <Button HorizontalAlignment="Right" Margin="10 0 0 0" Grid.Column="1" Content="Browse" Click="OnBrowseButtonClick"/>
+            <TextBox HorizontalAlignment="Left" Width="300" Grid.Column="0" x:Name="DirectoryPathTextBox" PlaceholderText="Choose a directory" Text="{x:Bind ViewModel.DirectoryPathTextBox , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button HorizontalAlignment="Right" Margin="10 0 0 0" Grid.Column="1" Content="Browse" Command="{x:Bind ViewModel.BrowseButtonClickCommand}"/>
         </Grid>
-        <TextBlock Margin="0 10 0 10" TextWrapping="Wrap" Text="{x:Bind ExampleDevDriveLocation, Mode=OneWay}"/>
+        <TextBlock Margin="0 10 0 10" TextWrapping="Wrap" Text="{x:Bind ViewModel.ExampleDevDriveLocation, Mode=OneWay}"/>
     </StackPanel>
 </ContentDialog>

@@ -8,7 +8,8 @@
     xmlns:devDriveModels="using:DevHome.Customization.Models.Environments"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Loaded="UserControl_Loaded">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -53,7 +54,7 @@
 
             <!--- Template for optimization suggestion cards on the dev insights page. -->
             <DataTemplate x:Key="HorizontalCardForDevDriveOptimizerInsightsPage" x:DataType="devViewModels:DevDriveOptimizerCardViewModel">
-                <ctControls:SettingsExpander Header="{Binding CacheToBeMoved, Mode=OneWay}">
+                <ctControls:SettingsExpander IsExpanded="True" Header="{Binding CacheToBeMoved, Mode=OneWay}">
                     <Grid HorizontalAlignment="Right">
                         <FontIcon HorizontalAlignment="Left" Margin="-10" Glyph="&#xE946;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
                         <TextBlock HorizontalAlignment="Left" Margin="5 5 5 5"
@@ -80,7 +81,7 @@
                 </ctControls:SettingsCard>
             </DataTemplate>
 
-            <DataTemplate x:Key="DevDriveContainerHeaderTemplate" x:DataType="devDriveModels:DevDrivesListViewModel">
+            <DataTemplate x:Key="DevDriveContainerHeaderTemplate">
                 <StackPanel Orientation="Horizontal"
                     Margin="0 10 0 10"
                     VerticalAlignment="Center">
