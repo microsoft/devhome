@@ -7,15 +7,19 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DevHome.Common.Helpers;
+using DevHome.Common.Models;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Serilog;
 
 namespace DevHome.Common.Helpers;
 
 public static class AdaptiveCardHelpers
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(AdaptiveCardHelpers));
+
     // convert base64 string to image that can be used in a imageIcon control
-    public static ImageIcon ConvertBase64StringToImageSource(string base64String)
+    public static ImageIcon ConvertBase64StringToImageIcon(string base64String)
     {
         try
         {
@@ -28,7 +32,7 @@ public static class AdaptiveCardHelpers
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError($"Failed to load image icon", ex);
+            _log.Error($"Failed to load image icon", ex);
             return new ImageIcon();
         }
     }

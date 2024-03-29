@@ -84,7 +84,7 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
         for (var i = 0; i < settingsCardChoiceSet.SettingsCards.Count; i++)
         {
             var curCard = settingsCardChoiceSet.SettingsCards[i];
-            curCard.HeaderIconImage = AdaptiveCardHelpers.ConvertBase64StringToImageSource(curCard.HeaderIcon);
+            curCard.HeaderIconImage = AdaptiveCardHelpers.ConvertBase64StringToImageIcon(curCard.HeaderIcon);
         }
 
         // Set up the ItemsSource for the ItemsView and add the input value to the context.
