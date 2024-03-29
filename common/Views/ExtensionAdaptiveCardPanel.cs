@@ -4,9 +4,7 @@
 using System;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
-using DevHome.Common.Extensions;
 using DevHome.Common.Models;
-using DevHome.Contracts.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

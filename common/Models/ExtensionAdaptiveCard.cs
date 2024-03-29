@@ -5,9 +5,6 @@ using System;
 using System.Text.Json.Nodes;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Templating;
-using DevHome.Common.Extensions;
-using DevHome.Contracts.Services;
-using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
@@ -23,18 +20,11 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 
     public string TemplateJson { get; private set; }
 
-    private readonly IThemeSelectorService _themeSelectorService;
-
-    private AdaptiveCardParseResult? _parseResult;
-
     public ExtensionAdaptiveCard()
     {
         TemplateJson = new JsonObject().ToJsonString();
         DataJson = new JsonObject().ToJsonString();
         State = string.Empty;
-
-        _themeSelectorService = Application.Current.GetService<IThemeSelectorService>();
-        _themeSelectorService.ThemeChanged += HandleThemeChanged;
     }
 
     public ProviderOperationResult Update(string templateJson, string dataJson, string state)
@@ -46,9 +36,9 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
         // an empty string.
         var adaptiveCardString = template.Expand(Newtonsoft.Json.JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(dataJson ?? DataJson));
 
-        _parseResult = AdaptiveCard.FromJsonString(adaptiveCardString);
+        var parseResult = AdaptiveCard.FromJsonString(adaptiveCardString);
 
-        if (_parseResult.AdaptiveCard is null)
+        if (parseResult.AdaptiveCard is null)
         {
             Log.Error($"ExtensionAdaptiveCard.Update(): AdaptiveCard is null - templateJson: {templateJson} dataJson: {dataJson} state: {state}");
             return new ProviderOperationResult(ProviderOperationStatus.Failure, new ArgumentNullException(null), "AdaptiveCard is null", $"templateJson: {templateJson} dataJson: {dataJson} state: {state}");
@@ -58,16 +48,8 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
         DataJson = dataJson ?? DataJson;
         State = state ?? State;
 
-        UiUpdate?.Invoke(this, _parseResult.AdaptiveCard);
+        UiUpdate?.Invoke(this, parseResult.AdaptiveCard);
 
         return new ProviderOperationResult(ProviderOperationStatus.Success, null, "IExtensionAdaptiveCard.Update succeeds", "IExtensionAdaptiveCard.Update succeeds");
-    }
-
-    private void HandleThemeChanged(object? sender, ElementTheme e)
-    {
-        if (_parseResult?.AdaptiveCard != null)
-        {
-            UiUpdate?.Invoke(this, _parseResult.AdaptiveCard);
-        }
     }
 }
