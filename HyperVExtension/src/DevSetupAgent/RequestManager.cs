@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Serilog;
+
 namespace HyperVExtension.DevSetupAgent;
 
 /// <summary>
@@ -8,6 +10,7 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 public class RequestManager : IRequestManager
 {
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(RequestManager));
     private const uint MaxRequestQueueSize = 3;
     private readonly IRequestFactory _requestFactory;
     private readonly IHostChannel _hostChannel;
@@ -51,7 +54,7 @@ public class RequestManager : IRequestManager
 
                 if (queueCount > MaxRequestQueueSize)
                 {
-                    Logging.Logger()?.ReportError($"Too many requests.");
+                    _log.Error($"Too many requests.");
                     var response = new TooManyRequestsResponse(message.RequestId);
                     _hostChannel.SendMessageAsync(response.GetResponseMessage(), stoppingToken);
                     return;
@@ -72,7 +75,7 @@ public class RequestManager : IRequestManager
         else
         {
             // Shouldn't happen, Log error
-            Logging.Logger()?.ReportError($"Received empty message.");
+            _log.Error($"Received empty message.");
         }
     }
 
@@ -99,7 +102,7 @@ public class RequestManager : IRequestManager
             }
             catch (Exception ex)
             {
-                Logging.Logger()?.ReportError($"Failed to execute request.", ex);
+                _log.Error($"Failed to execute request.", ex);
             }
         }
     }

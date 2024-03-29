@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,18 +18,24 @@ public class WidgetScreenshotService : IWidgetScreenshotService
 {
     private readonly WindowEx _windowEx;
 
-    private readonly Dictionary<string, BitmapImage> _widgetLightScreenshotCache;
-    private readonly Dictionary<string, BitmapImage> _widgetDarkScreenshotCache;
+    private readonly ConcurrentDictionary<string, BitmapImage> _widgetLightScreenshotCache;
+    private readonly ConcurrentDictionary<string, BitmapImage> _widgetDarkScreenshotCache;
 
     public WidgetScreenshotService(WindowEx windowEx)
     {
         _windowEx = windowEx;
 
-        _widgetLightScreenshotCache = new Dictionary<string, BitmapImage>();
-        _widgetDarkScreenshotCache = new Dictionary<string, BitmapImage>();
+        _widgetLightScreenshotCache = new ConcurrentDictionary<string, BitmapImage>();
+        _widgetDarkScreenshotCache = new ConcurrentDictionary<string, BitmapImage>();
     }
 
-    public async Task<BitmapImage> GetScreenshotFromCache(WidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    public void RemoveScreenshotsFromCache(string definitionId)
+    {
+        _widgetLightScreenshotCache.Remove(definitionId, out _);
+        _widgetDarkScreenshotCache.Remove(definitionId, out _);
+    }
+
+    public async Task<BitmapImage> GetScreenshotFromCacheAsync(WidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
         BitmapImage bitmapImage;
@@ -61,12 +68,6 @@ public class WidgetScreenshotService : IWidgetScreenshotService
         }
 
         return bitmapImage;
-    }
-
-    public void RemoveScreenshotsFromCache(string definitionId)
-    {
-        _widgetLightScreenshotCache.Remove(definitionId);
-        _widgetDarkScreenshotCache.Remove(definitionId);
     }
 
     private async Task<BitmapImage> WidgetScreenshotToBitmapImageAsync(IRandomAccessStreamReference iconStreamRef)

@@ -11,13 +11,9 @@ namespace DevHome.Dashboard.Services;
 
 public interface IWidgetIconService
 {
-    public Task CacheAllWidgetIconsAsync();
-
-    public Task AddIconsToCacheAsync(WidgetDefinition widgetDef);
-
     public void RemoveIconsFromCache(string definitionId);
 
-    public Task<BitmapImage> GetWidgetIconForThemeAsync(WidgetDefinition widgetDefinition, ElementTheme theme);
+    public Task<BitmapImage> GetIconFromCacheAsync(WidgetDefinition widgetDefinition, ElementTheme theme);
 
     public Task<Brush> GetBrushForWidgetIconAsync(WidgetDefinition widgetDefinition, ElementTheme theme);
 }

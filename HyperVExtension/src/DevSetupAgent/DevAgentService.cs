@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Serilog;
+
 namespace HyperVExtension.DevSetupAgent;
 
 /// <summary>
@@ -9,6 +11,7 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 public class DevAgentService : BackgroundService
 {
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(DevAgentService));
     private readonly IHost _host;
 
     public DevAgentService(IHost host)
@@ -18,7 +21,7 @@ public class DevAgentService : BackgroundService
 
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Logging.Logger()?.ReportInfo($"DevAgentService started at: {DateTimeOffset.Now}");
+        _log.Information($"DevAgentService started at: {DateTimeOffset.Now}");
 
         try
         {
@@ -38,18 +41,18 @@ public class DevAgentService : BackgroundService
                 }
                 catch (Exception ex)
                 {
-                    Logging.Logger()?.ReportError($"Exception in DevAgentService.", ex);
+                    _log.Error($"Exception in DevAgentService.", ex);
                 }
             }
         }
         catch (Exception ex)
         {
-            Logging.Logger()?.ReportError($"Failed to run DevSetupAgent.", ex);
+            _log.Error($"Failed to run DevSetupAgent.", ex);
             throw;
         }
         finally
         {
-            Logging.Logger()?.ReportInfo($"DevAgentService stopped at: {DateTimeOffset.Now}");
+            _log.Information($"DevAgentService stopped at: {DateTimeOffset.Now}");
         }
     }
 }

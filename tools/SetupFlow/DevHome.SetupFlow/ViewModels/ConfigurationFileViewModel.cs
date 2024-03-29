@@ -9,10 +9,10 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Exceptions;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
+using Serilog;
 using Windows.Storage;
 using WinUIEx;
 
@@ -20,6 +20,7 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileViewModel));
     private readonly IDesiredStateConfiguration _dsc;
     private readonly WindowEx _mainWindow;
 
@@ -57,7 +58,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
     partial void OnReadAndAgreeChanged(bool value)
     {
-        Log.Logger?.ReportInfo(Log.Component.Configuration, $"Read and agree changed. Value: {value}");
+        _log.Information($"Read and agree changed. Value: {value}");
         CanGoToNextPage = value;
         Orchestrator.NotifyNavigationCanExecuteChanged();
     }
@@ -83,7 +84,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to initialize elevated process.", e);
+            _log.Error($"Failed to initialize elevated process.", e);
         }
     }
 
@@ -101,7 +102,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     public async Task<bool> PickConfigurationFileAsync()
     {
         // Create and configure file picker
-        Log.Logger?.ReportInfo(Log.Component.Configuration, "Launching file picker to select configuration file");
+        _log.Information("Launching file picker to select configuration file");
         var file = await _mainWindow.OpenFilePickerAsync(Log.Logger, ("*.yaml;*.yml;*.winget", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
         return await LoadConfigurationFileInternalAsync(file);
     }
@@ -113,7 +114,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// <returns>True if the configuration file was loaded, false otherwise</returns>
     public async Task<bool> LoadFileAsync(StorageFile file)
     {
-        Log.Logger?.ReportInfo(Log.Component.Configuration, "Loading a configuration file");
+        _log.Information("Loading a configuration file");
         if (!await _dsc.IsUnstubbedAsync())
         {
             await _mainWindow.ShowErrorMessageDialogAsync(
@@ -136,13 +137,13 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         // Check if a file was selected
         if (file == null)
         {
-            Log.Logger?.ReportInfo(Log.Component.Configuration, "No configuration file selected");
+            _log.Information("No configuration file selected");
             return false;
         }
 
         try
         {
-            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
+            _log.Information($"Selected file: {file.Path}");
             Configuration = new(file.Path);
             Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
             await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
@@ -151,7 +152,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (OpenConfigurationSetException e)
         {
-            Log.Logger?.ReportError(Log.Component.Configuration, $"Opening configuration set failed.", e);
+            _log.Error($"Opening configuration set failed.", e);
             await _mainWindow.ShowErrorMessageDialogAsync(
                 StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
                 GetErrorMessage(e),
@@ -159,7 +160,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.Configuration, $"Unknown error while opening configuration set.", e);
+            _log.Error($"Unknown error while opening configuration set.", e);
 
             await _mainWindow.ShowErrorMessageDialogAsync(
                 file.Name,

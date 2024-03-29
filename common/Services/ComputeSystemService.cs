@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Models;
-using DevHome.Logging;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.ApplicationModel;
 
 namespace DevHome.Common.Services;
@@ -83,7 +83,7 @@ public class ComputeSystemService : IComputeSystemService
             }
             catch (Exception ex)
             {
-                GlobalLog.Logger?.ReportError($"Failed to get {nameof(IComputeSystemProvider)} provider from '{extension.Name}'", ex);
+                Log.Error($"Failed to get {nameof(IComputeSystemProvider)} provider from '{extension.Name}'", ex);
             }
         }
 

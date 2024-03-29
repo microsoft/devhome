@@ -10,6 +10,7 @@ using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 
 namespace DevHome.Dashboard.Helpers;
 
@@ -106,7 +107,8 @@ internal sealed class WidgetHelpers
 
         // Check if the specified widget provider is in the list.
         var include = enabledWidgetProviderIds.ToList().Contains(familyNamePartOfProviderId);
-        Log.Logger()?.ReportInfo("WidgetHelpers", $"Found provider Id = {providerId}, include = {include}");
+        var log = Log.ForContext("SourceContext", nameof(WidgetHelpers));
+        log.Information($"Found provider Id = {providerId}, include = {include}");
         return include;
     }
 

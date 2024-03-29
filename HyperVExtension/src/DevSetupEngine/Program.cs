@@ -3,9 +3,11 @@
 
 using System.ComponentModel;
 using System.Security.AccessControl;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
+using Serilog;
 
 namespace HyperVExtension.DevSetupEngine;
 
@@ -22,9 +24,18 @@ internal sealed class Program
     [MTAThread]
     public static int Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
     {
+        // Set up Logging
+        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(DevHome.Common.Logging.LogFolderRoot, "HyperV"));
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+
         try
         {
-            Logging.Logger()?.ReportInfo($"Launched with args: {string.Join(' ', args.ToArray())}");
+            Log.Information($"Launched with args: {string.Join(' ', args.ToArray())}");
 
             BuildHostContainer();
 
@@ -42,21 +53,23 @@ internal sealed class Program
             }
             else
             {
-                Logging.Logger()?.ReportWarn("Unknown arguments... exiting.");
+                Log.Warning("Unknown arguments... exiting.");
             }
         }
         catch (Exception ex)
         {
-            Logging.Logger()?.ReportError($"Exception: {ex}");
+            Log.Error($"Exception: {ex}", ex);
+            Log.CloseAndFlush();
             return ex.HResult;
         }
 
+        Log.CloseAndFlush();
         return 0;
     }
 
     private static void RegisterProcessAsComServer()
     {
-        Logging.Logger()?.ReportInfo($"Activating COM Server");
+        Log.Information($"Activating COM Server");
 
         // Register and run COM server.
         // This could be called by either of the COM registrations, we will do them all to avoid deadlock and bind all on the extension's lifetime.
@@ -71,7 +84,7 @@ internal sealed class Program
         // This will make the main thread wait until the event is signaled by the extension class.
         // Since we have single instance of the extension object, we exit as soon as it is disposed.
         devSetupEngine.ComServerDisposedEvent.WaitOne();
-        Logging.Logger()?.ReportInfo($"Extension is disposed.");
+        Log.Information($"Extension is disposed.");
     }
 
     private static void RegisterComServer()

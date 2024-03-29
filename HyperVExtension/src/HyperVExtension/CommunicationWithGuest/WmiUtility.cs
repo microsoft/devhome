@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Management;
-using HyperVExtension.Providers;
+using Serilog;
 using Windows.Win32.Foundation;
 
 namespace HyperVExtension.CommunicationWithGuest;
@@ -99,11 +99,12 @@ internal sealed class WmiUtility
         ManagementObject job = new ManagementObject(scope, new ManagementPath(jobPath), null);
 
         // Try to get storage job information
+        var log = Log.ForContext("SourceContext", nameof(WmiUtility));
         job.Get();
         while ((ushort)job["JobState"] == (ushort)JobState.Starting
             || (ushort)job["JobState"] == (ushort)JobState.Running)
         {
-            Logging.Logger()?.ReportInfo($"WMI job in progress... {job["PercentComplete"]}% completed.");
+            log.Information($"WMI job in progress... {job["PercentComplete"]}% completed.");
             Thread.Sleep(300);
             job.Get();
         }
@@ -115,9 +116,9 @@ internal sealed class WmiUtility
         {
             errorCode = (ushort)job["ErrorCode"];
             errorDescription = (string)job["ErrorDescription"];
-            Logging.Logger()?.ReportError($"WMI job state: {jobState}.");
-            Logging.Logger()?.ReportError($"WMI job error: {errorCode}.");
-            Logging.Logger()?.ReportError($"WMI job error description: {errorDescription}.");
+            log.Error($"WMI job state: {jobState}.");
+            log.Error($"WMI job error: {errorCode}.");
+            log.Error($"WMI job error description: {errorDescription}.");
             jobCompleted = false;
         }
 

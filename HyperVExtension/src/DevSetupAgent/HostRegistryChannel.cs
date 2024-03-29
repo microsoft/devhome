@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using HyperVExtension.HostGuestCommunication;
 using Microsoft.Win32;
+using Serilog;
 
 namespace HyperVExtension.DevSetupAgent;
 
@@ -20,6 +21,8 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 public sealed class HostRegistryChannel : IHostChannel, IDisposable
 {
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(HostRegistryChannel));
+
     // Public documentation doesn't say that there is a limit on the size of the value
     // smaller than registry key values. But in the sample code for linux integration services
     // HV_KVP_EXCHANGE_MAX_KEY_SIZE is used as a limit. In Windows code it's defined as 2048 (bytes).
@@ -89,7 +92,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
                     var regKey = _registryHiveKey.CreateSubKey(_toHostRegistryKeyPath);
                     if (regKey == null)
                     {
-                        Logging.Logger()?.ReportError($"Cannot open {_toHostRegistryKeyPath} registry key. Error: {Marshal.GetLastWin32Error()}");
+                        _log.Error($"Cannot open {_toHostRegistryKeyPath} registry key. Error: {Marshal.GetLastWin32Error()}");
                         return;
                     }
 
@@ -110,7 +113,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    Logging.Logger()?.ReportError($"Could not write host message. Response ID: {responseMessage.ResponseId}", ex);
+                    _log.Error($"Could not write host message. Response ID: {responseMessage.ResponseId}", ex);
                 }
             },
             stoppingToken);
@@ -127,7 +130,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    Logging.Logger()?.ReportError($"Could not delete host message. Response ID: {responseId}", ex);
+                    _log.Error($"Could not delete host message. Response ID: {responseId}", ex);
                 }
             },
             stoppingToken);
@@ -204,7 +207,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
                         }
                         catch (Exception ex)
                         {
-                            Logging.Logger()?.ReportError($"Could not read host message {valueName}", ex);
+                            _log.Error($"Could not read host message {valueName}", ex);
                         }
 
                         MessageHelper.DeleteAllMessages(_registryHiveKey, _fromHostRegistryKeyPath, s[0]);
@@ -215,7 +218,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
         }
         catch (Exception ex)
         {
-            Logging.Logger()?.ReportError("Could not read host message.", ex);
+            _log.Error("Could not read host message.", ex);
         }
 
         return requestMessage;

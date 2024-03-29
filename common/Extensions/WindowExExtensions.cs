@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DevHome.Common.Helpers;
-using DevHome.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Serilog;
 using Windows.Storage;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -85,7 +85,7 @@ public static class WindowExExtensions
     /// <param name="window">Target window</param>
     /// <param name="filters">List of type filters (e.g. *.yaml, *.txt), or empty/<c>null</c> to allow all file types</param>
     /// <returns>Storage file or <c>null</c> if no file was selected</returns>
-    public static async Task<StorageFile?> OpenFilePickerAsync(this WindowEx window, Logger? logger, params (string Type, string Name)[] filters)
+    public static async Task<StorageFile?> OpenFilePickerAsync(this WindowEx window, ILogger? logger, params (string Type, string Name)[] filters)
     {
         try
         {
@@ -167,7 +167,7 @@ public static class WindowExExtensions
         }
         catch (Exception e)
         {
-            logger?.ReportError("File picker failed. Returning null.", e);
+            logger?.Error("File picker failed. Returning null.", e);
             return null;
         }
     }

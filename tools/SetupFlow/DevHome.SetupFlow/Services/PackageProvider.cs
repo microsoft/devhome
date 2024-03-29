@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
+using Serilog;
 
 namespace DevHome.SetupFlow.Services;
 
@@ -25,6 +25,8 @@ namespace DevHome.SetupFlow.Services;
 /// </remarks>
 public class PackageProvider
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(PackageProvider));
+
     private sealed class PackageCache
     {
         /// <summary>
@@ -96,13 +98,13 @@ public class PackageProvider
             if (_packageViewModelCache.TryGetValue(package.UniqueKey, out var value))
             {
                 // Promote to permanent cache if requested
-                Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Package [{package.Id}] is cached; returning");
+                _log.Debug($"Package [{package.Id}] is cached; returning");
                 value.IsPermanent = value.IsPermanent || cachePermanently;
                 return value.PackageViewModel;
             }
 
             // Package is not cached, create a new one
-            Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Creating view model for package [{package.Id}]");
+            _log.Debug($"Creating view model for package [{package.Id}]");
             var viewModel = _packageViewModelFactory(package);
             viewModel.SelectionChanged += OnPackageSelectionChanged;
             viewModel.SelectionChanged += (sender, package) => PackageSelectionChanged?.Invoke(sender, package);
@@ -110,7 +112,7 @@ public class PackageProvider
             // Cache if requested
             if (cachePermanently)
             {
-                Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Caching package {package.Id}");
+                _log.Debug($"Caching package {package.Id}");
                 _packageViewModelCache.TryAdd(package.UniqueKey, new PackageCache()
                 {
                     PackageViewModel = viewModel,
@@ -128,11 +130,11 @@ public class PackageProvider
         {
             if (packageViewModel.IsSelected)
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Package [{packageViewModel.Package.Id}] has been selected");
+                _log.Information($"Package [{packageViewModel.Package.Id}] has been selected");
 
                 // If a package is selected and is not already cached permanently,
                 // cache it temporarily
-                Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Caching package [{packageViewModel.Package.Id}]");
+                _log.Debug($"Caching package [{packageViewModel.Package.Id}]");
                 _packageViewModelCache.TryAdd(packageViewModel.UniqueKey, new PackageCache()
                 {
                     PackageViewModel = packageViewModel,
@@ -144,13 +146,13 @@ public class PackageProvider
             }
             else
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Package [{packageViewModel.Package.Id}] has been un-selected");
+                _log.Information($"Package [{packageViewModel.Package.Id}] has been un-selected");
 
                 // If a package is unselected and is cached temporarily, remove it
                 // from the cache
                 if (_packageViewModelCache.TryGetValue(packageViewModel.UniqueKey, out var value) && !value.IsPermanent)
                 {
-                    Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Removing package [{packageViewModel.Package.Id}] from cache");
+                    _log.Debug($"Removing package [{packageViewModel.Package.Id}] from cache");
                     _packageViewModelCache.Remove(packageViewModel.UniqueKey);
                 }
 
@@ -168,11 +170,11 @@ public class PackageProvider
         lock (_lock)
         {
             // Clear cache
-            Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Clearing package view model cache");
+            _log.Debug($"Clearing package view model cache");
             _packageViewModelCache.Clear();
 
             // Clear list of selected packages
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Clearing selected packages");
+            _log.Information($"Clearing selected packages");
             _selectedPackages.Clear();
         }
     }

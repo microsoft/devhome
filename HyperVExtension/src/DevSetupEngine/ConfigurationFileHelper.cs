@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Management.Configuration;
+using Serilog;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.Foundation;
@@ -17,6 +18,8 @@ namespace HyperVExtension.DevSetupEngine;
 /// </summary>
 public class ConfigurationFileHelper
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileHelper));
+
     private const string PowerShellHandlerIdentifier = "pwsh";
 
     public class ApplicationResult
@@ -134,7 +137,8 @@ public class ConfigurationFileHelper
             }
 
             var installStatus = installItem.GetCurrentStatus();
-            Logging.Logger()?.ReportInfo($"{AppInstallerPackageName} installation status: {installStatus}");
+            var log = Log.ForContext("SourceContext", nameof(ConfigurationFileHelper));
+            log.Information($"{AppInstallerPackageName} installation status: {installStatus}");
             if (installStatus.InstallState != AppInstallState.Completed)
             {
                 throw new PackageOperationException(PackageOperationException.ErrorCode.DevSetupErrorMsStoreInstallFailed, $"Failed to install {AppInstallerPackageName} updates");
@@ -201,13 +205,13 @@ public class ConfigurationFileHelper
                 throw new InvalidOperationException();
             }
 
-            Logging.Logger()?.ReportInfo("Starting to apply configuration set");
+            _log.Information("Starting to apply configuration set");
             var applySetOperation = _processor.ApplySetAsync(_configSet, WinGet.ApplyConfigurationSetFlags.None);
             var progressWatcher = new ApplyConfigurationProgressWatcher(progress);
             applySetOperation.Progress += progressWatcher.Watcher;
             var result = await applySetOperation;
 
-            Logging.Logger()?.ReportInfo($"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
+            _log.Information($"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
 
             var unitResults = new List<DevSetupEngineTypes.IApplyConfigurationUnitResult>();
             foreach (var unitResult in result.UnitResults)
@@ -273,24 +277,24 @@ public class ConfigurationFileHelper
 
     private void LogConfigurationDiagnostics(WinGet.IDiagnosticInformation diagnosticInformation)
     {
-        Logging.Logger()?.ReportInfo($"WinGet: {diagnosticInformation.Message}");
+        _log.Information($"WinGet: {diagnosticInformation.Message}");
 
         var sourceComponent = nameof(WinGet.ConfigurationProcessor);
         switch (diagnosticInformation.Level)
         {
             case WinGet.DiagnosticLevel.Warning:
-                Logging.Logger()?.ReportWarn(sourceComponent, diagnosticInformation.Message);
+                _log.Warning(sourceComponent, diagnosticInformation.Message);
                 return;
             case WinGet.DiagnosticLevel.Error:
-                Logging.Logger()?.ReportError(sourceComponent, diagnosticInformation.Message);
+                _log.Error(sourceComponent, diagnosticInformation.Message);
                 return;
             case WinGet.DiagnosticLevel.Critical:
-                Logging.Logger()?.ReportCritical(sourceComponent, diagnosticInformation.Message);
+                _log.Fatal(sourceComponent, diagnosticInformation.Message);
                 return;
             case WinGet.DiagnosticLevel.Verbose:
             case WinGet.DiagnosticLevel.Informational:
             default:
-                Logging.Logger()?.ReportInfo(sourceComponent, diagnosticInformation.Message);
+                _log.Information(sourceComponent, diagnosticInformation.Message);
                 return;
         }
     }

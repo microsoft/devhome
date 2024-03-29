@@ -6,9 +6,9 @@ using System.Globalization;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Helpers;
-using DevHome.Common.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
@@ -135,13 +135,13 @@ public partial class CardProperty : ObservableObject
                         }
                     }
 
-                    Log.Logger()?.ReportError($"Failed to find icon image in path: {iconPathUri} for package: {packageFullName} due to error: 0x{res.Value:X}");
+                    Log.Error($"Failed to find icon image in path: {iconPathUri} for package: {packageFullName} due to error: 0x{res.Value:X}");
                 }
             }
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError($"Failed to load icon from ms-resource: {iconPathUri} for package: {packageFullName} due to error:", ex);
+            Log.Error($"Failed to load icon from ms-resource: {iconPathUri} for package: {packageFullName} due to error:", ex);
         }
 
         return new BitmapImage();
@@ -199,7 +199,7 @@ public partial class CardProperty : ObservableObject
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError($"Failed to convert size in bytes to ulong. Error: {ex}");
+            Log.Error($"Failed to convert size in bytes to ulong. Error: {ex}");
             return string.Empty;
         }
     }
