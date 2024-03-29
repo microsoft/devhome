@@ -26,6 +26,10 @@ public class NotificationService
 
     private readonly string _componentName = "NotificationService";
 
+    private readonly string _hyperVText = "Hyper-V";
+
+    private readonly string _microsoftText = "Microsoft";
+
     private readonly StringResource _stringResource;
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
@@ -87,14 +91,16 @@ public class NotificationService
         {
             var command = new RelayCommand(() =>
             {
-                System.Diagnostics.Process process = new System.Diagnostics.Process();
-                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                var startInfo = new System.Diagnostics.ProcessStartInfo();
                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                startInfo.FileName = "cmd.exe";
 
                 // Restart the computer
-                startInfo.Arguments = "/C shutdown -r -t 0";
+                // To Do: Remove the hardcoded time
+                startInfo.FileName = "shutdown.exe";
+                startInfo.Arguments = "-r -t 0";
                 startInfo.Verb = string.Empty;
+
+                var process = new System.Diagnostics.Process();
                 process.StartInfo = startInfo;
                 process.Start();
             });
@@ -102,8 +108,8 @@ public class NotificationService
             _dispatcher.EnqueueAsync(() =>
                 _notificationQueue?.Show(new Notification
                 {
-                    Title = _stringResource.GetLocalized("HyperVErrorTitle"),
-                    Message = _stringResource.GetLocalized("RestartMessage"),
+                    Title = _stringResource.GetLocalized("HyperVErrorTitle", _microsoftText, _hyperVText),
+                    Message = _stringResource.GetLocalized("RestartMessage", _hyperVText),
                     Severity = InfoBarSeverity.Warning,
                     ActionButton = new Button
                     {
@@ -118,6 +124,14 @@ public class NotificationService
         }
     }
 
+    private void ShowUnableToAddToHyperVAdminGroupNotification()
+    {
+        ShowNotificationAsync(
+            _stringResource.GetLocalized("HyperVErrorTitle", _microsoftText, _hyperVText),
+            _stringResource.GetLocalized("UserAddHyperVAdminFailed", _hyperVText),
+            InfoBarSeverity.Warning).Wait();
+    }
+
     public void CheckIfUserIsAHyperVAdminAndShowNotification()
     {
         if (!_windowsIdentityService.IsUserHyperVAdmin())
@@ -128,10 +142,9 @@ public class NotificationService
 
                 var command = new RelayCommand(() =>
                 {
-                    System.Diagnostics.Process process = new System.Diagnostics.Process();
-                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                    var startInfo = new System.Diagnostics.ProcessStartInfo();
                     startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                    startInfo.FileName = "cmd.exe";
+                    startInfo.FileName = "net.exe";
 
                     var user = _windowsIdentityService.GetCurrentUserName();
                     if (user == null)
@@ -141,22 +154,35 @@ public class NotificationService
                     }
 
                     // Add the user to the Hyper-V Administrators group
-                    startInfo.Arguments = "/C net localgroup \"Hyper-V Administrators\" " + user + " /add";
+                    startInfo.Arguments = "localgroup \"Hyper-V Administrators\" " + user + " /add";
                     startInfo.UseShellExecute = true;
                     startInfo.Verb = "runas";
+
+                    var process = new System.Diagnostics.Process();
                     process.StartInfo = startInfo;
-                    process.Start();
-                    process.WaitForExit();
 
-                    CloseNotification(notification);
-
-                    if (process.ExitCode == 0)
+                    // Since a UAC prompt will be shown, we need to wait for the process to exit
+                    // This can also be cancelled by the user which will result in an exception
+                    try
                     {
-                        ShowRestartNotification();
+                        process.Start();
+                        process.WaitForExit();
+
+                        CloseNotification(notification);
+
+                        if (process.ExitCode == 0)
+                        {
+                            ShowRestartNotification();
+                        }
+                        else
+                        {
+                            ShowUnableToAddToHyperVAdminGroupNotification();
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        ShowNotificationAsync(_stringResource.GetLocalized("HyperVErrorTitle"), _stringResource.GetLocalized("UserAddHyperVAdminFailed"), InfoBarSeverity.Warning).Wait();
+                        Log.Logger()?.ReportError(_componentName, "Unable to add the user to the Hyper-V Administrators group", ex);
+                        ShowUnableToAddToHyperVAdminGroupNotification();
                     }
                 });
 
@@ -164,12 +190,12 @@ public class NotificationService
                 {
                     notification = new Notification
                     {
-                        Title = _stringResource.GetLocalized("HyperVErrorTitle"),
-                        Message = _stringResource.GetLocalized("UserNotInHyperAdminGroupMessage"),
+                        Title = _stringResource.GetLocalized("HyperVErrorTitle", _microsoftText, _hyperVText),
+                        Message = _stringResource.GetLocalized("UserNotInHyperAdminGroupMessage", _hyperVText),
                         Severity = InfoBarSeverity.Error,
                         ActionButton = new Button
                         {
-                            Content = _stringResource.GetLocalized("HyperVAdminAddUser"),
+                            Content = _stringResource.GetLocalized("HyperVAdminAddUser", _hyperVText),
                             Command = command,
                         },
                     };

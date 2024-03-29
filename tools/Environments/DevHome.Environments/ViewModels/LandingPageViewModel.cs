@@ -205,7 +205,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         // Show error notifications for failed provider/developer id combinations
         foreach (var mapping in data.DevIdToComputeSystemMap.Where(kv =>
-            kv.Value.Result.Status == Microsoft.Windows.DevHome.SDK.ProviderOperationStatus.Failure).ToList())
+            kv.Value.Result.Status == Microsoft.Windows.DevHome.SDK.ProviderOperationStatus.Failure))
         {
             var result = mapping.Value.Result;
             await _notificationService.ShowNotificationAsync(provider.DisplayName, result.DisplayMessage, InfoBarSeverity.Error);
