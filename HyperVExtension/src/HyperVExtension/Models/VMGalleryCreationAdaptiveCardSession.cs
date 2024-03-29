@@ -16,8 +16,10 @@ using HyperVExtension.Models.VirtualMachineCreation;
 using HyperVExtension.Models.VMGalleryJsonToClasses;
 using HyperVExtension.Providers;
 using Json.More;
+using Microsoft.Extensions.Logging;
 using Microsoft.Windows.DevHome.SDK;
 using Newtonsoft.Json.Linq;
+using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -32,6 +34,8 @@ public enum SessionState
 
 public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSession2
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(HyperVVirtualMachine));
+
     private readonly string _pathToInitialCreationFormTemplate = Path.Combine(AppContext.BaseDirectory, @"HyperVExtension\Templates\", "InitialVMGalleryCreationForm.json");
 
     private readonly string _pathToReviewFormTemplate = Path.Combine(AppContext.BaseDirectory, @"HyperVExtension\Templates\", "ReviewFormForVMGallery.json");
@@ -83,7 +87,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action);
             if (actionPayload == null)
             {
-                Logging.Logger()?.ReportError($"Actions in Adaptive card action Json not recognized: {action}");
+                _log.Error($"Actions in Adaptive card action Json not recognized: {action}");
                 var creationFormGenerationError = _stringResource.GetLocalized("AdaptiveCardUnRecognizedAction");
                 var exception = new AdaptiveCardInvalidActionException(creationFormGenerationError);
                 return new ProviderOperationResult(ProviderOperationStatus.Failure, exception, creationFormGenerationError, creationFormGenerationError);
