@@ -333,6 +333,13 @@ public partial class AddRepoViewModel : ObservableObject
         return;
     }
 
+    [RelayCommand]
+    public async Task ShowCustomizeDevDriveWindow()
+    {
+        await EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        ToggleCloneButton();
+    }
+
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
     /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"

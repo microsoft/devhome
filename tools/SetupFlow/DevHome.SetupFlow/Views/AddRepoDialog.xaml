@@ -264,7 +264,7 @@
                         x:Uid="CustomizeHyperLink"
                         Grid.Column="1" 
                         Visibility="{x:Bind AddRepoViewModel.EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" 
-                        Click="CustomizeDevDriveHyperlinkButton_ClickAsync"
+                        Command="{x:Bind AddRepoViewModel.ShowCustomizeDevDriveWindowCommand}"
                         Grid.Row="0"
                         Margin="0 -3 0 0"
                         Padding="3" />
