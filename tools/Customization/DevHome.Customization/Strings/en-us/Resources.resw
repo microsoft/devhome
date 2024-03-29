@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ChooseDirectoryPromptText" xml:space="preserve">
+    <value>Choose directory on dev drive...</value>
+    <comment>Choose directory on dev drive</comment>
+  </data>  
   <data name="DevDriveFreeSizeText" xml:space="preserve">
     <value>{0} {1} free</value>
     <comment>Dev drive size free</comment>
@@ -157,6 +161,10 @@
     <value>Enable end task in taskbar by right click</value>
     <comment>The description for the end task on task bar settings card</comment>
   </data>
+  <data name="ExampleDevDriveLocation" xml:space="preserve">
+    <value>Example: E:\packages\pip</value>
+    <comment>Example dev drive location</comment>
+  </data>
   <data name="EndTaskOnTaskBar.Header" xml:space="preserve">
     <value>End Task</value>
     <comment>The header for the end task on task bar settings card</comment>
@@ -177,7 +185,7 @@
     <value>The environment variable {0} is set to {1}</value>
     <comment>Optimized dev drive description</comment>
   </data>
-  <data name="OptimizeDevDriveDialogDescription" xml:space="preserve">
+  <data name="OptimizeDevDriveDialogDescription.Text" xml:space="preserve">
     <value>Contents of {0} will be copied to chosen directory. And {1} will be set to chosen directory.</value>
     <comment>Optimize dev drive dialog description</comment>
   </data>

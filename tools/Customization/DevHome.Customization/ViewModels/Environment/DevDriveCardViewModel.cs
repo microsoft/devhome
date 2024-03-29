@@ -43,7 +43,7 @@ public partial class DevDriveCardViewModel : ObservableObject
         _devDriveManager = manager;
 
         DevDriveLabel = devDrive.DriveLabel;
-        var divider = (ulong)((devDrive.DriveUnitOfMeasure == ByteUnit.TB) ? 1000000000000 : 1000000000);
+        var divider = (ulong)((devDrive.DriveUnitOfMeasure == ByteUnit.TB) ? 1000_000_000_000 : 1000_000_000);
         DevDriveSize = devDrive.DriveSizeInBytes / divider;
         DevDriveFreeSize = devDrive.DriveSizeRemainingInBytes / divider;
         DevDriveUsedSize = DevDriveSize - DevDriveFreeSize;

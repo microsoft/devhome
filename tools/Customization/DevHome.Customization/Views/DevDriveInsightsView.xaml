@@ -105,6 +105,7 @@
                 Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
                 Text="Dev Drive Volumes"
                 IsTextSelectionEnabled="True"/>
+            <!--- List of DevDrivesListViewModel objects. -->
             <ListView
                 x:Name="DevDrivesList"
                 AutomationProperties.Name="{Binding AccessibilityName, Mode=OneWay}"

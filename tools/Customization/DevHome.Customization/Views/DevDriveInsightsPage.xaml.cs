@@ -34,13 +34,4 @@ public sealed partial class DevDriveInsightsPage : Page
         };
         this.InitializeComponent();
     }
-
-    private void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
-    {
-        if (args.Index < Breadcrumbs.Count - 1)
-        {
-            var crumb = (Breadcrumb)args.Item;
-            crumb.NavigateTo();
-        }
-    }
 }

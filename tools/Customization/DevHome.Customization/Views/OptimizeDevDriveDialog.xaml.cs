@@ -23,6 +23,20 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
         EnvironmentVariableToBeSet = environmentVariableToBeSet;
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         OptimizeDevDriveDialogDescription = stringResource.GetLocalized("OptimizeDevDriveDialogDescription", ExistingCacheLocation, EnvironmentVariableToBeSet);
+        ChooseDirectoryPromptText = stringResource.GetLocalized("ChooseDirectoryPromptText");
+        ExampleDevDriveLocation = stringResource.GetLocalized("ExampleDevDriveLocation");
+    }
+
+    public string ExampleDevDriveLocation
+    {
+        get => (string)GetValue(ExampleDevDriveLocationProperty);
+        set => SetValue(ExampleDevDriveLocationProperty, value);
+    }
+
+    public string ChooseDirectoryPromptText
+    {
+        get => (string)GetValue(ChooseDirectoryPromptTextProperty);
+        set => SetValue(ChooseDirectoryPromptTextProperty, value);
     }
 
     public string CacheToBeMoved
@@ -136,6 +150,8 @@ public sealed partial class OptimizeDevDriveDialog : ContentDialog
     {
     }
 
+    private static readonly DependencyProperty ExampleDevDriveLocationProperty = DependencyProperty.Register(nameof(ExampleDevDriveLocation), typeof(string), typeof(OptimizeDevDriveDialog), new PropertyMetadata(null));
+    private static readonly DependencyProperty ChooseDirectoryPromptTextProperty = DependencyProperty.Register(nameof(ChooseDirectoryPromptText), typeof(string), typeof(OptimizeDevDriveDialog), new PropertyMetadata(null));
     private static readonly DependencyProperty CacheToBeMovedProperty = DependencyProperty.Register(nameof(CacheToBeMoved), typeof(string), typeof(OptimizeDevDriveDialog), new PropertyMetadata(null));
     private static readonly DependencyProperty ExistingCacheLocationProperty = DependencyProperty.Register(nameof(ExistingCacheLocation), typeof(string), typeof(OptimizeDevDriveDialog), new PropertyMetadata(null));
     private static readonly DependencyProperty EnvironmentVariableToBeSetProperty = DependencyProperty.Register(nameof(EnvironmentVariableToBeSet), typeof(string), typeof(OptimizeDevDriveDialog), new PropertyMetadata(null));
