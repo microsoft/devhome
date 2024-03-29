@@ -1,0 +1,87 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Input.Text",
+      "id": "NewVMNameTextBox",
+      "label": "${EnterNewVMNameLabel}",
+      "placeholder": "${EnterNewVMNamePlaceHolder}",
+      "maxLength": 100,
+      "isRequired": true,
+      "Spacing": "Large"
+    },
+    {
+      "type": "DevHome.SettingsCardChoiceSet",
+      "id": "HyperVVmGalleryImageList",
+      "label": "${SettingsCardLabel}",
+      "DevHomeSettingsCards": [
+        {
+          "type": "DevHome.SettingsCard",
+          "$data": "${GalleryImages}",
+          "DevHomeSettingsCardDescription": "${SubDescription}",
+          "DevHomeSettingsCardHeader": "${Header}",
+          "DevHomeSettingsCardHeaderIcon": "${HeaderIcon}",
+          "DevHomeSettingsCardActionElement": {
+            "type": "DevHome.LaunchContentDialogButton",
+            "DevHomeActionText": "${ButtonToLaunchContentDialogLabel}",
+            "DevHomeContentDialogContent": {
+              "DevHomeContentDialogTitle": "${Header}",
+              "DevHomeContentDialogBodyAdaptiveCard": {
+                "type": "AdaptiveCard",
+                "version": "1.5",
+                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                "body": [
+                  {
+                    "type": "Container",
+                    "$data": "${ContentDialogInfo}",
+                    "items": [
+                      {
+                        "type": "TextBlock",
+                        "text": "${ImageDescription}",
+                        "isMultiline": true,
+                        "Spacing": "Medium",
+                        "size": "Medium",
+                        "wrap": true
+                      },
+                      {
+                        "$data": "${GalleryImageFacts}",
+                        "type": "FactSet",
+                        "facts": [
+                          {
+                            "title": "${title}",
+                            "value": "${value}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "DevHomeContentDialogSecondaryButtonText": "${SecondaryButtonForContentDialogText}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "id": "VmGalleryPrimaryButtonId",
+          "type": "Action.Submit",
+          "title": "${PrimaryButtonLabelForCreationFlow}",
+          "ActionMode": "Primary",
+          "style": "positive"
+        },
+        {
+          "id": "VmGallerySecondaryButtonId",
+          "type": "Action.Submit",
+          "title": "${SecondaryButtonLabelForCreationFlow}",
+          "ActionMode": "Secondary"
+        }
+      ]
+    }
+  ]
+}
