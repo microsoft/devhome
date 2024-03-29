@@ -181,7 +181,7 @@ public class NotificationService
                     }
                     catch (Exception ex)
                     {
-                        Log.Logger()?.ReportError(_componentName, "Unable to add the user to the Hyper-V Administrators group", ex);
+                        _log.Error(_componentName, "Unable to add the user to the Hyper-V Administrators group", ex);
                         ShowUnableToAddToHyperVAdminGroupNotification();
                     }
                 });
