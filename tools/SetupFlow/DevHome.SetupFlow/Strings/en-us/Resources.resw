@@ -1610,11 +1610,11 @@
   </data>
   <data name="MainPageEnvironmentSetupGroup" xml:space="preserve">
     <value>Set up development environment</value>
-    <comment>Header text for a group of controls giving multiple choices to set up the environment/machine</comment>
+    <comment>(Narrator reads this entry and should stay in sync with MainPage_EnvironmentSetup.Text ).  Header text for a group of controls giving multiple choices to set up the environment/machine</comment>
   </data>
   <data name="MainPageQuickConfigurationGroup" xml:space="preserve">
     <value>Quick steps</value>
-    <comment>Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
+    <comment>(Narrator reads this and should be in sync with MainPage_QuickConfiguration.Text) Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
   </data>
   <data name="CloneRepoNextStepsDescription" xml:space="preserve">
     <value>Detected '{0}' while cloning '{1}'</value>
