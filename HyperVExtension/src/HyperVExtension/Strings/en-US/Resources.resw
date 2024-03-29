@@ -151,7 +151,11 @@
   </data>
   <data name="ErrorPerformingOperation" xml:space="preserve">
     <value>Unable to perform the requested operation. Check the Dev Home Hyper-V extension's log files for more information.</value>
-    <comment>Error text  for when the hyper-v extension is unable to perform an operation the user requests</comment>
+    <comment>Error text for when the hyper-v extension is unable to perform an operation the user requests</comment>
+  </data>
+  <data name="VmCredentialRequest.AttemptCountText" xml:space="preserve">
+    <value>{0}/{1} attempts</value>
+    <comment>Attempt counter text for the dialog to enter Hyper-V VM admin credential ({CurrentAttempt}/{MaxAttempts}).</comment>
   </data>
   <data name="ExtractionInProgress" xml:space="preserve">
     <value>Extracting file {0}. {1}</value>
@@ -167,35 +171,90 @@
   </data>
   <data name="VmCredentialRequest.CancelText" xml:space="preserve">
     <value>Cancel</value>
+    <comment>Cancel button text in the dialog to enter Hyper-V VM admin credential.</comment>
   </data>
-  <data name="VmCredentialRequest.Description1" xml:space="preserve">
-    <value>Dev Home needs VM administrator credentials to install DevSetupAgent service.</value>
+  <data name="VmCredentialRequest.Description" xml:space="preserve">
+    <value>In order to run setup on hyper-v machines we need admin credentials</value>
+    <comment>Text describing the purpose of the dialog to enter Hyper-V VM admin credential.</comment>
   </data>
-  <data name="VmCredentialRequest.Description2" xml:space="preserve">
-    <value>Please enter credential for the VM administrator account</value>
+  <data name="VmCredentialRequest.DismissText" xml:space="preserve">
+    <value>Dismiss</value>
+    <comment>Dismiss button text in the dialog to enter Hyper-V VM admin credential.</comment>
+  </data>
+  <data name="VmCredentialRequest.InvalidCredentialDescription" xml:space="preserve">
+    <value>Credential you entered didn't work. Please try again</value>
+    <comment>Error description text shown in the dialog to enter Hyper-V VM admin credential if the entered credential didn't work.</comment>
+  </data>
+  <data name="VmCredentialRequest.InvalidCredentialDescriptionAfterLastAttempt" xml:space="preserve">
+    <value>Failed to provide validate credential for the Hyper-V setup. We are terminating the setup request</value>
+    <comment>Error description text shown in the dialog to enter Hyper-V VM admin credential after the last attempt.</comment>
+  </data>
+  <data name="VmCredentialRequest.InvalidCredentialText" xml:space="preserve">
+    <value>Invalid credential</value>
+    <comment>Error text shown in the dialog to enter Hyper-V VM admin credential if the entered credential didn't work.</comment>
+  </data>
+  <data name="VmCredentialRequest.InvalidCredentialTextAfterLastAttempt" xml:space="preserve">
+    <value>Terminating setup</value>
+    <comment>Error text shown in the dialog to enter Hyper-V VM admin credential after the last attempt.</comment>
   </data>
   <data name="VmCredentialRequest.OkText" xml:space="preserve">
-    <value>Ok</value>
-  </data>
-  <data name="VmCredentialRequest.PasswordErrorMsg" xml:space="preserve">
-    <value>Password is required</value>
+    <value>Authenticate</value>
+    <comment>Ok button text in the dialog to enter Hyper-V VM admin credential.</comment>
   </data>
   <data name="VmCredentialRequest.PasswordLabel" xml:space="preserve">
     <value>Password</value>
+    <comment>Label text for the user password field in the dialog to enter Hyper-V VM admin credential.</comment>
   </data>
   <data name="VmCredentialRequest.Title" xml:space="preserve">
-    <value>Dev Home Hyper-V Extension credential request</value>
+    <value>Request for admin credentials</value>
+    <comment>Title text of the dialog to enter Hyper-V VM admin credential.</comment>
   </data>
-  <data name="VmCredentialRequest.UsernameErrorMsg" xml:space="preserve">
+  <data name="VmCredentialRequest.UserNameIsRequiredText" xml:space="preserve">
     <value>Username is required</value>
+    <comment>Validation error text shown if the user name field is empty in the dialog to enter Hyper-V VM admin credential.</comment>
   </data>
   <data name="VmCredentialRequest.UsernameLabel" xml:space="preserve">
     <value>Admin username</value>
+    <comment>Label text for the user name field in the dialog to enter Hyper-V VM admin credential.</comment>
+  </data>
+  <data name="WaitForLoginRequest.AttemptCountText" xml:space="preserve">
+    <value>{0}/{1} attempts</value>
+    <comment>Attempt counter text for the dialog asking to log in to Hyper-V VM ({CurrentAttempt}/{MaxAttempts}).</comment>
+  </data>
+  <data name="WaitForLoginRequest.CancelText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Cancel button text in the dialog asking to log in to Hyper-V VM.</comment>
   </data>
   <data name="WaitForLoginRequest.Description" xml:space="preserve">
-    <value>Please login to &lt;Name&gt; Hyper-V VM to continue configuration. Click Ok after logging on.</value>
+    <value>You have an action item to follow</value>
+    <comment>Text describing the purpose of the dialog asking to log in to Hyper-V VM.</comment>
+  </data>
+  <data name="WaitForLoginRequest.DismissText" xml:space="preserve">
+    <value>Dismiss</value>
+    <comment>Dismiss button text in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
+  </data>
+  <data name="WaitForLoginRequest.LoginRequiredDescriptionText" xml:space="preserve">
+    <value>Please log in to the Hyper-V to continue the set up, once you logged in please click ‘retry’</value>
+    <comment>Warning description text in the dialog asking to log in to Hyper-V VM.</comment>
+  </data>
+  <data name="WaitForLoginRequest.LoginRequiredDescriptionTextAfterLastAttempt" xml:space="preserve">
+    <value>Failed to find a logged in user on your Hyper-V</value>
+    <comment>Error description text shown in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
+  </data>
+  <data name="WaitForLoginRequest.LoginRequiredText" xml:space="preserve">
+    <value>Log in required</value>
+    <comment>Warning text in the dialog asking to log in to Hyper-V VM.</comment>
+  </data>
+  <data name="WaitForLoginRequest.LoginRequiredTextAfterLastAttempt" xml:space="preserve">
+    <value>Terminating setup</value>
+    <comment>Error text shown in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
+  </data>
+  <data name="WaitForLoginRequest.OkText" xml:space="preserve">
+    <value>Retry</value>
+    <comment>Ok button text in the dialog asking to log in to Hyper-V VM.</comment>
   </data>
   <data name="WaitForLoginRequest.Title" xml:space="preserve">
-    <value>Dev Home Hyper-V Extension login request.</value>
+    <value>Please log on to your Hyper-V</value>
+    <comment>Title text of the dialog asking to log in to Hyper-V VM.</comment>
   </data>
 </root>
