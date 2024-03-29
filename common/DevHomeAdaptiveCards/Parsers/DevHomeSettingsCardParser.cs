@@ -3,11 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
+using DevHome.Common.DevHomeAdaptiveCards.CardInterfaces;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
+using DevHome.Common.Environments.Helpers;
 using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.Parsers;
@@ -17,47 +16,53 @@ public class DevHomeSettingsCardParser : IAdaptiveElementParser
     public IAdaptiveCardElement FromJson(JsonObject inputJson, AdaptiveElementParserRegistration elementParsers, AdaptiveActionParserRegistration actionParsers, IList<AdaptiveWarning> warnings)
     {
         var adaptiveSettingsCard = new DevHomeSettingsCard();
+        bool isCorrectType;
 
-        if (inputJson.ContainsKey("id"))
+        if (inputJson.TryGetValue("id", out var id))
         {
-            adaptiveSettingsCard.Id = inputJson.GetNamedString("id");
+            isCorrectType = id.ValueType == JsonValueType.String;
+            adaptiveSettingsCard.Id = isCorrectType ? id.GetString() : string.Empty;
         }
 
-        if (inputJson.ContainsKey("DevHomeSettingsCardDescription"))
+        if (inputJson.TryGetValue("DevHomeSettingsCardDescription", out var devHomeSettingsCardDescription))
         {
-            adaptiveSettingsCard.Description = inputJson.GetNamedString("DevHomeSettingsCardDescription");
+            isCorrectType = devHomeSettingsCardDescription.ValueType == JsonValueType.String;
+            adaptiveSettingsCard.Description = isCorrectType ? devHomeSettingsCardDescription.GetString() : StringResourceHelper.GetResource("SettingsCardDescriptionError");
         }
 
-        if (inputJson.ContainsKey("DevHomeSettingsCardHeader"))
+        if (inputJson.TryGetValue("DevHomeSettingsCardHeader", out var devHomeSettingsCardHeader))
         {
-            adaptiveSettingsCard.Header = inputJson.GetNamedString("DevHomeSettingsCardHeader");
+            isCorrectType = devHomeSettingsCardHeader.ValueType == JsonValueType.String;
+            adaptiveSettingsCard.Header = isCorrectType ? devHomeSettingsCardHeader.GetString() : StringResourceHelper.GetResource("SettingsCardHeaderError");
         }
 
-        if (inputJson.ContainsKey("DevHomeSettingsCardHeaderIcon"))
+        if (inputJson.TryGetValue("DevHomeSettingsCardHeaderIcon", out var devHomeSettingsCardHeaderIcon))
         {
-            adaptiveSettingsCard.HeaderIcon = inputJson.GetNamedString("DevHomeSettingsCardHeaderIcon");
+            isCorrectType = devHomeSettingsCardHeaderIcon.ValueType == JsonValueType.String;
+            adaptiveSettingsCard.HeaderIcon = isCorrectType ? devHomeSettingsCardHeaderIcon.GetString() : string.Empty;
         }
 
-        if (inputJson.ContainsKey("DevHomeSettingsCardActionElement"))
+        if (inputJson.TryGetValue("DevHomeSettingsCardActionElement", out var devHomeSettingsCardActionElement))
         {
-            var actionElementJson = inputJson.GetNamedObject("DevHomeSettingsCardActionElement");
-            var actionElementType = actionElementJson.GetNamedString("type");
+            isCorrectType = devHomeSettingsCardActionElement.ValueType == JsonValueType.Object;
+            var elementJson = isCorrectType ? devHomeSettingsCardActionElement.GetObject() : new JsonObject();
+            var elementType = elementJson.GetNamedString("type", string.Empty);
 
             // More action types can be added in the future by adding more cases here. Note this parser
             // will only parse elements that don't submit the adaptive card. If we need to support elements
             // that submit the adaptive card, we'll need to add a new parser action parser  and add the IAdaptiveActionElement
             // to the DevHomeSettingsCard's ActionElement property.
-            if (string.Equals(actionElementType, DevHomeLaunchContentDialogButton.AdaptiveElementType, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(elementType, DevHomeLaunchContentDialogButton.AdaptiveElementType, StringComparison.OrdinalIgnoreCase))
             {
-                adaptiveSettingsCard.NonActionElement = CreateLaunchContentDialogButton(actionElementJson, elementParsers, actionParsers, warnings);
+                adaptiveSettingsCard.NonSubmitActionElement = CreateLaunchContentDialogButton(elementJson, elementParsers, actionParsers, warnings);
             }
             else
             {
                 // If the action isn't one of our custom actions, we'll check if there is a built-in action parser that can parse it.
-                var elementParser = elementParsers.Get(actionElementType);
+                var elementParser = elementParsers.Get(elementType);
                 if (elementParser != null)
                 {
-                    adaptiveSettingsCard.NonActionElement = elementParser.FromJson(actionElementJson, elementParsers, actionParsers, warnings);
+                    adaptiveSettingsCard.NonSubmitActionElement = elementParser.FromJson(elementJson, elementParsers, actionParsers, warnings) as IDevHomeSettingsCardNonSubmitAction;
                 }
             }
         }
@@ -68,6 +73,6 @@ public class DevHomeSettingsCardParser : IAdaptiveElementParser
     private DevHomeLaunchContentDialogButton? CreateLaunchContentDialogButton(JsonObject inputJson, AdaptiveElementParserRegistration elementParsers, AdaptiveActionParserRegistration actionParsers, IList<AdaptiveWarning> warnings)
     {
         var parser = elementParsers.Get(DevHomeLaunchContentDialogButton.AdaptiveElementType);
-        return parser.FromJson(inputJson, elementParsers, actionParsers, warnings) as DevHomeLaunchContentDialogButton;
+        return parser?.FromJson(inputJson, elementParsers, actionParsers, warnings) as DevHomeLaunchContentDialogButton;
     }
 }

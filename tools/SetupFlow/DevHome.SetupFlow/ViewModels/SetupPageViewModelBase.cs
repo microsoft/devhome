@@ -3,7 +3,10 @@
 
 using System.Linq;
 using System.Threading.Tasks;
+using AdaptiveCards.ObjectModel.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.DevHomeAdaptiveCards.CardModels;
+using DevHome.Common.DevHomeAdaptiveCards.Parsers;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
@@ -91,6 +94,10 @@ public partial class SetupPageViewModelBase : ObservableObject
         get;
     }
 
+    public AdaptiveElementParserRegistration ElementRegistration { get; private set; } = new();
+
+    public AdaptiveActionParserRegistration ActionRegistration { get; private set; } = new();
+
     public bool IsLastStepPage => IsStepPage && Orchestrator.SetupStepPages.LastOrDefault() == this;
 
     public bool IsPastPage => Orchestrator.IsPastPage(this);
@@ -104,6 +111,12 @@ public partial class SetupPageViewModelBase : ObservableObject
         StringResource = stringResource;
         Orchestrator = orchestrator;
         _nextPageButtonText = StringResource.GetLocalized(StringResourceKey.Next);
+
+        // register the supported element and action parsers
+        ElementRegistration.Set(DevHomeSettingsCard.AdaptiveElementType, new DevHomeSettingsCardParser());
+        ElementRegistration.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new DevHomeSettingsCardChoiceSetParser());
+        ElementRegistration.Set(DevHomeLaunchContentDialogButton.AdaptiveElementType, new DevHomeLaunchContentDialogButtonParser());
+        ElementRegistration.Set(DevHomeContentDialogContent.AdaptiveElementType, new DevHomeContentDialogContentParser());
     }
 
     /// <summary>

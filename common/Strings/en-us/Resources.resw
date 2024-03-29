@@ -221,6 +221,34 @@
     <value>We couldn't start the operation to create your environment. Please check the extensions logs for more information</value>
     <comment>Error text to be displayed when we're unable to start the operation to create a new environment. An environment can be a cloud or virtual machine.</comment>
   </data>
+  <data name="DevHomeActionDefaultText" xml:space="preserve">
+    <value>Open</value>
+    <comment>Default text for a button that launches a content dialog in the UI</comment>
+  </data>
+  <data name="DevHomeContentDialogDefaultPrimaryButtonText" xml:space="preserve">
+    <value>Ok</value>
+    <comment>Default text for a content dialogs primary action button</comment>
+  </data>
+  <data name="DevHomeContentDialogDefaultSecondaryButtonText" xml:space="preserve">
+    <value>Close</value>
+    <comment>Default text for a content dialogs secondary action button</comment>
+  </data>
+  <data name="DevHomeContentDialogDefaultTitle" xml:space="preserve">
+    <value>No title was provide by the provider</value>
+    <comment>Default text when a provider does not provide Dev Home with a title for the dialog</comment>
+  </data>
+  <data name="SettingsCardChoiceSetDefaultLabel" xml:space="preserve">
+    <value>Settings card items</value>
+    <comment>Default text that will be displayed and read out to the reader if an extension does not provide us with label text for their list of values</comment>
+  </data>
+  <data name="SettingsCardDescriptionError" xml:space="preserve">
+    <value>Provider failed to provide a description for this item</value>
+    <comment>Error text to be displayed when a provider does not provide a description for an item in a list of UI cards</comment>
+  </data>
+  <data name="SettingsCardHeaderError" xml:space="preserve">
+    <value>Provider failed to provide a Header title for this item</value>
+    <comment>Error text to be displayed when an provider does not provide header text for an item in a list of UI cards</comment>
+  </data>
   <data name="UserNotInHyperAdminGroupButton" xml:space="preserve">
     <value>Launch computer management</value>
     <comment>Button text for the user to click, in order for us to add them to the Hyper-V admin group</comment>

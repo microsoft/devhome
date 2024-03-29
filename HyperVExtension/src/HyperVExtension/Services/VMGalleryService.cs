@@ -81,7 +81,7 @@ public sealed class VMGalleryService : IVMGalleryService
                         // value in the VM gallery Json to determin the size of the download. We'll use the same logic here to determine the smallest size.
                         // I'm not sure why this is done in this way, but we'll do the same here. In the Quick Create window the 'Download' text shows the size of both
                         // the archive file to be downloaded and the required disk space value added together.
-                        image.Disk.SizeInBytes = requiredDiskSpace + (ulong)totalSizeOfDisk;
+                        image.Disk.SizeInBytes = (ulong)totalSizeOfDisk;
                     }
                 }
             }

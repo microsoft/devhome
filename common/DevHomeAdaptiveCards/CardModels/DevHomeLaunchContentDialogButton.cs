@@ -3,16 +3,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
-using Microsoft.UI.Xaml;
+using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.DevHomeAdaptiveCards.CardInterfaces;
+using DevHome.Common.Views.AdaptiveCardViews;
+using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
-public class DevHomeLaunchContentDialogButton : IAdaptiveCardElement
+public partial class DevHomeLaunchContentDialogButton : IDevHomeSettingsCardNonSubmitAction
 {
     public string ActionText { get; set; } = string.Empty;
 
@@ -44,4 +45,20 @@ public class DevHomeLaunchContentDialogButton : IAdaptiveCardElement
     public Spacing Spacing { get; set; } = Spacing.Default;
 
     public JsonObject ToJson() => [];
+
+    [RelayCommand]
+    public async Task InvokeActionAsync(object sender)
+    {
+        var senderObj = sender as Button;
+        if (DialogContent is not DevHomeContentDialogContent dialogContent || senderObj == null)
+        {
+            return;
+        }
+
+        var dialog = new ContentDialogWithNonInteractiveContent(dialogContent);
+
+        dialog.XamlRoot = senderObj.XamlRoot;
+
+        await dialog.ShowAsync();
+    }
 }

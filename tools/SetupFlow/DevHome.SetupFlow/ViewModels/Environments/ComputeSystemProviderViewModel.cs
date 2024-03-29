@@ -25,6 +25,9 @@ public partial class ComputeSystemProviderViewModel : ObservableObject
     [ObservableProperty]
     private ImageIcon _icon;
 
+    [ObservableProperty]
+    private bool _isSelected;
+
     public ComputeSystemProviderViewModel(ComputeSystemProviderDetails providerDetails)
     {
         ProviderDetails = providerDetails;

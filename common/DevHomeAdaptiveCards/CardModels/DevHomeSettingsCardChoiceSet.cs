@@ -1,14 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
-using AdaptiveCards.Rendering.WinUI3;
-using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;

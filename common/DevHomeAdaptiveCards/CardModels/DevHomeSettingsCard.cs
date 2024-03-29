@@ -1,13 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
-using AdaptiveCards.Rendering.WinUI3;
+using DevHome.Common.DevHomeAdaptiveCards.CardInterfaces;
+using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
@@ -23,9 +20,11 @@ public class DevHomeSettingsCard : IDevHomeSettingsCard
 
     public string HeaderIcon { get; set; } = string.Empty;
 
-    public IAdaptiveCardElement? NonActionElement { get; set; }
+    public ImageIcon? HeaderIconImage { get; set; }
 
-    public IAdaptiveActionElement? ActionElement { get; set; }
+    public IDevHomeSettingsCardNonSubmitAction? NonSubmitActionElement { get; set; }
+
+    public IAdaptiveActionElement? SubmitActionElement { get; set; }
 
     // Properties for IAdaptiveCardElement
     public string ElementTypeString { get; set; } = AdaptiveElementType;

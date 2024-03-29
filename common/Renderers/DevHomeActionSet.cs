@@ -94,7 +94,7 @@ public class DevHomeActionSet : IDevHomeActionRender
     }
 
     /// <summary>
-    /// Invokes an adaptive card action from another control like a button in Dev Home.
+    /// Invokes an adaptive card action from anywhere in Dev Home like a method in a View Model for example.
     /// </summary>
     public void InitiateAction(ActionMode actionMode)
     {
@@ -114,7 +114,8 @@ public class DevHomeActionSet : IDevHomeActionRender
     }
 
     /// <summary>
-    /// Links the submit/execute actiono to the adaptive card itself.
+    /// Links the submit/execute action to the adaptive card itself. This allows Dev Home to initiate the action in the adaptive card
+    /// UI from Dev Homes own UI.
     /// </summary>
     private void LinkSubmitActionToCard(IAdaptiveActionElement action, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
@@ -122,11 +123,13 @@ public class DevHomeActionSet : IDevHomeActionRender
         {
             context.LinkSubmitActionToCard(action, renderArgs);
             _primaryButtonAdaptiveActionElement = action;
+            ActionButtonInvoker = context.ActionInvoker;
         }
         else
         {
             context.LinkSubmitActionToCard(action, renderArgs);
             _secondaryButtonAdaptiveActionElement = action;
+            ActionButtonInvoker = context.ActionInvoker;
         }
     }
 

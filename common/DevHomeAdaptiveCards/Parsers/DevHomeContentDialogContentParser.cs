@@ -3,11 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
+using DevHome.Common.Environments.Helpers;
 using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.Parsers;
@@ -17,27 +15,30 @@ public class DevHomeContentDialogContentParser : IAdaptiveElementParser
     public IAdaptiveCardElement FromJson(JsonObject inputJson, AdaptiveElementParserRegistration elementParsers, AdaptiveActionParserRegistration actionParsers, IList<AdaptiveWarning> warnings)
     {
         var dialog = new DevHomeContentDialogContent();
+        bool isCorrectType;
 
-        if (inputJson.TryGetValue("DevHomeContentDialogTitle", out var titleJsonValue))
+        if (inputJson.TryGetValue("DevHomeContentDialogTitle", out var devHomeContentDialogTitle))
         {
-            dialog.Title = titleJsonValue.GetString();
+            isCorrectType = devHomeContentDialogTitle.ValueType == JsonValueType.String;
+            dialog.Title = isCorrectType ? devHomeContentDialogTitle.GetString() : StringResourceHelper.GetResource("DevHomeContentDialogDefaultTitle");
         }
 
-        if (inputJson.TryGetValue("DevHomeContentDialogContainerElement", out var adaptiveCardContainerElement))
+        if (inputJson.TryGetValue("DevHomeContentDialogBodyAdaptiveCard", out var contentDialogInternalAdaptiveCardJson))
         {
-            // Parse the container element and pass it to the dialog. This will be the content of the dialog.
-            var containerElementParser = elementParsers.Get("Container");
-            dialog.ContainerElement = containerElementParser.FromJson(adaptiveCardContainerElement.GetObject(), elementParsers, actionParsers, warnings);
+            isCorrectType = contentDialogInternalAdaptiveCardJson.ValueType == JsonValueType.Object;
+            dialog.ContentDialogInternalAdaptiveCardJson = isCorrectType ? contentDialogInternalAdaptiveCardJson.GetObject() : new JsonObject();
         }
 
-        if (inputJson.TryGetValue("DevHomeContentDialogPrimaryButtonText", out var primaryButtonTextJsonValue))
+        if (inputJson.TryGetValue("DevHomeContentDialogPrimaryButtonText", out var devHomeContentDialogPrimaryButtonText))
         {
-            dialog.PrimaryButtonText = primaryButtonTextJsonValue.GetString();
+            isCorrectType = devHomeContentDialogPrimaryButtonText.ValueType == JsonValueType.String;
+            dialog.PrimaryButtonText = isCorrectType ? devHomeContentDialogPrimaryButtonText.GetString() : StringResourceHelper.GetResource("DevHomeContentDialogDefaultPrimaryButtonText");
         }
 
-        if (inputJson.TryGetValue("DevHomeContentDialogSecondaryButtonText", out var secondaryButtonTextJsonValue))
+        if (inputJson.TryGetValue("DevHomeContentDialogSecondaryButtonText", out var devHomeContentDialogSecondaryButtonText))
         {
-            dialog.SecondaryButtonText = secondaryButtonTextJsonValue.GetString();
+            isCorrectType = devHomeContentDialogSecondaryButtonText.ValueType == JsonValueType.String;
+            dialog.SecondaryButtonText = isCorrectType ? devHomeContentDialogSecondaryButtonText.GetString() : StringResourceHelper.GetResource("DevHomeContentDialogDefaultSecondaryButtonText");
         }
 
         return dialog;

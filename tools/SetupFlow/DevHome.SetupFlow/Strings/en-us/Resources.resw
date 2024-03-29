@@ -1484,7 +1484,7 @@
     <value>The entire configuration is still pending</value>
     <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
   </data>
-    <data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
+  <data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
     <value>This part of the configuration is still pending</value>
     <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
@@ -1624,7 +1624,7 @@
     <value>Create virtual environment</value>
     <comment>Header for a card that when clicked takes the user to a multi-step flow for creating an environment</comment>
   </data>
-	<data name="MainPageCreateEnvironment.Description" xml:space="preserve">
+  <data name="MainPageCreateEnvironment.Description" xml:space="preserve">
     <value>Create a local or cloud environment</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for creating an environment</comment>
   </data>
@@ -1636,4 +1636,13 @@
     <value>Add options to create your environment</value>
     <comment>Description for the setup target page</comment>
   </data>
+  <data name="ErrorRetrievingAdaptiveCardSession.Title" xml:space="preserve">
+    <value>There was an error retreiving the adaptive card session from the extension</value>
+    <comment>Error text display when we are unable to retrieve the adaptive card information from an extension</comment>
+  </data>
+  <data name="EnvironmentCreationReviewPageTitle" xml:space="preserve">
+    <value>Create Environment</value>
+    <comment>Title for create environment review page</comment>
+  </data>
+
 </root>

@@ -1,21 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
+using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
-public class DevHomeContentDialogContent : IDevHomeContentDialog
+public class DevHomeContentDialogContent : IAdaptiveCardElement
 {
     public string Title { get; set; } = string.Empty;
 
-    public IAdaptiveCardElement? ContainerElement { get; set; }
+    // This is the adaptive card that will be shown within
+    // a content dialogs body.
+    public JsonObject? ContentDialogInternalAdaptiveCardJson { get; set; }
 
     public string PrimaryButtonText { get; set; } = string.Empty;
 

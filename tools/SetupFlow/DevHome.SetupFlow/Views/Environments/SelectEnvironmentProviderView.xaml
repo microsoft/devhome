@@ -19,7 +19,8 @@
             <!-- Template for the compute system providers that we were able to retrieve from all the extensions -->
             <DataTemplate x:Key="ProviderItemTemplate" x:DataType="EnvironmentViewModels:ComputeSystemProviderViewModel">
                 <ItemContainer
-                    AutomationProperties.Name="{x:Bind DisplayName, Mode=OneWay}">
+                    AutomationProperties.Name="{x:Bind DisplayName, Mode=OneWay}"
+                    IsSelected="{x:Bind IsSelected}">
                     <toolKit:SettingsCard
                         HorizontalAlignment="Stretch"
                         HeaderIcon="{x:Bind Icon}"

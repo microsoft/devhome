@@ -37,10 +37,13 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
 
     public List<ItemContainer> ItemsContainerList { get; private set; } = new();
 
-    public ItemsViewChoiceSet(DataTemplate itemsTemplate)
+    public ItemsViewChoiceSet(string itemsTemplateResourceName)
     {
         // set the template for the items view.
+        var itemsTemplate = Application.Current.Resources[itemsTemplateResourceName] as DataTemplate;
         ChoiceSetItemsView.ItemTemplate = itemsTemplate;
+        _defaultLayout.Spacing = _defaultSpacing;
+        ChoiceSetItemsView.Layout = _defaultLayout;
     }
 
     // Default template for the ItemsView will be used
@@ -80,23 +83,14 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
         // Go through all the items in the choice set and make an item for each one.
         for (var i = 0; i < settingsCardChoiceSet.SettingsCards.Count; i++)
         {
-            var communityToolKitCard = new SettingsCard();
-            var devHomeSettingsCard = settingsCardChoiceSet.SettingsCards[i];
-            communityToolKitCard.Description = devHomeSettingsCard.Description;
-            communityToolKitCard.Header = devHomeSettingsCard.Header;
-            communityToolKitCard.HeaderIcon = AdaptiveCardHelpers.ConvertBase64StringToImageSource(devHomeSettingsCard.HeaderIcon);
-            var itemContainer = new ItemContainer();
-            itemContainer.Child = communityToolKitCard;
-
-            // Set the automation name of the card to be the header of the card.
-            AutomationProperties.SetName(itemContainer, devHomeSettingsCard.Header);
-            ItemsContainerList.Add(itemContainer);
+            var curCard = settingsCardChoiceSet.SettingsCards[i];
+            curCard.HeaderIconImage = AdaptiveCardHelpers.ConvertBase64StringToImageSource(curCard.HeaderIcon);
         }
 
         // Set up the ItemsSource for the ItemsView and add the input value to the context.
         // the input value is used to get the current index of the items view in relation
         // to the item in the choice set.
-        ChoiceSetItemsView.ItemsSource = ItemsContainerList;
+        ChoiceSetItemsView.ItemsSource = settingsCardChoiceSet.SettingsCards;
 
         // Set the automation name of the list to be the label of the choice set.
         context.AddInputValue(new ItemsViewInputValue(settingsCardChoiceSet, ChoiceSetItemsView), renderArgs);

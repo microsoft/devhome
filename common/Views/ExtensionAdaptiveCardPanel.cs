@@ -21,6 +21,8 @@ public class ExtensionAdaptiveCardPanel : StackPanel
 
     private RenderedAdaptiveCard? _renderedAdaptiveCard;
 
+    public AdaptiveCard? CurrentAdaptiveCard { get; private set; }
+
     public void Bind(
         IExtensionAdaptiveCardSession extensionAdaptiveCardSession,
         AdaptiveCardRenderer? customRenderer = null,
@@ -53,6 +55,7 @@ public class ExtensionAdaptiveCardPanel : StackPanel
             uiDispatcher.TryEnqueue(() =>
             {
                 _renderedAdaptiveCard = adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
+                CurrentAdaptiveCard = adaptiveCard;
                 _renderedAdaptiveCard.Action += async (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
                 {
                     GlobalLog.Logger?.ReportInfo($"RenderedAdaptiveCard.Action(): Called for {args.Action.Id}");

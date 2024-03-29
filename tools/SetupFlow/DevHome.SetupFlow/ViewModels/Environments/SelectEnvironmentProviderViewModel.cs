@@ -31,6 +31,9 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     private bool _areProvidersLoaded;
 
     [ObservableProperty]
+    private int _selectedProviderIndex;
+
+    [ObservableProperty]
     private ObservableCollection<ComputeSystemProviderViewModel> _providersViewModels;
 
     public SelectEnvironmentProviderViewModel(
@@ -46,12 +49,15 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
 
     public void LoadProviders()
     {
-        Task.Run(() =>
+        AreProvidersLoaded = false;
+        Orchestrator.NotifyNavigationCanExecuteChanged();
+
+        Task.Run(async () =>
         {
-            _dispatcher.TryEnqueue(async () =>
+            var providerDetails = await _computeSystemService.GetComputeSystemProvidersAsync();
+
+            _dispatcher.TryEnqueue(() =>
             {
-                AreProvidersLoaded = false;
-                var providerDetails = await _computeSystemService.GetComputeSystemProvidersAsync();
                 ProvidersViewModels = new();
 
                 foreach (var providerDetail in providerDetails)
@@ -78,6 +84,15 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     {
         if (sender != null)
         {
+            // When navigating between the select providers page and the configure creation options page
+            // visual selection is lost, so we need deselect the providers first. Then select correct one.
+            // this will ensure that the correct provider is visually selected when navigating back to the select providers page.
+            foreach (var provider in ProvidersViewModels)
+            {
+                provider.IsSelected = false;
+            }
+
+            sender.IsSelected = true;
             SelectedProvider = sender.ProviderDetails;
 
             // Using the default channel to send the message to the recipient. In this case, the EnvironmentCreationOptionsViewModel.
@@ -85,6 +100,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
             // For now, we are using the default channel.
             WeakReferenceMessenger.Default.Send(new CreationProviderChangedMessage(new CreationProviderChangedData(SelectedProvider)));
             CanGoToNextPage = true;
+            Orchestrator.NotifyNavigationCanExecuteChanged();
         }
     }
 }

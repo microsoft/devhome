@@ -4,6 +4,15 @@
   "version": "1.5",
   "body": [
     {
+      "type": "Input.Text",
+      "id": "NewVMNameTextBox",
+      "label": "${EnterNewVMNameLabel}",
+      "placeholder": "${EnterNewVMNamePlaceHolder}",
+      "maxLength": 100,
+      "isRequired": true,
+      "Spacing": "Large"
+    },
+    {
       "type": "DevHome.SettingsCardChoiceSet",
       "id": "HyperVVmGalleryImageList",
       "label": "${SettingsCardLabel}",
@@ -16,30 +25,41 @@
           "DevHomeSettingsCardHeaderIcon": "${HeaderIcon}",
           "DevHomeSettingsCardActionElement": {
             "type": "DevHome.LaunchContentDialogButton",
-            "ActionText": "${ActionButtonText}",
+            "DevHomeActionText": "${ButtonToLaunchContentDialogLabel}",
             "DevHomeContentDialogContent": {
-              "DevHomeContentDialogContainerElement": {
-                "type": "Container",
-                "$data": "${ContentDialogInfo}",
-                "items": [
+              "DevHomeContentDialogTitle": "${Header}",
+              "DevHomeContentDialogBodyAdaptiveCard": {
+                "type": "AdaptiveCard",
+                "version": "1.5",
+                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                "body": [
                   {
-                    "type": "TextBlock",
-                    "text": "${ImageDescription}"
-                  },
-                  {
-                    "$data": "${GalleryImageFacts}",
-                    "type": "FactSet",
-                    "facts": [
+                    "type": "Container",
+                    "$data": "${ContentDialogInfo}",
+                    "items": [
                       {
-                        "title": "${title}",
-                        "value": "${value}"
+                        "type": "TextBlock",
+                        "text": "${ImageDescription}",
+                        "isMultiline": true,
+                        "Spacing": "Medium",
+                        "size": "Medium",
+                        "wrap": true
+                      },
+                      {
+                        "$data": "${GalleryImageFacts}",
+                        "type": "FactSet",
+                        "facts": [
+                          {
+                            "title": "${title}",
+                            "value": "${value}"
+                          }
+                        ]
                       }
                     ]
                   }
                 ]
               },
-              "DevHomeContentDialogPrimaryButtonText": "${ContentDialogPrimaryButtonText}",
-              "DevHomeContentDialogSecondaryButtonText": "${ContentDialogSecondaryButtonText}"
+              "DevHomeContentDialogSecondaryButtonText": "${SecondaryButtonForContentDialogText}"
             }
           }
         }
@@ -51,13 +71,14 @@
         {
           "id": "VmGalleryPrimaryButtonId",
           "type": "Action.Submit",
-          "title": "${SecondaryButtonLabel}",
-          "ActionMode": "Primary"
+          "title": "${PrimaryButtonLabelForCreationFlow}",
+          "ActionMode": "Primary",
+          "style": "positive"
         },
         {
           "id": "VmGallerySecondaryButtonId",
           "type": "Action.Submit",
-          "title": "${PrimaryButtonLabel}",
+          "title": "${SecondaryButtonLabelForCreationFlow}",
           "ActionMode": "Secondary"
         }
       ]

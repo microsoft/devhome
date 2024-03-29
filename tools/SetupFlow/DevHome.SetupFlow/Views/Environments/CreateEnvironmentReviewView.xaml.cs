@@ -1,21 +1,18 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using AdaptiveCards.ObjectModel.WinUI3;
+using AdaptiveCards.Rendering.WinUI3;
+using AdaptiveCards.Templating;
+using CommunityToolkit.Mvvm.Messaging;
+using DevHome.Common.DevHomeAdaptiveCards.CardModels;
+using DevHome.Common.Renderers;
+using DevHome.Common.Views;
+using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using WinUIEx.Messaging;
 
 namespace DevHome.SetupFlow.Views.Environments;
 
@@ -32,7 +29,15 @@ public sealed partial class CreateEnvironmentReviewView : UserControl
     {
         if (ViewModel != null && ReviewTabAdaptiveCardUI.Content == null)
         {
-            ReviewTabAdaptiveCardUI.Content = ViewModel.LoadAdaptiveCardPanel();
+            ViewModel.LoadAdaptiveCardPanel();
+            var curCard = ViewModel.ExtensionAdaptiveCardPanel?.CurrentAdaptiveCard;
+            if (curCard != null)
+            {
+                var renderer = new AdaptiveCardRenderer();
+                renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+                var card = renderer.RenderAdaptiveCardFromJson(curCard.ToJson());
+                ReviewTabAdaptiveCardUI.Content = card.FrameworkElement;
+            }
         }
     }
 

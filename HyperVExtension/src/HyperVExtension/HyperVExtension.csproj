@@ -43,6 +43,9 @@
 	  <Content Include="Templates\InitialVMGalleryCreationForm.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	  <Content Include="Templates\ReviewFormForVMGallery.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
   </ItemGroup>
 
   <!--

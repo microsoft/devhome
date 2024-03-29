@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 
-namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
+namespace DevHome.Common.DevHomeAdaptiveCards.CardInterfaces;
 
 public interface IDevHomeSettingsCard : IAdaptiveCardElement
 {
@@ -19,8 +19,8 @@ public interface IDevHomeSettingsCard : IAdaptiveCardElement
     public string HeaderIcon { get; set; }
 
     // An element that is not expected to submit the adaptive card
-    public IAdaptiveCardElement? NonActionElement { get; set; }
+    public IDevHomeSettingsCardNonSubmitAction? NonSubmitActionElement { get; set; }
 
     // An element that is expected to submit the adaptive card
-    public IAdaptiveActionElement? ActionElement { get; set; }
+    public IAdaptiveActionElement? SubmitActionElement { get; set; }
 }

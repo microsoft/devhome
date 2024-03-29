@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection.Emit;
 using AdaptiveCards.ObjectModel.WinUI3;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
+using DevHome.Common.Environments.Helpers;
 using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.Parsers;
@@ -17,31 +15,37 @@ public class DevHomeSettingsCardChoiceSetParser : IAdaptiveElementParser
     public IAdaptiveCardElement FromJson(JsonObject inputJson, AdaptiveElementParserRegistration elementParsers, AdaptiveActionParserRegistration actionParsers, IList<AdaptiveWarning> warnings)
     {
         var adaptiveSettingsCardChoiceSet = new DevHomeSettingsCardChoiceSet();
+        bool isCorrectType;
 
-        if (inputJson.ContainsKey("id"))
+        if (inputJson.TryGetValue("id", out var id))
         {
-            adaptiveSettingsCardChoiceSet.Id = inputJson.GetNamedString("id");
+            isCorrectType = id.ValueType == JsonValueType.String;
+            adaptiveSettingsCardChoiceSet.Id = isCorrectType ? id.GetString() : string.Empty;
         }
 
-        if (inputJson.ContainsKey("label"))
+        if (inputJson.TryGetValue("label", out var label))
         {
-            adaptiveSettingsCardChoiceSet.Label = inputJson.GetNamedString("label");
+            isCorrectType = label.ValueType == JsonValueType.String;
+            adaptiveSettingsCardChoiceSet.Label = isCorrectType ? label.GetString() : StringResourceHelper.GetResource("SettingsCardChoiceSetDefaultLabel");
         }
 
-        if (inputJson.ContainsKey("SelectedValue"))
+        if (inputJson.TryGetValue("SelectedValue", out var selectedValue))
         {
-            adaptiveSettingsCardChoiceSet.SelectedValue = (int)inputJson.GetNamedNumber("SelectedValue");
+            isCorrectType = selectedValue.ValueType == JsonValueType.Number;
+            adaptiveSettingsCardChoiceSet.SelectedValue = isCorrectType ? (int)selectedValue.GetNumber() : DevHomeSettingsCardChoiceSet.UnselectedIndex;
         }
 
-        if (inputJson.ContainsKey("IsMultiSelect"))
+        if (inputJson.TryGetValue("IsMultiSelect", out var isMultiSelect))
         {
-            adaptiveSettingsCardChoiceSet.IsMultiSelect = inputJson.GetNamedBoolean("IsMultiSelect");
+            isCorrectType = isMultiSelect.ValueType == JsonValueType.Boolean;
+            adaptiveSettingsCardChoiceSet.IsMultiSelect = isCorrectType ? isMultiSelect.GetBoolean() : false;
         }
 
         // If IsSelectionDisabled is true, then IsMultiSelect should be false and no item should be selected.
-        if (inputJson.ContainsKey("DevHomeSettingsCardIsSelectionDisabled"))
+        if (inputJson.TryGetValue("DevHomeSettingsCardIsSelectionDisabled", out var devHomeSettingsCardIsSelectionDisabled))
         {
-            adaptiveSettingsCardChoiceSet.IsSelectionDisabled = inputJson.GetNamedBoolean("IsMultiSelect");
+            isCorrectType = devHomeSettingsCardIsSelectionDisabled.ValueType == JsonValueType.Boolean;
+            adaptiveSettingsCardChoiceSet.IsSelectionDisabled = isCorrectType ? devHomeSettingsCardIsSelectionDisabled.GetBoolean() : false;
 
             if (adaptiveSettingsCardChoiceSet.IsSelectionDisabled)
             {
@@ -51,9 +55,10 @@ public class DevHomeSettingsCardChoiceSetParser : IAdaptiveElementParser
         }
 
         // Parse the settings cards
-        if (inputJson.ContainsKey("DevHomeSettingsCards"))
+        if (inputJson.TryGetValue("DevHomeSettingsCards", out var devHomeSettingsCards))
         {
-            var elementJson = inputJson.GetNamedArray("DevHomeSettingsCards");
+            isCorrectType = devHomeSettingsCards.ValueType == JsonValueType.Array;
+            var elementJson = isCorrectType ? devHomeSettingsCards.GetArray() : [];
             adaptiveSettingsCardChoiceSet.SettingsCards = GetSettingsCards(elementJson, elementParsers, actionParsers, warnings);
         }
 
@@ -66,6 +71,11 @@ public class DevHomeSettingsCardChoiceSetParser : IAdaptiveElementParser
         var parser = elementParsers.Get(DevHomeSettingsCard.AdaptiveElementType);
         foreach (var element in elementJson)
         {
+            if (element.ValueType != JsonValueType.Object)
+            {
+                continue;
+            }
+
             if (parser.FromJson(element.GetObject(), elementParsers, actionParsers, warnings) is DevHomeSettingsCard card)
             {
                 settingsCards.Add(card);
