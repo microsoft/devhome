@@ -1613,7 +1613,7 @@
     <comment>Locked={"{0}", "{1}"} Description letting users know what configuration was found and in what repo the file was found in. {0} is the file name with extension. {1} is the repo name including the owner.</comment>
   </data>
   <data name="CloneRepoNextStepsFileFound" xml:space="preserve">
-    <value>Configuration File detected</value>
+    <value>Configuration file detected</value>
     <comment>Text to notify the user a configuration file was found in a repo.</comment>
   </data>
   <data name="CloneRepoNextStepsRun" xml:space="preserve">

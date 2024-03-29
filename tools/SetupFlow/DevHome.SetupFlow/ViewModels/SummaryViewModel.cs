@@ -240,7 +240,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         }
 
         // Send telemetry about the number of next steps tasks found broken down by their type.
-        ReportSummaryTaskCounts();
+        ReportSummaryTaskCounts(_cloneRepoNextSteps.Count);
 
         BitmapImage statusSymbol;
         if (_host.GetService<IThemeSelectorService>().Theme == ElementTheme.Dark)
@@ -273,9 +273,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     /// <summary>
     /// Send telemetry about all next steps.
     /// </summary>
-    private void ReportSummaryTaskCounts()
+    private void ReportSummaryTaskCounts(int cloneRepoNextStepsCount)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NextSteps_Event", LogLevel.Critical, new CloneRepoNextStepsEvent(_cloneRepoNextSteps.Count), Orchestrator.ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NextSteps_Event", LogLevel.Critical, new CloneRepoNextStepsEvent(cloneRepoNextStepsCount), Orchestrator.ActivityId);
     }
 
     private async Task ReloadCatalogsAsync()
