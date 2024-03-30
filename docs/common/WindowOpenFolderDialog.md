@@ -1,4 +1,4 @@
-# Window open file dialog
+# Window open folder dialog
 Create a folder dialog to select a folder
 
 ## Methods

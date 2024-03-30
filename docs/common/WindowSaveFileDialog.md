@@ -1,4 +1,4 @@
-# Window open file dialog
+# Window save file dialog
 Create a file dialog to save a file
 
 ## Methods
