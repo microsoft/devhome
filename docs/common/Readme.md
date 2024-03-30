@@ -7,3 +7,8 @@ List of common controls that are generic, customizable and reusable from all pag
 
 ## Controls
 - [CloseButton](./CloseButton.md)
+
+## File dialog
+- [WindowOpenFileDialog](./WindowOpenFileDialog.md)
+- [WindowOpenFolderDialog](./WindowOpenFolderDialog.md)
+- [WindowSaveFileDialog](./WindowSaveFileDialog.md)
