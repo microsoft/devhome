@@ -21,6 +21,7 @@ public enum ConfigurationFileKind
 
 public class ConfigurationFileBuilder
 {
+    public const string PackageNameSeparator = " | ";
     private readonly SetupFlowOrchestrator _orchestrator;
 
     public ConfigurationFileBuilder(SetupFlowOrchestrator orchestrator)
@@ -170,7 +171,7 @@ public class ConfigurationFileBuilder
         {
             // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
             // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
-            id = $"{arguments.PackageId} | Install: " + task.PackageName;
+            id = $"{arguments.PackageId}{PackageNameSeparator}Install: " + task.PackageName;
         }
 
         return new WinGetConfigResource()
@@ -200,7 +201,7 @@ public class ConfigurationFileBuilder
             // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
             // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
             id = $"Clone {task.RepositoryName}" + ": " + task.CloneLocation.FullName;
-            gitDependsOnId = $"{DscHelpers.GitWinGetPackageId} | Install: {DscHelpers.GitName}";
+            gitDependsOnId = $"{DscHelpers.GitWinGetPackageId}{PackageNameSeparator}Install: {DscHelpers.GitName}";
         }
 
         return new WinGetConfigResource()

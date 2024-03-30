@@ -52,6 +52,14 @@ public interface ISetupTask
     }
 
     /// <summary>
+    /// Gets target device name.
+    /// </summary>
+    public string TargetName
+    {
+        get;
+    }
+
+    /// <summary>
     /// Executes this setup task.
     /// </summary>
     /// <remarks>

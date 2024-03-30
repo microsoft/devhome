@@ -234,19 +234,19 @@
     <comment>Message displayed when applying a configuration unit succeeds.</comment>
   </data>
   <data name="ConfigurationUnitSummaryFull" xml:space="preserve">
-    <value>{0} : {3} [{1} {2}]</value>
+    <value>{0}: {3} [{1} {2}]</value>
     <comment>{Locked="{0}","{1}","{2}","{3}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit id. {3} is replaced by the configuration unit description. A string with all values replaced could look like "Apply : Install VS [WinGetPackage vspackage]"</comment>
   </data>
   <data name="ConfigurationUnitSummaryMinimal" xml:space="preserve">
-    <value>{0} : {1}</value>
+    <value>{0}: {1}</value>
     <comment>{Locked="{0}","{1}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. A string with all values replaced could look like "Apply : WinGetPackage"</comment>
   </data>
   <data name="ConfigurationUnitSummaryNoDescription" xml:space="preserve">
-    <value>{0} : {1} [{2}]</value>
+    <value>{0}: {1} [{2}]</value>
     <comment>{Locked="{0}","{1}","{2}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit id. A string with all values replaced could look like "Apply : WinGetPackage [vspackage]"</comment>
   </data>
   <data name="ConfigurationUnitSummaryNoId" xml:space="preserve">
-    <value>{0} : {2} [{1}]</value>
+    <value>{0}: {2} [{1}]</value>
     <comment>{Locked="{0}","{1}","{2}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit description. A string with all values replaced could look like "Apply : Install VS [WinGetPackage]"</comment>
   </data>
   <data name="ConfigurationUnitStats" xml:space="preserve">
@@ -825,9 +825,17 @@
     <value>Save</value>
     <comment>Content for the primary button in the edit clone path dialog.</comment>
   </data>
+  <data name="LoadingPageSetupTargetText" xml:space="preserve">
+    <value>Set up target: {0}</value>
+    <comment>Shows the name of target device (VM) that is being configured. {0} is the VM name.</comment>
+  </data>
   <data name="LoadingExecutingProgress" xml:space="preserve">
     <value>Executing step {0}/{1}</value>
-    <comment>Shows ot the user how many tasks have been completed</comment>
+    <comment>Shows to the user how many tasks have been completed</comment>
+  </data>
+  <data name="LoadingExecutingProgressForTarget" xml:space="preserve">
+    <value>Configuring the package...</value>
+    <comment>Text shown under progress bar while configuring a target device.</comment>
   </data>
   <data name="Loading_StopButton.Content" xml:space="preserve">
     <value>Stop</value>
@@ -841,13 +849,17 @@
     <value>Action center</value>
     <comment>Header for action center</comment>
   </data>
-  <data name="Loading_ExecutingTasks.Text" xml:space="preserve">
+  <data name="LoadingTasksTitleText" xml:space="preserve">
     <value>Tasks</value>
     <comment>Header for executing tasks</comment>
   </data>
+  <data name="LoadingLogsTitleText" xml:space="preserve">
+    <value>Logs</value>
+    <comment>Header for logs when executing tasks</comment>
+  </data>
   <data name="CloningRepositoryErrorText" xml:space="preserve">
     <value>Failed to clone repository {0}</value>
-    <comment>Main tex tto show in the loading screen that a repo failed to clone</comment>
+    <comment>Main text to show in the loading screen that a repo failed to clone</comment>
   </data>
   <data name="ActionCenterCloningRepositoryErrorTextSecondary" xml:space="preserve">
     <value>Error message: {0}</value>
@@ -1004,8 +1016,12 @@
     <value>Retry</value>
     <comment>Hyper link button content to allow users to retry all failed tasks</comment>
   </data>
-  <data name="LoadingPage_Header.Text" xml:space="preserve">
+  <data name="LoadingPageHeaderLocalText" xml:space="preserve">
     <value>Setup initiated, stay tuned for the magic...</value>
+    <comment>Header for the loading screen</comment>
+  </data>
+  <data name="LoadingPageHeaderTargetText" xml:space="preserve">
+    <value>Hold on while we set things up...</value>
     <comment>Header for the loading screen</comment>
   </data>
   <data name="LoadingPage_Tasks.Text" xml:space="preserve">
@@ -1469,7 +1485,7 @@
     <comment>Text for the completed status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationUnitCompleted" xml:space="preserve">
-    <value>This part of the configuration is now complete</value>
+    <value>Configuration applied</value>
     <comment>Text for the completed status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationInProgress" xml:space="preserve">
@@ -1477,7 +1493,7 @@
     <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationUnitInProgress" xml:space="preserve">
-    <value>This part of the configuration is in progress</value>
+    <value>Configuration in progress</value>
     <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationPending" xml:space="preserve">
@@ -1501,7 +1517,7 @@
     <comment>Text for the 'shut down' status of the configuration operation that happened on a remote machine</comment>
   </data>
   <data name="SetupTargetConfigurationUnitSkipped" xml:space="preserve">
-    <value>This part of the configuration has been skipped</value>
+    <value>Configuration skipped</value>
     <comment>Text for the 'shut down' status of the configuration operation that happened on a remote machine</comment>
   </data>
   <data name="SetupTargetConfigurationStartingDevice" xml:space="preserve">

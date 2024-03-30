@@ -51,6 +51,11 @@ public class ConfigureTargetTask : ISetupTask
     // Inherited via ISetupTask but unused
     public bool RequiresReboot => false;
 
+    // Inherited via ISetupTask
+    public string TargetName => string.IsNullOrEmpty(ComputeSystemName) ?
+            _stringResource.GetLocalized(StringResourceKey.SetupTargetMachineName) :
+            ComputeSystemName;
+
     // Inherited via ISetupTask but unused
     public bool DependsOnDevDriveToBeInstalled => false;
 
@@ -70,7 +75,7 @@ public class ConfigureTargetTask : ISetupTask
 
     public ActionCenterMessages ActionCenterMessages { get; set; } = new() { ExtensionAdaptiveCardPanel = new(), };
 
-    public string ComputeSystemName { get; private set; } = string.Empty;
+    public string ComputeSystemName => _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup.DisplayName ?? string.Empty;
 
     public SDK.IExtensionAdaptiveCardSession2 ExtensionAdaptiveCardSession { get; private set; }
 
@@ -182,7 +187,6 @@ public class ConfigureTargetTask : ISetupTask
             var wrapper = new SDKConfigurationSetChangeWrapper(progressData, _stringResource);
             var potentialErrorMsg = wrapper.GetErrorMessagesForDisplay();
             var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("---- " + _stringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationProgressUpdate) + " ----");
             var startingLineNumber = 0u;
 
             if (wrapper.Change == SDK.ConfigurationSetChangeEventType.SetStateChanged)
@@ -203,22 +207,46 @@ public class ConfigureTargetTask : ISetupTask
             // there is no way for us to know what the extension is doing, it may not have started configuration yet but may simply be installing prerequisites.
             if (wrapper.Unit != null)
             {
-                // We may need to change the formatting of the message in the future.
-                var description = BuildConfigurationUnitDescription(wrapper.Unit);
-                stringBuilder.AppendLine(GetSpacingForProgressMessage(startingLineNumber++) + description);
-                stringBuilder.AppendLine(GetSpacingForProgressMessage(startingLineNumber++) + wrapper.ConfigurationUnitState);
+                // Showing "pending" unit states is not useful to the user, so we'll ignore them.
+                if (wrapper.UnitState != ConfigurationUnitState.Pending)
+                {
+                    var description = BuildConfigurationUnitDescription(wrapper.Unit);
+                    stringBuilder.AppendLine(description.packageIdDescription);
+                    if (!string.IsNullOrEmpty(description.packageNameDescription))
+                    {
+                        stringBuilder.AppendLine(description.packageNameDescription);
+                    }
+
+                    stringBuilder.AppendLine(wrapper.ConfigurationUnitState);
+                    if ((wrapper.UnitState == ConfigurationUnitState.Completed) && !wrapper.IsErrorMessagePresent)
+                    {
+                        severity = MessageSeverityKind.Success;
+                    }
+                }
+                else
+                {
+                    _log.Information("Ignoring configuration unit pending state.");
+                }
             }
             else
             {
                 _log.Information("Extension sent progress but there was no configuration unit data sent.");
             }
 
-            // Example of a message that will be displayed in the UI:
-            // ---- Configuration progress recieved! ----
-            // There was an issue applying part of the configuration using DSC resource: 'GitClone'.Check the extension's logs
-            //      - Assert : GitClone[Clone: wil - C:\Users\Public\Documents\source\repos\wil]
-            //            - This part of the configuration is now complete
-            AddMessage(stringBuilder.ToString(), severity);
+            // Examples of a message that will be displayed in the UI:
+            // Apply: WinGetPackage [Microsoft.VisualStudioCode]
+            // Install: Microsoft Visual Studio Code
+            // Configuration applied
+            //
+            // There was an issue applying part of the configuration using DSC resource: 'WinGetPackage'.Error: WinGetPackage Failed installing Notepad++.Notepad++.
+            // InstallStatus 'InstallError' InstallerErrorCode '0' ExtendedError '-2147023673'
+            // Apply: WinGetPackage[Notepad++.Notepad++]
+            // Install: Notepad++
+            // Configuration applied
+            if (stringBuilder.Length > 0)
+            {
+                AddMessage(stringBuilder.ToString(), severity);
+            }
         }
         catch (Exception ex)
         {
@@ -333,16 +361,15 @@ public class ConfigureTargetTask : ISetupTask
             try
             {
                 UserNumberOfAttempts = 1;
-                var computeSystem = _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup;
-                ComputeSystemName = computeSystem.DisplayName;
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyingConfiguration, ComputeSystemName), MessageSeverityKind.Info);
                 WingetConfigFileString = _configurationFileBuilder.BuildConfigFileStringFromTaskGroups(_setupFlowOrchestrator.TaskGroups, ConfigurationFileKind.SetupTarget);
+                var computeSystem = _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup;
                 var applyConfigurationOperation = computeSystem.ApplyConfiguration(WingetConfigFileString);
 
                 applyConfigurationOperation.ConfigurationSetStateChanged += OnApplyConfigurationOperationChanged;
                 applyConfigurationOperation.ActionRequired += OnActionRequired;
 
-                // We'll cancell the operation after 10 minutes. This is arbitrary for now and will need to be adjusted in the future.
+                // We'll cancel the operation after 10 minutes. This is arbitrary for now and will need to be adjusted in the future.
                 // but we'll need to give the user the ability to cancel the operation in the UI as well. This is just a safety net.
                 // More work is needed to give the user the ability to cancel the operation as the capability is not currently available.
                 // in the UI of Dev Home's Loading page.
@@ -389,14 +416,12 @@ public class ConfigureTargetTask : ISetupTask
 
     TaskMessages ISetupTask.GetLoadingMessages()
     {
-        var localizedTargetName = _stringResource.GetLocalized(StringResourceKey.SetupTargetMachineName);
-        var nameToUseInDisplay = string.IsNullOrEmpty(ComputeSystemName) ? localizedTargetName : ComputeSystemName;
         return new()
         {
-            Executing = _stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyingConfiguration, nameToUseInDisplay),
-            Error = _stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyConfigurationError, nameToUseInDisplay),
-            Finished = _stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyConfigurationSuccess, nameToUseInDisplay),
-            NeedsReboot = _stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyConfigurationRebootRequired, nameToUseInDisplay),
+            Executing = _stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyingConfiguration, TargetName),
+            Error = _stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyConfigurationError, TargetName),
+            Finished = _stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyConfigurationSuccess, TargetName),
+            NeedsReboot = _stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyConfigurationRebootRequired, TargetName),
         };
     }
 
@@ -441,7 +466,7 @@ public class ConfigureTargetTask : ISetupTask
     /// was adapted from the LoginUI adaptive card code for the account page in Dev Home settings.
     /// The theming for the adaptive card isn't dynamic but in the future we can make it so.
     /// </summary>
-    /// <param name="session">Adaptive card session sent by the entension when it needs a user to perform an action</param>
+    /// <param name="session">Adaptive card session sent by the extension when it needs a user to perform an action</param>
     public async Task CreateCorrectiveActionPanel(IExtensionAdaptiveCardSession2 session)
     {
         await _dispatcherQueue.EnqueueAsync(async () =>
@@ -469,7 +494,7 @@ public class ConfigureTargetTask : ISetupTask
         });
     }
 
-    private string BuildConfigurationUnitDescription(ConfigurationUnit unit)
+    private (string packageIdDescription, string packageNameDescription) BuildConfigurationUnitDescription(ConfigurationUnit unit)
     {
         var unitDescription = string.Empty;
 
@@ -480,20 +505,33 @@ public class ConfigureTargetTask : ISetupTask
 
         if (string.IsNullOrEmpty(unit.Identifier) && string.IsNullOrEmpty(unitDescription))
         {
-            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryMinimal, unit.Intent, unit.Type);
+            return (_stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryMinimal, unit.Intent, unit.Type), string.Empty);
         }
 
         if (string.IsNullOrEmpty(unit.Identifier))
         {
-            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoId, unit.Intent, unit.Type, unitDescription);
+            return (_stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoId, unit.Intent, unit.Type, unitDescription), string.Empty);
+        }
+
+        var packageId = string.Empty;
+        var packageName = string.Empty;
+        var descriptionParts = unit.Identifier.Split(ConfigurationFileBuilder.PackageNameSeparator);
+        if (descriptionParts.Length > 0)
+        {
+            packageId = descriptionParts[0];
+        }
+
+        if (descriptionParts.Length > 1)
+        {
+            packageName = descriptionParts[1];
         }
 
         if (string.IsNullOrEmpty(unitDescription))
         {
-            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoDescription, unit.Intent, unit.Type, unit.Identifier);
+            return (_stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoDescription, unit.Intent, unit.Type, packageId), packageName);
         }
 
-        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, unit.Intent, unit.Type, unit.Identifier, unitDescription);
+        return (_stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, unit.Intent, unit.Type, packageId, unitDescription), packageName);
     }
 
     public void UpdateHostConfig()
