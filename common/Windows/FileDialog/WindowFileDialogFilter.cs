@@ -9,32 +9,43 @@ using Windows.Win32.UI.Shell.Common;
 
 namespace DevHome.Common.Windows.FileDialog;
 
-public class WindowFileDialogFilter : IDisposable
+internal class WindowFileDialogFilter : IWindowFileDialogFilter, IDisposable
 {
     private readonly COMDLG_FILTERSPEC _extension;
     private bool disposedValue;
 
-    public unsafe string? Name => Marshal.PtrToStringUni((IntPtr)_extension.pszName.Value);
+    /// <inheritdoc />
+    public unsafe string Name { get; }
 
-    public unsafe string? Spec => Marshal.PtrToStringUni((IntPtr)_extension.pszSpec.Value);
+    /// <inheritdoc />
+    public unsafe string Spec { get; }
 
+    /// <inheritdoc />
     public IReadOnlyList<string> Patterns { get; }
 
     internal COMDLG_FILTERSPEC Extension => _extension;
 
-    public unsafe WindowFileDialogFilter(string name, List<string> patterns)
+    public unsafe WindowFileDialogFilter(string name, IReadOnlyList<string> patterns)
     {
         if (patterns.Count == 0 || patterns.Any(p => !p.StartsWith(".", StringComparison.OrdinalIgnoreCase)))
         {
             throw new ArgumentException($"Pattern list cannot be empty and values should start with a '.'");
         }
 
+        // Patterns
         Patterns = patterns;
+
+        // Name
+        Name = name;
         _extension.pszName = (char*)Marshal.StringToHGlobalUni(name);
+
+        // Spec
         var combinedPattern = string.Join(";", patterns.Select(p => $"*{p}"));
+        Spec = combinedPattern;
         _extension.pszSpec = (char*)Marshal.StringToHGlobalUni(combinedPattern);
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -42,6 +53,7 @@ public class WindowFileDialogFilter : IDisposable
         GC.SuppressFinalize(this);
     }
 
+    /// <inheritdoc cref="Dispose()"/>
     private unsafe void Dispose(bool disposing)
     {
         if (!disposedValue)

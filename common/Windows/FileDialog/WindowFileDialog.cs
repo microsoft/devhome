@@ -39,7 +39,7 @@ public abstract class WindowFileDialog : IDisposable
     private bool disposedValue;
 
     // File dialog events
-    public event EventHandler<WindowFileDialogFilter?>? FileTypeChanged;
+    public event EventHandler<IWindowFileDialogFilter?>? FileTypeChanged;
 
     public WindowFileDialog()
     {
@@ -47,31 +47,53 @@ public abstract class WindowFileDialog : IDisposable
         _fileDialog.Advise(new WindowFileDialogEvents(this), out _adviseCookie);
     }
 
-    public List<WindowFileDialogFilter> GetFileTypes() => _fileTypes;
+    /// <summary>
+    /// Gets the file types that the user can choose from.
+    /// </summary>
+    /// <returns>List of file types.</returns>
+    public IReadOnlyCollection<IWindowFileDialogFilter> GetFileTypes() => _fileTypes;
 
-    public void SetFileTypes(List<WindowFileDialogFilter> fileTypes)
+    /// <summary>
+    /// Sets the file types that the user can choose from.
+    /// </summary>
+    /// <param name="fileTypes">List of file types.</param>
+    public void SetFileTypes(List<(string, List<string>)> fileTypes)
     {
         // Dispose previous file types
         _fileTypes.ForEach(ft => ft.Dispose());
 
         // Set new file types
-        _fileTypes = fileTypes ?? [];
+        _fileTypes = fileTypes.Select(ft => new WindowFileDialogFilter(ft.Item1, [..ft.Item2])).ToList() ?? [];
         var extensions = _fileTypes.Select(ft => ft.Extension).ToList();
         _fileDialog.SetFileTypes(CollectionsMarshal.AsSpan(extensions));
     }
 
+    /// <summary>
+    /// Gets the file name that the user has chosen.
+    /// </summary>
+    /// <returns>File name.</returns>
     public unsafe string GetFileName()
     {
+        // Get the file name and free the memory
         _fileDialog.GetFileName(out var pFileName);
         var fileName = new string(pFileName);
         Marshal.FreeCoTaskMem((IntPtr)pFileName.Value);
         return fileName;
     }
 
+    /// <summary>
+    /// Sets the file name programmatically.
+    /// </summary>
+    /// <param name="fileName">File name.</param>
     public void SetFileName(string fileName) => _fileDialog.SetFileName(fileName);
 
-    public WindowFileDialogFilter? GetFileType() => _fileTypes.ElementAtOrDefault(GetFileTypeIndex());
+    /// <summary>
+    /// Gets the file name that the user has chosen.
+    /// </summary>
+    /// <returns>File type.</returns>
+    public IWindowFileDialogFilter? GetFileType() => _fileTypes.ElementAtOrDefault(GetFileTypeIndex());
 
+    /// <inheritdoc />
     public void Dispose()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -79,6 +101,11 @@ public abstract class WindowFileDialog : IDisposable
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Shows the file dialog.
+    /// </summary>
+    /// <param name="window">Window to show the dialog on.</param>
+    /// <returns>True if the user has chosen a file; otherwise, false if the user has canceled the dialog.</returns>
     protected bool ShowInternal(Window window)
     {
         try
@@ -93,16 +120,30 @@ public abstract class WindowFileDialog : IDisposable
         }
     }
 
+    /// <summary>
+    /// Creates an instance of the file dialog.
+    /// </summary>
+    /// <returns>File dialog instance.</returns>
     private protected abstract IFileDialog CreateInstanceInternal();
 
+    /// <summary>
+    /// Gets the display name of the shell item.
+    /// </summary>
+    /// <param name="shellItem">Shell item.</param>
+    /// <returns>Display name.</returns>
     private protected static unsafe string GetDisplayName(IShellItem? shellItem)
     {
+        // Get the display name and free the memory
         shellItem.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out var pFileName);
         var fileName = new string(pFileName);
         Marshal.FreeCoTaskMem((IntPtr)pFileName.Value);
         return fileName;
     }
 
+    /// <summary>
+    /// Get the file type index selected by the user.
+    /// </summary>
+    /// <returns>File type index.</returns>
     private int GetFileTypeIndex()
     {
         // NOTE: IFileDialog::GetFileTypeIndex method is a one-based
@@ -111,6 +152,7 @@ public abstract class WindowFileDialog : IDisposable
         return (int)uFileTypeIndex - 1;
     }
 
+    /// <inheritdoc cref="Dispose()"/>/>
     private void Dispose(bool disposing)
     {
         if (!disposedValue)
@@ -126,11 +168,17 @@ public abstract class WindowFileDialog : IDisposable
     }
 
     /// <summary>
-    /// File dialog events
+    /// Class to handle file dialog events.
     /// </summary>
     private sealed class WindowFileDialogEvents(WindowFileDialog fileDialog) : IFileDialogEvents
     {
         private readonly WindowFileDialog _fileDialog = fileDialog;
+
+        public void OnTypeChange(IFileDialog pfd) => _fileDialog.FileTypeChanged?.Invoke(null, _fileDialog.GetFileType());
+
+        /************************************************************
+         * Redirect more events here if needed                      *
+         ************************************************************/
 
         public void OnFileOk(IFileDialog pfd) => Expression.Empty();
 
@@ -138,11 +186,9 @@ public abstract class WindowFileDialog : IDisposable
 
         public void OnFolderChange(IFileDialog pfd) => Expression.Empty();
 
-        public void OnSelectionChange(IFileDialog pfd) => _fileDialog.FileTypeChanged?.Invoke(null, _fileDialog.GetFileType());
+        public void OnSelectionChange(IFileDialog pfd) => Expression.Empty();
 
         public unsafe void OnShareViolation(IFileDialog pfd, IShellItem psi, FDE_SHAREVIOLATION_RESPONSE* pResponse) => Expression.Empty();
-
-        public void OnTypeChange(IFileDialog pfd) => Expression.Empty();
 
         public unsafe void OnOverwrite(IFileDialog pfd, IShellItem psi, FDE_OVERWRITE_RESPONSE* pResponse) => Expression.Empty();
     }

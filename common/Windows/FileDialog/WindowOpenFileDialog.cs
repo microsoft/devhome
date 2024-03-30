@@ -12,16 +12,25 @@ using Windows.Win32.UI.Shell;
 
 namespace DevHome.Common.Windows.FileDialog;
 
+/// <summary>
+/// Represents a window that allows the user to open a file.
+/// </summary>
 public class WindowOpenFileDialog : WindowFileDialog
 {
     private IFileOpenDialog? _fileDialog;
 
+    /// <inheritdoc />
     private protected override IFileDialog CreateInstanceInternal()
     {
         PInvoke.CoCreateInstance<IFileOpenDialog>(typeof(FileOpenDialog).GUID, null, CLSCTX.CLSCTX_INPROC_SERVER, out _fileDialog).ThrowOnFailure();
         return _fileDialog;
     }
 
+    /// <summary>
+    /// Shows the file dialog and returns the selected file.
+    /// </summary>
+    /// <param name="window">The window to parent the file dialog.</param>
+    /// <returns>The selected file or <see langword="null"/> if no file was selected.</returns>
     public async Task<StorageFile?> ShowAsync(Window window)
     {
         Debug.Assert(_fileDialog != null, "The file dialog instance should not be null.");
