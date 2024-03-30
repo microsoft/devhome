@@ -9,7 +9,7 @@ using Windows.Win32.UI.Shell.Common;
 
 namespace DevHome.Common.Windows.FileDialog;
 
-internal class WindowFileDialogFilter : IWindowFileDialogFilter, IDisposable
+internal sealed class WindowFileDialogFilter : IWindowFileDialogFilter, IDisposable
 {
     private readonly COMDLG_FILTERSPEC _extension;
     private bool disposedValue;

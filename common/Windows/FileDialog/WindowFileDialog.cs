@@ -35,7 +35,7 @@ public abstract class WindowFileDialog : IDisposable
 
     private readonly IFileDialog _fileDialog;
     private readonly uint _adviseCookie;
-    private List<WindowFileDialogFilter> _fileTypes = [];
+    private readonly List<WindowFileDialogFilter> _fileTypes = [];
     private bool disposedValue;
 
     // File dialog events
@@ -45,29 +45,28 @@ public abstract class WindowFileDialog : IDisposable
 
     public WindowFileDialog()
     {
-        _fileDialog = CreateInstanceInternal();
+        _fileDialog = CreateInstance();
         _fileDialog.Advise(new WindowFileDialogEvents(this), out _adviseCookie);
+        InitializeInstance();
     }
 
     /// <summary>
     /// Gets the file types that the user can choose from.
     /// </summary>
     /// <returns>List of file types.</returns>
-    public IReadOnlyCollection<IWindowFileDialogFilter> GetFileTypes() => _fileTypes;
+    public IReadOnlyCollection<IWindowFileDialogFilter> GetAvailableFileTypes() => _fileTypes;
 
     /// <summary>
-    /// Sets the file types that the user can choose from.
+    /// Add a file type to the file dialog.
     /// </summary>
-    /// <param name="fileTypes">List of file types.</param>
-    public void SetFileTypes(List<(string, List<string>)> fileTypes)
+    /// <param name="displayName">Display name of the file type.</param>
+    /// <param name="extensions">File extensions.</param>
+    /// <returns>File type.</returns>
+    public IWindowFileDialogFilter AddFileType(string displayName, params string[] extensions)
     {
-        // Dispose previous file types
-        _fileTypes.ForEach(ft => ft.Dispose());
-
-        // Set new file types
-        _fileTypes = fileTypes.Select(ft => new WindowFileDialogFilter(ft.Item1, [..ft.Item2])).ToList() ?? [];
-        var extensions = _fileTypes.Select(ft => ft.Extension).ToList();
-        _fileDialog.SetFileTypes(CollectionsMarshal.AsSpan(extensions));
+        var filter = new WindowFileDialogFilter(displayName, extensions);
+        _fileTypes.Add(filter);
+        return filter;
     }
 
     /// <summary>
@@ -108,10 +107,14 @@ public abstract class WindowFileDialog : IDisposable
     /// </summary>
     /// <param name="window">Window to show the dialog on.</param>
     /// <returns>True if the user has chosen a file; otherwise, false if the user has canceled the dialog.</returns>
-    protected bool ShowInternal(Window window)
+    protected bool ShowOk(Window window)
     {
         try
         {
+            // Set the file types before showing the dialog
+            UpdateDialogFileTypes();
+
+            // Show the dialog
             var hWnd = WindowNative.GetWindowHandle(window);
             _fileDialog.Show(new HWND(hWnd));
             return true;
@@ -123,10 +126,37 @@ public abstract class WindowFileDialog : IDisposable
     }
 
     /// <summary>
+    /// Add an option to the file dialog.
+    /// </summary>
+    /// <param name="option">Option to add.</param>
+    private protected void AddOption(FILEOPENDIALOGOPTIONS option)
+    {
+        _fileDialog.GetOptions(out var options);
+        options |= option;
+        _fileDialog.SetOptions(options);
+    }
+
+    /// <summary>
+    /// Remove an option from the file dialog.
+    /// </summary>
+    /// <param name="option">Option to remove.</param>
+    private protected void RemoveOption(FILEOPENDIALOGOPTIONS option)
+    {
+        _fileDialog.GetOptions(out var options);
+        options &= ~option;
+        _fileDialog.SetOptions(options);
+    }
+
+    /// <summary>
     /// Creates an instance of the file dialog.
     /// </summary>
     /// <returns>File dialog instance.</returns>
-    private protected abstract IFileDialog CreateInstanceInternal();
+    private protected abstract IFileDialog CreateInstance();
+
+    /// <summary>
+    /// Initializes the file dialog instance after creation.
+    /// </summary>
+    protected virtual void InitializeInstance() => Expression.Empty();
 
     /// <summary>
     /// Gets the display name of the shell item.
@@ -140,6 +170,18 @@ public abstract class WindowFileDialog : IDisposable
         var fileName = new string(pFileName);
         Marshal.FreeCoTaskMem((IntPtr)pFileName.Value);
         return fileName;
+    }
+
+    /// <summary>
+    /// Sets the file types that the user can choose from.
+    /// </summary>
+    private void UpdateDialogFileTypes()
+    {
+        if (_fileTypes.Count > 0)
+        {
+            var extensions = _fileTypes.Select(ft => ft.Extension).ToList();
+            _fileDialog.SetFileTypes(CollectionsMarshal.AsSpan(extensions));
+        }
     }
 
     /// <summary>

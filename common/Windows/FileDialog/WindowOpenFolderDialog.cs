@@ -11,10 +11,7 @@ using Windows.Win32.UI.Shell;
 
 namespace DevHome.Common.Windows.FileDialog;
 
-/// <summary>
-/// Represents a window that allows the user to open a file.
-/// </summary>
-public class WindowOpenFileDialog : WindowFileDialog
+public class WindowOpenFolderDialog : WindowFileDialog
 {
     /// <inheritdoc />
     private protected override IFileDialog CreateInstance()
@@ -23,18 +20,19 @@ public class WindowOpenFileDialog : WindowFileDialog
         return fileDialog;
     }
 
-    /// <summary>
-    /// Shows the file dialog and returns the selected file.
-    /// </summary>
-    /// <param name="window">The window to parent the file dialog.</param>
-    /// <returns>The selected file or <see langword="null"/> if no file was selected.</returns>
-    public async Task<StorageFile?> ShowAsync(Window window)
+    /// <inheritdoc />
+    protected override void InitializeInstance()
+    {
+        AddOption(FILEOPENDIALOGOPTIONS.FOS_PICKFOLDERS);
+    }
+
+    public async Task<StorageFolder?> ShowAsync(Window window)
     {
         if (ShowOk(window))
         {
             FileDialog.GetResult(out var shellItem);
-            var fileName = GetDisplayName(shellItem);
-            return await StorageFile.GetFileFromPathAsync(fileName).AsTask();
+            var folderPath = GetDisplayName(shellItem);
+            return await StorageFolder.GetFolderFromPathAsync(folderPath).AsTask();
         }
 
         return null;

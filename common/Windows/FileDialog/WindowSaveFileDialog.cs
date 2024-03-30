@@ -15,16 +15,17 @@ namespace DevHome.Common.Windows.FileDialog;
 /// </summary>
 public class WindowSaveFileDialog : WindowFileDialog
 {
-    public WindowSaveFileDialog()
-    {
-        FileTypeChanged += OnFileTypeChanged;
-    }
-
     /// <inheritdoc />
-    private protected override IFileDialog CreateInstanceInternal()
+    private protected override IFileDialog CreateInstance()
     {
         PInvoke.CoCreateInstance<IFileSaveDialog>(typeof(FileSaveDialog).GUID, null, CLSCTX.CLSCTX_INPROC_SERVER, out var fileDialog).ThrowOnFailure();
         return fileDialog;
+    }
+
+    /// <inheritdoc />
+    protected override void InitializeInstance()
+    {
+        FileTypeChanged += OnFileTypeChanged;
     }
 
     /// <summary>
@@ -46,11 +47,11 @@ public class WindowSaveFileDialog : WindowFileDialog
     /// <returns>The selected file path.</returns>
     public string? Show(Window window)
     {
-        if (ShowInternal(window))
+        if (ShowOk(window))
         {
             FileDialog.GetResult(out var shellItem);
-            var fileName = GetDisplayName(shellItem);
-            return GetModifiedFileName(fileName, GetFileType());
+            var filePath = GetDisplayName(shellItem);
+            return GetModifiedFileName(filePath, GetFileType());
         }
 
         return null;
@@ -77,7 +78,7 @@ public class WindowSaveFileDialog : WindowFileDialog
         }
 
         // If the file name contains an extension from a different file type, remove it
-        var allPatterns = GetFileTypes().SelectMany(ft => ft.Patterns);
+        var allPatterns = GetAvailableFileTypes().SelectMany(ft => ft.Patterns);
         var matchPattern = allPatterns.FirstOrDefault(p => fileName.EndsWith(p, StringComparison.OrdinalIgnoreCase)) ?? string.Empty;
         if (!string.IsNullOrEmpty(matchPattern))
         {
