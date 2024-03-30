@@ -10,9 +10,19 @@ namespace DevHome.Common.Windows.FileDialog;
 /// </summary>
 public interface IWindowFileDialogFilter
 {
-    public string? Name { get; }
+    /// <summary>
+    /// Gets the display name of the filter.
+    /// </summary>
+    public string Name { get; }
 
-    public string? Spec { get; }
+    /// <summary>
+    /// Gets the filter specified pattern.
+    /// </summary>
+    /// <remarks>This contains the combined pattern of all the patterns in the filter.</remarks>
+    public string Spec { get; }
 
+    /// <summary>
+    /// Gets the list of atomic patterns that make up the filter.
+    /// </summary>
     public IReadOnlyList<string> Patterns { get; }
 }
