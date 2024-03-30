@@ -41,6 +41,8 @@ public abstract class WindowFileDialog : IDisposable
     // File dialog events
     public event EventHandler<IWindowFileDialogFilter?>? FileTypeChanged;
 
+    private protected IFileDialog FileDialog => _fileDialog;
+
     public WindowFileDialog()
     {
         _fileDialog = CreateInstanceInternal();

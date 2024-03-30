@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Windows.Storage;
@@ -17,13 +16,11 @@ namespace DevHome.Common.Windows.FileDialog;
 /// </summary>
 public class WindowOpenFileDialog : WindowFileDialog
 {
-    private IFileOpenDialog? _fileDialog;
-
     /// <inheritdoc />
     private protected override IFileDialog CreateInstanceInternal()
     {
-        PInvoke.CoCreateInstance<IFileOpenDialog>(typeof(FileOpenDialog).GUID, null, CLSCTX.CLSCTX_INPROC_SERVER, out _fileDialog).ThrowOnFailure();
-        return _fileDialog;
+        PInvoke.CoCreateInstance<IFileOpenDialog>(typeof(FileOpenDialog).GUID, null, CLSCTX.CLSCTX_INPROC_SERVER, out var fileDialog).ThrowOnFailure();
+        return fileDialog;
     }
 
     /// <summary>
@@ -33,10 +30,9 @@ public class WindowOpenFileDialog : WindowFileDialog
     /// <returns>The selected file or <see langword="null"/> if no file was selected.</returns>
     public async Task<StorageFile?> ShowAsync(Window window)
     {
-        Debug.Assert(_fileDialog != null, "The file dialog instance should not be null.");
         if (ShowInternal(window))
         {
-            _fileDialog.GetResult(out var shellItem);
+            FileDialog.GetResult(out var shellItem);
             var fileName = GetDisplayName(shellItem);
             return await StorageFile.GetFileFromPathAsync(fileName).AsTask();
         }

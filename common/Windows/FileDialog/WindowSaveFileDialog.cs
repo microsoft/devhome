@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.UI.Xaml;
 using Windows.Win32;
@@ -16,8 +15,6 @@ namespace DevHome.Common.Windows.FileDialog;
 /// </summary>
 public class WindowSaveFileDialog : WindowFileDialog
 {
-    private IFileSaveDialog? _fileDialog;
-
     public WindowSaveFileDialog()
     {
         FileTypeChanged += OnFileTypeChanged;
@@ -26,8 +23,8 @@ public class WindowSaveFileDialog : WindowFileDialog
     /// <inheritdoc />
     private protected override IFileDialog CreateInstanceInternal()
     {
-        PInvoke.CoCreateInstance<IFileSaveDialog>(typeof(FileSaveDialog).GUID, null, CLSCTX.CLSCTX_INPROC_SERVER, out _fileDialog).ThrowOnFailure();
-        return _fileDialog;
+        PInvoke.CoCreateInstance<IFileSaveDialog>(typeof(FileSaveDialog).GUID, null, CLSCTX.CLSCTX_INPROC_SERVER, out var fileDialog).ThrowOnFailure();
+        return fileDialog;
     }
 
     /// <summary>
@@ -49,10 +46,9 @@ public class WindowSaveFileDialog : WindowFileDialog
     /// <returns>The selected file path.</returns>
     public string? Show(Window window)
     {
-        Debug.Assert(_fileDialog != null, "The file dialog instance should not be null.");
         if (ShowInternal(window))
         {
-            _fileDialog.GetResult(out var shellItem);
+            FileDialog.GetResult(out var shellItem);
             var fileName = GetDisplayName(shellItem);
             return GetModifiedFileName(fileName, GetFileType());
         }
