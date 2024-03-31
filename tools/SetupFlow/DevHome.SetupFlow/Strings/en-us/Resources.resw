@@ -323,11 +323,11 @@
   </data>
   <data name="FilePickerFileTypeOption" xml:space="preserve">
     <value>{0} files</value>
-    <comment>Dropdown option for a file picker. {0} is replaced by a file type (e.g. JSON, YAML, etc ...)</comment>
+    <comment>{Locked="{0}"}Dropdown option for a file picker. {0} is replaced by a file type (e.g. JSON, YAML, etc ...)</comment>
   </data>
   <data name="FilePickerSingleFileTypeOption" xml:space="preserve">
     <value>{0} file</value>
-    <comment>Dropdown option for a file picker. {0} is replaced by a file type (e.g. JSON, YAML, etc ...)</comment>
+    <comment>{Locked="{0}"}Dropdown option for a file picker. {0} is replaced by a file type (e.g. JSON, YAML, etc ...)</comment>
   </data>
   <data name="FileTypeNotSupported" xml:space="preserve">
     <value>File type not supported</value>
