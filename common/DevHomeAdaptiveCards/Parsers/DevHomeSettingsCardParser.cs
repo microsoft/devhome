@@ -24,25 +24,25 @@ public class DevHomeSettingsCardParser : IAdaptiveElementParser
             adaptiveSettingsCard.Id = isCorrectType ? id.GetString() : string.Empty;
         }
 
-        if (inputJson.TryGetValue("DevHomeSettingsCardDescription", out var devHomeSettingsCardDescription))
+        if (inputJson.TryGetValue("devHomeSettingsCardDescription", out var devHomeSettingsCardDescription))
         {
             isCorrectType = devHomeSettingsCardDescription.ValueType == JsonValueType.String;
             adaptiveSettingsCard.Description = isCorrectType ? devHomeSettingsCardDescription.GetString() : StringResourceHelper.GetResource("SettingsCardDescriptionError");
         }
 
-        if (inputJson.TryGetValue("DevHomeSettingsCardHeader", out var devHomeSettingsCardHeader))
+        if (inputJson.TryGetValue("devHomeSettingsCardHeader", out var devHomeSettingsCardHeader))
         {
             isCorrectType = devHomeSettingsCardHeader.ValueType == JsonValueType.String;
             adaptiveSettingsCard.Header = isCorrectType ? devHomeSettingsCardHeader.GetString() : StringResourceHelper.GetResource("SettingsCardHeaderError");
         }
 
-        if (inputJson.TryGetValue("DevHomeSettingsCardHeaderIcon", out var devHomeSettingsCardHeaderIcon))
+        if (inputJson.TryGetValue("devHomeSettingsCardHeaderIcon", out var devHomeSettingsCardHeaderIcon))
         {
             isCorrectType = devHomeSettingsCardHeaderIcon.ValueType == JsonValueType.String;
             adaptiveSettingsCard.HeaderIcon = isCorrectType ? devHomeSettingsCardHeaderIcon.GetString() : string.Empty;
         }
 
-        if (inputJson.TryGetValue("DevHomeSettingsCardActionElement", out var devHomeSettingsCardActionElement))
+        if (inputJson.TryGetValue("devHomeSettingsCardActionElement", out var devHomeSettingsCardActionElement))
         {
             isCorrectType = devHomeSettingsCardActionElement.ValueType == JsonValueType.Object;
             var elementJson = isCorrectType ? devHomeSettingsCardActionElement.GetObject() : new JsonObject();

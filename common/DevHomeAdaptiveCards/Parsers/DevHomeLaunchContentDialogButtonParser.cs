@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.Reflection.Emit;
 using AdaptiveCards.ObjectModel.WinUI3;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
 using DevHome.Common.Environments.Helpers;
@@ -17,14 +16,14 @@ public class DevHomeLaunchContentDialogButtonParser : IAdaptiveElementParser
         var action = new DevHomeLaunchContentDialogButton();
         bool isCorrectType;
 
-        if (inputJson.TryGetValue("DevHomeActionText", out var devHomeActionText))
+        if (inputJson.TryGetValue("devHomeActionText", out var devHomeActionText))
         {
             isCorrectType = devHomeActionText.ValueType == JsonValueType.String;
             action.ActionText = isCorrectType ? devHomeActionText.GetString() : StringResourceHelper.GetResource("DevHomeActionDefaultText");
         }
 
         // Parse the content dialog element and place its content into our content dialog button property.
-        if (inputJson.TryGetValue("DevHomeContentDialogContent", out var devHomeContentDialogContent))
+        if (inputJson.TryGetValue("devHomeContentDialogContent", out var devHomeContentDialogContent))
         {
             isCorrectType = devHomeContentDialogContent.ValueType == JsonValueType.Object;
             var contentDialogJson = isCorrectType ? devHomeContentDialogContent.GetObject() : new JsonObject();
