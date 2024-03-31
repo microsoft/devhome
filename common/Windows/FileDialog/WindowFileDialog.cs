@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml;
 using Windows.Win32;
@@ -51,10 +50,28 @@ public abstract class WindowFileDialog : IDisposable
     }
 
     /// <summary>
+    /// Gets or sets the file name that the user has chosen.
+    /// </summary>
+    /// <returns>File name.</returns>
+    public unsafe string FileName
+    {
+        get
+        {
+            // Get the file name and free the memory
+            _fileDialog.GetFileName(out var pFileName);
+            var fileName = new string(pFileName);
+            Marshal.FreeCoTaskMem((IntPtr)pFileName.Value);
+            return fileName;
+        }
+
+        set => _fileDialog.SetFileName(value);
+    }
+
+    /// <summary>
     /// Gets the file types that the user can choose from.
     /// </summary>
     /// <returns>List of file types.</returns>
-    public IReadOnlyCollection<IWindowFileDialogFilter> GetAvailableFileTypes() => _fileTypes;
+    public IReadOnlyCollection<IWindowFileDialogFilter> AvailableFileTypes => _fileTypes;
 
     /// <summary>
     /// Add a file type to the file dialog.
@@ -70,29 +87,17 @@ public abstract class WindowFileDialog : IDisposable
     }
 
     /// <summary>
-    /// Gets the file name that the user has chosen.
+    /// Remove a file type from the file dialog.
     /// </summary>
-    /// <returns>File name.</returns>
-    public unsafe string GetFileName()
-    {
-        // Get the file name and free the memory
-        _fileDialog.GetFileName(out var pFileName);
-        var fileName = new string(pFileName);
-        Marshal.FreeCoTaskMem((IntPtr)pFileName.Value);
-        return fileName;
-    }
-
-    /// <summary>
-    /// Sets the file name programmatically.
-    /// </summary>
-    /// <param name="fileName">File name.</param>
-    public void SetFileName(string fileName) => _fileDialog.SetFileName(fileName);
+    /// <param name="fileType">File type to remove.</param>
+    /// <returns>True if the file type was removed; otherwise, false.</returns>
+    public bool RemoveFileType(IWindowFileDialogFilter fileType) => fileType is WindowFileDialogFilter ft && _fileTypes.Remove(ft);
 
     /// <summary>
     /// Gets the file name that the user has chosen.
     /// </summary>
     /// <returns>File type.</returns>
-    public IWindowFileDialogFilter? GetFileType() => _fileTypes.ElementAtOrDefault(GetFileTypeIndex());
+    public IWindowFileDialogFilter? FileType => _fileTypes.ElementAtOrDefault(GetFileTypeIndex());
 
     /// <inheritdoc />
     public void Dispose()
@@ -156,7 +161,11 @@ public abstract class WindowFileDialog : IDisposable
     /// <summary>
     /// Initializes the file dialog instance after creation.
     /// </summary>
-    protected virtual void InitializeInstance() => Expression.Empty();
+    protected virtual void InitializeInstance()
+    {
+        // Derived classes can override this method to initialize the desired
+        // options for the file dialog
+    }
 
     /// <summary>
     /// Gets the display name of the shell item.
@@ -218,22 +227,40 @@ public abstract class WindowFileDialog : IDisposable
     {
         private readonly WindowFileDialog _fileDialog = fileDialog;
 
-        public void OnTypeChange(IFileDialog pfd) => _fileDialog.FileTypeChanged?.Invoke(null, _fileDialog.GetFileType());
+        public void OnTypeChange(IFileDialog pfd) => _fileDialog.FileTypeChanged?.Invoke(null, _fileDialog.FileType);
 
         /************************************************************
          * Redirect more events here if needed                      *
          ************************************************************/
 
-        public void OnFileOk(IFileDialog pfd) => Expression.Empty();
+        public void OnFileOk(IFileDialog pfd)
+        {
+            // Raise a new event if needed
+        }
 
-        public void OnFolderChanging(IFileDialog pfd, IShellItem psiFolder) => Expression.Empty();
+        public void OnFolderChanging(IFileDialog pfd, IShellItem psiFolder)
+        {
+            // Raise a new event if needed
+        }
 
-        public void OnFolderChange(IFileDialog pfd) => Expression.Empty();
+        public void OnFolderChange(IFileDialog pfd)
+        {
+            // Raise a new event if needed
+        }
 
-        public void OnSelectionChange(IFileDialog pfd) => Expression.Empty();
+        public void OnSelectionChange(IFileDialog pfd)
+        {
+            // Raise a new event if needed
+        }
 
-        public unsafe void OnShareViolation(IFileDialog pfd, IShellItem psi, FDE_SHAREVIOLATION_RESPONSE* pResponse) => Expression.Empty();
+        public unsafe void OnShareViolation(IFileDialog pfd, IShellItem psi, FDE_SHAREVIOLATION_RESPONSE* pResponse)
+        {
+            // Raise a new event if needed
+        }
 
-        public unsafe void OnOverwrite(IFileDialog pfd, IShellItem psi, FDE_OVERWRITE_RESPONSE* pResponse) => Expression.Empty();
+        public unsafe void OnOverwrite(IFileDialog pfd, IShellItem psi, FDE_OVERWRITE_RESPONSE* pResponse)
+        {
+            // Raise a new event if needed
+        }
     }
 }
