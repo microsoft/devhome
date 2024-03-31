@@ -257,4 +257,5 @@ public static class StringResourceKey
     public static readonly string SelectEnvironmentPageTitle = nameof(SelectEnvironmentPageTitle);
     public static readonly string ConfigureEnvironmentPageTitle = nameof(ConfigureEnvironmentPageTitle);
     public static readonly string EnvironmentCreationReviewPageTitle = nameof(EnvironmentCreationReviewPageTitle);
+    public static readonly string CreateEnvironmentButtonText = nameof(CreateEnvironmentButtonText);
 }

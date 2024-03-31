@@ -1484,7 +1484,7 @@
     <value>The entire configuration is still pending</value>
     <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
   </data>
-    <data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
+  <data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
     <value>This part of the configuration is still pending</value>
     <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
@@ -1643,5 +1643,9 @@
   <data name="EnvironmentCreationReviewPageTitle" xml:space="preserve">
     <value>Create Environment</value>
     <comment>Title for create environment review page</comment>
+  </data>
+  <data name="CreateEnvironmentButtonText" xml:space="preserve">
+    <value>Create Environment</value>
+    <comment>Text for button that starts creating a new virtual machine or cloud pc for the user</comment>
   </data>
 </root>

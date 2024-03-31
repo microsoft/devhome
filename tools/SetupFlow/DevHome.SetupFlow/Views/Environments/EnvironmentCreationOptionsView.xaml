@@ -4,7 +4,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:setupControls="using:DevHome.SetupFlow.Controls"
-    xmlns:converters="using:CommunityToolkit.WinUI.Converters">
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    Unloaded="ViewUnloaded"
+    Loaded="ViewLoaded">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="CollapsedWhenTrueBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
         <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
@@ -20,24 +22,22 @@
                 <StackPanel Spacing="10">
                     <Grid
                         HorizontalAlignment="Stretch"
-                        Visibility="{x:Bind ViewModel.ErrorRetrievingAdaptiveCardSessionMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
+                        Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
                         <InfoBar
                             IsOpen="True"
                             x:Uid="ErrorRetrievingAdaptiveCardSession"
                             Severity="Error"
-                            Message="{x:Bind ViewModel.ErrorRetrievingAdaptiveCardSessionMessage}" >
+                            Message="{x:Bind ViewModel.SessionErrorMessage}" >
                         </InfoBar>
                     </Grid>
                         <!--- 
                         Show the adaptive card frame on the page. 
                         Note: The frame adds an extra padding of 20 pixels on all sides so we are setting it to -20 to remove it.
-                    -->
-                    <Frame 
+                                        -->
+
+                    <Grid 
                         Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay}"
-                        x:Name="CreationOptionsAdaptiveCardUI"
-                        Padding="-20"
-                        Content="{x:Bind ViewModel.ExtensionAdaptiveCardPanel, Mode=OneWay}"
-                        Unloaded="ViewUnloaded"/>
+                        x:Name="AdaptiveCardGrid" />
 
                     <Grid
                         HorizontalAlignment="Center"

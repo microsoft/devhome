@@ -1,16 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
-using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.Messaging;
-using DevHome.Common.DevHomeAdaptiveCards.CardModels;
-using DevHome.Common.Models;
-using DevHome.Common.Renderers;
-using DevHome.Common.Views;
-using DevHome.Common.Windows;
-using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
@@ -18,18 +10,52 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.Views.Environments;
 
-public sealed partial class EnvironmentCreationOptionsView : UserControl
+public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecipient<CreationOptionsConfigureEnvironmentMessage>
 {
     public EnvironmentCreationOptionsViewModel ViewModel => (EnvironmentCreationOptionsViewModel)this.DataContext;
 
     public EnvironmentCreationOptionsView()
     {
         this.InitializeComponent();
+        WeakReferenceMessenger.Default.Register<CreationOptionsConfigureEnvironmentMessage>(this);
     }
 
     private void ViewUnloaded(object sender, RoutedEventArgs e)
     {
-        CreationOptionsAdaptiveCardUI.Content = null;
+        AdaptiveCardGrid.Children.Clear();
         WeakReferenceMessenger.Default.UnregisterAll(this);
+    }
+
+    /// <summary>
+    /// Request the adaptive cad from the view model
+    /// </summary>
+    private void ViewLoaded(object sender, RoutedEventArgs e)
+    {
+        var message = WeakReferenceMessenger.Default.Send<CreationOptionsViewPageRequestMessage>();
+        if (!message.HasReceivedResponse)
+        {
+            return;
+        }
+
+        AddAdaptiveCardToUI(message.Response);
+    }
+
+    /// <summary>
+    /// Receive the adaptive card from the view model, when the view model finishes loading it.
+    /// Note: There are times when the view is loaded after the view model has finished loading the adaptive card.
+    /// In these cases it would have "missed" the push message. This is where the ViewLoaded method comes in.
+    /// </summary>
+    public void Receive(CreationOptionsConfigureEnvironmentMessage message)
+    {
+        AddAdaptiveCardToUI(message.Value);
+    }
+
+    private void AddAdaptiveCardToUI(RenderedAdaptiveCard adaptiveCardData)
+    {
+        if (adaptiveCardData?.FrameworkElement != null)
+        {
+            AdaptiveCardGrid.Children.Clear();
+            AdaptiveCardGrid.Children.Add(adaptiveCardData.FrameworkElement);
+        }
     }
 }

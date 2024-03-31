@@ -1,0 +1,39 @@
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using AdaptiveCards.ObjectModel.WinUI3;
+using AdaptiveCards.Rendering.WinUI3;
+
+namespace DevHome.SetupFlow.Models.Environments;
+
+public class CreationOptionsReviewPageDataRequest
+{
+    public AdaptiveCard AdaptiveCard { get; private set; }
+
+    public AdaptiveCardRenderer AdaptiveCardRenderer { get; private set; }
+
+    public AdaptiveElementParserRegistration AdaptiveElementParserRegistration { get; private set; }
+
+    public AdaptiveActionParserRegistration AdaptiveActionParserRegistration { get; private set; }
+
+    public string SessionErrorMessage { get; private set; }
+
+    public CreationOptionsReviewPageDataRequest(
+        AdaptiveCard adaptiveCard,
+        AdaptiveCardRenderer renderer,
+        AdaptiveElementParserRegistration elementParserRegistration,
+        AdaptiveActionParserRegistration actionParserRegistration,
+        string errorMessage)
+    {
+        AdaptiveCard = adaptiveCard;
+        SessionErrorMessage = errorMessage;
+        AdaptiveCardRenderer = renderer;
+        AdaptiveElementParserRegistration = elementParserRegistration;
+        AdaptiveActionParserRegistration = actionParserRegistration;
+    }
+
+    public CreationOptionsReviewPageDataRequest(string errorMessage)
+    {
+        SessionErrorMessage = errorMessage;
+    }
+}

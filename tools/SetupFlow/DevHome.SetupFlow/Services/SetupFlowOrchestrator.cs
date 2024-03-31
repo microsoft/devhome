@@ -36,6 +36,10 @@ public partial class SetupFlowOrchestrator : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupFlowOrchestrator));
 
+    private readonly string _adaptiveCardNextButtonId = "DevHomeMachineConfigurationNextButton";
+
+    private readonly string _adaptiveCardPreviousButtonId = "DevHomeMachineConfigurationPreviousButton";
+
     private readonly List<SetupPageViewModelBase> _flowPages = new();
 
     /// <summary>
@@ -126,11 +130,11 @@ public partial class SetupFlowOrchestrator : ObservableObject
     public bool IsMachineConfigurationInProgress => FlowPages.Count > 1;
 
     /// <summary>
-    /// Gets the renderer for the Dev Home action set. This is used to invoke a primary or secondary
-    /// action within an adaptive card. This is used when an adaptive card is being shown in the setup flow.
-    /// and the action allows the flow to move to the next or previous page in the adaptive card.
+    /// Gets the renderer for the Dev Home action set. This is used to invoke the the buttons within the top level
+    /// of the adaptive card. This stitches up the setup flow's next and previous buttons to two buttons within an
+    /// extensions adaptive card.
     /// </summary>
-    public DevHomeActionSet DevHomeActionSetRenderer { get; private set; } = new(TopLevelCardActionSetVisibility.Visible);
+    public DevHomeActionSet DevHomeActionSetRenderer { get; private set; } = new(TopLevelCardActionSetVisibility.Hidden);
 
     /// <summary>
     /// Gets or sets a value indicating whether the done button should be shown. When false, the cancel
@@ -192,10 +196,10 @@ public partial class SetupFlowOrchestrator : ObservableObject
     public async Task GoToPreviousPage()
     {
         // If an adaptive card is being shown in the setup flow, we need to invoke the action
-        // of the secondart button in the action set to move the flow to the previous page in the adaptive card.
+        // of the previous button in the action set to move the flow to the previous page in the adaptive card.
         if (DevHomeActionSetRenderer?.ActionButtonInvoker != null)
         {
-            DevHomeActionSetRenderer.InitiateAction(ActionMode.Secondary);
+            DevHomeActionSetRenderer.InitiateAction(_adaptiveCardPreviousButtonId);
         }
 
         await SetCurrentPageIndex(_currentPageIndex - 1);
@@ -213,7 +217,11 @@ public partial class SetupFlowOrchestrator : ObservableObject
         // of the primary button in the action set to move the flow to the next page in the adaptive card.
         if (DevHomeActionSetRenderer?.ActionButtonInvoker != null)
         {
-            DevHomeActionSetRenderer.InitiateAction(ActionMode.Primary);
+            if (!TryNavigateToNextAdaptiveCardPage(_adaptiveCardNextButtonId))
+            {
+                // Don't navigate if there were validation errors.
+                return;
+            }
         }
 
         await SetCurrentPageIndex(_currentPageIndex + 1);
@@ -268,5 +276,16 @@ public partial class SetupFlowOrchestrator : ObservableObject
         }
 
         await CurrentPageViewModel?.OnNavigateToAsync();
+    }
+
+    private bool TryNavigateToNextAdaptiveCardPage(string buttonId)
+    {
+        if (DevHomeActionSetRenderer.TryValidateAndInitiateAction(buttonId, CurrentPageViewModel.UserInputsFromAdaptiveCard))
+        {
+            return true;
+        }
+
+        _log.Warning($"Failed to invoke adaptive card action with Id: {buttonId} due to input validation failure");
+        return false;
     }
 }

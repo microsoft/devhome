@@ -2,18 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Serilog;
@@ -101,7 +96,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
             // Using the default channel to send the message to the recipient. In this case, the EnvironmentCreationOptionsViewModel.
             // In the future if we support a multi-instance setup flow, we can use a custom channel/a message broker to send messages.
             // For now, we are using the default channel.
-            WeakReferenceMessenger.Default.Send(new CreationProviderChangedMessage(new CreationProviderChangedData(SelectedProvider)));
+            WeakReferenceMessenger.Default.Send(new CreationProviderChangedMessage(SelectedProvider));
             CanGoToNextPage = true;
             Orchestrator.NotifyNavigationCanExecuteChanged();
         }

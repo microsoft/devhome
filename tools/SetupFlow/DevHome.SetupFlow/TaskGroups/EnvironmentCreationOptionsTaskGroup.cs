@@ -31,19 +31,16 @@ public class EnvironmentCreationOptionsTaskGroup : ISetupTaskGroup, IRecipient<C
         _environmentCreationOptionsViewModel = environmentCreationOptionsViewModel;
         _createEnvironmentReviewViewModel = createEnvironmentReviewViewModel;
 
-        // Register for changes to the selected provider. This will be triggered when the user selects a provider.
-        // from the SelectEnvironmentProviderViewModel. This is a weak reference so that the recipient can be garbage collected.
+        // Register for the adaptive card session ended message so we can use the session data to create the environment
         WeakReferenceMessenger.Default.Register<CreationAdaptiveCardSessionEndedMessage>(this);
         _setupFlowViewModel = setupFlow;
         _setupFlowViewModel.EndSetupFlow += OnEndSetupFlow;
     }
 
-    // No setup tasks needed for this task group.
     public IEnumerable<ISetupTask> SetupTasks => new List<ISetupTask>();
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _environmentCreationOptionsViewModel;
 
-    // Review tab not needed for this task group.
     public ReviewTabViewModelBase GetReviewTabViewModel() => _createEnvironmentReviewViewModel;
 
     public void Receive(CreationAdaptiveCardSessionEndedMessage message)

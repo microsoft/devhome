@@ -4,6 +4,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
+using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
 using DevHome.Common.DevHomeAdaptiveCards.Parsers;
@@ -24,6 +25,8 @@ public partial class SetupPageViewModelBase : ObservableObject
     public AdaptiveElementParserRegistration ElementRegistration { get; private set; } = new();
 
     public AdaptiveActionParserRegistration ActionRegistration { get; private set; } = new();
+
+    public AdaptiveInputs UserInputsFromAdaptiveCard { get; set; } = new();
 
     /// <summary>
     /// Indicates whether this page has already executed <see cref="OnFirstNavigateToAsync"/>.

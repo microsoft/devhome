@@ -1,42 +1,45 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AdaptiveCards.ObjectModel.WinUI3;
-using AdaptiveCards.Rendering.WinUI3;
-using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.Messaging;
-using DevHome.Common.DevHomeAdaptiveCards.CardModels;
-using DevHome.Common.Renderers;
-using DevHome.Common.Views;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using WinUIEx.Messaging;
 
 namespace DevHome.SetupFlow.Views.Environments;
 
-public sealed partial class CreateEnvironmentReviewView : UserControl
+public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipient<CreationOptionsReviewPageDataRequest>
 {
     public CreateEnvironmentReviewViewModel ViewModel => (CreateEnvironmentReviewViewModel)this.DataContext;
 
     public CreateEnvironmentReviewView()
     {
         this.InitializeComponent();
-    }
-
-    private void ViewLoaded(object sender, RoutedEventArgs e)
-    {
-        if (ViewModel != null && ReviewTabAdaptiveCardUI.Content == null)
-        {
-            ViewModel.LoadAdaptiveCardPanel();
-
-            // TODO: pass adaptive card
-        }
+        WeakReferenceMessenger.Default.Register<CreationOptionsReviewPageDataRequest>(this);
     }
 
     private void ViewUnloaded(object sender, RoutedEventArgs e)
     {
-        ReviewTabAdaptiveCardUI.Content = null;
+        AdaptiveCardGrid.Children.Clear();
+        WeakReferenceMessenger.Default.UnregisterAll(this);
+    }
+
+    /// <summary>
+    /// Recieves the adaptive card from the view model, when the view model finishes loading it.
+    /// </summary>
+    public void Receive(CreationOptionsReviewPageDataRequest message)
+    {
+        // Recreate the adaptive card so we don't crash if the card already has a parent.
+        var renderedAdaptiveCard = message.AdaptiveCardRenderer.RenderAdaptiveCard(message.AdaptiveCard);
+
+        var frameworkElement = renderedAdaptiveCard?.FrameworkElement;
+        if (frameworkElement == null)
+        {
+            return;
+        }
+
+        AdaptiveCardGrid.Children.Clear();
+        AdaptiveCardGrid.Children.Add(frameworkElement);
     }
 }

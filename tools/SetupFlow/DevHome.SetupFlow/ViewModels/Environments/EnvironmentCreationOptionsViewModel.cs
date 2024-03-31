@@ -9,17 +9,12 @@ using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
-using DevHome.Common.DevHomeAdaptiveCards.Parsers;
 using DevHome.Common.Environments.Models;
-using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using DevHome.Common.Renderers;
-using DevHome.Common.Views;
-using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
-using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
@@ -28,8 +23,7 @@ namespace DevHome.SetupFlow.ViewModels.Environments;
 /// <summary>
 /// View model for the Configure Environment page in the setup flow. This page will display an adaptive card that is provided by the selected
 /// compute system provider. The adaptive card will be display in the middle of the page and will contain compute system provider specific UI
-/// for the user to configure their environment. The adaptive card will be provided by the compute system provider and this viewmodel will
-/// stitch up the actions and elements to the adaptive card renderer.
+/// for the user to configure their creation options.
 /// </summary>
 public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IRecipient<CreationProviderChangedMessage>
 {
@@ -39,8 +33,6 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
 
     private readonly SetupFlowViewModel _setupFlowViewModel;
 
-    private readonly ItemsViewChoiceSet _itemsViewChoiceSet = new("SettingsCardWithButtonThatLaunchesContentDialog");
-
     public ComputeSystemProviderDetails CurProviderDetails { get; private set; }
 
     public AdaptiveCardRenderer AdaptiveCardRenderer { get; set; }
@@ -49,13 +41,15 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
 
     public ExtensionAdaptiveCardSession ExtensionAdaptiveCardSession { get; private set; }
 
-    public ExtensionAdaptiveCardPanel ExtensionAdaptiveCardPanel { get; private set; }
+    public ExtensionAdaptiveCard ExtensionAdaptiveCard { get; private set; }
+
+    public RenderedAdaptiveCard RenderedAdaptiveCard { get; private set; }
 
     [ObservableProperty]
     private bool _isAdaptiveCardSessionLoaded;
 
     [ObservableProperty]
-    private string _errorRetrievingAdaptiveCardSessionMessage;
+    private string _sessionErrorMessage;
 
     public string ResultJson { get; private set; }
 
@@ -74,29 +68,34 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         // from the SelectEnvironmentProviderViewModel. This is a weak reference so that the recipient can be garbage collected.
         WeakReferenceMessenger.Default.Register<CreationProviderChangedMessage>(this);
 
-        // Register to receive the CreationOptionsReviewPageRequestMessage so that we can populate the review page with the current
-        // adaptive card information.
-        WeakReferenceMessenger.Default.Register<EnvironmentCreationOptionsViewModel, CreationOptionsReviewPageRequestMessage>(this, OnReviewPageRequestReceived);
-
-        // register the supported element and action parsers
-        RegisterAllSupportedDevHomeParsers();
+        // Register to receive the EnvironmentCreationOptionsViewRequestMessage so that we can populate the configure environment page with the current
+        // adaptive card information. This handles the case where the view is loaded after the view model has finished loading the adaptive card.
+        WeakReferenceMessenger.Default.Register<EnvironmentCreationOptionsViewModel, CreationOptionsViewPageRequestMessage>(this, OnEnvironmentOptionsViewRequest);
     }
 
     /// <summary>
-    /// Weak reference message handler for when the selected provider changes in the previous page. This will be triggered when the user
-    /// selects an item in the Select Environment Provider page. The next time the user goes to this page, we'll update the UI
+    /// Weak reference message handler for when the selected provider changes in the select environment provider page. This will be triggered when the user
+    /// selects an item in the Select Environment Provider page. The next time the user goes to this configure environments page, we'll update the UI
     /// with an adaptive card from the newly selected provider.
     /// </summary>
     /// <param name="message">Message data that contains the new provider details.</param>
     public void Receive(CreationProviderChangedMessage message)
     {
-        UpcomingProviderDetails = message.Value.ProviderDetails;
+        UpcomingProviderDetails = message.Value;
     }
 
     private void OnEndSetupFlow(object sender, EventArgs e)
     {
+        ResetAdaptiveCardConfiguration();
         WeakReferenceMessenger.Default.UnregisterAll(this);
         _setupFlowViewModel.EndSetupFlow -= OnEndSetupFlow;
+    }
+
+    protected async override Task OnFirstNavigateToAsync()
+    {
+        // Does nothing, but we need to override this as the base expects a task to be returned.
+        await Task.CompletedTask;
+        AdaptiveCardRenderer = GetAdaptiveCardRenderer();
     }
 
     /// <summary>
@@ -111,9 +110,10 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         var curSelectedProviderId = CurProviderDetails?.ComputeSystemProvider?.Id ?? string.Empty;
         var upcomingSelectedProviderId = UpcomingProviderDetails?.ComputeSystemProvider?.Id;
 
-        // Selected compute system provider changed so we need to update the adaptive card panel.
-        // with new a adaptive card session from the new provider.
+        // Selected compute system provider  may havechanged so we need to update the adaptive card in the UI
+        // with new a adaptive card from the new provider.
         CurProviderDetails = UpcomingProviderDetails;
+
         IsAdaptiveCardSessionLoaded = false;
 
         // Its possible that an extension could take a long time to load the adaptive card session.
@@ -122,29 +122,21 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         {
             var developerIdWrapper = CurProviderDetails.DeveloperIds.First();
             var result = CurProviderDetails.ComputeSystemProvider.CreateAdaptiveCardSessionForDeveloperId(developerIdWrapper.DeveloperId, ComputeSystemAdaptiveCardKind.CreateComputeSystem);
-            UpdateExtensionAdaptiveCardPanel(result);
+            UpdateExtensionAdaptiveCard(result);
         });
     }
 
     /// <summary>
     /// Gets and configures the adaptive card that will be displayed on the configure environment page.
-    /// This adaptive card will be used through out the flow until either the user changes compute system
-    /// providers, cancels the flow, or completes the flow. We use message passing to send the extension
-    /// adaptive card panel to the next page of the flow when the user moves from one page to the next.
     /// </summary>
-    public void UpdateExtensionAdaptiveCardPanel(ComputeSystemAdaptiveCardResult adaptiveCardSessionResult)
+    public void UpdateExtensionAdaptiveCard(ComputeSystemAdaptiveCardResult adaptiveCardSessionResult)
     {
         _dispatcher.TryEnqueue(() =>
         {
             try
             {
                 // Reset error state and remove event handler from previous session.
-                ExtensionAdaptiveCardPanel = null;
-                ErrorRetrievingAdaptiveCardSessionMessage = null;
-                if (ExtensionAdaptiveCardSession != null)
-                {
-                    ExtensionAdaptiveCardSession.Stopped -= OnAdaptiveCardSessionStopped;
-                }
+                ResetAdaptiveCardConfiguration();
 
                 if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
                 {
@@ -154,36 +146,85 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
 
                 ExtensionAdaptiveCardSession = new ExtensionAdaptiveCardSession(adaptiveCardSessionResult.ComputeSystemCardSession);
                 ExtensionAdaptiveCardSession.Stopped += OnAdaptiveCardSessionStopped;
-                AdaptiveCardRenderer = GetAdaptiveCardRenderer();
-                ExtensionAdaptiveCardPanel = GetExtensionAdaptiveCardPanel(ExtensionAdaptiveCardSession, AdaptiveCardRenderer);
+                ExtensionAdaptiveCard = new ExtensionAdaptiveCard(ElementRegistration, ActionRegistration);
+                ExtensionAdaptiveCard.UiUpdate += OnAdaptiveCardUpdated;
+
+                ExtensionAdaptiveCardSession.Initialize(ExtensionAdaptiveCard);
             }
             catch (Exception ex)
             {
-                _log.Error("EnvironmentCreationOptionsViewModel", $"Failed to get creation options adaptive card from provider {CurProviderDetails.ComputeSystemProvider.Id}.", ex);
-                ErrorRetrievingAdaptiveCardSessionMessage = ex.Message;
+                _log.Error($"Failed to get creation options adaptive card from provider {CurProviderDetails.ComputeSystemProvider.Id}.", ex);
+                SessionErrorMessage = ex.Message;
+            }
+        });
+    }
+
+    public void OnAdaptiveCardUpdated(object sender, AdaptiveCard adaptiveCard)
+    {
+        _dispatcher.TryEnqueue(async () =>
+        {
+            RenderedAdaptiveCard = GetAdaptiveCardRenderer().RenderAdaptiveCard(adaptiveCard);
+            RenderedAdaptiveCard.Action += OnRenderedAdaptiveCardAction;
+
+            // Add a small delay here for the case where the setup flow is switching between the configure environment page and the review page.
+            await Task.Delay(250);
+
+            // Send new card to listeners
+            if (Orchestrator.IsCurrentPage(this))
+            {
+                UserInputsFromAdaptiveCard = RenderedAdaptiveCard.UserInputs;
+                WeakReferenceMessenger.Default.Send(new CreationOptionsConfigureEnvironmentMessage(RenderedAdaptiveCard));
+            }
+            else
+            {
+                // To prevent the rendered adaptive card from crashing due to being added as a child of multiple UI elements in the visual tree, the recipient of this message will reconstruct
+                // a new the adaptive card with data from the currently rendered adaptive card. This is needed so the review page can display the adaptive card from the extension after we move
+                // from the configure environment page to the review page.
+                WeakReferenceMessenger.Default.Send(new CreationOptionsReviewPageDataRequest(RenderedAdaptiveCard?.OriginatingCard, GetAdaptiveCardRenderer(), ElementRegistration, ActionRegistration, SessionErrorMessage));
             }
 
             IsAdaptiveCardSessionLoaded = true;
         });
     }
 
+    private void OnRenderedAdaptiveCardAction(object sender, AdaptiveActionEventArgs args)
+    {
+        _dispatcher.TryEnqueue(async () =>
+        {
+            IsAdaptiveCardSessionLoaded = false;
+
+            // Send the inputs and actions that the user entered back to the extension.
+            await ExtensionAdaptiveCardSession.OnAction(args.Action.ToJson().Stringify(), args.Inputs.AsJson().Stringify());
+        });
+    }
+
+    private void ResetAdaptiveCardConfiguration()
+    {
+        SessionErrorMessage = null;
+        if (ExtensionAdaptiveCardSession != null)
+        {
+            ExtensionAdaptiveCardSession.Stopped -= OnAdaptiveCardSessionStopped;
+        }
+
+        if (ExtensionAdaptiveCard != null)
+        {
+            ExtensionAdaptiveCard.UiUpdate -= OnAdaptiveCardUpdated;
+        }
+
+        if (RenderedAdaptiveCard != null)
+        {
+            RenderedAdaptiveCard.Action -= OnRenderedAdaptiveCardAction;
+        }
+    }
+
     /// <summary>
-    /// The review page in the setup flow for creation will request an adaptive card panel to display the review page UI.
-    /// Only this class as a reference to the ExtensionAdaptiveCardSession so all others need to request the adaptive card panel.
-    /// which is created using the ExtensionAdaptiveCardSession.
+    /// The configure environment view page will request an adaptive card to display in the UI if it loads after the extension sends out the AdaptiveCardDataLoadedMessage.
     /// </summary>
     /// <param name="recipient">The class that should be receiving the request</param>
     /// <param name="message">The payload of the message request</param>
-    private void OnReviewPageRequestReceived(EnvironmentCreationOptionsViewModel recipient, CreationOptionsReviewPageRequestMessage message)
+    private void OnEnvironmentOptionsViewRequest(EnvironmentCreationOptionsViewModel recipient, CreationOptionsViewPageRequestMessage message)
     {
-        // Error previously occurred, if moving to review page show the error there as well.
-        if (!string.IsNullOrEmpty(ErrorRetrievingAdaptiveCardSessionMessage))
-        {
-            message.Reply(new CreationOptionsReviewPageRequestData(ErrorRetrievingAdaptiveCardSessionMessage));
-            return;
-        }
-
-        message.Reply(new CreationOptionsReviewPageRequestData(ExtensionAdaptiveCardPanel, ErrorRetrievingAdaptiveCardSessionMessage));
+        message.Reply(RenderedAdaptiveCard);
     }
 
     /// <summary>
@@ -204,29 +245,15 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     }
 
     /// <summary>
-    /// Register all the supported DevHome adaptive card parsers that are used in the DevHome adaptive cards. All other parsers remain as default.
+    /// Gets the adaptive card renderer that will be used to render the adaptive card in the UI. Its important to recreate the ItemsViewChoiceSet every time we want to
+    /// render an adaptive card because the parenting the ItemsView control to multiple parents will cause an exception to be thrown.
     /// </summary>
-    private void RegisterAllSupportedDevHomeParsers()
-    {
-        ElementRegistration.Set(DevHomeSettingsCard.AdaptiveElementType, new DevHomeSettingsCardParser());
-        ElementRegistration.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new DevHomeSettingsCardChoiceSetParser());
-        ElementRegistration.Set(DevHomeLaunchContentDialogButton.AdaptiveElementType, new DevHomeLaunchContentDialogButtonParser());
-        ElementRegistration.Set(DevHomeContentDialogContent.AdaptiveElementType, new DevHomeContentDialogContentParser());
-    }
-
     private AdaptiveCardRenderer GetAdaptiveCardRenderer()
     {
         var renderer = new AdaptiveCardRenderer();
-        renderer.ElementRenderers.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, _itemsViewChoiceSet);
+        renderer.ElementRenderers.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new ItemsViewChoiceSet("SettingsCardWithButtonThatLaunchesContentDialog"));
         renderer.ElementRenderers.Set("ActionSet", Orchestrator.DevHomeActionSetRenderer);
         renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
         return renderer;
-    }
-
-    private ExtensionAdaptiveCardPanel GetExtensionAdaptiveCardPanel(ExtensionAdaptiveCardSession cardSession, AdaptiveCardRenderer renderer)
-    {
-        var extensionPanel = new ExtensionAdaptiveCardPanel();
-        extensionPanel.Bind(cardSession.Session, renderer, ElementRegistration, ActionRegistration);
-        return extensionPanel;
     }
 }
