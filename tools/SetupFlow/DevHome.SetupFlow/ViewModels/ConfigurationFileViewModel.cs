@@ -43,9 +43,6 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     private bool _readAndAgree;
 
     [ObservableProperty]
-    private bool _isCodeMode;
-
-    [ObservableProperty]
     private IList<DSCConfigurationUnitViewModel> _configurationUnits;
 
     public ConfigurationFileViewModel(
