@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Unloaded="ViewUnloaded"
+    Loaded="ViewLoaded"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters">
     <UserControl.Resources>
         <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>

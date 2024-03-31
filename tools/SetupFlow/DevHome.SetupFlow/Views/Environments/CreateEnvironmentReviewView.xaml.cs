@@ -9,14 +9,14 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.Views.Environments;
 
-public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipient<CreationOptionsReviewPageDataRequest>
+public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipient<CreationOptionsReviewPageData>
 {
     public CreateEnvironmentReviewViewModel ViewModel => (CreateEnvironmentReviewViewModel)this.DataContext;
 
     public CreateEnvironmentReviewView()
     {
         this.InitializeComponent();
-        WeakReferenceMessenger.Default.Register<CreationOptionsReviewPageDataRequest>(this);
+        WeakReferenceMessenger.Default.Register<CreationOptionsReviewPageData>(this);
     }
 
     private void ViewUnloaded(object sender, RoutedEventArgs e)
@@ -28,7 +28,26 @@ public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipien
     /// <summary>
     /// Recieves the adaptive card from the view model, when the view model finishes loading it.
     /// </summary>
-    public void Receive(CreationOptionsReviewPageDataRequest message)
+    public void Receive(CreationOptionsReviewPageData message)
+    {
+        AddAdaptiveCardToUI(message);
+    }
+
+    /// <summary>
+    /// Request the adaptive cad from the view model
+    /// </summary>
+    private void ViewLoaded(object sender, RoutedEventArgs e)
+    {
+        var message = WeakReferenceMessenger.Default.Send<CreationOptionsReviewPageDataRequestMessage>();
+        if (!message.HasReceivedResponse)
+        {
+            return;
+        }
+
+        AddAdaptiveCardToUI(message.Response);
+    }
+
+    private void AddAdaptiveCardToUI(CreationOptionsReviewPageData message)
     {
         // Recreate the adaptive card so we don't crash if the card already has a parent.
         var renderedAdaptiveCard = message.AdaptiveCardRenderer.RenderAdaptiveCard(message.AdaptiveCard);

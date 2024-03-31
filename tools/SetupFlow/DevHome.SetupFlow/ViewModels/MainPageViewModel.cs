@@ -34,6 +34,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     private const string EnvironmentsSetupFlowFeatureName = "EnvironmentsSetupTargetFlow";
 
+    private const string EnvironmentsCreationFlowFeatureName = "EnvironmentsCreationFlow";
+
     private readonly IHost _host;
     private readonly IWindowsPackageManager _wpm;
     private readonly IDesiredStateConfiguration _dsc;
@@ -54,6 +56,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private bool _showAppInstallerUpdateNotification;
 
     public bool ShouldShowSetupTargetItem => _experimentationService.IsFeatureEnabled(EnvironmentsSetupFlowFeatureName);
+
+    public bool ShouldShowCreateEnvironmentItem => _experimentationService.IsFeatureEnabled(EnvironmentsCreationFlowFeatureName);
 
     /// <summary>
     /// Event raised when the user elects to start the setup flow.

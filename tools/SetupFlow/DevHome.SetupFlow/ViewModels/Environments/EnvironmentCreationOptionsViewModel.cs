@@ -71,6 +71,8 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         // Register to receive the EnvironmentCreationOptionsViewRequestMessage so that we can populate the configure environment page with the current
         // adaptive card information. This handles the case where the view is loaded after the view model has finished loading the adaptive card.
         WeakReferenceMessenger.Default.Register<EnvironmentCreationOptionsViewModel, CreationOptionsViewPageRequestMessage>(this, OnEnvironmentOptionsViewRequest);
+
+        WeakReferenceMessenger.Default.Register<EnvironmentCreationOptionsViewModel, CreationOptionsReviewPageDataRequestMessage>(this, OnReviewPageViewRequest);
     }
 
     /// <summary>
@@ -180,7 +182,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
                 // To prevent the rendered adaptive card from crashing due to being added as a child of multiple UI elements in the visual tree, the recipient of this message will reconstruct
                 // a new the adaptive card with data from the currently rendered adaptive card. This is needed so the review page can display the adaptive card from the extension after we move
                 // from the configure environment page to the review page.
-                WeakReferenceMessenger.Default.Send(new CreationOptionsReviewPageDataRequest(RenderedAdaptiveCard?.OriginatingCard, GetAdaptiveCardRenderer(), ElementRegistration, ActionRegistration, SessionErrorMessage));
+                WeakReferenceMessenger.Default.Send(new CreationOptionsReviewPageData(RenderedAdaptiveCard?.OriginatingCard, GetAdaptiveCardRenderer(), ElementRegistration, ActionRegistration, SessionErrorMessage));
             }
 
             IsAdaptiveCardSessionLoaded = true;
@@ -218,13 +220,32 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     }
 
     /// <summary>
-    /// The configure environment view page will request an adaptive card to display in the UI if it loads after the extension sends out the AdaptiveCardDataLoadedMessage.
+    /// The configure environment view page will request an adaptive card to display in the UI if it loads after the extension sends out the CreationOptionsViewPageRequestMessage.
     /// </summary>
     /// <param name="recipient">The class that should be receiving the request</param>
     /// <param name="message">The payload of the message request</param>
     private void OnEnvironmentOptionsViewRequest(EnvironmentCreationOptionsViewModel recipient, CreationOptionsViewPageRequestMessage message)
     {
         message.Reply(RenderedAdaptiveCard);
+    }
+
+    /// <summary>
+    /// The review environments view page will request an adaptive card to display in the UI if it loads after this view model sends out the original CreationOptionsReviewPageData message.
+    /// this can happen when the user navigates away from the review page to another page in Dev Home. E.g the settings page, then navigates back to the review page. At this point the review
+    /// page is unloaded when the user navigates away from it. When they navigate back to it, a new view will be created and loaded, so we need to request the adaptive again from this view model.
+    /// </summary>
+    /// <param name="recipient">The class that should be receiving the request</param>
+    /// <param name="message">The payload of the message request</param>
+    private void OnReviewPageViewRequest(EnvironmentCreationOptionsViewModel recipient, CreationOptionsReviewPageDataRequestMessage message)
+    {
+        // Only send the adaptive card if the session has loaded. If the session hasn't loaded yet, we'll send an empty response. The review page should be sent the adaptive card
+        // once the session has loaded in the OnAdaptiveCardUpdated method.
+        if (!IsAdaptiveCardSessionLoaded)
+        {
+            return;
+        }
+
+        message.Reply(new CreationOptionsReviewPageData(RenderedAdaptiveCard?.OriginatingCard, GetAdaptiveCardRenderer(), ElementRegistration, ActionRegistration, SessionErrorMessage));
     }
 
     /// <summary>

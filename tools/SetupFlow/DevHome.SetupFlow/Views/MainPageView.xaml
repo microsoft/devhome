@@ -166,7 +166,9 @@
                         <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
 
                         <!-- settings card for creating an environment -->
-                        <ctControls:SettingsCard x:Uid="MainPageCreateEnvironment"
+                        <ctControls:SettingsCard 
+                           Visibility="{x:Bind ViewModel.ShouldShowCreateEnvironmentItem}"
+                           x:Uid="MainPageCreateEnvironment"
                            AutomationProperties.AutomationId="CreateEnvironment"
                            IsClickEnabled="True"
                            Command="{x:Bind ViewModel.StartCreateEnvironmentCommand}"
