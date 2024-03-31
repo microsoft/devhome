@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.Reflection.Emit;
 using AdaptiveCards.ObjectModel.WinUI3;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
 using DevHome.Common.Environments.Helpers;
@@ -29,20 +28,26 @@ public class DevHomeSettingsCardChoiceSetParser : IAdaptiveElementParser
             adaptiveSettingsCardChoiceSet.Label = isCorrectType ? label.GetString() : StringResourceHelper.GetResource("SettingsCardChoiceSetDefaultLabel");
         }
 
-        if (inputJson.TryGetValue("SelectedValue", out var selectedValue))
+        if (inputJson.TryGetValue("isRequired", out var isRequired))
+        {
+            isCorrectType = isRequired.ValueType == JsonValueType.Boolean;
+            adaptiveSettingsCardChoiceSet.IsRequired = isCorrectType ? isRequired.GetBoolean() : false;
+        }
+
+        if (inputJson.TryGetValue("selectedValue", out var selectedValue))
         {
             isCorrectType = selectedValue.ValueType == JsonValueType.Number;
             adaptiveSettingsCardChoiceSet.SelectedValue = isCorrectType ? (int)selectedValue.GetNumber() : DevHomeSettingsCardChoiceSet.UnselectedIndex;
         }
 
-        if (inputJson.TryGetValue("IsMultiSelect", out var isMultiSelect))
+        if (inputJson.TryGetValue("isMultiSelect", out var isMultiSelect))
         {
             isCorrectType = isMultiSelect.ValueType == JsonValueType.Boolean;
             adaptiveSettingsCardChoiceSet.IsMultiSelect = isCorrectType ? isMultiSelect.GetBoolean() : false;
         }
 
         // If IsSelectionDisabled is true, then IsMultiSelect should be false and no item should be selected.
-        if (inputJson.TryGetValue("DevHomeSettingsCardIsSelectionDisabled", out var devHomeSettingsCardIsSelectionDisabled))
+        if (inputJson.TryGetValue("devHomeSettingsCardIsSelectionDisabled", out var devHomeSettingsCardIsSelectionDisabled))
         {
             isCorrectType = devHomeSettingsCardIsSelectionDisabled.ValueType == JsonValueType.Boolean;
             adaptiveSettingsCardChoiceSet.IsSelectionDisabled = isCorrectType ? devHomeSettingsCardIsSelectionDisabled.GetBoolean() : false;
@@ -55,7 +60,7 @@ public class DevHomeSettingsCardChoiceSetParser : IAdaptiveElementParser
         }
 
         // Parse the settings cards
-        if (inputJson.TryGetValue("DevHomeSettingsCards", out var devHomeSettingsCards))
+        if (inputJson.TryGetValue("devHomeSettingsCards", out var devHomeSettingsCards))
         {
             isCorrectType = devHomeSettingsCards.ValueType == JsonValueType.Array;
             var elementJson = isCorrectType ? devHomeSettingsCards.GetArray() : [];

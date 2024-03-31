@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using AdaptiveCards.ObjectModel.WinUI3;
 using DevHome.Common.DevHomeAdaptiveCards.CardInterfaces;
 using Microsoft.UI.Xaml.Controls;
@@ -11,6 +12,7 @@ namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
 public class DevHomeSettingsCard : IDevHomeSettingsCard
 {
+    // Specific properties for DevHomeSettingsCard
     // These properties relate to the Windows Community Toolkit's SettingsCard control.
     // We'll allow extensions to provide the data for the SettingsCard control from an Adaptive Card.
     // Then we'll render the actual SettingsCard control in the DevHome app.
@@ -20,16 +22,17 @@ public class DevHomeSettingsCard : IDevHomeSettingsCard
 
     public string HeaderIcon { get; set; } = string.Empty;
 
+    [JsonIgnore]
     public ImageIcon? HeaderIconImage { get; set; }
 
     public IDevHomeSettingsCardNonSubmitAction? NonSubmitActionElement { get; set; }
 
     public IAdaptiveActionElement? SubmitActionElement { get; set; }
 
+    public static string AdaptiveElementType => "DevHome.SettingsCard";
+
     // Properties for IAdaptiveCardElement
     public string ElementTypeString { get; set; } = AdaptiveElementType;
-
-    public static string AdaptiveElementType => "DevHome.SettingsCard";
 
     public JsonObject AdditionalProperties { get; set; } = new();
 
@@ -51,5 +54,5 @@ public class DevHomeSettingsCard : IDevHomeSettingsCard
 
     public Spacing Spacing { get; set; } = Spacing.Default;
 
-    public JsonObject ToJson() => [];
+    public JsonObject? ToJson() => [];
 }
