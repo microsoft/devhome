@@ -5,7 +5,7 @@
   "body": [
     {
       "type": "Input.Text",
-      "id": "NewVMNameTextBox",
+      "id": "NewVirtualMachineName",
       "label": "${EnterNewVMNameLabel}",
       "placeholder": "${EnterNewVMNamePlaceHolder}",
       "maxLength": 100,
@@ -14,21 +14,22 @@
     },
     {
       "type": "DevHome.SettingsCardChoiceSet",
-      "id": "HyperVVmGalleryImageList",
+      "id": "SelectedImageListIndex",
       "label": "${SettingsCardLabel}",
-      "DevHomeSettingsCards": [
+      "isRequired": true,
+      "devHomeSettingsCards": [
         {
           "type": "DevHome.SettingsCard",
           "$data": "${GalleryImages}",
-          "DevHomeSettingsCardDescription": "${SubDescription}",
-          "DevHomeSettingsCardHeader": "${Header}",
-          "DevHomeSettingsCardHeaderIcon": "${HeaderIcon}",
-          "DevHomeSettingsCardActionElement": {
+          "devHomeSettingsCardDescription": "${SubDescription}",
+          "devHomeSettingsCardHeader": "${Header}",
+          "devHomeSettingsCardHeaderIcon": "${HeaderIcon}",
+          "devHomeSettingsCardActionElement": {
             "type": "DevHome.LaunchContentDialogButton",
-            "DevHomeActionText": "${ButtonToLaunchContentDialogLabel}",
-            "DevHomeContentDialogContent": {
-              "DevHomeContentDialogTitle": "${Header}",
-              "DevHomeContentDialogBodyAdaptiveCard": {
+            "devHomeActionText": "${ButtonToLaunchContentDialogLabel}",
+            "devHomeContentDialogContent": {
+              "devHomeContentDialogTitle": "${Header}",
+              "devHomeContentDialogBodyAdaptiveCard": {
                 "type": "AdaptiveCard",
                 "version": "1.5",
                 "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -59,7 +60,7 @@
                   }
                 ]
               },
-              "DevHomeContentDialogSecondaryButtonText": "${SecondaryButtonForContentDialogText}"
+              "devHomeContentDialogSecondaryButtonText": "${SecondaryButtonForContentDialogText}"
             }
           }
         }
@@ -69,17 +70,14 @@
       "type": "ActionSet",
       "actions": [
         {
-          "id": "VmGalleryPrimaryButtonId",
+          "id": "DevHomeMachineConfigurationNextButton",
           "type": "Action.Submit",
-          "title": "${PrimaryButtonLabelForCreationFlow}",
-          "ActionMode": "Primary",
-          "style": "positive"
+          "title": "${PrimaryButtonLabelForCreationFlow}"
         },
         {
-          "id": "VmGallerySecondaryButtonId",
+          "id": "DevHomeMachineConfigurationPreviousButton",
           "type": "Action.Submit",
-          "title": "${SecondaryButtonLabelForCreationFlow}",
-          "ActionMode": "Secondary"
+          "title": "${SecondaryButtonLabelForCreationFlow}"
         }
       ]
     }
