@@ -24,8 +24,6 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 
     public string TemplateJson { get; private set; }
 
-    public AdaptiveCardParseResult? LastParseResult { get; private set; }
-
     public ExtensionAdaptiveCard()
     {
         TemplateJson = new JsonObject().ToJsonString();
@@ -69,7 +67,6 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
         TemplateJson = templateJson ?? TemplateJson;
         DataJson = dataJson ?? DataJson;
         State = state ?? State;
-        LastParseResult = parseResult;
 
         UiUpdate?.Invoke(this, parseResult.AdaptiveCard);
 

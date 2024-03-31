@@ -21,11 +21,7 @@ public class ExtensionAdaptiveCardPanel : StackPanel
 
     private RenderedAdaptiveCard? _renderedAdaptiveCard;
 
-    public void Bind(
-        IExtensionAdaptiveCardSession extensionAdaptiveCardSession,
-        AdaptiveCardRenderer? customRenderer = null,
-        AdaptiveElementParserRegistration? elementParserRegistration = null,
-        AdaptiveActionParserRegistration? actionParserRegistration = null)
+    public void Bind(IExtensionAdaptiveCardSession extensionAdaptiveCardSession, AdaptiveCardRenderer? customRenderer)
     {
         var adaptiveCardRenderer = customRenderer ?? new AdaptiveCardRenderer();
 
@@ -35,18 +31,7 @@ public class ExtensionAdaptiveCardPanel : StackPanel
         }
 
         var uiDispatcher = DispatcherQueue.GetForCurrentThread();
-        ExtensionAdaptiveCard extensionUI;
-
-        // Setup adaptive card to use custom element parsers when requested
-        if (elementParserRegistration != null && actionParserRegistration != null)
-        {
-            extensionUI = new ExtensionAdaptiveCard(elementParserRegistration, actionParserRegistration);
-        }
-        else
-        {
-            // Default parsers used
-            extensionUI = new ExtensionAdaptiveCard();
-        }
+        var extensionUI = new ExtensionAdaptiveCard();
 
         extensionUI.UiUpdate += (object? sender, AdaptiveCard adaptiveCard) =>
         {
