@@ -9,18 +9,22 @@ namespace DevHome.SetupFlow.Models;
 
 public class DSCConfigurationUnit
 {
-    private const string DescriptionSettingsKey = "description";
+    private const string DescriptionMetadataKey = "description";
     private const string ModuleMetadataKey = "module";
 
     public DSCConfigurationUnit(ConfigurationUnit unit)
     {
+        // Constructor copies all the required data from the out-of-proc COM
+        // objects over to the current process. This ensures that we have this
+        // information available even if the out-of-proc COM objects are no
+        // longer available (e.g. AppInstaller service is no longer running).
         Type = unit.Type;
         Id = unit.Identifier;
         Intent = unit.Intent.ToString();
         Dependencies = [.. unit.Dependencies];
 
         // Get description from settings
-        unit.Metadata.TryGetValue(DescriptionSettingsKey, out var descriptionObj);
+        unit.Metadata.TryGetValue(DescriptionMetadataKey, out var descriptionObj);
         Description = descriptionObj?.ToString() ?? string.Empty;
 
         // Get module name from metadata
@@ -44,7 +48,6 @@ public class DSCConfigurationUnit
             ModuleDocumentationUri = unit.Details.ModuleDocumentationUri?.ToString();
             PublishedModuleUri = unit.Details.PublishedModuleUri?.ToString();
             Version = unit.Details.Version;
-            PublishedDate = $"{unit.Details.PublishedDate}";
             IsLocal = unit.Details.IsLocal;
             Author = unit.Details.Author;
             Publisher = unit.Details.Publisher;
@@ -85,8 +88,6 @@ public class DSCConfigurationUnit
     public string PublishedModuleUri { get; }
 
     public string Version { get; }
-
-    public string PublishedDate { get; }
 
     public bool IsLocal { get; }
 

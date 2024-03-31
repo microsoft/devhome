@@ -102,10 +102,17 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task OnLoadedAsync()
     {
-        if (Configuration != null && ConfigurationUnits == null)
+        try
         {
-            var configUnits = await _dsc.GetConfigurationUnitDetailsAsync(Configuration, Orchestrator.ActivityId);
-            ConfigurationUnits = configUnits.Select(u => new DSCConfigurationUnitViewModel(u)).ToList();
+            if (Configuration != null && ConfigurationUnits == null)
+            {
+                var configUnits = await _dsc.GetConfigurationUnitDetailsAsync(Configuration, Orchestrator.ActivityId);
+                ConfigurationUnits = configUnits.Select(u => new DSCConfigurationUnitViewModel(u)).ToList();
+            }
+        }
+        catch (Exception e)
+        {
+            _log.Error($"Failed to get configuration unit details.", e);
         }
     }
 

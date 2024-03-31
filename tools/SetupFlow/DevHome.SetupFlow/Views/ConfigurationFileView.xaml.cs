@@ -31,7 +31,7 @@ public sealed partial class ConfigurationFileView : UserControl
         SetUpButton.IsChecked = true;
     }
 
-    private async void Hyperlink_Click(Hyperlink sender, HyperlinkClickEventArgs args)
+    private async void Dependency_Click(Hyperlink sender, HyperlinkClickEventArgs args)
     {
         var textBlock = sender?.ContentStart?.VisualParent as TextBlock;
         if (textBlock?.Tag is string unitId && !string.IsNullOrEmpty(unitId))
@@ -52,7 +52,10 @@ public sealed partial class ConfigurationFileView : UserControl
     }
 }
 
-public class ConfigurationUnitDataEntry
+/// <summary>
+/// Represents a configuration unit data entry.
+/// </summary>
+public sealed class ConfigurationUnitDataEntry
 {
     public string Key { get; set; }
 

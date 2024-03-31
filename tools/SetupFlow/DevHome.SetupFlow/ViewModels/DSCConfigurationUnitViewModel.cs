@@ -51,8 +51,6 @@ public class DSCConfigurationUnitViewModel
 
     public string Version => _configurationUnit.Version;
 
-    public string PublishedDate => _configurationUnit.PublishedDate;
-
     public bool IsLocal => _configurationUnit.IsLocal;
 
     public string Author => _configurationUnit.Author;

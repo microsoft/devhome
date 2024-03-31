@@ -79,7 +79,7 @@ public class ConfigurationFileHelper
     {
         if (_processor == null || _configSet == null)
         {
-            throw new InvalidOperationException("Cannot ");
+            throw new InvalidOperationException();
         }
 
         await _processor.GetSetDetailsAsync(_configSet, ConfigurationUnitDetailFlags.ReadOnly);

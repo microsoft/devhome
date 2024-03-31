@@ -89,14 +89,14 @@
             </Grid.RowDefinitions>
 
             <InfoBar
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ConfigurationFileWarning"
+                x:Uid="ConfigurationFileWarning"
                 IsOpen="True"
                 IsClosable="False"
                 Severity="Warning"/>
 
             <ctControls:Segmented Grid.Row="1" SelectedIndex="0">
-                <ctControls:SegmentedItem x:Name="SummaryView" Content="Summary view" />
-                <ctControls:SegmentedItem x:Name="CodeView" Content="Code view"/>
+                <ctControls:SegmentedItem x:Name="SummaryView" x:Uid="ConfigurationFile_SummaryView" />
+                <ctControls:SegmentedItem x:Name="CodeView" x:Uid="ConfigurationFile_CodeView"/>
             </ctControls:Segmented>
 
             <!-- Summary mode -->
@@ -143,13 +143,13 @@
                                     <StackPanel>
                                         <!-- Individual records -->
                                         <ListView Margin="{StaticResource BlockThickness}" Style="{StaticResource KeyValueList}" ItemTemplate="{StaticResource KeyValueTemplate}">
-                                            <local:ConfigurationUnitDataEntry Key="Id" Value="{x:Bind Id}" />
-                                            <local:ConfigurationUnitDataEntry Key="Intent" Value="{x:Bind Intent}" />
+                                            <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Id" Value="{x:Bind Id}" />
+                                            <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Intent" Value="{x:Bind Intent}" />
                                         </ListView>
 
                                         <!-- Dependencies -->
                                         <StackPanel Margin="{StaticResource BlockThickness}" Orientation="Horizontal" Visibility="{x:Bind Dependencies, Converter={StaticResource CollectionVisibilityConverter}}">
-                                            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Dependencies</TextBlock>
+                                            <TextBlock x:Uid="ConfigurationUnit_Dependencies" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                             <TextBlock Text=":" Margin="2,0" />
                                             <ListView Style="{StaticResource KeyValueList}" ItemsSource="{x:Bind Dependencies}">
                                                 <ListView.ItemsPanel>
@@ -160,7 +160,7 @@
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate x:DataType="x:String">
                                                         <TextBlock Tag="{x:Bind}">
-                                                            <Hyperlink Click="Hyperlink_Click">
+                                                            <Hyperlink Click="Dependency_Click">
                                                                 <Run Text="{x:Bind}" />
                                                             </Hyperlink>
                                                         </TextBlock>
@@ -171,33 +171,33 @@
 
                                         <!-- Metadata -->
                                         <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Metadata, Converter={StaticResource CollectionVisibilityConverter}}">
-                                            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Resource metadata</TextBlock>
+                                            <TextBlock x:Uid="ConfigurationUnit_ResourceMetadata" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                             <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{ThemeResource KeyValueTemplate}" ItemsSource="{x:Bind Metadata}"/>
                                         </StackPanel>
 
                                         <!-- Settings -->
                                         <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
-                                            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Settings</TextBlock>
+                                            <TextBlock x:Uid="ConfigurationUnit_Settings" Style="{ThemeResource BodyStrongTextBlockStyle}" />
                                             <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{ThemeResource KeyValueTemplate}" ItemsSource="{x:Bind Settings}"/>
                                         </StackPanel>
 
                                         <!-- Details -->
                                         <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
-                                            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Details</TextBlock>
+                                            <TextBlock x:Uid="ConfigurationUnit_Details" Style="{ThemeResource BodyStrongTextBlockStyle}" />
                                             <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{StaticResource KeyValueTemplate}">
-                                                <local:ConfigurationUnitDataEntry Key="Unit type" Value="{x:Bind UnitType}" />
-                                                <local:ConfigurationUnitDataEntry Key="Unit description" Value="{x:Bind UnitDescription}" />
-                                                <local:ConfigurationUnitDataEntry Key="Unit documentation uri" Value="{x:Bind UnitDocumentationUri}" />
-                                                <local:ConfigurationUnitDataEntry Key="Module name" Value="{x:Bind ModuleName}" />
-                                                <local:ConfigurationUnitDataEntry Key="Module source" Value="{x:Bind ModuleSource}" />
-                                                <local:ConfigurationUnitDataEntry Key="Module description" Value="{x:Bind ModuleDescription}" />
-                                                <local:ConfigurationUnitDataEntry Key="Module documentation uri" Value="{x:Bind ModuleDocumentationUri}" />
-                                                <local:ConfigurationUnitDataEntry Key="Published module uri" Value="{x:Bind PublishedModuleUri}" />
-                                                <local:ConfigurationUnitDataEntry Key="Version" Value="{x:Bind Version}" />
-                                                <local:ConfigurationUnitDataEntry Key="Is local" Value="{x:Bind IsLocal}" />
-                                                <local:ConfigurationUnitDataEntry Key="Author" Value="{x:Bind Author}" />
-                                                <local:ConfigurationUnitDataEntry Key="Publisher" Value="{x:Bind Publisher}" />
-                                                <local:ConfigurationUnitDataEntry Key="Is public" Value="{x:Bind IsPublic}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitType" Value="{x:Bind UnitType}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitDescription" Value="{x:Bind UnitDescription}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitDocumentation" Value="{x:Bind UnitDocumentationUri}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleName" Value="{x:Bind ModuleName}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleSource" Value="{x:Bind ModuleSource}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleDescription" Value="{x:Bind ModuleDescription}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleDocumentationUri" Value="{x:Bind ModuleDocumentationUri}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_PublishedModuleUri" Value="{x:Bind PublishedModuleUri}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Version" Value="{x:Bind Version}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Author" Value="{x:Bind Author}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Publisher" Value="{x:Bind Publisher}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_IsLocal" Value="{x:Bind IsLocal}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_IsPublic" Value="{x:Bind IsPublic}" />
                                             </ListView>
                                         </StackPanel>
                                     </StackPanel>
