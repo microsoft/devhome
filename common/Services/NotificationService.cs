@@ -3,6 +3,9 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
@@ -95,8 +98,7 @@ public class NotificationService
                 startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
 
                 // Restart the computer
-                // To Do: Remove the hardcoded time
-                startInfo.FileName = "shutdown.exe";
+                startInfo.FileName = Environment.SystemDirectory + "\\shutdown.exe";
                 startInfo.Arguments = "-r -t 0";
                 startInfo.Verb = string.Empty;
 
@@ -142,16 +144,16 @@ public class NotificationService
 
                 var command = new RelayCommand(() =>
                 {
-                    var startInfo = new System.Diagnostics.ProcessStartInfo();
-                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                    startInfo.FileName = "net.exe";
-
                     var user = _windowsIdentityService.GetCurrentUserName();
                     if (user == null)
                     {
                         _log.Error(_componentName, "Unable to get the current user name");
                         return;
                     }
+
+                    var startInfo = new System.Diagnostics.ProcessStartInfo();
+                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    startInfo.FileName = Environment.SystemDirectory + "\\net.exe";
 
                     // Add the user to the Hyper-V Administrators group
                     startInfo.Arguments = "localgroup \"Hyper-V Administrators\" " + user + " /add";
