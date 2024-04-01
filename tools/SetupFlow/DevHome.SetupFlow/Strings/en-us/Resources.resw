@@ -1028,7 +1028,7 @@
     <value>Installed applications</value>
     <comment>Header for the section that shows all the downloaded apps</comment>
   </data>
-  <data name="SummaryPage_Header.Text" xml:space="preserve">
+  <data name="SummaryPageHeader" xml:space="preserve">
     <value>Here's what we set up for you</value>
     <comment>Header text for the summary page</comment>
   </data>
@@ -1040,7 +1040,7 @@
     <value>Next steps</value>
     <comment>Text for the "Next steps" section of the summary page</comment>
   </data>
-  <data name="SummaryPage_OpenDashboard.Content" xml:space="preserve">
+  <data name="SummaryPageOpenDashboard" xml:space="preserve">
     <value>Open Dashboard</value>
     <comment>Button content to let user go to the dashboard</comment>
   </data>
@@ -1647,5 +1647,45 @@
   <data name="CreateEnvironmentButtonText" xml:space="preserve">
     <value>Create Environment</value>
     <comment>Text for button that starts creating a new virtual machine or cloud pc for the user</comment>
+  </data>
+  <data name="EnvironmentCreationError" xml:space="preserve">
+    <value>There was an error starting the creation operation</value>
+    <comment>Text to tell the user that we couldn't start the operation to create their local or cloud virtual environment</comment>
+  </data>
+  <data name="EnvironmentCreationOperationInitializationFinished" xml:space="preserve">
+    <value>The operation to create your environment has started successfully</value>
+    <comment>Text to tell the user that we were able to start the operation that create their local or cloud virtual machine successfully</comment>
+  </data>
+  <data name="StartingEnvironmentCreation" xml:space="preserve">
+    <value>Starting the create environment operation</value>
+    <comment>Text to tell the user that the operation to create their local or cloud virtual environment has started</comment>
+  </data>
+  <data name="EnvironmentCreationFailedToGetProviderInformation" xml:space="preserve">
+    <value>We timed out waiting for the extension to provide us with information to create your environment</value>
+    <comment>Error text to show the user that we timed out while waiting for a response from a Dev Home extension</comment>
+  </data>
+  <data name="EnvironmentCreationForProviderStarted" xml:space="preserve">
+    <value>The {0} provider is now creating your environment</value>
+    <comment>{Locked="{0}"} Text that tells the user that a specific provider has started creating their environment. {0} is the name of a provider who Dev Home will send the request to.</comment>
+  </data>
+  <data name="EnvironmentCreationOperationFailedToStart" xml:space="preserve">
+    <value>We failed to start the creation operation for the {0} provider</value>
+    <comment>{Locked="{0}"} Text that tells the user that Dev Home could not start the creation operation for a specific provider. {0} is the name of a provider who Dev Home will send the request to.</comment>
+  </data>
+  <data name="SummaryPageHeadingForCreateEnvironmentFlow.Text" xml:space="preserve">
+    <value>Environment details</value>
+    <comment>Heading that will show the user the details of the environment they initiated the creation process for. Environments can be local or cloud virtual machines</comment>
+  </data>
+  <data name="SummaryPageRedirectToEnvironmentPageButton" xml:space="preserve">
+    <value>View environments</value>
+    <comment>Text for button that when clicked will redirect the user to the environments page in Dev Home</comment>
+  </data>
+  <data name="SummaryPageEnvironmentCreating.Text" xml:space="preserve">
+    <value>Environment being created</value>
+    <comment>Text to tell the user that an environment is being created. Environments can be local or cloud virtual machines</comment>
+  </data>
+  <data name="SummaryPageHeaderForEnvironmentCreationText" xml:space="preserve">
+    <value>Here's your environment</value>
+    <comment>Text to tell the user that an environment is being created. Environments can be local or cloud virtual machines</comment>
   </data>
 </root>

@@ -258,4 +258,15 @@ public static class StringResourceKey
     public static readonly string ConfigureEnvironmentPageTitle = nameof(ConfigureEnvironmentPageTitle);
     public static readonly string EnvironmentCreationReviewPageTitle = nameof(EnvironmentCreationReviewPageTitle);
     public static readonly string CreateEnvironmentButtonText = nameof(CreateEnvironmentButtonText);
+    public static readonly string EnvironmentCreationError = nameof(EnvironmentCreationError);
+    public static readonly string StartingEnvironmentCreation = nameof(StartingEnvironmentCreation);
+    public static readonly string EnvironmentCreationOperationInitializationFinished = nameof(EnvironmentCreationOperationInitializationFinished);
+    public static readonly string EnvironmentCreationForProviderStarted = nameof(EnvironmentCreationForProviderStarted);
+    public static readonly string EnvironmentCreationFailedToGetProviderInformation = nameof(EnvironmentCreationFailedToGetProviderInformation);
+
+    // Summary page
+    public static readonly string SummaryPageOpenDashboard = nameof(SummaryPageOpenDashboard);
+    public static readonly string SummaryPageRedirectToEnvironmentPageButton = nameof(SummaryPageRedirectToEnvironmentPageButton);
+    public static readonly string SummaryPageHeader = nameof(SummaryPageHeader);
+    public static readonly string SummaryPageHeaderForEnvironmentCreationText = nameof(SummaryPageHeaderForEnvironmentCreationText);
 }

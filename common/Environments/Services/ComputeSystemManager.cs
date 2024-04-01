@@ -24,6 +24,8 @@ public class ComputeSystemManager : IComputeSystemManager
 
     private readonly IComputeSystemService _computeSystemService;
 
+    private readonly List<CreateComputeSystemOperation> _createComputeSystemOperations = new();
+
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> ComputeSystemStateChanged = (sender, state) => { };
 
     // Used in the setup flow to store the ComputeSystem needed to configure.
@@ -89,5 +91,25 @@ public class ComputeSystemManager : IComputeSystemManager
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
     {
         ComputeSystemStateChanged(sender, state);
+    }
+
+    public List<CreateComputeSystemOperation> GetRunningOperationsForCreation()
+    {
+        // remove any operations that have completed.
+        for (var i = _createComputeSystemOperations.Count - 1; i >= 0; i--)
+        {
+            var operation = _createComputeSystemOperations[i];
+            if (operation.CreateComputeSystemResult != null)
+            {
+                _createComputeSystemOperations.RemoveAt(i);
+            }
+        }
+
+        return _createComputeSystemOperations;
+    }
+
+    public void AddRunningOperationForCreation(CreateComputeSystemOperation operation)
+    {
+        _createComputeSystemOperations.Add(operation);
     }
 }
