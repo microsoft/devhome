@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ChooseDirectoryPromptText" xml:space="preserve">
-    <value>Choose directory on dev drive...</value>
+    <value>Choose directory on Dev Drive...</value>
     <comment>Choose directory on dev drive</comment>
   </data>  
   <data name="DevDriveFreeSizeText" xml:space="preserve">
@@ -198,7 +198,7 @@
     <comment>Optimize dev drive dialog description</comment>
   </data>
   <data name="OptimizerDevDriveDescription" xml:space="preserve">
-    <value>Global environment variable {0} is set to {1}, which is not located on dev drive. Move contents of this folder to a directory on dev drive such as {2} and set {3} to that chosen directory on dev drive</value>
+    <value>Global environment variable {0} is set to {1}, which is not located on Dev Drive. Move contents of this folder to a directory on Dev Drive such as {2} and set {3} to that chosen directory on Dev Drive</value>
     <comment>Optimizer dev drive description</comment>
   </data>
   <data name="SettingsAutoSuggestBox.PlaceholderText" xml:space="preserve">
