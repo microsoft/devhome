@@ -24,8 +24,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
-	<ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
+    <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
     <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
+    <ProjectReference Include="..\..\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +40,7 @@
     <None Remove="Views\DevDriveInsightsView.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\MainPageView.xaml" />
+    <None Remove="Views\QuietBackgroundProcessesPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,6 +58,9 @@
     </Page>
     <Page Update="Views\MainPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\QuietBackgroundProcessesPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
