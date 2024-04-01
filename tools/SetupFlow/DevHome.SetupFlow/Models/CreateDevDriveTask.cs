@@ -16,6 +16,7 @@ using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
@@ -54,6 +55,8 @@ internal sealed class CreateDevDriveTask : ISetupTask
     {
         get; set;
     }
+
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
 
     public CreateDevDriveTask(IDevDrive devDrive, IHost host, Guid activityId, ISetupFlowStringResource stringResource)
     {

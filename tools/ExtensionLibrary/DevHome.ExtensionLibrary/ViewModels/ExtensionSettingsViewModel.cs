@@ -9,7 +9,6 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
@@ -67,19 +66,10 @@ public partial class ExtensionSettingsViewModel : ObservableObject
         await Task.CompletedTask;
     }
 
-    public void FillBreadcrumbBar(string lastCrumbName)
+    private void FillBreadcrumbBar(string lastCrumbName)
     {
         var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
         Breadcrumbs.Add(new(stringResource.GetLocalized("Settings_Extensions_Header"), typeof(ExtensionLibraryViewModel).FullName!));
         Breadcrumbs.Add(new Breadcrumb(lastCrumbName, typeof(ExtensionSettingsViewModel).FullName!));
-    }
-
-    public void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
-    {
-        if (args.Index < Breadcrumbs.Count - 1)
-        {
-            var crumb = (Breadcrumb)args.Item;
-            crumb.NavigateTo();
-        }
     }
 }

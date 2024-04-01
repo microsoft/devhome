@@ -1462,7 +1462,7 @@
   </data>
   <data name="SetupTargetReviewPageDefaultInfoBarTitle" xml:space="preserve">
     <value>Warning</value>
-    <comment>Title for info bar that will warn users that proceeding with the setup may result in the restart and re-login of the targetted remote machine or virtual machine.</comment>
+    <comment>Title for info bar that will warn users that proceeding with the setup may result in the restart and re-login of the targeted remote machine or virtual machine.</comment>
   </data>
   <data name="SetupTargetReviewPageHyperVInfoBarMessage" xml:space="preserve">
     <value>Proceeding with the next step may result in the target machine being rebooted and logging in may be required. Dev Home's Dev Setup Agent service will be installed as it is required to setup a Hyper-V virtual machine</value>
@@ -1500,7 +1500,7 @@
     <value>The entire configuration is still pending</value>
     <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
   </data>
-    <data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
+  <data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
     <value>This part of the configuration is still pending</value>
     <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
@@ -1538,7 +1538,7 @@
   </data>
   <data name="SetupTargetConfigurationWaitingForAdminUserLogon" xml:space="preserve">
     <value>We're currently waiting for an admin to logon</value>
-    <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for a user with administrator priviledges to logon to the machine</comment>
+    <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for a user with administrator privileges to logon to the machine</comment>
   </data>
   <data name="SetupTargetConfigurationWaitingForUserLogon" xml:space="preserve">
     <value>We're currently waiting for the user to logon</value>
@@ -1550,7 +1550,7 @@
   </data>
   <data name="SetupTargetConfigurationOpenConfigFailed" xml:space="preserve">
     <value>The extension failed to open the configuration file. You may need to check the extensions log file for more information</value>
-    <comment>Text for when an extension recieved the configuration file string from Dev Home but was unable to open it</comment>
+    <comment>Text for when an extension received the configuration file string from Dev Home but was unable to open it</comment>
   </data>
   <data name="SetupTargetConfigurationSetProgressMessage" xml:space="preserve">
     <value>Configuration set status: {0}</value>
@@ -1558,7 +1558,7 @@
   </data>
   <data name="SetupTargetConfigurationUnitProgressErrorWithMsg" xml:space="preserve">
     <value>There was an issue applying part of the configuration using DSC resource: '{0}'. Error: {1}</value>
-    <comment>Locked={"0", "{1}"} Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine. {0} is the name of the DSC resource we're using for this part of the configuration file, while {1} is the message from the other app.</comment>
+    <comment>Locked={"{0}", "{1}"} Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine. {0} is the name of the DSC resource we're using for this part of the configuration file, while {1} is the message from the other app.</comment>
   </data>
   <data name="SetupTargetConfigurationUnitProgressError" xml:space="preserve">
     <value>There was an issue applying part of the configuration using DSC resource: '{0}'. Check the extension's logs</value>
@@ -1569,8 +1569,8 @@
     <comment>Locked={"0"} Text for the error that occurred while of applying a configuration unit in the configuration file on to the remote machine. {0} is the status string, e.g "pending", "completed" but it comes from a different app</comment>
   </data>
   <data name="ConfigureTargetApplyConfigurationActionNeeded" xml:space="preserve">
-    <value>Action required. Please review the action center. ({0}/{1})</value>
-    <comment>Locked={"0", "{1}"} Text to tell the user that their action is needed in order to complete the configuration. {0} is the amount of attempts  the user has done so far while {1} is the max amount attempts the user has.</comment>
+    <value>Action required. Please review the action center. ({0})</value>
+    <comment>Locked={"0"} Text to tell the user that their action is needed in order to complete the configuration. {0} is the amount of attempts  the user has done so far.</comment>
   </data>
   <data name="ConfigureTargetApplyConfigurationStopped" xml:space="preserve">
     <value>Apply configuration stopped with status: {0}. You may need to check the extensions log file for more information</value>
@@ -1614,7 +1614,7 @@
   </data>
   <data name="SetupTargetHyperVInfoBar.Message" xml:space="preserve">
     <value>To set up the Hyper-V virtual machine an installation of Dev Home's Dev Setup Agent service is required</value>
-    <comment>message text to tell the user which app is needed to be installed inorder for Dev Home to complete the remote machines configuration.</comment>
+    <comment>message text to tell the user which app is needed to be installed in order for Dev Home to complete the remote machines configuration.</comment>
   </data>
   <data name="SetupTargetHyperVInfoBar.Title" xml:space="preserve">
     <value>App install required</value>
@@ -1623,5 +1623,21 @@
   <data name="SetupTargetLoadingCard" xml:space="preserve">
     <value>Loading your environments</value>
     <comment>Test that tells the user that we're still loading their environments. These environments can be virtual or remote machines</comment>
+  </data>
+  <data name="CloneRepoNextStepsDescription" xml:space="preserve">
+    <value>Detected '{0}' while cloning '{1}'</value>
+    <comment>Locked={"{0}", "{1}"} Description letting users know what configuration was found and in what repo the file was found in. {0} is the file name with extension. {1} is the repo name including the owner.</comment>
+  </data>
+  <data name="CloneRepoNextStepsFileFound" xml:space="preserve">
+    <value>Configuration file detected</value>
+    <comment>Text to notify the user a configuration file was found in a repo.</comment>
+  </data>
+  <data name="CloneRepoNextStepsRun" xml:space="preserve">
+    <value>Run file</value>
+    <comment>Button content for running a configuration file.</comment>
+  </data>
+  <data name="CloneRepoNextStepsView" xml:space="preserve">
+    <value>View file</value>
+    <comment>Button content for viewing a file.</comment>
   </data>
 </root>

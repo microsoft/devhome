@@ -45,10 +45,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private static readonly BitmapImage LightInfo = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightCaution.png"));
 
 #pragma warning disable SA1310 // Field names should not contain underscore
-    private const int NUMBER_OF_PARALLEL_RUNNING_TASKS = 5;
-#pragma warning restore SA1310 // Field names should not contain underscore
-
-#pragma warning disable SA1310 // Field names should not contain underscore
     private const int MAX_RETRIES = 1;
 #pragma warning restore SA1310 // Field names should not contain underscore
 
@@ -82,6 +78,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private ObservableCollection<LoadingMessageViewModel> _messages;
+
+    [ObservableProperty]
+    private ObservableCollection<ISummaryInformationViewModel> _summaryInformation;
 
     /// <summary>
     /// List of all messages that shows up in the "action center" of the loading screen.
@@ -219,7 +218,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     {
         Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
-            var messageToDisplay = new LoadingMessageViewModel(message);
+            var messageToDisplay = _host.GetService<LoadingMessageViewModel>();
+            messageToDisplay.MessageToShow = message;
             messageToDisplay.ShouldShowStatusSymbolIcon = false;
             messageToDisplay.ShouldShowProgressRing = false;
 
@@ -308,6 +308,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ActionCenterItems = new();
         Messages = new();
         _activityId = orchestrator.ActivityId;
+        _summaryInformation = new ObservableCollection<ISummaryInformationViewModel>();
     }
 
     // Remove all tasks except for the SetupTarget
@@ -427,7 +428,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         Messages.Insert(Messages.Count - _numberOfExecutingTasks, loadingMessage);
 
         // Add the "Execution finished" message
-        var newLoadingScreenMessage = new LoadingMessageViewModel(stringToReplace);
+        var newLoadingScreenMessage = _host.GetService<LoadingMessageViewModel>();
+        newLoadingScreenMessage.MessageToShow = stringToReplace;
         newLoadingScreenMessage.StatusSymbolIcon = statusSymbolIcon;
         newLoadingScreenMessage.ShouldShowProgressRing = false;
         newLoadingScreenMessage.ShouldShowStatusSymbolIcon = true;
@@ -474,19 +476,14 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 }
             }
 
-            var options = new ParallelOptions()
-            {
-                MaxDegreeOfParallelism = NUMBER_OF_PARALLEL_RUNNING_TASKS,
-            };
-
             // Run all tasks that don't need dev drive installed.
-            await Parallel.ForEachAsync(tasksToRunFirst, options, async (taskInformation, token) =>
+            await Parallel.ForEachAsync(tasksToRunFirst, async (taskInformation, token) =>
             {
                 await StartTaskAndReportResult(window, taskInformation);
             });
 
             // Run all the tasks that need dev drive installed.
-            await Parallel.ForEachAsync(tasksToRunSecond, options, async (taskInformation, token) =>
+            await Parallel.ForEachAsync(tasksToRunSecond, async (taskInformation, token) =>
             {
                 await StartTaskAndReportResult(window, taskInformation);
             });
@@ -533,7 +530,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // Start the task and wait for it to complete.
         try
         {
-            var loadingMessage = new LoadingMessageViewModel(taskInformation.MessageToShow);
+            var loadingMessage = _host.GetService<LoadingMessageViewModel>();
+            loadingMessage.MessageToShow = taskInformation.MessageToShow;
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;

@@ -3,6 +3,7 @@
 
 extern alias Projection;
 
+using DevHome.SetupFlow.ViewModels;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
@@ -120,6 +121,8 @@ public interface ISetupTask
     /// Use this event to insert a message into the loading screen.
     /// </summary>
     public event ChangeMessageHandler AddMessage;
+
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
 
     public delegate void ChangeActionCenterMessageHandler(ActionCenterMessages message, ActionMessageRequestKind requestKind);
 
