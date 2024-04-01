@@ -1,21 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.SetupFlow.Models;
-using DevHome.SetupFlow.Models.Environments;
+using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.ViewModels.Environments;
 
 namespace DevHome.SetupFlow.TaskGroups;
 
-public class EnvironmentCreationOptionsTaskGroup : ISetupTaskGroup, IRecipient<CreationAdaptiveCardSessionEndedMessage>
+public class EnvironmentCreationOptionsTaskGroup : ISetupTaskGroup
 {
-    private readonly SetupFlowViewModel _setupFlowViewModel;
+    private readonly ISetupFlowStringResource _setupFlowStringResource;
+
+    private readonly IComputeSystemManager _computeSystemManager;
 
     private readonly EnvironmentCreationOptionsViewModel _environmentCreationOptionsViewModel;
 
@@ -24,17 +24,16 @@ public class EnvironmentCreationOptionsTaskGroup : ISetupTaskGroup, IRecipient<C
     public ComputeSystemProviderDetails ProviderDetails { get; private set; }
 
     public EnvironmentCreationOptionsTaskGroup(
+        SetupFlowViewModel setupFlowViewModel,
+        IComputeSystemManager computeSystemManager,
+        ISetupFlowStringResource setupFlowStringResource,
         EnvironmentCreationOptionsViewModel environmentCreationOptionsViewModel,
-        CreateEnvironmentReviewViewModel createEnvironmentReviewViewModel,
-        SetupFlowViewModel setupFlow)
+        CreateEnvironmentReviewViewModel createEnvironmentReviewViewModel)
     {
         _environmentCreationOptionsViewModel = environmentCreationOptionsViewModel;
         _createEnvironmentReviewViewModel = createEnvironmentReviewViewModel;
-
-        // Register for the adaptive card session ended message so we can use the session data to create the environment
-        WeakReferenceMessenger.Default.Register<CreationAdaptiveCardSessionEndedMessage>(this);
-        _setupFlowViewModel = setupFlow;
-        _setupFlowViewModel.EndSetupFlow += OnEndSetupFlow;
+        _setupFlowStringResource = setupFlowStringResource;
+        _computeSystemManager = computeSystemManager;
     }
 
     public IEnumerable<ISetupTask> SetupTasks => new List<ISetupTask>();
@@ -42,14 +41,4 @@ public class EnvironmentCreationOptionsTaskGroup : ISetupTaskGroup, IRecipient<C
     public SetupPageViewModelBase GetSetupPageViewModel() => _environmentCreationOptionsViewModel;
 
     public ReviewTabViewModelBase GetReviewTabViewModel() => _createEnvironmentReviewViewModel;
-
-    public void Receive(CreationAdaptiveCardSessionEndedMessage message)
-    {
-    }
-
-    private void OnEndSetupFlow(object sender, EventArgs e)
-    {
-        WeakReferenceMessenger.Default.Unregister<CreationAdaptiveCardSessionEndedMessage>(this);
-        _setupFlowViewModel.EndSetupFlow -= OnEndSetupFlow;
-    }
 }

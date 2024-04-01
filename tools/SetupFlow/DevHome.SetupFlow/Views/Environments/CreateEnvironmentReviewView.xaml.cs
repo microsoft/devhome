@@ -1,22 +1,24 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.SetupFlow.Models.Environments;
+using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.Views.Environments;
 
-public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipient<CreationOptionsReviewPageData>
+public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipient<NewAdaptiveCardAvailableMessage>
 {
     public CreateEnvironmentReviewViewModel ViewModel => (CreateEnvironmentReviewViewModel)this.DataContext;
 
     public CreateEnvironmentReviewView()
     {
         this.InitializeComponent();
-        WeakReferenceMessenger.Default.Register<CreationOptionsReviewPageData>(this);
+        WeakReferenceMessenger.Default.Register<NewAdaptiveCardAvailableMessage>(this);
     }
 
     private void ViewUnloaded(object sender, RoutedEventArgs e)
@@ -28,9 +30,13 @@ public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipien
     /// <summary>
     /// Recieves the adaptive card from the view model, when the view model finishes loading it.
     /// </summary>
-    public void Receive(CreationOptionsReviewPageData message)
+    public void Receive(NewAdaptiveCardAvailableMessage message)
     {
-        AddAdaptiveCardToUI(message);
+        // Only process the message if the view model is the ReviewViewModel
+        if (message.Value.CurrentSetupFlowViewModel is ReviewViewModel)
+        {
+            AddAdaptiveCardToUI(message.Value.RenderedAdaptiveCard);
+        }
     }
 
     /// <summary>
@@ -47,11 +53,8 @@ public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipien
         AddAdaptiveCardToUI(message.Response);
     }
 
-    private void AddAdaptiveCardToUI(CreationOptionsReviewPageData message)
+    private void AddAdaptiveCardToUI(RenderedAdaptiveCard renderedAdaptiveCard)
     {
-        // Recreate the adaptive card so we don't crash if the card already has a parent.
-        var renderedAdaptiveCard = message.AdaptiveCardRenderer.RenderAdaptiveCard(message.AdaptiveCard);
-
         var frameworkElement = renderedAdaptiveCard?.FrameworkElement;
         if (frameworkElement == null)
         {
