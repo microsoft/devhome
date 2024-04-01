@@ -1484,7 +1484,7 @@
     <value>The entire configuration is still pending</value>
     <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
   </data>
-    <data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
+  <data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
     <value>This part of the configuration is still pending</value>
     <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
@@ -1542,7 +1542,7 @@
   </data>
   <data name="SetupTargetConfigurationUnitProgressErrorWithMsg" xml:space="preserve">
     <value>There was an issue applying part of the configuration using DSC resource: '{0}'. Error: {1}</value>
-    <comment>Locked={"0", "{1}"} Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine. {0} is the name of the DSC resource we're using for this part of the configuration file, while {1} is the message from the other app.</comment>
+    <comment>Locked={"{0}", "{1}"} Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine. {0} is the name of the DSC resource we're using for this part of the configuration file, while {1} is the message from the other app.</comment>
   </data>
   <data name="SetupTargetConfigurationUnitProgressError" xml:space="preserve">
     <value>There was an issue applying part of the configuration using DSC resource: '{0}'. Check the extension's logs</value>
@@ -1607,5 +1607,21 @@
   <data name="SetupTargetLoadingCard" xml:space="preserve">
     <value>Loading your environments</value>
     <comment>Test that tells the user that we're still loading their environments. These environments can be virtual or remote machines</comment>
+  </data>
+  <data name="CloneRepoNextStepsDescription" xml:space="preserve">
+    <value>Detected '{0}' while cloning '{1}'</value>
+    <comment>Locked={"{0}", "{1}"} Description letting users know what configuration was found and in what repo the file was found in. {0} is the file name with extension. {1} is the repo name including the owner.</comment>
+  </data>
+  <data name="CloneRepoNextStepsFileFound" xml:space="preserve">
+    <value>Configuration file detected</value>
+    <comment>Text to notify the user a configuration file was found in a repo.</comment>
+  </data>
+  <data name="CloneRepoNextStepsRun" xml:space="preserve">
+    <value>Run file</value>
+    <comment>Button content for running a configuration file.</comment>
+  </data>
+  <data name="CloneRepoNextStepsView" xml:space="preserve">
+    <value>View file</value>
+    <comment>Button content for viewing a file.</comment>
   </data>
 </root>
