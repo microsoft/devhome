@@ -24,7 +24,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
-    private readonly ToastNotificationService _toastNotificationService;
+    private readonly NotificationService _toastNotificationService;
 
     private const string SortByDisplayName = "DisplayName";
 
@@ -76,7 +76,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         SetupFlowOrchestrator orchestrator,
         IComputeSystemManager computeSystemManager,
         ComputeSystemViewModelFactory computeSystemViewModelFactory,
-        ToastNotificationService toastNotificationService)
+        NotificationService toastNotificationService)
         : base(stringResource, orchestrator)
     {
         // Setup initial state for page.
