@@ -28,6 +28,8 @@ public class ComputeSystemManager : IComputeSystemManager
 
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> ComputeSystemStateChanged = (sender, state) => { };
 
+    private object _creationOperationLock = new();
+
     // Used in the setup flow to store the ComputeSystem needed to configure.
     public ComputeSystemReviewItem? ComputeSystemSetupItem { get;  set; }
 
@@ -95,21 +97,33 @@ public class ComputeSystemManager : IComputeSystemManager
 
     public List<CreateComputeSystemOperation> GetRunningOperationsForCreation()
     {
-        // remove any operations that have completed.
-        for (var i = _createComputeSystemOperations.Count - 1; i >= 0; i--)
+        lock (_creationOperationLock)
         {
-            var operation = _createComputeSystemOperations[i];
-            if (operation.CreateComputeSystemResult != null)
-            {
-                _createComputeSystemOperations.RemoveAt(i);
-            }
+            return _createComputeSystemOperations;
         }
-
-        return _createComputeSystemOperations;
     }
 
     public void AddRunningOperationForCreation(CreateComputeSystemOperation operation)
     {
-        _createComputeSystemOperations.Add(operation);
+        lock (_creationOperationLock)
+        {
+            _createComputeSystemOperations.Add(operation);
+        }
+    }
+
+    public void RemoveRunningOperationForCreation(Guid operationId)
+    {
+        lock (_creationOperationLock)
+        {
+            for (var i = _createComputeSystemOperations.Count - 1; i >= 0; i--)
+            {
+                var operation = _createComputeSystemOperations[i];
+                if (operation.OperationId == operationId)
+                {
+                    _createComputeSystemOperations.RemoveAt(i);
+                    break;
+                }
+            }
+        }
     }
 }

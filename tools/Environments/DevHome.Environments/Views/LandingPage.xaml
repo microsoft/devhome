@@ -54,6 +54,18 @@
                 </Grid>
             </DataTemplate>
 
+            <!-- Three Dot Button For create compute system operation template -->
+            <DataTemplate x:Key="ThreeDotsButtonForCreation" x:DataType="vm:CreateComputeSystemOperationViewModel">
+                <Grid>
+                    <Button
+                        Style="{StaticResource HorizontalThreeDotsStyle}">
+                        <Button.Flyout>
+                            <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations}"/>
+                        </Button.Flyout>
+                    </Button>
+                </Grid>
+            </DataTemplate>
+
             <!-- Properties template for the compute system properties that appear within a horizontal card.-->
             <DataTemplate x:Key="BottomRowProperties" x:DataType="commonModels:CardProperty">
                 <Grid
@@ -189,6 +201,42 @@
         <!-- Per VM/Compute System card -->
         <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <StackPanel>
+                <ListView
+                    MaxWidth="{ThemeResource MaxPageContentWidth}"
+                    ItemsSource="{x:Bind ViewModel.CreateComputeSystemOperations}" SelectionMode="None"
+                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CreateComputeSystemOperationViewModel">
+                            <Grid Style="{StaticResource HorizontalCardRootForEnvironmentsPage}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <!-- Card Header : Title, small icon, '...' button -->
+                                <Grid Grid.Row="0">
+                                    <commonCustomControls:CardHeader
+                                        HeaderCaption="{x:Bind ProviderDisplayName, Mode=OneWay}"
+                                        HeaderIcon="{x:Bind HeaderImage, Mode=OneWay}"
+                                        ActionControlTemplate="{StaticResource ThreeDotsButtonForCreation}" />
+                                </Grid>
+                                <Grid Grid.Row="1">
+                                    <commonCustomControls:CardBody
+                                        ComputeSystemTitle="{x:Bind Name, Mode=OneWay}"
+                                        CardState="{x:Bind State, Mode=OneWay}"
+                                        StateColor="{x:Bind StateColor, Mode=OneWay}"
+                                        ComputeSystemCreationStatus="{x:Bind UiMessageToDisplay, Mode=OneWay}"
+                                        ShouldShowInDefiniteProgress="{x:Bind IsCreationInProgress, Mode=OneWay}"/>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
                 <ListView
                       MaxWidth="{ThemeResource MaxPageContentWidth}"
                       ItemsSource="{x:Bind ViewModel.ComputeSystemsView}" SelectionMode="None"

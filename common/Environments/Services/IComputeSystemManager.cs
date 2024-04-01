@@ -26,4 +26,6 @@ public interface IComputeSystemManager
     public List<CreateComputeSystemOperation> GetRunningOperationsForCreation();
 
     public void AddRunningOperationForCreation(CreateComputeSystemOperation operation);
+
+    public void RemoveRunningOperationForCreation(Guid operationId);
 }

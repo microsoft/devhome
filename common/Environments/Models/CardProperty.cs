@@ -33,6 +33,7 @@ public enum CardStateColor
     Success,
     Neutral,
     Caution,
+    Failure,
 }
 
 public partial class CardProperty : ObservableObject

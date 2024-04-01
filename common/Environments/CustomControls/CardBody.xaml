@@ -7,10 +7,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:devEnvConverters="using:DevHome.Common.Environments.Converters"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     mc:Ignorable="d">
     <UserControl.Resources>
         <devEnvConverters:CardStateColorToBrushConverter x:Key="CardStateColorToBrushConverter"/>
         <devEnvConverters:CardStateToLocalizedTextConverter x:Key="CardStateToLocalizedTextConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
     </UserControl.Resources>
 
         <Grid
@@ -58,6 +60,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <!-- Colored dot that indicates the visual state of the compute system. -->
                     <Ellipse
@@ -70,9 +73,15 @@
                         Text="{x:Bind CardState, Converter={StaticResource CardStateToLocalizedTextConverter}, Mode=OneWay}"
                         Style="{StaticResource CardBodyStateTextBlockStyle}"
                         IsTextSelectionEnabled="True"/>
-                </Grid>
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="{x:Bind ComputeSystemCreationStatus, Mode=OneWay}"
+                        Style="{StaticResource CardBodyStateTextBlockStyle}"
+                        IsTextSelectionEnabled="True"/>
+            </Grid>
                 <!-- Wrap panel from community toolkit that will display properties of variable length. -->
                 <ItemsRepeater 
+                    Visibility="{x:Bind ShouldShowInDefiniteProgress, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                     ItemsSource="{x:Bind ComputeSystemProperties, Mode=OneWay}" 
                     ItemTemplate="{x:Bind ComputeSystemPropertyTemplate, Mode=OneWay}">
                     <ItemsRepeater.Layout>
@@ -81,7 +90,10 @@
                             HorizontalSpacing="15"/>
                     </ItemsRepeater.Layout>
                 </ItemsRepeater>
-            </StackPanel>
+            <ProgressBar
+                Visibility="{x:Bind ShouldShowInDefiniteProgress, Mode=OneWay}"
+                IsIndeterminate="True"/>
+        </StackPanel>
             <!--
                 For an action control, like a splitbutton or checkbox. Pass a Datatemplate to the CardBody's ActionControlTemplate in xaml.
             -->

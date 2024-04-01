@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -40,6 +41,10 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public bool IsLoading { get; set; }
 
     public ObservableCollection<ComputeSystemViewModel> ComputeSystems { get; set; } = new();
+
+    public Dictionary<Guid, CreateComputeSystemOperationViewModel> CreateComputeSystemOperationMap { get; private set; } = new();
+
+    public ObservableCollection<CreateComputeSystemOperationViewModel> CreateComputeSystemOperations { get; set; } = new();
 
     public AdvancedCollectionView ComputeSystemsView { get; set; }
 
@@ -181,6 +186,23 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             ComputeSystems.RemoveAt(i);
         }
 
+        var createComputeSystemOperations = _computeSystemManager.GetRunningOperationsForCreation();
+        for (var i = createComputeSystemOperations.Count - 1; i >= 0; i--)
+        {
+            if (!CreateComputeSystemOperationMap.TryGetValue(createComputeSystemOperations[i].OperationId, out var operation))
+            {
+                // this is a new operation
+                var action = () =>
+                {
+                    _computeSystemManager.RemoveRunningOperationForCreation(createComputeSystemOperations[i].OperationId);
+                    RemoveCreateComputeSystemOperationFromUI(createComputeSystemOperations[i].OperationId);
+                };
+                var operationViewModel = new CreateComputeSystemOperationViewModel(_stringResource, action, createComputeSystemOperations[i]);
+                CreateComputeSystemOperationMap.Add(createComputeSystemOperations[i].OperationId, operationViewModel);
+                CreateComputeSystemOperations.Add(operationViewModel);
+            }
+        }
+
         ShowLoadingShimmer = true;
         await _extensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
         ShowLoadingShimmer = false;
@@ -188,6 +210,17 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         lock (_lock)
         {
             IsLoading = false;
+        }
+    }
+
+    private void RemoveCreateComputeSystemOperationFromUI(Guid operationId)
+    {
+        // remove view model with the given operation id from the list
+        if (CreateComputeSystemOperationMap.TryGetValue(operationId, out var operation))
+        {
+            CreateComputeSystemOperations.Remove(operation);
+            CreateComputeSystemOperationMap.Remove(operationId);
+            operation.RemoveEventHandlers();
         }
     }
 
@@ -217,6 +250,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                     var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
                     var computeSystemViewModel = new ComputeSystemViewModel(_computeSystemManager, computeSystemList.ElementAt(i), provider, packageFullName);
                     await computeSystemViewModel.InitializeCardDataAsync();
+
                     ComputeSystems.Add(computeSystemViewModel);
                 }
             }

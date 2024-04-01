@@ -73,7 +73,7 @@ public sealed partial class SummaryView : UserControl, IRecipient<NewAdaptiveCar
             return;
         }
 
-        AddAdaptiveCardToUI(message.Response.RenderedAdaptiveCard);
+        AddAdaptiveCardToUI(message.Response);
     }
 
     private void AddAdaptiveCardToUI(RenderedAdaptiveCard renderedAdaptiveCard)

@@ -127,19 +127,19 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
                 return TaskFinishedState.Failure;
             }
 
-            // var sdkCreateEnvironmentOperation = ProviderDetails.ComputeSystemProvider.CreateCreateComputeSystemOperation(DeveloperIdWrapper.DeveloperId, UserJsonInput);
-            // var createComputeSystemOperationWrapper = new CreateComputeSystemOperation(sdkCreateEnvironmentOperation, ProviderDetails, UserJsonInput);
+            var sdkCreateEnvironmentOperation = ProviderDetails.ComputeSystemProvider.CreateCreateComputeSystemOperation(DeveloperIdWrapper.DeveloperId, UserJsonInput);
+            var createComputeSystemOperationWrapper = new CreateComputeSystemOperation(sdkCreateEnvironmentOperation, ProviderDetails, UserJsonInput);
 
             // Create a cancellation token that will cancel the task after 2 hours. Dev Box creation depends on the organization azure subscription. So depending on the
             // subscription and pool for example it could take over 65 minutes. Setting the timeout to 2 hours, should cover most cases. This can be adjusted in the future.
-            // var cancellationTokenSource = new CancellationTokenSource();
-            // cancellationTokenSource.CancelAfter(TimeSpan.FromHours(2));
+            var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.CancelAfter(TimeSpan.FromHours(2));
 
             // Start the operation, which returns immediately and runs in the background.
-            // createComputeSystemOperationWrapper.StartOperation(cancellationTokenSource.Token);
+            createComputeSystemOperationWrapper.StartOperation(cancellationTokenSource.Token);
             AddMessage(_stringResource.GetLocalized(StringResourceKey.EnvironmentCreationForProviderStarted, ProviderDetails.ComputeSystemProvider.DisplayName), MessageSeverityKind.Info);
 
-            // _computeSystemManager.AddRunningOperationForCreation(createComputeSystemOperationWrapper);
+            _computeSystemManager.AddRunningOperationForCreation(createComputeSystemOperationWrapper);
             CreationOperationStarted = true;
             return TaskFinishedState.Success;
         }).AsAsyncOperation();
