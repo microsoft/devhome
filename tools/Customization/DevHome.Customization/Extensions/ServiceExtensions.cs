@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.Customization.ViewModels;
+using DevHome.Customization.ViewModels.DevDriveInsights;
 using DevHome.Customization.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,6 +18,10 @@ public static class ServiceExtensions
 
         services.AddSingleton<DeveloperFileExplorerViewModel>();
         services.AddTransient<DeveloperFileExplorerPage>();
+
+        services.AddSingleton<OptimizeDevDriveDialogViewModelFactory>(sp => (cacheLocation, environmentVariable) => ActivatorUtilities.CreateInstance<OptimizeDevDriveDialogViewModel>(sp, cacheLocation, environmentVariable));
+        services.AddSingleton<DevDriveInsightsViewModel>();
+        services.AddTransient<DevDriveInsightsPage>();
 
         return services;
     }

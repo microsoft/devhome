@@ -9,7 +9,6 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using Microsoft.UI.Xaml;
 using Windows.System;
 
 namespace DevHome.Customization.ViewModels;
@@ -39,5 +38,11 @@ public partial class MainPageViewModel : ObservableObject
     private void NavigateToDeveloperFileExplorerPage()
     {
         NavigationService.NavigateTo(typeof(DeveloperFileExplorerViewModel).FullName!);
+    }
+
+    [RelayCommand]
+    private void NavigateToDevDriveInsightsPage()
+    {
+        NavigationService.NavigateTo(typeof(DevDriveInsightsViewModel).FullName!);
     }
 }
