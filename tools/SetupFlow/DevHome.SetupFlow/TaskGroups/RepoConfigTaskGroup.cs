@@ -69,11 +69,11 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
             CloneRepoTask task;
             if (cloningInformation.OwningAccount == null)
             {
-                task = new CloneRepoTask(cloningInformation.RepositoryProvider, new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, _stringResource, cloningInformation.RepositoryProviderDisplayName, _activityId);
+                task = new CloneRepoTask(cloningInformation.RepositoryProvider, new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, _stringResource, cloningInformation.RepositoryProviderDisplayName, _activityId, _host);
             }
             else
             {
-                task = new CloneRepoTask(cloningInformation.RepositoryProvider, new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.RepositoryProviderDisplayName, _activityId);
+                task = new CloneRepoTask(cloningInformation.RepositoryProvider, new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.RepositoryProviderDisplayName, _activityId, _host);
             }
 
             if (cloningInformation.CloneToDevDrive)

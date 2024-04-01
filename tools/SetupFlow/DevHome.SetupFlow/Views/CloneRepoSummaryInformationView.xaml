@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.SetupFlow.Views.CloneRepoSummaryInformationView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DevHome.SetupFlow.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid RowSpacing="5" Padding="0, 24, 0, 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.FileFoundMessage}" FontWeight="Bold"/>
+        <TextBlock Grid.Row="1" Text="{x:Bind ViewModel.FileDescription, Mode=OneWay}" TextWrapping="Wrap"/>
+
+        <!-- Keep spacing at 24 px.  Hyperlink buttons use their own padding values to keep the colume spacing consistent.-->
+        <Grid Grid.Row="2" ColumnSpacing="24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <HyperlinkButton Grid.Column="0" Command="{x:Bind ViewModel.OpenFileInExplorerCommand}" Padding="0, 8, 0, 8">
+                <HyperlinkButton.Content>
+                    <TextBlock Text="{x:Bind ViewModel.ViewFileMessage}" TextDecorations="Underline"/>
+                </HyperlinkButton.Content>
+            </HyperlinkButton>
+            <HyperlinkButton Grid.Column="1" Command="{x:Bind ViewModel.RunInAdminCommandPromptCommand}" Margin="0, 8, 0, 8">
+                <HyperlinkButton.Content>
+                    <TextBlock Text="{x:Bind ViewModel.RunFileMessage}" TextDecorations="Underline"/>
+                </HyperlinkButton.Content>
+            </HyperlinkButton>
+        </Grid>
+    </Grid>
+</UserControl>
