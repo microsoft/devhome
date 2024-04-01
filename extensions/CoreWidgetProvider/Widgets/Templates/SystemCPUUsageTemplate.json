@@ -23,6 +23,7 @@
           "url": "${cpuGraphUrl}",
           "height": "${chartHeight}",
           "width": "${chartWidth}",
+          "$when": "${$host.widgetSize != \"small\"}",
           "horizontalAlignment": "center"
         },
         {
@@ -64,25 +65,31 @@
           ]
         },
         {
-          "type": "TextBlock",
-          "isSubtle": true,
-          "text": "%CPUUsage_Widget_Template/Processes%",
-          "wrap": true
-        },
-        {
-          "type": "TextBlock",
-          "size": "medium",
-          "text": "${cpuProc1}"
-        },
-        {
-          "type": "TextBlock",
-          "size": "medium",
-          "text": "${cpuProc2}"
-        },
-        {
-          "type": "TextBlock",
-          "size": "medium",
-          "text": "${cpuProc3}"
+          "type": "Container",
+          "$when": "${$host.widgetSize != \"small\"}",
+          "items": [
+            {
+              "type": "TextBlock",
+              "isSubtle": true,
+              "text": "%CPUUsage_Widget_Template/Processes%",
+              "wrap": true
+            },
+            {
+              "type": "TextBlock",
+              "size": "medium",
+              "text": "${cpuProc1}"
+            },
+            {
+              "type": "TextBlock",
+              "size": "medium",
+              "text": "${cpuProc2}"
+            },
+            {
+              "type": "TextBlock",
+              "size": "medium",
+              "text": "${cpuProc3}"
+            }
+          ]
         }
       ]
     }

@@ -5,7 +5,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Settings.ViewModels;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

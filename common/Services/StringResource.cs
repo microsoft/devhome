@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Globalization;
-using Windows.ApplicationModel.Resources;
+using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace DevHome.Common.Services;
 
@@ -24,9 +24,10 @@ public class StringResource : IStringResource
     /// <inheritdoc cref="ResourceLoader.ResourceLoader(string)"/>
     /// </summary>
     /// <param name="name">fsa</param>
-    public StringResource(string name)
+    /// <param name="path">path</param>
+    public StringResource(string name, string path)
     {
-        _resourceLoader = new ResourceLoader(name);
+        _resourceLoader = new ResourceLoader(name, path);
     }
 
     /// <summary>

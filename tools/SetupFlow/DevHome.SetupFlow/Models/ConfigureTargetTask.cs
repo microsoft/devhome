@@ -5,38 +5,33 @@ extern alias Projection;
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.WinUI;
-using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Renderers;
 using DevHome.Common.Views;
 using DevHome.Contracts.Services;
-using DevHome.Logging;
 using DevHome.SetupFlow.Common.Exceptions;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.WingetConfigure;
 using DevHome.SetupFlow.Services;
-using LibGit2Sharp;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
+using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
-using Windows.Win32;
-using WinUIEx;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
 
 public class ConfigureTargetTask : ISetupTask
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigureTargetTask));
+
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue;
 
     private readonly ISetupFlowStringResource _stringResource;
@@ -74,7 +69,7 @@ public class ConfigureTargetTask : ISetupTask
         { ElementTheme.Light, "LightHostConfig.json" },
     };
 
-    public ActionCenterMessages ActionCenterMessages { get; set; } = new();
+    public ActionCenterMessages ActionCenterMessages { get; set; } = new() { ExtensionAdaptiveCardPanel = new(), };
 
     public string ComputeSystemName { get; private set; } = string.Empty;
 
@@ -100,6 +95,8 @@ public class ConfigureTargetTask : ISetupTask
 
     public IAsyncOperation<ApplyConfigurationResult> ApplyConfigurationAsyncOperation { get; private set; }
 
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
+
     public ConfigureTargetTask(
         ISetupFlowStringResource stringResource,
         IComputeSystemManager computeSystemManager,
@@ -118,7 +115,7 @@ public class ConfigureTargetTask : ISetupTask
 
     public void OnAdaptiveCardSessionStopped(IExtensionAdaptiveCardSession2 cardSession, SDK.ExtensionAdaptiveCardSessionStoppedEventArgs data)
     {
-        Log.Logger?.ReportInfo(Log.Component.ConfigurationTarget, "Extension ending adaptive card session");
+        _log.Information("Extension ending adaptive card session");
 
         // Now that the session has ended, we can remove the adaptive card panel from the UI.
         cardSession.Stopped -= OnAdaptiveCardSessionStopped;
@@ -139,13 +136,13 @@ public class ConfigureTargetTask : ISetupTask
             }
 
             AddMessage(_stringResource.GetLocalized(StringResourceKey.ConfigureTargetApplyConfigurationActionFailureEnd), MessageSeverityKind.Error);
-            Log.Logger?.ReportError(Log.Component.ConfigurationTarget, "Error no more attempts to correct action");
+            _log.Error("Error no more attempts to correct action");
         }
     }
 
     public void OnActionRequired(IApplyConfigurationOperation operation, SDK.ApplyConfigurationActionRequiredEventArgs actionRequiredEventArgs)
     {
-        Log.Logger?.ReportInfo(Log.Component.ConfigurationTarget, $"adaptive card receieved from extension");
+        _log.Information($"adaptive card receieved from extension");
         var correctiveCard = actionRequiredEventArgs?.CorrectiveActionCardSession;
 
         if (correctiveCard != null)
@@ -166,7 +163,7 @@ public class ConfigureTargetTask : ISetupTask
         }
         else
         {
-            Log.Logger?.ReportInfo(Log.Component.ConfigurationTarget, "A corrective action was sent from the extension but the adaptive card session was null.");
+            _log.Information("A corrective action was sent from the extension but the adaptive card session was null.");
         }
     }
 
@@ -178,7 +175,7 @@ public class ConfigureTargetTask : ISetupTask
 
             if (progressData == null)
             {
-                Log.Logger?.ReportError(Log.Component.ConfigurationTarget, "Unable to get progress of the configuration as the progress data was null");
+                _log.Error("Unable to get progress of the configuration as the progress data was null");
                 return;
             }
 
@@ -199,7 +196,7 @@ public class ConfigureTargetTask : ISetupTask
 
             if (wrapper.IsErrorMessagePresent)
             {
-                Log.Logger?.ReportError(Log.Component.ConfigurationTarget, $"Target experienced an error while applying the configuration: {wrapper.GetErrorMessageForLogging()}");
+                _log.Error($"Target experienced an error while applying the configuration: {wrapper.GetErrorMessageForLogging()}");
                 severity = MessageSeverityKind.Error;
                 stringBuilder.AppendLine(GetSpacingForProgressMessage(startingLineNumber++) + wrapper.GetErrorMessagesForDisplay());
             }
@@ -216,7 +213,7 @@ public class ConfigureTargetTask : ISetupTask
             }
             else
             {
-                Log.Logger?.ReportInfo(Log.Component.ConfigurationTarget, "Extension sent progress but there was no configuration unit data sent.");
+                _log.Information("Extension sent progress but there was no configuration unit data sent.");
             }
 
             // Example of a message that will be displayed in the UI:
@@ -228,7 +225,7 @@ public class ConfigureTargetTask : ISetupTask
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.ConfigurationTarget, $"Failed to process configuration progress data on target machine.'{ComputeSystemName}'", ex);
+            _log.Error($"Failed to process configuration progress data on target machine.'{ComputeSystemName}'", ex);
         }
     }
 
@@ -268,7 +265,7 @@ public class ConfigureTargetTask : ISetupTask
 
             if (resultStatus == ProviderOperationStatus.Failure)
             {
-                Log.Logger?.ReportError(Log.Component.ConfigurationTarget, $"Extension failed to configure config file with exception. Diagnostic text: {result.DiagnosticText}", result.ExtendedError);
+                _log.Error($"Extension failed to configure config file with exception. Diagnostic text: {result.DiagnosticText}", result.ExtendedError);
                 throw new SDKApplyConfigurationSetResultException(applyConfigurationResult.Result.DiagnosticText);
             }
 
@@ -293,7 +290,7 @@ public class ConfigureTargetTask : ISetupTask
                     ConfigurationResults.Add(new ConfigurationUnitResult(Result.ApplyResult.Result.UnitResults[i]));
                 }
 
-                Log.Logger?.ReportInfo(Log.Component.ConfigurationTarget, "Configuration stopped");
+                _log.Information("Configuration stopped");
             }
             else
             {
@@ -302,7 +299,7 @@ public class ConfigureTargetTask : ISetupTask
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.ConfigurationTarget, $"Failed to apply configuration on target machine. '{ComputeSystemName}'", ex);
+            _log.Error($"Failed to apply configuration on target machine. '{ComputeSystemName}'", ex);
         }
 
         var tempResultInfo = !string.IsNullOrEmpty(resultInformation) ? resultInformation : string.Empty;
@@ -385,7 +382,7 @@ public class ConfigureTargetTask : ISetupTask
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.ConfigurationTarget, $"Failed to apply configuration on target machine.", e);
+                _log.Error($"Failed to apply configuration on target machine.", e);
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -438,7 +435,7 @@ public class ConfigureTargetTask : ISetupTask
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file", ex);
+            _log.Error($"Failure occurred while retrieving the HostConfig file", ex);
         }
     }
 
@@ -520,7 +517,7 @@ public class ConfigureTargetTask : ISetupTask
                 }
                 else
                 {
-                    GlobalLog.Logger?.ReportInfo($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
+                    _log.Information($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
                 }
             });
         }

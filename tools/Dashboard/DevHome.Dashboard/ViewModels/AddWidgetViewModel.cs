@@ -41,7 +41,7 @@ public partial class AddWidgetViewModel : ObservableObject
     public async Task SetWidgetDefinition(WidgetDefinition selectedWidgetDefinition)
     {
         _selectedWidgetDefinition = selectedWidgetDefinition;
-        var bitmap = await _widgetScreenshotService.GetScreenshotFromCache(selectedWidgetDefinition, _themeSelectorService.GetActualTheme());
+        var bitmap = await _widgetScreenshotService.GetScreenshotFromCacheAsync(selectedWidgetDefinition, _themeSelectorService.GetActualTheme());
 
         WidgetDisplayTitle = selectedWidgetDefinition.DisplayTitle;
         WidgetProviderDisplayTitle = selectedWidgetDefinition.ProviderDefinition.DisplayName;
@@ -68,7 +68,7 @@ public partial class AddWidgetViewModel : ObservableObject
         {
             // Update the preview image for the selected widget.
             var theme = _themeSelectorService.GetActualTheme();
-            var bitmap = await _widgetScreenshotService.GetScreenshotFromCache(_selectedWidgetDefinition, theme);
+            var bitmap = await _widgetScreenshotService.GetScreenshotFromCacheAsync(_selectedWidgetDefinition, theme);
             WidgetScreenshot = new ImageBrush
             {
                 ImageSource = bitmap,

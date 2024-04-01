@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
 using DevHome.Contracts.Services;
-using DevHome.Dashboard.Helpers;
 using Microsoft.UI.Xaml;
+using Serilog;
 using Windows.Storage;
 using WinUIEx;
 
@@ -16,6 +16,8 @@ namespace DevHome.Dashboard.Services;
 
 public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AdaptiveCardRenderingService));
+
     public event EventHandler RendererUpdated = (_, _) => { };
 
     private readonly WindowEx _windowEx;
@@ -105,14 +107,14 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
             var hostConfigFileName = _themeSelectorService.IsDarkTheme() ? "HostConfigDark.json" : "HostConfigLight.json";
             try
             {
-                Log.Logger()?.ReportInfo("DashboardView", $"Get HostConfig file '{hostConfigFileName}'");
+                _log.Information($"Get HostConfig file '{hostConfigFileName}'");
                 var uri = new Uri($"ms-appx:///DevHome.Dashboard/Assets/{hostConfigFileName}");
                 var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
                 hostConfigContents = await FileIO.ReadTextAsync(file);
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError("DashboardView", "Error retrieving HostConfig", ex);
+                _log.Error("Error retrieving HostConfig", ex);
             }
 
             _windowEx.DispatcherQueue.TryEnqueue(() =>
@@ -126,7 +128,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
                 }
                 else
                 {
-                    Log.Logger()?.ReportError("DashboardView", $"HostConfig contents are {hostConfigContents}");
+                    _log.Error($"HostConfig contents are {hostConfigContents}");
                 }
             });
 

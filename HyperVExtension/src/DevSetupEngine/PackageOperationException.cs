@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Management.Configuration;
+using Serilog;
 
 namespace HyperVExtension.DevSetupEngine;
 
@@ -17,6 +18,7 @@ public class PackageOperationException : Exception
         : base(message)
     {
         HResult = (int)errorCode;
-        Logging.Logger()?.ReportError(string.Empty, this);
+        var log = Log.ForContext("SourceContext", nameof(PackageOperationException));
+        log.Error(message, this);
     }
 }

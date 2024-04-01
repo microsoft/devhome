@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
-using System.Text.Json.Nodes;
 using Microsoft.Windows.DevHome.DevSetupEngine;
 using Windows.Win32;
 using Windows.Win32.System.Com;

@@ -12,15 +12,18 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.TelemetryEvents.SetupFlow.SummaryPage;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.SetupFlow.Views;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Serilog;
 using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -30,6 +33,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
     private static readonly BitmapImage LightError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
 
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SummaryViewModel));
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly SetupFlowViewModel _setupFlowViewModel;
     private readonly IHost _host;
@@ -37,6 +41,14 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
     private readonly PackageProvider _packageProvider;
     private readonly IAppManagementInitializer _appManagementInitializer;
+
+    private readonly List<UserControl> _cloneRepoNextSteps;
+
+    // Holds all the UI to display for "Next Steps".
+    public List<UserControl> NextSteps => _cloneRepoNextSteps;
+
+    [ObservableProperty]
+    private ObservableCollection<ISummaryInformationViewModel> _summaryInformation;
 
     [ObservableProperty]
     private List<SummaryErrorMessageViewModel> _failedTasks = new();
@@ -49,7 +61,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     {
         await Task.Run(() =>
         {
-            var folderToOpen = Log.Logger.Options.LogFileFolderPath;
+            var folderToOpen = DevHome.Common.Logging.LogFolderRoot;
             var startInfo = new ProcessStartInfo();
             startInfo.UseShellExecute = true;
             startInfo.FileName = folderToOpen;
@@ -186,6 +198,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _configurationUnitResults = new(GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
         _appManagementInitializer = appManagementInitializer;
+        _cloneRepoNextSteps = new();
 
         IsNavigationBarVisible = true;
         IsStepPage = false;
@@ -203,6 +216,31 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 failedTasks = loadingViewModel.FailedTasks;
             }
         }
+
+        // Collect all next steps.
+        var taskGroups = Orchestrator.TaskGroups;
+        foreach (var taskGroup in taskGroups)
+        {
+            var setupTasks = taskGroup.SetupTasks;
+            foreach (var setupTask in setupTasks)
+            {
+                if (setupTask.SummaryScreenInformation is not null &&
+                    setupTask.SummaryScreenInformation.HasContent)
+                {
+                    switch (setupTask)
+                    {
+                        case CloneRepoTask:
+                            var configResult = new CloneRepoSummaryInformationView();
+                            configResult.DataContext = setupTask.SummaryScreenInformation;
+                            _cloneRepoNextSteps.Add(configResult);
+                            break;
+                    }
+                }
+            }
+        }
+
+        // Send telemetry about the number of next steps tasks found broken down by their type.
+        ReportSummaryTaskCounts(_cloneRepoNextSteps.Count);
 
         BitmapImage statusSymbol;
         if (_host.GetService<IThemeSelectorService>().Theme == ElementTheme.Dark)
@@ -232,11 +270,19 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         await ReloadCatalogsAsync();
     }
 
+    /// <summary>
+    /// Send telemetry about all next steps.
+    /// </summary>
+    private void ReportSummaryTaskCounts(int cloneRepoNextStepsCount)
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NextSteps_Event", LogLevel.Critical, new CloneRepoNextStepsEvent(cloneRepoNextStepsCount), Orchestrator.ActivityId);
+    }
+
     private async Task ReloadCatalogsAsync()
     {
         // After installing packages, reconnect to catalogs to
         // reflect the latest changes when new Package COM objects are created
-        Log.Logger?.ReportInfo(Log.Component.Summary, $"Checking if a new catalog connections should be established");
+        _log.Information($"Checking if a new catalog connections should be established");
         if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
         {
             await _appManagementInitializer.ReinitializeAsync();

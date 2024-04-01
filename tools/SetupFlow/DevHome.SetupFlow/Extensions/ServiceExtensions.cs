@@ -5,13 +5,11 @@ using System;
 using System.IO;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
-using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.Services.WinGet;
 using DevHome.SetupFlow.Services.WinGet.Operations;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.ViewModels;
-using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -34,6 +32,7 @@ public static class ServiceExtensions
         services.AddRepoConfig();
         services.AddReview();
         services.AddSummary();
+        services.AddSummaryInformation();
 
         // View-models
         services.AddSingleton<SetupFlowViewModel>();
@@ -116,6 +115,14 @@ public static class ServiceExtensions
         return services;
     }
 
+    private static IServiceCollection AddSummaryInformation(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<CloneRepoSummaryInformationViewModel>();
+
+        return services;
+    }
+
     private static IServiceCollection AddDevDrive(this IServiceCollection services)
     {
         // View models
@@ -135,6 +142,7 @@ public static class ServiceExtensions
     {
         // View models
         services.AddTransient<LoadingViewModel>();
+        services.AddTransient<LoadingMessageViewModel>();
 
         return services;
     }

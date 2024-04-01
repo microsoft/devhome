@@ -33,6 +33,8 @@ public static class StringResourceKey
     public static readonly string ConfigurationUnitSummaryNoId = nameof(ConfigurationUnitSummaryNoId);
     public static readonly string ConfigurationUnitStats = nameof(ConfigurationUnitStats);
     public static readonly string ConfigurationViewTitle = nameof(ConfigurationViewTitle);
+    public static readonly string ConfigurationActivationFailedDisabled = nameof(ConfigurationActivationFailedDisabled);
+    public static readonly string ConfigurationActivationFailedBusy = nameof(ConfigurationActivationFailedBusy);
     public static readonly string DevDriveReviewTitle = nameof(DevDriveReviewTitle);
     public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
     public static readonly string DevDriveDefaultFolderName = nameof(DevDriveDefaultFolderName);
@@ -98,6 +100,12 @@ public static class StringResourceKey
     public static readonly string CloneRepoError = nameof(CloneRepoError);
     public static readonly string CloneRepoErrorForActionCenter = nameof(CloneRepoErrorForActionCenter);
     public static readonly string CloneRepoRestart = nameof(CloneRepoRestart);
+
+    // Repository Next Steps messages
+    public static readonly string CloneRepoNextStepsView = nameof(CloneRepoNextStepsView);
+    public static readonly string CloneRepoNextStepsRun = nameof(CloneRepoNextStepsRun);
+    public static readonly string CloneRepoNextStepsFileFound = nameof(CloneRepoNextStepsFileFound);
+    public static readonly string CloneRepoNextStepsDescription = nameof(CloneRepoNextStepsDescription);
 
     // Configure task loading screen messages
     public static readonly string ApplyingConfigurationMessage = nameof(ApplyingConfigurationMessage);

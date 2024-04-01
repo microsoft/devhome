@@ -2,10 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,22 +10,21 @@ using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class SetupTargetViewModel : SetupPageViewModelBase
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupTargetViewModel));
+
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
-    private readonly ToastNotificationService _toastNotificationService;
+    private readonly NotificationService _toastNotificationService;
 
     private const string SortByDisplayName = "DisplayName";
 
@@ -80,7 +76,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         SetupFlowOrchestrator orchestrator,
         IComputeSystemManager computeSystemManager,
         ComputeSystemViewModelFactory computeSystemViewModelFactory,
-        ToastNotificationService toastNotificationService)
+        NotificationService toastNotificationService)
         : base(stringResource, orchestrator)
     {
         // Setup initial state for page.
@@ -198,7 +194,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.SetupTarget, $"Error filtering ComputeSystemsListViewModel", ex);
+            _log.Error($"Error filtering ComputeSystemsListViewModel", ex);
         }
 
         return true;
@@ -368,7 +364,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.SetupTarget, $"Error loading ComputeSystemViewModels data", ex);
+            _log.Error($"Error loading ComputeSystemViewModels data", ex);
         }
 
         ShouldShowShimmerBelowList = false;

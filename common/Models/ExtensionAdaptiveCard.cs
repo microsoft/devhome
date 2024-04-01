@@ -5,8 +5,8 @@ using System;
 using System.Text.Json.Nodes;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Templating;
-using DevHome.Logging;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.Common.Models;
 
@@ -40,7 +40,7 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 
         if (parseResult.AdaptiveCard is null)
         {
-            GlobalLog.Logger?.ReportError($"ExtensionAdaptiveCard.Update(): AdaptiveCard is null - templateJson: {templateJson} dataJson: {dataJson} state: {state}");
+            Log.Error($"ExtensionAdaptiveCard.Update(): AdaptiveCard is null - templateJson: {templateJson} dataJson: {dataJson} state: {state}");
             return new ProviderOperationResult(ProviderOperationStatus.Failure, new ArgumentNullException(null), "AdaptiveCard is null", $"templateJson: {templateJson} dataJson: {dataJson} state: {state}");
         }
 
