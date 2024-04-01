@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 using Windows.System;
@@ -16,10 +18,15 @@ public partial class MainPageViewModel : ObservableObject
 {
     private INavigationService NavigationService { get; }
 
+    public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
+
     public MainPageViewModel(
         INavigationService navigationService)
     {
         NavigationService = navigationService;
+
+        var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
+        Breadcrumbs = [new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!)];
     }
 
     [RelayCommand]
