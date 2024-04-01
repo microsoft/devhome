@@ -42,6 +42,16 @@ public class DataExtractor
             operations.Add(new OperationsViewModel("Delete", "\uE74D", computeSystem.DeleteAsync));
         }
 
+        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToStartMenu))
+        {
+            operations.Add(new OperationsViewModel("PinToStartMenu", "\uE74D", computeSystem.SetIsPinnedToStartMenuAsync, true));
+        }
+
+        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToTaskbar))
+        {
+            operations.Add(new OperationsViewModel("PinToTaskbarMenu", "\uE74D", computeSystem.SetIsPinnedToTaskbarAsync, true));
+        }
+
         // ToDo: Correct the function used
         // operations.Add(new OperationsViewModel("Pin To Taskbar", "\uE718", computeSystem.DeleteAsync));
         // operations.Add(new OperationsViewModel("Add to Start Menu", "\uF0DF", computeSystem.DeleteAsync));

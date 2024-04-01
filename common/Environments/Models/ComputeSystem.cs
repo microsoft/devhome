@@ -276,6 +276,86 @@ public class ComputeSystem
         }
     }
 
+    public async Task<ComputeSystemOperationResult> SetIsPinnedToStartMenuAsync(bool isPinnned)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.SetIsPinnedToStartMenuAsync(isPinnned);
+            }
+
+            var localErrorString = $"SetIsPinnedToStartMenuAsync for: {this} failed due to exception";
+            var ex = new InvalidOperationException(localErrorString);
+            throw ex;
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError(_componentName, $"SetIsPinnedToStartMenuAsync for: {this} failed due to exception", ex);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemOperationResult> SetIsPinnedToTaskbarAsync(bool isPinnned)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.SetIsPinnedToTaskbarAsync(isPinnned);
+            }
+
+            var localErrorString = $"SetIsPinnedToTaskbarAsync for: {this} failed due to exception";
+            var ex = new InvalidOperationException(localErrorString);
+            throw ex;
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError(_componentName, $"SetIsPinnedToTaskbarAsync for: {this} failed due to exception", ex);
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemPinnedResult> GetIsPinnedToStartMenuAsync()
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.GetIsPinnedToStartMenuAsync();
+            }
+
+            var localErrorString = $"GetIsPinnedToStartMenuAsync for: {this} failed due to exception";
+            var ex = new InvalidOperationException(localErrorString);
+            throw ex;
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError(_componentName, $"GetIsPinnedToStartMenuAsync for: {this} failed due to exception", ex);
+            return new ComputeSystemPinnedResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemPinnedResult> GetIsPinnedToTaskbarAsync()
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.GetIsPinnedToTaskbarAsync();
+            }
+
+            var localErrorString = $"GetIsPinnedToTaskbarAsync for: {this} failed due to exception";
+            var ex = new InvalidOperationException(localErrorString);
+            throw ex;
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError(_componentName, $"GetIsPinnedToTaskbarAsync for: {this} failed due to exception", ex);
+            return new ComputeSystemPinnedResult(ex, errorString, ex.Message);
+        }
+    }
+
     public IApplyConfigurationOperation ApplyConfiguration(string configuration)
     {
         try
