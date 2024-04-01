@@ -9,7 +9,7 @@ using DevHome.Common.Services;
 using DevHome.Customization.Views;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.Customization.ViewModels.Environments;
+namespace DevHome.Customization.ViewModels.DevDriveInsights;
 
 /// <summary>
 /// View model for the card that represents a dev drive optimizer on the dev drive insights page.
@@ -29,6 +29,8 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
     public string EnvironmentVariableToBeSet { get; set; }
 
     public string OptimizerDevDriveDescription { get; set; }
+
+    public string MakeTheChangeText { get; set; }
 
     /// <summary>
     /// User wants to optimize a dev drive.
@@ -56,6 +58,7 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
         EnvironmentVariableToBeSet = environmentVariableToBeSet;
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         OptimizerDevDriveDescription = stringResource.GetLocalized("OptimizerDevDriveDescription", EnvironmentVariableToBeSet, ExistingCacheLocation, ExampleLocationOnDevDrive, EnvironmentVariableToBeSet);
+        MakeTheChangeText = stringResource.GetLocalized("MakeTheChangeText");
         DevDriveOptimizationSuggestion = stringResource.GetLocalized("DevDriveOptimizationSuggestion");
     }
 }

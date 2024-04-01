@@ -12,7 +12,7 @@ using Serilog;
 using Windows.Storage.Pickers;
 using WinUIEx;
 
-namespace DevHome.Customization.ViewModels.Environments;
+namespace DevHome.Customization.ViewModels.DevDriveInsights;
 
 /// <summary>
 /// View model for the card that represents a dev drive on the dev drive insights page.
@@ -24,6 +24,9 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
 
     [ObservableProperty]
     private string _chooseDirectoryPromptText;
+
+    [ObservableProperty]
+    private string _makeChangesText;
 
     [ObservableProperty]
     private string _existingCacheLocation;
@@ -43,6 +46,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         ExampleDevDriveLocation = stringResource.GetLocalized("ExampleDevDriveLocation");
         ChooseDirectoryPromptText = stringResource.GetLocalized("ChooseDirectoryPromptText");
+        MakeChangesText = stringResource.GetLocalized("MakeChangesText");
         ExistingCacheLocation = existingCacheLocation;
         EnvironmentVariableToBeSet = environmentVariableToBeSet;
         OptimizeDevDriveDialogDescription = stringResource.GetLocalized("OptimizeDevDriveDialogDescription/Text", ExistingCacheLocation, EnvironmentVariableToBeSet);

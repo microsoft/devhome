@@ -6,15 +6,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Customization.ViewModels.Environments;
+using DevHome.Customization.ViewModels.DevDriveInsights;
 using DevHome.Customization.Views;
-using DevHome.SetupFlow.Services;
-using DevHome.SetupFlow.ViewModels;
 using Serilog;
 
 namespace DevHome.Customization.ViewModels;

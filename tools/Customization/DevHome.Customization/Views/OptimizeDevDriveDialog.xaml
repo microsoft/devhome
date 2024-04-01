@@ -7,15 +7,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:environments="using:DevHome.Customization.ViewModels.Environments" 
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    d:DataContext="{d:DesignInstance Type=environments:DevDriveOptimizerCardViewModel}"
+    xmlns:devDriveInsights="using:DevHome.Customization.ViewModels.DevDriveInsights"
+    d:DataContext="{d:DesignInstance Type=devDriveInsights:DevDriveOptimizerCardViewModel}"
     x:Uid="ms-resource:///DevHome.Customization/Views/OptimizeDevDriveDialog"
     mc:Ignorable="d"
     Style="{StaticResource DefaultContentDialogStyle}"
     Title="{x:Bind ViewModel.ChooseDirectoryPromptText}"
-    PrimaryButtonText="Make changes"
+    PrimaryButtonText="{x:Bind ViewModel.MakeChangesText}"
     PrimaryButtonCommand="{x:Bind ViewModel.DirectoryInputConfirmedCommand}"
     SecondaryButtonText="Cancel">
     <StackPanel>

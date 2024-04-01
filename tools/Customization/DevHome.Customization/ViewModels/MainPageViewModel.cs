@@ -5,9 +5,7 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using Microsoft.UI.Xaml;
 using Windows.System;
 
 namespace DevHome.Customization.ViewModels;

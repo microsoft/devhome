@@ -8,7 +8,7 @@ using DevHome.SetupFlow.Utilities;
 
 using Dispatching = Microsoft.UI.Dispatching;
 
-namespace DevHome.Customization.ViewModels.Environments;
+namespace DevHome.Customization.ViewModels.DevDriveInsights;
 
 /// <summary>
 /// View model for the card that represents a dev drive on the dev drive insights page.

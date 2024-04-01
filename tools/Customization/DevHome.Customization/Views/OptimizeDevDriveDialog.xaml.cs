@@ -1,15 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.IO;
-using DevHome.Common.Extensions;
-using DevHome.Customization.ViewModels.Environments;
-using Microsoft.UI.Xaml;
+using DevHome.Customization.ViewModels.DevDriveInsights;
 using Microsoft.UI.Xaml.Controls;
-using Serilog;
-using Windows.Storage.Pickers;
-using WinUIEx;
 
 namespace DevHome.Customization.Views;
 

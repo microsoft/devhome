@@ -1,9 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using DevHome.Customization.ViewModels;
-using DevHome.Customization.ViewModels.Environments;
+using DevHome.Customization.ViewModels.DevDriveInsights;
 using DevHome.Customization.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
