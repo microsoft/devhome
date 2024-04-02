@@ -254,7 +254,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 // Ensure only one copy of a widget is pinned if that widget's definition only allows for one instance.
                 var widgetDefinitionId = widget.DefinitionId;
                 var widgetDefinition = await Task.Run(() => catalog?.GetWidgetDefinition(widgetDefinitionId));
-                if (widgetDefinition.AllowMultiple == false)
+                if (widgetDefinition?.AllowMultiple == false)
                 {
                     if (pinnedSingleInstanceWidgets.Contains(widgetDefinitionId))
                     {
@@ -499,7 +499,7 @@ public partial class DashboardView : ToolPage, IDisposable
         var updatedDefinitionId = args.Definition.Id;
         _log.Information($"WidgetCatalog_WidgetDefinitionUpdated {updatedDefinitionId}");
 
-        var foundCount = 0;
+        var matchingWidgetsFound = 0;
 
         foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
         {
@@ -509,7 +509,7 @@ public partial class DashboardView : ToolPage, IDisposable
             var newDef = args.Definition;
 
             // If we're no longer allowed to have multiple instances of this widget, delete all but the first.
-            if (foundCount++ > 1 && newDef.AllowMultiple == false && oldDef.AllowMultiple == true)
+            if (++matchingWidgetsFound > 1 && newDef.AllowMultiple == false && oldDef.AllowMultiple == true)
             {
                 _dispatcher.TryEnqueue(async () =>
                 {
