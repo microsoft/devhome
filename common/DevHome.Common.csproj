@@ -25,7 +25,7 @@
     <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.240109" />
-    <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
@@ -33,7 +33,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.300.443" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.240211001" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240311-x1907" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
