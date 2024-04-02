@@ -220,6 +220,11 @@ public partial class DashboardView : ToolPage, IDisposable
         var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
         var numUnorderedWidgets = 0;
 
+        var catalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+        var pinnedSingleInstanceWidgets = new List<string>();
+
+        _log.Information($"Restore pinned widgets");
+
         // Widgets do not come from the host in a deterministic order, so save their order in each widget's CustomState.
         // Iterate through all the widgets and put them in order. If a widget does not have a position assigned to it,
         // append it at the end. If a position is missing, just show the next widget in order.
@@ -244,6 +249,24 @@ public partial class DashboardView : ToolPage, IDisposable
                     // This shouldn't be able to be reached
                     _log.Error($"Widget has custom state but no HostName.");
                     continue;
+                }
+
+                // Ensure only one copy of a widget is pinned if that widget's definition only allows for one instance.
+                var widgetDefinitionId = widget.DefinitionId;
+                var widgetDefinition = await Task.Run(() => catalog?.GetWidgetDefinition(widgetDefinitionId));
+                if (widgetDefinition.AllowMultiple == false)
+                {
+                    if (pinnedSingleInstanceWidgets.Contains(widgetDefinitionId))
+                    {
+                        _log.Information($"No longer allowed to have multiple of widget {widgetDefinitionId}");
+                        await widget.DeleteAsync();
+                        _log.Information($"Deleted Widget {widgetDefinitionId} and not adding it to PinnedWidgets");
+                        continue;
+                    }
+                    else
+                    {
+                        pinnedSingleInstanceWidgets.Add(widgetDefinitionId);
+                    }
                 }
 
                 var position = stateObj.Position;
@@ -476,6 +499,8 @@ public partial class DashboardView : ToolPage, IDisposable
         var updatedDefinitionId = args.Definition.Id;
         _log.Information($"WidgetCatalog_WidgetDefinitionUpdated {updatedDefinitionId}");
 
+        var foundCount = 0;
+
         foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
         {
             // Things in the definition that we need to update to if they have changed:
@@ -483,8 +508,8 @@ public partial class DashboardView : ToolPage, IDisposable
             var oldDef = widgetToUpdate.WidgetDefinition;
             var newDef = args.Definition;
 
-            // If we're no longer allowed to have multiple instances of this widget, delete all of them.
-            if (newDef.AllowMultiple == false && oldDef.AllowMultiple == true)
+            // If we're no longer allowed to have multiple instances of this widget, delete all but the first.
+            if (foundCount++ > 1 && newDef.AllowMultiple == false && oldDef.AllowMultiple == true)
             {
                 _dispatcher.TryEnqueue(async () =>
                 {
