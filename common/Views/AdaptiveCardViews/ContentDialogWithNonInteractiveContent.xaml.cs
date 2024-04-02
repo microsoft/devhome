@@ -1,12 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
-using DevHome.Common.Renderers;
-using DevHome.Common.Services;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Common.Views.AdaptiveCardViews;
