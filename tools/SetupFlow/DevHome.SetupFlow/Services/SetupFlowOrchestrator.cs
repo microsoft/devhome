@@ -278,9 +278,19 @@ public partial class SetupFlowOrchestrator : ObservableObject
         await CurrentPageViewModel?.OnNavigateToAsync();
     }
 
+    /// <summary>
+    /// Performs the work needed to navigate to the next page in an adaptive card. This is used when the setup flow is
+    /// rendering a flow that includes an adaptive card style wizard flow.
+    /// </summary>
+    /// <remarks>
+    /// Only adaptive cards that have input controls with the 'isRequired' property set to true will be validated.
+    /// All other elements within the adaptive card will be ignored.
+    /// </remarks>
+    /// <param name="buttonId">The string Id of the button</param>
+    /// <returns>True when the user inputs have been validated and false otherwise.</returns>
     private bool TryNavigateToNextAdaptiveCardPage(string buttonId)
     {
-        if (DevHomeActionSetRenderer.TryValidateAndInitiateAction(buttonId, CurrentPageViewModel.UserInputsFromAdaptiveCard))
+        if (DevHomeActionSetRenderer.TryValidateAndInitiateAction(buttonId, CurrentPageViewModel?.GetAdaptiveCardUserInputsForNavigationValidation()))
         {
             return true;
         }

@@ -45,12 +45,12 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
     }
 
-    public void LoadProviders()
+    public async Task LoadProvidersAsync()
     {
         AreProvidersLoaded = false;
         Orchestrator.NotifyNavigationCanExecuteChanged();
 
-        Task.Run(async () =>
+        await Task.Run(async () =>
         {
             var providerDetails = await _computeSystemService.GetComputeSystemProvidersAsync();
 
@@ -71,10 +71,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     protected async override Task OnFirstNavigateToAsync()
     {
         CanGoToNextPage = false;
-        LoadProviders();
-
-        // Does nothing, but we need to override this as the base expects a task to be returned.
-        await Task.CompletedTask;
+        await LoadProvidersAsync();
     }
 
     [RelayCommand]

@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.SetupFlow.Models.Environments;
@@ -8,11 +9,15 @@ using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Serilog;
 
 namespace DevHome.SetupFlow.Views.Environments;
 
 public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipient<NewAdaptiveCardAvailableMessage>
 {
+    // Logging to capture any adaptive card rendering exceptions so the app doesn't crash
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CreateEnvironmentReviewView));
+
     public CreateEnvironmentReviewViewModel ViewModel => (CreateEnvironmentReviewViewModel)this.DataContext;
 
     public CreateEnvironmentReviewView()
@@ -55,13 +60,21 @@ public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipien
 
     private void AddAdaptiveCardToUI(RenderedAdaptiveCard renderedAdaptiveCard)
     {
-        var frameworkElement = renderedAdaptiveCard?.FrameworkElement;
-        if (frameworkElement == null)
+        try
         {
-            return;
-        }
+            var frameworkElement = renderedAdaptiveCard?.FrameworkElement;
+            if (frameworkElement == null)
+            {
+                return;
+            }
 
-        AdaptiveCardGrid.Children.Clear();
-        AdaptiveCardGrid.Children.Add(frameworkElement);
+            AdaptiveCardGrid.Children.Clear();
+            AdaptiveCardGrid.Children.Add(frameworkElement);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+            _log.Error("Error adding adaptive card UI in CreateEnvironmentReviewView", ex);
+        }
     }
 }
