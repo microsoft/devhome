@@ -27,7 +27,7 @@ public static class ServiceExtensions
         services.AddSingleton<IWidgetHostingService, WidgetHostingService>();
         services.AddSingleton<IWidgetIconService, WidgetIconService>();
         services.AddSingleton<IWidgetScreenshotService, WidgetScreenshotService>();
-        services.AddSingleton<IAdaptiveCardRenderingService, AdaptiveCardRenderingService>();
+        services.AddSingleton<WidgetAdaptiveCardRenderingService>();
 
         return services;
     }
