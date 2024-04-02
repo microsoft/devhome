@@ -11,7 +11,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
-using Microsoft.UI.Dispatching;
 using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -24,7 +23,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
     private readonly IWindowsPackageManager _wpm;
     private readonly PackageProvider _packageProvider;
-    private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
     private readonly IScreenReaderService _screenReaderService;
 
     /// <summary>

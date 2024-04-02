@@ -6,8 +6,6 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Utilities;
 
-using Dispatching = Microsoft.UI.Dispatching;
-
 namespace DevHome.Customization.ViewModels.DevDriveInsights;
 
 /// <summary>
@@ -15,10 +13,6 @@ namespace DevHome.Customization.ViewModels.DevDriveInsights;
 /// </summary>
 public partial class DevDriveCardViewModel : ObservableObject
 {
-    private readonly Dispatching.DispatcherQueue _dispatcher;
-
-    private readonly DevHome.Common.Services.IDevDriveManager _devDriveManager;
-
     public string DevDriveLabel { get; set; }
 
     public ulong DevDriveSize { get; set; }
@@ -37,11 +31,8 @@ public partial class DevDriveCardViewModel : ObservableObject
 
     public string DevDriveFreeSizeText { get; set; }
 
-    public DevDriveCardViewModel(IDevDrive devDrive, IDevDriveManager manager)
+    public DevDriveCardViewModel(IDevDrive devDrive)
     {
-        _dispatcher = Dispatching.DispatcherQueue.GetForCurrentThread();
-        _devDriveManager = manager;
-
         DevDriveLabel = devDrive.DriveLabel;
         var divider = (ulong)((devDrive.DriveUnitOfMeasure == ByteUnit.TB) ? 1000_000_000_000 : 1000_000_000);
         DevDriveSize = devDrive.DriveSizeInBytes / divider;

@@ -242,15 +242,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         // Send telemetry about the number of next steps tasks found broken down by their type.
         ReportSummaryTaskCounts(_cloneRepoNextSteps.Count);
 
-        BitmapImage statusSymbol;
-        if (_host.GetService<IThemeSelectorService>().Theme == ElementTheme.Dark)
-        {
-            statusSymbol = DarkError;
-        }
-        else
-        {
-            statusSymbol = LightError;
-        }
+        var statusSymbol = _host.GetService<IThemeSelectorService>().IsDarkTheme() ? DarkError : LightError;
 
         foreach (var failedTask in failedTasks)
         {

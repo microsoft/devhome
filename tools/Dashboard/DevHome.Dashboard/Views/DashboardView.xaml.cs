@@ -48,7 +48,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private readonly SemaphoreSlim _pinnedWidgetsLock = new(1, 1);
 
-    private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private static WindowEx _windowEx;
     private readonly ILocalSettingsService _localSettingsService;
     private bool _disposedValue;
 
@@ -66,7 +66,7 @@ public partial class DashboardView : ToolPage, IDisposable
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
         PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
 
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _windowEx = Application.Current.GetService<WindowEx>();
         _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
 
 #if DEBUG
@@ -431,7 +431,7 @@ public partial class DashboardView : ToolPage, IDisposable
                     new ReportPinnedWidgetEvent(widgetDefinition.ProviderDefinition.Id, widgetDefinitionId));
 
                 var wvm = _widgetViewModelFactory(widget, size, widgetDefinition);
-                _dispatcher.TryEnqueue(() =>
+                _windowEx.DispatcherQueue.TryEnqueue(() =>
                 {
                     try
                     {
@@ -486,7 +486,7 @@ public partial class DashboardView : ToolPage, IDisposable
             // If we're no longer allowed to have multiple instances of this widget, delete all of them.
             if (newDef.AllowMultiple == false && oldDef.AllowMultiple == true)
             {
-                _dispatcher.TryEnqueue(async () =>
+                _windowEx.DispatcherQueue.TryEnqueue(async () =>
                 {
                     _log.Information($"No longer allowed to have multiple of widget {newDef.Id}");
                     _log.Information($"Delete widget {widgetToUpdate.Widget.Id}");
@@ -526,7 +526,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
         var definitionId = args.DefinitionId;
-        _dispatcher.TryEnqueue(async () =>
+        _windowEx.DispatcherQueue.TryEnqueue(async () =>
         {
             _log.Information($"WidgetDefinitionDeleted {definitionId}");
             foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
