@@ -119,7 +119,7 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     private async Task OnUnloadedAsync()
     {
-        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
+        Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
 
         _log.Debug($"Leaving Dashboard, deactivating widgets.");
 
@@ -175,7 +175,7 @@ public partial class DashboardView : ToolPage, IDisposable
             }
         }
 
-        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
+        Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
         LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
         ViewModel.IsLoading = false;
     }

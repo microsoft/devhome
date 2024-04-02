@@ -179,7 +179,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
                     continue;
                 }
 
-                _log.Error($"Found package: {productId}, {packageFamilyName}");
+                _log.Information($"Found package: {productId}, {packageFamilyName}");
                 var storePackage = new StorePackageViewModel(productId, title, publisher, packageFamilyName);
                 tempStorePackagesList.Add(storePackage);
             }

@@ -8,11 +8,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Environments.Services;
+using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Common.Views;
-using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.WingetConfigure;
@@ -23,7 +23,6 @@ using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;
 using Windows.Foundation;
-using Windows.Storage;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -42,9 +41,7 @@ public class ConfigureTargetTask : ISetupTask
 
     private readonly ConfigurationFileBuilder _configurationFileBuilder;
 
-    private readonly IThemeSelectorService _themeSelectorService;
-
-    public AdaptiveCardRenderer Renderer { get; private set; }
+    private readonly AdaptiveCardRenderingService _adaptiveCardRenderingService;
 
     // Inherited via ISetupTask but unused
     public bool RequiresAdmin => false;
@@ -60,14 +57,6 @@ public class ConfigureTargetTask : ISetupTask
 
     // Inherited via ISetupTask
     public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
-
-    public Dictionary<ElementTheme, string> AdaptiveCardHostConfigs { get; set; } = new();
-
-    private readonly Dictionary<ElementTheme, string> _hostConfigFileNames = new()
-    {
-        { ElementTheme.Dark, "DarkHostConfig.json" },
-        { ElementTheme.Light, "LightHostConfig.json" },
-    };
 
     public ActionCenterMessages ActionCenterMessages { get; set; } = new() { ExtensionAdaptiveCardPanel = new(), };
 
@@ -101,16 +90,14 @@ public class ConfigureTargetTask : ISetupTask
         ISetupFlowStringResource stringResource,
         IComputeSystemManager computeSystemManager,
         ConfigurationFileBuilder configurationFileBuilder,
-        SetupFlowOrchestrator setupFlowOrchestrator,
-        IThemeSelectorService themeSelectorService)
+        SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _stringResource = stringResource;
         _computeSystemManager = computeSystemManager;
         _configurationFileBuilder = configurationFileBuilder;
-        _themeSelectorService = themeSelectorService;
         _setupFlowOrchestrator = setupFlowOrchestrator;
         _dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-        _themeSelectorService.ThemeChanged += OnThemeChanged;
+        _adaptiveCardRenderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
     }
 
     public void OnAdaptiveCardSessionStopped(IExtensionAdaptiveCardSession2 cardSession, SDK.ExtensionAdaptiveCardSessionStoppedEventArgs data)
@@ -420,28 +407,7 @@ public class ConfigureTargetTask : ISetupTask
     }
 
     /// <summary>
-    /// Gets the host config files for the light and dark themes and sets them in the AdaptiveCardHostConfigs dictionary.
-    /// </summary>
-    public async Task SetupHostConfigFiles()
-    {
-        try
-        {
-            foreach (var elementPairing in _hostConfigFileNames)
-            {
-                var uri = new Uri($"ms-appx:///DevHome.Settings//Assets/{_hostConfigFileNames[elementPairing.Key]}");
-                var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
-                AdaptiveCardHostConfigs.Add(elementPairing.Key, await FileIO.ReadTextAsync(file));
-            }
-        }
-        catch (Exception ex)
-        {
-            _log.Error($"Failure occurred while retrieving the HostConfig file", ex);
-        }
-    }
-
-    /// <summary>
-    /// Creates the adaptive card that will appear in the action center of the loading page. This
-    /// was adapted from the LoginUI adaptive card code for the account page in Dev Home settings.
+    /// Creates the adaptive card that will appear in the action center of the loading page.
     /// The theming for the adaptive card isn't dynamic but in the future we can make it so.
     /// </summary>
     /// <param name="session">Adaptive card session sent by the entension when it needs a user to perform an action</param>
@@ -449,17 +415,10 @@ public class ConfigureTargetTask : ISetupTask
     {
         await _dispatcherQueue.EnqueueAsync(async () =>
         {
-            await SetupHostConfigFiles();
-            var correctiveAction = session;
-            Renderer ??= new AdaptiveCardRenderer();
-            var elementTheme = _themeSelectorService.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
-            UpdateHostConfig();
-
-            Renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+            var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
 
             var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
-            extensionAdaptiveCardPanel.Bind(correctiveAction, Renderer);
-            extensionAdaptiveCardPanel.RequestedTheme = elementTheme;
+            extensionAdaptiveCardPanel.Bind(session, renderer);
 
             if (ActionCenterMessages.ExtensionAdaptiveCardPanel != null)
             {
@@ -498,30 +457,4 @@ public class ConfigureTargetTask : ISetupTask
 
         return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, unit.Intent, unit.Type, unit.Identifier, unitDescription);
     }
-
-    public void UpdateHostConfig()
-    {
-        if (Renderer != null)
-        {
-            _dispatcherQueue.TryEnqueue(() =>
-            {
-                var elementTheme = _themeSelectorService.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
-
-                // Add host config for current theme to renderer
-                if (AdaptiveCardHostConfigs.TryGetValue(elementTheme, out var hostConfigContents))
-                {
-                    Renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
-
-                    // Remove margins from selectAction.
-                    Renderer.AddSelectActionMargin = false;
-                }
-                else
-                {
-                    _log.Information($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
-                }
-            });
-        }
-    }
-
-    private void OnThemeChanged(object sender, ElementTheme e) => UpdateHostConfig();
 }
