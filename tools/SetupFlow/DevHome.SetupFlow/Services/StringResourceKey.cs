@@ -101,6 +101,12 @@ public static class StringResourceKey
     public static readonly string CloneRepoErrorForActionCenter = nameof(CloneRepoErrorForActionCenter);
     public static readonly string CloneRepoRestart = nameof(CloneRepoRestart);
 
+    // Repository Next Steps messages
+    public static readonly string CloneRepoNextStepsView = nameof(CloneRepoNextStepsView);
+    public static readonly string CloneRepoNextStepsRun = nameof(CloneRepoNextStepsRun);
+    public static readonly string CloneRepoNextStepsFileFound = nameof(CloneRepoNextStepsFileFound);
+    public static readonly string CloneRepoNextStepsDescription = nameof(CloneRepoNextStepsDescription);
+
     // Configure task loading screen messages
     public static readonly string ApplyingConfigurationMessage = nameof(ApplyingConfigurationMessage);
     public static readonly string ConfigureTaskCreating = nameof(ConfigureTaskCreating);

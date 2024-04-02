@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Models;
+using DevHome.Common.Services;
 using DevHome.Customization.Models;
 using DevHome.Customization.TelemetryEvents;
 using Microsoft.Internal.Windows.DevHome.Helpers;
@@ -12,9 +15,18 @@ public partial class DeveloperFileExplorerViewModel : ObservableObject
 {
     private readonly ShellSettings _shellSettings;
 
+    public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
+
     public DeveloperFileExplorerViewModel()
     {
         _shellSettings = new ShellSettings();
+
+        var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
+        Breadcrumbs =
+        [
+            new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
+            new(stringResource.GetLocalized("DeveloperFileExplorer_Header"), typeof(DeveloperFileExplorerViewModel).FullName!)
+        ];
     }
 
     public bool ShowFileExtensions

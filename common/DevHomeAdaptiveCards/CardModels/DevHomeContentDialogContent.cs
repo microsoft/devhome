@@ -7,6 +7,10 @@ using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
+/// <summary>
+/// Represents a content dialog that can be rendered through an adaptive card based on the
+/// Json template.
+/// </summary>
 public class DevHomeContentDialogContent : IAdaptiveCardElement
 {
     // Specific properties for DevHomeContentDialogContent

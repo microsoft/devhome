@@ -126,7 +126,8 @@ public partial class App : Application, IApp
             services.AddSingleton<IScreenReaderService, ScreenReaderService>();
             services.AddSingleton<IComputeSystemService, ComputeSystemService>();
             services.AddSingleton<IComputeSystemManager, ComputeSystemManager>();
-            services.AddSingleton<ToastNotificationService>();
+            services.AddTransient<NotificationService>();
+            services.AddTransient<AdaptiveCardRenderingService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -206,7 +207,7 @@ public partial class App : Application, IApp
     {
         if (args.Kind == ExtendedActivationKind.ToastNotification)
         {
-            GetService<ToastNotificationService>().HandlerNotificationActions(args);
+            GetService<NotificationService>().HandlerNotificationActions(args);
             return;
         }
 

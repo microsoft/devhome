@@ -10,21 +10,29 @@ using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
+/// <summary>
+/// Represents a settings card that can be rendered through an adaptive card based on the ElementTypeString.
+/// </summary>
 public class DevHomeSettingsCard : IDevHomeSettingsCard
 {
     // Specific properties for DevHomeSettingsCard
     // These properties relate to the Windows Community Toolkit's SettingsCard control.
     // We'll allow extensions to provide the data for the SettingsCard control from an Adaptive Card.
     // Then we'll render the actual SettingsCard control in the DevHome app.
+    /// <inheritdoc cref="IDevHomeSettingsCard.Description"/>
     public string Description { get; set; } = string.Empty;
 
+    /// <inheritdoc cref="IDevHomeSettingsCard.Header"/>
     public string Header { get; set; } = string.Empty;
 
+    /// <inheritdoc cref="IDevHomeSettingsCard.HeaderIcon"/>
     public string HeaderIcon { get; set; } = string.Empty;
 
     [JsonIgnore]
     public ImageIcon? HeaderIconImage { get; set; }
 
+    /// <inheritdoc cref="IDevHomeSettingsCardNonSubmitAction"/>
+    /// Gets or sets the element that does not submit the card.
     public IDevHomeSettingsCardNonSubmitAction? NonSubmitActionElement { get; set; }
 
     public IAdaptiveActionElement? SubmitActionElement { get; set; }

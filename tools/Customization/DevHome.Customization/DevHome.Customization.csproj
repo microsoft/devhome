@@ -24,6 +24,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+	<ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
+    <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +35,8 @@
   <ItemGroup>
     <None Remove="Views\DeveloperFileExplorerPage.xaml" />
     <None Remove="Views\DeveloperFileExplorerView.xaml" />
+	<None Remove="Views\DevDriveInsightsPage.xaml" />
+    <None Remove="Views\DevDriveInsightsView.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\MainPageView.xaml" />
   </ItemGroup>
