@@ -32,50 +32,57 @@
     </UserControl.Resources>
 
     <!--- Show the Select environment header on the page. -->
-    <setupControls:SetupShell 
-        x:Uid="SelectEnvironmentPage"
-        Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
-        Foreground="{ThemeResource TextFillColorSecondary}" >
-        <setupControls:SetupShell.SetupShellContent>
-            <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}">
-                <StackPanel Spacing="10">
-                    <!--- Show the Select environment subtitle on the page. -->
-                    <TextBlock
-                        x:Uid="SelectEnvironmentSubtitle"
-                        x:Name="LabelForItemsView"
-                        Foreground="{ThemeResource TextFillColorSecondary}"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <setupControls:SetupShell 
+            x:Uid="SelectEnvironmentPage"
+            Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+            Foreground="{ThemeResource TextFillColorSecondary}" 
+            Grid.Row="0">
+        </setupControls:SetupShell>
+        <ScrollViewer 
+            MaxWidth="{ThemeResource MaxPageContentWidth}"
+            Grid.Row="1">
+            <StackPanel Spacing="10">
+                <!--- Show the Select environment subtitle on the page. -->
+                <TextBlock
+                    x:Uid="SelectEnvironmentSubtitle"
+                    x:Name="LabelForItemsView"
+                    Foreground="{ThemeResource TextFillColorSecondary}"/>
 
-                    <!--- List of Compute system providers the user can choose from when they're loaded. -->
-                    <ItemsView 
-                        x:Name="ComputeSystemProviderViewModelsList"
-                        AutomationProperties.LabeledBy="{Binding ElementName=LabelForItemsView, Mode=OneWay}"
-                        ItemsSource="{x:Bind ViewModel.ProvidersViewModels, Mode=OneWay}"
-                        ItemTemplate="{StaticResource ProviderItemTemplate}"
-                        Visibility="{x:Bind ViewModel.AreProvidersLoaded, Mode=OneWay}">
-                        <ItemsView.Layout>
-                            <StackLayout Spacing="5" />
-                        </ItemsView.Layout>
-                        <i:Interaction.Behaviors>
-                            <ic:EventTriggerBehavior EventName="SelectionChanged">
-                                <ic:InvokeCommandAction  
-                                    Command="{Binding ItemsViewSelectionChangedCommand, Mode=OneWay}"  
-                                    CommandParameter="{Binding SelectedItem, ElementName=ComputeSystemProviderViewModelsList, Mode=OneWay}"/>
-                            </ic:EventTriggerBehavior>
-                        </i:Interaction.Behaviors>
-                    </ItemsView>
+                <!--- List of Compute system providers the user can choose from when they're loaded. -->
+                <ItemsView 
+                    x:Name="ComputeSystemProviderViewModelsList"
+                    AutomationProperties.LabeledBy="{Binding ElementName=LabelForItemsView, Mode=OneWay}"
+                    ItemsSource="{x:Bind ViewModel.ProvidersViewModels, Mode=OneWay}"
+                    ItemTemplate="{StaticResource ProviderItemTemplate}"
+                    Visibility="{x:Bind ViewModel.AreProvidersLoaded, Mode=OneWay}">
+                    <ItemsView.Layout>
+                        <StackLayout Spacing="5" />
+                    </ItemsView.Layout>
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="SelectionChanged">
+                            <ic:InvokeCommandAction  
+                                Command="{Binding ItemsViewSelectionChangedCommand, Mode=OneWay}"  
+                                CommandParameter="{Binding SelectedItem, ElementName=ComputeSystemProviderViewModelsList, Mode=OneWay}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ItemsView>
 
-                    <Grid
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Visibility="{x:Bind ViewModel.AreProvidersLoaded, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
-                        <ProgressRing
-                            IsActive="True"
-                            Width="25"
-                            Height="25"
-                            Margin="0,150,0,0"/>
-                    </Grid>
-                </StackPanel>
-            </ScrollViewer>
-        </setupControls:SetupShell.SetupShellContent>
-    </setupControls:SetupShell>
+                <Grid
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Visibility="{x:Bind ViewModel.AreProvidersLoaded, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
+                    <ProgressRing
+                        IsActive="True"
+                        Width="25"
+                        Height="25"
+                        Margin="0,150,0,0"/>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

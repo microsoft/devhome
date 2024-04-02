@@ -12,6 +12,7 @@ using DevHome.Common.Environments.Models;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
@@ -19,7 +20,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SelectEnvironmentProviderViewModel));
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly WindowEx _windowEx;
 
     private readonly IComputeSystemService _computeSystemService;
 
@@ -37,12 +38,13 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     public SelectEnvironmentProviderViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        IComputeSystemService computeSystemService)
+        IComputeSystemService computeSystemService,
+        WindowEx windowEx)
            : base(stringResource, orchestrator)
     {
         PageTitle = stringResource.GetLocalized(StringResourceKey.SelectEnvironmentPageTitle);
         _computeSystemService = computeSystemService;
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _windowEx = windowEx;
     }
 
     public async Task LoadProvidersAsync()
@@ -54,7 +56,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         {
             var providerDetails = await _computeSystemService.GetComputeSystemProvidersAsync();
 
-            _dispatcher.TryEnqueue(() =>
+            _windowEx.DispatcherQueue.TryEnqueue(() =>
             {
                 ProvidersViewModels = new();
 

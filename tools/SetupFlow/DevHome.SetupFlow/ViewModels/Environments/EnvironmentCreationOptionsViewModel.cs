@@ -13,11 +13,13 @@ using DevHome.Common.DevHomeAdaptiveCards.Parsers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Models;
 using DevHome.Common.Renderers;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
@@ -30,7 +32,9 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SelectEnvironmentProviderViewModel));
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly AdaptiveCardRenderingService _adaptiveCardRenderingService;
+
+    private readonly WindowEx _windowEx;
 
     private readonly AdaptiveElementParserRegistration _elementRegistration = new();
 
@@ -61,13 +65,15 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     public EnvironmentCreationOptionsViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        SetupFlowViewModel setupFlow)
+        SetupFlowViewModel setupFlow,
+        WindowEx windowEx,
+        AdaptiveCardRenderingService renderingService)
            : base(stringResource, orchestrator)
     {
         PageTitle = stringResource.GetLocalized(StringResourceKey.ConfigureEnvironmentPageTitle);
         _setupFlowViewModel = setupFlow;
         _setupFlowViewModel.EndSetupFlow += OnEndSetupFlow;
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _windowEx = windowEx;
 
         // Register for changes to the selected provider. This will be triggered when the user selects a provider.
         // from the SelectEnvironmentProviderViewModel. This is a weak reference so that the recipient can be garbage collected.
@@ -84,6 +90,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         _elementRegistration.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new DevHomeSettingsCardChoiceSetParser());
         _elementRegistration.Set(DevHomeLaunchContentDialogButton.AdaptiveElementType, new DevHomeLaunchContentDialogButtonParser());
         _elementRegistration.Set(DevHomeContentDialogContent.AdaptiveElementType, new DevHomeContentDialogContentParser());
+        _adaptiveCardRenderingService = renderingService;
     }
 
     /// <summary>
@@ -106,8 +113,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        await Task.CompletedTask;
-        _adaptiveCardRenderer = GetAdaptiveCardRenderer();
+        _adaptiveCardRenderer = await GetAdaptiveCardRenderer();
     }
 
     /// <summary>
@@ -142,7 +148,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     /// </summary>
     public void UpdateExtensionAdaptiveCard(ComputeSystemAdaptiveCardResult adaptiveCardSessionResult)
     {
-        _dispatcher.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             try
             {
@@ -186,10 +192,10 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     /// </summary>
     public void OnAdaptiveCardUpdated(object sender, AdaptiveCard adaptiveCard)
     {
-        _dispatcher.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             // Render the adaptive card and set the action event handler.
-            _renderedAdaptiveCard = GetAdaptiveCardRenderer().RenderAdaptiveCard(adaptiveCard);
+            _renderedAdaptiveCard = _adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
             _renderedAdaptiveCard.Action += OnRenderedAdaptiveCardAction;
 
             // Send new card to listeners
@@ -212,7 +218,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     /// <param name="args">The action and user inputs from within the adaptive card</param>
     private void OnRenderedAdaptiveCardAction(object sender, AdaptiveActionEventArgs args)
     {
-        _dispatcher.TryEnqueue(async () =>
+        _windowEx.DispatcherQueue.TryEnqueue(async () =>
         {
             IsAdaptiveCardSessionLoaded = false;
 
@@ -288,15 +294,14 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     /// Gets the adaptive card renderer that will be used to render the adaptive card in the UI. Its important to recreate the ItemsViewChoiceSet every time we want to
     /// render an adaptive card because the parenting the ItemsView control to multiple parents will cause an exception to be thrown.
     /// </summary>
-    private AdaptiveCardRenderer GetAdaptiveCardRenderer()
+    private async Task<AdaptiveCardRenderer> GetAdaptiveCardRenderer()
     {
-        var renderer = new AdaptiveCardRenderer();
+        var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
         renderer.ElementRenderers.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new ItemsViewChoiceSet("SettingsCardWithButtonThatLaunchesContentDialog"));
 
         // We need to keep the same renderer for the ActionSet that is hooked up to the orchestrator as it will have the adaptive card
         // context needed to invoke the adaptive card actions from outside the adaptive card.
         renderer.ElementRenderers.Set("ActionSet", Orchestrator.DevHomeActionSetRenderer);
-        renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
         return renderer;
     }
 

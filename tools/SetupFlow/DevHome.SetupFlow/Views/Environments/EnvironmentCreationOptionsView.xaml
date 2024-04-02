@@ -13,43 +13,49 @@
     </UserControl.Resources>
 
     <!--- Show the Choose environment header on the page. -->
-    <setupControls:SetupShell 
-         x:Uid="ConfigureEnvironmentPage"
-         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
-         Foreground="{ThemeResource TextFillColorSecondary}" >
-        <setupControls:SetupShell.SetupShellContent>
-            <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}">
-                <StackPanel Spacing="10">
-                    <Grid
-                        HorizontalAlignment="Stretch"
-                        Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
-                        <InfoBar
-                            IsOpen="True"
-                            x:Uid="ErrorRetrievingAdaptiveCardSession"
-                            Severity="Error"
-                            Message="{x:Bind ViewModel.SessionErrorMessage}" >
-                        </InfoBar>
-                    </Grid>
-                        <!--- 
-                        Show the adaptive card frame on the page. 
-                        Note: The frame adds an extra padding of 20 pixels on all sides so we are setting it to -20 to remove it.
-                                        -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
 
-                    <Grid 
-                        Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay}"
-                        x:Name="AdaptiveCardGrid" />
+        <!--- Make SetupShellContent. -->
+        <setupControls:SetupShell 
+            x:Uid="ConfigureEnvironmentPage"
+            Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+            Foreground="{ThemeResource TextFillColorSecondary}" 
+            Grid.Row="0">
+        </setupControls:SetupShell>
+        <ScrollViewer 
+            MaxWidth="{ThemeResource MaxPageContentWidth}"
+            Grid.Row="1">
+            <StackPanel Spacing="10">
+                <Grid
+                    HorizontalAlignment="Stretch"
+                    Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
+                    <InfoBar
+                        IsOpen="True"
+                        x:Uid="ErrorRetrievingAdaptiveCardSession"
+                        Severity="Error"
+                        Message="{x:Bind ViewModel.SessionErrorMessage}" >
+                    </InfoBar>
+                </Grid>
 
-                    <Grid
-                        HorizontalAlignment="Center"
-                        Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
-                        <ProgressRing
-                            IsActive="True"
-                            Width="25"
-                            Height="25"
-                            Margin="0,150,0,20"/>
-                    </Grid>
-                </StackPanel>
-            </ScrollViewer>
-        </setupControls:SetupShell.SetupShellContent>
-    </setupControls:SetupShell>
+                <!--- Show the adaptive card on the page if its loaded -->
+                <Grid 
+                    Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay}"
+                    x:Name="AdaptiveCardGrid" />
+
+                <Grid
+                    HorizontalAlignment="Center"
+                    Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
+                    <ProgressRing
+                        IsActive="True"
+                        Width="25"
+                        Height="25"
+                        Margin="0,150,0,20"/>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </UserControl>
