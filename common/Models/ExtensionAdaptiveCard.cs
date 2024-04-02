@@ -24,18 +24,14 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 
     public string TemplateJson { get; private set; }
 
-    public ExtensionAdaptiveCard()
+    public ExtensionAdaptiveCard(AdaptiveElementParserRegistration? elementParserRegistration = null, AdaptiveActionParserRegistration? actionParserRegistration = null)
     {
         TemplateJson = new JsonObject().ToJsonString();
         DataJson = new JsonObject().ToJsonString();
         State = string.Empty;
-    }
 
-    public ExtensionAdaptiveCard(AdaptiveElementParserRegistration elementParserRegistration, AdaptiveActionParserRegistration actionParserRegistration)
-        : this()
-    {
-        _elementParserRegistration = elementParserRegistration;
-        _actionParserRegistration = actionParserRegistration;
+        _elementParserRegistration = elementParserRegistration != null ? elementParserRegistration : new AdaptiveElementParserRegistration();
+        _actionParserRegistration = actionParserRegistration != null ? actionParserRegistration : new AdaptiveActionParserRegistration();
     }
 
     public ProviderOperationResult Update(string templateJson, string dataJson, string state)
@@ -47,16 +43,7 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
         // an empty string.
         var adaptiveCardString = template.Expand(Newtonsoft.Json.JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(dataJson ?? DataJson));
 
-        AdaptiveCardParseResult parseResult;
-
-        if (_actionParserRegistration != null && _elementParserRegistration != null)
-        {
-            parseResult = AdaptiveCard.FromJsonString(adaptiveCardString, _elementParserRegistration, _actionParserRegistration);
-        }
-        else
-        {
-            parseResult = AdaptiveCard.FromJsonString(adaptiveCardString);
-        }
+        var parseResult = AdaptiveCard.FromJsonString(adaptiveCardString, _elementParserRegistration, _actionParserRegistration);
 
         if (parseResult.AdaptiveCard is null)
         {

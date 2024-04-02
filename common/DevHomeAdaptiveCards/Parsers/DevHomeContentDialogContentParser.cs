@@ -9,6 +9,13 @@ using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.Parsers;
 
+/// <summary>
+/// Represents a parser for a Dev Home content dialog card that can be rendered through an adaptive card.
+/// This parser will be used if the element type is "DevHome.ContentDialogContent".
+/// </summary>
+/// <remarks>
+/// the JsonObject is a Windows.Data.Json.JsonObject, which has methods that can throw an exception if the type is not correct.
+/// </remarks>
 public class DevHomeContentDialogContentParser : IAdaptiveElementParser
 {
     public IAdaptiveCardElement FromJson(JsonObject inputJson, AdaptiveElementParserRegistration elementParsers, AdaptiveActionParserRegistration actionParsers, IList<AdaptiveWarning> warnings)
