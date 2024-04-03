@@ -49,6 +49,10 @@ public partial class DevDriveInsightsViewModel : ObservableObject
 
     private IEnumerable<IDevDrive> ExistingDevDrives { get; set; } = Enumerable.Empty<IDevDrive>();
 
+    private static readonly string LocalAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+    private static readonly string UserProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
     public DevDriveInsightsViewModel(IDevDriveManager devDriveManager, OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory)
     {
         _optimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
@@ -231,11 +235,14 @@ public partial class DevDriveInsightsViewModel : ObservableObject
     [
         new DevDriveCacheViewModel
         {
-            CacheName = "Pip cache (Python)", EnvironmentVariable = "PIP_CACHE_DIR", CacheDirectory = "\\pip\\cache",
+            CacheName = "Pip cache (Python)", EnvironmentVariable = "PIP_CACHE_DIR", CacheDirectory = $"{LocalAppDataPath}\\pip\\cache",
             ExampleDirectory = "D:\\packages\\pip\\cache",
+        },
+        new DevDriveCacheViewModel
+        {
+            CacheName = "NuGet cache (dotnet)", EnvironmentVariable = "NUGET_PACKAGES", CacheDirectory = $"{UserProfilePath}\\.nuget\\packages",
+            ExampleDirectory = "D:\\packages\\NuGet\\Cache",
         }
-
-        // Add more cache directories and their corresponding environment variables here
     ];
 
     private string? GetExistingCacheLocation(DevDriveCacheViewModel cache)
@@ -261,11 +268,11 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         return null;
     }
 
-    private bool CacheInDevDrive(string existingPipCacheLocation)
+    private bool CacheInDevDrive(string existingCacheLocation)
     {
         foreach (var existingDrive in ExistingDevDrives)
         {
-            if (existingPipCacheLocation.StartsWith(existingDrive.DriveLetter.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (existingCacheLocation.StartsWith(existingDrive.DriveLetter.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
