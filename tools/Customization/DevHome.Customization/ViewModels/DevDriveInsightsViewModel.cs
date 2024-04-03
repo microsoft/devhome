@@ -266,10 +266,9 @@ public partial class DevDriveInsightsViewModel : ObservableObject
             {
                 var subDirectories = Directory.GetDirectories(_localAppDataPath + "\\Packages", "*", SearchOption.TopDirectoryOnly);
                 var matchingSubdirectory = subDirectories.FirstOrDefault(subdir => subdir.StartsWith(cacheDirectory, StringComparison.OrdinalIgnoreCase));
-                var alternateFullDirectoryPath = matchingSubdirectory + "\\localcache\\local" + cacheDirectory;
-                if (Directory.Exists(alternateFullDirectoryPath))
+                if (Directory.Exists(matchingSubdirectory))
                 {
-                    return alternateFullDirectoryPath;
+                    return matchingSubdirectory;
                 }
             }
         }
