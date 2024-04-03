@@ -227,19 +227,31 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         DevDriveLoadingCompleted = true;
     }
 
-    private string? GetExistingCacheLocation(string rootDirectory, string targetDirectoryName)
+    private readonly List<DevDriveCacheViewModel> _cacheInfo =
+    [
+        new DevDriveCacheViewModel
+        {
+            CacheName = "Pip cache (Python)", EnvironmentVariable = "PIP_CACHE_DIR", CacheDirectory = "\\pip\\cache",
+            ExampleDirectory = "D:\\packages\\pip\\cache",
+        }
+
+        // Add more cache directories and their corresponding environment variables here
+    ];
+
+    private string? GetExistingCacheLocation(DevDriveCacheViewModel cache)
     {
-        var fullDirectoryPath = rootDirectory + targetDirectoryName;
+        var rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var fullDirectoryPath = rootDirectory + cache.CacheDirectory;
         if (Directory.Exists(fullDirectoryPath))
         {
             return fullDirectoryPath;
         }
         else
         {
-            var subDirPrefix = rootDirectory + "\\Packages\\PythonSoftwareFoundation.Python";
+            var subDirPrefix = rootDirectory + cache.ExampleDirectory;
             var subDirectories = Directory.GetDirectories(rootDirectory + "\\Packages", "*", SearchOption.TopDirectoryOnly);
             var matchingSubdirectory = subDirectories.FirstOrDefault(subdir => subdir.StartsWith(subDirPrefix, StringComparison.OrdinalIgnoreCase));
-            var alternateFullDirectoryPath = matchingSubdirectory + "\\localcache\\local" + targetDirectoryName;
+            var alternateFullDirectoryPath = matchingSubdirectory + "\\localcache\\local" + cache.CacheDirectory;
             if (Directory.Exists(alternateFullDirectoryPath))
             {
                 return alternateFullDirectoryPath;
@@ -264,35 +276,40 @@ public partial class DevDriveInsightsViewModel : ObservableObject
 
     public void UpdateOptimizerListViewModelList()
     {
-        var cacheSubDir = "\\pip\\cache";
-        var environmentVariable = "PIP_CACHE_DIR";
-        var localAppDataDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        var existingPipCacheLocation = GetExistingCacheLocation(localAppDataDir.ToString(), cacheSubDir);
-        if (existingPipCacheLocation != null && !CacheInDevDrive(existingPipCacheLocation))
+        foreach (var cache in _cacheInfo)
         {
+            var existingCacheLocation = GetExistingCacheLocation(cache);
+            if (existingCacheLocation == null || CacheInDevDrive(existingCacheLocation))
+            {
+                continue;
+            }
+
             var card = new DevDriveOptimizerCardViewModel(
                 _optimizeDevDriveDialogViewModelFactory,
-                "Pip cache (Python)",
-                existingPipCacheLocation,
-                "D:\\packages" + cacheSubDir /*example location on dev drive to move cache to*/,
-                environmentVariable /*environmentVariableToBeSet*/);
+                cache.CacheName!,
+                existingCacheLocation,
+                cache.ExampleDirectory!, // example location on dev drive to move cache to
+                cache.EnvironmentVariable!); // environmentVariableToBeSet
             DevDriveOptimizerCardCollection.Add(card);
-            DevDriveOptimizerLoadingCompleted = true;
         }
+
+        DevDriveOptimizerLoadingCompleted = true;
     }
 
     public void UpdateOptimizedListViewModelList()
     {
-        var environmentVariable = "PIP_CACHE_DIR";
-
-        // We retrieve the cache location from environment variable, because if the cache might have already moved.
-        var movedPipCacheLocation = Environment.GetEnvironmentVariable(environmentVariable);
-        if (!string.IsNullOrEmpty(movedPipCacheLocation) && CacheInDevDrive(movedPipCacheLocation))
+        foreach (var cache in _cacheInfo)
         {
-            // Cache already in dev drive, show the "Optimized" card
-            var card = new DevDriveOptimizedCardViewModel("Pip cache (Python)", movedPipCacheLocation, environmentVariable);
-            DevDriveOptimizedCardCollection.Add(card);
-            DevDriveOptimizedLoadingCompleted = true;
+            // We retrieve the cache location from environment variable, because if the cache might have already moved.
+            var movedCacheLocation = Environment.GetEnvironmentVariable(cache.EnvironmentVariable!);
+            if (!string.IsNullOrEmpty(movedCacheLocation) && CacheInDevDrive(movedCacheLocation))
+            {
+                // Cache already in dev drive, show the "Optimized" card
+                var card = new DevDriveOptimizedCardViewModel(cache.CacheName!, movedCacheLocation, cache.EnvironmentVariable!);
+                DevDriveOptimizedCardCollection.Add(card);
+            }
         }
+
+        DevDriveOptimizedLoadingCompleted = true;
     }
 }
