@@ -64,8 +64,8 @@ public partial class CreateComputeSystemOperationViewModel : ObservableObject
         _windowEx = windowsEx;
         _removalAction = removalAction;
         _stringResource = stringResource;
-        ProviderDisplayName = details.ProviderDetails.ComputeSystemProvider.DisplayName;
-        PackageFullName = details.ProviderDetails.ExtensionWrapper.PackageFullName;
+        ProviderDisplayName = details.ComputeSystemProvider.DisplayName;
+        PackageFullName = details.ExtensionWrapper.PackageFullName;
         Operation = operation;
         UpdateUiMessage(Operation.LastProgressMessage, Operation.LastProgressPercentage);
         IsCreationInProgress = true;
@@ -75,7 +75,7 @@ public partial class CreateComputeSystemOperationViewModel : ObservableObject
         StateColor = CardStateColor.Caution;
 
         DotOperations = new ObservableCollection<OperationsViewModel>() { new(_stringResource.GetLocalized("DeleteButtonTextForCreateComputeSystem"), _deletionUniCodeCharacter, _removalAction) };
-        HeaderImage = CardProperty.ConvertMsResourceToIcon(details.ProviderDetails.ComputeSystemProvider.Icon, PackageFullName);
+        HeaderImage = CardProperty.ConvertMsResourceToIcon(details.ComputeSystemProvider.Icon, PackageFullName);
 
         // If the operation is already completed update the status
         if (operation.CreateComputeSystemResult != null)
@@ -126,6 +126,11 @@ public partial class CreateComputeSystemOperationViewModel : ObservableObject
     {
         _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
+            if (operationStatus == null)
+            {
+                return;
+            }
+
             var percentageString = percentage == 0 ? string.Empty : $"({percentage}%)";
             UiMessageToDisplay = _stringResource.GetLocalized("CreationStatueTextForCreateEnvironmentFlow", $"{operationStatus} {percentageString}");
         });
