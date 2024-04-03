@@ -70,21 +70,23 @@
                                 <ctControls:SettingsExpander.HeaderIcon>
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
                                 </ctControls:SettingsExpander.HeaderIcon>
-                                <Button x:Uid="MoreOptionsButton"
-                                        Content="&#xe712;"
-                                        Height="36" Width="36"
-                                        FontFamily="{StaticResource SymbolThemeFontFamily}" 
-                                        Background="Transparent"
-                                        BorderThickness="0">
-                                    <Button.Flyout>
-                                        <MenuFlyout>
-                                            <MenuFlyoutItem
-                                                x:Uid="UninstallItem"
-                                                Command="{x:Bind UninstallButtonCommand}">
-                                            </MenuFlyoutItem>
-                                        </MenuFlyout>
-                                    </Button.Flyout>
-                                </Button>
+                                <StackPanel>
+                                    <Button x:Uid="MoreOptionsButton"
+                                            Content="&#xe712;"
+                                            Height="36" Width="36"
+                                            FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                            Background="Transparent"
+                                            BorderThickness="0">
+                                        <Button.Flyout>
+                                            <MenuFlyout>
+                                                <MenuFlyoutItem
+                                                    x:Uid="UninstallItem"
+                                                    Command="{x:Bind UninstallButtonCommand}">
+                                                </MenuFlyoutItem>
+                                            </MenuFlyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </StackPanel>
                                 <ctControls:SettingsExpander.ItemTemplate>
                                     <DataTemplate x:DataType="viewmodels:InstalledExtensionViewModel">
                                         <ctControls:SettingsCard x:Uid="ManageExtensionCard"
@@ -116,6 +118,7 @@
                                                Description="{x:Bind Publisher}"
                                                Margin="{ThemeResource SettingsCardMargin}"
                                                CornerRadius="3"
+                                               AutomationProperties.Name="{x:Bind Title}"
                                                IsClickEnabled="False">
                                 <ctControls:SettingsCard.HeaderIcon>
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
