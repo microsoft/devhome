@@ -306,15 +306,6 @@ public partial class AddRepoDialog : ContentDialog
         }
     }
 
-    /// <summary>
-    /// User wants to customize the default dev drive.
-    /// </summary>
-    private async void CustomizeDevDriveHyperlinkButton_ClickAsync(object sender, RoutedEventArgs e)
-    {
-        await AddRepoViewModel.EditDevDriveViewModel.PopDevDriveCustomizationAsync();
-        AddRepoViewModel.ToggleCloneButton();
-    }
-
     private void RepoUrlTextBox_TextChanged(object sender, RoutedEventArgs e)
     {
         // just in case something other than a text box calls this.

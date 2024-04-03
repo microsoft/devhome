@@ -27,7 +27,7 @@
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter"  TrueValue="Collapsed" FalseValue="Visible" />
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
                     <ControlTemplate x:Key="LinksTemplate">
-                        <StackPanel Orientation="Vertical" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
+                        <StackPanel>
                             <StackPanel.Resources>
                                 <Style TargetType="HyperlinkButton" BasedOn="{StaticResource TextBlockButtonStyle}"/>
                             </StackPanel.Resources>
@@ -47,6 +47,7 @@
                         <Setter Property="Margin" Value="0" />
                         <Setter Property="Padding" Value="0" />
                     </Style>
+                    <Thickness x:Key="TopLeftQuadrantThickness">0, 1, 0, 2</Thickness>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -119,7 +120,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Configuration unit results -->
-                    <Grid RowSpacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" >
+                    <Grid RowSpacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopLeftQuadrantThickness}" >
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="*" />
@@ -197,7 +198,8 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
-                            <RowDefinition Height="*" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
 
                         <!-- Show any failed tasks if the loading screen has any failed tasks-->
@@ -205,7 +207,7 @@
                             HorizontalAlignment="Stretch" 
                             Padding="0,15,0,30"
                             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
+                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"/>
@@ -259,12 +261,13 @@
                             HorizontalAlignment="Stretch" 
                             Padding="0,15,0,30"
                             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
+                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
                                 <ColumnDefinition Width="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
+                                <RowDefinition />
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
@@ -288,8 +291,8 @@
                                     Foreground="{ThemeResource TextFillColorSecondary}"/>
                             </Grid>
                             <Grid
-                                Grid.Column="1"
-                                Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}">
+                            Grid.Column="1"
+                            Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition/>
@@ -314,7 +317,18 @@
                                 Margin="0, 50, 0, 0"/>
                         </Grid>
                         <!-- Next steps section -->
-                        <ContentControl Grid.Row="1" Template="{ThemeResource LinksTemplate}" />
+                        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.NextSteps, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
+                            <ListView ItemsSource="{x:Bind ViewModel.NextSteps, Mode=OneWay}" SelectionMode="None" ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="UserControl">
+                                        <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0, 0, 0, 1">
+                                            <ContentControl Content="{x:Bind}"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Grid>
+                        <ContentControl Grid.Row="2" Template="{ThemeResource LinksTemplate}" />
                     </Grid>
 
                     <!-- Displays the repos cloned and apps downloaded -->

@@ -3,6 +3,7 @@ CoCreateInstance
 FileOpenDialog
 FileSaveDialog
 IFileOpenDialog
+IFileSaveDialog
 SHCreateItemFromParsingName
 GetCurrentPackageFullName
 SetWindowLong

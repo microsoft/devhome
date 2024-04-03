@@ -1,0 +1,27 @@
+<!-- Copyright (c) Microsoft Corporation.. -->
+<!-- Licensed under the MIT License. -->
+
+<ContentDialog
+    x:Class="DevHome.Customization.Views.OptimizeDevDriveDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:devDriveInsights="using:DevHome.Customization.ViewModels.DevDriveInsights"
+    d:DataContext="{d:DesignInstance Type=devDriveInsights:DevDriveOptimizerCardViewModel}"
+    x:Uid="ms-resource:///DevHome.Customization/Views/OptimizeDevDriveDialog"
+    mc:Ignorable="d"
+    Style="{StaticResource DefaultContentDialogStyle}"
+    Title="{x:Bind ViewModel.ChooseDirectoryPromptText}"
+    PrimaryButtonText="{x:Bind ViewModel.MakeChangesText}"
+    PrimaryButtonCommand="{x:Bind ViewModel.DirectoryInputConfirmedCommand}"
+    SecondaryButtonText="Cancel">
+    <StackPanel>
+        <TextBlock Text="{x:Bind ViewModel.OptimizeDevDriveDialogDescription}" TextWrapping="Wrap"/>
+        <Grid Margin="0 10 0 0">
+            <TextBox HorizontalAlignment="Left" MinWidth="300" Grid.Column="0" x:Name="DirectoryPathTextBox" PlaceholderText="Choose a directory" Text="{x:Bind ViewModel.DirectoryPathTextBox , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button HorizontalAlignment="Right" Margin="10 0 0 0" Grid.Column="1" Content="Browse" Command="{x:Bind ViewModel.BrowseButtonClickCommand}"/>
+        </Grid>
+        <TextBlock Margin="0 10 0 10" TextWrapping="Wrap" Text="{x:Bind ViewModel.ExampleDevDriveLocation, Mode=OneWay}"/>
+    </StackPanel>
+</ContentDialog>

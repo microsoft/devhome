@@ -60,6 +60,8 @@ public static class StringResourceKey
     public static readonly string InstalledPackageReboot = nameof(InstalledPackageReboot);
     public static readonly string InstallingPackage = nameof(InstallingPackage);
     public static readonly string InstallationNotesTitle = nameof(InstallationNotesTitle);
+    public static readonly string MainPageEnvironmentSetupGroup = nameof(MainPageEnvironmentSetupGroup);
+    public static readonly string MainPageQuickConfigurationGroup = nameof(MainPageQuickConfigurationGroup);
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
     public static readonly string PackagesCount = nameof(PackagesCount);
@@ -101,6 +103,12 @@ public static class StringResourceKey
     public static readonly string CloneRepoError = nameof(CloneRepoError);
     public static readonly string CloneRepoErrorForActionCenter = nameof(CloneRepoErrorForActionCenter);
     public static readonly string CloneRepoRestart = nameof(CloneRepoRestart);
+
+    // Repository Next Steps messages
+    public static readonly string CloneRepoNextStepsView = nameof(CloneRepoNextStepsView);
+    public static readonly string CloneRepoNextStepsRun = nameof(CloneRepoNextStepsRun);
+    public static readonly string CloneRepoNextStepsFileFound = nameof(CloneRepoNextStepsFileFound);
+    public static readonly string CloneRepoNextStepsDescription = nameof(CloneRepoNextStepsDescription);
 
     // Configure task loading screen messages
     public static readonly string ApplyingConfigurationMessage = nameof(ApplyingConfigurationMessage);

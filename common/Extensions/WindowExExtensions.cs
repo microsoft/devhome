@@ -2,19 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DevHome.Common.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Serilog;
-using Windows.Storage;
-using Windows.Win32;
-using Windows.Win32.Foundation;
-using Windows.Win32.System.Com;
-using Windows.Win32.UI.Shell;
-using Windows.Win32.UI.Shell.Common;
 using WinUIEx;
 
 namespace DevHome.Common.Extensions;
@@ -77,133 +68,5 @@ public static class WindowExExtensions
             rootElement.RequestedTheme = theme;
             TitleBarHelper.UpdateTitleBar(window, rootElement.ActualTheme);
         }
-    }
-
-    /// <summary>
-    /// Open file picker
-    /// </summary>
-    /// <param name="window">Target window</param>
-    /// <param name="logger">Logger instance</param>
-    /// <param name="filters">List of type filters (e.g. *.yaml, *.txt)</param>
-    /// <returns>Storage file or <c>null</c> if no file was selected</returns>
-    public static async Task<StorageFile?> OpenFilePickerAsync(this WindowEx window, ILogger? logger, params (string Type, string Name)[] filters)
-    {
-        var filePicker = window.FileDialogInternal<FileOpenDialog>(logger, filters);
-        if (filePicker.HasValue)
-        {
-            var fileName = filePicker.Value.Item1;
-            return await StorageFile.GetFileFromPathAsync(fileName);
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// Save file dialog
-    /// </summary>
-    /// <param name="window">Target window</param>
-    /// <param name="logger">Logger instance</param>
-    /// <param name="filters">List of type filters (e.g. *.yaml, *.txt)</param>
-    /// <returns>Tuple with the file name and file type index or <c>null</c> if no file was selected</returns>
-    public static (string, int)? SaveFileDialog(this WindowEx window, ILogger? logger, params (string Type, string Name)[] filters)
-    {
-        return window.FileDialogInternal<FileSaveDialog>(logger, filters);
-    }
-
-    /// <summary>
-    /// Core implementation for file dialog
-    /// </summary>
-    /// <typeparam name="T">File dialog types</typeparam>
-    /// <param name="window">Target window</param>
-    /// <param name="logger">Logger instance</param>
-    /// <param name="filters">List of type filters (e.g. *.yaml, *.txt)</param>
-    /// <returns>Tuple with the file name and file type index or <c>null</c> if no file was selected</returns>
-    private static (string, int)? FileDialogInternal<T>(this WindowEx window, ILogger? logger, params (string Type, string Name)[] filters)
-    {
-        try
-        {
-            if (filters.Length == 0)
-            {
-                throw new ArgumentException("Input filters cannot be empty");
-            }
-
-            string fileName;
-            int fileTypeIndex;
-
-            // File picker fails when running the application as admin.
-            // To workaround this issue, we instead use the Win32 picking APIs
-            // as suggested in the documentation for the FileSavePicker:
-            // >> Original code reference: https://learn.microsoft.com/uwp/api/windows.storage.pickers.filesavepicker?view=winrt-22621#in-a-desktop-app-that-requires-elevation
-            // >> GitHub issue: https://github.com/microsoft/WindowsAppSDK/issues/2504
-            // "In a desktop app (which includes WinUI 3 apps), you can use
-            // FileSavePicker (and other types from Windows.Storage.Pickers).
-            // But if the desktop app requires elevation to run, then you'll
-            // need a different approach (that's because these APIs aren't
-            // designed to be used in an elevated app). The code snippet below
-            // illustrates how you can use the C#/Win32 P/Invoke Source
-            // Generator (CsWin32) to call the Win32 picking APIs instead."
-            unsafe
-            {
-                var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-
-                var hr = PInvoke.CoCreateInstance<IFileDialog>(typeof(T).GUID, null, CLSCTX.CLSCTX_INPROC_SERVER, out var fileDialog);
-                Marshal.ThrowExceptionForHR(hr);
-
-                IShellItem ppsi;
-                var extensions = new List<COMDLG_FILTERSPEC>();
-
-                try
-                {
-                    // Set filters (e.g. "*.yaml", "*.yml", etc...)
-                    foreach (var filter in filters)
-                    {
-                        COMDLG_FILTERSPEC extension;
-                        extension.pszName = (char*)Marshal.StringToHGlobalUni(filter.Name);
-                        extension.pszSpec = (char*)Marshal.StringToHGlobalUni(filter.Type);
-                        extensions.Add(extension);
-                    }
-
-                    fileDialog.SetFileTypes(CollectionsMarshal.AsSpan(extensions));
-
-                    fileDialog.Show(new HWND(hWnd));
-                    fileDialog.GetResult(out ppsi);
-                }
-                finally
-                {
-                    // Free all filter names and specs
-                    foreach (var extension in extensions)
-                    {
-                        Marshal.FreeHGlobal((IntPtr)extension.pszName.Value);
-                        Marshal.FreeHGlobal((IntPtr)extension.pszSpec.Value);
-                    }
-                }
-
-                // Get the display name and then manually free it after creating the string.
-                // See https://learn.microsoft.com/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitem-getdisplayname:
-                // "It is the responsibility of the caller to free the string pointed to by ppszName
-                // when it is no longer needed. Call CoTaskMemFree on *ppszName to free the memory."
-                PWSTR pFileName;
-                ppsi.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out pFileName);
-                fileName = new string(pFileName);
-                Marshal.FreeCoTaskMem((IntPtr)pFileName.Value);
-
-                // NOTE: IFileDialog::GetFileTypeIndex method is a one-based
-                // index rather than zero-based.
-                fileDialog.GetFileTypeIndex(out var uFileTypeIndex);
-                fileTypeIndex = (int)uFileTypeIndex - 1;
-            }
-
-            return (fileName, fileTypeIndex);
-        }
-        catch (COMException e) when (e.ErrorCode == FilePickerCanceledErrorCode)
-        {
-            // No-op: Operation was canceled by the user
-        }
-        catch (Exception e)
-        {
-            logger?.Error("File picker failed. Returning null.", e);
-        }
-
-        return null;
     }
 }
