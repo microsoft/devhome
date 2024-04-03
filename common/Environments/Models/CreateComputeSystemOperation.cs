@@ -16,7 +16,7 @@ namespace DevHome.Common.Environments.Models;
 /// <summary>
 /// Wrapper class for the out of proc ICreateComputeSystemOperation interface that is receieved from the extension.
 /// </summary>
-public class CreateComputeSystemOperation
+public class CreateComputeSystemOperation : IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CreateComputeSystemOperation));
 
@@ -27,6 +27,8 @@ public class CreateComputeSystemOperation
     private readonly ICreateComputeSystemOperation _createComputeSystemOperation;
 
     private readonly string _environmentGenericName = StringResourceHelper.GetResource("EnvironmentGenericName");
+
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
 
     public string EnvironmentName { get; private set; }
 
@@ -52,6 +54,8 @@ public class CreateComputeSystemOperation
         "NewEnvironmentName",
         "EnvironmentName",
     };
+
+    private bool _disposedValue;
 
     public CreateComputeSystemOperation(ICreateComputeSystemOperation createComputeSystemOperation, ComputeSystemProviderDetails providerDetails, string userInputJson)
     {
@@ -79,24 +83,23 @@ public class CreateComputeSystemOperation
 
     public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemResult>? Completed;
 
-    public void StartOperation(CancellationToken cancellationToken)
+    public void StartOperation()
     {
-        Task.Run(
-            async () =>
+        // Fire the task on a background thread so that the UI thread is not blocked.
+        Task.Run(async () =>
+        {
+            try
             {
-                try
-                {
-                    CreateComputeSystemResult = await _createComputeSystemOperation.StartAsync().AsTask(cancellationToken);
-                    Completed?.Invoke(this, CreateComputeSystemResult);
-                }
-                catch (Exception ex)
-                {
-                    _log.Error($"CreateComputeSystemOperation failed for provider {ProviderDetails.ComputeSystemProvider}", ex);
-                    CreateComputeSystemResult = new CreateComputeSystemResult(ex, StringResourceHelper.GetResource("CreationOperationStoppedUnexpectedly"), ex.Message);
-                    Completed?.Invoke(this, CreateComputeSystemResult);
-                }
-            },
-            CancellationToken.None);
+                CreateComputeSystemResult = await _createComputeSystemOperation.StartAsync().AsTask(_cancellationTokenSource.Token);
+                Completed?.Invoke(this, CreateComputeSystemResult);
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"CreateComputeSystemOperation failed for provider {ProviderDetails.ComputeSystemProvider}", ex);
+                CreateComputeSystemResult = new CreateComputeSystemResult(ex, StringResourceHelper.GetResource("CreationOperationStoppedUnexpectedly"), ex.Message);
+                Completed?.Invoke(this, CreateComputeSystemResult);
+            }
+        });
     }
 
     private void OnActionRequired(ICreateComputeSystemOperation sender, CreateComputeSystemActionRequiredEventArgs args)
@@ -125,5 +128,37 @@ public class CreateComputeSystemOperation
         {
             _log.Error($"Failed to remove event handlers for {this}", ex);
         }
+    }
+
+    public void CancelOperation()
+    {
+        try
+        {
+            _cancellationTokenSource.Cancel();
+        }
+        catch (Exception ex)
+        {
+            _log.Error($"Failed to cancel operation for {this}", ex);
+        }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _cancellationTokenSource.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

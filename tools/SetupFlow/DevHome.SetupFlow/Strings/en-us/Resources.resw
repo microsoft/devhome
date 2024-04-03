@@ -1662,7 +1662,6 @@
   </data>
   <data name="CreateEnvironmentButtonText" xml:space="preserve">
     <value>Create Environment</value>
-    <comment>Text for button that starts creating a new virtual machine or cloud pc for the user</comment>
   </data>
   <data name="EnvironmentCreationError" xml:space="preserve">
     <value>There was an error starting the creation operation</value>

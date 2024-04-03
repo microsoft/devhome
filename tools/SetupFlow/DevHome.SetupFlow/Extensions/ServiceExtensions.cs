@@ -199,9 +199,11 @@ public static class ServiceExtensions
 
     private static IServiceCollection AddCreateEnvironment(this IServiceCollection services)
     {
-        // View models
+        // Task groups
         services.AddTransient<EnvironmentCreationOptionsTaskGroup>();
         services.AddTransient<SelectEnvironmentProviderTaskGroup>();
+
+        // View models
         services.AddTransient<CreateEnvironmentReviewViewModel>();
         services.AddTransient<EnvironmentCreationOptionsViewModel>();
         services.AddTransient<SelectEnvironmentProviderViewModel>();

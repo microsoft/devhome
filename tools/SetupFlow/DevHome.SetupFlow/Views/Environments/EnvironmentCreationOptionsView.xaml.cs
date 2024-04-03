@@ -1,17 +1,22 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Serilog;
 
 namespace DevHome.SetupFlow.Views.Environments;
 
 public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecipient<NewAdaptiveCardAvailableMessage>
 {
+    // Logging to capture any adaptive card rendering exceptions so the app doesn't crash
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(EnvironmentCreationOptionsView));
+
     public EnvironmentCreationOptionsViewModel ViewModel => (EnvironmentCreationOptionsViewModel)this.DataContext;
 
     public EnvironmentCreationOptionsView()
@@ -56,10 +61,18 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecip
 
     private void AddAdaptiveCardToUI(RenderedAdaptiveCard adaptiveCardData)
     {
-        if (adaptiveCardData?.FrameworkElement != null)
+        try
         {
-            AdaptiveCardGrid.Children.Clear();
-            AdaptiveCardGrid.Children.Add(adaptiveCardData.FrameworkElement);
+            if (adaptiveCardData?.FrameworkElement != null)
+            {
+                AdaptiveCardGrid.Children.Clear();
+                AdaptiveCardGrid.Children.Add(adaptiveCardData.FrameworkElement);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+            _log.Error("Error adding adaptive card UI in EnvironmentCreationOptionsView", ex);
         }
     }
 }

@@ -114,6 +114,7 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
                 // Either wait until either we're signalled to continue execution or time out after a minute. This gives enough time for the
                 // extension to send the stopped event for the adaptive card session.
                 _autoResetEventToStartCreationOperation.WaitOne(TimeSpan.FromMinutes(1));
+                _isFirstAttempt = false;
             }
 
             if (string.IsNullOrWhiteSpace(UserJsonInput))
@@ -137,7 +138,7 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
             cancellationTokenSource.CancelAfter(TimeSpan.FromHours(2));
 
             // Start the operation, which returns immediately and runs in the background.
-            createComputeSystemOperationWrapper.StartOperation(cancellationTokenSource.Token);
+            createComputeSystemOperationWrapper.StartOperation();
             AddMessage(_stringResource.GetLocalized(StringResourceKey.EnvironmentCreationForProviderStarted), MessageSeverityKind.Info);
 
             _computeSystemManager.AddRunningOperationForCreation(createComputeSystemOperationWrapper);

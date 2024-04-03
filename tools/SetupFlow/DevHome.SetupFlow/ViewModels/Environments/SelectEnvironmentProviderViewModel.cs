@@ -55,6 +55,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         await Task.Run(async () =>
         {
             var providerDetails = await _computeSystemService.GetComputeSystemProvidersAsync();
+
             _windowEx.DispatcherQueue.TryEnqueue(() =>
             {
                 ProvidersViewModels = new();

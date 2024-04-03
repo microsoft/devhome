@@ -22,12 +22,6 @@ public partial class SetupPageViewModelBase : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupPageViewModelBase));
 
-    public AdaptiveElementParserRegistration ElementRegistration { get; private set; } = new();
-
-    public AdaptiveActionParserRegistration ActionRegistration { get; private set; } = new();
-
-    public AdaptiveInputs UserInputsFromAdaptiveCard { get; set; } = new();
-
     /// <summary>
     /// Indicates whether this page has already executed <see cref="OnFirstNavigateToAsync"/>.
     /// </summary>
@@ -116,12 +110,6 @@ public partial class SetupPageViewModelBase : ObservableObject
         StringResource = stringResource;
         Orchestrator = orchestrator;
         _nextPageButtonText = StringResource.GetLocalized(StringResourceKey.Next);
-
-        // register the supported element and action parsers
-        ElementRegistration.Set(DevHomeSettingsCard.AdaptiveElementType, new DevHomeSettingsCardParser());
-        ElementRegistration.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new DevHomeSettingsCardChoiceSetParser());
-        ElementRegistration.Set(DevHomeLaunchContentDialogButton.AdaptiveElementType, new DevHomeLaunchContentDialogButtonParser());
-        ElementRegistration.Set(DevHomeContentDialogContent.AdaptiveElementType, new DevHomeContentDialogContentParser());
     }
 
     /// <summary>
@@ -204,5 +192,27 @@ public partial class SetupPageViewModelBase : ObservableObject
     {
         // Do nothing
         await Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Hook so the orchestrator can validate if the user can navigate to the next page when a page is rendering
+    /// an adaptive card that is hooked up to the <see cref="SetupFlowOrchestrator.DevHomeActionSetRenderer"/>.
+    /// </summary>
+    /// <remarks>
+    /// The orchestrator takes care of calling this when appropriate through <see cref="GetAdaptiveCardUserInputsForNavigationValidation"/>.
+    /// This runs on the UI thread, but the cost of validating the inputs should be minimal.
+    /// </remarks>
+    protected virtual AdaptiveInputs GetAdaptiveCardUserInputs()
+    {
+        return new AdaptiveInputs();
+    }
+
+    /// <summary>
+    /// Performs the work to validate the user inputs when navigating to the next page when the page is rendering an adaptive card.
+    /// </summary>
+    /// <returns>The adaptive card inputs for the adaptive card currently presented to the user on the setup flow page</returns>
+    public AdaptiveInputs GetAdaptiveCardUserInputsForNavigationValidation()
+    {
+        return GetAdaptiveCardUserInputs();
     }
 }
