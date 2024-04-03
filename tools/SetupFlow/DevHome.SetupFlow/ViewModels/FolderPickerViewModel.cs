@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
+using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using Serilog;
@@ -127,20 +128,25 @@ public partial class FolderPickerViewModel : ObservableObject
     /// <returns>An awaitable task.</returns>
     private async Task<DirectoryInfo> PickCloneDirectoryAsync()
     {
-        _log.Information("Opening folder picker to select clone directory");
-        var folderPicker = new FolderPicker();
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Application.Current.GetService<WindowEx>().GetWindowHandle());
-        folderPicker.FileTypeFilter.Add("*");
-
-        var locationToCloneTo = await folderPicker.PickSingleFolderAsync();
-        if (locationToCloneTo != null && locationToCloneTo.Path.Length > 0)
+        try
         {
-            _log.Information($"Selected '{locationToCloneTo.Path}' as location to clone to");
-            return new DirectoryInfo(locationToCloneTo.Path);
+            _log.Information("Opening folder picker to select clone directory");
+            using var folderPicker = new WindowOpenFolderDialog();
+            var locationToCloneTo = await folderPicker.ShowAsync(Application.Current.GetService<WindowEx>());
+            if (locationToCloneTo != null && locationToCloneTo.Path.Length > 0)
+            {
+                _log.Information($"Selected '{locationToCloneTo.Path}' as location to clone to");
+                return new DirectoryInfo(locationToCloneTo.Path);
+            }
+            else
+            {
+                _log.Information("Didn't select a location to clone to");
+                return null;
+            }
         }
-        else
+        catch (Exception e)
         {
-            _log.Information("Didn't select a location to clone to");
+            _log.Error("Failed to open folder picker", e);
             return null;
         }
     }
