@@ -13,10 +13,7 @@
         <devEnvConverters:CardStateColorToBrushConverter x:Key="CardStateColorToBrushConverter"/>
         <devEnvConverters:CardStateToLocalizedTextConverter x:Key="CardStateToLocalizedTextConverter"/>
         <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
-<<<<<<< Updated upstream
-=======
         <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
->>>>>>> Stashed changes
     </UserControl.Resources>
 
         <Grid
@@ -30,7 +27,7 @@
             <Viewbox
                 Grid.Column="0"
                 Style="{StaticResource ComputeSystemImageStyle}">
-            <Grid>
+                <Grid>
                 <!-- Image for card body. -->
                     <Border Style="{StaticResource ComputeSystemImageBorderStyle}">
                         <Image
@@ -49,16 +46,16 @@
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
                 Style="{StaticResource CardBodyStackPanelStyle}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock
-                    Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
-                    Text="{x:Bind ComputeSystemTitle, Mode=OneWay}"
-                    IsTextSelectionEnabled="True"/>
-                <TextBlock
-                    Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
-                    Text="{x:Bind ComputeSystemAlternativeTitle, Mode=OneWay}"
-                    IsTextSelectionEnabled="True"/>
-            </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
+                        Text="{x:Bind ComputeSystemTitle, Mode=OneWay}"
+                        IsTextSelectionEnabled="True"/>
+                    <TextBlock
+                        Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                        Text="{x:Bind ComputeSystemAlternativeTitle, Mode=OneWay}"
+                        IsTextSelectionEnabled="True"/>
+                </StackPanel>
                 <Grid
                     ColumnSpacing="{StaticResource ContainerElementSpacing}">
                     <Grid.ColumnDefinitions>
@@ -72,29 +69,27 @@
                         Fill="{x:Bind StateColor, Converter={StaticResource CardStateColorToBrushConverter}, Mode=OneWay}"
                         Style="{StaticResource CardBodyElipsisStyle}"/>
                     <!-- String that indicates the internal state of the compute system. -->
-                <TextBlock
+                    <TextBlock
                         Grid.Column="1"
                         Text="{x:Bind CardState, Converter={StaticResource CardStateToLocalizedTextConverter}, Mode=OneWay}"
                         Style="{StaticResource CardBodyStateTextBlockStyle}"
                         IsTextSelectionEnabled="True"/>
-<<<<<<< Updated upstream
+
                     <TextBlock
                         Grid.Column="1"
                         Text="{x:Bind ComputeSystemCreationStatus, Mode=OneWay}"
                         Style="{StaticResource CardBodyStateTextBlockStyle}"
                         IsTextSelectionEnabled="True"/>
-            </Grid>
+                </Grid>
                 <!-- Wrap panel from community toolkit that will display properties of variable length. -->
-=======
-            </Grid>
-            <TextBlock
-                Visibility="{x:Bind ComputeSystemCreationStatus, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
-                Text="{x:Bind ComputeSystemCreationStatus, Mode=OneWay}"
-                Style="{StaticResource CardBodyStateTextBlockStyle}"
-                TextTrimming="CharacterEllipsis"
-                IsTextSelectionEnabled="True"/>
-            <!-- Wrap panel from community toolkit that will display properties of variable length. -->
->>>>>>> Stashed changes
+
+                <TextBlock
+                    Visibility="{x:Bind ComputeSystemCreationStatus, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
+                    Text="{x:Bind ComputeSystemCreationStatus, Mode=OneWay}"
+                    Style="{StaticResource CardBodyStateTextBlockStyle}"
+                    TextTrimming="CharacterEllipsis"
+                    IsTextSelectionEnabled="True"/>
+                <!-- Wrap panel from community toolkit that will display properties of variable length. -->
                 <ItemsRepeater 
                     Visibility="{x:Bind ShouldShowInDefiniteProgress, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                     ItemsSource="{x:Bind ComputeSystemProperties, Mode=OneWay}" 
@@ -105,10 +100,10 @@
                             HorizontalSpacing="15"/>
                     </ItemsRepeater.Layout>
                 </ItemsRepeater>
-            <ProgressBar
-                Visibility="{x:Bind ShouldShowInDefiniteProgress, Mode=OneWay}"
-                IsIndeterminate="True"/>
-        </StackPanel>
+                <ProgressBar
+                    Visibility="{x:Bind ShouldShowInDefiniteProgress, Mode=OneWay}"
+                    IsIndeterminate="True"/>
+            </StackPanel>
             <!--
                 For an action control, like a splitbutton or checkbox. Pass a Datatemplate to the CardBody's ActionControlTemplate in xaml.
             -->
@@ -118,5 +113,5 @@
                 HorizontalContentAlignment="Right"
                 VerticalContentAlignment="Stretch"
                 ContentTemplate="{x:Bind ActionControlTemplate, Mode=OneWay}"/>
-    </Grid>
+        </Grid>
 </UserControl>

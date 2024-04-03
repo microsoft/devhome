@@ -9,6 +9,7 @@ using DevHome.Common.Services;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -16,7 +17,7 @@ public partial class CreateComputeSystemOperationViewModel : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly WindowEx _windowEx;
 
     private readonly StringResource _stringResource;
 
@@ -53,13 +54,18 @@ public partial class CreateComputeSystemOperationViewModel : ObservableObject
 
     public ComputeSystem? ComputeSystem { get; private set; }
 
-    public CreateComputeSystemOperationViewModel(StringResource stringResource, Action removalAction, CreateComputeSystemOperation operation)
+    public CreateComputeSystemOperationViewModel(
+        StringResource stringResource,
+        WindowEx windowsEx,
+        Action removalAction,
+        ComputeSystemProviderDetails details,
+        CreateComputeSystemOperation operation)
     {
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _windowEx = windowsEx;
         _removalAction = removalAction;
         _stringResource = stringResource;
-        ProviderDisplayName = operation.ProviderDetails.ComputeSystemProvider.DisplayName;
-        PackageFullName = operation.ProviderDetails.ExtensionWrapper.PackageFullName;
+        ProviderDisplayName = details.ProviderDetails.ComputeSystemProvider.DisplayName;
+        PackageFullName = details.ProviderDetails.ExtensionWrapper.PackageFullName;
         Operation = operation;
         UpdateUiMessage(Operation.LastProgressMessage, Operation.LastProgressPercentage);
         IsCreationInProgress = true;
@@ -69,7 +75,7 @@ public partial class CreateComputeSystemOperationViewModel : ObservableObject
         StateColor = CardStateColor.Caution;
 
         DotOperations = new ObservableCollection<OperationsViewModel>() { new(_stringResource.GetLocalized("DeleteButtonTextForCreateComputeSystem"), _deletionUniCodeCharacter, _removalAction) };
-        HeaderImage = CardProperty.ConvertMsResourceToIcon(operation.ProviderDetails.ComputeSystemProvider.Icon, PackageFullName);
+        HeaderImage = CardProperty.ConvertMsResourceToIcon(details.ProviderDetails.ComputeSystemProvider.Icon, PackageFullName);
 
         // If the operation is already completed update the status
         if (operation.CreateComputeSystemResult != null)
@@ -85,7 +91,7 @@ public partial class CreateComputeSystemOperationViewModel : ObservableObject
 
     private void UpdateStatusIfCompleted(CreateComputeSystemResult createComputeSystemResult)
     {
-        _dispatcher.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             // Update the creation status
             IsCreationInProgress = false;
@@ -118,10 +124,10 @@ public partial class CreateComputeSystemOperationViewModel : ObservableObject
 
     private void UpdateUiMessage(string operationStatus, uint percentage)
     {
-        _dispatcher.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             var percentageString = percentage == 0 ? string.Empty : $"({percentage}%)";
-            UiMessageToDisplay = $"{operationStatus} {percentageString}";
+            UiMessageToDisplay = _stringResource.GetLocalized("CreationStatueTextForCreateEnvironmentFlow", $"{operationStatus} {percentageString}");
         });
     }
 }

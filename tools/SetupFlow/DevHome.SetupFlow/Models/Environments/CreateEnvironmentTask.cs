@@ -20,6 +20,9 @@ using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
 
+/// <summary>
+/// Task that creates an environment using the user input from an adaptive card session.
+/// </summary>
 public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<CreationAdaptiveCardSessionEndedMessage>
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CreateEnvironmentTask));
@@ -32,6 +35,7 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
 
     private readonly ISetupFlowStringResource _stringResource;
 
+    // Used to signal the task to start the creation operation. This is used when the adaptive card session ends.
     private readonly AutoResetEvent _autoResetEventToStartCreationOperation = new(false);
 
     private readonly SetupFlowViewModel _setupFlowViewModel;
@@ -89,6 +93,8 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
     public void Receive(CreationAdaptiveCardSessionEndedMessage message)
     {
         ProviderDetails = message.Value.ProviderDetails;
+
+        // Json input that the user entered in the adaptive card session
         UserJsonInput = message.Value.UserInputResultJson;
 
         // In the future we'll add the specific developer ID to the task, but for now since we haven't
@@ -111,9 +117,13 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
         {
             if (_isFirstAttempt)
             {
-                // Either wait until either we're signalled to continue execution or time out after a minute. This gives enough time for the
-                // extension to send the stopped event for the adaptive card session.
+                // Either wait until we're signalled to continue execution or we times out after 2 minutes. If this task is initiated
+                // then that means the user went past the review page. At this point the extension should be firing a session ended
+                // event. Since the call flow is disjointed an extension may not have sent the session ended event when this method is called.
                 _autoResetEventToStartCreationOperation.WaitOne(TimeSpan.FromMinutes(1));
+
+                // if we time out then that means the extension didn't send the session ended event. So there is no point in trying again
+                // as the error will happen again.
                 _isFirstAttempt = false;
             }
 
@@ -122,6 +132,7 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
                 _log.Information("UserJsonInput is null or empty");
             }
 
+            // If the provider details are null, then we can't proceed with the operation. This happens if the auto event times out.
             if (ProviderDetails == null)
             {
                 _log.Error("ProviderDetails is null");
@@ -131,11 +142,6 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
 
             var sdkCreateEnvironmentOperation = ProviderDetails.ComputeSystemProvider.CreateCreateComputeSystemOperation(DeveloperIdWrapper.DeveloperId, UserJsonInput);
             var createComputeSystemOperationWrapper = new CreateComputeSystemOperation(sdkCreateEnvironmentOperation, ProviderDetails, UserJsonInput);
-
-            // Create a cancellation token that will cancel the task after 2 hours. Dev Box creation depends on the organization azure subscription. So depending on the
-            // subscription and pool for example it could take over 65 minutes. Setting the timeout to 2 hours, should cover most cases. This can be adjusted in the future.
-            var cancellationTokenSource = new CancellationTokenSource();
-            cancellationTokenSource.CancelAfter(TimeSpan.FromHours(2));
 
             // Start the operation, which returns immediately and runs in the background.
             createComputeSystemOperationWrapper.StartOperation();

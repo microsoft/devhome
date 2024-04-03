@@ -15,7 +15,7 @@ namespace HyperVExtension.Models.VirtualMachineCreation;
 public sealed class DotNetZipArchiveProvider : IArchiveProvider
 {
     // Same buffer size used by Hyper-V Manager's VM gallery feature.
-    private readonly int _transferBufferSize = 81920;
+    private readonly int _transferBufferSize = 4096;
 
     /// <inheritdoc cref="IArchiveProvider.ExtractArchiveAsync"/>
     public async Task ExtractArchiveAsync(IProgress<IOperationReport> progressProvider, StorageFile archivedFile, string destinationAbsoluteFilePath, CancellationToken cancellationToken)
@@ -28,9 +28,9 @@ public sealed class DotNetZipArchiveProvider : IArchiveProvider
         using var outputFileStream = File.OpenWrite(destinationAbsoluteFilePath);
         using var zipArchiveEntryStream = zipArchiveEntry.Open();
 
-        var fileExtractionProgress = new Progress<long>(bytesCopied =>
+        var fileExtractionProgress = new Progress<ProgressObject>(progressObj =>
         {
-            progressProvider.Report(new ArchiveExtractionReport((ulong)bytesCopied, (ulong)totalBytesToExtract));
+            progressProvider.Report(new ArchiveExtractionReport(progressObj));
         });
 
         outputFileStream.SetLength(totalBytesToExtract);

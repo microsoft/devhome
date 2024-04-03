@@ -34,13 +34,17 @@ public class CreateComputeSystemOperation : IDisposable
 
     private readonly Dictionary<string, string> _userInputJsonMap;
 
-    public ComputeSystemProviderDetails ProviderDetails { get; private set; }
-
     public string LastProgressMessage { get; private set; } = string.Empty;
 
     public uint LastProgressPercentage { get; private set; }
 
     public CreateComputeSystemResult? CreateComputeSystemResult { get; private set; }
+
+    public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemActionRequiredEventArgs>? ActionRequired;
+
+    public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemProgressEventArgs>? Progress;
+
+    public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemResult>? Completed;
 
     // Since we don't actually know what the user input json will look like, we check for known key names that possibly contain the environment name.
     // These "known" keys are names that could be used but its really up to the extension to decide what key they want to use. We can provide guidance
@@ -57,16 +61,17 @@ public class CreateComputeSystemOperation : IDisposable
 
     private bool _disposedValue;
 
-    public CreateComputeSystemOperation(ICreateComputeSystemOperation createComputeSystemOperation, ComputeSystemProviderDetails providerDetails, string userInputJson)
+    public CreateComputeSystemOperation(ICreateComputeSystemOperation createComputeSystemOperation, string userInputJson)
     {
         _createComputeSystemOperation = createComputeSystemOperation;
         _createComputeSystemOperation.ActionRequired += OnActionRequired;
         _createComputeSystemOperation.Progress += OnProgress;
 
         _userInputJsonMap = JsonSerializer.Deserialize<Dictionary<string, string>>(userInputJson) ?? new();
-        ProviderDetails = providerDetails;
         EnvironmentName = _environmentGenericName;
 
+        // Try to find the environment name in the user input json. This is the Id of the adaptive card element that allowed the user to enter
+        // their environment name.
         foreach (var key in _userInputJsonMap.Keys)
         {
             if (MapOfKnownEnvironmentNameJsonKeys.Contains(key))
@@ -76,12 +81,6 @@ public class CreateComputeSystemOperation : IDisposable
             }
         }
     }
-
-    public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemActionRequiredEventArgs>? ActionRequired;
-
-    public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemProgressEventArgs>? Progress;
-
-    public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemResult>? Completed;
 
     public void StartOperation()
     {

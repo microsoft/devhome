@@ -204,19 +204,14 @@
             <StackPanel>
                 <ListView
                     MaxWidth="{ThemeResource MaxPageContentWidth}"
-<<<<<<< Updated upstream
-                    ItemsSource="{x:Bind ViewModel.CreateComputeSystemOperations}" SelectionMode="None"
+                    ItemsSource="{x:Bind ViewModel.CreateComputeSystemOperations}" 
+                    SelectionMode="None"
                     ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel></StackPanel>
                         </ItemsPanelTemplate>
                     </ListView.ItemsPanel>
-=======
-                    ItemsSource="{x:Bind ViewModel.CreateComputeSystemOperations, Mode=OneWay}" 
-                    SelectionMode="None"
-                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
->>>>>>> Stashed changes
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="vm:CreateComputeSystemOperationViewModel">
                             <Grid Style="{StaticResource HorizontalCardRootForEnvironmentsPage}">

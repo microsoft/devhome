@@ -28,11 +28,7 @@ public class ComputeSystemManager : IComputeSystemManager
 
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> ComputeSystemStateChanged = (sender, state) => { };
 
-<<<<<<< Updated upstream
-    private object _creationOperationLock = new();
-=======
     private readonly object _creationOperationLock = new();
->>>>>>> Stashed changes
 
     // Used in the setup flow to store the ComputeSystem needed to configure.
     public ComputeSystemReviewItem? ComputeSystemSetupItem { get;  set; }

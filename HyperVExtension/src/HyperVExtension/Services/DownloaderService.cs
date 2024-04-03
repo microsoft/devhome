@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using HyperVExtension.Extensions;
+using HyperVExtension.Models;
 using HyperVExtension.Models.VirtualMachineCreation;
 
 namespace HyperVExtension.Services;
@@ -32,10 +33,9 @@ public class DownloaderService : IDownloaderService
         using var outputFileStream = File.OpenWrite(destinationFile);
         outputFileStream.SetLength(totalBytesToReceive);
 
-        var downloadProgress = new Progress<long>(bytesCopied =>
+        var downloadProgress = new Progress<ProgressObject>(progressObj =>
         {
-            var percentage = (uint)(bytesCopied / (double)totalBytesToReceive * 100D);
-            progressProvider.Report(new DownloadOperationReport((ulong)bytesCopied, (ulong)totalBytesToReceive));
+            progressProvider.Report(new DownloadOperationReport(progressObj));
         });
 
         await webFileStream.CopyToAsync(outputFileStream, downloadProgress, _transferBufferSize, totalBytesToReceive, cancellationToken);

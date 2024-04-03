@@ -63,6 +63,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
                 {
                     ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
                 }
+
                 AreProvidersLoaded = true;
             });
         });

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+
 namespace HyperVExtension.Models.VirtualMachineCreation;
 
 /// <summary>
@@ -12,13 +14,10 @@ public sealed class ArchiveExtractionReport : IOperationReport
 
     public string LocalizationKey => "ExtractionInProgress";
 
-    public ulong BytesReceived { get; private set; }
+    public ProgressObject ProgressObject { get; private set; }
 
-    public ulong TotalBytesToReceive { get; private set; }
-
-    public ArchiveExtractionReport(ulong bytesReceived, ulong totalBytesToReceive)
+    public ArchiveExtractionReport(ProgressObject progressObj)
     {
-        BytesReceived = bytesReceived;
-        TotalBytesToReceive = totalBytesToReceive;
+        ProgressObject = progressObj;
     }
 }

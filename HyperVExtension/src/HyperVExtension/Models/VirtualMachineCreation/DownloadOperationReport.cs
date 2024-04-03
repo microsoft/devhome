@@ -9,13 +9,10 @@ public class DownloadOperationReport : IOperationReport
 
     public string LocalizationKey => "DownloadInProgress";
 
-    public ulong BytesReceived { get; private set; }
+    public ProgressObject ProgressObject { get; private set; }
 
-    public ulong TotalBytesToReceive { get; private set; }
-
-    public DownloadOperationReport(ulong bytesReceived, ulong totalBytesToReceive)
+    public DownloadOperationReport(ProgressObject progressObj)
     {
-        BytesReceived = bytesReceived;
-        TotalBytesToReceive = totalBytesToReceive;
+        ProgressObject = progressObj;
     }
 }
