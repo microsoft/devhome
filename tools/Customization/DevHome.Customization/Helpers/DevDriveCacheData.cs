@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DevHome.Customization.ViewModels.DevDriveInsights;
+namespace DevHome.Customization.Helpers;
 
-public partial class DevDriveCacheViewModel
+public partial class DevDriveCacheData
 {
     public string? EnvironmentVariable { get; set; }
 

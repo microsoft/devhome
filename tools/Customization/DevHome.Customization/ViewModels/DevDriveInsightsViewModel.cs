@@ -9,6 +9,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Customization.Helpers;
 using DevHome.Customization.ViewModels.DevDriveInsights;
 using DevHome.Customization.Views;
 using Serilog;
@@ -49,9 +50,9 @@ public partial class DevDriveInsightsViewModel : ObservableObject
 
     private IEnumerable<IDevDrive> ExistingDevDrives { get; set; } = Enumerable.Empty<IDevDrive>();
 
-    private static readonly string LocalAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+    private static readonly string _localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-    private static readonly string UserProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+    private static readonly string _userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
     public DevDriveInsightsViewModel(IDevDriveManager devDriveManager, OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory)
     {
@@ -231,33 +232,35 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         DevDriveLoadingCompleted = true;
     }
 
-    private readonly List<DevDriveCacheViewModel> _cacheInfo =
+    private readonly List<DevDriveCacheData> _cacheInfo =
     [
-        new DevDriveCacheViewModel
+        new DevDriveCacheData
         {
-            CacheName = "Pip cache (Python)", EnvironmentVariable = "PIP_CACHE_DIR", CacheDirectory = $"{LocalAppDataPath}\\pip\\cache",
-            ExampleDirectory = "D:\\packages\\pip\\cache",
+            CacheName = "Pip cache (Python)",
+            EnvironmentVariable = "PIP_CACHE_DIR",
+            CacheDirectory = Path.Join(_localAppDataPath, "packages", "PythonSoftwareFoundation.Python"),
+            ExampleDirectory = Path.Join("D:", "packages", "pip", "cache"),
         },
-        new DevDriveCacheViewModel
+        new DevDriveCacheData
         {
-            CacheName = "NuGet cache (dotnet)", EnvironmentVariable = "NUGET_PACKAGES", CacheDirectory = $"{UserProfilePath}\\.nuget\\packages",
-            ExampleDirectory = "D:\\packages\\NuGet\\Cache",
+            CacheName = "NuGet cache (dotnet)",
+            EnvironmentVariable = "NUGET_PACKAGES",
+            CacheDirectory = Path.Join(_userProfilePath, ".nuget", "packages"),
+            ExampleDirectory = Path.Join("D:", "packages", "NuGet", "Cache"),
         }
     ];
 
-    private string? GetExistingCacheLocation(DevDriveCacheViewModel cache)
+    private string? GetExistingCacheLocation(DevDriveCacheData cache)
     {
-        var rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        var fullDirectoryPath = rootDirectory + cache.CacheDirectory;
-        if (Directory.Exists(fullDirectoryPath))
+        if (Directory.Exists(cache.CacheDirectory))
         {
-            return fullDirectoryPath;
+            return cache.CacheDirectory;
         }
         else
         {
-            var subDirPrefix = rootDirectory + cache.ExampleDirectory;
-            var subDirectories = Directory.GetDirectories(rootDirectory + "\\Packages", "*", SearchOption.TopDirectoryOnly);
-            var matchingSubdirectory = subDirectories.FirstOrDefault(subdir => subdir.StartsWith(subDirPrefix, StringComparison.OrdinalIgnoreCase));
+            var subDirPrefix = cache.ExampleDirectory;
+            var subDirectories = Directory.GetDirectories(_localAppDataPath + "\\Packages", "*", SearchOption.TopDirectoryOnly);
+            var matchingSubdirectory = subDirectories.FirstOrDefault(subdir => subdir.StartsWith(subDirPrefix!, StringComparison.OrdinalIgnoreCase));
             var alternateFullDirectoryPath = matchingSubdirectory + "\\localcache\\local" + cache.CacheDirectory;
             if (Directory.Exists(alternateFullDirectoryPath))
             {
