@@ -12,13 +12,16 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.TelemetryEvents.SetupFlow.SummaryPage;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.SetupFlow.Views;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
 using Windows.System;
@@ -38,6 +41,14 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
     private readonly PackageProvider _packageProvider;
     private readonly IAppManagementInitializer _appManagementInitializer;
+
+    private readonly List<UserControl> _cloneRepoNextSteps;
+
+    // Holds all the UI to display for "Next Steps".
+    public List<UserControl> NextSteps => _cloneRepoNextSteps;
+
+    [ObservableProperty]
+    private ObservableCollection<ISummaryInformationViewModel> _summaryInformation;
 
     [ObservableProperty]
     private List<SummaryErrorMessageViewModel> _failedTasks = new();
@@ -229,6 +240,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _configurationUnitResults = new(GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
         _appManagementInitializer = appManagementInitializer;
+        _cloneRepoNextSteps = new();
         PageRedirectButtonText = StringResource.GetLocalized(StringResourceKey.SummaryPageOpenDashboard);
         PageHeaderText = StringResource.GetLocalized(StringResourceKey.SummaryPageHeader);
 
@@ -248,6 +260,31 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 failedTasks = loadingViewModel.FailedTasks;
             }
         }
+
+        // Collect all next steps.
+        var taskGroups = Orchestrator.TaskGroups;
+        foreach (var taskGroup in taskGroups)
+        {
+            var setupTasks = taskGroup.SetupTasks;
+            foreach (var setupTask in setupTasks)
+            {
+                if (setupTask.SummaryScreenInformation is not null &&
+                    setupTask.SummaryScreenInformation.HasContent)
+                {
+                    switch (setupTask)
+                    {
+                        case CloneRepoTask:
+                            var configResult = new CloneRepoSummaryInformationView();
+                            configResult.DataContext = setupTask.SummaryScreenInformation;
+                            _cloneRepoNextSteps.Add(configResult);
+                            break;
+                    }
+                }
+            }
+        }
+
+        // Send telemetry about the number of next steps tasks found broken down by their type.
+        ReportSummaryTaskCounts(_cloneRepoNextSteps.Count);
 
         BitmapImage statusSymbol;
         if (_host.GetService<IThemeSelectorService>().Theme == ElementTheme.Dark)
@@ -281,6 +318,14 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         }
 
         await ReloadCatalogsAsync();
+    }
+
+    /// <summary>
+    /// Send telemetry about all next steps.
+    /// </summary>
+    private void ReportSummaryTaskCounts(int cloneRepoNextStepsCount)
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NextSteps_Event", LogLevel.Critical, new CloneRepoNextStepsEvent(cloneRepoNextStepsCount), Orchestrator.ActivityId);
     }
 
     private async Task ReloadCatalogsAsync()
