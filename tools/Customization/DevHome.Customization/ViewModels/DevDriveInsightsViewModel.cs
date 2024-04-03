@@ -238,33 +238,39 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         {
             CacheName = "Pip cache (Python)",
             EnvironmentVariable = "PIP_CACHE_DIR",
-            CacheDirectory = Path.Join(_localAppDataPath, "packages", "PythonSoftwareFoundation.Python"),
+            CacheDirectory = new List<string>
+            {
+                Path.Join(_localAppDataPath, "pip", "cache"),
+                Path.Join(_localAppDataPath, "packages", "PythonSoftwareFoundation.Python"),
+            },
             ExampleDirectory = Path.Join("D:", "packages", "pip", "cache"),
         },
         new DevDriveCacheData
         {
             CacheName = "NuGet cache (dotnet)",
             EnvironmentVariable = "NUGET_PACKAGES",
-            CacheDirectory = Path.Join(_userProfilePath, ".nuget", "packages"),
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".nuget", "packages") },
             ExampleDirectory = Path.Join("D:", "packages", "NuGet", "Cache"),
         }
     ];
 
     private string? GetExistingCacheLocation(DevDriveCacheData cache)
     {
-        if (Directory.Exists(cache.CacheDirectory))
+        foreach (var cacheDirectory in cache.CacheDirectory!)
         {
-            return cache.CacheDirectory;
-        }
-        else
-        {
-            var subDirPrefix = cache.ExampleDirectory;
-            var subDirectories = Directory.GetDirectories(_localAppDataPath + "\\Packages", "*", SearchOption.TopDirectoryOnly);
-            var matchingSubdirectory = subDirectories.FirstOrDefault(subdir => subdir.StartsWith(subDirPrefix!, StringComparison.OrdinalIgnoreCase));
-            var alternateFullDirectoryPath = matchingSubdirectory + "\\localcache\\local" + cache.CacheDirectory;
-            if (Directory.Exists(alternateFullDirectoryPath))
+            if (Directory.Exists(cacheDirectory))
             {
-                return alternateFullDirectoryPath;
+                return cacheDirectory;
+            }
+            else
+            {
+                var subDirectories = Directory.GetDirectories(_localAppDataPath + "\\Packages", "*", SearchOption.TopDirectoryOnly);
+                var matchingSubdirectory = subDirectories.FirstOrDefault(subdir => subdir.StartsWith(cacheDirectory, StringComparison.OrdinalIgnoreCase));
+                var alternateFullDirectoryPath = matchingSubdirectory + "\\localcache\\local" + cacheDirectory;
+                if (Directory.Exists(alternateFullDirectoryPath))
+                {
+                    return alternateFullDirectoryPath;
+                }
             }
         }
 
@@ -289,6 +295,12 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         foreach (var cache in _cacheInfo)
         {
             var existingCacheLocation = GetExistingCacheLocation(cache);
+            var environmentVariablePath = Environment.GetEnvironmentVariable(cache.EnvironmentVariable!);
+            if (environmentVariablePath is not null && CacheInDevDrive(environmentVariablePath!))
+            {
+                continue;
+            }
+
             if (existingCacheLocation == null || CacheInDevDrive(existingCacheLocation))
             {
                 continue;
