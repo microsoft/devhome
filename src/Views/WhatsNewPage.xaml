@@ -29,6 +29,9 @@
                     <Color x:Key="ButtonAccentForeground">#000000</Color>
                     <Color x:Key="LearnMoreForeground">#60CDFF</Color>
                 </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast">
+                    <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
+                </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Page.Resources>

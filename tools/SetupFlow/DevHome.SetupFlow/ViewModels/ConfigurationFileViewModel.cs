@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -41,6 +42,9 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     [NotifyCanExecuteChangedFor(nameof(ConfigureAsNonAdminCommand))]
     private bool _readAndAgree;
 
+    [ObservableProperty]
+    private IList<DSCConfigurationUnitViewModel> _configurationUnits;
+
     public ConfigurationFileViewModel(
         ISetupFlowStringResource stringResource,
         IDesiredStateConfiguration dsc,
@@ -69,7 +73,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     public string Content => Configuration.Content;
 
     [RelayCommand(CanExecute = nameof(ReadAndAgree))]
-    public async Task ConfigureAsAdminAsync()
+    private async Task ConfigureAsAdminAsync()
     {
         foreach (var task in TaskList)
         {
@@ -89,10 +93,27 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(ReadAndAgree))]
-    public async Task ConfigureAsNonAdminAsync()
+    private async Task ConfigureAsNonAdminAsync()
     {
         TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", LogLevel.Critical, new ConfigureCommandEvent(false), Orchestrator.ActivityId);
         await Orchestrator.GoToNextPage();
+    }
+
+    [RelayCommand]
+    private async Task OnLoadedAsync()
+    {
+        try
+        {
+            if (Configuration != null && ConfigurationUnits == null)
+            {
+                var configUnits = await _dsc.GetConfigurationUnitDetailsAsync(Configuration, Orchestrator.ActivityId);
+                ConfigurationUnits = configUnits.Select(u => new DSCConfigurationUnitViewModel(u)).ToList();
+            }
+        }
+        catch (Exception e)
+        {
+            _log.Error($"Failed to get configuration unit details.", e);
+        }
     }
 
     /// <summary>

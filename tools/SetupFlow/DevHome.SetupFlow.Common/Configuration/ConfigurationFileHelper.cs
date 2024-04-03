@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Exceptions;
@@ -51,6 +53,8 @@ public class ConfigurationFileHelper
         _activityId = activityId;
     }
 
+    public IList<ConfigurationUnit> Units => _configSet?.Units;
+
     /// <summary>
     /// Open configuration set from the provided <paramref name="content"/>.
     /// </summary>
@@ -69,6 +73,16 @@ public class ConfigurationFileHelper
             _configSet = null;
             throw;
         }
+    }
+
+    public async Task ResolveConfigurationUnitDetails()
+    {
+        if (_processor == null || _configSet == null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        await _processor.GetSetDetailsAsync(_configSet, ConfigurationUnitDetailFlags.ReadOnly);
     }
 
     private async Task<ConfigurationSet> OpenConfigurationSetInternalAsync(ConfigurationProcessor processor, string filePath, string content)

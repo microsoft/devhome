@@ -9,12 +9,15 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Behaviors;
 using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
+using Microsoft.UI.Xaml.Controls;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -25,11 +28,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(LandingPageViewModel));
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly WindowEx _windowEx;
 
     private readonly EnvironmentsExtensionsService _extensionsService;
 
-    private readonly ToastNotificationService _notificationService;
+    private readonly NotificationService _notificationService;
 
     private readonly IComputeSystemManager _computeSystemManager;
 
@@ -62,14 +65,16 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private CancellationTokenSource _cancellationTokenSource = new();
 
     public LandingPageViewModel(
-                IComputeSystemManager manager,
-                EnvironmentsExtensionsService extensionsService,
-                ToastNotificationService toastNotificationService)
+        IComputeSystemManager manager,
+        EnvironmentsExtensionsService extensionsService,
+        NotificationService notificationService,
+        WindowEx windowEx)
     {
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-        _extensionsService = extensionsService;
-        _notificationService = toastNotificationService;
         _computeSystemManager = manager;
+        _extensionsService = extensionsService;
+        _notificationService = notificationService;
+        _windowEx = windowEx;
+
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
         SelectedSortIndex = -1;
@@ -79,13 +84,17 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         ComputeSystemsView = new AdvancedCollectionView(ComputeSystems);
     }
 
+    public void Initialize(StackedNotificationsBehavior notificationQueue)
+    {
+        _notificationService.Initialize(notificationQueue);
+
+        // To Do: Need to give the users a way to disable this, if they don't want to use Hyper-V
+        _ = Task.Run(() => _notificationService.CheckIfUserIsAHyperVAdminAndShowNotification());
+    }
+
     [RelayCommand]
     public async Task SyncButton()
     {
-        // temporary, we'll need to give the users a way to disable this.
-        // if they don't want to use hyper-v
-        _notificationService.CheckIfUserIsAHyperVAdmin();
-
         // Reset the sort and filter
         SelectedSortIndex = -1;
         Providers = new ObservableCollection<string> { _stringResource.GetLocalized("AllProviders") };
@@ -93,7 +102,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         // Reset the old sync timer
         _cancellationTokenSource.Cancel();
-        await _dispatcher.EnqueueAsync(() => LastSyncTime = _stringResource.GetLocalized("MomentsAgo"));
+        await _windowEx.DispatcherQueue.EnqueueAsync(() => LastSyncTime = _stringResource.GetLocalized("MomentsAgo"));
 
         await LoadModelAsync();
 
@@ -111,7 +120,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         if (!token.IsCancellationRequested)
         {
-            await _dispatcher.EnqueueAsync(() => LastSyncTime = time);
+            await _windowEx.DispatcherQueue.EnqueueAsync(() => LastSyncTime = time);
         }
     }
 
@@ -172,9 +181,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             await RunSyncTimmer();
         });
 
-        // temporary, we'll need to give the users a way to disable this.
-        // if they don't want to use hyper-v
-        _notificationService.CheckIfUserIsAHyperVAdmin();
         for (var i = ComputeSystems.Count - 1; i >= 0; i--)
         {
             ComputeSystems[i].RemoveStateChangedHandler();
@@ -195,7 +201,18 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     {
         var provider = data.ProviderDetails.ComputeSystemProvider;
 
-        await _dispatcher.EnqueueAsync(async () =>
+        // Show error notifications for failed provider/developer id combinations
+        foreach (var mapping in data.DevIdToComputeSystemMap.Where(kv =>
+            kv.Value.Result.Status == Microsoft.Windows.DevHome.SDK.ProviderOperationStatus.Failure))
+        {
+            var result = mapping.Value.Result;
+            await _notificationService.ShowNotificationAsync(provider.DisplayName, result.DisplayMessage, InfoBarSeverity.Error);
+
+            _log.Error($"Error occurred while adding Compute systems to environments page for provider: {provider.Id}", result.DiagnosticText, result.ExtendedError);
+            data.DevIdToComputeSystemMap.Remove(mapping.Key);
+        }
+
+        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
             Providers.Add(provider.DisplayName);
             try
@@ -204,8 +221,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
                 // In the future when we support switching between accounts in the environments page, we will need to handle this differently.
                 // for now we'll show all the compute systems from a provider.
-                var computeSystemResult = data.DevIdToComputeSystemMap.Values.FirstOrDefault();
-
                 if (computeSystemList == null || computeSystemList.Count == 0)
                 {
                     _log.Error($"No Compute systems found for provider: {provider.Id}");
@@ -215,14 +230,19 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 for (var i = 0; i < computeSystemList.Count; i++)
                 {
                     var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
-                    var computeSystemViewModel = new ComputeSystemViewModel(_computeSystemManager, computeSystemList.ElementAt(i), provider, packageFullName);
+                    var computeSystemViewModel = new ComputeSystemViewModel(
+                        _computeSystemManager,
+                        computeSystemList.ElementAt(i),
+                        provider,
+                        packageFullName,
+                        _windowEx);
                     await computeSystemViewModel.InitializeCardDataAsync();
                     ComputeSystems.Add(computeSystemViewModel);
                 }
             }
             catch (Exception ex)
             {
-                _log.Error($"Error occurred while adding Compute systems to environments page for provider: {provider.Id}", ex);
+                _log.Error($"Exception occurred while adding Compute systems to environments page for provider: {provider.Id}", ex);
             }
         });
     }

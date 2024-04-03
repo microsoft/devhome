@@ -1616,6 +1616,90 @@
     <value>Quick steps</value>
     <comment>(Narrator reads this and should be in sync with MainPage_QuickConfiguration.Text) Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
   </data>
+  <data name="ConfigurationFile_SummaryView.Content" xml:space="preserve">
+    <value>Summary view</value>
+    <comment>Show the summary view of the configuration file</comment>
+  </data>
+  <data name="ConfigurationFile_CodeView.Content" xml:space="preserve">
+    <value>Code view</value>
+    <comment>Show the code view of the configuration file</comment>
+  </data>
+  <data name="ConfigurationUnit_Id.Key" xml:space="preserve">
+    <value>Id</value>
+    <comment>Id of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_Intent.Key" xml:space="preserve">
+    <value>Intent</value>
+    <comment>Intent of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_Dependencies.Text" xml:space="preserve">
+    <value>Dependencies</value>
+    <comment>Dependencies of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_ResourceMetadata.Text" xml:space="preserve">
+    <value>Resource metadata</value>
+    <comment>Resource metadata of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_Settings.Text" xml:space="preserve">
+    <value>Settings</value>
+    <comment>Settings of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_Details.Text" xml:space="preserve">
+    <value>Details</value>
+    <comment>Details of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_UnitType.Key" xml:space="preserve">
+    <value>unit type</value>
+    <comment>Unit type of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_UnitDescription.Key" xml:space="preserve">
+    <value>unit description</value>
+    <comment>Unit description of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_UnitDocumentation.Key" xml:space="preserve">
+    <value>unit documentation</value>
+    <comment>Unit documentation of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_ModuleName.Key" xml:space="preserve">
+    <value>module name</value>
+    <comment>Module name of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_ModuleSource.Key" xml:space="preserve">
+    <value>module source</value>
+    <comment>Module source of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_ModuleDescription.Key" xml:space="preserve">
+    <value>module description</value>
+    <comment>Module description of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_ModuleDocumentationUri.Key" xml:space="preserve">
+    <value>module documentation uri</value>
+    <comment>Module documentation uri of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_PublishedModuleUri.Key" xml:space="preserve">
+    <value>module documentation uri</value>
+    <comment>Module documentation uri of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_Version.Key" xml:space="preserve">
+    <value>version</value>
+    <comment>Version of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_IsLocal.Key" xml:space="preserve">
+    <value>is local</value>
+    <comment>Check if the configuration unit is local on the machine</comment>
+  </data>
+  <data name="ConfigurationUnit_Author.Key" xml:space="preserve">
+    <value>author</value>
+    <comment>Author of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_Publisher.Key" xml:space="preserve">
+    <value>publisher</value>
+    <comment>Publisher of the configuration unit</comment>
+  </data>
+  <data name="ConfigurationUnit_IsPublic.Key" xml:space="preserve">
+    <value>is public</value>
+    <comment>Check if the configuration unit is public</comment>
+  </data>
   <data name="CloneRepoNextStepsDescription" xml:space="preserve">
     <value>Detected '{0}' while cloning '{1}'</value>
     <comment>Locked={"{0}", "{1}"} Description letting users know what configuration was found and in what repo the file was found in. {0} is the file name with extension. {1} is the repo name including the owner.</comment>
