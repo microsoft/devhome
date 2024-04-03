@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Windows.Storage.Pickers;
 using WinUIEx;
@@ -140,6 +141,8 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
             // TODO: If chosen folder not a dev drive location, currently we no-op. Instead we should display the error.
             MoveDirectory(ExistingCacheLocation, directoryPath);
             SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
+
+            Log.Debug($"Moved cache from {ExistingCacheLocation} to {directoryPath}");
         }
     }
 }

@@ -22,6 +22,7 @@
             AutomationProperties.AccessibilityView="Control"
             AutomationProperties.AutomationId="NavigateDevDriveInsightsCardButton"
             Command="{x:Bind ViewModel.NavigateToDevDriveInsightsPageCommand}"
+            Visibility="{x:Bind ViewModel.AnyDevDrivesPresent}"
             IsClickEnabled="True" >
             <controls:SettingsCard.HeaderIcon>
                 <FontIcon Glyph="&#xE3AF;" FontFamily="{ThemeResource AmcFluentIcons}"/>

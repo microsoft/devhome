@@ -12,12 +12,17 @@ using DevHome.Common.Services;
 using DevHome.Customization.Helpers;
 using DevHome.Customization.ViewModels.DevDriveInsights;
 using DevHome.Customization.Views;
+using Microsoft.Internal.Windows.DevHome.Helpers;
 using Serilog;
 
 namespace DevHome.Customization.ViewModels;
 
 public partial class DevDriveInsightsViewModel : ObservableObject
 {
+    private readonly ShellSettings _shellSettings;
+
+    public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
+
     public ObservableCollection<DevDriveCardViewModel> DevDriveCardCollection { get; private set; } = new();
 
     public ObservableCollection<DevDriveOptimizerCardViewModel> DevDriveOptimizerCardCollection { get; private set; } = new();
@@ -54,6 +59,15 @@ public partial class DevDriveInsightsViewModel : ObservableObject
 
     public DevDriveInsightsViewModel(IDevDriveManager devDriveManager, OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory)
     {
+        _shellSettings = new ShellSettings();
+
+        var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
+        Breadcrumbs =
+        [
+            new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
+            new(stringResource.GetLocalized("DevDriveInsights_Header"), typeof(DevDriveInsightsViewModel).FullName!)
+        ];
+
         _optimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
         DevDriveManagerObj = devDriveManager;
     }
