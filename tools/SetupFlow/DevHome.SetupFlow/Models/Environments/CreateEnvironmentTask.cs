@@ -60,6 +60,8 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
 
     public bool CreationOperationStarted { get; private set; }
 
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
+
     public CreateEnvironmentTask(IComputeSystemManager computeSystemManager, ISetupFlowStringResource stringResource, SetupFlowViewModel setupFlowViewModel)
     {
         _computeSystemManager = computeSystemManager;
@@ -112,7 +114,6 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
                 // Either wait until either we're signalled to continue execution or time out after a minute. This gives enough time for the
                 // extension to send the stopped event for the adaptive card session.
                 _autoResetEventToStartCreationOperation.WaitOne(TimeSpan.FromMinutes(1));
-                _isFirstAttempt = false;
             }
 
             if (string.IsNullOrWhiteSpace(UserJsonInput))
@@ -123,7 +124,7 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
             if (ProviderDetails == null)
             {
                 _log.Error("ProviderDetails is null");
-                AddMessage(_stringResource.GetLocalized(StringResourceKey.EnvironmentCreationFailedToGetProviderInformation, ProviderDetails.ComputeSystemProvider.DisplayName), MessageSeverityKind.Error);
+                AddMessage(_stringResource.GetLocalized(StringResourceKey.EnvironmentCreationFailedToGetProviderInformation), MessageSeverityKind.Error);
                 return TaskFinishedState.Failure;
             }
 
@@ -137,7 +138,7 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
 
             // Start the operation, which returns immediately and runs in the background.
             createComputeSystemOperationWrapper.StartOperation(cancellationTokenSource.Token);
-            AddMessage(_stringResource.GetLocalized(StringResourceKey.EnvironmentCreationForProviderStarted, ProviderDetails.ComputeSystemProvider.DisplayName), MessageSeverityKind.Info);
+            AddMessage(_stringResource.GetLocalized(StringResourceKey.EnvironmentCreationForProviderStarted), MessageSeverityKind.Info);
 
             _computeSystemManager.AddRunningOperationForCreation(createComputeSystemOperationWrapper);
             CreationOperationStarted = true;

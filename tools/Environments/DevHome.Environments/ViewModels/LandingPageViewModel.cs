@@ -53,6 +53,10 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<CreateComputeSystemOperationViewModel> CreateComputeSystemOperations { get; set; } = new();
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     public AdvancedCollectionView ComputeSystemsView { get; set; }
 
     public bool HasPageLoadedForTheFirstTime { get; set; }
@@ -223,12 +227,24 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private void RemoveCreateComputeSystemOperationFromUI(Guid operationId)
     {
+<<<<<<< Updated upstream
         // remove view model with the given operation id from the list
         if (CreateComputeSystemOperationMap.TryGetValue(operationId, out var operation))
         {
             CreateComputeSystemOperations.Remove(operation);
             CreateComputeSystemOperationMap.Remove(operationId);
             operation.RemoveEventHandlers();
+=======
+        _computeSystemManager.RemoveRunningOperationForCreation(operationId);
+
+        // remove view model with the given operation id from the list
+        if (CreateComputeSystemOperationMap.TryGetValue(operationId, out var operationViewModel))
+        {
+            CreateComputeSystemOperations.Remove(operationViewModel);
+            CreateComputeSystemOperationMap.Remove(operationId);
+            operationViewModel.RemoveEventHandlers();
+            operationViewModel.Operation.CancelOperation();
+>>>>>>> Stashed changes
         }
     }
 

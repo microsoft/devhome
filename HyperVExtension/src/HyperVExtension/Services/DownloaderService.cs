@@ -38,7 +38,7 @@ public class DownloaderService : IDownloaderService
             progressProvider.Report(new DownloadOperationReport((ulong)bytesCopied, (ulong)totalBytesToReceive));
         });
 
-        await webFileStream.CopyToAsync(outputFileStream, downloadProgress, _transferBufferSize, cancellationToken);
+        await webFileStream.CopyToAsync(outputFileStream, downloadProgress, _transferBufferSize, totalBytesToReceive, cancellationToken);
     }
 
     /// <inheritdoc cref="IDownloaderService.DownloadStringAsync"/>

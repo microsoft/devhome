@@ -130,7 +130,7 @@
     <comment>Locked="{0}" text to tell the user that a file exists and we do not need to download it again. {0} is a previously download file. We show the file name in {0}.</comment>
   </data>
   <data name="DownloadInProgress" xml:space="preserve">
-    <value>Downloading {0}. {1}</value>
+    <value>Downloading {0} {1}</value>
     <comment>Locked="{0}" text to tell the user that we are downloading a file from the web. {0} is the file we're downloading. {1} the progress in the form of  "bytes received / total bytes needed". E.g "10 Mb / 400 Mb"</comment>
   </data>
   <data name="DownloadOperationCancelled" xml:space="preserve">
@@ -158,7 +158,7 @@
     <comment>Attempt counter text for the dialog to enter Hyper-V VM admin credential ({CurrentAttempt}/{MaxAttempts}).</comment>
   </data>
   <data name="ExtractionInProgress" xml:space="preserve">
-    <value>Extracting file {0}. {1}</value>
+    <value>Extracting file {0} {1}</value>
     <comment>Locked="{0}" text to tell the user that we're extracting a zip file into a location on their computer. {0} is the zip file we're extracting. {1} the progress in the form of  "bytes extracted / total bytes needed". E.g "10 Mb / 400 Mb"</comment>
   </data>
   <data name="NoImagesFoundError" xml:space="preserve">

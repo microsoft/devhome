@@ -115,7 +115,7 @@ public class HyperVManager : IHyperVManager, IDisposable
             throw new HyperVAdminGroupException("The current logged on user is not in the Hyper-V administrator group");
         }
 
-        if (!IsHyperVModuleLoaded())
+        if (IsFirstTimeLoadingModule && !IsHyperVModuleLoaded())
         {
             // we won't throw an exception here. If there is a cmdlet failure due to the module not being loaded, we'll let the
             // PowerShell cmdlet throw the exception.

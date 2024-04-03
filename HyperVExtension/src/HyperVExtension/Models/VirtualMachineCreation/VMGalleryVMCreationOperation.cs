@@ -79,14 +79,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
     /// <param name="value">The archive extraction operation returned by the progress handler which extracts the archive file</param>
     public void Report(IOperationReport value)
     {
-        var displayText = Image.Name;
-
-        if (value.ReportKind == ReportKind.ArchiveExtraction)
-        {
-            displayText = $"{ArchivedFile!.Name} ({Image.Name})";
-        }
-
-        UpdateProgress(value, value.LocalizationKey, displayText);
+        UpdateProgress(value, value.LocalizationKey, $"({Image.Name})");
     }
 
     /// <summary>
@@ -161,13 +154,27 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
         var bytesReceivedSoFar = BytesHelper.ConvertBytesToString(report.BytesReceived);
         var totalBytesToReceive = BytesHelper.ConvertBytesToString(report.TotalBytesToReceive);
         var progressPercentage = (uint)((report.BytesReceived / (double)report.TotalBytesToReceive) * 100D);
-        var displayString = _stringResource.GetLocalized(localizedKey, fileName, $"{bytesReceivedSoFar}/{totalBytesToReceive}");
-        Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(displayString, progressPercentage));
+        var displayString = _stringResource.GetLocalized(localizedKey, fileName, $"{bytesReceivedSoFar} / {totalBytesToReceive}");
+        try
+        {
+            Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(displayString, progressPercentage));
+        }
+        catch (Exception ex)
+        {
+            _log.Error("Failed to update progress", ex);
+        }
     }
 
     private void UpdateProgress(string localizedString, uint percentage = 0u)
     {
-        Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(localizedString, percentage));
+        try
+        {
+            Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(localizedString, percentage));
+        }
+        catch (Exception ex)
+        {
+            _log.Error("Failed to update progress", ex);
+        }
     }
 
     /// <summary>

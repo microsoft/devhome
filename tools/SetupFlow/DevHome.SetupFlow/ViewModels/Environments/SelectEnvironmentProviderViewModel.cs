@@ -12,6 +12,7 @@ using DevHome.Common.Environments.Models;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
@@ -19,7 +20,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SelectEnvironmentProviderViewModel));
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly WindowEx _windowEx;
 
     private readonly IComputeSystemService _computeSystemService;
 
@@ -37,32 +38,30 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     public SelectEnvironmentProviderViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        IComputeSystemService computeSystemService)
+        IComputeSystemService computeSystemService,
+        WindowEx windowEx)
            : base(stringResource, orchestrator)
     {
         PageTitle = stringResource.GetLocalized(StringResourceKey.SelectEnvironmentPageTitle);
         _computeSystemService = computeSystemService;
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _windowEx = windowEx;
     }
 
-    public void LoadProviders()
+    public async Task LoadProvidersAsync()
     {
         AreProvidersLoaded = false;
         Orchestrator.NotifyNavigationCanExecuteChanged();
 
-        Task.Run(async () =>
+        await Task.Run(async () =>
         {
             var providerDetails = await _computeSystemService.GetComputeSystemProvidersAsync();
-
-            _dispatcher.TryEnqueue(() =>
+            _windowEx.DispatcherQueue.TryEnqueue(() =>
             {
                 ProvidersViewModels = new();
-
                 foreach (var providerDetail in providerDetails)
                 {
                     ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
                 }
-
                 AreProvidersLoaded = true;
             });
         });
@@ -71,10 +70,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     protected async override Task OnFirstNavigateToAsync()
     {
         CanGoToNextPage = false;
-        LoadProviders();
-
-        // Does nothing, but we need to override this as the base expects a task to be returned.
-        await Task.CompletedTask;
+        await LoadProvidersAsync();
     }
 
     [RelayCommand]

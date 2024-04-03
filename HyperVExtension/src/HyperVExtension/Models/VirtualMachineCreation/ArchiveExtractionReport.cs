@@ -10,7 +10,7 @@ public sealed class ArchiveExtractionReport : IOperationReport
 {
     public ReportKind ReportKind => ReportKind.ArchiveExtraction;
 
-    public string LocalizationKey => "ExtractingFile";
+    public string LocalizationKey => "ExtractionInProgress";
 
     public ulong BytesReceived { get; private set; }
 

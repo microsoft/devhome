@@ -13,6 +13,10 @@
         <devEnvConverters:CardStateColorToBrushConverter x:Key="CardStateColorToBrushConverter"/>
         <devEnvConverters:CardStateToLocalizedTextConverter x:Key="CardStateToLocalizedTextConverter"/>
         <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+<<<<<<< Updated upstream
+=======
+        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+>>>>>>> Stashed changes
     </UserControl.Resources>
 
         <Grid
@@ -68,11 +72,12 @@
                         Fill="{x:Bind StateColor, Converter={StaticResource CardStateColorToBrushConverter}, Mode=OneWay}"
                         Style="{StaticResource CardBodyElipsisStyle}"/>
                     <!-- String that indicates the internal state of the compute system. -->
-                    <TextBlock
+                <TextBlock
                         Grid.Column="1"
                         Text="{x:Bind CardState, Converter={StaticResource CardStateToLocalizedTextConverter}, Mode=OneWay}"
                         Style="{StaticResource CardBodyStateTextBlockStyle}"
                         IsTextSelectionEnabled="True"/>
+<<<<<<< Updated upstream
                     <TextBlock
                         Grid.Column="1"
                         Text="{x:Bind ComputeSystemCreationStatus, Mode=OneWay}"
@@ -80,6 +85,16 @@
                         IsTextSelectionEnabled="True"/>
             </Grid>
                 <!-- Wrap panel from community toolkit that will display properties of variable length. -->
+=======
+            </Grid>
+            <TextBlock
+                Visibility="{x:Bind ComputeSystemCreationStatus, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
+                Text="{x:Bind ComputeSystemCreationStatus, Mode=OneWay}"
+                Style="{StaticResource CardBodyStateTextBlockStyle}"
+                TextTrimming="CharacterEllipsis"
+                IsTextSelectionEnabled="True"/>
+            <!-- Wrap panel from community toolkit that will display properties of variable length. -->
+>>>>>>> Stashed changes
                 <ItemsRepeater 
                     Visibility="{x:Bind ShouldShowInDefiniteProgress, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                     ItemsSource="{x:Bind ComputeSystemProperties, Mode=OneWay}" 

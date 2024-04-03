@@ -19,10 +19,11 @@ public static class StreamExtensions
     /// <param name="progressProvider">The object that progress will be reported to</param>
     /// <param name="bufferSize">The size of the buffer which is used to read data from the source stream and write it to the destination stream</param>
     /// <param name="cancellationToken">A cancellation token that will allow the caller to cancel the operation</param>
-    public static async Task CopyToAsync(this Stream source, Stream destination, IProgress<long> progressProvider, int bufferSize, CancellationToken cancellationToken)
+    public static async Task CopyToAsync(this Stream source, Stream destination, IProgress<long> progressProvider, int bufferSize, long totalBytesToExtract, CancellationToken cancellationToken)
     {
         var buffer = new byte[bufferSize];
         long totalRead = 0;
+        var lastPercentage = 0L;
 
         while (true)
         {
@@ -37,8 +38,13 @@ public static class StreamExtensions
             await destination.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
             totalRead += bytesRead;
 
-            // Report the progress of the operation.
-            progressProvider.Report(totalRead);
+            var progressPercentage = (long)(totalRead / (double)totalBytesToExtract * 100D);
+            if (progressPercentage != lastPercentage)
+            {
+                // Report the progress of the operation.
+                progressProvider.Report(totalRead);
+                lastPercentage = progressPercentage;
+            }
         }
     }
 }
