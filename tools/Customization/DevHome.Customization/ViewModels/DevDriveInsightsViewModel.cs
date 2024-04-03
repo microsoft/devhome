@@ -17,8 +17,6 @@ namespace DevHome.Customization.ViewModels;
 
 public partial class DevDriveInsightsViewModel : ObservableObject
 {
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-
     public ObservableCollection<DevDriveCardViewModel> DevDriveCardCollection { get; private set; } = new();
 
     public ObservableCollection<DevDriveOptimizerCardViewModel> DevDriveOptimizerCardCollection { get; private set; } = new();
@@ -52,7 +50,6 @@ public partial class DevDriveInsightsViewModel : ObservableObject
     public DevDriveInsightsViewModel(IDevDriveManager devDriveManager, OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory)
     {
         _optimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         DevDriveManagerObj = devDriveManager;
     }
 
@@ -221,7 +218,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject
     {
         foreach (var existingDevDrive in ExistingDevDrives)
         {
-            DevDriveCardCollection.Add(new DevDriveCardViewModel(existingDevDrive, DevDriveManagerObj));
+            DevDriveCardCollection.Add(new DevDriveCardViewModel(existingDevDrive));
         }
 
         DevDriveLoadingCompleted = true;

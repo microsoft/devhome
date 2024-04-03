@@ -18,6 +18,7 @@ using Windows.ApplicationModel;
 using Windows.Data.Json;
 using Windows.Storage;
 using Windows.System;
+using WinUIEx;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
 
@@ -27,8 +28,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
     private readonly string devHomeProductId = "9N8MHTPHNGVV";
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly IExtensionService _extensionService;
+    private readonly WindowEx _windowEx;
 
     public ObservableCollection<StorePackageViewModel> StorePackagesList { get; set; }
 
@@ -37,10 +38,10 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowStoreError = false;
 
-    public ExtensionLibraryViewModel(IExtensionService extensionService)
+    public ExtensionLibraryViewModel(IExtensionService extensionService, WindowEx windowEx)
     {
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _extensionService = extensionService;
+        _windowEx = windowEx;
 
         extensionService.OnExtensionsChanged -= OnExtensionsChanged;
         extensionService.OnExtensionsChanged += OnExtensionsChanged;
@@ -64,7 +65,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
     private async void OnExtensionsChanged(object? sender, EventArgs e)
     {
-        await _dispatcher.EnqueueAsync(async () =>
+        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
             ShouldShowStoreError = false;
             await GetInstalledExtensionsAsync();
