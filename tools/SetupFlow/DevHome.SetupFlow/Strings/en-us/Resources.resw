@@ -1608,6 +1608,14 @@
     <value>Loading your environments</value>
     <comment>Test that tells the user that we're still loading their environments. These environments can be virtual or remote machines</comment>
   </data>
+  <data name="MainPageEnvironmentSetupGroup" xml:space="preserve">
+    <value>Set up development environment</value>
+    <comment>(Narrator reads this entry and should stay in sync with MainPage_EnvironmentSetup.Text ).  Header text for a group of controls giving multiple choices to set up the environment/machine</comment>
+  </data>
+  <data name="MainPageQuickConfigurationGroup" xml:space="preserve">
+    <value>Quick steps</value>
+    <comment>(Narrator reads this and should be in sync with MainPage_QuickConfiguration.Text) Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
+  </data>
   <data name="ConfigurationFile_SummaryView.Content" xml:space="preserve">
     <value>Summary view</value>
     <comment>Show the summary view of the configuration file</comment>
