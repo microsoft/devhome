@@ -268,6 +268,11 @@ public partial class DevDriveInsightsViewModel : ObservableObject
                 var matchingSubdirectory = subDirectories.FirstOrDefault(subdir => subdir.StartsWith(cacheDirectory, StringComparison.OrdinalIgnoreCase));
                 if (Directory.Exists(matchingSubdirectory))
                 {
+                    if (matchingSubdirectory.Contains("PythonSoftwareFoundation"))
+                    {
+                        return Path.Join(matchingSubdirectory, "Local", "pip", "cache");
+                    }
+
                     return matchingSubdirectory;
                 }
             }
