@@ -139,7 +139,7 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_Memory" DisplayName="ms-resource:WidgetDisplayNameMemory" Description="ms-resource:WidgetDescriptionMemory" AllowMultiple="true" IsCustomizable="false">
+                  <Definition Id="System_Memory" DisplayName="ms-resource:WidgetDisplayNameMemory" Description="ms-resource:WidgetDescriptionMemory" AllowMultiple="false" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -229,7 +229,7 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_CPUUsage" DisplayName="ms-resource:WidgetDisplayNameCPU" Description="ms-resource:WidgetDescriptionCPU" AllowMultiple="true" IsCustomizable="false">
+                  <Definition Id="System_CPUUsage" DisplayName="ms-resource:WidgetDisplayNameCPU" Description="ms-resource:WidgetDescriptionCPU" AllowMultiple="false" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />

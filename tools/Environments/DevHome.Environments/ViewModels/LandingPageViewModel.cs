@@ -11,14 +11,10 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
 using CommunityToolkit.WinUI.Collections;
-using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Extensions;
-using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using WinUIEx;
@@ -32,7 +28,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(LandingPageViewModel));
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly WindowEx _windowEx;
 
     private readonly EnvironmentsExtensionsService _extensionsService;
 
@@ -69,14 +65,16 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private CancellationTokenSource _cancellationTokenSource = new();
 
     public LandingPageViewModel(
-                IComputeSystemManager manager,
-                EnvironmentsExtensionsService extensionsService,
-                NotificationService notificationService)
+        IComputeSystemManager manager,
+        EnvironmentsExtensionsService extensionsService,
+        NotificationService notificationService,
+        WindowEx windowEx)
     {
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _computeSystemManager = manager;
         _extensionsService = extensionsService;
         _notificationService = notificationService;
-        _computeSystemManager = manager;
+        _windowEx = windowEx;
+
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
         SelectedSortIndex = -1;
@@ -104,7 +102,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         // Reset the old sync timer
         _cancellationTokenSource.Cancel();
-        await _dispatcher.EnqueueAsync(() => LastSyncTime = _stringResource.GetLocalized("MomentsAgo"));
+        await _windowEx.DispatcherQueue.EnqueueAsync(() => LastSyncTime = _stringResource.GetLocalized("MomentsAgo"));
 
         await LoadModelAsync();
 
@@ -122,7 +120,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         if (!token.IsCancellationRequested)
         {
-            await _dispatcher.EnqueueAsync(() => LastSyncTime = time);
+            await _windowEx.DispatcherQueue.EnqueueAsync(() => LastSyncTime = time);
         }
     }
 
@@ -214,7 +212,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             data.DevIdToComputeSystemMap.Remove(mapping.Key);
         }
 
-        await _dispatcher.EnqueueAsync(async () =>
+        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
             Providers.Add(provider.DisplayName);
             try
@@ -232,7 +230,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 for (var i = 0; i < computeSystemList.Count; i++)
                 {
                     var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
-                    var computeSystemViewModel = new ComputeSystemViewModel(_computeSystemManager, computeSystemList.ElementAt(i), provider, packageFullName);
+                    var computeSystemViewModel = new ComputeSystemViewModel(
+                        _computeSystemManager,
+                        computeSystemList.ElementAt(i),
+                        provider,
+                        packageFullName,
+                        _windowEx);
                     await computeSystemViewModel.InitializeCardDataAsync();
                     ComputeSystems.Add(computeSystemViewModel);
                 }

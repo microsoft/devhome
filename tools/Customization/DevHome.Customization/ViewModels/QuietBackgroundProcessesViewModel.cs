@@ -5,19 +5,22 @@ using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
+using DevHome.QuietBackgroundProcesses;
 using Microsoft.UI.Xaml;
 using Serilog;
 
-namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
+namespace DevHome.Customization.ViewModels;
 
 public partial class QuietBackgroundProcessesViewModel : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(QuietBackgroundProcessesViewModel));
 
-    private readonly TimeSpan _zero = new TimeSpan(0, 0, 0);
-    private readonly TimeSpan _oneSecond = new TimeSpan(0, 0, 1);
+    private readonly IExperimentationService _experimentationService;
+
+    private readonly TimeSpan _zero = new(0, 0, 0);
+    private readonly TimeSpan _oneSecond = new(0, 0, 1);
 #nullable enable
-    private DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession? _session;
+    private QuietBackgroundProcessesSession? _session;
 #nullable disable
 
     [ObservableProperty]
@@ -32,7 +35,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
     [ObservableProperty]
     private string _quietButtonText;
 
-    private DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession GetSession()
+    private QuietBackgroundProcessesSession GetSession()
     {
         if (_session == null)
         {
@@ -44,7 +47,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
 
     private string GetString(string id)
     {
-        var stringResource = new StringResource("DevHome.QuietBackgroundProcesses.UI.pri", "DevHome.QuietBackgroundProcesses.UI/Resources");
+        var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         return stringResource.GetLocalized(id);
     }
 
@@ -53,9 +56,12 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
         return GetString("QuietBackgroundProcesses_Status_" + id);
     }
 
-    public QuietBackgroundProcessesViewModel()
+    public bool IsQuietBackgroundProcessesFeatureEnabled => _experimentationService.IsFeatureEnabled("QuietBackgroundProcessesExperiment");
+
+    public QuietBackgroundProcessesViewModel(IExperimentationService experimentationService)
     {
-        IsFeaturePresent = DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager.IsFeaturePresent();
+        _experimentationService = experimentationService;
+        IsFeaturePresent = QuietBackgroundProcessesSessionManager.IsFeaturePresent();
 
         var running = false;
         if (IsFeaturePresent)
@@ -127,7 +133,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
     {
         try
         {
-            _session = DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager.TryGetSession();
+            _session = QuietBackgroundProcessesSessionManager.TryGetSession();
             if (_session != null)
             {
                 return _session.IsActive;
