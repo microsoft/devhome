@@ -1,6 +1,6 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(3)]
+    [contractversion(4)]
     apicontract DevHomeContract {}
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -578,9 +578,10 @@ namespace Microsoft.Windows.DevHome.SDK
         DeleteSnapshot = 0x00000400,
         ApplyConfiguration = 0x00000800,
         ModifyProperties = 0x00001000,
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)] PinToStartMenu = 0x00002000,
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)] PinToTaskbar = 0x00004000,
-
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)]
+        PinToStartMenu = 0x00002000,
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)]
+        PinToTaskbar = 0x00004000,
     };
 
     // Enumeration that define a compute systems state.
@@ -711,7 +712,9 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // The result object returned to Dev Home when it requests to know if the Compute System is currently pinned
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)] runtimeclass ComputeSystemPinnedResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)]
+    runtimeclass ComputeSystemPinnedResult
+    {
         // Used when retrieval of the Pinned status was successful
         ComputeSystemPinnedResult(Boolean isPinned);
 
@@ -968,16 +971,20 @@ namespace Microsoft.Windows.DevHome.SDK
     // An interface that represents a remote machine, local VM or container. Specifically this interface
     // allows the extension to be pinned or unpinned from the Start Menu or Taskbar, and allows the calling
     // app to check whether or not the extension is pinned.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)] interface IComputeSystem2
-        requires IComputeSystem
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)] 
+    interface IComputeSystem2 requires IComputeSystem
     {
-        // Pins or Unpins the Compute System to the Start Menu
-        // Boolean isPinned signals whether to pin or unpin
-        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> SetIsPinnedToStartMenuAsync(Boolean isPinnned);
+        // Pins the Compute System to the Start Menu
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> PinToStartMenuAsync();
 
-        // Pins or Unpins the Compute System to the Taskbar
-        // Boolean isPinned signals whether to pin or unpin
-        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> SetIsPinnedToTaskbarAsync(Boolean isPinnned);
+        // Unpins the Compute System from the Start Menu
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> UnpinFromStartMenuAsync();
+
+        // Pins the Compute System to the Taskbar
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> PinToTaskbarAsync();
+
+        // Unpins the Compute System from the Taskbar
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> UnpinFromTaskbarAsync();
 
         // Returns whether or not the Compute System is pinned to the Start Menu
         Windows.Foundation.IAsyncOperation<ComputeSystemPinnedResult> GetIsPinnedToStartMenuAsync();
