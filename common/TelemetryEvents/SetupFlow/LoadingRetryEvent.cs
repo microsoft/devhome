@@ -14,7 +14,7 @@ public class LoadingRetryEvent : EventBase
 {
     public int NumberOfFailedTasks { get; }
 
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public LoadingRetryEvent(int numberOfFailedTasks)
     {
