@@ -94,7 +94,6 @@ Try {
 
 # SDK version and .NEt version needs to stay in sync with ToolingVersion.props, and DevSetupEngineIdl.vcxproj
   $binariesOutputPath = (Join-Path $env:Build_RootDirectory "HyperVExtension\src\DevSetupAgent\bin\$Platform\$Configuration\net8.0-windows10.0.22621.0\win10-$Platform\*")
-  write-host $binariesOutputPath
   $zipOutputPath = (Join-Path $env:Build_RootDirectory "HyperVExtension\src\DevSetupAgent\bin\$Platform\$Configuration\DevSetupAgent_$Platform.zip")
 
   Compress-Archive -Force -Path $binariesOutputPath $zipOutputPath
