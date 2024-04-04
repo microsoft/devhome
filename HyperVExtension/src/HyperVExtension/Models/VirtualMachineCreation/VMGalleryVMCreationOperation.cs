@@ -123,12 +123,12 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
                 var archiveProvider = _archiveProviderFactory.CreateArchiveProvider(ArchivedFile!.FileType);
 
                 await archiveProvider.ExtractArchiveAsync(this, ArchivedFile!, absoluteFilePathForVhd, CancellationTokenSource.Token);
-                var virtualMachineName = MakeFileNameValid(_userInputParameters.NewVirtualMachineName);
+                var virtualMachineName = MakeFileNameValid(_userInputParameters.NewEnvironmentName);
 
                 // Use the Hyper-V manager to create the VM.
                 UpdateProgress(_stringResource.GetLocalized("CreationInProgress", virtualMachineName));
                 var creationParameters = new VirtualMachineCreationParameters(
-                    _userInputParameters.NewVirtualMachineName,
+                    _userInputParameters.NewEnvironmentName,
                     GetVirtualMachineProcessorCount(),
                     absoluteFilePathForVhd,
                     Image.Config.SecureBoot,
@@ -151,13 +151,12 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
 
     private void UpdateProgress(IOperationReport report, string localizedKey, string fileName)
     {
-        var bytesReceivedSoFar = BytesHelper.ConvertBytesToString(report.BytesReceived);
-        var totalBytesToReceive = BytesHelper.ConvertBytesToString(report.TotalBytesToReceive);
-        var progressPercentage = (uint)((report.BytesReceived / (double)report.TotalBytesToReceive) * 100D);
+        var bytesReceivedSoFar = BytesHelper.ConvertBytesToString((ulong)report.ProgressObject.BytesReceived);
+        var totalBytesToReceive = BytesHelper.ConvertBytesToString((ulong)report.ProgressObject.TotalBytesToReceive);
         var displayString = _stringResource.GetLocalized(localizedKey, fileName, $"{bytesReceivedSoFar} / {totalBytesToReceive}");
         try
         {
-            Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(displayString, progressPercentage));
+            Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(displayString, report.ProgressObject.PercentageComplete));
         }
         catch (Exception ex)
         {
@@ -234,7 +233,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
     private string GetUniqueAbsoluteFilePath(string defaultVirtualDiskPath)
     {
         var extension = Path.GetExtension(Image.Disk.ArchiveRelativePath);
-        var expectedExtractedFileLocation = Path.Combine(defaultVirtualDiskPath, $"{_userInputParameters.NewVirtualMachineName}{extension}");
+        var expectedExtractedFileLocation = Path.Combine(defaultVirtualDiskPath, $"{_userInputParameters.NewEnvironmentName}{extension}");
         var appendedNumber = 1u;
         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(expectedExtractedFileLocation);
 

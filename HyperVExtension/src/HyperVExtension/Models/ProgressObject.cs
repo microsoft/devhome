@@ -14,15 +14,15 @@ namespace HyperVExtension.Models;
 /// </summary>
 public class ProgressObject
 {
-    public long BytesTransferred { get; set; }
+    public long BytesReceived { get; set; }
 
-    public long TotalBytes { get; set; }
+    public long TotalBytesToReceive { get; set; }
 
-    public uint PercentageComplete => (uint)((BytesTransferred / (double)TotalBytes) * 100);
+    public uint PercentageComplete => (uint)((BytesReceived / (double)TotalBytesToReceive) * 100);
 
-    public ProgressObject(long bytesTransferred, long totalBytes)
+    public ProgressObject(long bytesReceived, long totalBytesToReceive)
     {
-        BytesTransferred = bytesTransferred;
-        TotalBytes = totalBytes;
+        BytesReceived = bytesReceived;
+        TotalBytesToReceive = totalBytesToReceive;
     }
 }

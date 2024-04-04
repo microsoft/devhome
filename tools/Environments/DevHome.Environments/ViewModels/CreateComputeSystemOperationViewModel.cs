@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
@@ -13,69 +14,62 @@ using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
 
-public partial class CreateComputeSystemOperationViewModel : ObservableObject
+/// <summary>
+/// Represents a view model for the create compute system operation that will appear in the UI
+/// </summary>
+public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
+
+    private readonly IComputeSystemManager _computeSystemManager;
 
     private readonly WindowEx _windowEx;
 
     private readonly StringResource _stringResource;
 
-    private readonly string _deletionUniCodeCharacter = "\uE74D";
+    private readonly string _cancelationUniCodeForGlyph = "\uE74D";
 
-    public string Name => Operation.EnvironmentName;
+    public string EnvironmentName => Operation.EnvironmentName;
 
-    private readonly Action _removalAction;
+    /// <summary>
+    /// Callback action to remove the view model from the view.
+    /// </summary>
+    private readonly Func<ComputeSystemCardBase, bool> _removalAction;
 
     public CreateComputeSystemOperation Operation { get; }
 
-    // Dot button operations
-    public ObservableCollection<OperationsViewModel> DotOperations { get; set; }
-
-    [ObservableProperty]
-    private ComputeSystemState _state;
-
-    [ObservableProperty]
-    private string _uiMessageToDisplay = string.Empty;
-
-    [ObservableProperty]
-    private bool _isCreationInProgress;
-
-    [ObservableProperty]
-    private CardStateColor _stateColor;
-
-    public BitmapImage? HeaderImage { get; set; } = new();
-
-    public BitmapImage? BodyImage { get; set; } = new();
-
-    public string PackageFullName { get; set; } = string.Empty;
-
-    public string ProviderDisplayName { get; set; } = string.Empty;
-
-    public ComputeSystem? ComputeSystem { get; private set; }
-
     public CreateComputeSystemOperationViewModel(
+        IComputeSystemManager computeSystemManager,
         StringResource stringResource,
         WindowEx windowsEx,
-        Action removalAction,
-        ComputeSystemProviderDetails details,
+        Func<ComputeSystemCardBase, bool> removalAction,
         CreateComputeSystemOperation operation)
     {
+        IsCreationInProgress = true;
         _windowEx = windowsEx;
         _removalAction = removalAction;
         _stringResource = stringResource;
-        ProviderDisplayName = details.ComputeSystemProvider.DisplayName;
-        PackageFullName = details.ExtensionWrapper.PackageFullName;
+        _computeSystemManager = computeSystemManager;
         Operation = operation;
-        UpdateUiMessage(Operation.LastProgressMessage, Operation.LastProgressPercentage);
-        IsCreationInProgress = true;
+
+        var providerDetails = Operation.ProviderDetails;
+        ProviderDisplayName = providerDetails.ComputeSystemProvider.DisplayName;
+        IsCreateComputeSystemOperation = true;
+
+        // Hook up event handlers to the operation
         Operation.Completed += OnOperationCompleted;
         Operation.Progress += OnOperationProgressChanged;
+
+        // make sure the last update appears in the UI if the operation is already completed at this point
+        UpdateUiMessage(Operation.LastProgressMessage, Operation.LastProgressPercentage);
+
+        // Update the state of the card
         State = ComputeSystemState.Creating;
         StateColor = CardStateColor.Caution;
 
-        DotOperations = new ObservableCollection<OperationsViewModel>() { new(_stringResource.GetLocalized("DeleteButtonTextForCreateComputeSystem"), _deletionUniCodeCharacter, _removalAction) };
-        HeaderImage = CardProperty.ConvertMsResourceToIcon(details.ComputeSystemProvider.Icon, PackageFullName);
+        // Setup the button to remove the the view model from the UI and the header Image
+        DotOperations = new ObservableCollection<OperationsViewModel>() { new(_stringResource.GetLocalized("RemoveButtonTextForCreateComputeSystem"), _cancelationUniCodeForGlyph, RemoveViewModelFromUI) };
+        HeaderImage = CardProperty.ConvertMsResourceToIcon(providerDetails.ComputeSystemProvider.Icon, providerDetails.ExtensionWrapper.PackageFullName);
 
         // If the operation is already completed update the status
         if (operation.CreateComputeSystemResult != null)
@@ -97,17 +91,19 @@ public partial class CreateComputeSystemOperationViewModel : ObservableObject
             IsCreationInProgress = false;
             if (createComputeSystemResult.Result.Status == ProviderOperationStatus.Success)
             {
-                UpdateUiMessage(_stringResource.GetLocalized("SuccessMessageForCreateComputeSystem"), 0);
+                UpdateUiMessage(_stringResource.GetLocalized("SuccessMessageForCreateComputeSystem", ProviderDisplayName));
                 ComputeSystem = new(createComputeSystemResult.ComputeSystem);
                 State = ComputeSystemState.Created;
                 StateColor = CardStateColor.Success;
             }
             else
             {
-                UpdateUiMessage(_stringResource.GetLocalized("FailureMessageForCreateComputeSystem", createComputeSystemResult.Result.DisplayMessage), 0);
+                UpdateUiMessage(_stringResource.GetLocalized("FailureMessageForCreateComputeSystem", createComputeSystemResult.Result.DisplayMessage));
                 State = ComputeSystemState.Unknown;
                 StateColor = CardStateColor.Failure;
             }
+
+            RemoveEventHandlers();
         });
     }
 
@@ -122,7 +118,7 @@ public partial class CreateComputeSystemOperationViewModel : ObservableObject
         Operation.Progress -= OnOperationProgressChanged;
     }
 
-    private void UpdateUiMessage(string operationStatus, uint percentage)
+    private void UpdateUiMessage(string operationStatus, uint percentage = 0)
     {
         _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
@@ -132,7 +128,16 @@ public partial class CreateComputeSystemOperationViewModel : ObservableObject
             }
 
             var percentageString = percentage == 0 ? string.Empty : $"({percentage}%)";
-            UiMessageToDisplay = _stringResource.GetLocalized("CreationStatueTextForCreateEnvironmentFlow", $"{operationStatus} {percentageString}");
+            UiMessageToDisplay = _stringResource.GetLocalized("CreationStatusTextForCreateEnvironmentFlow", $"{operationStatus} {percentageString}");
+        });
+    }
+
+    private void RemoveViewModelFromUI()
+    {
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        {
+            _removalAction(this);
+            RemoveEventHandlers();
         });
     }
 }

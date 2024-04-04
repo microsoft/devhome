@@ -17,6 +17,7 @@ using DevHome.SetupFlow.ViewModels;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;
 using Windows.Foundation;
+using DevHomeSDK = Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -41,8 +42,6 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
     private readonly SetupFlowViewModel _setupFlowViewModel;
 
     private bool _disposedValue;
-
-    private bool _isFirstAttempt;
 
     public event ISetupTask.ChangeMessageHandler AddMessage;
 
@@ -81,7 +80,6 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
 
         // Register for the adaptive card session ended message so we can use the session data to create the environment
         WeakReferenceMessenger.Default.Register<CreationAdaptiveCardSessionEndedMessage>(this);
-        _isFirstAttempt = true;
     }
 
     public ActionCenterMessages GetErrorMessages() => _actionCenterMessages;
@@ -90,8 +88,17 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
 
     public ActionCenterMessages GetRebootMessage() => new();
 
+    /// <summary>
+    /// Receives the adaptive card session ended message from the he <see cref="ViewModels.Environments.EnvironmentCreationOptionsViewModel"/>
+    /// once the extension sends the session ended event.
+    /// </summary>
+    /// <param name="message">
+    /// The message payload that contains the provider and the user input json that will be used to invoke the
+    /// <see cref="DevHomeSDK.IComputeSystemProvider.CreateCreateComputeSystemOperation(DevHomeSDK.IDeveloperId, string)"/>
+    /// </param>
     public void Receive(CreationAdaptiveCardSessionEndedMessage message)
     {
+        _log.Information("The extension sent the session ended event");
         ProviderDetails = message.Value.ProviderDetails;
 
         // Json input that the user entered in the adaptive card session
@@ -102,6 +109,7 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
         // in the provider details list of developer IDs. If we get here, then there should be at least one.
         DeveloperIdWrapper = message.Value.ProviderDetails.DeveloperIds.First();
 
+        _log.Information("Signaling to the waiting event handle to Continue the 'Execute' operation");
         _autoResetEventToStartCreationOperation.Set();
     }
 
@@ -115,27 +123,23 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
     {
         return Task.Run(() =>
         {
-            if (_isFirstAttempt)
-            {
-                // Either wait until we're signalled to continue execution or we times out after 2 minutes. If this task is initiated
-                // then that means the user went past the review page. At this point the extension should be firing a session ended
-                // event. Since the call flow is disjointed an extension may not have sent the session ended event when this method is called.
-                _autoResetEventToStartCreationOperation.WaitOne(TimeSpan.FromMinutes(1));
+            _log.Information("Executing the operation. Waiting to be signalled that the adaptive card session has ended");
 
-                // if we time out then that means the extension didn't send the session ended event. So there is no point in trying again
-                // as the error will happen again.
-                _isFirstAttempt = false;
-            }
+            // Either wait until we're signaled to continue execution or we times out after 1 minute. If this task is initiated
+            // then that means the user went past the review page. At this point the extension should be firing a session ended
+            // event. Since the call flow is disjointed an extension may not have sent the session ended event when this method is called.
+            _autoResetEventToStartCreationOperation.WaitOne(TimeSpan.FromMinutes(1));
 
             if (string.IsNullOrWhiteSpace(UserJsonInput))
             {
-                _log.Information("UserJsonInput is null or empty");
+                // The extension's creation adaptive card may not need user input. In that case, the user input will be null or empty.
+                _log.Information("UserJsonInput is null or empty.");
             }
 
             // If the provider details are null, then we can't proceed with the operation. This happens if the auto event times out.
             if (ProviderDetails == null)
             {
-                _log.Error("ProviderDetails is null");
+                _log.Error("ProviderDetails is null so we cannot proceed with executing the task");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.EnvironmentCreationFailedToGetProviderInformation), MessageSeverityKind.Error);
                 return TaskFinishedState.Failure;
             }
@@ -149,6 +153,8 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
 
             _computeSystemManager.AddRunningOperationForCreation(createComputeSystemOperationWrapper);
             CreationOperationStarted = true;
+
+            _log.Information("Successfully started the creation operation");
             return TaskFinishedState.Success;
         }).AsAsyncOperation();
     }
@@ -157,7 +163,7 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
     {
         return Task.Run(() =>
         {
-            // No admin rights required for this task
+            // No admin rights required for this task. This shouldn't ever be invoked since the RequiresAdmin property is always false.
             _log.Error("Admin execution is not required for the create environment task");
             return TaskFinishedState.Failure;
         }).AsAsyncOperation();

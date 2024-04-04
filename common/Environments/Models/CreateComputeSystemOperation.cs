@@ -14,7 +14,7 @@ using Windows.Foundation;
 namespace DevHome.Common.Environments.Models;
 
 /// <summary>
-/// Wrapper class for the out of proc ICreateComputeSystemOperation interface that is receieved from the extension.
+/// Wrapper class for the out of proc ICreateComputeSystemOperation interface that is received from the extension.
 /// </summary>
 public class CreateComputeSystemOperation : IDisposable
 {
@@ -24,57 +24,75 @@ public class CreateComputeSystemOperation : IDisposable
     // page to be displayed to the user.
     public Guid OperationId { get; } = Guid.NewGuid();
 
+    /// <summary>
+    /// The original ICreateComputeSystemOperation object that was received from the extension.
+    /// </summary>
     private readonly ICreateComputeSystemOperation _createComputeSystemOperation;
 
-    private readonly string _environmentGenericName = StringResourceHelper.GetResource("EnvironmentGenericName");
+    /// <summary>
+    /// Wrapper for the <see cref="ICreateComputeSystemOperation.ActionRequired"/> that is received from the extension."/>
+    /// </summary>
+    public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemActionRequiredEventArgs>? ActionRequired;
+
+    /// <summary>
+    /// Wrapper for the <see cref="ICreateComputeSystemOperation.Progress"/> that is received from the extension."/>
+    /// </summary>
+    public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemProgressEventArgs>? Progress;
+
+    /// <summary>
+    /// This is not an extension event, it provides a way for another object receive the result of the operation.
+    /// </summary>
+    public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemResult>? Completed;
 
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
-    public string EnvironmentName { get; private set; }
+    public string EnvironmentName { get; private set; } = StringResourceHelper.GetResource("EnvironmentGenericName");
+
+    public ComputeSystemProviderDetails ProviderDetails { get; }
 
     private readonly Dictionary<string, string> _userInputJsonMap;
 
+    /// <summary>
+    /// Gets the last progress message that was received from the extension. This is useful if we initialing missed the progress message.
+    /// </summary>
     public string LastProgressMessage { get; private set; } = string.Empty;
 
+    /// <summary>
+    /// Gets the last progress message that was received from the extension. This is useful if we initialing missed the progress percentage.
+    /// </summary>
     public uint LastProgressPercentage { get; private set; }
 
     public CreateComputeSystemResult? CreateComputeSystemResult { get; private set; }
 
-    public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemActionRequiredEventArgs>? ActionRequired;
-
-    public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemProgressEventArgs>? Progress;
-
-    public event TypedEventHandler<CreateComputeSystemOperation, CreateComputeSystemResult>? Completed;
-
-    // Since we don't actually know what the user input json will look like, we check for known key names that possibly contain the environment name.
-    // These "known" keys are names that could be used but its really up to the extension to decide what key they want to use. We can provide guidance
-    // on what key to use but we can't strongly enforce it, since this input is coming from an adaptive card from the extension. In the future we can
-    // update the ICreateComputeSystemOperation interface in the SDK to have metadata about the new environment. This way we can have strongly typed access
-    // to what the new environment name is, as well as other properties we expect an environment to have.
-    private static readonly HashSet<string> MapOfKnownEnvironmentNameJsonKeys = new()
-    {
-        "NewVirtualMachineName",
-        "VirtualMachineName",
-        "NewEnvironmentName",
-        "EnvironmentName",
-    };
+    /// <summary>
+    /// Since we don't actually know what the user input json will look like, we check for the known key name 'NewEnvironmentName'.
+    /// This "known" key will be provided as guidance to extension creators. However, its really up to the extension to decide what key they want to use.
+    /// Since this input is coming from an adaptive card from the extension we know we'll only get string key/values pairs. So we expect to see a
+    /// key/value pair like this:
+    ///
+    ///    {"NewEnvironmentName" : "MyNewEnvironment"}
+    ///
+    /// In the future we can update the ICreateComputeSystemOperation interface in the SDK to have metadata about the new environment.
+    /// This way we can have strongly typed access to what the new environment name is, as well as other properties we expect an environment to have.
+    /// </summary>
+    private const string EnvironmentNameJsonKey = "NewEnvironmentName";
 
     private bool _disposedValue;
 
-    public CreateComputeSystemOperation(ICreateComputeSystemOperation createComputeSystemOperation, string userInputJson)
+    public CreateComputeSystemOperation(ICreateComputeSystemOperation createComputeSystemOperation, ComputeSystemProviderDetails providerDetails, string userInputJson)
     {
         _createComputeSystemOperation = createComputeSystemOperation;
+        ProviderDetails = providerDetails;
         _createComputeSystemOperation.ActionRequired += OnActionRequired;
         _createComputeSystemOperation.Progress += OnProgress;
 
         _userInputJsonMap = JsonSerializer.Deserialize<Dictionary<string, string>>(userInputJson) ?? new();
-        EnvironmentName = _environmentGenericName;
 
         // Try to find the environment name in the user input json. This is the Id of the adaptive card element that allowed the user to enter
-        // their environment name.
+        // their environment name. If the key is not found, we'll just use the generic name.
         foreach (var key in _userInputJsonMap.Keys)
         {
-            if (MapOfKnownEnvironmentNameJsonKeys.Contains(key))
+            if (key.Equals(EnvironmentNameJsonKey, StringComparison.OrdinalIgnoreCase))
             {
                 EnvironmentName = _userInputJsonMap[key];
                 break;
@@ -89,15 +107,19 @@ public class CreateComputeSystemOperation : IDisposable
         {
             try
             {
-                CreateComputeSystemResult = await _createComputeSystemOperation.StartAsync().AsTask(_cancellationTokenSource.Token);
+                CreateComputeSystemResult = await _createComputeSystemOperation.StartAsync().AsTask().WaitAsync(_cancellationTokenSource.Token);
+                _cancellationTokenSource.Token.ThrowIfCancellationRequested();
+
                 Completed?.Invoke(this, CreateComputeSystemResult);
             }
             catch (Exception ex)
             {
-                _log.Error($"CreateComputeSystemOperation failed for provider {ProviderDetails.ComputeSystemProvider}", ex);
+                _log.Error($"StartOperation failed for provider {ProviderDetails.ComputeSystemProvider}", ex);
                 CreateComputeSystemResult = new CreateComputeSystemResult(ex, StringResourceHelper.GetResource("CreationOperationStoppedUnexpectedly"), ex.Message);
                 Completed?.Invoke(this, CreateComputeSystemResult);
             }
+
+            RemoveEventHandlers();
         });
     }
 

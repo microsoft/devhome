@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace HyperVExtension.Models.VirtualMachineCreation;
 
@@ -10,7 +11,7 @@ namespace HyperVExtension.Models.VirtualMachineCreation;
 /// </summary>
 public sealed class VMGalleryCreationUserInput
 {
-    public string NewVirtualMachineName { get; set; } = string.Empty;
+    public string NewEnvironmentName { get; set; } = string.Empty;
 
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public int SelectedImageListIndex { get; set; }

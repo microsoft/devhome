@@ -1700,7 +1700,7 @@
     <comment>Text to tell the user that an environment is being created. Environments can be local or cloud virtual machines</comment>
   </data>
   <data name="SummaryPageHeaderForEnvironmentCreationText" xml:space="preserve">
-    <value>Here's your environment</value>
+    <value>We've started creating your environment</value>
     <comment>Text to tell the user that an environment is being created. Environments can be local or cloud virtual machines</comment>
   </data>
 </root>

@@ -285,8 +285,4 @@
     <value>New Environment</value>
     <comment>Generic name text for the card header for an environment that is being created in Dev Homes environment page</comment>
   </data>
-  <data name="CreationStatueTextForCreateEnvironmentFlow" xml:space="preserve">
-    <value>Status: {0}</value>
-    <comment>Locked="{0}" provides the user with status message updates about a currently running operation. {0} is the status message that will appear in the UI</comment>
-  </data>
 </root>

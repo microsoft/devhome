@@ -41,7 +41,8 @@
             x:Uid="SelectEnvironmentPage"
             Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
             Foreground="{ThemeResource TextFillColorSecondary}" 
-            Grid.Row="0">
+            Grid.Row="0"
+            ContentVisibility="Collapsed">
         </setupControls:SetupShell>
         <ScrollViewer 
             MaxWidth="{ThemeResource MaxPageContentWidth}"

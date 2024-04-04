@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CreationInProgress" xml:space="preserve">
-    <value>Creating: {0}</value>
+    <value>Adding network, sesure and session configurations</value>
     <comment>Locked="{0}" text to tell the user that we're currently creating the virtual machine. {0} is the name of the virtual machine</comment>
   </data>
   <data name="CurrentCheckpoint" xml:space="preserve">

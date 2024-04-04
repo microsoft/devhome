@@ -24,7 +24,7 @@ public static class StreamExtensions
     {
         var buffer = new byte[bufferSize];
         long totalRead = 0;
-        var lastPercentage = 0L;
+        var lastPercentage = 0U;
 
         while (true)
         {
@@ -39,7 +39,7 @@ public static class StreamExtensions
             await destination.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
             totalRead += bytesRead;
 
-            var progressPercentage = (long)(totalRead / (double)totalBytesToExtract * 100D);
+            var progressPercentage = (uint)(totalRead / (double)totalBytesToExtract * 100D);
 
             // Only update progress when a whole percentage has been completed.
             if (progressPercentage != lastPercentage)

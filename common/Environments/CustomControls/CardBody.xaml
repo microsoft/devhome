@@ -13,7 +13,8 @@
         <devEnvConverters:CardStateColorToBrushConverter x:Key="CardStateColorToBrushConverter"/>
         <devEnvConverters:CardStateToLocalizedTextConverter x:Key="CardStateToLocalizedTextConverter"/>
         <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
-        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToVisibleConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToCollapsedConverter" NotEmptyValue="Collapsed" EmptyValue="Visible"/>
     </UserControl.Resources>
 
         <Grid
@@ -61,7 +62,6 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <!-- Colored dot that indicates the visual state of the compute system. -->
                     <Ellipse
@@ -71,24 +71,18 @@
                     <!-- String that indicates the internal state of the compute system. -->
                     <TextBlock
                         Grid.Column="1"
+                        Visibility="{x:Bind ComputeSystemCreationStatus, Mode=OneWay, Converter={StaticResource EmptyObjectToCollapsedConverter}}"
                         Text="{x:Bind CardState, Converter={StaticResource CardStateToLocalizedTextConverter}, Mode=OneWay}"
                         Style="{StaticResource CardBodyStateTextBlockStyle}"
                         IsTextSelectionEnabled="True"/>
-
                     <TextBlock
                         Grid.Column="1"
+                        Visibility="{x:Bind ComputeSystemCreationStatus, Mode=OneWay, Converter={StaticResource EmptyObjectToVisibleConverter}}"
                         Text="{x:Bind ComputeSystemCreationStatus, Mode=OneWay}"
                         Style="{StaticResource CardBodyStateTextBlockStyle}"
+                        TextTrimming="CharacterEllipsis"
                         IsTextSelectionEnabled="True"/>
-                </Grid>
-                <!-- Wrap panel from community toolkit that will display properties of variable length. -->
-
-                <TextBlock
-                    Visibility="{x:Bind ComputeSystemCreationStatus, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
-                    Text="{x:Bind ComputeSystemCreationStatus, Mode=OneWay}"
-                    Style="{StaticResource CardBodyStateTextBlockStyle}"
-                    TextTrimming="CharacterEllipsis"
-                    IsTextSelectionEnabled="True"/>
+            </Grid>
                 <!-- Wrap panel from community toolkit that will display properties of variable length. -->
                 <ItemsRepeater 
                     Visibility="{x:Bind ShouldShowInDefiniteProgress, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"

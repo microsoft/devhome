@@ -25,6 +25,7 @@ public class CardStateColorToBrushConverter : IValueConverter
                 CardStateColor.Success => (SolidColorBrush)Application.Current.Resources["SystemFillColorSuccessBrush"],
                 CardStateColor.Neutral => (SolidColorBrush)Application.Current.Resources["SystemFillColorSolidNeutralBrush"],
                 CardStateColor.Caution => (SolidColorBrush)Application.Current.Resources["SystemFillColorCautionBrush"],
+                CardStateColor.Failure => (SolidColorBrush)Application.Current.Resources["SystemFillColorCriticalBrush"],
                 _ => (SolidColorBrush)Application.Current.Resources["SystemFillColorCautionBrush"],
             };
         }

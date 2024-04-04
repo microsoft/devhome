@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Contracts.Services;
@@ -24,7 +25,7 @@ public class ComputeSystemManager : IComputeSystemManager
 
     private readonly IComputeSystemService _computeSystemService;
 
-    private readonly List<CreateComputeSystemOperation> _createComputeSystemOperations = new();
+    private readonly Dictionary<Guid, CreateComputeSystemOperation> _createComputeSystemOperations = new();
 
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> ComputeSystemStateChanged = (sender, state) => { };
 
@@ -99,7 +100,7 @@ public class ComputeSystemManager : IComputeSystemManager
     {
         lock (_creationOperationLock)
         {
-            return _createComputeSystemOperations;
+           return _createComputeSystemOperations.Values.ToList();
         }
     }
 
@@ -107,21 +108,29 @@ public class ComputeSystemManager : IComputeSystemManager
     {
         lock (_creationOperationLock)
         {
-            _createComputeSystemOperations.Add(operation);
+            _createComputeSystemOperations.Add(operation.OperationId, operation);
         }
     }
 
-    public void RemoveRunningOperationForCreation(Guid operationId)
+    public void RemoveOperation(CreateComputeSystemOperation operation)
     {
         lock (_creationOperationLock)
         {
-            for (var i = _createComputeSystemOperations.Count - 1; i >= 0; i--)
+           _createComputeSystemOperations.Remove(operation.OperationId);
+        }
+    }
+
+    public void RemoveAllCompletedOperations()
+    {
+        lock (_creationOperationLock)
+        {
+            var totalOperations = _createComputeSystemOperations.Count;
+            for (var i = 0; i < totalOperations; i++)
             {
-                var operation = _createComputeSystemOperations[i];
-                if (operation.OperationId == operationId)
+                var operation = _createComputeSystemOperations.ElementAt(i).Value;
+                if (operation.CreateComputeSystemResult != null)
                 {
-                    _createComputeSystemOperations.RemoveAt(i);
-                    break;
+                    _createComputeSystemOperations.Remove(operation.OperationId);
                 }
             }
         }
