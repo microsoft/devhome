@@ -267,7 +267,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject
                 {
                     if (matchingSubdirectory.Contains("PythonSoftwareFoundation"))
                     {
-                        return Path.Join(matchingSubdirectory, "Local", "pip", "cache");
+                        return Path.Join(matchingSubdirectory, "LocalCache", "Local", "pip", "cache");
                     }
 
                     return matchingSubdirectory;
@@ -296,7 +296,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         foreach (var cache in _cacheInfo)
         {
             var existingCacheLocation = GetExistingCacheLocation(cache);
-            var environmentVariablePath = Environment.GetEnvironmentVariable(cache.EnvironmentVariable!);
+            var environmentVariablePath = Environment.GetEnvironmentVariable(cache.EnvironmentVariable!, EnvironmentVariableTarget.User);
             if (environmentVariablePath is not null && CacheInDevDrive(environmentVariablePath!))
             {
                 continue;
@@ -324,7 +324,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         foreach (var cache in _cacheInfo)
         {
             // We retrieve the cache location from environment variable, because if the cache might have already moved.
-            var movedCacheLocation = Environment.GetEnvironmentVariable(cache.EnvironmentVariable!);
+            var movedCacheLocation = Environment.GetEnvironmentVariable(cache.EnvironmentVariable!, EnvironmentVariableTarget.User);
             if (!string.IsNullOrEmpty(movedCacheLocation) && CacheInDevDrive(movedCacheLocation))
             {
                 // Cache already in dev drive, show the "Optimized" card
