@@ -153,7 +153,7 @@
                                     </Grid.RowDefinitions>
                                     <TextBlock Text="Error logs" Grid.Row="0" Grid.Column="0" Margin="0, 5, 0, 0"/>
                                     <StackPanel Orientation="Horizontal" Spacing="5" Grid.Row="1" Grid.Column="0">
-                                        <TextBlock Text="{x:Bind ViewModel.ConfigurationUnitFailedCount}" Foreground="{ThemeResource TextFillColorSecondary}"/>
+                                        <TextBlock Text="{x:Bind ViewModel.TargetFailedResults.Count}" Foreground="{ThemeResource TextFillColorSecondary}"/>
                                         <TextBlock Text="installation errors" Foreground="{ThemeResource TextFillColorSecondary}"/>
                                     </StackPanel>
                                 </Grid>
@@ -204,8 +204,8 @@
                             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
                             BorderThickness="{ThemeResource TopLeftQuadrantThickness}">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="{x:Bind ViewModel.ConfigurationUnitAppInstalledCount, Converter={StaticResource ZeroCountWillNotSpanColumnsConverter}}"/>
-                                <ColumnDefinition Width="{x:Bind ViewModel.ConfigurationUnitRepositoriesClonedCount, Converter={StaticResource ZeroCountWillNotSpanColumnsConverter}}"/>
+                                <ColumnDefinition Width="{x:Bind ViewModel.TargetInstallResults.Count, Converter={StaticResource ZeroCountWillNotSpanColumnsConverter}}"/>
+                                <ColumnDefinition Width="{x:Bind ViewModel.TargetCloneResults.Count, Converter={StaticResource ZeroCountWillNotSpanColumnsConverter}}"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition />
@@ -213,7 +213,7 @@
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <Grid
-                                Visibility="{x:Bind ViewModel.ConfigurationUnitAppInstalledCount, Converter={StaticResource CountToVisibilityConverter}}"
+                                Visibility="{x:Bind ViewModel.TargetInstallResults.Count, Converter={StaticResource CountToVisibilityConverter}}"
                                 Grid.Column="0"
                                 HorizontalAlignment="Center">
                                 <Grid.RowDefinitions>
@@ -221,7 +221,7 @@
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <TextBlock 
-                                    Grid.Row="0" Text="{x:Bind ViewModel.ConfigurationUnitAppInstalledCount}" 
+                                    Grid.Row="0" Text="{x:Bind ViewModel.TargetInstallResults.Count}" 
                                     FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
                                     FontWeight="{StaticResource InfoBarTitleFontWeight}" 
                                     HorizontalAlignment="center"/>
@@ -233,14 +233,14 @@
                             </Grid>
                             <Grid
                             Grid.Column="1"
-                            Visibility="{x:Bind ViewModel.ConfigurationUnitRepositoriesClonedCount, Converter={StaticResource CountToVisibilityConverter}}">
+                            Visibility="{x:Bind ViewModel.TargetCloneResults.Count, Converter={StaticResource CountToVisibilityConverter}}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <TextBlock 
                                     Grid.Row="0" 
-                                    Text="{x:Bind ViewModel.ConfigurationUnitRepositoriesClonedCount}" 
+                                    Text="{x:Bind ViewModel.TargetCloneResults.Count}" 
                                     FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
                                     FontWeight="{StaticResource InfoBarTitleFontWeight}"
                                     HorizontalAlignment="Center"/>
@@ -270,64 +270,6 @@
                             </ListView>
                         </Grid>
                         <ContentControl Grid.Row="2" Template="{ThemeResource LinksTemplate}" />
-
-                        <!-- Configuration unit results -->
-                        <Grid Grid.Row="1" RowSpacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopLeftQuadrantThickness}" >
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <!-- Section header -->
-                            <Grid Padding="0,20,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Summary"
-                                Style="{ThemeResource BodyStrongTextBlockStyle}" />
-                                <TextBlock
-                                Grid.Column="1"
-                                Text="{x:Bind ViewModel.ConfigurationUnitStats}"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Style="{ThemeResource CaptionTextBlockStyle}" />
-                            </Grid>
-                            <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
-                                <ItemsRepeater ItemsSource="{x:Bind ViewModel.ConfigurationUnitResults, Mode=OneWay}">
-                                    <ItemsRepeater.Resources>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="FontFamily" Value="{StaticResource CascadiaMonoFontFamily}"/>
-                                            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                            <Setter Property="LineHeight" Value="20"/>
-                                            <Setter Property="TextWrapping" Value="Wrap"/>
-                                            <Setter Property="IsTextSelectionEnabled" Value="True"/>
-                                        </Style>
-                                    </ItemsRepeater.Resources>
-                                    <ItemsRepeater.ItemTemplate>
-                                        <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
-                                            <StackPanel>
-                                                <TextBlock Text="{x:Bind Title}"/>
-                                                <StackPanel Margin="20,0,0,0">
-                                                    <TextBlock Text="{x:Bind ApplyResult}">
-                                                    <i:Interaction.Behaviors>
-                                                        <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
-                                                            <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}"/>
-                                                        </ic:DataTriggerBehavior>
-                                                        <ic:DataTriggerBehavior Binding="{x:Bind IsSkipped}" Value="True">
-                                                            <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCautionBrush}"/>
-                                                        </ic:DataTriggerBehavior>
-                                                    </i:Interaction.Behaviors>
-                                                    </TextBlock>
-                                                    <TextBlock Text="{x:Bind ErrorDescription}"
-                                                           Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                                           Visibility="{x:Bind ErrorDescription, Converter={StaticResource StringVisibilityConverter}}"/>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ItemsRepeater.ItemTemplate>
-                                </ItemsRepeater>
-                            </ScrollViewer>
-                        </Grid>
                     </Grid>
 
                     <!-- Next steps section -->

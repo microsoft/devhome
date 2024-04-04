@@ -132,23 +132,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     public bool ShowConfigurationUnitResults => ConfigurationUnitResults.Any();
 
-    public bool CompletedWithErrors => ConfigurationUnitResults.Any(unitResult => unitResult.IsError);
+    public bool CompletedWithErrors => TargetFailedResults.Count > 0;
 
     public int ConfigurationUnitSucceededCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsSuccess);
-
-    public int ConfigurationUnitFailedCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsError);
-
-    public int ConfigurationUnitSkippedCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsSkipped);
-
-    public int ConfigurationUnitRepositoriesClonedCount => TargetCloneResults.Count;
-
-    public int ConfigurationUnitAppInstalledCount => TargetInstallResults.Count;
-
-    public string ConfigurationUnitStats => StringResource.GetLocalized(
-        StringResourceKey.ConfigurationUnitStats,
-        ConfigurationUnitSucceededCount,
-        ConfigurationUnitFailedCount,
-        ConfigurationUnitSkippedCount);
 
     [ObservableProperty]
     private string _repositoriesClonedText;
@@ -312,10 +298,10 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 targetFailedResult.StatusSymbolIcon = statusSymbol;
             }
 
-            var localizedHeader = (ConfigurationUnitRepositoriesClonedCount == 1) ? StringResourceKey.SummaryPageOneRepositoryCloned : StringResourceKey.SummaryPageReposClonedCount;
+            var localizedHeader = (TargetCloneResults.Count == 1) ? StringResourceKey.SummaryPageOneRepositoryCloned : StringResourceKey.SummaryPageReposClonedCount;
             RepositoriesClonedText = StringResource.GetLocalized(localizedHeader);
 
-            localizedHeader = (ConfigurationUnitAppInstalledCount == 1) ? StringResourceKey.SummaryPageOneApplicationInstalled : StringResourceKey.SummaryPageAppsDownloadedCount;
+            localizedHeader = (TargetInstallResults.Count == 1) ? StringResourceKey.SummaryPageOneApplicationInstalled : StringResourceKey.SummaryPageAppsDownloadedCount;
             ApplicationsClonedText = StringResource.GetLocalized(localizedHeader);
         }
 
@@ -377,30 +363,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
         return unitResults;
     }
-
-    ////private List<ConfigurationUnitResultViewModel> InitializeTargetCloneResults()
-    ////{
-    ////    List<ConfigurationUnitResultViewModel> unitResults = new();
-    ////    if (_orchestrator.IsSettingUpATargetMachine)
-    ////    {
-    ////        unitResults.AddRange(ConfigurationUnitResults.Where(unitResult =>
-    ////            (unitResult.IsCloneRepoUnit && unitResult.IsSuccess && !unitResult.IsSkipped)));
-    ////    }
-
-    ////    return unitResults;
-    ////}
-
-    ////private List<ConfigurationUnitResultViewModel> InitializeTargetInstallResults()
-    ////{
-    ////    List<ConfigurationUnitResultViewModel> unitResults = new();
-    ////    if (_orchestrator.IsSettingUpATargetMachine)
-    ////    {
-    ////        unitResults.AddRange(ConfigurationUnitResults.Where(unitResult =>
-    ////            (!unitResult.IsCloneRepoUnit && unitResult.IsSuccess && !unitResult.IsSkipped)));
-    ////    }
-
-    ////    return unitResults;
-    ////}
 
     private List<ConfigurationUnitResultViewModel> InitializeTargetResults(Func<ConfigurationUnitResultViewModel, bool> predicate)
     {

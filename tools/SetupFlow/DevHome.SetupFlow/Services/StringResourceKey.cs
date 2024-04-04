@@ -31,7 +31,6 @@ public static class StringResourceKey
     public static readonly string ConfigurationUnitSummaryMinimal = nameof(ConfigurationUnitSummaryMinimal);
     public static readonly string ConfigurationUnitSummaryNoDescription = nameof(ConfigurationUnitSummaryNoDescription);
     public static readonly string ConfigurationUnitSummaryNoId = nameof(ConfigurationUnitSummaryNoId);
-    public static readonly string ConfigurationUnitStats = nameof(ConfigurationUnitStats);
     public static readonly string ConfigurationViewTitle = nameof(ConfigurationViewTitle);
     public static readonly string ConfigurationActivationFailedDisabled = nameof(ConfigurationActivationFailedDisabled);
     public static readonly string ConfigurationActivationFailedBusy = nameof(ConfigurationActivationFailedBusy);

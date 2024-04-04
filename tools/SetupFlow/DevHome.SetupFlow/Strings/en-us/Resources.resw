@@ -249,10 +249,6 @@
     <value>{0}: {2} [{1}]</value>
     <comment>{Locked="{0}","{1}","{2}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit description. A string with all values replaced could look like "Apply : Install VS [WinGetPackage]"</comment>
   </data>
-  <data name="ConfigurationUnitStats" xml:space="preserve">
-    <value>Succeeded: {0} | Failed: {1} | Skipped: {2}</value>
-    <comment>{Locked="{0}","{1}","{2}"}Text showing the number of configuration units that succeeded, failed and skipped. {0}, {1} and {2} are replaced with numeric values.</comment>
-  </data>
   <data name="DefaultBanner.Title" xml:space="preserve">
     <value>Get ready to code in minutes</value>
     <comment>Title text of an instruction banner section for setting up a development machine</comment>
@@ -1075,10 +1071,6 @@
   <data name="SummaryPage_RestartRequired_Second.Text" xml:space="preserve">
     <value>Restart your computer to finish setup</value>
     <comment>Second part of the message notifying users to restart.</comment>
-  </data>
-  <data name="SummaryPage_Summary.Text" xml:space="preserve">
-    <value>Summary</value>
-    <comment>Title for a section in the summary page</comment>
   </data>
   <data name="SummaryPage_ViewAll.Content" xml:space="preserve">
     <value>View all</value>
