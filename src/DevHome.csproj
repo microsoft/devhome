@@ -115,7 +115,7 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
-  
+
   <!-- Quiet Background Processes bins -->
   <PropertyGroup>
     <_DevHomeInternal_CppPlatform>$(Platform)</_DevHomeInternal_CppPlatform>
