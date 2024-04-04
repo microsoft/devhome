@@ -92,7 +92,7 @@ Try {
 
   & $msbuildPath $msbuildArgs
 
-# SDK version and .NEt version needs to stay in sync with ToolingVersion.props, and DevSetupEngineIdl.vcxproj
+# SDK version and .NEt version needs to stay in sync with ToolingVersion.props, DevSetupEngineIdl.vcxproj, and DevHome-CL.yaml
   $binariesOutputPath = (Join-Path $env:Build_RootDirectory "HyperVExtension\src\DevSetupAgent\bin\$Platform\$Configuration\net8.0-windows10.0.22621.0\win10-$Platform\*")
   $zipOutputPath = (Join-Path $env:Build_RootDirectory "HyperVExtension\src\DevSetupAgent\bin\$Platform\$Configuration\DevSetupAgent_$Platform.zip")
 
