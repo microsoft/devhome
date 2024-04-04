@@ -105,6 +105,7 @@ public sealed partial class WidgetControl : UserControl
                 var widgetIdToDelete = widgetViewModel.Widget.Id;
                 var widgetToDelete = widgetViewModel.Widget;
                 _log.Debug($"User removed widget, delete widget {widgetIdToDelete}");
+                widgetViewModel.AnnounceDeleted();
                 DashboardView.PinnedWidgets.Remove(widgetViewModel);
                 try
                 {
