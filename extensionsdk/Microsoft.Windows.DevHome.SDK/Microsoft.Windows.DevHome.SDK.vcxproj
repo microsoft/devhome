@@ -206,6 +206,7 @@
     <ClInclude Include="ApplyConfigurationUnitResult.h" />
     <ClInclude Include="ComputeSystemAdaptiveCardResult.h" />
     <ClInclude Include="ComputeSystemOperationResult.h" />
+    <ClInclude Include="ComputeSystemPinnedResult.h" />
     <ClInclude Include="ComputeSystemProperty.h" />
     <ClInclude Include="ComputeSystemsResult.h" />
     <ClInclude Include="ComputeSystemStateResult.h" />
@@ -238,6 +239,7 @@
     <ClCompile Include="ApplyConfigurationUnitResult.cpp" />
     <ClCompile Include="ComputeSystemAdaptiveCardResult.cpp" />
     <ClCompile Include="ComputeSystemOperationResult.cpp" />
+    <ClCompile Include="ComputeSystemPinnedResult.cpp" />
     <ClCompile Include="ComputeSystemProperty.cpp" />
     <ClCompile Include="ComputeSystemsResult.cpp" />
     <ClCompile Include="ComputeSystemStateResult.cpp" />
