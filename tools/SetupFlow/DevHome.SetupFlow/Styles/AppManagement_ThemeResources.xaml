@@ -11,7 +11,7 @@
     <!-- Package title style -->
     <Style x:Key="AppManagementPackageTitleTextBlock" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-        <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimary}" />
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="MaxLines" Value="1" />
     </Style>
 
