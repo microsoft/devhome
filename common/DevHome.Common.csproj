@@ -28,7 +28,7 @@
     <PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
     <PackageReference Include="CommunityToolkit.Labs.WinUI.Shimmer" Version="0.1.230830" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-    <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.1.240328-rc9" />
+    <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.1.240328-rc" />
     <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.1.240328-rc" />
     <PackageReference Include="CommunityToolkit.WinUI.Collections" Version="8.1.240328-rc" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.240109" />
