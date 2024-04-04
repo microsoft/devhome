@@ -28,9 +28,9 @@ unsafe
 }
 
 // Set up Logging
-Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(DevHome.Common.Logging.LogFolderRoot, "HyperV"));
+Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(HyperVExtension.DevSetupEngine.Logging.LogFolderRoot, "HyperV"));
 var configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
+    .AddJsonFile("appsettings_hypervsetupagent.json")
     .Build();
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(configuration)
