@@ -22,6 +22,8 @@ public enum ConfigurationFileKind
 public class ConfigurationFileBuilder
 {
     public const string PackageNameSeparator = " | ";
+    public const string RepoNamePrefix = "Clone ";
+    public const string RepoNameSuffix = ": ";
     private readonly SetupFlowOrchestrator _orchestrator;
 
     public ConfigurationFileBuilder(SetupFlowOrchestrator orchestrator)
@@ -171,7 +173,7 @@ public class ConfigurationFileBuilder
         {
             // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
             // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
-            id = $"{arguments.PackageId}{PackageNameSeparator}Install: " + task.PackageName;
+            id = $"{arguments.PackageId}{PackageNameSeparator}{task.PackageName}";
         }
 
         return new WinGetConfigResource()
@@ -200,8 +202,8 @@ public class ConfigurationFileBuilder
         {
             // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
             // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
-            id = $"Clone {task.RepositoryName}" + ": " + task.CloneLocation.FullName;
-            gitDependsOnId = $"{DscHelpers.GitWinGetPackageId}{PackageNameSeparator}Install: {DscHelpers.GitName}";
+            id = $"{RepoNamePrefix}{task.RepositoryName}{RepoNameSuffix}" + task.CloneLocation.FullName;
+            gitDependsOnId = $"{DscHelpers.GitWinGetPackageId}{PackageNameSeparator}{DscHelpers.GitName}";
         }
 
         return new WinGetConfigResource()
@@ -224,7 +226,7 @@ public class ConfigurationFileBuilder
         return new WinGetConfigResource()
         {
             Resource = DscHelpers.WinGetDscResource,
-            Id = $"{DscHelpers.GitWinGetPackageId} | Install: {DscHelpers.GitName}",
+            Id = $"{DscHelpers.GitWinGetPackageId}{PackageNameSeparator}{DscHelpers.GitName}",
             Directives = new() { AllowPrerelease = true, Description = $"Installing {DscHelpers.GitName}" },
             Settings = new WinGetDscSettings() { Id = DscHelpers.GitWinGetPackageId, Source = DscHelpers.DscSourceNameForWinGet },
         };

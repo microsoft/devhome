@@ -304,12 +304,6 @@ public class ConfigureTargetTask : ISetupTask
                 throw new OpenConfigurationSetException(Result.OpenResult.ResultCode, Result.OpenResult.Field, Result.OpenResult.Value);
             }
 
-            // Check if the WinGet apply operation was failed.
-            if (!Result.ApplyConfigSucceeded)
-            {
-                throw new SDKApplyConfigurationSetResultException("Unable to get the result of the apply configuration set as it was null.");
-            }
-
             // Gather the configuration results. We'll display these to the user in the summary page if they are available.
             if (Result.ApplyResult.AreConfigUnitsAvailable)
             {
@@ -322,6 +316,19 @@ public class ConfigureTargetTask : ISetupTask
             }
             else
             {
+                // Check if the WinGet apply operation failed.
+                if (Result.ApplyResult.ResultException != null)
+                {
+                    // TODO: We should propagate this error to Summery page.
+                    throw Result.ApplyResult.ResultException;
+                }
+                else if (!Result.ApplyConfigSucceeded)
+                {
+                    // Failed, but no configuration units and no result exception. Something is wrong with result reporting.
+                    throw new SDKApplyConfigurationSetResultException("Unable to get the result of the apply configuration set as it was null.");
+                }
+
+                // Succeeded, but no configuration units. Something is wrong with result reporting.
                 throw new SDKApplyConfigurationSetResultException("No configuration units were found. This is likely due to an error within the extension.");
             }
         }
@@ -526,7 +533,7 @@ public class ConfigureTargetTask : ISetupTask
 
         if (descriptionParts.Length > 1)
         {
-            packageName = descriptionParts[1];
+            packageName = $"Install: {descriptionParts[1]}";
         }
 
         if (string.IsNullOrEmpty(unitDescription))
