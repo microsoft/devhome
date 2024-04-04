@@ -578,8 +578,10 @@ namespace Microsoft.Windows.DevHome.SDK
         DeleteSnapshot = 0x00000400,
         ApplyConfiguration = 0x00000800,
         ModifyProperties = 0x00001000,
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)] PinToStartMenu = 0x00002000,
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)] PinToTaskbar = 0x00004000,
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)]
+        PinToStartMenu = 0x00002000,
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)]
+        PinToTaskbar = 0x00004000,
     };
 
     // Enumeration that define a compute systems state.
