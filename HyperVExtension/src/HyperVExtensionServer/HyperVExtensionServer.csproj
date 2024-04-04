@@ -15,7 +15,7 @@
     <CsWinRTEnabled>false</CsWinRTEnabled>
     <StartupObject>HyperVExtension.Program</StartupObject>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
-  <Platforms>x86;x64;arm64</Platforms>
+    <Platforms>x86;x64;arm64</Platforms>
     <PublishProfileFullPath Condition="'$(BuildingInsideVisualStudio)' != 'True'">$(SolutionDir)\src\Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfileFullPath>
   </PropertyGroup>
 
