@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Windows.AppLifecycle;
 using Serilog;
 using Windows.ApplicationModel.Activation;
-using Windows.Storage;
 
 namespace CoreWidgetProvider;
 
@@ -15,7 +14,7 @@ public sealed class Program
     public static void Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
     {
         // Set up Logging
-        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(DevHome.Common.Logging.LogFolderRoot, "CoreWidgets"));
+        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Helpers.Logging.LogFolderRoot, "CoreWidgets"));
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("corewidgets_appsettings.json")
             .Build();
