@@ -290,7 +290,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"SetIsPinnedToStartMenuAsync for: {this} failed due to exception", ex);
+            _log.Error($"SetIsPinnedToStartMenuAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -310,7 +310,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"SetIsPinnedToTaskbarAsync for: {this} failed due to exception", ex);
+            _log.Error($"SetIsPinnedToTaskbarAsync for: {this} failed due to exception", ex);
             return new ComputeSystemOperationResult(ex, errorString, ex.Message);
         }
     }
@@ -330,7 +330,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"GetIsPinnedToStartMenuAsync for: {this} failed due to exception", ex);
+            _log.Error($"GetIsPinnedToStartMenuAsync for: {this} failed due to exception", ex);
             return new ComputeSystemPinnedResult(ex, errorString, ex.Message);
         }
     }
@@ -350,7 +350,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"GetIsPinnedToTaskbarAsync for: {this} failed due to exception", ex);
+            _log.Error($"GetIsPinnedToTaskbarAsync for: {this} failed due to exception", ex);
             return new ComputeSystemPinnedResult(ex, errorString, ex.Message);
         }
     }

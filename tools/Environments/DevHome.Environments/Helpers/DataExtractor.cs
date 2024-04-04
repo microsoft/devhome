@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
 using DevHome.Environments.ViewModels;
 using Microsoft.Windows.DevHome.SDK;
@@ -32,19 +33,46 @@ public class DataExtractor
             operations.Add(new OperationsViewModel("Delete", "\uE74D", computeSystem.DeleteAsync));
         }
 
-        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToStartMenu))
-        {
-            operations.Add(new OperationsViewModel("PinToStartMenu", "\uE74D", computeSystem.SetIsPinnedToStartMenuAsync, true));
-        }
+        return operations;
+    }
 
+    public static async Task<List<OperationsViewModel>> FillDotButtonPinOperationsAsync(ComputeSystem computeSystem)
+    {
+        var supportedOperations = computeSystem.SupportedOperations;
+        var operations = new List<OperationsViewModel>();
         if (supportedOperations.HasFlag(ComputeSystemOperations.PinToTaskbar))
         {
-            operations.Add(new OperationsViewModel("PinToTaskbarMenu", "\uE74D", computeSystem.SetIsPinnedToTaskbarAsync, true));
+            var pinResultTaskbar = await computeSystem.GetIsPinnedToTaskbarAsync();
+            if (pinResultTaskbar.Result.Status == ProviderOperationStatus.Success)
+            {
+                if (pinResultTaskbar.IsPinned)
+                {
+                    operations.Add(new OperationsViewModel("Unpin From Taskbar", "\uE74D", computeSystem.SetIsPinnedToTaskbarAsync, false));
+                }
+                else
+                {
+                    operations.Add(new OperationsViewModel("Pin To Taskbar", "\uE74D", computeSystem.SetIsPinnedToTaskbarAsync, true));
+                }
+            }
         }
 
-        // ToDo: Correct the function used
-        // operations.Add(new OperationsViewModel("Pin To Taskbar", "\uE718", computeSystem.));
-        // operations.Add(new OperationsViewModel("Add to Start Menu", "\uE8A9", computeSystem.));
+        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToStartMenu))
+        {
+            var pinResultStartMenu = await computeSystem.GetIsPinnedToStartMenuAsync();
+            if (pinResultStartMenu.Result.Status == ProviderOperationStatus.Success)
+            {
+                if (pinResultStartMenu.IsPinned)
+                {
+                    operations.Add(new OperationsViewModel("Unpin From Start Menu", "\uE74D", computeSystem.SetIsPinnedToStartMenuAsync, false));
+                }
+                else
+                {
+                    operations.Add(new OperationsViewModel("Pin To Start Menu", "\uE74D", computeSystem.SetIsPinnedToStartMenuAsync, true));
+                }
+            }
+        }
+
+        // TODO: _log.Error($"Failed to get state for {ComputeSystem.DisplayName} due to {result.Result.DiagnosticText}");
         return operations;
     }
 

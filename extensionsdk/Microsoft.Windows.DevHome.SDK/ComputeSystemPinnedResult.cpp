@@ -4,20 +4,23 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    ComputeSystemPinnedResult::ComputeSystemPinnedResult(bool isPinned)
+    ComputeSystemPinnedResult::ComputeSystemPinnedResult(bool isPinned) :
+        m_isPinned(isPinned), m_result(ProviderOperationStatus::Success, S_OK, hstring(), hstring())
     {
-        throw hresult_not_implemented();
     }
-    ComputeSystemPinnedResult::ComputeSystemPinnedResult(winrt::hresult const& e, hstring const& displayMessage, hstring const& diagnosticText)
+
+    ComputeSystemPinnedResult::ComputeSystemPinnedResult(winrt::hresult const& e, hstring const& displayMessage, hstring const& diagnosticText) :
+        m_isPinned(false), m_result(ProviderOperationStatus::Failure, e, displayMessage, diagnosticText)
     {
-        throw hresult_not_implemented();
     }
+
     bool ComputeSystemPinnedResult::IsPinned()
     {
-        throw hresult_not_implemented();
+        return m_isPinned;
     }
+
     winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult ComputeSystemPinnedResult::Result()
     {
-        throw hresult_not_implemented();
+        return m_result;
     }
 }

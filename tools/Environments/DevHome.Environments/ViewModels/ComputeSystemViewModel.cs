@@ -88,6 +88,15 @@ public partial class ComputeSystemViewModel : ObservableObject
         await SetPropertiesAsync();
     }
 
+    public async Task InitializePinDataAsync()
+    {
+        var operations = new ObservableCollection<OperationsViewModel>(await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem));
+        foreach (var operation in operations)
+        {
+            DotOperations.Add(operation);
+        }
+    }
+
     private async Task InitializeStateAsync()
     {
         var result = await ComputeSystem.GetStateAsync();

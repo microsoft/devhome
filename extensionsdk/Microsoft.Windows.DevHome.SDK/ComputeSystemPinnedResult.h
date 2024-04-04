@@ -11,6 +11,10 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
         ComputeSystemPinnedResult(winrt::hresult const& e, hstring const& displayMessage, hstring const& diagnosticText);
         bool IsPinned();
         winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult Result();
+
+    private:
+        bool m_isPinned;
+        ProviderOperationResult m_result;
     };
 }
 namespace winrt::Microsoft::Windows::DevHome::SDK::factory_implementation

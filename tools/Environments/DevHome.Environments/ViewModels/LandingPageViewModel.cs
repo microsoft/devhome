@@ -234,6 +234,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                     var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
                     var computeSystemViewModel = new ComputeSystemViewModel(_computeSystemManager, computeSystemList.ElementAt(i), provider, packageFullName);
                     await computeSystemViewModel.InitializeCardDataAsync();
+                    await computeSystemViewModel.InitializePinDataAsync();
                     ComputeSystems.Add(computeSystemViewModel);
                 }
             }
