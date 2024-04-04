@@ -523,14 +523,9 @@ public class ConfigureTargetTask : ISetupTask
             return (_stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoId, unit.Intent, unit.Type, unitDescription), string.Empty);
         }
 
-        var packageId = string.Empty;
-        var packageName = string.Empty;
         var descriptionParts = unit.Identifier.Split(ConfigurationFileBuilder.PackageNameSeparator);
-        if (descriptionParts.Length > 0)
-        {
-            packageId = descriptionParts[0];
-        }
-
+        var packageId = descriptionParts[0];
+        var packageName = string.Empty;
         if (descriptionParts.Length > 1)
         {
             packageName = $"Install: {descriptionParts[1]}";

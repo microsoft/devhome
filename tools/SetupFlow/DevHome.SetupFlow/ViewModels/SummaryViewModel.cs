@@ -43,11 +43,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     private readonly List<UserControl> _cloneRepoNextSteps;
 
-    private Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
-    private Lazy<IList<ConfigurationUnitResultViewModel>> _targetCloneResults;
-    private Lazy<IList<ConfigurationUnitResultViewModel>> _targetInstallResults;
-    private Lazy<IList<ConfigurationUnitResultViewModel>> _targetFailedResults;
-
     // Holds all the UI to display for "Next Steps".
     public List<UserControl> NextSteps => _cloneRepoNextSteps;
 
@@ -122,15 +117,15 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     public List<PackageViewModel> AppsDownloadedInstallationNotes => AppsDownloaded.Where(p => !string.IsNullOrEmpty(p.InstallationNotes)).ToList();
 
-    public IList<ConfigurationUnitResultViewModel> ConfigurationUnitResults => _configurationUnitResults.Value;
+    public List<ConfigurationUnitResultViewModel> ConfigurationUnitResults { get; private set; } = [];
 
-    public IList<ConfigurationUnitResultViewModel> TargetCloneResults => _targetCloneResults.Value;
+    public List<ConfigurationUnitResultViewModel> TargetCloneResults { get; private set; } = [];
 
-    public IList<ConfigurationUnitResultViewModel> TargetInstallResults => _targetInstallResults.Value;
+    public List<ConfigurationUnitResultViewModel> TargetInstallResults { get; private set; } = [];
 
-    public IList<ConfigurationUnitResultViewModel> TargetFailedResults => _targetFailedResults.Value;
+    public List<ConfigurationUnitResultViewModel> TargetFailedResults { get; private set; } = [];
 
-    public bool ShowConfigurationUnitResults => ConfigurationUnitResults.Any();
+    public bool ShowConfigurationUnitResults => ConfigurationUnitResults.Count > 0;
 
     public bool CompletedWithErrors => TargetFailedResults.Count > 0;
 
@@ -203,16 +198,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _host = host;
         _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
         _packageProvider = packageProvider;
-        _configurationUnitResults = new(GetConfigurationUnitResults);
-
-        _targetCloneResults = new(InitializeTargetResults(
-            unitResult => unitResult.IsCloneRepoUnit && unitResult.IsSuccess && !unitResult.IsSkipped));
-
-        _targetInstallResults = new(InitializeTargetResults(
-            unitResult => !unitResult.IsCloneRepoUnit && unitResult.IsSuccess && !unitResult.IsSkipped));
-
-        _targetFailedResults = new(InitializeTargetResults(
-            unitResult => unitResult.IsError));
 
         _showRestartNeeded = Visibility.Collapsed;
         _appManagementInitializer = appManagementInitializer;
@@ -224,18 +209,16 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        // reset these lists as they can be initialized too early due to the view creation before
-        // completion of the tasks.
-        _configurationUnitResults = new(GetConfigurationUnitResults);
+        ConfigurationUnitResults = GetConfigurationUnitResults();
 
-        _targetCloneResults = new(InitializeTargetResults(
-            unitResult => unitResult.IsCloneRepoUnit && unitResult.IsSuccess && !unitResult.IsSkipped));
+        TargetCloneResults = InitializeTargetResults(
+            unitResult => unitResult.IsCloneRepoUnit && unitResult.IsSuccess && !unitResult.IsSkipped);
 
-        _targetInstallResults = new(InitializeTargetResults(
-            unitResult => !unitResult.IsCloneRepoUnit && unitResult.IsSuccess && !unitResult.IsSkipped));
+        TargetInstallResults = InitializeTargetResults(
+            unitResult => !unitResult.IsCloneRepoUnit && unitResult.IsSuccess && !unitResult.IsSkipped);
 
-        _targetFailedResults = new(InitializeTargetResults(
-            unitResult => unitResult.IsError));
+        TargetFailedResults = InitializeTargetResults(
+            unitResult => unitResult.IsError);
 
         IList<TaskInformation> failedTasks = new List<TaskInformation>();
 
