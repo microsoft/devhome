@@ -127,7 +127,7 @@ public partial class PackageViewModel : ObservableObject
 
     public string TooltipPublisher => _stringResource.GetLocalized(StringResourceKey.PackagePublisherNameTooltip, PublisherName);
 
-    public bool CanInstall => !IsInstalled || _package.InstalledVersion != SelectedVersion;
+    public bool CanInstall => _orchestrator.IsSettingUpATargetMachine || !IsInstalled || _package.InstalledVersion != SelectedVersion;
 
     public string ButtonAutomationName => IsSelected ?
         _stringResource.GetLocalized(StringResourceKey.RemoveApplication) :
