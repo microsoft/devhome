@@ -60,7 +60,7 @@ internal sealed class RepositoryProvider
 
     public string DisplayName => _repositoryProvider.DisplayName;
 
-    public string ExtensionDisplayName => _extensionWrapper.Name;
+    public string ExtensionDisplayName => _extensionWrapper.ExtensionDisplayName;
 
     /// <summary>
     /// Starts the extension if it isn't running.

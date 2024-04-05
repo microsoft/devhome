@@ -37,7 +37,7 @@ internal sealed class RepositoryProviders
 
     public RepositoryProviders(IEnumerable<IExtensionWrapper> extensionWrappers)
     {
-        _providers = extensionWrappers.ToDictionary(extensionWrapper => extensionWrapper.Name, extensionWrapper => new RepositoryProvider(extensionWrapper));
+        _providers = extensionWrappers.ToDictionary(extensionWrapper => extensionWrapper.ExtensionDisplayName, extensionWrapper => new RepositoryProvider(extensionWrapper));
     }
 
     public void StartAllExtensions()
