@@ -1732,4 +1732,44 @@
     <value>View file</value>
     <comment>Button content for viewing a file.</comment>
   </data>
+  <data name="SelectEnvironmentPageTitle" xml:space="preserve">
+    <value>Select your environment</value>
+    <comment>Title of the 'Select your environment' page in the create environment flow where users can select the provider they will use to create the environment, like Microsoft Hyper-V and Microsoft Dev Box</comment>
+  </data>
+  <data name="ConfigureEnvironmentPageTitle" xml:space="preserve">
+    <value>Configure your environment</value>
+    <comment>Title of the 'Configure your environment' page in the environment creation flow where users can choose options that they'd like their environment to be created with</comment>
+  </data>
+  <data name="SelectEnvironmentSubtitle.Text" xml:space="preserve">
+    <value>Begin by selecting an environment provider below</value>
+    <comment>subtitle text advise the user that they can select an environment option in a list below the text</comment>
+  </data>
+  <data name="MainPageCreateEnvironment.Header" xml:space="preserve">
+    <value>Create virtual environment</value>
+    <comment>Header for a card that when clicked takes the user to a multi-step flow for creating an environment</comment>
+  </data>
+  <data name="MainPageCreateEnvironment.Description" xml:space="preserve">
+    <value>Create a local or cloud environment</value>
+    <comment>Body text description for a card than when clicked takes the user to a multi-step flow for creating an environment</comment>
+  </data>
+  <data name="SelectEnvironmentPage.Description" xml:space="preserve">
+    <value>Choose an environment provider to create a new dev environment</value>
+    <comment>Description for the setup target page</comment>
+  </data>
+  <data name="ConfigureEnvironmentPage.Description" xml:space="preserve">
+    <value>Add options to create your environment</value>
+    <comment>Description for the setup target page</comment>
+  </data>
+  <data name="ErrorRetrievingAdaptiveCardSession.Title" xml:space="preserve">
+    <value>There was an error retreiving the adaptive card session from the extension</value>
+    <comment>Error text display when we are unable to retrieve the adaptive card information from an extension</comment>
+  </data>
+  <data name="EnvironmentCreationReviewPageTitle" xml:space="preserve">
+    <value>Create Environment</value>
+    <comment>Title for create environment review page</comment>
+  </data>
+  <data name="CreateEnvironmentButtonText" xml:space="preserve">
+    <value>Create Environment</value>
+    <comment>Text for button that starts creating a new virtual machine or cloud pc for the user</comment>
+  </data>
 </root>
