@@ -55,6 +55,12 @@ public class DownloaderService : IDownloaderService
         return await httpClient.GetByteArrayAsync(sourceWebUri, cancellationToken);
     }
 
+    public async Task<long> GetHeaderContentLength(Uri sourceWebUri, CancellationToken cancellationToken)
+    {
+        var httpClient = _httpClientFactory.CreateClient();
+        return GetTotalBytesToReceive(await httpClient.GetAsync(sourceWebUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken));
+    }
+
     private long GetTotalBytesToReceive(HttpResponseMessage response)
     {
         if (response.Content.Headers.ContentLength.HasValue)
