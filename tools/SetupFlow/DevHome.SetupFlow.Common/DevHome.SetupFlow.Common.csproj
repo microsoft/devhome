@@ -51,7 +51,7 @@
       <IncludeAssets>none</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.WindowsPackageManager.Configuration.OutOfProc" Version="1.7.10091-preview">
-        <GeneratePathProperty>True</GeneratePathProperty>
+      <GeneratePathProperty>True</GeneratePathProperty>
     </PackageReference>
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />

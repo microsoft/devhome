@@ -36,7 +36,7 @@
   <ItemGroup>
     <None Remove="Views\DeveloperFileExplorerPage.xaml" />
     <None Remove="Views\DeveloperFileExplorerView.xaml" />
-	<None Remove="Views\DevDriveInsightsPage.xaml" />
+    <None Remove="Views\DevDriveInsightsPage.xaml" />
     <None Remove="Views\DevDriveInsightsView.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\MainPageView.xaml" />
