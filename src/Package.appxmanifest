@@ -86,6 +86,8 @@
                 <Activation>
                   <CreateInstance ClassId="F8B26528-976A-488C-9B40-7198FB425C9E" />
                 </Activation>
+                <!-- ExtensionService expects SupportedInterfaces to be defined, even if it is empty -->
+                <SupportedInterfaces />
               </DevHomeProvider>
             </uap3:Properties>
           </uap3:AppExtension>
