@@ -13,6 +13,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
+using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -251,20 +252,24 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [RelayCommand]
     public async Task ChooseFolderLocationAsync()
     {
-        _log.Information("Opening file picker to select dev drive location");
-        var folderPicker = new FolderPicker();
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, DevDriveWindowContainer.GetWindowHandle());
-        folderPicker.FileTypeFilter.Add("*");
-
-        var location = await folderPicker.PickSingleFolderAsync();
-        if (!string.IsNullOrWhiteSpace(location?.Path))
+        try
         {
-            _log.Information($"Selected Dev Drive location: {location.Path}");
-            Location = location.Path;
+            _log.Information("Opening file picker to select dev drive location");
+            using var folderPicker = new WindowOpenFolderDialog();
+            var location = await folderPicker.ShowAsync(DevDriveWindowContainer);
+            if (!string.IsNullOrWhiteSpace(location?.Path))
+            {
+                _log.Information($"Selected Dev Drive location: {location.Path}");
+                Location = location.Path;
+            }
+            else
+            {
+                _log.Information("No location selected for Dev Drive");
+            }
         }
-        else
+        catch (Exception e)
         {
-            _log.Information("No location selected for Dev Drive");
+            _log.Error("Failed to open folder picker.", e);
         }
     }
 

@@ -23,6 +23,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;
 using Windows.Foundation;
+using WinUIEx;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -31,7 +32,7 @@ public class ConfigureTargetTask : ISetupTask
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigureTargetTask));
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue;
+    private readonly WindowEx _windowEx;
 
     private readonly ISetupFlowStringResource _stringResource;
 
@@ -90,13 +91,14 @@ public class ConfigureTargetTask : ISetupTask
         ISetupFlowStringResource stringResource,
         IComputeSystemManager computeSystemManager,
         ConfigurationFileBuilder configurationFileBuilder,
-        SetupFlowOrchestrator setupFlowOrchestrator)
+        SetupFlowOrchestrator setupFlowOrchestrator,
+        WindowEx windowEx)
     {
         _stringResource = stringResource;
         _computeSystemManager = computeSystemManager;
         _configurationFileBuilder = configurationFileBuilder;
         _setupFlowOrchestrator = setupFlowOrchestrator;
-        _dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _windowEx = windowEx;
         _adaptiveCardRenderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
     }
 
@@ -129,7 +131,7 @@ public class ConfigureTargetTask : ISetupTask
 
     public void OnActionRequired(IApplyConfigurationOperation operation, SDK.ApplyConfigurationActionRequiredEventArgs actionRequiredEventArgs)
     {
-        _log.Information($"adaptive card receieved from extension");
+        _log.Information($"adaptive card received from extension");
         var correctiveCard = actionRequiredEventArgs?.CorrectiveActionCardSession;
 
         if (correctiveCard != null)
@@ -204,7 +206,7 @@ public class ConfigureTargetTask : ISetupTask
             }
 
             // Example of a message that will be displayed in the UI:
-            // ---- Configuration progress recieved! ----
+            // ---- Configuration progress received! ----
             // There was an issue applying part of the configuration using DSC resource: 'GitClone'.Check the extension's logs
             //      - Assert : GitClone[Clone: wil - C:\Users\Public\Documents\source\repos\wil]
             //            - This part of the configuration is now complete
@@ -306,7 +308,7 @@ public class ConfigureTargetTask : ISetupTask
     /// </summary>
     public void RemoveAdaptiveCardPanelFromLoadingUI()
     {
-        _dispatcherQueue.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             if (ActionCenterMessages.ExtensionAdaptiveCardPanel != null)
             {
@@ -332,7 +334,7 @@ public class ConfigureTargetTask : ISetupTask
                 applyConfigurationOperation.ConfigurationSetStateChanged += OnApplyConfigurationOperationChanged;
                 applyConfigurationOperation.ActionRequired += OnActionRequired;
 
-                // We'll cancell the operation after 10 minutes. This is arbitrary for now and will need to be adjusted in the future.
+                // We'll cancel the operation after 10 minutes. This is arbitrary for now and will need to be adjusted in the future.
                 // but we'll need to give the user the ability to cancel the operation in the UI as well. This is just a safety net.
                 // More work is needed to give the user the ability to cancel the operation as the capability is not currently available.
                 // in the UI of Dev Home's Loading page.
@@ -410,10 +412,10 @@ public class ConfigureTargetTask : ISetupTask
     /// Creates the adaptive card that will appear in the action center of the loading page.
     /// The theming for the adaptive card isn't dynamic but in the future we can make it so.
     /// </summary>
-    /// <param name="session">Adaptive card session sent by the entension when it needs a user to perform an action</param>
+    /// <param name="session">Adaptive card session sent by the extension when it needs a user to perform an action</param>
     public async Task CreateCorrectiveActionPanel(IExtensionAdaptiveCardSession2 session)
     {
-        await _dispatcherQueue.EnqueueAsync(async () =>
+        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
             var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
 

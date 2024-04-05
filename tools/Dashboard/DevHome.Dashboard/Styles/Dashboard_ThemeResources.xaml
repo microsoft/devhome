@@ -1,0 +1,56 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Default">
+            <StaticResource x:Key="WidgetCardBackground" ResourceKey="CardBackgroundFillColorDefaultBrush" />
+            <StaticResource x:Key="WidgetCardBackgroundPointerOver" ResourceKey="ControlFillColorSecondaryBrush" />
+            <StaticResource x:Key="WidgetCardBackgroundPressed" ResourceKey="ControlFillColorTertiaryBrush" />
+            <StaticResource x:Key="WidgetCardBackgroundDisabled" ResourceKey="ControlFillColorDisabledBrush" />
+
+            <StaticResource x:Key="WidgetCardForeground" ResourceKey="TextFillColorPrimaryBrush" />
+            <StaticResource x:Key="WidgetCardForegroundPointerOver" ResourceKey="TextFillColorPrimaryBrush" />
+            <StaticResource x:Key="WidgetCardForegroundPressed" ResourceKey="TextFillColorSecondaryBrush" />
+            <StaticResource x:Key="WidgetCardForegroundDisabled" ResourceKey="TextFillColorDisabledBrush" />
+
+            <StaticResource x:Key="WidgetCardBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
+            <StaticResource x:Key="WidgetCardBorderBrushPointerOver" ResourceKey="ControlElevationBorderBrush" />
+            <StaticResource x:Key="WidgetCardBorderBrushPressed" ResourceKey="ControlStrokeColorDefaultBrush" />
+            <StaticResource x:Key="WidgetCardBorderBrushDisabled" ResourceKey="ControlStrokeColorDefaultBrush" />
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="Light">
+            <StaticResource x:Key="WidgetCardBackground" ResourceKey="CardBackgroundFillColorDefaultBrush" />
+            <StaticResource x:Key="WidgetCardBackgroundPointerOver" ResourceKey="ControlFillColorSecondaryBrush" />
+            <StaticResource x:Key="WidgetCardBackgroundPressed" ResourceKey="ControlFillColorTertiaryBrush" />
+            <StaticResource x:Key="WidgetCardBackgroundDisabled" ResourceKey="ControlFillColorDisabledBrush" />
+
+            <StaticResource x:Key="WidgetCardForeground" ResourceKey="TextFillColorPrimaryBrush" />
+            <StaticResource x:Key="WidgetCardForegroundPointerOver" ResourceKey="TextFillColorPrimaryBrush" />
+            <StaticResource x:Key="WidgetCardForegroundPressed" ResourceKey="TextFillColorSecondaryBrush" />
+            <StaticResource x:Key="WidgetCardForegroundDisabled" ResourceKey="TextFillColorDisabledBrush" />
+
+            <StaticResource x:Key="WidgetCardBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
+            <StaticResource x:Key="WidgetCardBorderBrushPointerOver" ResourceKey="ControlElevationBorderBrush" />
+            <StaticResource x:Key="WidgetCardBorderBrushPressed" ResourceKey="ControlStrokeColorDefaultBrush" />
+            <StaticResource x:Key="WidgetCardBorderBrushDisabled" ResourceKey="ControlStrokeColorDefaultBrush" />
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="HighContrast">
+            <StaticResource x:Key="WidgetCardBackground" ResourceKey="SystemColorButtonFaceColorBrush" />
+            <StaticResource x:Key="WidgetCardBackgroundPointerOver" ResourceKey="SystemColorHighlightTextColorBrush" />
+            <StaticResource x:Key="WidgetCardBackgroundPressed" ResourceKey="SystemColorHighlightTextColorBrush" />
+            <StaticResource x:Key="WidgetCardBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+
+            <StaticResource x:Key="WidgetCardForeground" ResourceKey="SystemColorButtonTextColorBrush" />
+            <StaticResource x:Key="WidgetCardForegroundPointerOver" ResourceKey="SystemColorHighlightColorBrush" />
+            <StaticResource x:Key="WidgetCardForegroundPressed" ResourceKey="SystemColorHighlightColorBrush" />
+            <StaticResource x:Key="WidgetCardForegroundDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+
+            <StaticResource x:Key="WidgetCardBorderBrush" ResourceKey="SystemColorButtonTextColorBrush" />
+            <StaticResource x:Key="WidgetCardBorderBrushPointerOver" ResourceKey="SystemColorHighlightColorBrush" />
+            <StaticResource x:Key="WidgetCardBorderBrushPressed" ResourceKey="SystemColorHighlightTextColorBrush" />
+            <StaticResource x:Key="WidgetCardBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

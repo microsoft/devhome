@@ -163,7 +163,7 @@
                 <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.RepositoriesToDisplay, Mode=OneWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:RepoViewListItem">
-                            <Grid ColumnSpacing="7">
+                            <Grid ColumnSpacing="7" AutomationProperties.Name="{x:Bind RepoDisplayName}">
                                 <ToolTipService.ToolTip>
                                     <ToolTip IsEnabled="{x:Bind IsRepoNameTrimmed, Mode=OneWay}" Content="{x:Bind RepoDisplayName}"/>
                                 </ToolTipService.ToolTip>
@@ -264,7 +264,7 @@
                         x:Uid="CustomizeHyperLink"
                         Grid.Column="1" 
                         Visibility="{x:Bind AddRepoViewModel.EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" 
-                        Click="CustomizeDevDriveHyperlinkButton_ClickAsync"
+                        Command="{x:Bind AddRepoViewModel.ShowCustomizeDevDriveWindowCommand}"
                         Grid.Row="0"
                         Margin="0 -3 0 0"
                         Padding="3" />
