@@ -334,9 +334,8 @@ public partial class WidgetViewModel : ObservableObject
 
     public void AnnounceDeleted()
     {
-        _screenReaderService.Announce("Hello world");
-
-        return;
+        var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+        _screenReaderService.Announce(stringResource.GetLocalized("WidgetRemoved"));
     }
 
     private async void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
