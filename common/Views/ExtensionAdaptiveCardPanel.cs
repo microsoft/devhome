@@ -5,7 +5,6 @@ using System;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Models;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
@@ -30,7 +29,7 @@ public class ExtensionAdaptiveCardPanel : StackPanel
             throw new ArgumentException("The ExtensionUI element must be bound to an empty container.");
         }
 
-        var uiDispatcher = DispatcherQueue.GetForCurrentThread();
+        var uiDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         var extensionUI = new ExtensionAdaptiveCard();
 
         extensionUI.UiUpdate += (object? sender, AdaptiveCard adaptiveCard) =>

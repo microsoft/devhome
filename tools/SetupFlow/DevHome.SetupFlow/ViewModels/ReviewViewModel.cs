@@ -5,15 +5,18 @@ extern alias Projection;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
+using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
-using Microsoft.Extensions.Hosting;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -21,9 +24,9 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ReviewViewModel));
 
-    private readonly IHost _host;
-
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+    private readonly ConfigurationFileBuilder _configFileBuilder;
+    private readonly WindowEx _mainWindow;
 
     [ObservableProperty]
     private IList<ReviewTabViewModelBase> _reviewTabs;
@@ -74,18 +77,21 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     public bool HasTasksToSetUp => Orchestrator.TaskGroups.Any(g => g.SetupTasks.Any());
 
+    public bool HasDSCTasksToDownload => Orchestrator.TaskGroups.Any(g => g.DSCTasks.Any());
+
     public ReviewViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        IHost host)
+        ConfigurationFileBuilder configFileBuilder,
+        WindowEx mainWindow)
         : base(stringResource, orchestrator)
     {
-        _host = host;
-
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReviewPageTitle);
 
         _setupFlowOrchestrator = orchestrator;
+        _configFileBuilder = configFileBuilder;
+        _mainWindow = mainWindow;
     }
 
     protected async override Task OnEachNavigateToAsync()
@@ -138,5 +144,29 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         {
             _log.Error($"Failed to initialize elevated process.", e);
         }
-   }
+    }
+
+    [RelayCommand(CanExecute = nameof(HasDSCTasksToDownload))]
+    private async Task DownloadConfigurationAsync()
+    {
+        try
+        {
+            // Show the save file dialog
+            using var fileDialog = new WindowSaveFileDialog();
+            fileDialog.AddFileType(StringResource.GetLocalized(StringResourceKey.FilePickerSingleFileTypeOption, "YAML"), ".winget");
+            fileDialog.AddFileType(StringResource.GetLocalized(StringResourceKey.FilePickerSingleFileTypeOption, "YAML"), ".dsc.yaml");
+            var fileName = fileDialog.Show(_mainWindow);
+
+            // If the user selected a file, write the configuration to it
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                var configFile = _configFileBuilder.BuildConfigFileStringFromTaskGroups(Orchestrator.TaskGroups, ConfigurationFileKind.Normal);
+                await File.WriteAllTextAsync(fileName, configFile);
+            }
+        }
+        catch (Exception e)
+        {
+            _log.Error($"Failed to download configuration file.", e);
+        }
+    }
 }

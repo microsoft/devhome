@@ -105,7 +105,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
             var packagesInstalled = new ObservableCollection<PackageViewModel>();
             if (!_orchestrator.IsSettingUpATargetMachine)
             {
-                var packages = _packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true).ToList();
+                var packages = _packageProvider.SelectedPackages.Where(sp => sp.CanInstall && sp.InstallPackageTask.WasInstallSuccessful).ToList();
                 packages.ForEach(p => packagesInstalled.Add(p));
                 var localizedHeader = (packagesInstalled.Count == 1) ? StringResourceKey.SummaryPageOneApplicationInstalled : StringResourceKey.SummaryPageAppsDownloadedCount;
                 ApplicationsClonedText = StringResource.GetLocalized(localizedHeader);
@@ -256,15 +256,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         // Send telemetry about the number of next steps tasks found broken down by their type.
         ReportSummaryTaskCounts(_cloneRepoNextSteps.Count);
 
-        BitmapImage statusSymbol;
-        if (_host.GetService<IThemeSelectorService>().Theme == ElementTheme.Dark)
-        {
-            statusSymbol = DarkError;
-        }
-        else
-        {
-            statusSymbol = LightError;
-        }
+        var statusSymbol = _host.GetService<IThemeSelectorService>().IsDarkTheme() ? DarkError : LightError;
 
         foreach (var failedTask in failedTasks)
         {
@@ -311,7 +303,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         // After installing packages, reconnect to catalogs to
         // reflect the latest changes when new Package COM objects are created
         _log.Information($"Checking if a new catalog connections should be established");
-        if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
+        if (_packageProvider.SelectedPackages.Any(package => package.CanInstall && package.InstallPackageTask.WasInstallSuccessful))
         {
             await _appManagementInitializer.ReinitializeAsync();
         }

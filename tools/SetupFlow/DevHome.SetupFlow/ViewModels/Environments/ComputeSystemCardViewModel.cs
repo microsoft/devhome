@@ -9,11 +9,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
+using DevHome.Common.Extensions;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-
-using Dispatching = Microsoft.UI.Dispatching;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
@@ -24,7 +25,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemCardViewModel));
 
-    private readonly Dispatching.DispatcherQueue _dispatcher;
+    private readonly WindowEx _windowEx;
 
     private readonly IComputeSystemManager _computeSystemManager;
 
@@ -74,9 +75,9 @@ public partial class ComputeSystemCardViewModel : ObservableObject
         }
     }
 
-    public ComputeSystemCardViewModel(ComputeSystem computeSystem, IComputeSystemManager manager)
+    public ComputeSystemCardViewModel(ComputeSystem computeSystem, IComputeSystemManager manager, WindowEx windowEx)
     {
-        _dispatcher = Dispatching.DispatcherQueue.GetForCurrentThread();
+        _windowEx = windowEx;
         _computeSystemManager = manager;
         ComputeSystemTitle = computeSystem.DisplayName;
         ComputeSystemWrapper = computeSystem;
@@ -86,7 +87,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
     {
-        _dispatcher.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             if (sender.Id == ComputeSystemWrapper.Id)
             {

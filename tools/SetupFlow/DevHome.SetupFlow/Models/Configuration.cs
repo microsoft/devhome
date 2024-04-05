@@ -27,6 +27,8 @@ public class Configuration
     /// </summary>
     public string Name => _fileInfo.Name;
 
+    public string Path => _fileInfo.FullName;
+
     /// <summary>
     /// Gets the file content
     /// </summary>
