@@ -98,16 +98,12 @@ public class DevHomeActionSet : IDevHomeActionSetRender
     {
         ActionButtonMap.TryGetValue(buttonId, out var actionElement);
 
-        if (actionElement == null)
+        if ((actionElement == null) || (userInputs == null))
         {
             return false;
         }
 
-        var result = true;
-        if (!userInputs.ValidateInputs(actionElement))
-        {
-            result = false;
-        }
+        var result = userInputs.ValidateInputs(actionElement);
 
         ActionButtonInvoker?.SendActionEvent(actionElement);
         return result;

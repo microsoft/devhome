@@ -55,6 +55,10 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private bool _showAppInstallerUpdateNotification;
 
+    public string MainPageEnvironmentSetupGroupName => StringResource.GetLocalized(StringResourceKey.MainPageEnvironmentSetupGroup);
+
+    public string MainPageQuickStepsGroupName => StringResource.GetLocalized(StringResourceKey.MainPageQuickConfigurationGroup);
+
     public bool ShouldShowSetupTargetItem => _experimentationService.IsFeatureEnabled(EnvironmentsSetupFlowFeatureName);
 
     public bool ShouldShowCreateEnvironmentItem => _experimentationService.IsFeatureEnabled(EnvironmentsCreationFlowFeatureName);

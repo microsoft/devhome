@@ -9,19 +9,6 @@
         {
           "type": "Column",
           "width": "auto",
-          "spacing": "large",
-          "verticalContentAlignment": "center",
-          "items": [
-            {
-              "type": "Image",
-              "url": "${Base64ImageForProvider}",
-              "height": "32px"
-            }
-          ]
-        },
-        {
-          "type": "Column",
-          "width": "auto",
           "spacing": "medium",
           "items": [
             {
@@ -33,6 +20,25 @@
             {
               "type": "TextBlock",
               "text": "${DiskImageSize}",
+              "wrap": true,
+              "size": "medium"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "extraLarge",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "${NameLabel}",
+              "wrap": true,
+              "size": "medium"
+            },
+            {
+              "type": "TextBlock",
+              "text": "${NameOfNewVM}",
               "wrap": true,
               "isSubtle": true,
               "size": "medium"

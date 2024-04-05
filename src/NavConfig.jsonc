@@ -27,14 +27,6 @@
             "icon": "E83B"
           },
           {
-            "identity": "DevHome.QuietBackgroundProcesses.UI",
-            "assembly": "DevHome.QuietBackgroundProcesses.UI",
-            "viewFullName": "DevHome.QuietBackgroundProcesses.UI.Views.QuietBackgroundProcessesPage",
-            "viewModelFullName": "DevHome.QuietBackgroundProcesses.UI.ViewModels.QuietBackgroundProcessesViewModel",
-            "icon": "f5b0",
-            "experimentalFeatureIdentity": "QuietBackgroundProcessesExperiment"
-          },
-          {
             "identity": "DevHome.Customization",
             "assembly": "DevHome.Customization",
             "viewFullName": "DevHome.Customization.Views.MainPage",

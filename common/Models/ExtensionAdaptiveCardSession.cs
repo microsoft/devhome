@@ -54,6 +54,11 @@ public class ExtensionAdaptiveCardSession
     {
         try
         {
+            if (Session is IExtensionAdaptiveCardSession2 cardSession2)
+            {
+                cardSession2.Stopped -= OnSessionStopped;
+            }
+
             Session.Dispose();
         }
         catch (Exception ex)
