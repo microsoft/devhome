@@ -30,8 +30,8 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
         DataJson = new JsonObject().ToJsonString();
         State = string.Empty;
 
-        _elementParserRegistration = elementParserRegistration != null ? elementParserRegistration : new AdaptiveElementParserRegistration();
-        _actionParserRegistration = actionParserRegistration != null ? actionParserRegistration : new AdaptiveActionParserRegistration();
+        _elementParserRegistration = elementParserRegistration ?? new AdaptiveElementParserRegistration();
+        _actionParserRegistration = actionParserRegistration ?? new AdaptiveActionParserRegistration();
     }
 
     public ProviderOperationResult Update(string templateJson, string dataJson, string state)
