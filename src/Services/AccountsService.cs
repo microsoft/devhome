@@ -97,14 +97,14 @@ public class AccountsService : IAccountsService
 
             if (authenticationState == AuthenticationState.LoggedIn)
             {
-                TelemetryFactory.Get<ITelemetry>().Log("Login_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.DisplayName, developerId));
+                TelemetryFactory.Get<ITelemetry>().Log("Login_DevId_Event", LogLevel.Critical, new DeveloperIdUserEvent(devIdProvider.DisplayName, developerId));
 
                 // Bring focus back to DevHome after login
                 _ = PInvoke.SetForegroundWindow((HWND)Process.GetCurrentProcess().MainWindowHandle);
             }
             else if (authenticationState == AuthenticationState.LoggedOut)
             {
-                TelemetryFactory.Get<ITelemetry>().Log("Logout_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.DisplayName, developerId));
+                TelemetryFactory.Get<ITelemetry>().Log("Logout_DevId_Event", LogLevel.Critical, new DeveloperIdUserEvent(devIdProvider.DisplayName, developerId));
             }
         }
     }

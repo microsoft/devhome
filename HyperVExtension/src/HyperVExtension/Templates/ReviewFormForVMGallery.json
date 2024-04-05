@@ -1,0 +1,98 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "medium",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "${ProviderName}",
+              "wrap": true,
+              "size": "medium"
+            },
+            {
+              "type": "TextBlock",
+              "text": "${DiskImageSize}",
+              "wrap": true,
+              "size": "medium"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "extraLarge",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "${NameLabel}",
+              "wrap": true,
+              "size": "medium"
+            },
+            {
+              "type": "TextBlock",
+              "text": "${NameOfNewVM}",
+              "wrap": true,
+              "size": "medium"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "extraLarge",
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "type": "Image",
+              "url": "${DiskImageUrl}",
+              "height": "32px"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "medium",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "${VMGalleryImageName}",
+              "wrap": true,
+              "size": "medium"
+            },
+            {
+              "type": "TextBlock",
+              "text": "${Publisher}",
+              "wrap": true,
+              "isSubtle": true,
+              "size": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "id": "DevHomeMachineConfigurationNextButton",
+          "type": "Action.Submit",
+          "title": "${PrimaryButtonLabelForCreationFlow}"
+        },
+        {
+          "id": "DevHomeMachineConfigurationPreviousButton",
+          "type": "Action.Submit",
+          "title": "${SecondaryButtonLabelForCreationFlow}"
+        }
+      ]
+    }
+  ]
+}
