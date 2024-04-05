@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -18,10 +17,8 @@ using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using WinUIEx;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -39,6 +36,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private readonly NotificationService _notificationService;
 
     private readonly IComputeSystemManager _computeSystemManager;
+
+    private readonly INavigationService _navigationService;
 
     private readonly StringResource _stringResource;
 
@@ -74,6 +73,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private CancellationTokenSource _cancellationTokenSource = new();
 
     public LandingPageViewModel(
+        INavigationService navigationService,
         IComputeSystemManager manager,
         EnvironmentsExtensionsService extensionsService,
         NotificationService notificationService,
@@ -83,6 +83,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _notificationService = notificationService;
         _computeSystemManager = manager;
         _windowEx = windowEx;
+        _navigationService = navigationService;
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
@@ -119,6 +120,17 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _computeSystemManager.RemoveAllCompletedOperations();
         await LoadModelAsync();
         _wasSyncButtonClicked = false;
+    }
+
+    /// <summary>
+    /// Navigates the user to the select environments page in the setup flow. This is the first page in the create environment
+    /// process.
+    /// </summary>
+    [RelayCommand]
+    public void CreateEnvironmentButton()
+    {
+        _log.Information("User clicked on the create environment button. Navigating to Select environment page in Setup flow");
+        _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow");
     }
 
     // Updates the last sync time on the UI thread after set delay
@@ -179,23 +191,17 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 return;
             }
 
+            // If the page has already loaded once, then we don't need to re-load the compute systems as that can take a while.
+            // The user can click the sync button to refresh the compute systems. However, there may be new operations that have started
+            // since the last time the page was loaded. So we need to add those to the view model quickly.
+            SetupCreateComputeSystemOperationForUI();
+            if (HasPageLoadedForTheFirstTime && !_wasSyncButtonClicked)
+            {
+                return;
+            }
+
             IsLoading = true;
         }
-
-        // if the page has already loaded once, then we don't need to re-load the compute systems as that can take a while.
-        // The user can click the sync button to refresh the compute systems. However, there may be new operations that have started
-        // since the last time the page was loaded. So we need to add those to the view model.
-        SetupCreateComputeSystemOperationForUI();
-        if (HasPageLoadedForTheFirstTime && !_wasSyncButtonClicked)
-        {
-            return;
-        }
-
-        // Start a new sync timer
-        _ = Task.Run(async () =>
-        {
-            await RunSyncTimmer();
-        });
 
         for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
         {
@@ -225,13 +231,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         // Remove all the operations from view and then add the ones the manager has.
         _log.Information($"Adding any new create compute system operations to ComputeSystemCards list");
         var curOperations = _computeSystemManager.GetRunningOperationsForCreation();
-        var hashSetOfIds = new HashSet<Guid>();
         for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
         {
             if (ComputeSystemCards[i].IsCreateComputeSystemOperation)
             {
                 var operationViewModel = ComputeSystemCards[i] as CreateComputeSystemOperationViewModel;
-                hashSetOfIds.Add(operationViewModel!.Operation.OperationId);
+                operationViewModel!.RemoveEventHandlers();
                 ComputeSystemCards.RemoveAt(i);
             }
         }
@@ -239,11 +244,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         // Add new operations to the list
         foreach (var operation in curOperations)
         {
-            if (hashSetOfIds.Contains(operation.OperationId))
-            {
-                continue;
-            }
-
             // this is a new operation so we need to create a view model for it.
             ComputeSystemCards.Add(new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, ComputeSystemCards.Remove, operation));
             _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
@@ -265,7 +265,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             data.DevIdToComputeSystemMap.Remove(mapping.Key);
         }
 
-        _windowEx.DispatcherQueue.TryEnqueue(async () =>
+        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
             Providers.Add(provider.DisplayName);
             try
@@ -324,8 +324,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     /// Updates the view model to filter the compute systems according to the provider.
     /// </summary>
     [RelayCommand]
-    public void ProviderHandler()
+    public void ProviderHandler(int selectedIndex)
     {
+        SelectedProviderIndex = selectedIndex;
         var currentProvider = Providers[SelectedProviderIndex];
         ComputeSystemCardsView.Filter = system =>
         {
@@ -336,7 +337,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
             if (system is CreateComputeSystemOperationViewModel createComputeSystemOperationViewModel)
             {
-                return createComputeSystemOperationViewModel.ProviderDisplayName.Contains(currentProvider, StringComparison.OrdinalIgnoreCase);
+                return createComputeSystemOperationViewModel.ProviderDisplayName.Equals(currentProvider, StringComparison.OrdinalIgnoreCase);
             }
 
             if (system is ComputeSystemViewModel computeSystemViewModel)

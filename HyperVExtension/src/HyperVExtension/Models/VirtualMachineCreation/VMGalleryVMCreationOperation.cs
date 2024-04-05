@@ -107,6 +107,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
                     IsOperationInProgress = true;
                 }
 
+                UpdateProgress(_stringResource.GetLocalized("CreationStarting", $"({_userInputParameters.NewEnvironmentName})"));
                 var imageList = await _vmGalleryService.GetGalleryImagesAsync();
                 if (imageList.Images.Count == 0)
                 {

@@ -61,7 +61,7 @@
                     ColumnSpacing="{StaticResource ContainerElementSpacing}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <!-- Colored dot that indicates the visual state of the compute system. -->
                     <Ellipse
@@ -80,6 +80,7 @@
                         Visibility="{x:Bind ComputeSystemCreationStatus, Mode=OneWay, Converter={StaticResource EmptyObjectToVisibleConverter}}"
                         Text="{x:Bind ComputeSystemCreationStatus, Mode=OneWay}"
                         Style="{StaticResource CardBodyStateTextBlockStyle}"
+                        TextWrapping="Wrap"
                         TextTrimming="CharacterEllipsis"
                         IsTextSelectionEnabled="True"/>
             </Grid>
@@ -95,6 +96,7 @@
                     </ItemsRepeater.Layout>
                 </ItemsRepeater>
                 <ProgressBar
+                    Margin="0 5 0 0"
                     Visibility="{x:Bind ShouldShowInDefiniteProgress, Mode=OneWay}"
                     IsIndeterminate="True"/>
             </StackPanel>

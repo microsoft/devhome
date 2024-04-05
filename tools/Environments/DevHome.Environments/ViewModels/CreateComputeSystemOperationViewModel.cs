@@ -138,6 +138,8 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
         {
             _removalAction(this);
             RemoveEventHandlers();
+            Operation.CancelOperation();
+            _computeSystemManager.RemoveOperation(Operation);
         });
     }
 }

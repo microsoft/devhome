@@ -38,6 +38,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <setupControls:SetupShell 
+            Title="{x:Bind ViewModel.PageTitle}"
             x:Uid="SelectEnvironmentPage"
             Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
             Foreground="{ThemeResource TextFillColorSecondary}" 

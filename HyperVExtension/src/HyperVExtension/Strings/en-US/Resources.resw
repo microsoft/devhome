@@ -118,8 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CreationInProgress" xml:space="preserve">
-    <value>Adding network, sesure and session configurations</value>
-    <comment>Locked="{0}" text to tell the user that we're currently creating the virtual machine. {0} is the name of the virtual machine</comment>
+    <value>Adding network switch, secure boot and enhanced session configuration for {0}</value>
+    <comment>Locked="{0}" Text to tell the user that we're performing post creation actions like adding a network switch to the virtual machine. {0} is the name of the virtual machine</comment>
+  </data>
+  <data name="CreationStarting" xml:space="preserve">
+    <value>Starting the creation process for {0}</value>
+    <comment>Locked="{0}" Text to tell the user that we're starting the process to create the virtual machine. {0} is the name of the virtual machine</comment>
   </data>
   <data name="CurrentCheckpoint" xml:space="preserve">
     <value>Current Checkpoint</value>

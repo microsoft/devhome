@@ -633,7 +633,7 @@
     <value>Restore</value>
     <comment>Label for restore button</comment>
   </data>
-  <data name="Review_SetupDetails.Text" xml:space="preserve">
+  <data name="ReviewExpanderDescription" xml:space="preserve">
     <value>Set up details</value>
     <comment>Header for a section detailing the set up steps to be performed. "Set up" is the noun</comment>
   </data>
@@ -697,8 +697,12 @@
     <value>Select a target machine to set up.</value>
     <comment>Description for the setup target page</comment>
   </data>
-  <data name="SetupShell_Review.Description" xml:space="preserve">
+  <data name="SetupShellReviewPageDescription" xml:space="preserve">
     <value>Review the terms and setup details below before applying these changes to your computer.</value>
+    <comment>Description for the review page</comment>
+  </data>
+  <data name="SetupShellReviewPageDescriptionForEnvironmentCreation" xml:space="preserve">
+    <value>Review the details for your new environment</value>
     <comment>Description for the review page</comment>
   </data>
   <data name="Applications" xml:space="preserve">
@@ -1656,8 +1660,16 @@
     <value>There was an error retreiving the adaptive card session from the extension</value>
     <comment>Error text display when we are unable to retrieve the adaptive card information from an extension</comment>
   </data>
+  <data name="EnvironmentCreationReviewTabTitle" xml:space="preserve">
+    <value>Environment</value>
+    <comment>Title for create environment review tab</comment>
+  </data>
+  <data name="EnvironmentCreationReviewExpanderDescription" xml:space="preserve">
+    <value>Your environment's details</value>
+    <comment>Title for create environment review tab</comment>
+  </data>
   <data name="EnvironmentCreationReviewPageTitle" xml:space="preserve">
-    <value>Create Environment</value>
+    <value>Review your environment</value>
     <comment>Title for create environment review page</comment>
   </data>
   <data name="CreateEnvironmentButtonText" xml:space="preserve">
@@ -1692,7 +1704,7 @@
     <comment>Heading that will show the user the details of the environment they initiated the creation process for. Environments can be local or cloud virtual machines</comment>
   </data>
   <data name="SummaryPageRedirectToEnvironmentPageButton" xml:space="preserve">
-    <value>View environments</value>
+    <value>Go to Environments page</value>
     <comment>Text for button that when clicked will redirect the user to the environments page in Dev Home</comment>
   </data>
   <data name="SummaryPageEnvironmentCreating.Text" xml:space="preserve">

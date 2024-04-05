@@ -21,6 +21,7 @@
 
         <!--- Make SetupShellContent. -->
         <setupControls:SetupShell 
+            Title="{x:Bind ViewModel.PageTitle}"
             x:Uid="ConfigureEnvironmentPage"
             Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
             Foreground="{ThemeResource TextFillColorSecondary}" 
@@ -30,7 +31,7 @@
         <ScrollViewer 
             MaxWidth="{ThemeResource MaxPageContentWidth}"
             Grid.Row="1">
-            <StackPanel Spacing="10">
+            <Grid >
                 <Grid
                     HorizontalAlignment="Stretch"
                     Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
@@ -56,7 +57,7 @@
                         Height="25"
                         Margin="0,150,0,20"/>
                 </Grid>
-            </StackPanel>
+            </Grid>
         </ScrollViewer>
     </Grid>
 </UserControl>

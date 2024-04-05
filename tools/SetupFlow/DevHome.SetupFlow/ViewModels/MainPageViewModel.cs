@@ -188,12 +188,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// Starts the create environment flow.
     /// </summary>
     [RelayCommand]
-    private void StartCreateEnvironment(string flowTitle)
+    public void StartCreateEnvironment(string flowTitle)
     {
         _log.Information("Starting flow for environment creation");
         StartSetupFlowForTaskGroups(
             flowTitle,
-            "RepoConfig",
+            "CreateEnvironment",
             _host.GetService<SelectEnvironmentProviderTaskGroup>(),
             _host.GetService<EnvironmentCreationOptionsTaskGroup>());
     }

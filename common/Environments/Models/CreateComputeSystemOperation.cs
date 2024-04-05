@@ -107,9 +107,7 @@ public class CreateComputeSystemOperation : IDisposable
         {
             try
             {
-                CreateComputeSystemResult = await _createComputeSystemOperation.StartAsync().AsTask().WaitAsync(_cancellationTokenSource.Token);
-                _cancellationTokenSource.Token.ThrowIfCancellationRequested();
-
+                CreateComputeSystemResult = await _createComputeSystemOperation.StartAsync().AsTask(_cancellationTokenSource.Token);
                 Completed?.Invoke(this, CreateComputeSystemResult);
             }
             catch (Exception ex)

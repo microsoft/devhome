@@ -52,9 +52,12 @@
         </Grid>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
 
-    <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
-                         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
-                         Foreground="{ThemeResource TextFillColorSecondary}">
+    <controls:SetupShell
+        Title="{x:Bind ViewModel.PageTitle, Mode=OneWay}"
+        Description="{x:Bind ViewModel.ReviewPageDescription}"
+        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
+        Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+        Foreground="{ThemeResource TextFillColorSecondary}">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -62,7 +65,7 @@
                           MinHeight="64" CornerRadius="4" Padding="24,0,24,7" >
                     <Expander.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
-                                   x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_SetUpDetails" />
+                                   Text="{x:Bind ViewModel.ReviewPageExpanderDescription, Mode=OneWay}"/>
                     </Expander.Header>
                     <Expander.Content>
                         <Grid MinHeight="266">
