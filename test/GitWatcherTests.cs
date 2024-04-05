@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using DevHome.Contracts.Services;
 using DevHome.Services;

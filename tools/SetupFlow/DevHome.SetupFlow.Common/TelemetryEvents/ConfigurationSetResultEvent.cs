@@ -23,7 +23,7 @@ internal sealed class ConfigurationSetResultEvent : EventBase
 
     public int ExceptionHResult => _setResult.ResultCode?.HResult ?? 0;
 
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public ConfigurationSetResultEvent(ConfigurationSet configSet, ApplyConfigurationSetResult setResult)
     {

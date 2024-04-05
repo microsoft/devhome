@@ -9,11 +9,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.SetupFlow.Common.Helpers;
+using DevHome.Common.Extensions;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
-
-using Dispatching = Microsoft.UI.Dispatching;
+using Serilog;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
@@ -22,7 +23,9 @@ namespace DevHome.SetupFlow.ViewModels.Environments;
 /// </summary>
 public partial class ComputeSystemCardViewModel : ObservableObject
 {
-    private readonly Dispatching.DispatcherQueue _dispatcher;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemCardViewModel));
+
+    private readonly WindowEx _windowEx;
 
     private readonly IComputeSystemManager _computeSystemManager;
 
@@ -72,9 +75,9 @@ public partial class ComputeSystemCardViewModel : ObservableObject
         }
     }
 
-    public ComputeSystemCardViewModel(ComputeSystem computeSystem, IComputeSystemManager manager)
+    public ComputeSystemCardViewModel(ComputeSystem computeSystem, IComputeSystemManager manager, WindowEx windowEx)
     {
-        _dispatcher = Dispatching.DispatcherQueue.GetForCurrentThread();
+        _windowEx = windowEx;
         _computeSystemManager = manager;
         ComputeSystemTitle = computeSystem.DisplayName;
         ComputeSystemWrapper = computeSystem;
@@ -84,7 +87,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
     {
-        _dispatcher.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             if (sender.Id == ComputeSystemWrapper.Id)
             {
@@ -100,7 +103,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
         if (result.Result.Status == ProviderOperationStatus.Failure)
         {
-            Log.Logger.ReportError(Log.Component.ComputeSystemCardViewModel, $"Failed to get state for compute system {ComputeSystemWrapper.DisplayName} from provider {ComputeSystemWrapper.AssociatedProviderId}. Error: {result.Result.DiagnosticText}");
+            _log.Error($"Failed to get state for compute system {ComputeSystemWrapper.DisplayName} from provider {ComputeSystemWrapper.AssociatedProviderId}. Error: {result.Result.DiagnosticText}");
         }
 
         StateColor = ComputeSystemHelpers.GetColorBasedOnState(result.State);

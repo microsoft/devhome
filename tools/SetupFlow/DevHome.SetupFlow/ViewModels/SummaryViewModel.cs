@@ -12,17 +12,18 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.TelemetryEvents.SetupFlow.SummaryPage;
 using DevHome.Contracts.Services;
-using DevHome.Dashboard.ViewModels;
-using DevHome.Settings.ViewModels;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.SetupFlow.Views;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Serilog;
 using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -32,6 +33,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
     private static readonly BitmapImage LightError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
 
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SummaryViewModel));
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly SetupFlowViewModel _setupFlowViewModel;
     private readonly IHost _host;
@@ -39,6 +41,14 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
     private readonly PackageProvider _packageProvider;
     private readonly IAppManagementInitializer _appManagementInitializer;
+
+    private readonly List<UserControl> _cloneRepoNextSteps;
+
+    // Holds all the UI to display for "Next Steps".
+    public List<UserControl> NextSteps => _cloneRepoNextSteps;
+
+    [ObservableProperty]
+    private ObservableCollection<ISummaryInformationViewModel> _summaryInformation;
 
     [ObservableProperty]
     private List<SummaryErrorMessageViewModel> _failedTasks = new();
@@ -51,7 +61,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     {
         await Task.Run(() =>
         {
-            var folderToOpen = Log.Logger.Options.LogFileFolderPath;
+            var folderToOpen = DevHome.Common.Logging.LogFolderRoot;
             var startInfo = new ProcessStartInfo();
             startInfo.UseShellExecute = true;
             startInfo.FileName = folderToOpen;
@@ -90,7 +100,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         get
         {
             var packagesInstalled = new ObservableCollection<PackageViewModel>();
-            var packages = _packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true).ToList();
+            var packages = _packageProvider.SelectedPackages.Where(sp => sp.CanInstall && sp.InstallPackageTask.WasInstallSuccessful).ToList();
             packages.ForEach(p => packagesInstalled.Add(p));
             var localizedHeader = (packagesInstalled.Count == 1) ? StringResourceKey.SummaryPageOneApplicationInstalled : StringResourceKey.SummaryPageAppsDownloadedCount;
             ApplicationsClonedText = StringResource.GetLocalized(localizedHeader);
@@ -151,7 +161,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     public void GoToDashboard()
     {
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("Dashboard"), Orchestrator.ActivityId);
-        _host.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName);
+        _host.GetService<INavigationService>().NavigateTo(KnownPageKeys.Dashboard);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToDashboard");
     }
 
@@ -159,7 +169,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     public void GoToDevHomeSettings()
     {
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("DevHomeSettings"), Orchestrator.ActivityId);
-        _host.GetService<INavigationService>().NavigateTo(typeof(SettingsViewModel).FullName);
+        _host.GetService<INavigationService>().NavigateTo(KnownPageKeys.Settings);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToSettings");
     }
 
@@ -188,6 +198,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _configurationUnitResults = new(GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
         _appManagementInitializer = appManagementInitializer;
+        _cloneRepoNextSteps = new();
 
         IsNavigationBarVisible = true;
         IsStepPage = false;
@@ -206,15 +217,32 @@ public partial class SummaryViewModel : SetupPageViewModelBase
             }
         }
 
-        BitmapImage statusSymbol;
-        if (_host.GetService<IThemeSelectorService>().Theme == ElementTheme.Dark)
+        // Collect all next steps.
+        var taskGroups = Orchestrator.TaskGroups;
+        foreach (var taskGroup in taskGroups)
         {
-            statusSymbol = DarkError;
+            var setupTasks = taskGroup.SetupTasks;
+            foreach (var setupTask in setupTasks)
+            {
+                if (setupTask.SummaryScreenInformation is not null &&
+                    setupTask.SummaryScreenInformation.HasContent)
+                {
+                    switch (setupTask)
+                    {
+                        case CloneRepoTask:
+                            var configResult = new CloneRepoSummaryInformationView();
+                            configResult.DataContext = setupTask.SummaryScreenInformation;
+                            _cloneRepoNextSteps.Add(configResult);
+                            break;
+                    }
+                }
+            }
         }
-        else
-        {
-            statusSymbol = LightError;
-        }
+
+        // Send telemetry about the number of next steps tasks found broken down by their type.
+        ReportSummaryTaskCounts(_cloneRepoNextSteps.Count);
+
+        var statusSymbol = _host.GetService<IThemeSelectorService>().IsDarkTheme() ? DarkError : LightError;
 
         foreach (var failedTask in failedTasks)
         {
@@ -234,12 +262,20 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         await ReloadCatalogsAsync();
     }
 
+    /// <summary>
+    /// Send telemetry about all next steps.
+    /// </summary>
+    private void ReportSummaryTaskCounts(int cloneRepoNextStepsCount)
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NextSteps_Event", LogLevel.Critical, new CloneRepoNextStepsEvent(cloneRepoNextStepsCount), Orchestrator.ActivityId);
+    }
+
     private async Task ReloadCatalogsAsync()
     {
         // After installing packages, reconnect to catalogs to
         // reflect the latest changes when new Package COM objects are created
-        Log.Logger?.ReportInfo(Log.Component.Summary, $"Checking if a new catalog connections should be established");
-        if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
+        _log.Information($"Checking if a new catalog connections should be established");
+        if (_packageProvider.SelectedPackages.Any(package => package.CanInstall && package.InstallPackageTask.WasInstallSuccessful))
         {
             await _appManagementInitializer.ReinitializeAsync();
         }

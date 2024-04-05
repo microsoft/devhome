@@ -2,37 +2,19 @@
     x:Class="DevHome.Settings.Views.PreferencesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
-    xmlns:i="using:Microsoft.Xaml.Interactivity" 
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:xaml="using:Microsoft.UI.Xaml"
-    xmlns:viewmodels="using:DevHome.Settings.ViewModels"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
     Loaded="Page_Loaded">
 
-    <behaviors:NavigationViewHeaderBehavior.HeaderTemplate>
-        <DataTemplate x:DataType="viewmodels:PreferencesViewModel">
-            <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-                <BreadcrumbBar
-                    x:Name="BreadcrumbBar"
-                    ItemsSource="{x:Bind Breadcrumbs}">
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="ItemClicked">
-                            <ic:InvokeCommandAction Command="{x:Bind BreadcrumbBarItemClickedCommand}" />
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </BreadcrumbBar>
-            </Grid>
-        </DataTemplate>
-    </behaviors:NavigationViewHeaderBehavior.HeaderTemplate>
-
-    <Grid
-        MaxWidth="{ThemeResource MaxPageContentWidth}"
-        Margin="{ThemeResource ContentPageMargin}">
-
-        <ScrollViewer VerticalAlignment="Top">
-            <ctControls:SettingsCard x:Uid="Settings_Theme">
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <ctControls:SettingsCard x:Uid="Settings_Theme"
+                                     MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <ctControls:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xE790;" />
                 </ctControls:SettingsCard.HeaderIcon>
@@ -48,6 +30,6 @@
                     </i:Interaction.Behaviors>
                 </ComboBox>
             </ctControls:SettingsCard>
-        </ScrollViewer>
-    </Grid>
+        </StackPanel>
+    </ScrollViewer>
 </Page>

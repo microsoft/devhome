@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Globalization;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace HyperVExtension.Exceptions;

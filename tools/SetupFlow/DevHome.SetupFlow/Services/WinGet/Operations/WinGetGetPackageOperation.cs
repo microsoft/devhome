@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
+using Serilog;
 
 namespace DevHome.SetupFlow.Services.WinGet.Operations;
 
@@ -15,6 +14,7 @@ namespace DevHome.SetupFlow.Services.WinGet.Operations;
 /// </summary>
 internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WinGetGetPackageOperation));
     private readonly IWinGetPackageCache _packageCache;
     private readonly IWinGetProtocolParser _protocolParser;
     private readonly IWinGetPackageFinder _packageFinder;
@@ -40,8 +40,8 @@ internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
 
         // Find packages in the cache and packages that need to be queried
         var cachedPackages = _packageCache.GetPackages(distinctPackageUris, out var packageUrisToQuery);
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Packages loaded from cache [{string.Join(", ", cachedPackages.Select(p => $"({p.Id}, {p.CatalogName})"))}]");
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Package URIs not found in cache [{string.Join(", ", packageUrisToQuery)}]");
+        _log.Information($"Packages loaded from cache [{string.Join(", ", cachedPackages.Select(p => $"({p.Id}, {p.CatalogName})"))}]");
+        _log.Information($"Package URIs not found in cache [{string.Join(", ", packageUrisToQuery)}]");
 
         // Get packages grouped by catalog
         var getPackagesTasks = new List<Task<List<IWinGetPackage>>>();
@@ -56,7 +56,7 @@ internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
                     // All parsed URIs in the group have the same catalog, resolve catalog from the first entry
                     var firstParsedUri = parsedUrisGroup.First();
                     var packageIds = parsedUrisGroup.Select(p => p.PackageId).ToHashSet();
-                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages [{string.Join(", ", packageIds)}] from parsed uri catalog name: {firstParsedUri.CatalogName}");
+                    _log.Information($"Getting packages [{string.Join(", ", packageIds)}] from parsed uri catalog name: {firstParsedUri.CatalogName}");
 
                     // Get packages from the catalog
                     var catalog = await _protocolParser.ResolveCatalogAsync(firstParsedUri);
@@ -88,7 +88,7 @@ internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
             }
             else
             {
-                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to find package URI '{packageUri}'");
+                _log.Warning($"Failed to find package URI '{packageUri}'");
             }
         }
 

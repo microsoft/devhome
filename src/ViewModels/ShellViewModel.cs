@@ -7,6 +7,7 @@ using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.Windows.AppLifecycle;
 
 namespace DevHome.ViewModels;
 
@@ -14,21 +15,16 @@ public partial class ShellViewModel : ObservableObject
 {
     private readonly ILocalSettingsService _localSettingsService;
     private readonly IAppInfoService _appInfoService;
+    private readonly IThemeSelectorService _themeSelectorService;
 
     [ObservableProperty]
     private string? _announcementText;
 
     public string Title => _appInfoService.GetAppNameLocalized();
 
-    public INavigationService NavigationService
-    {
-        get;
-    }
+    public INavigationService NavigationService { get; }
 
-    public INavigationViewService NavigationViewService
-    {
-        get;
-    }
+    public INavigationViewService NavigationViewService { get; }
 
     [ObservableProperty]
     private object? _selected;
@@ -41,26 +37,31 @@ public partial class ShellViewModel : ObservableObject
         INavigationViewService navigationViewService,
         ILocalSettingsService localSettingsService,
         IScreenReaderService screenReaderService,
-        IAppInfoService appInfoService)
+        IAppInfoService appInfoService,
+        IThemeSelectorService themeSelectorService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
         _localSettingsService = localSettingsService;
         _appInfoService = appInfoService;
+        _themeSelectorService = themeSelectorService;
 
         screenReaderService.AnnouncementTextChanged += OnAnnouncementTextChanged;
     }
 
     public async Task OnLoaded()
     {
-        if (await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun))
+        switch (AppInstance.GetCurrent().GetActivatedEventArgs().Kind)
         {
-            NavigationService.NavigateTo(NavigationService.DefaultPage);
-        }
-        else
-        {
-            NavigationService.NavigateTo(typeof(WhatsNewViewModel).FullName!);
+            case ExtendedActivationKind.File:
+                // Allow the file activation handler to navigate to the appropriate page.
+                break;
+            case ExtendedActivationKind.Launch:
+            default:
+                var isNotFirstRun = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun);
+                NavigationService.NavigateTo(isNotFirstRun ? NavigationService.DefaultPage : typeof(WhatsNewViewModel).FullName!);
+                break;
         }
     }
 
@@ -97,5 +98,10 @@ public partial class ShellViewModel : ObservableObject
 
         // Set new announcement title
         AnnouncementText = text;
+    }
+
+    internal void NotifyActualThemeChanged()
+    {
+        _themeSelectorService.SetRequestedTheme();
     }
 }

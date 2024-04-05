@@ -4,11 +4,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:models="using:DevHome.Settings.Models"
     xmlns:viewmodels="using:DevHome.Settings.ViewModels"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
+    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
     <Page.Resources>
@@ -35,26 +34,8 @@
         </DataTemplate>
     </Page.Resources>
 
-    <behaviors:NavigationViewHeaderBehavior.HeaderTemplate>
-        <DataTemplate x:DataType="viewmodels:AccountsViewModel">
-            <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-                <BreadcrumbBar
-                    x:Name="BreadcrumbBar"
-                    ItemsSource="{x:Bind Breadcrumbs}">
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="ItemClicked">
-                            <ic:InvokeCommandAction Command="{x:Bind BreadcrumbBarItemClickedCommand}" />
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </BreadcrumbBar>
-            </Grid>
-        </DataTemplate>
-    </behaviors:NavigationViewHeaderBehavior.HeaderTemplate>
-
-    <Grid
-        MaxWidth="{ThemeResource MaxPageContentWidth}"
-        Margin="{ThemeResource ContentPageMargin}">
-        <ScrollViewer VerticalAlignment="Top">
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+        <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <StackPanel>
                 <ctControls:SettingsCard x:Uid="Settings_Accounts_AddAccount">
                     <ctControls:SettingsCard.HeaderIcon>
@@ -84,6 +65,6 @@
                                HorizontalAlignment="Stretch" VerticalAlignment="Center">
                 </ItemsRepeater>
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>

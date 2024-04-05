@@ -13,24 +13,21 @@ Dev Home has a modular architecture that consists of multiple components. These 
 A more detailed look at how the projects are related:
 ```mermaid
 graph TD;
-    DevHome.Logging-->DevHome.Common;
     DevHome.Telemetry-->DevHome.Common;
-    DevHome.Common-->CoreWidgetProvider;
     DevHome.Common-->DevHome;
+    DevHome.Common-->DevHome.Customization;
     DevHome.Common-->DevHome.Dashboard;
     DevHome.Common-->DevHome.Experiments;
     DevHome.Common-->DevHome.ExtensionLibrary;
     DevHome.Common-->DevHome.Settings;
-    DevHome.Logging-->DevHome.SetupFlow.Common;
     DevHome.Telemetry-->DevHome.SetupFlow.Common;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow.ElevatedComponent;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow.ElevatedServer;
     DevHome.SetupFlow.ElevatedComponent-->DevHome.SetupFlow.ElevatedServer;
     DevHome.SetupFlow.ElevatedComponent.Projection-->DevHome.SetupFlow;
-    DevHome.Dashboard-->DevHome.SetupFlow;
-    DevHome.Settings-->DevHome.SetupFlow;
     CoreWidgetProvider-->DevHome;
+    DevHome.Customization-->DevHome;
     DevHome.Dashboard-->DevHome;
     DevHome.Experiments-->DevHome;
     DevHome.ExtensionLibrary-->DevHome;
@@ -71,6 +68,7 @@ Dev Home currently has the following tools:
 - [Dashboard](./tools.md#dashboard-tool)
 - [Setup flow](./tools.md#setup-flow-tool)
 - Extensions
+- [Windows customization](../tools/Customization/DevHome.Customization/Customization.md)
 
 ## Extensions
 

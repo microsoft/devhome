@@ -1,6 +1,6 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(2)]
+    [contractversion(4)]
     apicontract DevHomeContract {}
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -77,6 +77,30 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination, IDeveloperId developerId);
     };
 
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)] interface IRepositoryProvider2
+        requires IRepositoryProvider
+    {
+        String[] SearchFieldNames
+        {
+            get;
+        };
+
+        Boolean IsSearchingSupported
+        {
+            get;
+        };
+
+        String AskToSearchLabel
+        {
+            get;
+        };
+
+        // This should return a list of suggestions given fieldValues.
+        // "Suggestions" is dependant on the extension and how it keeps track of repositories.
+        Windows.Foundation.IAsyncOperation<IVectorView<String> > GetValuesForSearchFieldAsync(IMapView<String, String> fieldValues, String requestedSearchField, IDeveloperId developerId);
+        Windows.Foundation.IAsyncOperation<RepositoriesSearchResult> GetRepositoriesAsync(IMapView<String, String> fieldValues, IDeveloperId developerId);
+    };
+
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     runtimeclass RepositoryResult {
         RepositoryResult(IRepository repository);
@@ -101,6 +125,37 @@ namespace Microsoft.Windows.DevHome.SDK
         {
             get;
         };
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)] runtimeclass RepositoriesSearchResult {
+        RepositoriesSearchResult(IIterable<IRepository> repositories);
+        RepositoriesSearchResult(IIterable<IRepository> repositories, String selectionsOptionsLabel, String[] selectionOptions, String selectionOptionsName);
+        RepositoriesSearchResult(HRESULT e, String diagnosticText);
+
+        IIterable<IRepository> Repositories
+        {
+            get;
+        };
+
+        String SelectionOptionsLabel
+        {
+            get;
+        };
+
+        String[] SelectionOptions
+        {
+            get;
+        };
+
+        String SelectionOptionsName
+        {
+            get;
+        };
+
         ProviderOperationResult Result
         {
             get;
@@ -523,6 +578,10 @@ namespace Microsoft.Windows.DevHome.SDK
         DeleteSnapshot = 0x00000400,
         ApplyConfiguration = 0x00000800,
         ModifyProperties = 0x00001000,
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)]
+        PinToStartMenu = 0x00002000,
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)]
+        PinToTaskbar = 0x00004000,
     };
 
     // Enumeration that define a compute systems state.
@@ -651,6 +710,34 @@ namespace Microsoft.Windows.DevHome.SDK
             get;
         };
     };
+
+    // The result object returned to Dev Home when it requests to know if the Compute System is currently pinned
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)]
+    runtimeclass ComputeSystemPinnedResult
+    {
+        // Used when retrieval of the Pinned status was successful
+        ComputeSystemPinnedResult(Boolean isPinned);
+
+        // Used when retrieval of the Pinned status was unsuccessful
+        // The extension can provide Dev Home with an error message to be displayed in the UI, by providing
+        // a non-empty value for the displayMessage. diagnosticText can be used to send non-localized error
+        // information back to Dev Home
+        ComputeSystemPinnedResult(HRESULT e, String displayMessage, String diagnosticText);
+
+        // A Boolean that tells whether or not the Compute System is pinned to the Shell surface in question
+        Boolean IsPinned
+        {
+            get;
+        };
+
+        // The result of the operation. This contains the ProviderOperationStatus enum value that tells Dev Home
+        // whether the result was successful or failed. It is created based on the constructor that was used.
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
 
     // An enum value that extensions will use in the ComputeSystemProperty to tell Dev Home if the property is
     // one of the predefined properties or a custom property. Dev Home will use this value as a way to keep
@@ -881,6 +968,31 @@ namespace Microsoft.Windows.DevHome.SDK
         // via a string.
         IApplyConfigurationOperation CreateApplyConfigurationOperation(String configuration);
     };
+
+    // An interface that represents a remote machine, local VM or container. Specifically this interface
+    // allows the extension to be pinned or unpinned from the Start Menu or Taskbar, and allows the calling
+    // app to check whether or not the extension is pinned.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)] 
+    interface IComputeSystem2 requires IComputeSystem
+    {
+        // Pins the Compute System to the Start Menu
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> PinToStartMenuAsync();
+
+        // Unpins the Compute System from the Start Menu
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> UnpinFromStartMenuAsync();
+
+        // Pins the Compute System to the Taskbar
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> PinToTaskbarAsync();
+
+        // Unpins the Compute System from the Taskbar
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> UnpinFromTaskbarAsync();
+
+        // Returns whether or not the Compute System is pinned to the Start Menu
+        Windows.Foundation.IAsyncOperation<ComputeSystemPinnedResult> GetIsPinnedToStartMenuAsync();
+
+        // Returns whether or not the Compute System is pinned to the taskbar
+        Windows.Foundation.IAsyncOperation<ComputeSystemPinnedResult> GetIsPinnedToTaskbarAsync();
+    }
 
     // The current state of a configuration set.
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]

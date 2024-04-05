@@ -3,20 +3,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace DevHome.SetupFlow.TaskGroups;
 
 public class DevDriveTaskGroup : ISetupTaskGroup
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DevDriveTaskGroup));
     private readonly IHost _host;
     private readonly Lazy<DevDriveReviewViewModel> _devDriveReviewViewModel;
     private readonly ISetupFlowStringResource _stringResource;
@@ -41,12 +41,12 @@ public class DevDriveTaskGroup : ISetupTaskGroup
     {
         if (_devDriveTasks.Count != 0)
         {
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Overwriting existing dev drive task");
+            _log.Information($"Overwriting existing dev drive task");
             _devDriveTasks[0].DevDrive = devDrive;
         }
         else
         {
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Adding new dev drive task");
+            _log.Information("Adding new dev drive task");
             _devDriveTasks.Add(new CreateDevDriveTask(devDrive, _host, _host.GetService<SetupFlowOrchestrator>().ActivityId, _stringResource));
         }
     }
@@ -57,7 +57,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
     /// </summary>
     public void RemoveDevDriveTasks()
     {
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Clearing all dev drive tasks");
+        _log.Information("Clearing all dev drive tasks");
         _devDriveTasks.Clear();
     }
 
@@ -77,6 +77,8 @@ public class DevDriveTaskGroup : ISetupTaskGroup
             return _devDriveTasks;
         }
     }
+
+    public IEnumerable<ISetupTask> DSCTasks => SetupTasks;
 
     public SetupPageViewModelBase GetSetupPageViewModel() => null;
 

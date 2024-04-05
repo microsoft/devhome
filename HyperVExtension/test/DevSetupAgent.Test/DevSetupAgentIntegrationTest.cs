@@ -7,7 +7,6 @@ using HyperVExtension.HostGuestCommunication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
-using Windows.UI.Accessibility;
 
 namespace DevSetupAgent.Test;
 

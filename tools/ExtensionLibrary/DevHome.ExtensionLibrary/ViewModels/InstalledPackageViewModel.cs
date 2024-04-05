@@ -9,7 +9,6 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel;
 using Windows.System;
@@ -129,9 +128,9 @@ public partial class InstalledPackageViewModel : ObservableObject
 
     public string GeneratePackageDetails(PackageVersion version, string publisher, DateTimeOffset installedDate)
     {
-        var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.ExtensionLibrary.pri", "DevHome.ExtensionLibrary/Resources");
-        var versionLabel = resourceLoader.GetString("Version");
-        var lastUpdatedLabel = resourceLoader.GetString("LastUpdated");
+        var stringResource = new StringResource("DevHome.ExtensionLibrary.pri", "DevHome.ExtensionLibrary/Resources");
+        var versionLabel = stringResource.GetLocalized("Version");
+        var lastUpdatedLabel = stringResource.GetLocalized("LastUpdated");
 
         var versionString = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 

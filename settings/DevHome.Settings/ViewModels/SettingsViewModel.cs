@@ -3,12 +3,11 @@
 
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Settings.Models;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Settings.ViewModels;
 
@@ -21,7 +20,7 @@ public partial class SettingsViewModel : ObservableObject
 
     public SettingsViewModel()
     {
-        var stringResource = new StringResource("DevHome.Settings/Resources");
+        var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
 
         var settings = new[]
         {
@@ -41,16 +40,6 @@ public partial class SettingsViewModel : ObservableObject
         {
             new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
         };
-    }
-
-    [RelayCommand]
-    public void BreadcrumbBarItemClicked(BreadcrumbBarItemClickedEventArgs args)
-    {
-        if (args.Index < Breadcrumbs.Count - 1)
-        {
-            var crumb = (Breadcrumb)args.Item;
-            crumb.NavigateTo();
-        }
     }
 
     public void Navigate(string path)

@@ -2,18 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Helpers;
-using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.Foundation;
-using Windows.Foundation.Metadata;
+using Serilog;
 
 namespace DevHome.Common.Environments.Models;
 
@@ -24,9 +19,9 @@ namespace DevHome.Common.Environments.Models;
 /// </summary>
 public class ComputeSystemProvider
 {
-    private readonly string errorString;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemProvider));
 
-    private readonly string _componentName = "ComputeSystemProvider";
+    private readonly string errorString;
 
     private readonly IComputeSystemProvider _computeSystemProvider;
 
@@ -56,7 +51,7 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"CreateAdaptiveCardSessionWithDeveloperId for: {this} failed due to exception", ex);
+            _log.Error($"CreateAdaptiveCardSessionWithDeveloperId for: {this} failed due to exception", ex);
             return new ComputeSystemAdaptiveCardResult(ex, errorString, ex.Message);
         }
     }
@@ -69,7 +64,7 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"CreateAdaptiveCardSessionWithComputeSystem for: {this} failed due to exception", ex);
+            _log.Error($"CreateAdaptiveCardSessionWithComputeSystem for: {this} failed due to exception", ex);
             return new ComputeSystemAdaptiveCardResult(ex, errorString, ex.Message);
         }
     }
@@ -82,7 +77,7 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError(_componentName, $"GetComputeSystemsAsync for: {this} failed due to exception", ex);
+            _log.Error($"GetComputeSystemsAsync for: {this} failed due to exception", ex);
             return new ComputeSystemsResult(ex, errorString, ex.Message);
         }
     }

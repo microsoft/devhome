@@ -1,8 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using CoreWidgetProvider.Helpers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Windows.AppLifecycle;
+using Serilog;
 using Windows.ApplicationModel.Activation;
 
 namespace CoreWidgetProvider;
@@ -12,7 +13,16 @@ public sealed class Program
     [MTAThread]
     public static void Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
     {
-        Log.Logger()?.ReportInfo($"Launched with args: {string.Join(' ', args.ToArray())}");
+        // Set up Logging
+        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Helpers.Logging.LogFolderRoot, "CoreWidgets"));
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("corewidgets_appsettings.json")
+            .Build();
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+
+        Log.Information($"Launched with args: {string.Join(' ', args.ToArray())}");
 
         // Force the app to be single instanced
         // Get or register the main instance
@@ -22,9 +32,9 @@ public sealed class Program
         // If the main instance isn't this current instance
         if (!mainInstance.IsCurrent)
         {
-            Log.Logger()?.ReportInfo($"Not main instance, redirecting.");
+            Log.Information($"Not main instance, redirecting.");
             mainInstance.RedirectActivationToAsync(activationArgs).AsTask().Wait();
-
+            Log.CloseAndFlush();
             return;
         }
 
@@ -38,15 +48,15 @@ public sealed class Program
         }
         else
         {
-            Log.Logger()?.ReportWarn("Not being launched as a ComServer... exiting.");
+            Log.Warning("Not being launched as a ComServer... exiting.");
         }
 
-        Log.Logger()?.Dispose();
+        Log.CloseAndFlush();
     }
 
     private static void AppActivationRedirected(object? sender, Microsoft.Windows.AppLifecycle.AppActivationArguments activationArgs)
     {
-        Log.Logger()?.ReportInfo($"Redirected with kind: {activationArgs.Kind}");
+        Log.Information($"Redirected with kind: {activationArgs.Kind}");
 
         // Handle COM server
         if (activationArgs.Kind == ExtendedActivationKind.Launch)
@@ -56,7 +66,7 @@ public sealed class Program
 
             if (args?.Length > 0 && args[1] == "-RegisterProcessAsComServer")
             {
-                Log.Logger()?.ReportInfo($"Activation COM Registration Redirect: {string.Join(' ', args.ToList())}");
+                Log.Information($"Activation COM Registration Redirect: {string.Join(' ', args.ToList())}");
                 HandleCOMServerActivation();
             }
         }
@@ -64,7 +74,7 @@ public sealed class Program
 
     private static void HandleCOMServerActivation()
     {
-        Log.Logger()?.ReportInfo($"Activating COM Server");
+        Log.Information($"Activating COM Server");
 
         // Register and run COM server
         // This could be called by either of the COM registrations, we will do them all to avoid deadlock and bind all on the extension's lifetime.
@@ -86,6 +96,6 @@ public sealed class Program
         // This will make the main thread wait until the event is signalled by the extension class.
         // Since we have single instance of the extension object, we exit as soon as it is disposed.
         extensionDisposedEvent.WaitOne();
-        Log.Logger()?.ReportInfo($"Extension is disposed.");
+        Log.Information($"Extension is disposed.");
     }
 }

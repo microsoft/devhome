@@ -6,12 +6,11 @@ using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace DevHome.SetupFlow.TaskGroups;
 
@@ -20,6 +19,7 @@ namespace DevHome.SetupFlow.TaskGroups;
 /// </summary>
 public class RepoConfigTaskGroup : ISetupTaskGroup
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepoConfigTaskGroup));
     private readonly IHost _host;
     private readonly Lazy<RepoConfigReviewViewModel> _repoConfigReviewViewModel;
     private readonly Lazy<RepoConfigViewModel> _repoConfigViewModel;
@@ -43,6 +43,8 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     /// </summary>
     public IEnumerable<ISetupTask> SetupTasks => CloneTasks;
 
+    public IEnumerable<ISetupTask> DSCTasks => SetupTasks;
+
     /// <summary>
     /// Gets all tasks that need to be ran.
     /// </summary>
@@ -58,7 +60,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     /// <param name="cloningInformations">all repositories the user wants to clone.</param>
     public void SaveSetupTaskInformation(List<CloningInformation> cloningInformations)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Saving cloning information to task group");
+        _log.Information("Saving cloning information to task group");
         CloneTasks.Clear();
 
         List<FinalRepoResult> allAddedRepos = new();
@@ -69,11 +71,11 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
             CloneRepoTask task;
             if (cloningInformation.OwningAccount == null)
             {
-                task = new CloneRepoTask(cloningInformation.RepositoryProvider, new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, _stringResource, cloningInformation.RepositoryProviderDisplayName, _activityId);
+                task = new CloneRepoTask(cloningInformation.RepositoryProvider, new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, _stringResource, cloningInformation.RepositoryProviderDisplayName, _activityId, _host);
             }
             else
             {
-                task = new CloneRepoTask(cloningInformation.RepositoryProvider, new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.RepositoryProviderDisplayName, _activityId);
+                task = new CloneRepoTask(cloningInformation.RepositoryProvider, new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.RepositoryProviderDisplayName, _activityId, _host);
             }
 
             if (cloningInformation.CloneToDevDrive)

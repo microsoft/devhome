@@ -9,6 +9,9 @@ namespace DevHome.Contracts.Services;
 
 public interface IThemeSelectorService
 {
+    /// <summary>
+    /// Occurs when the theme has changed, either due to user selection or the system theme changing.
+    /// </summary>
     public event EventHandler<ElementTheme> ThemeChanged;
 
     ElementTheme Theme { get; }
