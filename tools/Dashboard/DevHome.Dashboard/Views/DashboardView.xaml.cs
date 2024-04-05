@@ -147,7 +147,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
                 if (isFirstDashboardRun)
                 {
-                    await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
+                    await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
                 }
 
                 await InitializePinnedWidgetListAsync(isFirstDashboardRun);
@@ -424,9 +424,8 @@ public partial class DashboardView : ToolPage, IDisposable
             catch (Exception ex)
             {
                 _log.Warning($"Creating widget failed: ", ex);
-                var mainWindow = Application.Current.GetService<WindowEx>();
                 var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-                await mainWindow.ShowErrorMessageDialogAsync(
+                await _windowEx.ShowErrorMessageDialogAsync(
                     title: string.Empty,
                     content: stringResource.GetLocalized("CouldNotCreateWidgetError"),
                     buttonText: stringResource.GetLocalized("CloseButtonText"));
