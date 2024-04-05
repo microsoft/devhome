@@ -71,6 +71,7 @@
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
                                 </ctControls:SettingsExpander.HeaderIcon>
                                 <StackPanel>
+                                    <!-- This StackPanel is a workaround for the bug https://github.com/CommunityToolkit/Windows/issues/396 -->
                                     <Button x:Uid="MoreOptionsButton"
                                             Content="&#xe712;"
                                             Height="36" Width="36"
