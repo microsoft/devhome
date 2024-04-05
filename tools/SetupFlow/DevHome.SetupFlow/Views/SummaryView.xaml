@@ -117,8 +117,10 @@
 
                 <Grid Grid.Row="2" ColumnSpacing="50" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1.77*" />
-                        <ColumnDefinition Width="*" />
+                        <!-- repos cloned/apps downloaded and next steps column -->
+                        <ColumnDefinition/>
+                        <!-- Clone repos list and apps downloaded list-->
+                        <ColumnDefinition Width="1.77*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Numbers of tasks ran and next steps.-->
@@ -272,8 +274,6 @@
                         <ContentControl Grid.Row="2" Template="{ThemeResource LinksTemplate}" />
                     </Grid>
 
-                    <!-- Next steps section -->
-                    <!--<ContentControl Grid.Column="1" Template="{ThemeResource LinksTemplate}" />-->
                     <!-- Displays the repos cloned and apps downloaded -->
                     <StackPanel Grid.Column="1" Orientation="Vertical" x:Name="TargetTasksSections">
                         <StackPanel.Resources>
