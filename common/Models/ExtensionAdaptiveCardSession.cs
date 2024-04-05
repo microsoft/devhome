@@ -65,11 +65,6 @@ public class ExtensionAdaptiveCardSession
         {
            _log.Error(_componentName, $"Dispose failed due to exception", ex);
         }
-
-        if (Session is IExtensionAdaptiveCardSession2 cardSession2)
-        {
-            cardSession2.Stopped -= OnSessionStopped;
-        }
     }
 
     public async Task<ProviderOperationResult> OnAction(string action, string inputs)

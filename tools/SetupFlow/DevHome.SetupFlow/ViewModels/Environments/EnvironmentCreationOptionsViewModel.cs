@@ -277,17 +277,18 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
 
     /// <summary>
     /// When the extension indicates that the session has stopped, we need to get the result json from the session. Once we get this
-    /// we can send a message to the EnvironmentCreationOptionsTaskGroup to let it know that the adaptive card session has ended.
+    /// we can send a message to the CreateEnvironmentTask to let it know that the adaptive card session has ended.
     /// It will then update its setup tasks with information to create the compute system.
     /// </summary>
     /// <param name="sender">The extension session object who stopped the session</param>
     /// <param name="args">Data payload that contains the users provided input</param>
     private void OnAdaptiveCardSessionStopped(ExtensionAdaptiveCardSession sender, ExtensionAdaptiveCardSessionStoppedEventArgs args)
     {
-        // Send message to the EnvironmentCreationOptionsTaskGroup to let it know that the adaptive card session has ended.
-        // the task group will use the ResultJson to create the compute system.
+        // Send message to the CreateEnvironmentTask to let it know that the adaptive card session has ended.
+        // the task will use the ResultJson to create the compute system.
         WeakReferenceMessenger.Default.Send(new CreationAdaptiveCardSessionEndedMessage(new CreationAdaptiveCardSessionEndedData(args.ResultJson, _curProviderDetails)));
         sender.Stopped -= OnAdaptiveCardSessionStopped;
+        _extensionAdaptiveCard.UiUpdate -= OnAdaptiveCardUpdated;
     }
 
     /// <summary>

@@ -20,8 +20,6 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SelectEnvironmentProviderViewModel));
 
-    private readonly WindowEx _windowEx;
-
     private readonly IComputeSystemService _computeSystemService;
 
     public ComputeSystemProviderDetails SelectedProvider { get; private set; }
@@ -38,36 +36,27 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     public SelectEnvironmentProviderViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        IComputeSystemService computeSystemService,
-        WindowEx windowEx)
+        IComputeSystemService computeSystemService)
            : base(stringResource, orchestrator)
     {
         PageTitle = stringResource.GetLocalized(StringResourceKey.SelectEnvironmentPageTitle);
         _computeSystemService = computeSystemService;
-        _windowEx = windowEx;
     }
 
-    public async Task LoadProvidersAsync()
+    private async Task LoadProvidersAsync()
     {
         AreProvidersLoaded = false;
         Orchestrator.NotifyNavigationCanExecuteChanged();
 
-        await Task.Run(async () =>
+        var providerDetails = await Task.Run(_computeSystemService.GetComputeSystemProvidersAsync);
+
+        ProvidersViewModels = new();
+        foreach (var providerDetail in providerDetails)
         {
-            var providerDetails = await _computeSystemService.GetComputeSystemProvidersAsync();
+            ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
+        }
 
-            _windowEx.DispatcherQueue.TryEnqueue(() =>
-            {
-                ProvidersViewModels = new();
-
-                foreach (var providerDetail in providerDetails)
-                {
-                    ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
-                }
-
-                AreProvidersLoaded = true;
-            });
-        });
+        AreProvidersLoaded = true;
     }
 
     protected async override Task OnFirstNavigateToAsync()
@@ -77,7 +66,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand]
-    public void ItemsViewSelectionChanged(ComputeSystemProviderViewModel sender)
+    private void ItemsViewSelectionChanged(ComputeSystemProviderViewModel sender)
     {
         if (sender != null)
         {

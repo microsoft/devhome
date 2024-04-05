@@ -40,7 +40,6 @@
               "type": "TextBlock",
               "text": "${NameOfNewVM}",
               "wrap": true,
-              "isSubtle": true,
               "size": "medium"
             }
           ]
@@ -72,26 +71,6 @@
             {
               "type": "TextBlock",
               "text": "${Publisher}",
-              "wrap": true,
-              "isSubtle": true,
-              "size": "medium"
-            }
-          ]
-        },
-        {
-          "type": "Column",
-          "width": "auto",
-          "spacing": "extraLarge",
-          "items": [
-            {
-              "type": "TextBlock",
-              "text": "${NameLabel}",
-              "wrap": true,
-              "size": "medium"
-            },
-            {
-              "type": "TextBlock",
-              "text": "${NameOfNewVM}",
               "wrap": true,
               "isSubtle": true,
               "size": "medium"

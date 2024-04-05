@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using DevHome.Common;
 using HyperVExtension.Common;
 using HyperVExtension.Helpers;
 using HyperVExtension.Models;
