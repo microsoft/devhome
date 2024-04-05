@@ -111,6 +111,7 @@
                     <muxc:ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="models:WhatsNewCard">
                             <Grid
+                                AutomationProperties.Name="{x:Bind Title}"
                                 HorizontalAlignment="Stretch"
                                 Padding="15 15"
                                 CornerRadius="{ThemeResource ControlCornerRadius}"
@@ -235,6 +236,7 @@
                         <DataTemplate 
                             x:DataType="models:WhatsNewCard">
                             <Grid
+                                AutomationProperties.Name="{x:Bind Title}"
                                 HorizontalAlignment="Stretch"
                                 Padding="15 15"
                                 CornerRadius="{ThemeResource ControlCornerRadius}"
