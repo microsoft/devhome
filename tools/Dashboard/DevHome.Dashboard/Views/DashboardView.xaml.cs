@@ -23,7 +23,6 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
@@ -563,13 +562,10 @@ public partial class DashboardView : ToolPage, IDisposable
                 await widgetToRemove.Widget.DeleteAsync();
             }
         });
-
-        ViewModel.WidgetIconService.RemoveIconsFromCache(definitionId);
-        ViewModel.WidgetScreenshotService.RemoveScreenshotsFromCache(definitionId);
     }
 
     // If a widget is removed from the list, update the saved positions of the following widgets.
-    // If not updated, widges pinned later may be assigned the same position as existing widgets,
+    // If not updated, widgets pinned later may be assigned the same position as existing widgets,
     // since the saved position may be greater than the number of pinned widgets.
     // Unsubscribe from this event during drag and drop, since the drop event takes care of re-numbering.
     private async void OnPinnedWidgetsCollectionChangedAsync(object sender, NotifyCollectionChangedEventArgs e)

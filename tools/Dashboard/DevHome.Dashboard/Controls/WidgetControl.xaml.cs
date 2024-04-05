@@ -239,12 +239,12 @@ public sealed partial class WidgetControl : UserControl
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
         WidgetHeaderIcon.Fill = await Application.Current.GetService<IWidgetIconService>()
-            .GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
+            .GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition);
     }
 
     private async void UpdateWidgetHeaderIconFillAsync()
     {
         WidgetHeaderIcon.Fill = await Application.Current.GetService<IWidgetIconService>()
-            .GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
+            .GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition);
     }
 }

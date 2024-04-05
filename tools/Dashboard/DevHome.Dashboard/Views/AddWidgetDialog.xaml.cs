@@ -130,7 +130,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task<StackPanel> BuildWidgetNavItem(WidgetDefinition widgetDefinition)
     {
-        var image = await _widgetIconService.GetIconFromCacheAsync(widgetDefinition, ActualTheme);
+        var image = await _widgetIconService.GetWidgetIconAsync(widgetDefinition);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
     }
 
@@ -243,7 +243,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             {
                 if (widgetItem.Tag is WidgetDefinition widgetDefinition)
                 {
-                    var image = await _widgetIconService.GetIconFromCacheAsync(widgetDefinition, ActualTheme);
+                    var image = await _widgetIconService.GetWidgetIconAsync(widgetDefinition);
                     widgetItem.Content = BuildNavItem(image, widgetDefinition.DisplayTitle);
                 }
             }
