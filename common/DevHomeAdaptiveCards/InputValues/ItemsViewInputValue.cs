@@ -45,7 +45,7 @@ public class ItemsViewInputValue : IAdaptiveInputValue
             return true;
         }
 
-        if (_itemsView.SelectedItem == null || _itemsView.CurrentItemIndex < 0)
+        if ((_itemsView.SelectedItem == null) || (_itemsView.CurrentItemIndex < 0))
         {
             var errorMessage = StringResourceHelper.GetResource("ItemsViewNonSelectedItemError");
             ErrorMessage = new TextBlock();
