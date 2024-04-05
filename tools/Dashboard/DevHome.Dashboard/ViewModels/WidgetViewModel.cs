@@ -42,7 +42,6 @@ public partial class WidgetViewModel : ObservableObject
 
     private readonly WindowEx _windowEx;
     private readonly WidgetAdaptiveCardRenderingService _renderingService;
-    private readonly IScreenReaderService _screenReaderService;
 
     private RenderedAdaptiveCard _renderedCard;
 
@@ -99,11 +98,9 @@ public partial class WidgetViewModel : ObservableObject
         WidgetSize widgetSize,
         WidgetDefinition widgetDefinition,
         WidgetAdaptiveCardRenderingService adaptiveCardRenderingService,
-        IScreenReaderService screenReaderService,
         WindowEx windowEx)
     {
         _renderingService = adaptiveCardRenderingService;
-        _screenReaderService = screenReaderService;
         _windowEx = windowEx;
 
         Widget = widget;
@@ -330,12 +327,6 @@ public partial class WidgetViewModel : ObservableObject
 
         // TODO: Handle other ActionTypes
         // https://github.com/microsoft/devhome/issues/644
-    }
-
-    public void AnnounceDeleted()
-    {
-        var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-        _screenReaderService.Announce(stringResource.GetLocalized("WidgetRemoved"));
     }
 
     private async void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
