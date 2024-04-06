@@ -12,7 +12,7 @@ namespace HyperVExtension.Models;
 /// <summary>
 /// Represents progress of an operation that require transferring bytes from one place to another.
 /// </summary>
-public class ProgressObject
+public class ByteTransferProgress
 {
     public long BytesReceived { get; set; }
 
@@ -20,7 +20,7 @@ public class ProgressObject
 
     public uint PercentageComplete => (uint)((BytesReceived / (double)TotalBytesToReceive) * 100);
 
-    public ProgressObject(long bytesReceived, long totalBytesToReceive)
+    public ByteTransferProgress(long bytesReceived, long totalBytesToReceive)
     {
         BytesReceived = bytesReceived;
         TotalBytesToReceive = totalBytesToReceive;

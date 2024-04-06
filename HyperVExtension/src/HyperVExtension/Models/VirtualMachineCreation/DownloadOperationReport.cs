@@ -9,9 +9,9 @@ public class DownloadOperationReport : IOperationReport
 
     public string LocalizationKey => "DownloadInProgress";
 
-    public ProgressObject ProgressObject { get; private set; }
+    public ByteTransferProgress ProgressObject { get; private set; }
 
-    public DownloadOperationReport(ProgressObject progressObj)
+    public DownloadOperationReport(ByteTransferProgress progressObj)
     {
         ProgressObject = progressObj;
     }

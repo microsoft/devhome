@@ -14,9 +14,9 @@ public sealed class ArchiveExtractionReport : IOperationReport
 
     public string LocalizationKey => "ExtractionInProgress";
 
-    public ProgressObject ProgressObject { get; private set; }
+    public ByteTransferProgress ProgressObject { get; private set; }
 
-    public ArchiveExtractionReport(ProgressObject progressObj)
+    public ArchiveExtractionReport(ByteTransferProgress progressObj)
     {
         ProgressObject = progressObj;
     }

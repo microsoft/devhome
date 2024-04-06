@@ -27,6 +27,11 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
 
     private readonly StringResource _stringResource;
 
+    /// <summary>
+    /// This glyph can be found in the Fluent UI MDL2 Assets font that ships with Windows.
+    /// Check the Win UI 3 gallery gallery for the viual representation of the glyph. It is
+    /// the trash can icon.
+    /// </summary>
     private readonly string _cancelationUniCodeForGlyph = "\uE74D";
 
     public string EnvironmentName => Operation.EnvironmentName;

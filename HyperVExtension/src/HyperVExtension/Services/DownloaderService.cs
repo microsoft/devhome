@@ -33,7 +33,7 @@ public class DownloaderService : IDownloaderService
         using var outputFileStream = File.OpenWrite(destinationFile);
         outputFileStream.SetLength(totalBytesToReceive);
 
-        var downloadProgress = new Progress<ProgressObject>(progressObj =>
+        var downloadProgress = new Progress<ByteTransferProgress>(progressObj =>
         {
             progressProvider.Report(new DownloadOperationReport(progressObj));
         });

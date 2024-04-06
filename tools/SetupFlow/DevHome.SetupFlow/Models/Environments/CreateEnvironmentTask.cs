@@ -51,6 +51,8 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
 
     public DeveloperIdWrapper DeveloperIdWrapper { get; set; }
 
+    // The "#pragma warning disable 67" directive suppresses the CS0067 warning.
+    // CS0067 is a warning that occurs when a public event is declared but never used.
 #pragma warning disable 67
     public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
 #pragma warning restore 67

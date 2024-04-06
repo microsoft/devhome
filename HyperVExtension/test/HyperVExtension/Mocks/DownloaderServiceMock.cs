@@ -30,7 +30,7 @@ public class DownloaderServiceMock : IDownloaderService
         {
             await Task.Delay(100, cancellationToken);
             bytesReceivedSoFar += _bytesReceivedEachIteration;
-            progressProvider.Report(new DownloadOperationReport(new ProgressObject(bytesReceivedSoFar, _totalBytesToReceive)));
+            progressProvider.Report(new DownloadOperationReport(new ByteTransferProgress(bytesReceivedSoFar, _totalBytesToReceive)));
         }
 
         var zipFile = await GetTestZipFileInPackage();

@@ -28,7 +28,7 @@ public sealed class DotNetZipArchiveProvider : IArchiveProvider
         using var outputFileStream = File.OpenWrite(destinationAbsoluteFilePath);
         using var zipArchiveEntryStream = zipArchiveEntry.Open();
 
-        var fileExtractionProgress = new Progress<ProgressObject>(progressObj =>
+        var fileExtractionProgress = new Progress<ByteTransferProgress>(progressObj =>
         {
             progressProvider.Report(new ArchiveExtractionReport(progressObj));
         });

@@ -20,8 +20,6 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SelectEnvironmentProviderViewModel));
 
-    private readonly WindowEx _windowEx;
-
     private readonly IComputeSystemService _computeSystemService;
 
     public ComputeSystemProviderDetails SelectedProvider { get; private set; }
@@ -43,7 +41,6 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     {
         PageTitle = stringResource.GetLocalized(StringResourceKey.SelectEnvironmentPageTitle);
         _computeSystemService = computeSystemService;
-        _windowEx = windowEx;
     }
 
     private async Task LoadProvidersAsync()

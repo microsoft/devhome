@@ -15,5 +15,5 @@ public interface IOperationReport
 
     public string LocalizationKey { get; }
 
-    public ProgressObject ProgressObject { get; }
+    public ByteTransferProgress ProgressObject { get; }
 }

@@ -135,8 +135,11 @@ public partial class SetupFlowViewModel : ObservableObject
         // pages. Instead we need to navigate to the main page and then start the creation flow template manually.
         var parameter = args.Parameter?.ToString();
 
-        if (!string.IsNullOrEmpty(parameter) && _creationFlowNavigationParameter.Equals(parameter, StringComparison.OrdinalIgnoreCase))
+        if ((!string.IsNullOrEmpty(parameter)) &&
+            _creationFlowNavigationParameter.Equals(parameter, StringComparison.OrdinalIgnoreCase) &&
+            Orchestrator.CurrentSetupFlowKind != SetupFlowKind.CreateEnvironment)
         {
+            Cancel();
             StartCreationFlowAsync();
         }
     }
