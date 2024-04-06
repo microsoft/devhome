@@ -29,7 +29,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
 
     /// <summary>
     /// This glyph can be found in the Fluent UI MDL2 Assets font that ships with Windows.
-    /// Check the Win UI 3 gallery gallery for the viual representation of the glyph. It is
+    /// Check the Win UI 3 gallery for the visual representation of the glyph. It is
     /// the trash can icon.
     /// </summary>
     private readonly string _cancelationUniCodeForGlyph = "\uE74D";
