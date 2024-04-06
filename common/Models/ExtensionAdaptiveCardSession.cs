@@ -54,16 +54,16 @@ public class ExtensionAdaptiveCardSession
     {
         try
         {
+            if (Session is IExtensionAdaptiveCardSession2 cardSession2)
+            {
+                cardSession2.Stopped -= OnSessionStopped;
+            }
+
             Session.Dispose();
         }
         catch (Exception ex)
         {
            _log.Error(_componentName, $"Dispose failed due to exception", ex);
-        }
-
-        if (Session is IExtensionAdaptiveCardSession2 cardSession2)
-        {
-            cardSession2.Stopped -= OnSessionStopped;
         }
     }
 

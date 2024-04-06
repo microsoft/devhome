@@ -13,15 +13,13 @@ Dev Home has a modular architecture that consists of multiple components. These 
 A more detailed look at how the projects are related:
 ```mermaid
 graph TD;
-    DevHome.Logging-->DevHome.Common;
     DevHome.Telemetry-->DevHome.Common;
-    DevHome.Common-->CoreWidgetProvider;
     DevHome.Common-->DevHome;
+    DevHome.Common-->DevHome.Customization;
     DevHome.Common-->DevHome.Dashboard;
     DevHome.Common-->DevHome.Experiments;
     DevHome.Common-->DevHome.ExtensionLibrary;
     DevHome.Common-->DevHome.Settings;
-    DevHome.Logging-->DevHome.SetupFlow.Common;
     DevHome.Telemetry-->DevHome.SetupFlow.Common;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow.ElevatedComponent;
@@ -29,6 +27,7 @@ graph TD;
     DevHome.SetupFlow.ElevatedComponent-->DevHome.SetupFlow.ElevatedServer;
     DevHome.SetupFlow.ElevatedComponent.Projection-->DevHome.SetupFlow;
     CoreWidgetProvider-->DevHome;
+    DevHome.Customization-->DevHome;
     DevHome.Dashboard-->DevHome;
     DevHome.Experiments-->DevHome;
     DevHome.ExtensionLibrary-->DevHome;

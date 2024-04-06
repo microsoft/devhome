@@ -21,7 +21,7 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
     {
         this.InitializeComponent();
 
-        // Since we'll use the renderer service so the card recieves theming updates, we need to ensure the UI thread is used.
+        // Since we use the renderer service to allow the card to receive theming updates, we need to ensure the UI thread is used.
         var dispatcherQueue = Application.Current.GetService<WindowEx>().DispatcherQueue;
         dispatcherQueue.TryEnqueue(async () =>
         {

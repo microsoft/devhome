@@ -158,16 +158,16 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             foreach (var image in _vMGalleryImageList.Images)
             {
                 var dataJson = new JsonObject
-            {
-                { "ImageDescription", GetMergedDescription(image) },
-                { "SubDescription", image.Publisher },
-                { "Header", image.Name },
-                { "HeaderIcon", image.Symbol.Base64Image },
-                { "ActionButtonText", "More info" },
-                { "ContentDialogInfo", SetupContentDialogInfo(image) },
-                { "ButtonToLaunchContentDialogLabel", buttonToLaunchContentDialogLabel },
-                { "SecondaryButtonForContentDialogText", secondaryButtonForContentDialogText },
-            };
+                {
+                    { "ImageDescription", GetMergedDescription(image) },
+                    { "SubDescription", image.Publisher },
+                    { "Header", image.Name },
+                    { "HeaderIcon", image.Symbol.Base64Image },
+                    { "ActionButtonText", "More info" },
+                    { "ContentDialogInfo", SetupContentDialogInfo(image) },
+                    { "ButtonToLaunchContentDialogLabel", buttonToLaunchContentDialogLabel },
+                    { "SecondaryButtonForContentDialogText", secondaryButtonForContentDialogText },
+                };
 
                 jsonArrayOfGalleryImages.Add(dataJson);
             }

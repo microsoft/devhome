@@ -41,6 +41,8 @@ public class EnvironmentCreationOptionsTaskGroup : ISetupTaskGroup
 
     public IEnumerable<ISetupTask> SetupTasks => new List<ISetupTask>() { CreateEnvironmentTask };
 
+    public IEnumerable<ISetupTask> DSCTasks => new List<ISetupTask>();
+
     public SetupPageViewModelBase GetSetupPageViewModel() => _environmentCreationOptionsViewModel;
 
     public ReviewTabViewModelBase GetReviewTabViewModel() => _createEnvironmentReviewViewModel;

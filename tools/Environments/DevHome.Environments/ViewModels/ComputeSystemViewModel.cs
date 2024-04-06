@@ -9,10 +9,13 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
+using DevHome.Common.Extensions;
 using DevHome.Environments.Helpers;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -24,7 +27,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly WindowEx _windowEx;
 
     private readonly IComputeSystemManager _computeSystemManager;
 
@@ -37,9 +40,14 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
 
     public string PackageFullName { get; set; }
 
-    public ComputeSystemViewModel(IComputeSystemManager manager, IComputeSystem system, ComputeSystemProvider provider, string packageFullName)
+    public ComputeSystemViewModel(
+        IComputeSystemManager manager,
+        IComputeSystem system,
+        ComputeSystemProvider provider,
+        string packageFullName,
+        WindowEx windowEx)
     {
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _windowEx = windowEx;
         _computeSystemManager = manager;
 
         ComputeSystem = new(system);
@@ -93,7 +101,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
 
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
     {
-        _dispatcher.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             if (sender.Id == ComputeSystem!.Id)
             {

@@ -79,9 +79,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         NotificationService notificationService,
         WindowEx windowEx)
     {
+        _computeSystemManager = manager;
         _extensionsService = extensionsService;
         _notificationService = notificationService;
-        _computeSystemManager = manager;
         _windowEx = windowEx;
         _navigationService = navigationService;
 
@@ -283,7 +283,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 for (var i = 0; i < computeSystemList.Count; i++)
                 {
                     var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
-                    var computeSystemViewModel = new ComputeSystemViewModel(_computeSystemManager, computeSystemList.ElementAt(i), provider, packageFullName);
+                    var computeSystemViewModel = new ComputeSystemViewModel(
+                        _computeSystemManager,
+                        computeSystemList.ElementAt(i),
+                        provider,
+                        packageFullName,
+                        _windowEx);
                     await computeSystemViewModel.InitializeCardDataAsync();
 
                     ComputeSystemCards.Add(computeSystemViewModel);

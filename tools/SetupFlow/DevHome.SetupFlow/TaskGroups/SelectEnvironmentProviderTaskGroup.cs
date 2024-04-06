@@ -24,6 +24,9 @@ public class SelectEnvironmentProviderTaskGroup : ISetupTaskGroup
     // No setup tasks needed for this task group.
     public IEnumerable<ISetupTask> SetupTasks => new List<ISetupTask>();
 
+    // No dsc tasks needed for this task group.
+    public IEnumerable<ISetupTask> DSCTasks => new List<ISetupTask>();
+
     public SetupPageViewModelBase GetSetupPageViewModel() => _selectEnvironmentProviderViewModel;
 
     // Review tab not needed for this task group.

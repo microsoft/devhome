@@ -134,7 +134,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
     {
         var directoryPath = DirectoryPathTextBox;
 
-        if (directoryPath != null)
+        if (!string.IsNullOrEmpty(directoryPath))
         {
             // Handle the selected folder
             // TODO: If chosen folder not a dev drive location, currently we no-op. Instead we should display the error.

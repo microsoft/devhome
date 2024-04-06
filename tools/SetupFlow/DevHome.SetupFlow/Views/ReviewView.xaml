@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation.. -->
+﻿<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <UserControl
@@ -64,8 +64,31 @@
                           IsExpanded="true"
                           MinHeight="64" CornerRadius="4" Padding="24,0,24,7" >
                     <Expander.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
-                                   Text="{x:Bind ViewModel.ReviewPageExpanderDescription, Mode=OneWay}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock VerticalAlignment="Center"
+                                       Style="{StaticResource BodyStrongTextBlockStyle}" 
+                                       Text="{x:Bind ViewModel.ReviewPageExpanderDescription, Mode=OneWay}" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                                <Button Command="{x:Bind ViewModel.DownloadConfigurationCommand}"
+                                        x:Uid="Review_GenerateConfigurationFileButton"/>
+                                <!-- Info icon -->
+                                <TextBlock Text="&#xE946;"
+                                           FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                           VerticalAlignment="Center">
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip>
+                                            <TextBlock TextWrapping="WrapWholeWords"
+                                                       x:Uid="Review_DownloadFileTooltip"/>
+                                        </ToolTip>
+                                    </ToolTipService.ToolTip>
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
                     </Expander.Header>
                     <Expander.Content>
                         <Grid MinHeight="266">
