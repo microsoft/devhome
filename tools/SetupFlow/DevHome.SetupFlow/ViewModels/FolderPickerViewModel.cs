@@ -5,13 +5,11 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using Serilog;
-using Windows.Storage.Pickers;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
