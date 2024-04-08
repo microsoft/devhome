@@ -164,6 +164,24 @@
 
                     <StackPanel Spacing="{StaticResource SettingsCardSpacing}" AutomationProperties.Name="{x:Bind ViewModel.MainPageQuickStepsGroupName}">
                         <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
+
+                        <!-- settings card for creating an environment -->
+                        <ctControls:SettingsCard 
+                           Visibility="{x:Bind ViewModel.ShouldShowCreateEnvironmentItem}"
+                           x:Uid="MainPageCreateEnvironment"
+                           AutomationProperties.AutomationId="CreateEnvironment"
+                           IsClickEnabled="True"
+                           Command="{x:Bind ViewModel.StartCreateEnvironmentCommand}"
+                           CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                           ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                           AutomationProperties.AccessibilityView="Control"
+                           ActionIcon="{x:Null}" >
+                            <ctControls:SettingsCard.HeaderIcon>
+                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/CreateVirtualEnvironment.png" />
+                            </ctControls:SettingsCard.HeaderIcon>
+                        </ctControls:SettingsCard>
+
+                        <!-- settings card for cloning repositories -->
                         <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos"
                                            AutomationProperties.AutomationId="CloneRepoButton"
                                            IsClickEnabled="True"

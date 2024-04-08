@@ -706,7 +706,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         var extensions = extensionWrappers.Where(
             extension => extension.HasProviderType(ProviderType.Repository) &&
-            extension.HasProviderType(ProviderType.DeveloperId)).OrderBy(extensionWrapper => extensionWrapper.Name);
+            extension.HasProviderType(ProviderType.DeveloperId)).OrderBy(extensionWrapper => extensionWrapper.ExtensionDisplayName);
 
         _providers = new RepositoryProviders(extensions);
 

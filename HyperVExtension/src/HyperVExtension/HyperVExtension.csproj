@@ -19,7 +19,14 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
+  <ItemGroup>
+    <Content Include="Templates\InitialVMGalleryCreationForm.json">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
+	<Content Include="Templates\ReviewFormForVMGallery.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MessageFormat" Version="6.0.2" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />

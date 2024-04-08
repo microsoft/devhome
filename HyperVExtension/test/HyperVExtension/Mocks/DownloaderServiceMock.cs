@@ -56,4 +56,10 @@ public class DownloaderServiceMock : IDownloaderService
         var httpClient = _httpClientFactory.CreateClient();
         return await httpClient.GetByteArrayAsync(sourceWebUri, cancellationToken);
     }
+
+    public async Task<long> GetHeaderContentLength(Uri sourceWebUri, CancellationToken cancellationToken)
+    {
+        await Task.Delay(1, cancellationToken);
+        return 100L;
+    }
 }

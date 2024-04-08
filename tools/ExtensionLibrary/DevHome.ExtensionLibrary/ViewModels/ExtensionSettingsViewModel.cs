@@ -46,7 +46,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
             if ((_navigationService.LastParameterUsed != null) &&
                 ((string)_navigationService.LastParameterUsed == extensionWrapper.ExtensionUniqueId))
             {
-                FillBreadcrumbBar(extensionWrapper.Name);
+                FillBreadcrumbBar(extensionWrapper.ExtensionDisplayName);
 
                 var settingsProvider = Task.Run(() => extensionWrapper.GetProviderAsync<ISettingsProvider>()).Result;
                 if (settingsProvider != null)

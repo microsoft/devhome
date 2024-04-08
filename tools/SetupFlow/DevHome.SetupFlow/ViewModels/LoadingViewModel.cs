@@ -150,7 +150,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [RelayCommand]
     public async Task RestartFailedTasksAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().LogCritical("Loading_RestartFailedTasks_Event");
+        TelemetryFactory.Get<ITelemetry>().Log("Loading_RestartFailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count), _activityId);
         _log.Information("Restarting all failed tasks");
 
         // Keep the number of successful tasks and needs attention tasks the same.
