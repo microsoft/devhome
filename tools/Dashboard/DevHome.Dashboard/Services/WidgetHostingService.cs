@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 
@@ -15,15 +16,14 @@ public class WidgetHostingService : IWidgetHostingService
     private WidgetHost _widgetHost;
     private WidgetCatalog _widgetCatalog;
 
-    public async Task<WidgetHost> GetWidgetHostAsync()
+    public async Task<Widget[]> GetWidgetsAsync()
     {
         // If we already have a WidgetHost, check if the COM object is still alive and use it if it is.
         if (_widgetHost != null)
         {
             try
             {
-                await Task.Run(() => _widgetHost.GetWidgets());
-                return _widgetHost;
+                return await Task.Run(() => _widgetHost.GetWidgets());
             }
             catch (Exception ex)
             {
@@ -37,14 +37,47 @@ public class WidgetHostingService : IWidgetHostingService
             try
             {
                 _widgetHost = await Task.Run(() => WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031")));
+                return await Task.Run(() => _widgetHost.GetWidgets());
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Exception in WidgetHost.Register:");
+                _log.Error(ex, "Exception getting widgets from service:");
             }
         }
 
-        return _widgetHost;
+        return [];
+    }
+
+    public async Task<Widget> CreateWidgetAsync(string widgetDefinitionId, WidgetSize widgetSize)
+    {
+        // If we already have a WidgetHost, check if the COM object is still alive and use it if it is.
+        if (_widgetHost != null)
+        {
+            try
+            {
+                return await Task.Run(async () => await _widgetHost.CreateWidgetAsync(widgetDefinitionId, widgetSize));
+            }
+            catch (Exception ex)
+            {
+                _log.Warning(ex, "Exception trying to use WidgetHost");
+                _widgetHost = null;
+            }
+        }
+
+        if (_widgetHost == null)
+        {
+            try
+            {
+                _widgetHost = await Task.Run(() => WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031")));
+                return await Task.Run(async () => await _widgetHost.CreateWidgetAsync(widgetDefinitionId, widgetSize));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception getting widgets from service:");
+            }
+        }
+
+        return null;
     }
 
     public async Task<WidgetCatalog> GetWidgetCatalogAsync()

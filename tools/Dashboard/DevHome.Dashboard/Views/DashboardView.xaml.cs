@@ -199,8 +199,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private async Task<Widget[]> GetPreviouslyPinnedWidgets()
     {
         _log.Information("Get widgets for current host");
-        var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
-        var hostWidgets = await Task.Run(() => widgetHost?.GetWidgets());
+        var hostWidgets = await ViewModel.WidgetHostingService.GetWidgetsAsync();
 
         if (hostWidgets == null)
         {
@@ -315,15 +314,14 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private async Task DeleteAbandonedWidgetAsync(Widget widget)
     {
-        var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
-
-        var length = await Task.Run(() => widgetHost!.GetWidgets().Length);
+        var widgetList = await ViewModel.WidgetHostingService.GetWidgetsAsync();
+        var length = await Task.Run(() => widgetList.Length);
         _log.Information($"Found abandoned widget, try to delete it...");
         _log.Information($"Before delete, {length} widgets for this host");
 
         await widget.DeleteAsync();
 
-        var newWidgetList = await Task.Run(() => widgetHost.GetWidgets());
+        var newWidgetList = await ViewModel.WidgetHostingService.GetWidgetsAsync();
         length = (newWidgetList == null) ? 0 : newWidgetList.Length;
         _log.Information($"After delete, {length} widgets for this host");
     }
@@ -355,10 +353,9 @@ public partial class DashboardView : ToolPage, IDisposable
         try
         {
             // Create widget
-            var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
             var size = WidgetHelpers.GetDefaultWidgetSize(defaultWidgetDefinition.GetWidgetCapabilities());
             var id = defaultWidgetDefinition.Id;
-            var newWidget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(id, size));
+            var newWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(id, size);
             _log.Information($"Created default widget {id}");
 
             // Set custom state on new widget.
@@ -409,8 +406,7 @@ public partial class DashboardView : ToolPage, IDisposable
             try
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(newWidgetDefinition.GetWidgetCapabilities());
-                var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
-                newWidget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(newWidgetDefinition.Id, size));
+                newWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(newWidgetDefinition.Id, size);
 
                 // Set custom state on new widget.
                 var position = PinnedWidgets.Count;

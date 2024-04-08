@@ -64,9 +64,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
         AddWidgetNavigationView.MenuItems.Clear();
 
         var catalog = await _hostingService.GetWidgetCatalogAsync();
-        var host = await _hostingService.GetWidgetHostAsync();
 
-        if (catalog is null || host is null)
+        if (catalog is null)
         {
             // We should never have gotten here if we don't have a WidgetCatalog.
             _log.Error($"Opened the AddWidgetDialog, but WidgetCatalog is null.");
@@ -82,7 +81,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
-        var currentlyPinnedWidgets = await Task.Run(() => host.GetWidgets());
+        var currentlyPinnedWidgets = await _hostingService.GetWidgetsAsync();
         foreach (var providerDef in providerDefinitions)
         {
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
