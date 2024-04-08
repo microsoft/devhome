@@ -62,7 +62,7 @@
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.InstalledPackagesList, Mode=OneWay}">
                     <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:InstalledPackageViewModel">
-                            <ctControls:SettingsExpander Header="{x:Bind Title}"
+                            <ctControls:SettingsExpander Header="{x:Bind DisplayName}"
                                                    Description="{x:Bind GeneratePackageDetails(Version,Publisher , InstalledDate), Mode=OneWay}"
                                                    Margin="{ThemeResource SettingsCardMargin}"
                                                    ItemsSource="{x:Bind InstalledExtensionsList}"
@@ -90,7 +90,7 @@
                                 </StackPanel>
                                 <ctControls:SettingsExpander.ItemTemplate>
                                     <DataTemplate x:DataType="viewmodels:InstalledExtensionViewModel">
-                                        <ctControls:SettingsCard x:Uid="ManageExtensionCard"
+                                        <ctControls:SettingsCard Header="{x:Bind DisplayName}"
                                                            CornerRadius="0,0,3,3"
                                                            IsClickEnabled="{x:Bind HasSettingsProvider}"
                                                            Command="{x:Bind NavigateSettingsCommand}">
