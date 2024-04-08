@@ -253,4 +253,8 @@
     <value>Dashboard</value>
     <comment>Dashboard accessible name to be narrated</comment>
   </data>
+  <data name="WidgetRemoved" xml:space="preserve">
+    <value>Widget removed</value>
+    <comment>This is said by narrator whenever a widget is removed</comment>
+  </data>
 </root>
