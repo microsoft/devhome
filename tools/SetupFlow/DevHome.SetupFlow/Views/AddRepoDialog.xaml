@@ -61,9 +61,14 @@
             <TextBox x:Name="RepoUrlTextBox"
                      x:Uid="RepoUrl"
                      Visibility="{x:Bind AddRepoViewModel.ShowUrlPage, Mode=OneWay}"
-                     TextChanged="RepoUrlTextBox_TextChanged"
                      Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}"
-                     Margin="0, 20, 0, 0"/>
+                     Margin="0, 20, 0, 0">
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="TextChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.SaveRepoUrlCommand}" CommandParameter="{x:Bind RepoUrlTextBox.Text, Mode=OneWay}"/>
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </TextBox>
             <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.UrlParsingError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlError, Mode=OneWay}"/>
 
             <!-- Log into account -->
