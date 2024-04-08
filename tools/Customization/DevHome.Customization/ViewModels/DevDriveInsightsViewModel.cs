@@ -53,9 +53,19 @@ public partial class DevDriveInsightsViewModel : ObservableObject
 
     private IEnumerable<IDevDrive> ExistingDevDrives { get; set; } = Enumerable.Empty<IDevDrive>();
 
+    private static readonly string _appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
     private static readonly string _localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
     private static readonly string _userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+    private const string ExampleDevDriveDirStr = "D:";
+
+    private const string PackagesStr = "packages";
+
+    private const string CacheStr = "cache";
+
+    private const string ArchivesStr = "archives";
 
     public DevDriveInsightsViewModel(IDevDriveManager devDriveManager, OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory)
     {
@@ -251,17 +261,60 @@ public partial class DevDriveInsightsViewModel : ObservableObject
             EnvironmentVariable = "PIP_CACHE_DIR",
             CacheDirectory = new List<string>
             {
-                Path.Join(_localAppDataPath, "pip", "cache"),
-                Path.Join(_localAppDataPath, "packages", "PythonSoftwareFoundation.Python"),
+                Path.Join(_localAppDataPath, "pip", CacheStr),
+                Path.Join(_localAppDataPath, PackagesStr, "PythonSoftwareFoundation.Python"),
             },
-            ExampleDirectory = Path.Join("D:", "packages", "pip", "cache"),
+            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "pip", CacheStr),
         },
         new DevDriveCacheData
         {
             CacheName = "NuGet cache (dotnet)",
             EnvironmentVariable = "NUGET_PACKAGES",
-            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".nuget", "packages") },
-            ExampleDirectory = Path.Join("D:", "packages", "NuGet", "Cache"),
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".nuget", PackagesStr) },
+            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "NuGet", CacheStr),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Npm cache (NodeJS)",
+            EnvironmentVariable = "NPM_CONFIG_CACHE",
+            CacheDirectory = new List<string>
+            {
+                Path.Join(_appDataPath, "npm-cache"),
+                Path.Join(_localAppDataPath, "npm-cache"),
+            },
+            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "npm"),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Vcpkg cache",
+            EnvironmentVariable = "VCPKG_DEFAULT_BINARY_CACHE",
+            CacheDirectory = new List<string>
+            {
+                Path.Join(_appDataPath, "vcpkg", ArchivesStr),
+                Path.Join(_localAppDataPath, "vcpkg", ArchivesStr),
+            },
+            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "vcpkg"),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Cargo cache (Rust)",
+            EnvironmentVariable = "CARGO_HOME",
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".cargo") },
+            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "cargo"),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Maven cache (Java)",
+            EnvironmentVariable = "MAVEN_OPTS",
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".m2") },
+            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "m2"),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Gradle cache (Java)",
+            EnvironmentVariable = "GRADLE_USER_HOME",
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".gradle") },
+            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "gradle"),
         }
     ];
 
@@ -275,13 +328,13 @@ public partial class DevDriveInsightsViewModel : ObservableObject
             }
             else
             {
-                var subDirectories = Directory.GetDirectories(_localAppDataPath + "\\Packages", "*", SearchOption.TopDirectoryOnly);
+                var subDirectories = Directory.GetDirectories(Path.Join(_localAppDataPath, PackagesStr), "*", SearchOption.TopDirectoryOnly);
                 var matchingSubdirectory = subDirectories.FirstOrDefault(subdir => subdir.StartsWith(cacheDirectory, StringComparison.OrdinalIgnoreCase));
                 if (Directory.Exists(matchingSubdirectory))
                 {
                     if (matchingSubdirectory.Contains("PythonSoftwareFoundation"))
                     {
-                        return Path.Join(matchingSubdirectory, "LocalCache", "Local", "pip", "cache");
+                        return Path.Join(matchingSubdirectory, "LocalCache", "Local", "pip", CacheStr);
                     }
 
                     return matchingSubdirectory;

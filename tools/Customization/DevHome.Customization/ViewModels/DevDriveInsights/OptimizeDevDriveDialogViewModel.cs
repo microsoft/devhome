@@ -41,11 +41,11 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
     [ObservableProperty]
     private string _directoryPathTextBox;
 
-    public OptimizeDevDriveDialogViewModel(string existingCacheLocation, string environmentVariableToBeSet)
+    public OptimizeDevDriveDialogViewModel(string existingCacheLocation, string environmentVariableToBeSet, string exampleDevDriveLocation)
     {
         DirectoryPathTextBox = string.Empty;
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
-        ExampleDevDriveLocation = stringResource.GetLocalized("ExampleDevDriveLocation");
+        ExampleDevDriveLocation = exampleDevDriveLocation;
         ChooseDirectoryPromptText = stringResource.GetLocalized("ChooseDirectoryPromptText");
         MakeChangesText = stringResource.GetLocalized("MakeChangesText");
         ExistingCacheLocation = existingCacheLocation;

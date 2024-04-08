@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Customization.Views;
 
-public delegate OptimizeDevDriveDialogViewModel OptimizeDevDriveDialogViewModelFactory(string existingCacheLocation, string environmentVariableToBeSet);
+public delegate OptimizeDevDriveDialogViewModel OptimizeDevDriveDialogViewModelFactory(string existingCacheLocation, string environmentVariableToBeSet, string exampleDevDriveLocation);
 
 public sealed partial class OptimizeDevDriveDialog : ContentDialog
 {

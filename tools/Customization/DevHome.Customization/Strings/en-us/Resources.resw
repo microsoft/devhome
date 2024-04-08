@@ -161,10 +161,6 @@
     <value>Enable end task in taskbar by right click</value>
     <comment>The description for the end task on task bar settings card</comment>
   </data>
-  <data name="ExampleDevDriveLocation" xml:space="preserve">
-    <value>Example: E:\packages\pip</value>
-    <comment>Example dev drive location</comment>
-  </data>
   <data name="EndTaskOnTaskBar.Header" xml:space="preserve">
     <value>End Task</value>
     <comment>The header for the end task on task bar settings card</comment>

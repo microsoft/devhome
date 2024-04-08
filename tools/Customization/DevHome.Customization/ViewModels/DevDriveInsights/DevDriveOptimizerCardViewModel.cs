@@ -41,7 +41,7 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
         var settingsCard = sender as Button;
         if (settingsCard != null)
         {
-            var optimizeDevDriveViewModel = OptimizeDevDriveDialogViewModelFactory(ExistingCacheLocation, EnvironmentVariableToBeSet);
+            var optimizeDevDriveViewModel = OptimizeDevDriveDialogViewModelFactory(ExistingCacheLocation, EnvironmentVariableToBeSet, ExampleLocationOnDevDrive);
             var optimizeDevDriveDialog = new OptimizeDevDriveDialog(optimizeDevDriveViewModel);
             optimizeDevDriveDialog.XamlRoot = settingsCard.XamlRoot;
             optimizeDevDriveDialog.RequestedTheme = settingsCard.ActualTheme;
