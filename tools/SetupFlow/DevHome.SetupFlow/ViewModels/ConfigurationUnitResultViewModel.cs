@@ -54,6 +54,8 @@ public class ConfigurationUnitResultViewModel
 
     private void SetName()
     {
+        // Get either Git repo name for if this is a repo clone request or package name for package install request.
+        // We add into Id in ConfigurationFileBuilder.
         if (!string.IsNullOrEmpty(_unitResult.Id))
         {
             if (IsCloneRepoUnit)
