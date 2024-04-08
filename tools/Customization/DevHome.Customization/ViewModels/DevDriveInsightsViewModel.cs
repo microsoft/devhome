@@ -374,12 +374,19 @@ public partial class DevDriveInsightsViewModel : ObservableObject
                 continue;
             }
 
+            List<string> existingDevDriveLetters = new List<string>();
+            foreach (var existingDevDrive in ExistingDevDrives)
+            {
+                existingDevDriveLetters.Add(existingDevDrive.DriveLetter.ToString());
+            }
+
             var card = new DevDriveOptimizerCardViewModel(
                 _optimizeDevDriveDialogViewModelFactory,
                 cache.CacheName!,
                 existingCacheLocation,
                 cache.ExampleDirectory!, // example location on dev drive to move cache to
-                cache.EnvironmentVariable!); // environmentVariableToBeSet
+                cache.EnvironmentVariable!, // environmentVariableToBeSet
+                existingDevDriveLetters);
             DevDriveOptimizerCardCollection.Add(card);
         }
 
