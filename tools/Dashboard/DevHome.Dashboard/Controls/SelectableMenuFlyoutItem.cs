@@ -47,7 +47,7 @@ public class SelectableMenuFlyoutItemAutomationPeer : MenuFlyoutItemAutomationPe
 
     public void Select()
     {
-        IsSelected = true;
+        Invoke();
     }
 
     protected override string GetClassNameCore()
