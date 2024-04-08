@@ -9,8 +9,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
+using Windows.Media.Protection;
 using Windows.Storage.Pickers;
 using WinUIEx;
 
@@ -88,7 +91,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         }
     }
 
-    private void MoveDirectory(string sourceDirectory, string targetDirectory)
+    private int MoveDirectory(string sourceDirectory, string targetDirectory)
     {
         try
         {
@@ -120,10 +123,13 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
 
             // Delete the source directory
             Directory.Delete(sourceDirectory, true);
+            return 0;
         }
         catch (Exception ex)
         {
             Log.Error($"Error in MoveDirectory. Error: {ex}");
+            TelemetryFactory.Get<ITelemetry>().LogError("DevDriveInsights_PackageCacheMove_Error", LogLevel.Critical, new ExceptionEvent(ex.HResult, sourceDirectory));
+            return ex.HResult;
         }
     }
 
@@ -163,10 +169,12 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
             // TODO: If chosen folder not a dev drive location, currently we no-op and log the error. Instead we should display the error.
             if (ChosenDirectoryInDevDrive(directoryPath))
             {
-                MoveDirectory(ExistingCacheLocation, directoryPath);
-                SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
-
-                Log.Debug($"Moved cache from {ExistingCacheLocation} to {directoryPath}");
+                if (MoveDirectory(ExistingCacheLocation, directoryPath) == 0)
+                {
+                    SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
+                    Log.Debug($"Moved cache from {ExistingCacheLocation} to {directoryPath}");
+                    TelemetryFactory.Get<ITelemetry>().Log("DevDriveInsights_PackageCacheMoved_Event", LogLevel.Critical, new ExceptionEvent(0, ExistingCacheLocation));
+                }
             }
             else
             {
