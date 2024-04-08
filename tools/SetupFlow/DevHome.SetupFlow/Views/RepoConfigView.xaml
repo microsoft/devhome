@@ -146,7 +146,12 @@
                                             VerticalAlignment="Center"/>
                                     <!-- Need to use view methods here because DataType is CloningInformation-->
                                     <!-- Each button needs a unique name for screen readers. -->
-                                    <Button Click="EditClonePathButton_Click" DataContext="{x:Bind}" AutomationProperties.Name="{x:Bind EditClonePathAutomationName}" Grid.Column="1" >
+                                    <Button
+                                        Click="EditClonePathButton_Click"
+                                        DataContext="{x:Bind}"
+                                        AutomationProperties.Name="{x:Bind EditClonePathAutomationName}"
+                                        Grid.Column="1"
+                                        ToolTipService.ToolTip="{x:Bind EditClonePathAutomationName}">
                                         <Button.Content>
                                             <SymbolIcon Symbol="Edit"/>
                                         </Button.Content>
@@ -159,7 +164,8 @@
                                 Grid.Column="3"
                                 Style="{ThemeResource AlternateCloseButtonStyle}"
                                 AutomationProperties.Name="{x:Bind RemoveFromCloningAutomationName}"
-                                VerticalAlignment="Center">
+                                VerticalAlignment="Center"
+                                ToolTipService.ToolTip="{x:Bind RemoveFromCloningAutomationName}">
                                 <Button.Content>
                                     <SymbolIcon Symbol="Cancel"/>
                                 </Button.Content>
