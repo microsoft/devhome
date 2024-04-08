@@ -1014,8 +1014,8 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.RepositoryProvider = _providers.GetSDKProvider(_selectedRepoProvider);
             cloningInformation.ProviderName = _providers.DisplayName(_selectedRepoProvider);
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{_selectedRepoProvider}/{repositoryToAdd}");
-            cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{_selectedRepoProvider}/{repositoryToAdd}");
+            cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{_selectedRepoProvider}/{repositoryToAdd.RepoDisplayName}");
+            cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{_selectedRepoProvider}/{repositoryToAdd.RepoDisplayName}");
             EverythingToClone.Add(cloningInformation);
         }
     }
