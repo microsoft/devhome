@@ -10,6 +10,7 @@ using DevHome.SetupFlow.Services.WinGet;
 using DevHome.SetupFlow.Services.WinGet.Operations;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.ViewModels;
+using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -33,6 +34,7 @@ public static class ServiceExtensions
         services.AddReview();
         services.AddSummary();
         services.AddSummaryInformation();
+        services.AddCreateEnvironment();
 
         // View-models
         services.AddSingleton<SetupFlowViewModel>();
@@ -191,6 +193,20 @@ public static class ServiceExtensions
         services.AddTransient<SetupTargetViewModel>();
         services.AddTransient<SetupTargetReviewViewModel>();
         services.AddTransient<SetupTargetTaskGroup>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCreateEnvironment(this IServiceCollection services)
+    {
+        // Task groups
+        services.AddTransient<EnvironmentCreationOptionsTaskGroup>();
+        services.AddTransient<SelectEnvironmentProviderTaskGroup>();
+
+        // View models
+        services.AddTransient<CreateEnvironmentReviewViewModel>();
+        services.AddTransient<EnvironmentCreationOptionsViewModel>();
+        services.AddTransient<SelectEnvironmentProviderViewModel>();
 
         return services;
     }
