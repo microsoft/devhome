@@ -249,6 +249,10 @@
     <value>Close</value>
     <comment>Text for a button to close a content dialog.</comment>
   </data>
+  <data name="DashboardPage.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Dashboard</value>
+    <comment>Dashboard accessible name to be narrated</comment>
+  </data>
   <data name="WidgetRemoved" xml:space="preserve">
     <value>Widget removed</value>
     <comment>This is said by narrator whenever a widget is removed</comment>
