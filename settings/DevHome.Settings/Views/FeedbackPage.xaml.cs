@@ -297,7 +297,7 @@ public sealed partial class FeedbackPage : Page
         var extensionsStr = stringResource.GetLocalized("Settings_Feedback_Extensions") + ": \n";
         foreach (var extension in extensions)
         {
-            extensionsStr += extension.PackageFullName + "\n";
+            extensionsStr += extension.PackageFullName + " (" + extension.ExtensionDisplayName + ")\n";
         }
 
         return extensionsStr;

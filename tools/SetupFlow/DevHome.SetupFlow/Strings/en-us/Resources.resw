@@ -649,7 +649,7 @@
     <value>Generate a WinGet Configuration file (.winget) to repeat this set up in the future or share it with others.</value>
     <comment>{Locked="WinGet",".winget"}Tooltip text about the generated configuration file</comment>
   </data>
-  <data name="Review_SetupDetails.Text" xml:space="preserve">
+  <data name="ReviewExpanderDescription" xml:space="preserve">
     <value>Set up details</value>
     <comment>Header for a section detailing the set up steps to be performed. "Set up" is the noun</comment>
   </data>
@@ -713,8 +713,12 @@
     <value>Select a target machine to set up.</value>
     <comment>Description for the setup target page</comment>
   </data>
-  <data name="SetupShell_Review.Description" xml:space="preserve">
+  <data name="SetupShellReviewPageDescription" xml:space="preserve">
     <value>Review the terms and setup details below before applying these changes to your computer.</value>
+    <comment>Description for the review page</comment>
+  </data>
+  <data name="SetupShellReviewPageDescriptionForEnvironmentCreation" xml:space="preserve">
+    <value>Review the details for your new environment</value>
     <comment>Description for the review page</comment>
   </data>
   <data name="Applications" xml:space="preserve">
@@ -1044,7 +1048,7 @@
     <value>Installed applications</value>
     <comment>Header for the section that shows all the downloaded apps</comment>
   </data>
-  <data name="SummaryPage_Header.Text" xml:space="preserve">
+  <data name="SummaryPageHeader" xml:space="preserve">
     <value>Here's what we set up for you</value>
     <comment>Header text for the summary page</comment>
   </data>
@@ -1056,7 +1060,7 @@
     <value>Next steps</value>
     <comment>Text for the "Next steps" section of the summary page</comment>
   </data>
-  <data name="SummaryPage_OpenDashboard.Content" xml:space="preserve">
+  <data name="SummaryPageOpenDashboard" xml:space="preserve">
     <value>Open Dashboard</value>
     <comment>Button content to let user go to the dashboard</comment>
   </data>
@@ -1731,5 +1735,92 @@
   <data name="CloneRepoNextStepsView" xml:space="preserve">
     <value>View file</value>
     <comment>Button content for viewing a file.</comment>
+  </data>
+  <data name="SelectEnvironmentPageTitle" xml:space="preserve">
+    <value>Select your environment</value>
+    <comment>Title of the 'Select your environment' page in the create environment flow where users can select the provider they will use to create the environment, like Microsoft Hyper-V and Microsoft Dev Box</comment>
+  </data>
+  <data name="ConfigureEnvironmentPageTitle" xml:space="preserve">
+    <value>Configure your environment</value>
+    <comment>Title of the 'Configure your environment' page in the environment creation flow where users can choose options that they'd like their environment to be created with</comment>
+  </data>
+  <data name="SelectEnvironmentSubtitle.Text" xml:space="preserve">
+    <value>Begin by selecting an environment provider below</value>
+    <comment>subtitle text advise the user that they can select an environment option in a list below the text</comment>
+  </data>
+  <data name="MainPageCreateEnvironment.Header" xml:space="preserve">
+    <value>Create virtual environment</value>
+    <comment>Header for a card that when clicked takes the user to a multi-step flow for creating an environment</comment>
+  </data>
+  <data name="MainPageCreateEnvironment.Description" xml:space="preserve">
+    <value>Create a local or cloud environment</value>
+    <comment>Body text description for a card than when clicked takes the user to a multi-step flow for creating an environment</comment>
+  </data>
+  <data name="SelectEnvironmentPage.Description" xml:space="preserve">
+    <value>Choose an environment provider to create a new dev environment</value>
+    <comment>Description for the setup target page</comment>
+  </data>
+  <data name="ConfigureEnvironmentPage.Description" xml:space="preserve">
+    <value>Add options to create your environment</value>
+    <comment>Description for the setup target page</comment>
+  </data>
+  <data name="ErrorRetrievingAdaptiveCardSession.Title" xml:space="preserve">
+    <value>There was an error retreiving the adaptive card session from the extension</value>
+    <comment>Error text display when we are unable to retrieve the adaptive card information from an extension</comment>
+  </data>
+  <data name="EnvironmentCreationReviewTabTitle" xml:space="preserve">
+    <value>Environment</value>
+    <comment>Title for create environment review tab</comment>
+  </data>
+  <data name="EnvironmentCreationReviewExpanderDescription" xml:space="preserve">
+    <value>Your environment's details</value>
+    <comment>Title for create environment review tab</comment>
+  </data>
+  <data name="EnvironmentCreationReviewPageTitle" xml:space="preserve">
+    <value>Review your environment</value>
+    <comment>Title for create environment review page</comment>
+  </data>
+  <data name="CreateEnvironmentButtonText" xml:space="preserve">
+    <value>Create Environment</value>
+  </data>
+  <data name="EnvironmentCreationError" xml:space="preserve">
+    <value>There was an error starting the creation operation</value>
+    <comment>Text to tell the user that we couldn't start the operation to create their local or cloud virtual environment</comment>
+  </data>
+  <data name="EnvironmentCreationOperationInitializationFinished" xml:space="preserve">
+    <value>The operation to create your environment has started successfully</value>
+    <comment>Text to tell the user that we were able to start the operation that create their local or cloud virtual machine successfully</comment>
+  </data>
+  <data name="StartingEnvironmentCreation" xml:space="preserve">
+    <value>Starting the create environment operation</value>
+    <comment>Text to tell the user that the operation to create their local or cloud virtual environment has started</comment>
+  </data>
+  <data name="EnvironmentCreationFailedToGetProviderInformation" xml:space="preserve">
+    <value>We timed out waiting for the extension to provide us with information to create your environment</value>
+    <comment>Error text to show the user that we timed out while waiting for a response from a Dev Home extension</comment>
+  </data>
+  <data name="EnvironmentCreationForProviderStarted" xml:space="preserve">
+    <value>The {0} provider is now creating your environment</value>
+    <comment>{Locked="{0}"} Text that tells the user that a specific provider has started creating their environment. {0} is the name of a provider who Dev Home will send the request to.</comment>
+  </data>
+  <data name="EnvironmentCreationOperationFailedToStart" xml:space="preserve">
+    <value>We failed to start the creation operation for the {0} provider</value>
+    <comment>{Locked="{0}"} Text that tells the user that Dev Home could not start the creation operation for a specific provider. {0} is the name of a provider who Dev Home will send the request to.</comment>
+  </data>
+  <data name="SummaryPageHeadingForCreateEnvironmentFlow.Text" xml:space="preserve">
+    <value>Environment details</value>
+    <comment>Heading that will show the user the details of the environment they initiated the creation process for. Environments can be local or cloud virtual machines</comment>
+  </data>
+  <data name="SummaryPageRedirectToEnvironmentPageButton" xml:space="preserve">
+    <value>Go to Environments page</value>
+    <comment>Text for button that when clicked will redirect the user to the environments page in Dev Home</comment>
+  </data>
+  <data name="SummaryPageEnvironmentCreating.Text" xml:space="preserve">
+    <value>Environment being created</value>
+    <comment>Text to tell the user that an environment is being created. Environments can be local or cloud virtual machines</comment>
+  </data>
+  <data name="SummaryPageHeaderForEnvironmentCreationText" xml:space="preserve">
+    <value>We've started creating your environment</value>
+    <comment>Text to tell the user that an environment is being created. Environments can be local or cloud virtual machines</comment>
   </data>
 </root>
