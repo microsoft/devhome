@@ -38,6 +38,12 @@ public sealed partial class CardBody : UserControl
         set => SetValue(ComputeSystemAlternativeTitleProperty, value);
     }
 
+    public string ComputeSystemCreationStatus
+    {
+        get => (string)GetValue(ComputeSystemCreationStatusProperty);
+        set => SetValue(ComputeSystemCreationStatusProperty, value);
+    }
+
     public BitmapImage ComputeSystemImage
     {
         get => (BitmapImage)GetValue(ComputeSystemImageProperty);
@@ -60,6 +66,12 @@ public sealed partial class CardBody : UserControl
     {
         get => (ObservableCollection<CardProperty>)GetValue(ComputeSystemPropertiesProperty);
         set => SetValue(ComputeSystemPropertiesProperty, value);
+    }
+
+    public bool ShouldShowInDefiniteProgress
+    {
+        get => (bool)GetValue(ShouldShowInDefiniteProgressProperty);
+        set => SetValue(ShouldShowInDefiniteProgressProperty, value);
     }
 
     public DataTemplate ComputeSystemPropertyTemplate
@@ -90,4 +102,8 @@ public sealed partial class CardBody : UserControl
     private static readonly DependencyProperty ComputeSystemImageProperty = DependencyProperty.Register(nameof(ComputeSystemImage), typeof(BitmapImage), typeof(CardBody), new PropertyMetadata(new BitmapImage { UriSource = new Uri(DefaultCardBodyImagePath) }, (s, e) => OnCardBodyChanged((CardBody)s, (BitmapImage)e.NewValue)));
     private static readonly DependencyProperty ComputeSystemPropertiesProperty = DependencyProperty.Register(nameof(ComputeSystemProperties), typeof(ObservableCollection<CardProperty>), typeof(CardBody), new PropertyMetadata(null));
     private static readonly DependencyProperty ComputeSystemPropertyTemplateProperty = DependencyProperty.Register(nameof(ComputeSystemPropertyTemplate), typeof(DataTemplate), typeof(CardBody), new PropertyMetadata(null));
+
+    private static readonly DependencyProperty ComputeSystemCreationStatusProperty = DependencyProperty.Register(nameof(ComputeSystemCreationStatus), typeof(string), typeof(CardBody), new PropertyMetadata(null));
+
+    private static readonly DependencyProperty ShouldShowInDefiniteProgressProperty = DependencyProperty.Register(nameof(ShouldShowInDefiniteProgress), typeof(bool), typeof(CardBody), new PropertyMetadata(false));
 }
