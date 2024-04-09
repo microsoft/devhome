@@ -54,7 +54,7 @@
                     <Span
                         xml:space="preserve">
                         <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowOnlyOneDevDriveAllowedHeader" /> <!--
-                        --><Hyperlink
+                        --><Hyperlink x:Name="GoToLearnMoreHyperlink"
                                 UnderlineStyle="None"
                                 NavigateUri="https://go.microsoft.com/fwlink/?linkid=2226090"><!--
                             --> <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore" /> <!--
