@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace HyperVExtension.CommunicationWithGuest;
+namespace HyperVExtension.HostGuestCommunication;
 
-internal sealed class HResultException : Exception
+public sealed class HResultException : Exception
 {
     public HResultException(int resultCode, string? description = null)
         : base(description)
