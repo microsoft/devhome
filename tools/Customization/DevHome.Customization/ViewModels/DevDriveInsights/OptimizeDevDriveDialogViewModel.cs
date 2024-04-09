@@ -128,7 +128,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         catch (Exception ex)
         {
             Log.Error($"Error in MoveDirectory. Error: {ex}");
-            TelemetryFactory.Get<ITelemetry>().LogError("DevDriveInsights_PackageCacheMove_Error", LogLevel.Critical, new ExceptionEvent(ex.HResult, sourceDirectory));
+            TelemetryFactory.Get<ITelemetry>().LogError("DevDriveInsights_PackageCacheMoveDirectory_Error", LogLevel.Critical, new ExceptionEvent(ex.HResult, sourceDirectory));
             return ex.HResult;
         }
     }
@@ -173,7 +173,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
                 {
                     SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
                     Log.Debug($"Moved cache from {ExistingCacheLocation} to {directoryPath}");
-                    TelemetryFactory.Get<ITelemetry>().Log("DevDriveInsights_PackageCacheMoved_Event", LogLevel.Critical, new ExceptionEvent(0, ExistingCacheLocation));
+                    TelemetryFactory.Get<ITelemetry>().Log("DevDriveInsights_PackageCacheMovedSuccessfully_Event", LogLevel.Critical, new ExceptionEvent(0, ExistingCacheLocation));
                 }
             }
             else

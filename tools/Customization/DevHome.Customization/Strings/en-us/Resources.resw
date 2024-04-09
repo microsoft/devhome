@@ -163,7 +163,7 @@
   </data>
   <data name="ExampleText" xml:space="preserve">
     <value>Example: </value>
-    <comment>Example string</comment>
+    <comment>Example string, will be followed by a sample location to move the cache to a dev drive location</comment>
   </data>
   <data name="EndTaskOnTaskBar.Header" xml:space="preserve">
     <value>End Task</value>

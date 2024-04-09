@@ -59,8 +59,6 @@ public partial class DevDriveInsightsViewModel : ObservableObject
 
     private static readonly string _userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-    private const string ExampleDevDriveDirStr = "D:";
-
     private const string PackagesStr = "packages";
 
     private const string CacheStr = "cache";
@@ -264,14 +262,14 @@ public partial class DevDriveInsightsViewModel : ObservableObject
                 Path.Join(_localAppDataPath, "pip", CacheStr),
                 Path.Join(_localAppDataPath, PackagesStr, "PythonSoftwareFoundation.Python"),
             },
-            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "pip", CacheStr),
+            ExampleSubDirectory = Path.Join(PackagesStr, "pip", CacheStr),
         },
         new DevDriveCacheData
         {
             CacheName = "NuGet cache (dotnet)",
             EnvironmentVariable = "NUGET_PACKAGES",
             CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".nuget", PackagesStr) },
-            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "NuGet", CacheStr),
+            ExampleSubDirectory = Path.Join(PackagesStr, "NuGet", CacheStr),
         },
         new DevDriveCacheData
         {
@@ -282,7 +280,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject
                 Path.Join(_appDataPath, "npm-cache"),
                 Path.Join(_localAppDataPath, "npm-cache"),
             },
-            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "npm"),
+            ExampleSubDirectory = Path.Join(PackagesStr, "npm"),
         },
         new DevDriveCacheData
         {
@@ -293,28 +291,28 @@ public partial class DevDriveInsightsViewModel : ObservableObject
                 Path.Join(_appDataPath, "vcpkg", ArchivesStr),
                 Path.Join(_localAppDataPath, "vcpkg", ArchivesStr),
             },
-            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "vcpkg"),
+            ExampleSubDirectory = Path.Join(PackagesStr, "vcpkg"),
         },
         new DevDriveCacheData
         {
             CacheName = "Cargo cache (Rust)",
             EnvironmentVariable = "CARGO_HOME",
             CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".cargo") },
-            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "cargo"),
+            ExampleSubDirectory = Path.Join(PackagesStr, "cargo"),
         },
         new DevDriveCacheData
         {
             CacheName = "Maven cache (Java)",
             EnvironmentVariable = "MAVEN_OPTS",
             CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".m2") },
-            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "m2"),
+            ExampleSubDirectory = Path.Join(PackagesStr, "m2"),
         },
         new DevDriveCacheData
         {
             CacheName = "Gradle cache (Java)",
             EnvironmentVariable = "GRADLE_USER_HOME",
             CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".gradle") },
-            ExampleDirectory = Path.Join(ExampleDevDriveDirStr, PackagesStr, "gradle"),
+            ExampleSubDirectory = Path.Join(PackagesStr, "gradle"),
         }
     ];
 
@@ -380,11 +378,12 @@ public partial class DevDriveInsightsViewModel : ObservableObject
                 existingDevDriveLetters.Add(existingDevDrive.DriveLetter.ToString());
             }
 
+            var exampleDirectory = Path.Join(existingDevDriveLetters[0] + ":", cache.ExampleSubDirectory);
             var card = new DevDriveOptimizerCardViewModel(
                 _optimizeDevDriveDialogViewModelFactory,
                 cache.CacheName!,
                 existingCacheLocation,
-                cache.ExampleDirectory!, // example location on dev drive to move cache to
+                exampleDirectory!, // example location on dev drive to move cache to
                 cache.EnvironmentVariable!, // environmentVariableToBeSet
                 existingDevDriveLetters);
             DevDriveOptimizerCardCollection.Add(card);
