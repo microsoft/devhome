@@ -128,7 +128,7 @@ public class DevSetupAgentDeploymentHelper
 
     private static string LoadScript()
     {
-        var path = Path.Combine(AppContext.BaseDirectory, @"HyperVExtension\Scripts\", "DevSetupAgent.ps1");
+        var path = Path.Combine(AppContext.BaseDirectory, "HyperVExtension", "Scripts", "DevSetupAgent.ps1");
         return File.ReadAllText(path, Encoding.Default) ?? throw new FileNotFoundException(path);
     }
 }
