@@ -110,4 +110,100 @@ public class WidgetHostingService : IWidgetHostingService
 
         return _widgetCatalog;
     }
+
+    public async Task<WidgetProviderDefinition[]> GetProviderDefinitionsAsync()
+    {
+        // If we already have a WidgetCatalog, check if the COM object is still alive.
+        if (_widgetCatalog != null)
+        {
+            try
+            {
+                return await Task.Run(() => _widgetCatalog.GetProviderDefinitions());
+            }
+            catch (Exception ex)
+            {
+                _log.Warning("Exception trying to use WidgetCatalog", ex);
+                _widgetCatalog = null;
+            }
+        }
+
+        if (_widgetCatalog == null)
+        {
+            try
+            {
+                _widgetCatalog = await Task.Run(() => WidgetCatalog.GetDefault());
+                return await Task.Run(() => _widgetCatalog.GetProviderDefinitions());
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Exception in GetWidgetDefinitionAsync:", ex);
+            }
+        }
+
+        return [];
+    }
+
+    public async Task<WidgetDefinition[]> GetWidgetDefinitionsAsync()
+    {
+        // If we already have a WidgetCatalog, check if the COM object is still alive.
+        if (_widgetCatalog != null)
+        {
+            try
+            {
+                return await Task.Run(() => _widgetCatalog.GetWidgetDefinitions());
+            }
+            catch (Exception ex)
+            {
+                _log.Warning("WidgetCatalog was not still alive", ex.Message);
+                _widgetCatalog = null;
+            }
+        }
+
+        if (_widgetCatalog == null)
+        {
+            try
+            {
+                _widgetCatalog = await Task.Run(() => WidgetCatalog.GetDefault());
+                return await Task.Run(() => _widgetCatalog.GetWidgetDefinitions());
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Exception in GetWidgetDefinitionAsync:", ex);
+            }
+        }
+
+        return [];
+    }
+
+    public async Task<WidgetDefinition> GetWidgetDefinitionAsync(string widgetDefinitionId)
+    {
+        // If we already have a WidgetCatalog, check if the COM object is still alive.
+        if (_widgetCatalog != null)
+        {
+            try
+            {
+                return await Task.Run(() => _widgetCatalog.GetWidgetDefinition(widgetDefinitionId));
+            }
+            catch (Exception ex)
+            {
+                _log.Warning("WidgetCatalog was not still alive", ex.Message);
+                _widgetCatalog = null;
+            }
+        }
+
+        if (_widgetCatalog == null)
+        {
+            try
+            {
+                _widgetCatalog = await Task.Run(() => WidgetCatalog.GetDefault());
+                return await Task.Run(() => _widgetCatalog.GetWidgetDefinition(widgetDefinitionId));
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Exception in GetWidgetDefinitionAsync:", ex);
+            }
+        }
+
+        return null;
+    }
 }

@@ -218,7 +218,6 @@ public partial class DashboardView : ToolPage, IDisposable
         var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
         var numUnorderedWidgets = 0;
 
-        var catalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
         var pinnedSingleInstanceWidgets = new List<string>();
 
         _log.Information($"Restore pinned widgets");
@@ -251,8 +250,13 @@ public partial class DashboardView : ToolPage, IDisposable
 
                 // Ensure only one copy of a widget is pinned if that widget's definition only allows for one instance.
                 var widgetDefinitionId = widget.DefinitionId;
-                var widgetDefinition = await Task.Run(() => catalog?.GetWidgetDefinition(widgetDefinitionId));
-                if (widgetDefinition?.AllowMultiple == false)
+                var widgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
+                if (widgetDefinition == null)
+                {
+                    await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
+                }
+
+                if (widgetDefinition.AllowMultiple == false)
                 {
                     if (pinnedSingleInstanceWidgets.Contains(widgetDefinitionId))
                     {
@@ -328,15 +332,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private async Task PinDefaultWidgetsAsync()
     {
-        var catalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
-
-        if (catalog is null)
-        {
-            _log.Error($"Trying to pin default widgets, but WidgetCatalog is null.");
-            return;
-        }
-
-        var widgetDefinitions = await Task.Run(() => catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle));
+        var widgetDefinitions = (await ViewModel.WidgetHostingService.GetWidgetDefinitionsAsync()).OrderBy(x => x.DisplayTitle);
         foreach (var widgetDefinition in widgetDefinitions)
         {
             var id = widgetDefinition.Id;
@@ -436,8 +432,7 @@ public partial class DashboardView : ToolPage, IDisposable
         {
             var widgetDefinitionId = widget.DefinitionId;
             var widgetId = widget.Id;
-            var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
-            var widgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(widgetDefinitionId));
+            var widgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
 
             if (widgetDefinition != null)
             {
@@ -465,19 +460,24 @@ public partial class DashboardView : ToolPage, IDisposable
             }
             else
             {
-                // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
-                _log.Information($"No widget definition '{widgetDefinitionId}', delete widget {widgetId} with that definition");
-                try
-                {
-                    await widget.SetCustomStateAsync(string.Empty);
-                    await widget.DeleteAsync();
-                }
-                catch (Exception ex)
-                {
-                    _log.Information(ex, $"Error deleting widget");
-                }
+                await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
             }
         });
+    }
+
+    private async Task DeleteWidgetWithNoDefinition(Widget widget, string widgetDefinitionId)
+    {
+        // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
+        _log.Information($"No widget definition '{widgetDefinitionId}', delete widget with that definition");
+        try
+        {
+            await widget.SetCustomStateAsync(string.Empty);
+            await widget.DeleteAsync();
+        }
+        catch (Exception ex)
+        {
+            _log.Information(ex, $"Error deleting widget");
+        }
     }
 
     private void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args) =>

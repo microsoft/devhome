@@ -9,9 +9,15 @@ namespace DevHome.Dashboard.Services;
 
 public interface IWidgetHostingService
 {
-    public Task<WidgetCatalog> GetWidgetCatalogAsync();
-
     public Task<Widget[]> GetWidgetsAsync();
 
     public Task<Widget> CreateWidgetAsync(string widgetDefinitionId, WidgetSize widgetSize);
+
+    public Task<WidgetCatalog> GetWidgetCatalogAsync();
+
+    public Task<WidgetProviderDefinition[]> GetProviderDefinitionsAsync();
+
+    public Task<WidgetDefinition[]> GetWidgetDefinitionsAsync();
+
+    public Task<WidgetDefinition> GetWidgetDefinitionAsync(string widgetDefinitionId);
 }

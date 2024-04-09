@@ -63,18 +63,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         AddWidgetNavigationView.MenuItems.Clear();
 
-        var catalog = await _hostingService.GetWidgetCatalogAsync();
-
-        if (catalog is null)
-        {
-            // We should never have gotten here if we don't have a WidgetCatalog.
-            _log.Error($"Opened the AddWidgetDialog, but WidgetCatalog is null.");
-            return;
-        }
-
         // Show the providers and widgets underneath them in alphabetical order.
-        var providerDefinitions = await Task.Run(() => catalog!.GetProviderDefinitions().OrderBy(x => x.DisplayName));
-        var widgetDefinitions = await Task.Run(() => catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle));
+        var providerDefinitions = (await _hostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
+        var widgetDefinitions = (await _hostingService.GetWidgetDefinitionsAsync()).OrderBy(x => x.DisplayTitle);
 
         _log.Information($"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
 
