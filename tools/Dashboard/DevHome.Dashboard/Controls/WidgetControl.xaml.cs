@@ -204,7 +204,7 @@ public sealed partial class WidgetControl : UserControl
         };
         menuSizeItem.Icon = fontIcon;
         var peer = FrameworkElementAutomationPeer.FromElement(menuSizeItem) as SelectableMenuFlyoutItemAutomationPeer;
-        peer.Select();
+        peer.AddToSelection();
     }
 
     private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel)
