@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 
