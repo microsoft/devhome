@@ -28,7 +28,6 @@
     <Folder Include="CustomControls\" />
     <Folder Include="Extensions\" />
     <Folder Include="Strings\" />
-    <Folder Include="ViewModels\" />
     <Folder Include="Views\" />
   </ItemGroup>
 </Project>

@@ -54,11 +54,6 @@ public sealed partial class LandingPage : ToolPage
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.HasPageLoadedForTheFirstTime)
-        {
-            return;
-        }
-
         _ = ViewModel.LoadModelAsync(false);
     }
 }

@@ -10,7 +10,7 @@ namespace HyperVExtension.Models.VirtualMachineCreation;
 /// </summary>
 public sealed class VMGalleryCreationUserInput
 {
-    public string NewVirtualMachineName { get; set; } = string.Empty;
+    public string NewEnvironmentName { get; set; } = string.Empty;
 
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public int SelectedImageListIndex { get; set; }

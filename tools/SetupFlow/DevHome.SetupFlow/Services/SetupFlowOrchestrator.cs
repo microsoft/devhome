@@ -27,6 +27,7 @@ public enum SetupFlowKind
 {
     LocalMachine,
     SetupTarget,
+    CreateEnvironment,
 }
 
 /// <summary>

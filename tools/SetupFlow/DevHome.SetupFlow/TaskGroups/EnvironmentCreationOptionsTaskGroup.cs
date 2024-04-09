@@ -23,6 +23,8 @@ public class EnvironmentCreationOptionsTaskGroup : ISetupTaskGroup
 
     public ComputeSystemProviderDetails ProviderDetails { get; private set; }
 
+    public CreateEnvironmentTask CreateEnvironmentTask { get; private set; }
+
     public EnvironmentCreationOptionsTaskGroup(
         SetupFlowViewModel setupFlowViewModel,
         IComputeSystemManager computeSystemManager,
@@ -34,9 +36,10 @@ public class EnvironmentCreationOptionsTaskGroup : ISetupTaskGroup
         _createEnvironmentReviewViewModel = createEnvironmentReviewViewModel;
         _setupFlowStringResource = setupFlowStringResource;
         _computeSystemManager = computeSystemManager;
+        CreateEnvironmentTask = new CreateEnvironmentTask(_computeSystemManager, _setupFlowStringResource, setupFlowViewModel);
     }
 
-    public IEnumerable<ISetupTask> SetupTasks => new List<ISetupTask>();
+    public IEnumerable<ISetupTask> SetupTasks => new List<ISetupTask>() { CreateEnvironmentTask };
 
     public IEnumerable<ISetupTask> DSCTasks => new List<ISetupTask>();
 
