@@ -91,7 +91,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         }
     }
 
-    private int MoveDirectory(string sourceDirectory, string targetDirectory)
+    private bool MoveDirectory(string sourceDirectory, string targetDirectory)
     {
         try
         {
@@ -123,13 +123,13 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
 
             // Delete the source directory
             Directory.Delete(sourceDirectory, true);
-            return 0;
+            return true;
         }
         catch (Exception ex)
         {
             Log.Error($"Error in MoveDirectory. Error: {ex}");
             TelemetryFactory.Get<ITelemetry>().LogError("DevDriveInsights_PackageCacheMoveDirectory_Error", LogLevel.Critical, new ExceptionEvent(ex.HResult, sourceDirectory));
-            return ex.HResult;
+            return false;
         }
     }
 
@@ -169,7 +169,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
             // TODO: If chosen folder not a dev drive location, currently we no-op and log the error. Instead we should display the error.
             if (ChosenDirectoryInDevDrive(directoryPath))
             {
-                if (MoveDirectory(ExistingCacheLocation, directoryPath) == 0)
+                if (MoveDirectory(ExistingCacheLocation, directoryPath))
                 {
                     SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
                     Log.Debug($"Moved cache from {ExistingCacheLocation} to {directoryPath}");
