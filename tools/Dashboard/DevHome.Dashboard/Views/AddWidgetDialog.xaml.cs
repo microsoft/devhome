@@ -52,8 +52,15 @@ public sealed partial class AddWidgetDialog : ContentDialog
     [RelayCommand]
     public async Task OnLoadedAsync()
     {
-        var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
-        widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        try
+        {
+            var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+            widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        }
+        catch (Exception ex)
+        {
+            _log.Error("Exception in OnLoadedAsync:", ex);
+        }
 
         await FillAvailableWidgetsAsync();
         SelectFirstWidgetByDefault();
@@ -263,8 +270,15 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _selectedWidget = null;
         ViewModel = null;
 
-        var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
-        widgetCatalog!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        try
+        {
+            var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+            widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        }
+        catch (Exception ex)
+        {
+            _log.Error("Exception in HideDialogAsync:", ex);
+        }
 
         this.Hide();
     }

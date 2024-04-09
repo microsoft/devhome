@@ -87,7 +87,7 @@ public class WidgetHostingService : IWidgetHostingService
         {
             try
             {
-                await Task.Run(() => _widgetCatalog.GetType());
+                await Task.Run(() => _widgetCatalog.GetProviderDefinitions());
             }
             catch (Exception ex)
             {

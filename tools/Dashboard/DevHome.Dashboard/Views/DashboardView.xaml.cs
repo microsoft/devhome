@@ -100,6 +100,30 @@ public partial class DashboardView : ToolPage, IDisposable
         return true;
     }
 
+    private async Task UnsubscribeFromWidgetCatalogEventsAsync()
+    {
+        _log.Information("UnsubscribeFromWidgetCatalogEvents");
+
+        try
+        {
+            var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+            if (widgetCatalog == null)
+            {
+                return;
+            }
+
+            widgetCatalog!.WidgetProviderDefinitionAdded -= WidgetCatalog_WidgetProviderDefinitionAdded;
+            widgetCatalog!.WidgetProviderDefinitionDeleted -= WidgetCatalog_WidgetProviderDefinitionDeleted;
+            widgetCatalog!.WidgetDefinitionAdded -= WidgetCatalog_WidgetDefinitionAdded;
+            widgetCatalog!.WidgetDefinitionUpdated -= WidgetCatalog_WidgetDefinitionUpdated;
+            widgetCatalog!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        }
+        catch (Exception ex)
+        {
+            _log.Error("Exception in UnsubscribeFromWidgetCatalogEventsAsync:", ex);
+        }
+    }
+
     private async void HandleRendererUpdated(object sender, object args)
     {
         // Re-render the widgets with the new theme and renderer.
@@ -122,14 +146,30 @@ public partial class DashboardView : ToolPage, IDisposable
 
         _log.Debug($"Leaving Dashboard, deactivating widgets.");
 
-        await Task.Run(() => UnsubscribeFromWidgets());
+        try
+        {
+            await Task.Run(() => UnsubscribeFromWidgets());
+        }
+        catch (Exception ex)
+        {
+            _log.Error("Exception in UnsubscribeFromWidgets:", ex);
+        }
+
+        await UnsubscribeFromWidgetCatalogEventsAsync();
     }
 
     private void UnsubscribeFromWidgets()
     {
-        foreach (var widget in PinnedWidgets)
+        try
         {
-            widget.UnsubscribeFromWidgetUpdates();
+            foreach (var widget in PinnedWidgets)
+            {
+                widget.UnsubscribeFromWidgetUpdates();
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error("Exception in UnsubscribeFromWidgets:", ex);
         }
     }
 
