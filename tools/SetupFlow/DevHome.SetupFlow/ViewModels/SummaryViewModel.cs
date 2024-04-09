@@ -115,6 +115,20 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         }
     }
 
+    public bool WasCreateEnvironmentOperationStarted
+    {
+        get
+        {
+            var taskGroup = Orchestrator.GetTaskGroup<EnvironmentCreationOptionsTaskGroup>();
+            if (taskGroup == null)
+            {
+                return false;
+            }
+
+            return taskGroup.CreateEnvironmentTask.CreationOperationStarted;
+        }
+    }
+
     public List<PackageViewModel> AppsDownloadedInstallationNotes => AppsDownloaded.Where(p => !string.IsNullOrEmpty(p.InstallationNotes)).ToList();
 
     public List<ConfigurationUnitResultViewModel> ConfigurationUnitResults { get; private set; } = [];
@@ -136,6 +150,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private string _applicationsClonedText;
+
+    [ObservableProperty]
+    private string _summaryPageEnvironmentCreatingText;
 
     [RelayCommand]
     public void RemoveRestartGrid()
@@ -160,12 +177,31 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToMainPage");
     }
 
-    [RelayCommand]
     public void GoToDashboard()
     {
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("Dashboard"), Orchestrator.ActivityId);
         _host.GetService<INavigationService>().NavigateTo(KnownPageKeys.Dashboard);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToDashboard");
+    }
+
+    [RelayCommand]
+    public void RedirectToNextPage()
+    {
+        if (WasCreateEnvironmentOperationStarted)
+        {
+            GoToEnvironmentsPage();
+            return;
+        }
+
+        // Default behavior is to go to the dashboard
+        GoToDashboard();
+    }
+
+    public void GoToEnvironmentsPage()
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("Environments"), Orchestrator.ActivityId);
+        _host.GetService<INavigationService>().NavigateTo(KnownPageKeys.Environments);
+        _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToEnvironments");
     }
 
     [RelayCommand]
@@ -182,6 +218,12 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("WindowsDeveloperSettings"), Orchestrator.ActivityId);
         Task.Run(() => Launcher.LaunchUriAsync(new Uri("ms-settings:developers"))).Wait();
     }
+
+    [ObservableProperty]
+    private string _pageRedirectButtonText;
+
+    [ObservableProperty]
+    private string _pageHeaderText;
 
     public SummaryViewModel(
         ISetupFlowStringResource stringResource,
@@ -202,6 +244,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _showRestartNeeded = Visibility.Collapsed;
         _appManagementInitializer = appManagementInitializer;
         _cloneRepoNextSteps = new();
+        PageRedirectButtonText = StringResource.GetLocalized(StringResourceKey.SummaryPageOpenDashboard);
+        PageHeaderText = StringResource.GetLocalized(StringResourceKey.SummaryPageHeader);
 
         IsNavigationBarVisible = true;
         IsStepPage = false;
@@ -285,6 +329,12 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         if (failedTasks.Count != 0)
         {
             TelemetryFactory.Get<ITelemetry>().LogCritical("Summary_NavigatedTo_Event", false, Orchestrator.ActivityId);
+        }
+
+        if (WasCreateEnvironmentOperationStarted)
+        {
+            PageRedirectButtonText = StringResource.GetLocalized(StringResourceKey.SummaryPageRedirectToEnvironmentPageButton);
+            PageHeaderText = StringResource.GetLocalized(StringResourceKey.SummaryPageHeaderForEnvironmentCreationText);
         }
 
         await ReloadCatalogsAsync();

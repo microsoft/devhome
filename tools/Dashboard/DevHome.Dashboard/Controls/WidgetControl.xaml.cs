@@ -105,6 +105,8 @@ public sealed partial class WidgetControl : UserControl
                 var widgetIdToDelete = widgetViewModel.Widget.Id;
                 var widgetToDelete = widgetViewModel.Widget;
                 _log.Debug($"User removed widget, delete widget {widgetIdToDelete}");
+                var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+                Application.Current.GetService<IScreenReaderService>().Announce(stringResource.GetLocalized("WidgetRemoved"));
                 DashboardView.PinnedWidgets.Remove(widgetViewModel);
                 try
                 {
@@ -202,7 +204,7 @@ public sealed partial class WidgetControl : UserControl
         };
         menuSizeItem.Icon = fontIcon;
         var peer = FrameworkElementAutomationPeer.FromElement(menuSizeItem) as SelectableMenuFlyoutItemAutomationPeer;
-        peer.Select();
+        peer.AddToSelection();
     }
 
     private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel)

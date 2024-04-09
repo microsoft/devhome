@@ -59,7 +59,7 @@ public class AccountsService : IAccountsService
             }
             catch (Exception ex)
             {
-                _log.Error($"Failed to get {nameof(IDeveloperIdProvider)} provider from '{extension.Name}'", ex);
+                _log.Error($"Failed to get {nameof(IDeveloperIdProvider)} provider from '{extension.PackageFamilyName}/{extension.ExtensionDisplayName}'", ex);
             }
         }
 

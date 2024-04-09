@@ -118,8 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CreationInProgress" xml:space="preserve">
-    <value>Creating: {0}</value>
-    <comment>Locked="{0}" text to tell the user that we're currently creating the virtual machine. {0} is the name of the virtual machine</comment>
+    <value>Adding network switch, secure boot and enhanced session configuration for {0}</value>
+    <comment>Locked="{0}" Text to tell the user that we're performing post creation actions like adding a network switch to the virtual machine. {0} is the name of the virtual machine</comment>
+  </data>
+  <data name="CreationStarting" xml:space="preserve">
+    <value>Starting the creation process for {0}</value>
+    <comment>Locked="{0}" Text to tell the user that we're starting the process to create the virtual machine. {0} is the name of the virtual machine</comment>
   </data>
   <data name="CurrentCheckpoint" xml:space="preserve">
     <value>Current Checkpoint</value>
@@ -130,7 +134,7 @@
     <comment>Locked="{0}" text to tell the user that a file exists and we do not need to download it again. {0} is a previously download file. We show the file name in {0}.</comment>
   </data>
   <data name="DownloadInProgress" xml:space="preserve">
-    <value>Downloading {0}. {1}</value>
+    <value>Downloading {0} {1}</value>
     <comment>Locked="{0}" text to tell the user that we are downloading a file from the web. {0} is the file we're downloading. {1} the progress in the form of  "bytes received / total bytes needed". E.g "10 Mb / 400 Mb"</comment>
   </data>
   <data name="DownloadOperationCancelled" xml:space="preserve">
@@ -158,7 +162,7 @@
     <comment>Attempt counter text for the dialog to enter Hyper-V VM admin credential ({CurrentAttempt}/{MaxAttempts}).</comment>
   </data>
   <data name="ExtractionInProgress" xml:space="preserve">
-    <value>Extracting file {0}. {1}</value>
+    <value>Extracting file {0} {1}</value>
     <comment>Locked="{0}" text to tell the user that we're extracting a zip file into a location on their computer. {0} is the zip file we're extracting. {1} the progress in the form of  "bytes extracted / total bytes needed". E.g "10 Mb / 400 Mb"</comment>
   </data>
   <data name="NoImagesFoundError" xml:space="preserve">

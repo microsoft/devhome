@@ -171,7 +171,7 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
         var extensions = await _extensionService.GetInstalledExtensionsAsync(ProviderType.FeaturedApplications);
         foreach (var extension in extensions)
         {
-            var extensionName = extension.Name;
+            var extensionName = extension.PackageFamilyName;
             try
             {
                 _log.Information($"Getting featured applications provider from extension '{extensionName}'");

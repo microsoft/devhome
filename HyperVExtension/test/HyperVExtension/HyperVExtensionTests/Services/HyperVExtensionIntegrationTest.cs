@@ -393,7 +393,7 @@ properties:
         var smallestImageIndex = await GetIndexOfImageWithSmallestRequiredSpace(imageList);
         var inputJson = JsonSerializer.Serialize(new VMGalleryCreationUserInput()
         {
-            NewVirtualMachineName = expectedVMName,
+            NewEnvironmentName = expectedVMName,
 
             // Get Image with the smallest size from gallery, we'll use it to create a VM.
             SelectedImageListIndex = smallestImageIndex,

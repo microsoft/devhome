@@ -90,7 +90,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             switch (_creationAdaptiveCard?.State)
             {
                 case "initialCreationForm":
-                    operationResult = await HandleActionWhenFormInInitalState(actionPayload, inputs);
+                    operationResult = await HandleActionWhenFormInInitialState(actionPayload, inputs);
                     break;
                 case "reviewForm":
                     (operationResult, shouldEndSession) = await HandleActionWhenFormInReviewState(actionPayload);
@@ -158,16 +158,16 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             foreach (var image in _vMGalleryImageList.Images)
             {
                 var dataJson = new JsonObject
-            {
-                { "ImageDescription", GetMergedDescription(image) },
-                { "SubDescription", image.Publisher },
-                { "Header", image.Name },
-                { "HeaderIcon", image.Symbol.Base64Image },
-                { "ActionButtonText", "More info" },
-                { "ContentDialogInfo", SetupContentDialogInfo(image) },
-                { "ButtonToLaunchContentDialogLabel", buttonToLaunchContentDialogLabel },
-                { "SecondaryButtonForContentDialogText", secondaryButtonForContentDialogText },
-            };
+                {
+                    { "ImageDescription", GetMergedDescription(image) },
+                    { "SubDescription", image.Publisher },
+                    { "Header", image.Name },
+                    { "HeaderIcon", image.Symbol.Base64Image },
+                    { "ActionButtonText", "More info" },
+                    { "ContentDialogInfo", SetupContentDialogInfo(image) },
+                    { "ButtonToLaunchContentDialogLabel", buttonToLaunchContentDialogLabel },
+                    { "SecondaryButtonForContentDialogText", secondaryButtonForContentDialogText },
+                };
 
                 jsonArrayOfGalleryImages.Add(dataJson);
             }
@@ -211,7 +211,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             }
 
             var galleryImage = _vMGalleryImageList.Images[inputForGalleryOperation.SelectedImageListIndex];
-            var newVirtualMachineNameLabel = _stringResource.GetLocalized("NameLabelForNewVirtualMachine", ":");
+            var newEnvironmentNameLabel = _stringResource.GetLocalized("NameLabelForNewVirtualMachine", ":");
             var primaryButtonForCreationFlowText = _stringResource.GetLocalized("PrimaryButtonLabelForCreationFlow");
             var secondaryButtonForCreationFlowText = _stringResource.GetLocalized("SecondaryButtonLabelForCreationFlow");
             var storageFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(Constants.ExtensionIconInternal));
@@ -227,8 +227,8 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
                 { "DiskImageSize", BytesHelper.ConvertBytesToString(galleryImage.Disk.SizeInBytes) },
                 { "VMGalleryImageName", galleryImage.Name },
                 { "Publisher", galleryImage.Publisher },
-                { "NameOfNewVM", inputForGalleryOperation.NewVirtualMachineName },
-                { "NameLabel", newVirtualMachineNameLabel },
+                { "NameOfNewVM", inputForGalleryOperation.NewEnvironmentName },
+                { "NameLabel", newEnvironmentNameLabel },
                 { "Base64ImageForProvider", providerBase64Image },
                 { "DiskImageUrl", galleryImage.Symbol.Uri },
                 { "PrimaryButtonLabelForCreationFlow", primaryButtonForCreationFlowText },
@@ -247,7 +247,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
     }
 
     /// <summary>
-    /// The discription for VM gallery images is stored in a list of strings. This method merges the strings into one string.
+    /// The description for VM gallery images is stored in a list of strings. This method merges the strings into one string.
     /// </summary>
     /// <param name="image">The c# class that represents the gallery image</param>
     /// <returns>A string that combines the original list of strings into one</returns>
@@ -298,7 +298,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
         };
     }
 
-    private async Task<ProviderOperationResult> HandleActionWhenFormInInitalState(AdaptiveCardActionPayload actionPayload, string inputs)
+    private async Task<ProviderOperationResult> HandleActionWhenFormInInitialState(AdaptiveCardActionPayload actionPayload, string inputs)
     {
         ProviderOperationResult operationResult;
         var actionButtonId = actionPayload.Id ?? string.Empty;

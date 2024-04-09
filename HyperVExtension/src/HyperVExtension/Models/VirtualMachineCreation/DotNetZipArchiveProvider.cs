@@ -28,13 +28,13 @@ public sealed class DotNetZipArchiveProvider : IArchiveProvider
         using var outputFileStream = File.OpenWrite(destinationAbsoluteFilePath);
         using var zipArchiveEntryStream = zipArchiveEntry.Open();
 
-        var fileExtractionProgress = new Progress<long>(bytesCopied =>
+        var fileExtractionProgress = new Progress<ByteTransferProgress>(progressObj =>
         {
-            progressProvider.Report(new ArchiveExtractionReport((ulong)bytesCopied, (ulong)totalBytesToExtract));
+            progressProvider.Report(new ArchiveExtractionReport(progressObj));
         });
 
         outputFileStream.SetLength(totalBytesToExtract);
-        await zipArchiveEntryStream.CopyToAsync(outputFileStream, fileExtractionProgress, _transferBufferSize, cancellationToken);
+        await zipArchiveEntryStream.CopyToAsync(outputFileStream, fileExtractionProgress, _transferBufferSize, totalBytesToExtract, cancellationToken);
         File.SetLastWriteTime(destinationAbsoluteFilePath, zipArchiveEntry.LastWriteTime.DateTime);
     }
 }

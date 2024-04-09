@@ -266,4 +266,28 @@ public static class StringResourceKey
     public static readonly string SetupTargetConfigurationProgressUpdate = nameof(SetupTargetConfigurationProgressUpdate);
     public static readonly string SetupTargetConfigurationUnitProgressErrorWithMsg = nameof(SetupTargetConfigurationUnitProgressErrorWithMsg);
     public static readonly string SetupTargetConfigurationUnitUnknown = nameof(SetupTargetConfigurationUnitUnknown);
+
+    // Create Environment flow
+    public static readonly string SelectEnvironmentPageTitle = nameof(SelectEnvironmentPageTitle);
+    public static readonly string ConfigureEnvironmentPageTitle = nameof(ConfigureEnvironmentPageTitle);
+    public static readonly string EnvironmentCreationReviewPageTitle = nameof(EnvironmentCreationReviewPageTitle);
+    public static readonly string EnvironmentCreationReviewTabTitle = nameof(EnvironmentCreationReviewTabTitle);
+    public static readonly string EnvironmentCreationError = nameof(EnvironmentCreationError);
+    public static readonly string StartingEnvironmentCreation = nameof(StartingEnvironmentCreation);
+    public static readonly string EnvironmentCreationOperationInitializationFinished = nameof(EnvironmentCreationOperationInitializationFinished);
+    public static readonly string EnvironmentCreationForProviderStarted = nameof(EnvironmentCreationForProviderStarted);
+    public static readonly string EnvironmentCreationFailedToGetProviderInformation = nameof(EnvironmentCreationFailedToGetProviderInformation);
+    public static readonly string EnvironmentCreationReviewExpanderDescription = nameof(EnvironmentCreationReviewExpanderDescription);
+    public static readonly string CreateEnvironmentButtonText = nameof(CreateEnvironmentButtonText);
+    public static readonly string SetupShellReviewPageDescriptionForEnvironmentCreation = nameof(SetupShellReviewPageDescriptionForEnvironmentCreation);
+
+    // Summary page
+    public static readonly string SummaryPageOpenDashboard = nameof(SummaryPageOpenDashboard);
+    public static readonly string SummaryPageRedirectToEnvironmentPageButton = nameof(SummaryPageRedirectToEnvironmentPageButton);
+    public static readonly string SummaryPageHeader = nameof(SummaryPageHeader);
+    public static readonly string SummaryPageHeaderForEnvironmentCreationText = nameof(SummaryPageHeaderForEnvironmentCreationText);
+
+    // Review page
+    public static readonly string ReviewExpanderDescription = nameof(ReviewExpanderDescription);
+    public static readonly string SetupShellReviewPageDescription = nameof(SetupShellReviewPageDescription);
 }

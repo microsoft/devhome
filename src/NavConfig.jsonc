@@ -100,6 +100,27 @@
           "visible": false
         }
       ]
+    },
+    {
+      "identity": "EnvironmentsCreationFlow",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "release",
+          "enabledByDefault": false,
+          "visible": false
+        }
+      ]
     }
   ]
 }
