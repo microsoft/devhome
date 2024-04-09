@@ -9,11 +9,20 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal sealed class ErrorResponse : ResponseBase
 {
-    public ErrorResponse(string requestId)
+    public ErrorResponse(string requestId, Exception? error)
         : base(requestId)
     {
-        Status = Windows.Win32.Foundation.HRESULT.E_FAIL;
-        ErrorDescription = "Missing Request data.";
+        if (error != null)
+        {
+            ErrorDescription = error.Message;
+            Status = (uint)error.HResult;
+        }
+        else
+        {
+            ErrorDescription = "Missing Request data.";
+            Status = Windows.Win32.Foundation.HRESULT.E_FAIL;
+        }
+
         GenerateJsonData();
     }
 }

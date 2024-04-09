@@ -8,10 +8,14 @@
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Scripts\DevSetupAgent.ps1" />
     <None Remove="Templates\VmCredentialAdaptiveCardTemplate.json" />
     <None Remove="Templates\WaitForLoginAdaptiveCardTemplate.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Scripts\DevSetupAgent.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Templates\VmCredentialAdaptiveCardTemplate.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
