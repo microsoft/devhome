@@ -20,6 +20,10 @@ public sealed partial class DevDriveView : UserControl
         {
             var option = new FindNextElementOptions();
             option.SearchRoot = GoToLearnMoreHyperlink;
+
+            // An invisible element above the hyperlink is eating a tab.
+            // Set IsTabStop to false to prevent users having to double-tab to get to the first
+            // focusable element.
             var focusableElement = FocusManager.FindNextElement(FocusNavigationDirection.Up, option);
             focusableElement.SetValue(IsTabStopProperty, false);
         };
