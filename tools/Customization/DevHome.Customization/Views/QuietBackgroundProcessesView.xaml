@@ -7,7 +7,7 @@
 
     <StackPanel Orientation="Vertical"
                 Visibility="{x:Bind ViewModel.IsQuietBackgroundProcessesFeatureEnabled, Mode=OneWay}">
-        <ctControls:SettingsExpander x:Uid="QuietBackgroundProcesses" IsExpanded="True" Margin="{ThemeResource SettingsCardMargin}">
+        <ctControls:SettingsExpander x:Uid="QuietBackgroundProcesses" IsExpanded="False" Margin="{ThemeResource SettingsCardMargin}">
 
             <!-- Header icon -->
             <ctControls:SettingsExpander.HeaderIcon>
@@ -34,7 +34,7 @@
 
             <!-- Expander -->
             <ctControls:SettingsExpander.Items>
-                <ctControls:SettingsCard x:Uid="QuietBackgroundProcessesExplanation" HorizontalContentAlignment="Left" >
+                <ctControls:SettingsCard x:Uid="QuietBackgroundProcessesExplanation" HorizontalContentAlignment="Left" Margin="{ThemeResource SettingsCardMargin}">
                 </ctControls:SettingsCard>
             </ctControls:SettingsExpander.Items>
 
