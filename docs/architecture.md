@@ -61,7 +61,7 @@ The tools are a set of functionalities that are integrated within Dev Home's cod
 
 These tools can use the APIs in the extension SDK to get data or functionality from the extensions.
 
-Learn more about [writing a tool](./tools/tools.md).
+Learn more about [tools](./tools/readme.md).
 
 Dev Home currently has the following tools:
 
