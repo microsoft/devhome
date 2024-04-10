@@ -76,4 +76,4 @@ Extensions are separate packages living as out-of-process components that provid
 
 Extensions can be developed by third-party developers or by Dev Home's core development team. These extensions allow Dev Home to be extended without modifying its core codebase.
 
-Learn more about [writing an extension](./extensions/extensions.md).
+Learn more about [writing an extension](./extensions/readme.md).
