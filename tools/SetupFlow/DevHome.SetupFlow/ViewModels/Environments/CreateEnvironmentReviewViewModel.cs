@@ -16,6 +16,6 @@ public partial class CreateEnvironmentReviewViewModel : ReviewTabViewModelBase
         ISetupFlowStringResource stringResource)
     {
         _stringResource = stringResource;
-        TabTitle = stringResource.GetLocalized(StringResourceKey.EnvironmentCreationReviewPageTitle);
+        TabTitle = stringResource.GetLocalized(StringResourceKey.EnvironmentCreationReviewTabTitle);
     }
 }

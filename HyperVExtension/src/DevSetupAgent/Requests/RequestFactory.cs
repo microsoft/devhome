@@ -42,7 +42,6 @@ public class RequestFactory : IRequestFactory
                 {
                     if (_requestFactories.TryGetValue(requestType, out var createRequest))
                     {
-                        // TODO: Try/catch error.
                         requestContext.JsonData = requestJson!;
                         return createRequest(requestContext);
                     }

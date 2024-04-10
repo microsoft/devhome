@@ -41,6 +41,15 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     [NotifyCanExecuteChangedFor(nameof(SetUpCommand))]
     private bool _canSetUp;
 
+    [ObservableProperty]
+    private string _reviewPageTitle;
+
+    [ObservableProperty]
+    private string _reviewPageExpanderDescription;
+
+    [ObservableProperty]
+    private string _reviewPageDescription;
+
     public bool HasApplicationsToInstall => Orchestrator.GetTaskGroup<AppManagementTaskGroup>()?.SetupTasks.Any() == true;
 
     public bool RequiresTermsAgreement => HasApplicationsToInstall;
@@ -88,6 +97,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     {
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReviewPageTitle);
+        ReviewPageExpanderDescription = StringResource.GetLocalized(StringResourceKey.ReviewExpanderDescription);
+        ReviewPageDescription = StringResource.GetLocalized(StringResourceKey.SetupShellReviewPageDescription);
 
         _setupFlowOrchestrator = orchestrator;
         _configFileBuilder = configFileBuilder;
@@ -104,7 +115,18 @@ public partial class ReviewViewModel : SetupPageViewModelBase
             .ToList();
         SelectedReviewTab = ReviewTabs.FirstOrDefault();
 
+        // If the CreateEnvironmentTaskGroup is present, update the setup button text to "Create Environment"
+        // and page title to "Review your environment"
+        if (Orchestrator.GetTaskGroup<EnvironmentCreationOptionsTaskGroup>() != null)
+        {
+            NextPageButtonText = StringResource.GetLocalized(StringResourceKey.CreateEnvironmentButtonText);
+            PageTitle = StringResource.GetLocalized(StringResourceKey.EnvironmentCreationReviewPageTitle);
+            ReviewPageExpanderDescription = StringResource.GetLocalized(StringResourceKey.EnvironmentCreationReviewExpanderDescription);
+            ReviewPageDescription = StringResource.GetLocalized(StringResourceKey.SetupShellReviewPageDescriptionForEnvironmentCreation);
+        }
+
         NextPageButtonToolTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
+
         UpdateCanSetUp();
 
         await Task.CompletedTask;

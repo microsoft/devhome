@@ -49,7 +49,6 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         Orchestrator.NotifyNavigationCanExecuteChanged();
 
         var providerDetails = await Task.Run(_computeSystemService.GetComputeSystemProvidersAsync);
-
         ProvidersViewModels = new();
         foreach (var providerDetail in providerDetails)
         {
