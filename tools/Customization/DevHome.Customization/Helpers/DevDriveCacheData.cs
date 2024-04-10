@@ -17,5 +17,5 @@ public partial class DevDriveCacheData
 
     public List<string>? CacheDirectory { get; set; }
 
-    public string? ExampleDirectory { get; set; }
+    public string? ExampleSubDirectory { get; set; }
 }

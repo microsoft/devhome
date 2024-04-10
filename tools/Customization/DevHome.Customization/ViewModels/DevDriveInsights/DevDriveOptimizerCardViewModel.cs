@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -17,6 +18,8 @@ namespace DevHome.Customization.ViewModels.DevDriveInsights;
 public partial class DevDriveOptimizerCardViewModel : ObservableObject
 {
     public OptimizeDevDriveDialogViewModelFactory OptimizeDevDriveDialogViewModelFactory { get; set; }
+
+    public List<string> ExistingDevDriveLetters { get; set; }
 
     public string CacheToBeMoved { get; set; }
 
@@ -41,7 +44,11 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
         var settingsCard = sender as Button;
         if (settingsCard != null)
         {
-            var optimizeDevDriveViewModel = OptimizeDevDriveDialogViewModelFactory(ExistingCacheLocation, EnvironmentVariableToBeSet);
+            var optimizeDevDriveViewModel = OptimizeDevDriveDialogViewModelFactory(
+                ExistingCacheLocation,
+                EnvironmentVariableToBeSet,
+                ExampleLocationOnDevDrive,
+                ExistingDevDriveLetters);
             var optimizeDevDriveDialog = new OptimizeDevDriveDialog(optimizeDevDriveViewModel);
             optimizeDevDriveDialog.XamlRoot = settingsCard.XamlRoot;
             optimizeDevDriveDialog.RequestedTheme = settingsCard.ActualTheme;
@@ -49,9 +56,16 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
         }
     }
 
-    public DevDriveOptimizerCardViewModel(OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory, string cacheToBeMoved, string existingCacheLocation, string exampleLocationOnDevDrive, string environmentVariableToBeSet)
+    public DevDriveOptimizerCardViewModel(
+        OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory,
+        string cacheToBeMoved,
+        string existingCacheLocation,
+        string exampleLocationOnDevDrive,
+        string environmentVariableToBeSet,
+        List<string> existingDevDriveLetters)
     {
         OptimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
+        ExistingDevDriveLetters = existingDevDriveLetters;
         CacheToBeMoved = cacheToBeMoved;
         ExistingCacheLocation = existingCacheLocation;
         ExampleLocationOnDevDrive = exampleLocationOnDevDrive;

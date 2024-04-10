@@ -12,12 +12,17 @@ using DevHome.Common.Services;
 using DevHome.Customization.Helpers;
 using DevHome.Customization.ViewModels.DevDriveInsights;
 using DevHome.Customization.Views;
+using Microsoft.Internal.Windows.DevHome.Helpers;
 using Serilog;
 
 namespace DevHome.Customization.ViewModels;
 
 public partial class DevDriveInsightsViewModel : ObservableObject
 {
+    private readonly ShellSettings _shellSettings;
+
+    public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
+
     public ObservableCollection<DevDriveCardViewModel> DevDriveCardCollection { get; private set; } = new();
 
     public ObservableCollection<DevDriveOptimizerCardViewModel> DevDriveOptimizerCardCollection { get; private set; } = new();
@@ -48,12 +53,29 @@ public partial class DevDriveInsightsViewModel : ObservableObject
 
     private IEnumerable<IDevDrive> ExistingDevDrives { get; set; } = Enumerable.Empty<IDevDrive>();
 
+    private static readonly string _appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
     private static readonly string _localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
     private static readonly string _userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
+    private const string PackagesStr = "packages";
+
+    private const string CacheStr = "cache";
+
+    private const string ArchivesStr = "archives";
+
     public DevDriveInsightsViewModel(IDevDriveManager devDriveManager, OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory)
     {
+        _shellSettings = new ShellSettings();
+
+        var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
+        Breadcrumbs =
+        [
+            new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
+            new(stringResource.GetLocalized("DevDriveInsights_Header"), typeof(DevDriveInsightsViewModel).FullName!)
+        ];
+
         _optimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
         DevDriveManagerObj = devDriveManager;
     }
@@ -237,17 +259,60 @@ public partial class DevDriveInsightsViewModel : ObservableObject
             EnvironmentVariable = "PIP_CACHE_DIR",
             CacheDirectory = new List<string>
             {
-                Path.Join(_localAppDataPath, "pip", "cache"),
-                Path.Join(_localAppDataPath, "packages", "PythonSoftwareFoundation.Python"),
+                Path.Join(_localAppDataPath, "pip", CacheStr),
+                Path.Join(_localAppDataPath, PackagesStr, "PythonSoftwareFoundation.Python"),
             },
-            ExampleDirectory = Path.Join("D:", "packages", "pip", "cache"),
+            ExampleSubDirectory = Path.Join(PackagesStr, "pip", CacheStr),
         },
         new DevDriveCacheData
         {
             CacheName = "NuGet cache (dotnet)",
             EnvironmentVariable = "NUGET_PACKAGES",
-            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".nuget", "packages") },
-            ExampleDirectory = Path.Join("D:", "packages", "NuGet", "Cache"),
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".nuget", PackagesStr) },
+            ExampleSubDirectory = Path.Join(PackagesStr, "NuGet", CacheStr),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Npm cache (NodeJS)",
+            EnvironmentVariable = "NPM_CONFIG_CACHE",
+            CacheDirectory = new List<string>
+            {
+                Path.Join(_appDataPath, "npm-cache"),
+                Path.Join(_localAppDataPath, "npm-cache"),
+            },
+            ExampleSubDirectory = Path.Join(PackagesStr, "npm"),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Vcpkg cache",
+            EnvironmentVariable = "VCPKG_DEFAULT_BINARY_CACHE",
+            CacheDirectory = new List<string>
+            {
+                Path.Join(_appDataPath, "vcpkg", ArchivesStr),
+                Path.Join(_localAppDataPath, "vcpkg", ArchivesStr),
+            },
+            ExampleSubDirectory = Path.Join(PackagesStr, "vcpkg"),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Cargo cache (Rust)",
+            EnvironmentVariable = "CARGO_HOME",
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".cargo") },
+            ExampleSubDirectory = Path.Join(PackagesStr, "cargo"),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Maven cache (Java)",
+            EnvironmentVariable = "MAVEN_OPTS",
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".m2") },
+            ExampleSubDirectory = Path.Join(PackagesStr, "m2"),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Gradle cache (Java)",
+            EnvironmentVariable = "GRADLE_USER_HOME",
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".gradle") },
+            ExampleSubDirectory = Path.Join(PackagesStr, "gradle"),
         }
     ];
 
@@ -261,13 +326,13 @@ public partial class DevDriveInsightsViewModel : ObservableObject
             }
             else
             {
-                var subDirectories = Directory.GetDirectories(_localAppDataPath + "\\Packages", "*", SearchOption.TopDirectoryOnly);
+                var subDirectories = Directory.GetDirectories(Path.Join(_localAppDataPath, PackagesStr), "*", SearchOption.TopDirectoryOnly);
                 var matchingSubdirectory = subDirectories.FirstOrDefault(subdir => subdir.StartsWith(cacheDirectory, StringComparison.OrdinalIgnoreCase));
                 if (Directory.Exists(matchingSubdirectory))
                 {
                     if (matchingSubdirectory.Contains("PythonSoftwareFoundation"))
                     {
-                        return Path.Join(matchingSubdirectory, "LocalCache", "Local", "pip", "cache");
+                        return Path.Join(matchingSubdirectory, "LocalCache", "Local", "pip", CacheStr);
                     }
 
                     return matchingSubdirectory;
@@ -307,12 +372,16 @@ public partial class DevDriveInsightsViewModel : ObservableObject
                 continue;
             }
 
+            List<string> existingDevDriveLetters = ExistingDevDrives.Select(x => x.DriveLetter.ToString()).ToList();
+
+            var exampleDirectory = Path.Join(existingDevDriveLetters[0] + ":", cache.ExampleSubDirectory);
             var card = new DevDriveOptimizerCardViewModel(
                 _optimizeDevDriveDialogViewModelFactory,
                 cache.CacheName!,
                 existingCacheLocation,
-                cache.ExampleDirectory!, // example location on dev drive to move cache to
-                cache.EnvironmentVariable!); // environmentVariableToBeSet
+                exampleDirectory!, // example location on dev drive to move cache to
+                cache.EnvironmentVariable!, // environmentVariableToBeSet
+                existingDevDriveLetters);
             DevDriveOptimizerCardCollection.Add(card);
         }
 
