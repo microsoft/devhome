@@ -7,9 +7,9 @@
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
-    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-        <ScrollView Grid.Row="1" VerticalAlignment="Top">
+    <ScrollView VerticalAlignment="Top">
+        <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <views:DevDriveInsightsView />
-        </ScrollView>
-    </Grid>
+        </Grid>
+    </ScrollView>
 </Page>
