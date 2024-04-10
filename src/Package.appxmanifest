@@ -86,7 +86,7 @@
                 <Activation>
                   <CreateInstance ClassId="426A52D6-8007-4894-A946-CF80F39507F1" />
                 </Activation>
-                <!-- ExtensionService expects SupportedInterfaces to be defined, even if it is empty -->
+                <!-- Best practice is to define SupportedInterfaces, even if it is empty -->
                 <SupportedInterfaces />
               </DevHomeProvider>
             </uap3:Properties>
