@@ -10,7 +10,6 @@ using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using Serilog;
-using Windows.Storage.Pickers;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;

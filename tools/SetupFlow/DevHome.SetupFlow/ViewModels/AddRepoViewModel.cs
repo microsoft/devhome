@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -336,6 +337,28 @@ public partial class AddRepoViewModel : ObservableObject
     public async Task ShowCustomizeDevDriveWindow()
     {
         await EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        ToggleCloneButton();
+    }
+
+    [RelayCommand]
+    public void DevDriveCloneLocationChanged()
+    {
+        var location = (EditDevDriveViewModel.DevDrive != null) ? EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
+
+        if (!string.IsNullOrEmpty(location))
+        {
+            SaveCloneLocation(location);
+        }
+    }
+
+    [RelayCommand]
+    public void SaveCloneLocation(string location)
+    {
+        // In cases where location is empty don't update the cloneLocation. Only update when there are actual values.
+        FolderPickerViewModel.CloneLocation = location;
+
+        FolderPickerViewModel.ValidateCloneLocation();
+
         ToggleCloneButton();
     }
 
@@ -1014,8 +1037,8 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.RepositoryProvider = _providers.GetSDKProvider(_selectedRepoProvider);
             cloningInformation.ProviderName = _providers.DisplayName(_selectedRepoProvider);
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{_selectedRepoProvider}/{repositoryToAdd}");
-            cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{_selectedRepoProvider}/{repositoryToAdd}");
+            cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, Path.Join(_selectedRepoProvider, repositoryToAdd.RepoDisplayName));
+            cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, Path.Join(_selectedRepoProvider, repositoryToAdd.RepoDisplayName));
             EverythingToClone.Add(cloningInformation);
         }
     }
