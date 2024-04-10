@@ -23,7 +23,7 @@ public static class ServiceExtensions
         services.AddSingleton<DevDriveInsightsViewModel>();
         services.AddTransient<DevDriveInsightsPage>();
 
-        services.AddTransient<QuietBackgroundProcessesViewModel>();
+        services.AddTransient<DevHome.QuietBackgroundProcesses.UI.ViewModels.QuietBackgroundProcessesViewModel>();
 
         return services;
     }

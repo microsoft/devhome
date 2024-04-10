@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
-using DevHome.Customization.ViewModels;
+using DevHome.QuietBackgroundProcesses.UI.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.Customization.Views;
+namespace DevHome.QuietBackgroundProcesses.UI.Views;
 
 public sealed partial class QuietBackgroundProcessesView : UserControl
 {

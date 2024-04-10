@@ -7,12 +7,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Services;
-using DevHome.QuietBackgroundProcesses;
 using Microsoft.UI.Xaml;
 using Serilog;
 using WinUIEx;
 
-namespace DevHome.Customization.ViewModels;
+namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
 
 public partial class QuietBackgroundProcessesViewModel : ObservableObject
 {
@@ -53,7 +52,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
 
     private string GetString(string id)
     {
-        var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
+        var stringResource = new StringResource("DevHome.QuietBackgroundProcesses.UI.pri", "DevHome.QuietBackgroundProcesses.UI/Resources");
         return stringResource.GetLocalized(id);
     }
 
