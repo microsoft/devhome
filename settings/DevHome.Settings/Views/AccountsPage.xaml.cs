@@ -114,7 +114,7 @@ public sealed partial class AccountsPage : Page
         }
         catch (Exception ex)
         {
-            _log.Error($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
+            _log.Error(ex, $"ShowLoginUIAsync(): loginUIContentDialog failed.");
         }
 
         accountProvider.RefreshLoggedInAccounts();
@@ -186,7 +186,7 @@ public sealed partial class AccountsPage : Page
             }
             catch (Exception ex)
             {
-                _log.Error($"Exception thrown while calling {nameof(accountProvider.DeveloperIdProvider)}.{nameof(accountProvider.DeveloperIdProvider.ShowLogonSession)}: ", ex);
+                _log.Error(ex, $"Exception thrown while calling {nameof(accountProvider.DeveloperIdProvider)}.{nameof(accountProvider.DeveloperIdProvider.ShowLogonSession)}: ");
             }
 
             accountProvider.RefreshLoggedInAccounts();

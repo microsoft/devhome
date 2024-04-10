@@ -138,7 +138,7 @@ public class ConfigurationFileBuilder
             }
             catch (Exception e)
             {
-                _log.Error($"Error creating a repository resource entry", e);
+                _log.Error(e, $"Error creating a repository resource entry");
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using HyperVExtension.HostGuestCommunication;
 using HyperVExtension.Models;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;

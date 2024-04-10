@@ -104,7 +104,7 @@ public static class DevDriveUtil
             }
             catch (Exception ex)
             {
-                Log.Error($"Unable to query for Dev Drive enablement: {ex.Message}");
+                Log.Error(ex, $"Unable to query for Dev Drive enablement: {ex.Message}");
                 return false;
             }
         }

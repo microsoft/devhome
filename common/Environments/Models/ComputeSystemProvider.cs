@@ -52,7 +52,7 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            _log.Error($"CreateAdaptiveCardSessionForDeveloperId for: {this} failed due to exception", ex);
+            _log.Error(ex, $"CreateAdaptiveCardSessionForDeveloperId for: {this} failed due to exception");
             return new ComputeSystemAdaptiveCardResult(ex, errorString, ex.Message);
         }
     }
@@ -65,7 +65,7 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            _log.Error($"CreateAdaptiveCardSessionForComputeSystem for: {this} failed due to exception", ex);
+            _log.Error(ex, $"CreateAdaptiveCardSessionForComputeSystem for: {this} failed due to exception");
             return new ComputeSystemAdaptiveCardResult(ex, errorString, ex.Message);
         }
     }
@@ -78,7 +78,7 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            _log.Error($"GetComputeSystemsAsync for: {this} failed due to exception", ex);
+            _log.Error(ex, $"GetComputeSystemsAsync for: {this} failed due to exception");
             return new ComputeSystemsResult(ex, errorString, ex.Message);
         }
     }
@@ -92,7 +92,7 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            _log.Error($"GetComputeSystemsAsync for: {this} failed due to exception", ex);
+            _log.Error(ex, $"GetComputeSystemsAsync for: {this} failed due to exception");
             return new FailedCreateComputeSystemOperation(ex, StringResourceHelper.GetResource("CreationOperationStoppedUnexpectedly"));
         }
     }

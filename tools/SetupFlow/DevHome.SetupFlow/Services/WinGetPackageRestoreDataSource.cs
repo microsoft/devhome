@@ -97,7 +97,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         }
         catch (Exception e)
         {
-            _log.Error($"Error loading packages from winget restore catalog.", e);
+            _log.Error(e, $"Error loading packages from winget restore catalog.");
         }
 
         return result;
@@ -130,7 +130,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to get icon for restore package {appInfo.Id}", e);
+            _log.Error(e, $"Failed to get icon for restore package {appInfo.Id}");
         }
 
         _log.Warning($"No {theme} icon found for restore package {appInfo.Id}. A default one will be provided.");

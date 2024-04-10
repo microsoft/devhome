@@ -6,8 +6,14 @@ CLSCTX
 WIN32_ERROR
 S_OK
 E_FAIL
+E_UNEXPECTED
 LsaEnumerateLogonSessions
 LsaGetLogonSessionData
 Windows.Win32.Security.Authentication.Identity.LsaFreeReturnBuffer
 SECURITY_LOGON_TYPE
 STATUS_SUCCESS
+MakeAbsoluteSD
+ConvertStringSecurityDescriptorToSecurityDescriptor
+LocalAlloc
+LocalFree
+SDDL_REVISION_1

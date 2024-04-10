@@ -196,7 +196,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
         catch (Exception ex)
         {
-            _log.Error($"Error filtering ComputeSystemsListViewModel", ex);
+            _log.Error(ex, $"Error filtering ComputeSystemsListViewModel");
         }
 
         return true;
@@ -366,7 +366,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
         catch (Exception ex)
         {
-            _log.Error($"Error loading ComputeSystemViewModels data", ex);
+            _log.Error(ex, $"Error loading ComputeSystemViewModels data");
         }
 
         ShouldShowShimmerBelowList = false;

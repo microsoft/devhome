@@ -251,7 +251,7 @@ public class DevDriveManager : IDevDriveManager
         catch (Exception ex)
         {
             // Log then return empty list, don't show the user their existing dev drive. Not catastrophic failure.
-            _log.Error($"Failed to get existing Dev Drives.", ex);
+            _log.Error(ex, $"Failed to get existing Dev Drives.");
             return new List<IDevDrive>();
         }
     }
@@ -280,7 +280,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            _log.Error($"Unable to get available Free Space for {root}.", ex);
+            _log.Error(ex, $"Unable to get available Free Space for {root}.");
             validationSuccessful = false;
         }
 
@@ -372,7 +372,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to validate selected Drive letter ({devDrive.DriveLocation.FirstOrDefault()}).", ex);
+            _log.Error(ex, $"Failed to validate selected Drive letter ({devDrive.DriveLocation.FirstOrDefault()}).");
             returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
         }
 
@@ -405,7 +405,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to get Available Drive letters.", ex);
+            _log.Error(ex, $"Failed to get Available Drive letters.");
         }
 
         return driveLetterSet.ToList();

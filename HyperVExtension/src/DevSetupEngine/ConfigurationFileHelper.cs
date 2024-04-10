@@ -279,22 +279,21 @@ public class ConfigurationFileHelper
     {
         _log.Information($"WinGet: {diagnosticInformation.Message}");
 
-        var sourceComponent = nameof(WinGet.ConfigurationProcessor);
         switch (diagnosticInformation.Level)
         {
             case WinGet.DiagnosticLevel.Warning:
-                _log.Warning(sourceComponent, diagnosticInformation.Message);
+                _log.Warning(diagnosticInformation.Message);
                 return;
             case WinGet.DiagnosticLevel.Error:
-                _log.Error(sourceComponent, diagnosticInformation.Message);
+                _log.Error(diagnosticInformation.Message);
                 return;
             case WinGet.DiagnosticLevel.Critical:
-                _log.Fatal(sourceComponent, diagnosticInformation.Message);
+                _log.Fatal(diagnosticInformation.Message);
                 return;
             case WinGet.DiagnosticLevel.Verbose:
             case WinGet.DiagnosticLevel.Informational:
             default:
-                _log.Information(sourceComponent, diagnosticInformation.Message);
+                _log.Information(diagnosticInformation.Message);
                 return;
         }
     }

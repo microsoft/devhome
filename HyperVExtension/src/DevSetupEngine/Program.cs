@@ -58,7 +58,7 @@ internal sealed class Program
         }
         catch (Exception ex)
         {
-            Log.Error($"Exception: {ex}", ex);
+            Log.Error(ex, $"Exception: {ex}");
             Log.CloseAndFlush();
             return ex.HResult;
         }
