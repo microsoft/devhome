@@ -49,11 +49,11 @@ Dev Home Core is the central part of Dev Home where all the components come toge
 
 The Dev Home Common component contains code that is shared among the tools, core, and settings components. It also imports libraries that are used across Dev Home. One such library is the **Dev Home Extension SDK** used to get references to out-of-process extensions.
 
-Dev Home Common also provides logging and telemetry functionality.
+Dev Home Common also provides telemetry functionality.
 
 ## Settings
 
-This is a special component that acts similarly a tool but isn't actually a tool. The Settings component, like other tools, consumes the Common project and is used by Dev Home Core. It manages user preferences across all tools and extensions.
+This is a special component that acts similarly to a tool but isn't actually a tool. The Settings component, like other tools, consumes the Common project and is used by Dev Home Core. It manages user preferences across all tools and extensions.
 
 ## Tools
 
@@ -61,13 +61,13 @@ The tools are a set of functionalities that are integrated within Dev Home's cod
 
 These tools can use the APIs in the extension SDK to get data or functionality from the extensions.
 
-Learn more about [writing a tool](./tools.md).
+Learn more about [writing a tool](./tools/tools.md).
 
 Dev Home currently has the following tools:
 
-- [Dashboard](./tools.md#dashboard-tool)
-- [Setup flow](./tools.md#setup-flow-tool)
-- Extensions
+- [Dashboard](./tools/Dashboard.md)
+- Setup flow
+- Extensions Library
 - [Windows customization](../tools/Customization/DevHome.Customization/Customization.md)
 
 ## Extensions
@@ -76,4 +76,4 @@ Extensions are separate packages living as out-of-process components that provid
 
 Extensions can be developed by third-party developers or by Dev Home's core development team. These extensions allow Dev Home to be extended without modifying its core codebase.
 
-Learn more about [writing an extension](./extensions.md).
+Learn more about [writing an extension](./extensions/extensions.md).
