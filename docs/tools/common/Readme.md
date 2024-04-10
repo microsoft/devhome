@@ -18,3 +18,7 @@ List of common controls that are generic, customizable and reusable from all pag
 - [WindowOpenFileDialog](./WindowOpenFileDialog.md)
 - [WindowOpenFolderDialog](./WindowOpenFolderDialog.md)
 - [WindowSaveFileDialog](./WindowSaveFileDialog.md)
+
+## Custom Adaptive Card schema
+
+Coming soon.
