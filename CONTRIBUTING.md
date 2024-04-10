@@ -153,6 +153,14 @@ Once you've discussed your proposed feature/fix/etc. with a team member and you'
 5. Work on your changes
 6. Build and see if it works
 
+### Rules
+
+- **Follow the pattern of what you already see in the code.**
+- [Coding style](style.md).
+- Try to package new ideas/components into libraries that have nicely defined interfaces.
+- Package new ideas into classes or refactor existing ideas into a class as you extend.
+- When adding new classes/methods/changing existing code: add new unit tests or update the existing tests.
+
 ### Code review
 
 When you'd like the team to take a look (even if the work is not yet fully-complete), mark the PR as 'Ready For Review' so that the team can review your work and provide comments, suggestions, and request changes. It may take several cycles but the end result will be solid, testable, conformant code that is safe for us to merge.

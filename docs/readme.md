@@ -1,21 +1,5 @@
 # Dev Documentation
 
-## Fork, Clone, Branch and Create your PR
-
-Once you've discussed your proposed feature/fix/etc. with a team member, and you've agreed on an approach or a spec has been written and approved, it's time to start development:
-
-1. Fork the repo if you haven't already
-1. Clone your fork locally
-1. Create & push a feature branch <!--1. Create a [Draft Pull Request (PR)](https://github.blog/2019-02-14-introducing-draft-pull-requests/)-->
-1. Work on your changes
-
-## Rules
-
-- **Follow the pattern of what you already see in the code.**
-- [Coding style](style.md).
-- Try to package new ideas/components into libraries that have nicely defined interfaces.
-- Package new ideas into classes or refactor existing ideas into a class as you extend.
-- When adding new classes/methods/changing existing code: add new unit tests or update the existing tests.
 <!--
 ## GitHub Workflow
 
@@ -58,5 +42,5 @@ It's responsible for:
 ## More
 
 - [Dev Home Architecture](./architecture.md)
-- [Dev Home Tools](./tools.md)
-- [Dev Home Extensions](./extensions.md)
+- [Dev Home Tools](./tools/tools.md)
+- [Dev Home Extensions](./extensions/extensions.md)
