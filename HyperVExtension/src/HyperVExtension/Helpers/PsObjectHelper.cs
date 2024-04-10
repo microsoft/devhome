@@ -71,7 +71,7 @@ public class PsObjectHelper
         catch (Exception ex)
         {
             var log = Log.ForContext("SourceContext", nameof(PsObjectHelper));
-            log.Error($"Failed to get property value with name {propertyName} from object with type {type}.", ex);
+            log.Error(ex, $"Failed to get property value with name {propertyName} from object with type {type}.");
         }
 
         return default(T);

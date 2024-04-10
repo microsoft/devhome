@@ -33,6 +33,7 @@ public enum CardStateColor
     Success,
     Neutral,
     Caution,
+    Failure,
 }
 
 public partial class CardProperty : ObservableObject
@@ -141,7 +142,7 @@ public partial class CardProperty : ObservableObject
         }
         catch (Exception ex)
         {
-            Log.Error($"Failed to load icon from ms-resource: {iconPathUri} for package: {packageFullName} due to error:", ex);
+            Log.Error(ex, $"Failed to load icon from ms-resource: {iconPathUri} for package: {packageFullName} due to error:");
         }
 
         return new BitmapImage();
@@ -199,7 +200,7 @@ public partial class CardProperty : ObservableObject
         }
         catch (Exception ex)
         {
-            Log.Error($"Failed to convert size in bytes to ulong. Error: {ex}");
+            Log.Error(ex, $"Failed to convert size in bytes to ulong. Error: {ex}");
             return string.Empty;
         }
     }

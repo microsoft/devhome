@@ -14,8 +14,8 @@
     <ApplicationIcon Condition="'$(BuildRing)'=='Stable'">Assets\Preview\DevHome_Preview.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;arm64</Platforms>
-    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
-    <PublishProfile Condition="'$(BuildingInsideVisualStudio)' != 'True'">Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <PublishProfile Condition="'$(BuildingInsideVisualStudio)' != 'True'">Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfile>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
@@ -60,6 +60,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Temporarily duplicate the Adaptive Card from DevHome.Common -->
+    <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="2.0.0-beta" GeneratePathProperty="true" />
+    <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="2.0.0-beta" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240311-x1907" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
@@ -115,7 +118,7 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
-  
+
   <!-- Quiet Background Processes bins -->
   <PropertyGroup>
     <_DevHomeInternal_CppPlatform>$(Platform)</_DevHomeInternal_CppPlatform>
@@ -142,4 +145,14 @@
     <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
   </PropertyGroup>
 
+  <!-- Workaround for Adaptive Cards not supporting correct RIDs when using .NET 8 -->
+  <ItemGroup>
+    <Content Include="$(TargetDir)\AdaptiveCards.ObjectModel.WinUI3.dll" Link="AdaptiveCards.ObjectModel.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(TargetDir)\AdaptiveCards.Rendering.WinUI3.dll" Link="AdaptiveCards.Rendering.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <Target Name="CopyAdaptiveCardsToTargetDir" BeforeTargets="BeforeBuild">
+    <Copy SourceFiles="$(PkgAdaptiveCards_ObjectModel_WinUI3)\runtimes\win10-$(Platform)\native\AdaptiveCards.ObjectModel.WinUI3.dll" DestinationFolder="$(TargetDir)" />
+    <Copy SourceFiles="$(PkgAdaptiveCards_Rendering_WinUI3)\runtimes\win10-$(Platform)\native\AdaptiveCards.Rendering.WinUI3.dll" DestinationFolder="$(TargetDir)" />
+  </Target>
 </Project>

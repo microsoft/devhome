@@ -44,7 +44,7 @@ public sealed partial class AboutPage : Page
         catch (Exception e)
         {
             var log = Log.ForContext("SourceContext", "AboutPage");
-            log.Error($"Error opening log location", e);
+            log.Error(e, $"Error opening log location");
         }
     }
 #endif

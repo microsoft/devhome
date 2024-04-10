@@ -53,7 +53,7 @@ internal sealed class WinGetDeployment : IWinGetDeployment
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to create dummy {nameof(PackageManager)} COM object. WinGet COM Server is not available.", e);
+            _log.Error(e, $"Failed to create dummy {nameof(PackageManager)} COM object. WinGet COM Server is not available.");
             return false;
         }
     }
@@ -70,7 +70,7 @@ internal sealed class WinGetDeployment : IWinGetDeployment
         }
         catch (Exception e)
         {
-            _log.Error("Failed to check if AppInstaller has an update, defaulting to false", e);
+            _log.Error(e, "Failed to check if AppInstaller has an update, defaulting to false");
             return false;
         }
     }
@@ -87,12 +87,12 @@ internal sealed class WinGetDeployment : IWinGetDeployment
         }
         catch (RegisterPackageException e)
         {
-            _log.Error($"Failed to register AppInstaller", e);
+            _log.Error(e, $"Failed to register AppInstaller");
             return false;
         }
         catch (Exception e)
         {
-            _log.Error("An unexpected error occurred when registering AppInstaller", e);
+            _log.Error(e, "An unexpected error occurred when registering AppInstaller");
             return false;
         }
     }
@@ -106,7 +106,7 @@ internal sealed class WinGetDeployment : IWinGetDeployment
         }
         catch (Exception e)
         {
-            _log.Error("An unexpected error occurred when checking if configuration is unstubbed", e);
+            _log.Error(e, "An unexpected error occurred when checking if configuration is unstubbed");
             return false;
         }
     }
@@ -123,7 +123,7 @@ internal sealed class WinGetDeployment : IWinGetDeployment
         }
         catch (Exception e)
         {
-            _log.Error("An unexpected error occurred when unstubbing configuration", e);
+            _log.Error(e, "An unexpected error occurred when unstubbing configuration");
             return false;
         }
     }

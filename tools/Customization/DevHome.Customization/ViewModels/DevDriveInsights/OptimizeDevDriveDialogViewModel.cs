@@ -156,7 +156,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Log.Error($"Error in SetEnvironmentVariable. Error: {ex}");
+            Log.Error(ex, $"Error in SetEnvironmentVariable. Error: {ex}");
         }
     }
 

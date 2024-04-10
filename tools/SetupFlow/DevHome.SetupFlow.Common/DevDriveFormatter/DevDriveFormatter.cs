@@ -88,7 +88,7 @@ public class DevDriveFormatter
         }
         catch (CimException e)
         {
-            _log.Error($"A CimException occurred while formatting Dev Drive Error.", e);
+            _log.Error(e, $"A CimException occurred while formatting Dev Drive Error.");
             return e.HResult;
         }
     }

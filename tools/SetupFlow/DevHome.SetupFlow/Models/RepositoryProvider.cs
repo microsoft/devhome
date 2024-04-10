@@ -60,7 +60,7 @@ internal sealed class RepositoryProvider
 
     public string DisplayName => _repositoryProvider.DisplayName;
 
-    public string ExtensionDisplayName => _extensionWrapper.Name;
+    public string ExtensionDisplayName => _extensionWrapper.ExtensionDisplayName;
 
     /// <summary>
     /// Starts the extension if it isn't running.
@@ -77,7 +77,7 @@ internal sealed class RepositoryProvider
         }
         catch (Exception ex)
         {
-            _log.Error($"Could not get repository provider from extension.", ex);
+            _log.Error(ex, $"Could not get repository provider from extension.");
         }
     }
 
@@ -199,7 +199,7 @@ internal sealed class RepositoryProvider
         }
         catch (Exception ex)
         {
-            _log.Error($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
+            _log.Error(ex, $"ShowLoginUIAsync(): loginUIContentDialog failed.");
         }
 
         return null;
@@ -224,7 +224,7 @@ internal sealed class RepositoryProvider
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
         if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
         {
-            _log.Error($"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}", developerIdsResult.Result.ExtendedError);
+            _log.Error(developerIdsResult.Result.ExtendedError, $"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}");
             return new List<IDeveloperId>();
         }
 
@@ -251,7 +251,7 @@ internal sealed class RepositoryProvider
                 }
                 else
                 {
-                    _log.Error($"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
+                    _log.Error(result.Result.ExtendedError, $"Could not get repositories.  Message: {result.Result.DisplayMessage}");
                 }
             }
             else
@@ -264,7 +264,7 @@ internal sealed class RepositoryProvider
                 }
                 else
                 {
-                    _log.Error($"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
+                    _log.Error(result.Result.ExtendedError, $"Could not get repositories.  Message: {result.Result.DisplayMessage}");
                 }
             }
         }
@@ -282,7 +282,7 @@ internal sealed class RepositoryProvider
         }
         catch (Exception ex)
         {
-            _log.Error($"Could not get repositories.  Message: {ex}");
+            _log.Error(ex, $"Could not get repositories.  Message: {ex}");
         }
 
         _repositories[developerId] = repoSearchInformation.Repositories;
@@ -304,7 +304,7 @@ internal sealed class RepositoryProvider
             }
             else
             {
-                _log.Error($"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
+                _log.Error(result.Result.ExtendedError, $"Could not get repositories.  Message: {result.Result.DisplayMessage}");
             }
         }
         catch (AggregateException aggregateException)
@@ -316,12 +316,12 @@ internal sealed class RepositoryProvider
             }
             else
             {
-                _log.Error(aggregateException.Message, aggregateException);
+                _log.Error(aggregateException, aggregateException.Message);
             }
         }
         catch (Exception ex)
         {
-            _log.Error($"Could not get repositories.  Message: {ex}", ex);
+            _log.Error(ex, $"Could not get repositories.  Message: {ex}");
         }
 
         _repositories[developerId] = repoSearchInformation.Repositories;

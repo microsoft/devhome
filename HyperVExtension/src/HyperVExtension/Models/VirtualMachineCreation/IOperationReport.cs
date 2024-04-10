@@ -15,7 +15,5 @@ public interface IOperationReport
 
     public string LocalizationKey { get; }
 
-    public ulong BytesReceived { get; }
-
-    public ulong TotalBytesToReceive { get; }
+    public ByteTransferProgress ProgressObject { get; }
 }

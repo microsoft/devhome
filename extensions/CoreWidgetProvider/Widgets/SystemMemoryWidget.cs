@@ -75,7 +75,7 @@ internal sealed class SystemMemoryWidget : CoreWidget, IDisposable
         }
         catch (Exception e)
         {
-            Log.Error("Error retrieving data.", e);
+            Log.Error(e, "Error retrieving data.");
             var content = new JsonObject
             {
                 { "errorMessage", e.Message },

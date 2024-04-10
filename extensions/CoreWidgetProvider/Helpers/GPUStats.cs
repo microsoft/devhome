@@ -113,7 +113,7 @@ internal sealed class GPUStats : IDisposable
                 }
                 catch (InvalidOperationException ex)
                 {
-                    Log.Warning("GPUStats", "Failed to get next value", ex);
+                    Log.Warning(ex, "GPUStats", "Failed to get next value");
                     Log.Information("GPUStats", "Calling GetGPUPerfCounters again");
                     GetGPUPerfCounters();
                 }

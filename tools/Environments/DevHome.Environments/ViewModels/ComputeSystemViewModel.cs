@@ -23,43 +23,20 @@ namespace DevHome.Environments.ViewModels;
 /// View model for a compute system. Each 'card' in the UI represents a compute system.
 /// Contains an instance of the compute system object as well.
 /// </summary>
-public partial class ComputeSystemViewModel : ObservableObject
+public partial class ComputeSystemViewModel : ComputeSystemCardBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
 
     private readonly WindowEx _windowEx;
 
-    public string Name => ComputeSystem.DisplayName;
-
     private readonly IComputeSystemManager _computeSystemManager;
-
-    public ComputeSystem ComputeSystem { get; }
-
-    public string AlternativeName { get; } = string.Empty;
-
-    public DateTime LastConnected { get; set; } = DateTime.Now;
-
-    public string Type { get; }
 
     public bool IsOperationInProgress { get; set; }
 
     // Launch button operations
     public ObservableCollection<OperationsViewModel> LaunchOperations { get; set; }
 
-    // Dot button operations
-    public ObservableCollection<OperationsViewModel> DotOperations { get; set; }
-
     public ObservableCollection<CardProperty> Properties { get; set; } = new();
-
-    [ObservableProperty]
-    private ComputeSystemState _state;
-
-    [ObservableProperty]
-    private CardStateColor _stateColor;
-
-    public BitmapImage? HeaderImage { get; set; } = new();
-
-    public BitmapImage? BodyImage { get; set; } = new();
 
     public string PackageFullName { get; set; }
 
@@ -74,8 +51,9 @@ public partial class ComputeSystemViewModel : ObservableObject
         _computeSystemManager = manager;
 
         ComputeSystem = new(system);
-        Type = provider.DisplayName;
+        ProviderDisplayName = provider.DisplayName;
         PackageFullName = packageFullName;
+        Name = ComputeSystem.DisplayName;
 
         if (!string.IsNullOrEmpty(ComputeSystem.SupplementalDisplayName))
         {
@@ -98,7 +76,7 @@ public partial class ComputeSystemViewModel : ObservableObject
 
     private async Task InitializeStateAsync()
     {
-        var result = await ComputeSystem.GetStateAsync();
+        var result = await ComputeSystem!.GetStateAsync();
         if (result.Result.Status == ProviderOperationStatus.Failure)
         {
             _log.Error($"Failed to get state for {ComputeSystem.DisplayName} due to {result.Result.DiagnosticText}");
@@ -110,12 +88,12 @@ public partial class ComputeSystemViewModel : ObservableObject
 
     private async Task SetBodyImageAsync()
     {
-        BodyImage = await ComputeSystemHelpers.GetBitmapImageAsync(ComputeSystem);
+        BodyImage = await ComputeSystemHelpers.GetBitmapImageAsync(ComputeSystem!);
     }
 
     private async Task SetPropertiesAsync()
     {
-        foreach (var property in await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(ComputeSystem, PackageFullName))
+        foreach (var property in await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(ComputeSystem!, PackageFullName))
         {
             Properties.Add(property);
         }
@@ -125,7 +103,7 @@ public partial class ComputeSystemViewModel : ObservableObject
     {
         _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
-            if (sender.Id == ComputeSystem.Id)
+            if (sender.Id == ComputeSystem!.Id)
             {
                 State = state;
                 StateColor = ComputeSystemHelpers.GetColorBasedOnState(state);
@@ -135,7 +113,7 @@ public partial class ComputeSystemViewModel : ObservableObject
 
     public void RemoveStateChangedHandler()
     {
-        ComputeSystem.StateChanged -= _computeSystemManager.OnComputeSystemStateChanged;
+        ComputeSystem!.StateChanged -= _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged -= OnComputeSystemStateChanged;
     }
 
@@ -148,7 +126,7 @@ public partial class ComputeSystemViewModel : ObservableObject
         Task.Run(async () =>
         {
             IsOperationInProgress = true;
-            await ComputeSystem.ConnectAsync(string.Empty);
+            await ComputeSystem!.ConnectAsync(string.Empty);
             IsOperationInProgress = false;
         });
     }

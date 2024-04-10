@@ -223,7 +223,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to create or connect to search catalog.", e);
+            _log.Error(e, $"Failed to create or connect to search catalog.");
         }
     }
 
@@ -241,7 +241,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to create or connect to 'winget' catalog source.", e);
+            _log.Error(e, $"Failed to create or connect to 'winget' catalog source.");
         }
     }
 
@@ -259,7 +259,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to create or connect to 'msstore' catalog source.", e);
+            _log.Error(e, $"Failed to create or connect to 'msstore' catalog source.");
         }
     }
 
@@ -278,7 +278,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to create or connect to custom catalog with name {catalogName}", e);
+            _log.Error(e, $"Failed to create or connect to custom catalog with name {catalogName}");
             return null;
         }
     }

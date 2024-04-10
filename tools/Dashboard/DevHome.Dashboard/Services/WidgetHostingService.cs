@@ -119,7 +119,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                _log.Error("Exception in WidgetHost.Register:", ex);
+                _log.Error(ex, "Exception in WidgetHost.Register:");
             }
         }
 
@@ -136,7 +136,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                _log.Error("Exception in WidgetCatalog.GetDefault:", ex);
+                _log.Error(ex, "Exception in WidgetCatalog.GetDefault:");
             }
         }
 

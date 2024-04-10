@@ -25,7 +25,7 @@ internal sealed class ConfigurationUnitResultEvent : EventBase
 
     public bool RebootRequired => _unitResult.RebootRequired;
 
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public ConfigurationUnitResultEvent(ApplyConfigurationUnitResult unitResult)
     {

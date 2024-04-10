@@ -5,13 +5,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
-    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Scripts\DevSetupAgent.ps1" />
     <None Remove="Templates\VmCredentialAdaptiveCardTemplate.json" />
     <None Remove="Templates\WaitForLoginAdaptiveCardTemplate.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Scripts\DevSetupAgent.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Templates\VmCredentialAdaptiveCardTemplate.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -19,7 +23,14 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
+  <ItemGroup>
+    <Content Include="Templates\InitialVMGalleryCreationForm.json">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
+	<Content Include="Templates\ReviewFormForVMGallery.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MessageFormat" Version="6.0.2" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
@@ -30,7 +41,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.300.443" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Serilog" Version="3.1.1" />
@@ -45,7 +55,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\HyperVExtension.Common\HyperVExtension.Common.csproj" />
     <ProjectReference Include="..\HyperVExtension.HostGuestCommunication\HyperVExtension.HostGuestCommunication.csproj" />
     <ProjectReference Include="..\Telemetry\HyperVExtension.Telemetry.csproj" />

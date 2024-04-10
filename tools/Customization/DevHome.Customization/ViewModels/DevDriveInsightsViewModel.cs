@@ -197,7 +197,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Log.Error($"Error loading Dev Drives data. Error: {ex}");
+            Log.Error(ex, $"Error loading Dev Drives data. Error: {ex}");
         }
     }
 
@@ -217,7 +217,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Log.Error($"Error loading Dev Drive Optimizers data. Error: {ex}");
+            Log.Error(ex, $"Error loading Dev Drive Optimizers data. Error: {ex}");
         }
     }
 
@@ -237,7 +237,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Log.Error($"Error loading Dev Drive Optimized data. Error: {ex}");
+            Log.Error(ex, $"Error loading Dev Drive Optimized data. Error: {ex}");
         }
     }
 

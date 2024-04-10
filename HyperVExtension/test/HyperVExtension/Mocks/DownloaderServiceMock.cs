@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using HyperVExtension.Models;
 using HyperVExtension.Models.VirtualMachineCreation;
 using HyperVExtension.Services;
 using Windows.Storage;
@@ -11,9 +12,9 @@ public class DownloaderServiceMock : IDownloaderService
 {
     private readonly int _totalIterations = 4;
 
-    private readonly ulong _totalBytesToReceive = 1000;
+    private readonly long _totalBytesToReceive = 1000;
 
-    private readonly ulong _bytesReceivedEachIteration = 250;
+    private readonly long _bytesReceivedEachIteration = 250;
 
     private readonly IHttpClientFactory _httpClientFactory;
 
@@ -24,12 +25,12 @@ public class DownloaderServiceMock : IDownloaderService
 
     public async Task StartDownloadAsync(IProgress<IOperationReport> progressProvider, Uri sourceWebUri, string destinationFile, CancellationToken cancellationToken)
     {
-        var bytesReceivedSoFar = 0UL;
+        var bytesReceivedSoFar = 0L;
         for (var i = 0; i < _totalIterations; i++)
         {
             await Task.Delay(100, cancellationToken);
             bytesReceivedSoFar += _bytesReceivedEachIteration;
-            progressProvider.Report(new DownloadOperationReport(bytesReceivedSoFar, _totalBytesToReceive));
+            progressProvider.Report(new DownloadOperationReport(new ByteTransferProgress(bytesReceivedSoFar, _totalBytesToReceive)));
         }
 
         var zipFile = await GetTestZipFileInPackage();
@@ -55,5 +56,11 @@ public class DownloaderServiceMock : IDownloaderService
     {
         var httpClient = _httpClientFactory.CreateClient();
         return await httpClient.GetByteArrayAsync(sourceWebUri, cancellationToken);
+    }
+
+    public async Task<long> GetHeaderContentLength(Uri sourceWebUri, CancellationToken cancellationToken)
+    {
+        await Task.Delay(1, cancellationToken);
+        return 100L;
     }
 }

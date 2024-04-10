@@ -30,6 +30,11 @@ internal sealed class AdaptiveCardActionPayload
         get; set;
     }
 
+    public string? Mode
+    {
+        get; set;
+    }
+
     public bool IsCancelAction()
     {
         return Id == "cancelAction";

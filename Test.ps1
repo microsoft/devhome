@@ -103,12 +103,12 @@ try {
             $vstestArgs = @(
                 "/Platform:$platform",
                 "/Logger:trx;LogFileName=DevHome.Test-$platform-$configuration.trx",
-                "test\bin\$platform\$configuration\net8.0-windows10.0.22000.0\DevHome.Test.dll"
+                "test\bin\$platform\$configuration\net8.0-windows10.0.22621.0\DevHome.Test.dll"
             )
             $winAppTestArgs = @(
                 "/Platform:$platform",
                 "/Logger:trx;LogFileName=DevHome.UITest-$platform-$configuration.trx",
-                "uitest\bin\$platform\$configuration\net8.0-windows10.0.22000.0\DevHome.UITest.dll"
+                "uitest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\DevHome.UITest.dll"
             )
 
             & $vstestPath $vstestArgs
@@ -122,13 +122,13 @@ try {
                 $vstestArgs = @(
                     "/Platform:$platform",
                     "/Logger:trx;LogFileName=$tool.Test-$platform-$configuration.trx",
-                    "tools\$tool\*UnitTest\bin\$platform\$configuration\net8.0-windows10.0.22000.0\*.UnitTest.dll"
+                    "tools\$tool\*UnitTest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\*.UnitTest.dll"
                 )
 
                 $winAppTestArgs = @(
                     "/Platform:$platform",
                     "/Logger:trx;LogFileName=$tool.UITest-$platform-$configuration.trx",
-                    "tools\$tool\*UITest\bin\$platform\$configuration\net8.0-windows10.0.22000.0\*.UITest.dll"
+                    "tools\$tool\*UITest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\*.UITest.dll"
                 )
 
                 & $vstestPath $vstestArgs
