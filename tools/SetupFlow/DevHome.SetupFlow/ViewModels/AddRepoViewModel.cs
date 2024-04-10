@@ -597,6 +597,14 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    public void SaveRepoUrl(string repoUrl)
+    {
+        Url = repoUrl;
+
+        ToggleCloneButton();
+    }
+
     /// <summary>
     /// Filters all repos down to any that start with text.
     /// A side-effect of filtering is that SelectionChanged fires for every selected repo but only on removal.

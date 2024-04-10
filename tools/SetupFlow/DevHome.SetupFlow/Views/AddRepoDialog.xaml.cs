@@ -283,17 +283,6 @@ public partial class AddRepoDialog : ContentDialog
         }
     }
 
-    private void RepoUrlTextBox_TextChanged(object sender, RoutedEventArgs e)
-    {
-        // just in case something other than a text box calls this.
-        if (sender is TextBox)
-        {
-            AddRepoViewModel.Url = (sender as TextBox).Text;
-        }
-
-        AddRepoViewModel.ToggleCloneButton();
-    }
-
     /// <summary>
     /// Putting the event in the view so SelectRange can be called.
     /// SelectRange needs a reference to the ListView.
