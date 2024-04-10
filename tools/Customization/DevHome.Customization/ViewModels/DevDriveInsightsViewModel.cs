@@ -372,11 +372,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject
                 continue;
             }
 
-            List<string> existingDevDriveLetters = new List<string>();
-            foreach (var existingDevDrive in ExistingDevDrives)
-            {
-                existingDevDriveLetters.Add(existingDevDrive.DriveLetter.ToString());
-            }
+            List<string> existingDevDriveLetters = ExistingDevDrives.Select(x => x.DriveLetter.ToString()).ToList();
 
             var exampleDirectory = Path.Join(existingDevDriveLetters[0] + ":", cache.ExampleSubDirectory);
             var card = new DevDriveOptimizerCardViewModel(

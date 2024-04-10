@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -16,6 +17,7 @@ using Serilog;
 using Windows.Media.Protection;
 using Windows.Storage.Pickers;
 using WinUIEx;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace DevHome.Customization.ViewModels.DevDriveInsights;
 
@@ -91,6 +93,19 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         }
     }
 
+    private string RemovePrivacyInfo(string input)
+    {
+        var output = input;
+        var userProfilePath = Environment.ExpandEnvironmentVariables("%userprofile%");
+        if (input.StartsWith(userProfilePath, StringComparison.OrdinalIgnoreCase))
+        {
+            var index = input.LastIndexOf(userProfilePath, StringComparison.OrdinalIgnoreCase) + userProfilePath.Length;
+            output = Path.Join("%userprofile%", input.Substring(index));
+        }
+
+        return output;
+    }
+
     private bool MoveDirectory(string sourceDirectory, string targetDirectory)
     {
         try
@@ -128,7 +143,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         catch (Exception ex)
         {
             Log.Error($"Error in MoveDirectory. Error: {ex}");
-            TelemetryFactory.Get<ITelemetry>().LogError("DevDriveInsights_PackageCacheMoveDirectory_Error", LogLevel.Critical, new ExceptionEvent(ex.HResult, sourceDirectory));
+            TelemetryFactory.Get<ITelemetry>().LogError("DevDriveInsights_PackageCacheMoveDirectory_Error", LogLevel.Critical, new ExceptionEvent(ex.HResult, RemovePrivacyInfo(sourceDirectory)));
             return false;
         }
     }
@@ -172,8 +187,9 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
                 if (MoveDirectory(ExistingCacheLocation, directoryPath))
                 {
                     SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
-                    Log.Debug($"Moved cache from {ExistingCacheLocation} to {directoryPath}");
-                    TelemetryFactory.Get<ITelemetry>().Log("DevDriveInsights_PackageCacheMovedSuccessfully_Event", LogLevel.Critical, new ExceptionEvent(0, ExistingCacheLocation));
+                    var existingCacheLocationVetted = RemovePrivacyInfo(ExistingCacheLocation);
+                    Log.Debug($"Moved cache from {existingCacheLocationVetted} to {directoryPath}");
+                    TelemetryFactory.Get<ITelemetry>().Log("DevDriveInsights_PackageCacheMovedSuccessfully_Event", LogLevel.Critical, new ExceptionEvent(0, existingCacheLocationVetted));
                 }
             }
             else
