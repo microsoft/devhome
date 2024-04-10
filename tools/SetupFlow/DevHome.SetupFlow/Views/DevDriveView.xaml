@@ -51,15 +51,10 @@
                         The comment tags and the spaces Before the Run tags are necessary so the clickable area
                         of the hyperlink does not extend to edge of the grid column, and instead stay only over the text.
                     -->
-                    <Span
-                        xml:space="preserve">
-                        <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowOnlyOneDevDriveAllowedHeader" /> <!--
-                        --><Hyperlink x:Name="GoToLearnMoreHyperlink"
-                                UnderlineStyle="None"
-                                NavigateUri="https://go.microsoft.com/fwlink/?linkid=2226090"><!--
-                            --> <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore" /> <!--
-                            --></Hyperlink> <!--
-                        --></Span>
+                        <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowOnlyOneDevDriveAllowedHeader" />
+                        <Hyperlink UnderlineStyle="None" NavigateUri="https://go.microsoft.com/fwlink/?linkid=2226090">
+                            <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore" />
+                        </Hyperlink>
                 </TextBlock>
                 <TextBlock
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLaunchSettingsDisksAndVolumesHeader"
