@@ -72,7 +72,7 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecip
         catch (Exception ex)
         {
             // Log the exception
-            _log.Error("Error adding adaptive card UI in EnvironmentCreationOptionsView", ex);
+            _log.Error(ex, "Error adding adaptive card UI in EnvironmentCreationOptionsView");
         }
     }
 }

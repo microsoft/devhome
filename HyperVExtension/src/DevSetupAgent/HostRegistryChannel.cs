@@ -113,7 +113,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    _log.Error($"Could not write host message. Response ID: {responseMessage.ResponseId}", ex);
+                    _log.Error(ex, $"Could not write host message. Response ID: {responseMessage.ResponseId}");
                 }
             },
             stoppingToken);
@@ -130,7 +130,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    _log.Error($"Could not delete host message. Response ID: {responseId}", ex);
+                    _log.Error(ex, $"Could not delete host message. Response ID: {responseId}");
                 }
             },
             stoppingToken);
@@ -207,7 +207,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
                         }
                         catch (Exception ex)
                         {
-                            _log.Error($"Could not read host message {valueName}", ex);
+                            _log.Error(ex, $"Could not read host message {valueName}");
                         }
 
                         MessageHelper.DeleteAllMessages(_registryHiveKey, _fromHostRegistryKeyPath, s[0]);
@@ -218,7 +218,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error("Could not read host message.", ex);
+            _log.Error(ex, "Could not read host message.");
         }
 
         return requestMessage;

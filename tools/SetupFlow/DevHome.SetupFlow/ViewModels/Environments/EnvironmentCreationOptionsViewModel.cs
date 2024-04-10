@@ -181,7 +181,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
             }
             catch (Exception ex)
             {
-                _log.Error($"Failed to get creation options adaptive card from provider {_curProviderDetails.ComputeSystemProvider.Id}.", ex);
+                _log.Error(ex, $"Failed to get creation options adaptive card from provider {_curProviderDetails.ComputeSystemProvider.Id}.");
                 SessionErrorMessage = ex.Message;
             }
         });

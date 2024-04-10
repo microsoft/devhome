@@ -164,7 +164,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to initialize elevated process.", e);
+            _log.Error(e, $"Failed to initialize elevated process.");
         }
     }
 
@@ -188,7 +188,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to download configuration file.", e);
+            _log.Error(e, $"Failed to download configuration file.");
         }
     }
 }

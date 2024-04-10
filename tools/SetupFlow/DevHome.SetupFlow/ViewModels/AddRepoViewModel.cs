@@ -1051,7 +1051,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                _log.Error($"Invalid URL {uri.OriginalString}", e);
+                _log.Error(e, $"Invalid URL {uri.OriginalString}");
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
                 ShouldShowUrlError = true;
                 return;
@@ -1248,7 +1248,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                _log.Error($"Exception thrown while calling show logon session", ex);
+                _log.Error(ex, $"Exception thrown while calling show logon session");
             }
         }
     }
@@ -1335,7 +1335,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                _log.Error($"Exception thrown while selecting repositories from the return object", ex);
+                _log.Error(ex, $"Exception thrown while selecting repositories from the return object");
                 _allRepositories = new();
             }
         }

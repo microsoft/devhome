@@ -19,6 +19,6 @@ public class PackageOperationException : Exception
     {
         HResult = (int)errorCode;
         var log = Log.ForContext("SourceContext", nameof(PackageOperationException));
-        log.Error(message, this);
+        log.Error(this, message);
     }
 }

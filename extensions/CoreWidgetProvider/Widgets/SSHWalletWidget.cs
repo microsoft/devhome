@@ -83,7 +83,7 @@ internal sealed class SSHWalletWidget : CoreWidget
         }
         catch (Exception e)
         {
-            Log.Error("Error retrieving data.", e);
+            Log.Error(e, "Error retrieving data.");
             var content = new JsonObject
             {
                 { "errorMessage", e.Message },
@@ -309,7 +309,7 @@ internal sealed class SSHWalletWidget : CoreWidget
             }
             catch (Exception ex)
             {
-                Log.Error($"Failed getting configuration information for input config file path: {data}", ex);
+                Log.Error(ex, $"Failed getting configuration information for input config file path: {data}");
 
                 configurationData = FillConfigurationData(false, data, 0, Resources.GetResource(@"SSH_Widget_Template/ErrorProcessingConfigFile", Log));
 

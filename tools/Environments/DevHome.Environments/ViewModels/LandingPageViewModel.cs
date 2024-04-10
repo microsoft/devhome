@@ -261,7 +261,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             var result = mapping.Value.Result;
             await _notificationService.ShowNotificationAsync(provider.DisplayName, result.DisplayMessage, InfoBarSeverity.Error);
 
-            _log.Error($"Error occurred while adding Compute systems to environments page for provider: {provider.Id}", result.DiagnosticText, result.ExtendedError);
+            _log.Error($"Error occurred while adding Compute systems to environments page for provider: {provider.Id}. {result.DiagnosticText}, {result.ExtendedError}");
             data.DevIdToComputeSystemMap.Remove(mapping.Key);
         }
 
@@ -296,7 +296,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             }
             catch (Exception ex)
             {
-                _log.Error($"Exception occurred while adding Compute systems to environments page for provider: {provider.Id}", ex);
+                _log.Error(ex, $"Exception occurred while adding Compute systems to environments page for provider: {provider.Id}");
             }
         });
     }

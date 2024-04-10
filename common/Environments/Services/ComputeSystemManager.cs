@@ -77,17 +77,17 @@ public class ComputeSystemManager : IComputeSystemManager
             {
                 if (innerEx is TaskCanceledException)
                 {
-                    _log.Error($"Failed to get retrieve all compute systems from all compute system providers due to cancellation", innerEx);
+                    _log.Error(innerEx, $"Failed to get retrieve all compute systems from all compute system providers due to cancellation");
                 }
                 else
                 {
-                    _log.Error($"Failed to get retrieve all compute systems from all compute system providers ", innerEx);
+                    _log.Error(innerEx, $"Failed to get retrieve all compute systems from all compute system providers ");
                 }
             }
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to get retrieve all compute systems from all compute system providers ", ex);
+            _log.Error(ex, $"Failed to get retrieve all compute systems from all compute system providers ");
         }
     }
 

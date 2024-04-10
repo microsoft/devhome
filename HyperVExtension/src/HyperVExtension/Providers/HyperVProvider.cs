@@ -75,7 +75,7 @@ public class HyperVProvider : IComputeSystemProvider
             }
             catch (Exception ex)
             {
-                _log.Error($"Failed to retrieved all virtual machines on: {DateTime.Now}", ex);
+                _log.Error(ex, $"Failed to retrieved all virtual machines on: {DateTime.Now}");
                 return new ComputeSystemsResult(ex, OperationErrorString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -105,7 +105,7 @@ public class HyperVProvider : IComputeSystemProvider
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to create a new virtual machine on: {DateTime.Now}", ex);
+            _log.Error(ex, $"Failed to create a new virtual machine on: {DateTime.Now}");
 
             // Dev Home will handle null values as failed operations. We can't throw because this is an out of proc
             // COM call, so we'll lose the error information. We'll log the error and return null.
