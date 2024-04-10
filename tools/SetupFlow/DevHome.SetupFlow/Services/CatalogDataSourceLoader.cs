@@ -72,7 +72,7 @@ public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
         }
         catch (Exception e)
         {
-            _log.Error($"Exception thrown while initializing data source of type {dataSource.GetType().Name}", e);
+            _log.Error(e, $"Exception thrown while initializing data source of type {dataSource.GetType().Name}");
         }
     }
 
@@ -89,7 +89,7 @@ public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
         }
         catch (Exception e)
         {
-            _log.Error($"Exception thrown while loading data source of type {dataSource.GetType().Name}", e);
+            _log.Error(e, $"Exception thrown while loading data source of type {dataSource.GetType().Name}");
         }
 
         return null;

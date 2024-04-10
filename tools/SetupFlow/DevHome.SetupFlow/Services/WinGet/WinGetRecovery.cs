@@ -45,12 +45,12 @@ internal sealed class WinGetRecovery : IWinGetRecovery
                 }
                 catch (CatalogNotInitializedException e)
                 {
-                    _log.Error($"Catalog used by the action is not initialized", e);
+                    _log.Error(e, $"Catalog used by the action is not initialized");
                     await RecoveryAsync(attempt);
                 }
                 catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed || e.HResult == PackageUpdating)
                 {
-                    _log.Error($"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}", e);
+                    _log.Error(e, $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}");
                     await RecoveryAsync(attempt);
                 }
             }

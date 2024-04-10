@@ -64,7 +64,7 @@ public class RequestFactory : IRequestFactory
         {
             var messageId = requestContext.RequestMessage.RequestId ?? "<unknown>";
             var requestData = requestContext.RequestMessage.RequestData ?? "<unknown>";
-            _log.Error($"Error processing message. Message ID: {messageId}. Request data: {requestData}", ex);
+            _log.Error(ex, $"Error processing message. Message ID: {messageId}. Request data: {requestData}");
             return new ErrorRequest(requestContext.RequestMessage);
         }
     }

@@ -112,7 +112,7 @@ public class CreateComputeSystemOperation : IDisposable
             }
             catch (Exception ex)
             {
-                _log.Error($"StartOperation failed for provider {ProviderDetails.ComputeSystemProvider}", ex);
+                _log.Error(ex, $"StartOperation failed for provider {ProviderDetails.ComputeSystemProvider}");
                 CreateComputeSystemResult = new CreateComputeSystemResult(ex, StringResourceHelper.GetResource("CreationOperationStoppedUnexpectedly"), ex.Message);
                 Completed?.Invoke(this, CreateComputeSystemResult);
             }
@@ -145,7 +145,7 @@ public class CreateComputeSystemOperation : IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to remove event handlers for {this}", ex);
+            _log.Error(ex, $"Failed to remove event handlers for {this}");
         }
     }
 
@@ -157,7 +157,7 @@ public class CreateComputeSystemOperation : IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to cancel operation for {this}", ex);
+            _log.Error(ex, $"Failed to cancel operation for {this}");
         }
     }
 

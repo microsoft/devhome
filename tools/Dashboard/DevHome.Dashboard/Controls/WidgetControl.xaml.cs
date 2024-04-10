@@ -115,7 +115,7 @@ public sealed partial class WidgetControl : UserControl
                 }
                 catch (Exception ex)
                 {
-                    _log.Error($"Didn't delete Widget {widgetIdToDelete}", ex);
+                    _log.Error(ex, $"Didn't delete Widget {widgetIdToDelete}");
                 }
             }
         }

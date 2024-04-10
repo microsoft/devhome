@@ -153,7 +153,7 @@ public class InstallPackageTask : ISetupTask
             catch (Exception e)
             {
                 ReportAppInstallFailedEvent();
-                _log.Error($"Exception thrown while installing package.", e);
+                _log.Error(e, $"Exception thrown while installing package.");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -189,7 +189,7 @@ public class InstallPackageTask : ISetupTask
             catch (Exception e)
             {
                 ReportAppInstallFailedEvent();
-                _log.Error($"Exception thrown while installing package.", e);
+                _log.Error(e, $"Exception thrown while installing package.");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();

@@ -146,7 +146,7 @@ public partial class FolderPickerViewModel : ObservableObject
         }
         catch (Exception e)
         {
-            _log.Error("Failed to open folder picker", e);
+            _log.Error(e, "Failed to open folder picker");
             return null;
         }
     }

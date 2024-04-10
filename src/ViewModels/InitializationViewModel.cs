@@ -65,7 +65,7 @@ public class InitializationViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            _log.Information("Installing WidgetService failed: ", ex);
+            _log.Information(ex, "Installing WidgetService failed: ");
         }
 
         // Install the DevHomeGitHubExtension, unless it's already installed or a dev build is running.
@@ -82,7 +82,7 @@ public class InitializationViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                _log.Information("Installing DevHomeGitHubExtension failed: ", ex);
+                _log.Information(ex, "Installing DevHomeGitHubExtension failed: ");
             }
         }
 

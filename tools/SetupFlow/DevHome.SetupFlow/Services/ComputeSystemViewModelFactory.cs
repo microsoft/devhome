@@ -37,7 +37,7 @@ public class ComputeSystemViewModelFactory
         catch (Exception ex)
         {
             var log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModelFactory));
-            log.Error($"Failed to get initial properties for compute system {computeSystem}. Error: {ex.Message}");
+            log.Error(ex, $"Failed to get initial properties for compute system {computeSystem}. Error: {ex.Message}");
         }
 
         return cardViewModel;

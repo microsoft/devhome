@@ -98,7 +98,7 @@ public class DSCFileActivationHandler : ActivationHandler<FileActivatedEventArgs
         }
         catch (Exception ex)
         {
-            _log.Error("Error executing the DSC activation flow", ex);
+            _log.Error(ex, "Error executing the DSC activation flow");
         }
     }
 }
