@@ -10,7 +10,6 @@ using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using Serilog;
-using Windows.Storage.Pickers;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -146,7 +145,7 @@ public partial class FolderPickerViewModel : ObservableObject
         }
         catch (Exception e)
         {
-            _log.Error("Failed to open folder picker", e);
+            _log.Error(e, "Failed to open folder picker");
             return null;
         }
     }

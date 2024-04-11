@@ -155,7 +155,7 @@ public partial class WidgetViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                _log.Warning("There was an error expanding the Widget template with data: ", ex);
+                _log.Warning(ex, "There was an error expanding the Widget template with data: ");
                 ShowErrorCard("WidgetErrorCardDisplayText");
                 return;
             }
@@ -192,7 +192,7 @@ public partial class WidgetViewModel : ObservableObject
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Error rendering widget card: ", ex);
+                    _log.Error(ex, "Error rendering widget card: ");
                     WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
                 }
             });

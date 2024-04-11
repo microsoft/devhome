@@ -140,7 +140,7 @@ internal abstract class CoreWidget : WidgetImpl
         }
         catch (Exception e)
         {
-            Log.Error("Error getting template.", e);
+            Log.Error(e, "Error getting template.");
             return string.Empty;
         }
     }

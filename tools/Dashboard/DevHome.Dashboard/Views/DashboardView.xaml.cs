@@ -94,7 +94,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error("Exception in SubscribeToWidgetCatalogEvents:", ex);
+            _log.Error(ex, "Exception in SubscribeToWidgetCatalogEvents:");
             return false;
         }
 
@@ -287,7 +287,7 @@ public partial class DashboardView : ToolPage, IDisposable
             }
             catch (Exception ex)
             {
-                _log.Error($"RestorePinnedWidgets(): ", ex);
+                _log.Error(ex, $"RestorePinnedWidgets(): ");
             }
         }
 
@@ -374,7 +374,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error($"PinDefaultWidget failed: ", ex);
+            _log.Error(ex, $"PinDefaultWidget failed: ");
         }
     }
 
@@ -424,7 +424,7 @@ public partial class DashboardView : ToolPage, IDisposable
             }
             catch (Exception ex)
             {
-                _log.Warning($"Creating widget failed: ", ex);
+                _log.Warning(ex, $"Creating widget failed: ");
                 var mainWindow = Application.Current.GetService<WindowEx>();
                 var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
                 await mainWindow.ShowErrorMessageDialogAsync(
@@ -464,7 +464,7 @@ public partial class DashboardView : ToolPage, IDisposable
                     {
                         // TODO Support concurrency in dashboard. Today concurrent async execution can cause insertion errors.
                         // https://github.com/microsoft/devhome/issues/1215
-                        _log.Warning($"Couldn't insert pinned widget", ex);
+                        _log.Warning(ex, $"Couldn't insert pinned widget");
                     }
                 });
             }
@@ -479,7 +479,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    _log.Information($"Error deleting widget", ex);
+                    _log.Information(ex, $"Error deleting widget");
                 }
             }
         });

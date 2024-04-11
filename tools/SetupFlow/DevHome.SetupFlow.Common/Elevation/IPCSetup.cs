@@ -296,7 +296,7 @@ public static class IPCSetup
         }
         catch (Exception e)
         {
-            Log.Error($"Error occurring while setting up elevated process:", e);
+            Log.Error(e, $"Error occurring while setting up elevated process:");
 
             // Release the "mutex" if there is any error.
             // On success, the mutex will be released after work is done.
@@ -386,7 +386,7 @@ public static class IPCSetup
         }
         catch (Exception e)
         {
-            Log.Error($"Error occurred during setup.", e);
+            Log.Error(e, $"Error occurred during setup.");
             mappedMemory.HResult = e.HResult;
         }
 

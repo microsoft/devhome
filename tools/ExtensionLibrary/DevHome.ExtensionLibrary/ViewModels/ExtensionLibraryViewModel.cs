@@ -124,7 +124,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            _log.Error("Error retrieving packages", ex);
+            _log.Error(ex, "Error retrieving packages");
             ShouldShowStoreError = true;
         }
 

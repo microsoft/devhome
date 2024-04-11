@@ -56,7 +56,7 @@ internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
         }
         catch (Exception e)
         {
-            Log.Error("Error retrieving stats.", e);
+            Log.Error(e, "Error retrieving stats.");
             var content = new JsonObject
             {
                 { "errorMessage", e.Message },

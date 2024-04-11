@@ -26,7 +26,7 @@ public static class StringResourceHelper
         }
         catch (Exception ex)
         {
-            Log.Error($"Failed to get resource for key {key}.", ex);
+            Log.Error(ex, $"Failed to get resource for key {key}.");
             return key;
         }
     }

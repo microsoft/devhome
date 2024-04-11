@@ -133,7 +133,7 @@ public class WinGetPackage : IWinGetPackage
         }
         catch (Exception e)
         {
-            _log.Error($"Unable to validate if the version {versionInfo.Version} is in the list of available versions", e);
+            _log.Error(e, $"Unable to validate if the version {versionInfo.Version} is in the list of available versions");
         }
 
         return versionInfo.Version;

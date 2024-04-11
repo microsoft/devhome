@@ -25,8 +25,6 @@ public class NotificationService
 
     private readonly IWindowsIdentityService _windowsIdentityService;
 
-    private readonly string _componentName = "NotificationService";
-
     private readonly string _hyperVText = "Hyper-V";
 
     private readonly string _microsoftText = "Microsoft";
@@ -81,7 +79,7 @@ public class NotificationService
             }
             catch (Exception ex)
             {
-                _log.Error(_componentName, $"Unable to launch computer management due to exception", ex);
+                _log.Error(ex, $"Unable to launch computer management due to exception");
             }
         }
     }
@@ -124,7 +122,7 @@ public class NotificationService
         }
         else
         {
-            _log.Error(_componentName, "Notification queue is not initialized");
+            _log.Error("Notification queue is not initialized");
         }
     }
 
@@ -149,7 +147,7 @@ public class NotificationService
                     var user = _windowsIdentityService.GetCurrentUserName();
                     if (user == null)
                     {
-                        _log.Error(_componentName, "Unable to get the current user name");
+                        _log.Error("Unable to get the current user name");
                         return;
                     }
 
@@ -185,7 +183,7 @@ public class NotificationService
                     }
                     catch (Exception ex)
                     {
-                        _log.Error(_componentName, "Unable to add the user to the Hyper-V Administrators group", ex);
+                        _log.Error(ex, "Unable to add the user to the Hyper-V Administrators group");
                         ShowUnableToAddToHyperVAdminGroupNotification();
                     }
                 });
@@ -209,7 +207,7 @@ public class NotificationService
             }
             else
             {
-                _log.Error(_componentName, "Notification queue is not initialized");
+                _log.Error("Notification queue is not initialized");
             }
         }
     }

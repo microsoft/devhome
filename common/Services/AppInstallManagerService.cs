@@ -97,7 +97,7 @@ public class AppInstallManagerService : IAppInstallManagerService
         }
         catch (Exception ex)
         {
-            _log.Error("Package installation Failed", ex);
+            _log.Error(ex, "Package installation Failed");
         }
 
         return false;

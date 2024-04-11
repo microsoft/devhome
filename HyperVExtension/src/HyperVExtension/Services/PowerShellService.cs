@@ -60,7 +60,7 @@ public class PowerShellService : IPowerShellService, IDisposable
         catch (Exception ex)
         {
             var commandStrings = string.Join(Environment.NewLine, commandLineStatements.Select(cmd => cmd.ToString()));
-            _log.Error($"Error running PowerShell commands: {commandStrings}", ex);
+            _log.Error(ex, $"Error running PowerShell commands: {commandStrings}");
             throw;
         }
     }

@@ -21,8 +21,6 @@ public class ExtensionAdaptiveCardSession
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExtensionAdaptiveCardSession));
 
-    private readonly string _componentName = "ExtensionAdaptiveCardSession";
-
     public IExtensionAdaptiveCardSession Session { get; private set; }
 
     public event TypedEventHandler<ExtensionAdaptiveCardSession, ExtensionAdaptiveCardSessionStoppedEventArgs>? Stopped;
@@ -45,7 +43,7 @@ public class ExtensionAdaptiveCardSession
         }
         catch (Exception ex)
         {
-            _log.Error(_componentName, $"Initialize failed due to exception", ex);
+            _log.Error(ex, $"Initialize failed due to exception");
             return new ProviderOperationResult(ProviderOperationStatus.Failure, ex, ex.Message, ex.Message);
         }
     }
@@ -63,7 +61,7 @@ public class ExtensionAdaptiveCardSession
         }
         catch (Exception ex)
         {
-           _log.Error(_componentName, $"Dispose failed due to exception", ex);
+           _log.Error(ex, $"Dispose failed due to exception");
         }
     }
 
@@ -75,7 +73,7 @@ public class ExtensionAdaptiveCardSession
         }
         catch (Exception ex)
         {
-           _log.Error(_componentName, $"OnAction failed due to exception", ex);
+           _log.Error(ex, $"OnAction failed due to exception");
            return new ProviderOperationResult(ProviderOperationStatus.Failure, ex, ex.Message, ex.Message);
         }
     }

@@ -139,7 +139,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
             }
             catch (Exception ex)
             {
-                _log.Error("Operation to create compute system failed", ex);
+                _log.Error(ex, "Operation to create compute system failed");
                 ComputeSystemResult = new CreateComputeSystemResult(ex, ex.Message, ex.Message);
             }
 
@@ -161,7 +161,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
         }
         catch (Exception ex)
         {
-            _log.Error("Failed to update progress", ex);
+            _log.Error(ex, "Failed to update progress");
         }
     }
 
@@ -173,7 +173,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
         }
         catch (Exception ex)
         {
-            _log.Error("Failed to update progress", ex);
+            _log.Error(ex, "Failed to update progress");
         }
     }
 
@@ -221,7 +221,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to delete file {file.Path}", ex);
+            _log.Error(ex, $"Failed to delete file {file.Path}");
         }
     }
 
