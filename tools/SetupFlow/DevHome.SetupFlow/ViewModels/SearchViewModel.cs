@@ -128,7 +128,7 @@ public partial class SearchViewModel : ObservableObject
         }
         catch (Exception e)
         {
-            _log.Error($"Search error.", e);
+            _log.Error(e, $"Search error.");
             return (SearchResultStatus.ExceptionThrown, null);
         }
     }

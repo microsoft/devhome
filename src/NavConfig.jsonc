@@ -45,7 +45,7 @@
         {
           "buildType": "dev",
           "enabledByDefault": true,
-          "visible": true
+          "visible": false
         },
         {
           "buildType": "canary",
@@ -53,7 +53,7 @@
           "visible": true
         },
         {
-          "buildType": "release",
+          "buildType": "stable",
           "enabledByDefault": false,
           "visible": false
         }
@@ -74,7 +74,7 @@
           "visible": false
         },
         {
-          "buildType": "release",
+          "buildType": "stable",
           "enabledByDefault": false,
           "visible": false
         }
@@ -95,7 +95,28 @@
           "visible": false
         },
         {
-          "buildType": "release",
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": false
+        }
+      ]
+    },
+    {
+      "identity": "EnvironmentsCreationFlow",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "stable",
           "enabledByDefault": false,
           "visible": false
         }

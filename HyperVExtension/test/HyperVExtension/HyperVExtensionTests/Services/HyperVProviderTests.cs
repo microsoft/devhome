@@ -77,7 +77,7 @@ public class HyperVProviderTests : HyperVExtensionTestsBase
         var hyperVProvider = TestHost!.GetService<IComputeSystemProvider>();
         var inputJson = JsonSerializer.Serialize(new VMGalleryCreationUserInput()
         {
-            NewVirtualMachineName = _expectedVmName,
+            NewEnvironmentName = _expectedVmName,
             SelectedImageListIndex = 0, // Our test gallery image list Json only has one image
         });
 

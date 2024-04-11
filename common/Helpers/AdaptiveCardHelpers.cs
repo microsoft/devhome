@@ -32,7 +32,7 @@ public static class AdaptiveCardHelpers
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to load image icon", ex);
+            _log.Error(ex, $"Failed to load image icon");
             return new ImageIcon();
         }
     }

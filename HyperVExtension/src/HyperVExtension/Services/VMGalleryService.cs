@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json;
 using HyperVExtension.Models.VMGalleryJsonToClasses;
@@ -73,11 +74,20 @@ public sealed class VMGalleryService : IVMGalleryService
 
                     image.Symbol.Base64Image = Convert.ToBase64String(byteArray);
                 }
+
+                if (!string.IsNullOrEmpty(image.Disk.Uri))
+                {
+                    var totalSizeOfDisk = await _downloaderService.GetHeaderContentLength(new Uri(image.Disk.Uri), cancellationTokenSource.Token);
+                    if (ulong.TryParse(image.Requirements.DiskSpace, CultureInfo.InvariantCulture, out var requiredDiskSpace))
+                    {
+                        image.Disk.SizeInBytes = (ulong)totalSizeOfDisk;
+                    }
+                }
             }
         }
         catch (Exception ex)
         {
-            _log.Error($"Unable to retrieve VM gallery images", ex);
+            _log.Error(ex, $"Unable to retrieve VM gallery images");
         }
 
         return _imageList;

@@ -90,7 +90,7 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
                     }
                     catch (Exception e)
                     {
-                        _log.Error($"Error loading packages from featured applications group.", e);
+                        _log.Error(e, $"Error loading packages from featured applications group.");
                     }
                 }
             });
@@ -171,7 +171,7 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
         var extensions = await _extensionService.GetInstalledExtensionsAsync(ProviderType.FeaturedApplications);
         foreach (var extension in extensions)
         {
-            var extensionName = extension.Name;
+            var extensionName = extension.PackageFamilyName;
             try
             {
                 _log.Information($"Getting featured applications provider from extension '{extensionName}'");
@@ -197,7 +197,7 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
                     }
                     else
                     {
-                        _log.Error($"Failed to get featured applications groups from extension '{extensionName}': {groupsResult.Result.DiagnosticText}", groupsResult.Result.ExtendedError);
+                        _log.Error(groupsResult.Result.ExtendedError, $"Failed to get featured applications groups from extension '{extensionName}': {groupsResult.Result.DiagnosticText}");
                     }
                 }
                 else
@@ -207,7 +207,7 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
             }
             catch (Exception e)
             {
-                _log.Error($"Error loading featured applications from extension {extensionName}", e);
+                _log.Error(e, $"Error loading featured applications from extension {extensionName}");
             }
         }
     }

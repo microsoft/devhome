@@ -24,7 +24,7 @@ This is useful for features that are not ready for general use, but can be teste
         "visible": true
       },
       {
-        "buildType": "release",
+        "buildType": "stable",
         "enabledByDefault": false,
         "visible": false
       }

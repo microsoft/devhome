@@ -23,7 +23,7 @@ public static class Resources
         }
         catch (Exception ex)
         {
-            log?.Error($"Failed loading resource: {identifier}", ex);
+            log?.Error(ex, $"Failed loading resource: {identifier}");
 
             // If we fail, load the original identifier so it is obvious which resource is missing.
             return identifier;

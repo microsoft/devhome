@@ -83,7 +83,7 @@ public class ComputeSystemService : IComputeSystemService
             }
             catch (Exception ex)
             {
-                Log.Error($"Failed to get {nameof(IComputeSystemProvider)} provider from '{extension.Name}'", ex);
+                Log.Error(ex, $"Failed to get {nameof(IComputeSystemProvider)} provider from '{extension.PackageFamilyName}/{extension.ExtensionDisplayName}'");
             }
         }
 

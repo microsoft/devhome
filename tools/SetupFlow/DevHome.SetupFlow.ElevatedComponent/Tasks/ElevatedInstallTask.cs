@@ -100,7 +100,7 @@ public sealed class ElevatedInstallTask
             }
             catch (Exception e)
             {
-                _log.Error("Elevated app install failed.", e);
+                _log.Error(e, "Elevated app install failed.");
                 result.TaskSucceeded = false;
             }
 

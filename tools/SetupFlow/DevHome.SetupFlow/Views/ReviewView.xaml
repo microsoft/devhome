@@ -13,6 +13,7 @@
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:selectors="using:DevHome.SetupFlow.Selectors"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:environmentViews="using:DevHome.SetupFlow.Views.Environments"
     xmlns:views="using:DevHome.SetupFlow.Views"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -51,9 +52,12 @@
         </Grid>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
 
-    <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
-                         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
-                         Foreground="{ThemeResource TextFillColorSecondary}">
+    <controls:SetupShell
+        Title="{x:Bind ViewModel.PageTitle, Mode=OneWay}"
+        Description="{x:Bind ViewModel.ReviewPageDescription}"
+        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
+        Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+        Foreground="{ThemeResource TextFillColorSecondary}">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -67,8 +71,8 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock VerticalAlignment="Center"
-                                       Style="{StaticResource BodyStrongTextBlockStyle}"
-                                       x:Uid="Review_SetUpDetails" />
+                                       Style="{StaticResource BodyStrongTextBlockStyle}" 
+                                       Text="{x:Bind ViewModel.ReviewPageExpanderDescription, Mode=OneWay}" />
                             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
                                 <Button Command="{x:Bind ViewModel.DownloadConfigurationCommand}"
                                         x:Uid="Review_GenerateConfigurationFileButton"/>
@@ -139,6 +143,11 @@
                                                         <views:AppManagementReviewView />
                                                     </DataTemplate>
                                                 </selectors:ReviewTabViewSelector.AppManagementTabTemplate>
+                                                <selectors:ReviewTabViewSelector.CreateEnvironmentTabTemplate>
+                                                    <DataTemplate>
+                                                        <environmentViews:CreateEnvironmentReviewView />
+                                                    </DataTemplate>
+                                                </selectors:ReviewTabViewSelector.CreateEnvironmentTabTemplate>
                                             </selectors:ReviewTabViewSelector>
                                         </ContentControl.ContentTemplateSelector>
                                     </ContentControl>

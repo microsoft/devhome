@@ -49,7 +49,7 @@ public class SDKOpenConfigurationSetResult
     public string GetErrorMessage()
     {
         var log = Log.ForContext("SourceContext", nameof(SDKOpenConfigurationSetResult));
-        log.Error($"Extension failed to open the configuration file provided by Dev Home: Field: {Field}, Value: {Value}, Line: {Line}, Column: {Column}", ResultCode);
+        log.Error(ResultCode, $"Extension failed to open the configuration file provided by Dev Home: Field: {Field}, Value: {Value}, Line: {Line}, Column: {Column}");
         return _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationOpenConfigFailed);
     }
 }

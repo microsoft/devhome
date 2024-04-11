@@ -22,4 +22,6 @@ internal sealed class Constants
 #else
     public const string ExtensionIcon = "ms-resource://Microsoft.Windows.DevHome.Dev/Files/HyperVExtension/Assets/hyper-v-provider-icon.png";
 #endif
+
+    public const string ExtensionIconInternal = "ms-appx:///HyperVExtension/Assets/hyper-v-provider-icon.png";
 }
