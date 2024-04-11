@@ -110,7 +110,7 @@ public static class MessageHelper
             catch (Exception ex)
             {
                 var log = Serilog.Log.ForContext("SourceContext", nameof(MessageHelper));
-                log.Error($"Could not read guest message {valueName}", ex);
+                log.Error(ex, $"Could not read guest message {valueName}");
             }
 
             messages.Add(name, value);

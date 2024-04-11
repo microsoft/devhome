@@ -3,12 +3,14 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using Microsoft.UI.Xaml;
 using Windows.System;
 
 namespace DevHome.Customization.ViewModels;
@@ -45,4 +47,6 @@ public partial class MainPageViewModel : ObservableObject
     {
         NavigationService.NavigateTo(typeof(DevDriveInsightsViewModel).FullName!);
     }
+
+    public bool AnyDevDrivesPresent => Application.Current.GetService<IDevDriveManager>().GetAllDevDrivesThatExistOnSystem().Any();
 }

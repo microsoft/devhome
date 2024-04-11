@@ -6,7 +6,7 @@
       {
         "Name": "Console",
         "Args": {
-          "outputTemplate": "[{Timestamp:yyyy/mm/dd HH:mm:ss.fff} {Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
+          "outputTemplate": "[{Timestamp:yyyy/MM/dd HH:mm:ss.fff} {Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
           "restrictedToMinimumLevel": "Debug"
         }
       },
@@ -14,7 +14,7 @@
         "Name": "File",
         "Args": {
           "path": "%DEVHOME_LOGS_ROOT%\\corewidgets.dhlog",
-          "outputTemplate": "[{Timestamp:yyyy/mm/dd HH:mm:ss.fff} {Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
+          "outputTemplate": "[{Timestamp:yyyy/MM/dd HH:mm:ss.fff} {Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
           "restrictedToMinimumLevel": "Information",
           "rollingInterval": "Day"
         }

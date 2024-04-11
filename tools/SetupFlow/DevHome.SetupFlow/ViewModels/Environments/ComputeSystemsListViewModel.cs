@@ -146,7 +146,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                _log.Error($"Failed to filter Compute system cards. Error: {ex.Message}");
+                _log.Error(ex, $"Failed to filter Compute system cards. Error: {ex.Message}");
             }
 
             return true;

@@ -92,7 +92,7 @@
         </StackPanel>
 
         <!-- Content -->
-        <ScrollViewer Grid.Row="3" Grid.ColumnSpan="2">
+        <ScrollViewer Grid.Row="3" Grid.ColumnSpan="2" Visibility="{x:Bind ContentVisibility}">
             <ContentControl IsTabStop="False"
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Stretch"

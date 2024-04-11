@@ -119,7 +119,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
             }
             catch (Exception ex)
             {
-                _log.Error("Error retrieving HostConfig", ex);
+                _log.Error(ex, "Error retrieving HostConfig");
             }
 
             _windowEx.DispatcherQueue.TryEnqueue(() =>

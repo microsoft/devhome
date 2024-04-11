@@ -42,7 +42,6 @@ public class RequestFactory : IRequestFactory
                 {
                     if (_requestFactories.TryGetValue(requestType, out var createRequest))
                     {
-                        // TODO: Try/catch error.
                         requestContext.JsonData = requestJson!;
                         return createRequest(requestContext);
                     }
@@ -65,7 +64,7 @@ public class RequestFactory : IRequestFactory
         {
             var messageId = requestContext.RequestMessage.RequestId ?? "<unknown>";
             var requestData = requestContext.RequestMessage.RequestData ?? "<unknown>";
-            _log.Error($"Error processing message. Message ID: {messageId}. Request data: {requestData}", ex);
+            _log.Error(ex, $"Error processing message. Message ID: {messageId}. Request data: {requestData}");
             return new ErrorRequest(requestContext.RequestMessage);
         }
     }

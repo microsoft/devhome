@@ -66,7 +66,7 @@ public class ResponseFactory : IResponseFactory
         {
             var messageId = message?.ResponseId ?? "<unknown>";
             var responseData = message?.ResponseData ?? "<unknown>";
-            _log.Error($"Error processing message. Message ID: {messageId}. Request data: {responseData}", ex);
+            _log.Error(ex, $"Error processing message. Message ID: {messageId}. Request data: {responseData}");
             return new ErrorResponse(message!);
         }
     }

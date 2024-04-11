@@ -192,7 +192,7 @@ public class HyperVVirtualMachine : IComputeSystem
         catch (Exception ex)
         {
             StateChanged(this, ComputeSystemState.Unknown);
-            _log.Error(OperationErrorString(ComputeSystemOperations.Start), ex);
+            _log.Error(ex, OperationErrorString(ComputeSystemOperations.Start));
             return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
         }
     }
@@ -253,7 +253,7 @@ public class HyperVVirtualMachine : IComputeSystem
             catch (Exception ex)
             {
                 StateChanged(this, ComputeSystemState.Unknown);
-                _log.Error(OperationErrorString(ComputeSystemOperations.Terminate), ex);
+                _log.Error(ex, OperationErrorString(ComputeSystemOperations.Terminate));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -278,7 +278,7 @@ public class HyperVVirtualMachine : IComputeSystem
             catch (Exception ex)
             {
                 StateChanged(this, ComputeSystemState.Unknown);
-                _log.Error(OperationErrorString(ComputeSystemOperations.Delete), ex);
+                _log.Error(ex, OperationErrorString(ComputeSystemOperations.Delete));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -309,7 +309,7 @@ public class HyperVVirtualMachine : IComputeSystem
             catch (Exception ex)
             {
                 StateChanged(this, ComputeSystemState.Unknown);
-                _log.Error(OperationErrorString(ComputeSystemOperations.Save), ex);
+                _log.Error(ex, OperationErrorString(ComputeSystemOperations.Save));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -340,7 +340,7 @@ public class HyperVVirtualMachine : IComputeSystem
             catch (Exception ex)
             {
                 StateChanged(this, ComputeSystemState.Unknown);
-                _log.Error(OperationErrorString(ComputeSystemOperations.Pause), ex);
+                _log.Error(ex, OperationErrorString(ComputeSystemOperations.Pause));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -371,7 +371,7 @@ public class HyperVVirtualMachine : IComputeSystem
             catch (Exception ex)
             {
                 StateChanged(this, ComputeSystemState.Unknown);
-                _log.Error(OperationErrorString(ComputeSystemOperations.Resume), ex);
+                _log.Error(ex, OperationErrorString(ComputeSystemOperations.Resume));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -393,7 +393,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                _log.Error(OperationErrorString(ComputeSystemOperations.CreateSnapshot), ex);
+                _log.Error(ex, OperationErrorString(ComputeSystemOperations.CreateSnapshot));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -416,7 +416,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                _log.Error(OperationErrorString(ComputeSystemOperations.RevertSnapshot), ex);
+                _log.Error(ex, OperationErrorString(ComputeSystemOperations.RevertSnapshot));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -439,7 +439,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                _log.Error(OperationErrorString(ComputeSystemOperations.DeleteSnapshot), ex);
+                _log.Error(ex, OperationErrorString(ComputeSystemOperations.DeleteSnapshot));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -457,7 +457,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                _log.Error($"Failed to launch vmconnect on {DateTime.Now}: VM details: {this}", ex);
+                _log.Error(ex, $"Failed to launch vmconnect on {DateTime.Now}: VM details: {this}");
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -487,7 +487,7 @@ public class HyperVVirtualMachine : IComputeSystem
             catch (Exception ex)
             {
                 StateChanged(this, ComputeSystemState.Unknown);
-                _log.Error(OperationErrorString(ComputeSystemOperations.Restart), ex);
+                _log.Error(ex, OperationErrorString(ComputeSystemOperations.Restart));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -536,7 +536,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                _log.Error($"Failed to GetComputeSystemPropertiesAsync on {DateTime.Now}: VM details: {this}", ex);
+                _log.Error(ex, $"Failed to GetComputeSystemPropertiesAsync on {DateTime.Now}: VM details: {this}");
                 return new List<ComputeSystemProperty>();
             }
         }).AsAsyncOperation();
@@ -708,7 +708,7 @@ public class HyperVVirtualMachine : IComputeSystem
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to apply configuration on {DateTime.Now}: VM details: {this}", ex);
+            _log.Error(ex, $"Failed to apply configuration on {DateTime.Now}: VM details: {this}");
             return operation.CompleteOperation(new HostGuestCommunication.ApplyConfigurationResult(ex.HResult, ex.Message));
         }
     }
@@ -721,7 +721,7 @@ public class HyperVVirtualMachine : IComputeSystem
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to apply configuration on {DateTime.Now}: VM details: {this}", ex);
+            _log.Error(ex, $"Failed to apply configuration on {DateTime.Now}: VM details: {this}");
             return new ApplyConfigurationOperation(this, ex);
         }
     }

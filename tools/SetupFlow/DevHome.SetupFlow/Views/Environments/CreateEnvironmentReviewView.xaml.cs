@@ -74,7 +74,7 @@ public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipien
         catch (Exception ex)
         {
             // Log the exception
-            _log.Error("Error adding adaptive card UI in CreateEnvironmentReviewView", ex);
+            _log.Error(ex, "Error adding adaptive card UI in CreateEnvironmentReviewView");
         }
     }
 }

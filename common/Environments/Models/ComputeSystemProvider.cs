@@ -5,6 +5,7 @@ using System;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using DevHome.Common.Environments.Exceptions;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Helpers;
 using Microsoft.Windows.DevHome.SDK;
@@ -51,12 +52,12 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            _log.Error($"CreateAdaptiveCardSessionWithDeveloperId for: {this} failed due to exception", ex);
+            _log.Error(ex, $"CreateAdaptiveCardSessionForDeveloperId for: {this} failed due to exception");
             return new ComputeSystemAdaptiveCardResult(ex, errorString, ex.Message);
         }
     }
 
-    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSession(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind)
+    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForComputeSystem(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind)
     {
         try
         {
@@ -64,7 +65,7 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            _log.Error($"CreateAdaptiveCardSessionWithComputeSystem for: {this} failed due to exception", ex);
+            _log.Error(ex, $"CreateAdaptiveCardSessionForComputeSystem for: {this} failed due to exception");
             return new ComputeSystemAdaptiveCardResult(ex, errorString, ex.Message);
         }
     }
@@ -77,8 +78,22 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            _log.Error($"GetComputeSystemsAsync for: {this} failed due to exception", ex);
+            _log.Error(ex, $"GetComputeSystemsAsync for: {this} failed due to exception");
             return new ComputeSystemsResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public ICreateComputeSystemOperation? CreateCreateComputeSystemOperation(IDeveloperId developerId, string inputJson)
+    {
+        try
+        {
+            return _computeSystemProvider.CreateCreateComputeSystemOperation(developerId, inputJson)
+                ?? throw new CreateCreateComputeSystemOperationException("CreateCreateComputeSystemOperation was null");
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"GetComputeSystemsAsync for: {this} failed due to exception");
+            return new FailedCreateComputeSystemOperation(ex, StringResourceHelper.GetResource("CreationOperationStoppedUnexpectedly"));
         }
     }
 

@@ -14,6 +14,8 @@
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
     setupFlowBehaviors:SetupFlowNavigationBehavior.NextVisibility="Collapsed"
+    Loaded="ViewLoaded"
+    Unloaded="ViewUnloaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -106,7 +108,7 @@
                     <TextBlock
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Header"/>
+                        Text="{x:Bind ViewModel.PageHeaderText}"/>
                     <TextBlock
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
@@ -265,6 +267,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
                                 <ColumnDefinition Width="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition />
@@ -309,10 +312,30 @@
                                     Text="{x:Bind ViewModel.RepositoriesClonedText}"
                                     Foreground="{ThemeResource TextFillColorSecondary}"/>
                             </Grid>
-                            <Button Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" 
+                            <Grid
+                                Grid.Column="2"
+                                Visibility="{x:Bind ViewModel.WasCreateEnvironmentOperationStarted, Mode=OneWay}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <!--- There will only ever be 1 environment created in the flow  at a time. -->
+                                <TextBlock 
+                                    Grid.Row="0" 
+                                    Text="1" 
+                                    FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
+                                    FontWeight="{StaticResource InfoBarTitleFontWeight}"
+                                    HorizontalAlignment="Center"/>
+                                <TextBlock 
+                                    Grid.Row="1" 
+                                    HorizontalAlignment="Center"
+                                    x:Uid="SummaryPageEnvironmentCreating"
+                                    Foreground="{ThemeResource TextFillColorSecondary}"/>
+                            </Grid>
+                            <Button Grid.Row="1" Grid.ColumnSpan="3" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
+                                Content="{x:Bind ViewModel.PageRedirectButtonText}"
                                 HorizontalAlignment="Center" 
-                                Command="{x:Bind ViewModel.GoToDashboardCommand, Mode=OneWay}" 
+                                Command="{x:Bind ViewModel.RedirectToNextPageCommand, Mode=OneWay}" 
                                 Style="{StaticResource AccentButtonStyle}"
                                 Margin="0, 50, 0, 0"/>
                         </Grid>
@@ -371,6 +394,18 @@
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
                                 </ListView>
+                            </Expander>
+                        </Grid>
+
+                        <!-- Create environment details expander -->
+                        <Grid Padding="0,13" Visibility="{x:Bind ViewModel.WasCreateEnvironmentOperationStarted}"
+                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
+                            <Expander>
+                                <Expander.Header>
+                                    <TextBlock x:Uid="SummaryPageHeadingForCreateEnvironmentFlow" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                </Expander.Header>
+                                <Grid x:Name="AdaptiveCardGrid" />
                             </Expander>
                         </Grid>
 

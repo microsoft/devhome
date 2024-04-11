@@ -110,7 +110,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             catch (Exception ex)
             {
                 SessionStateText = GetStatusString("SessionError");
-                _log.Error("QuietBackgroundProcessesSession::Start failed", ex);
+                _log.Error(ex, "QuietBackgroundProcessesSession::Start failed");
             }
         }
         else
@@ -124,7 +124,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             catch (Exception ex)
             {
                 SessionStateText = GetStatusString("UnableToCancelSession");
-                _log.Error("QuietBackgroundProcessesSession::Stop failed", ex);
+                _log.Error(ex, "QuietBackgroundProcessesSession::Stop failed");
             }
         }
     }
@@ -142,7 +142,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
         catch (Exception ex)
         {
             SessionStateText = GetStatusString("SessionError");
-            _log.Error("QuietBackgroundProcessesSession::IsActive failed", ex);
+            _log.Error(ex, "QuietBackgroundProcessesSession::IsActive failed");
         }
 
         return false;
@@ -157,7 +157,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
         catch (Exception ex)
         {
             SessionStateText = GetStatusString("SessionError");
-            _log.Error("QuietBackgroundProcessesSession::TimeLeftInSeconds failed", ex);
+            _log.Error(ex, "QuietBackgroundProcessesSession::TimeLeftInSeconds failed");
             return 0;
         }
     }

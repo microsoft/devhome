@@ -214,7 +214,7 @@ public class ConfigureTargetTask : ISetupTask
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to process configuration progress data on target machine.'{ComputeSystemName}'", ex);
+            _log.Error(ex, $"Failed to process configuration progress data on target machine.'{ComputeSystemName}'");
         }
     }
 
@@ -254,7 +254,7 @@ public class ConfigureTargetTask : ISetupTask
 
             if (resultStatus == ProviderOperationStatus.Failure)
             {
-                _log.Error($"Extension failed to configure config file with exception. Diagnostic text: {result.DiagnosticText}", result.ExtendedError);
+                _log.Error(result.ExtendedError, $"Extension failed to configure config file with exception. Diagnostic text: {result.DiagnosticText}");
                 throw new SDKApplyConfigurationSetResultException(applyConfigurationResult.Result.DiagnosticText);
             }
 
@@ -288,7 +288,7 @@ public class ConfigureTargetTask : ISetupTask
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to apply configuration on target machine. '{ComputeSystemName}'", ex);
+            _log.Error(ex, $"Failed to apply configuration on target machine. '{ComputeSystemName}'");
         }
 
         var tempResultInfo = !string.IsNullOrEmpty(resultInformation) ? resultInformation : string.Empty;
@@ -371,7 +371,7 @@ public class ConfigureTargetTask : ISetupTask
             }
             catch (Exception e)
             {
-                _log.Error($"Failed to apply configuration on target machine.", e);
+                _log.Error(e, $"Failed to apply configuration on target machine.");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();

@@ -269,7 +269,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
         catch (Exception e)
         {
-            _log.Error("Failed to open folder picker.", e);
+            _log.Error(e, "Failed to open folder picker.");
         }
     }
 
@@ -509,7 +509,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to refresh the drive letter to size mapping.", ex);
+            _log.Error(ex, $"Failed to refresh the drive letter to size mapping.");
 
             // Clear the mapping since it can't be refreshed. This shouldn't happen unless DriveInfo.GetDrives() fails. In that case we won't know which drive
             // in the list is causing GetDrives()'s to throw. If there are values inside the dictionary at this point, they could be stale. Clearing the list

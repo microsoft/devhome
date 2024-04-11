@@ -126,7 +126,7 @@
     <comment>Dev drive size free</comment>
   </data>
   <data name="DevDriveInsightsCard.Description" xml:space="preserve">
-    <value>All things, dev drives, optimizations, etc.</value>
+    <value>All things, Dev Drives, optimizations, etc.</value>
     <comment>The description for the Dev Drive Insights settings card</comment>
   </data>
   <data name="DevDriveInsightsCard.Header" xml:space="preserve">
@@ -161,9 +161,9 @@
     <value>Enable end task in taskbar by right click</value>
     <comment>The description for the end task on task bar settings card</comment>
   </data>
-  <data name="ExampleDevDriveLocation" xml:space="preserve">
-    <value>Example: E:\packages\pip</value>
-    <comment>Example dev drive location</comment>
+  <data name="ExampleText" xml:space="preserve">
+    <value>Example: </value>
+    <comment>Example string, will be followed by a sample location to move the cache to a dev drive location</comment>
   </data>
   <data name="EndTaskOnTaskBar.Header" xml:space="preserve">
     <value>End Task</value>

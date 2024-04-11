@@ -91,6 +91,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         _elementRegistration.Set(DevHomeLaunchContentDialogButton.AdaptiveElementType, new DevHomeLaunchContentDialogButtonParser());
         _elementRegistration.Set(DevHomeContentDialogContent.AdaptiveElementType, new DevHomeContentDialogContentParser());
         _adaptiveCardRenderingService = renderingService;
+        Orchestrator.CurrentSetupFlowKind = SetupFlowKind.CreateEnvironment;
     }
 
     /// <summary>
@@ -109,6 +110,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         ResetAdaptiveCardConfiguration();
         WeakReferenceMessenger.Default.UnregisterAll(this);
         _setupFlowViewModel.EndSetupFlow -= OnEndSetupFlow;
+        Orchestrator.CurrentSetupFlowKind = SetupFlowKind.LocalMachine;
     }
 
     protected async override Task OnFirstNavigateToAsync()
@@ -179,7 +181,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
             }
             catch (Exception ex)
             {
-                _log.Error($"Failed to get creation options adaptive card from provider {_curProviderDetails.ComputeSystemProvider.Id}.", ex);
+                _log.Error(ex, $"Failed to get creation options adaptive card from provider {_curProviderDetails.ComputeSystemProvider.Id}.");
                 SessionErrorMessage = ex.Message;
             }
         });
@@ -267,7 +269,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     {
         // Only send the adaptive card if the session has loaded. If the session hasn't loaded yet, we'll send an empty response. The review page should be sent the adaptive card
         // once the session has loaded in the OnAdaptiveCardUpdated method.
-        if (!IsAdaptiveCardSessionLoaded)
+        if (!IsAdaptiveCardSessionLoaded && Orchestrator?.CurrentPageViewModel is not SummaryViewModel)
         {
             return;
         }

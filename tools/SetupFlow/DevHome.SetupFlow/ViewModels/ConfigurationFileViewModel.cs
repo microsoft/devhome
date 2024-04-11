@@ -89,7 +89,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to initialize elevated process.", e);
+            _log.Error(e, $"Failed to initialize elevated process.");
         }
     }
 
@@ -113,7 +113,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to get configuration unit details.", e);
+            _log.Error(e, $"Failed to get configuration unit details.");
         }
     }
 
@@ -134,7 +134,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to open file picker.", e);
+            _log.Error(e, $"Failed to open file picker.");
             return false;
         }
     }
@@ -184,7 +184,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (OpenConfigurationSetException e)
         {
-            _log.Error($"Opening configuration set failed.", e);
+            _log.Error(e, $"Opening configuration set failed.");
             await _mainWindow.ShowErrorMessageDialogAsync(
                 StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
                 GetErrorMessage(e),
@@ -192,7 +192,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error($"Unknown error while opening configuration set.", e);
+            _log.Error(e, $"Unknown error while opening configuration set.");
 
             await _mainWindow.ShowErrorMessageDialogAsync(
                 file.Name,

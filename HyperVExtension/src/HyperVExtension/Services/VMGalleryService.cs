@@ -87,7 +87,7 @@ public sealed class VMGalleryService : IVMGalleryService
         }
         catch (Exception ex)
         {
-            _log.Error($"Unable to retrieve VM gallery images", ex);
+            _log.Error(ex, $"Unable to retrieve VM gallery images");
         }
 
         return _imageList;
