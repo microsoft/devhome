@@ -156,6 +156,8 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
             return true;
         };
+
+        ComputeSystemCardAdvancedCollectionView.RefreshFilter();
     }
 
     /// <summary>
