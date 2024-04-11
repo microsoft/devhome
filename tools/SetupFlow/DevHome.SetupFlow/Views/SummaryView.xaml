@@ -187,7 +187,7 @@
                 </Grid>
 
                 <!-- Target setup results -->
-                <Grid Grid.Row="2" ColumnSpacing="50" Visibility="{x:Bind ViewModel.IsSettingUpATargetMachine, Mode=OneWay}">
+                <Grid Grid.Row="2" ColumnSpacing="50" Visibility="{x:Bind ViewModel.ShowTargetMachineSetupResults, Mode=OneWay}">
                     <Grid.ColumnDefinitions>
                         <!-- repos cloned/apps downloaded and next steps column -->
                         <ColumnDefinition/>

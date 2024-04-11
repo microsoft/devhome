@@ -143,6 +143,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     public bool ShowConfigurationUnitResults => ConfigurationUnitResults.Count > 0;
 
+    public bool ShowTargetMachineSetupResults => IsSettingUpATargetMachine && ShowConfigurationUnitResults;
+
     public bool ShowConfigurationFileResults => ShowConfigurationUnitResults && !IsSettingUpATargetMachine;
 
     public bool CompletedWithErrors => TargetFailedResults.Count > 0;
