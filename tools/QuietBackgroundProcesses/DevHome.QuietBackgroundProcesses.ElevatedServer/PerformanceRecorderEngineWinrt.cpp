@@ -64,7 +64,7 @@ namespace ABI::DevHome::QuietBackgroundProcesses
             return S_OK;
         }
 
-        STDMETHODIMP get_Pid(__int64* value) noexcept override
+        STDMETHODIMP get_Pid(unsigned int* value) noexcept override
         try
         {
             *value = m_summary.pid;
@@ -146,7 +146,7 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         }
         CATCH_RETURN()
 
-        STDMETHODIMP get_PercentCumulative(float* value) noexcept override
+        STDMETHODIMP get_PercentCumulative(double* value) noexcept override
         try
         {
             *value = m_summary.percentCumulative;
@@ -154,7 +154,7 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         }
         CATCH_RETURN()
 
-        STDMETHODIMP get_VarianceCumulative(float* value) noexcept override
+        STDMETHODIMP get_VarianceCumulative(double* value) noexcept override
         try
         {
             *value = m_summary.varianceCumulative;
@@ -162,7 +162,7 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         }
         CATCH_RETURN()
 
-        STDMETHODIMP get_Sigma4Cumulative(float* value) noexcept override
+        STDMETHODIMP get_Sigma4Cumulative(double* value) noexcept override
         try
         {
             *value = m_summary.sigma4Cumulative;
@@ -170,7 +170,7 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         }
         CATCH_RETURN()
 
-        STDMETHODIMP get_MaxPercent(float* value) noexcept override
+        STDMETHODIMP get_MaxPercent(double* value) noexcept override
         try
         {
             *value = m_summary.maxPercent;
@@ -259,9 +259,11 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         }
 
         // IPerformanceRecorderEngine
-        STDMETHODIMP Start(int periodInMs) noexcept override
+        STDMETHODIMP Start(ABI::Windows::Foundation::TimeSpan samplingPeriod) noexcept override
         try
         {
+            // Convert TimeSpan from 100ns to milliseconds
+            auto periodInMs = static_cast<uint32_t>(samplingPeriod.Duration / 10000);
             THROW_IF_FAILED(StartMonitoringProcessUtilization(periodInMs, &m_context));
             return S_OK;
         }

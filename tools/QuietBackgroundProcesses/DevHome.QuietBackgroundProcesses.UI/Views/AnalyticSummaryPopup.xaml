@@ -18,10 +18,6 @@
         <Thickness x:Key="ContentDialogTitleMargin">0,0,0,0</Thickness>
         <Thickness x:Key="ContentDialogPadding">0,0,0,0</Thickness>
         <Thickness x:Key="NavigationViewContentMargin">0,0,0,0</Thickness>
-        <Thickness x:Key="SmallPinButtonMargin">0,20</Thickness>
-        <Thickness x:Key="LargePinButtonMargin">0,42</Thickness>
-        <Thickness x:Key="SmallWidgetPreviewTopMargin">0,20,0,0</Thickness>
-        <Thickness x:Key="LargeWidgetPreviewTopMargin">0,42,0,0</Thickness>
     </ContentDialog.Resources>
 
     <!-- Title and Close button -->
@@ -57,7 +53,6 @@
                     Grid.Column="1"
                     x:Name="SortComboBox"
                     Margin="5 0 5 0"
-                    PlaceholderText="Sort by"
                     SelectedValue=""
                     SelectedIndex="{x:Bind ViewModel.SortComboBoxIndex, Mode=TwoWay}">
                     <ComboBoxItem x:Uid="ComboBox_SortBy_Process" />
@@ -75,21 +70,28 @@
                     Grid.Column="2"
                     x:Uid="AnalyticSummary_FilterProcesses_PlaceholderText"
                     x:Name="FilterTextBox"
-                    TextChanged="FilterTextBox_TextChanged"
-                    Margin="50 0 0 0" />
+                    Margin="50 0 0 0">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="TextChanged">
+                            <ic:InvokeCommandAction
+                            Command="{x:Bind ViewModel.FilterProcessesTextInputChangedCommand, Mode=OneWay}"
+                            CommandParameter="{Binding Text, ElementName=FilterTextBox}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </TextBox>
             </Grid>
         </StackPanel>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1" Padding="10 0 10 0">
             <StackPanel Padding="15 0 15 15">
-                <local:SimpleTableControl x:Name="processListControl" ItemsSource="{x:Bind ViewModel.ProcessDatasAd}" />
+                <local:ProcessPerformanceTableControl x:Name="processListControl" ItemsSource="{x:Bind ViewModel.ProcessDatasAd}" />
             </StackPanel>
         </ScrollViewer>
 
         <Grid Grid.Row="2" Background="{StaticResource SmokeFillColorDefaultBrush}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
             <Button

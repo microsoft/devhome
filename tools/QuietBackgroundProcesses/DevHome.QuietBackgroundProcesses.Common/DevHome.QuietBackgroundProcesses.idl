@@ -19,7 +19,7 @@ namespace DevHome.QuietBackgroundProcesses
     [default_interface]
     runtimeclass ProcessRow
     {
-        Int64 Pid { get; };
+        UInt32 Pid { get; };
         String Name { get; };
         String PackageFullName { get; };
         String Aumid { get; };
@@ -29,10 +29,10 @@ namespace DevHome.QuietBackgroundProcesses
         Windows.Foundation.DateTime ExitTime { get; };
 
         UInt64 SampleCount { get; };
-        Single PercentCumulative { get; };
-        Single VarianceCumulative { get; };
-        Single Sigma4Cumulative { get; };
-        Single MaxPercent { get; };
+        Double PercentCumulative { get; };
+        Double VarianceCumulative { get; };
+        Double Sigma4Cumulative { get; };
+        Double MaxPercent { get; };
         UInt32 SamplesAboveThreshold { get; };
 
         UInt64 TotalCpuTimeInMicroseconds { get; };
@@ -48,7 +48,7 @@ namespace DevHome.QuietBackgroundProcesses
     runtimeclass PerformanceRecorderEngine
     {
         PerformanceRecorderEngine();
-        void Start(Int32 periodInMs);
+        void Start(Windows.Foundation.TimeSpan periodInMs);
         ProcessPerformanceTable Stop();
     }
 

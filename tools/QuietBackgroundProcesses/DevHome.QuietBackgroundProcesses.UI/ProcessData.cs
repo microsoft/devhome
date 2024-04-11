@@ -45,13 +45,13 @@ public class ProcessData
 
     public ulong Samples { get; set; }
 
-    public float Percent { get; set; }
+    public double Percent { get; set; }
 
-    public float StandardDeviation { get; set; }
+    public double StandardDeviation { get; set; }
 
-    public float Sigma4Deviation { get; set; }
+    public double Sigma4Deviation { get; set; }
 
-    public float MaxPercent { get; set; }
+    public double MaxPercent { get; set; }
 
     public TimeSpan TimeAboveThreshold { get; set; }
 

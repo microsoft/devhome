@@ -19,10 +19,10 @@ struct ProcessPerformanceSummary
 
     // Sampling
     uint64_t sampleCount{};
-    float percentCumulative{};
-    float varianceCumulative{};
-    float sigma4Cumulative{};
-    float maxPercent{};
+    double percentCumulative{};
+    double varianceCumulative{};
+    double sigma4Cumulative{};
+    double maxPercent{};
     uint32_t samplesAboveThreshold{};
 
     // Other

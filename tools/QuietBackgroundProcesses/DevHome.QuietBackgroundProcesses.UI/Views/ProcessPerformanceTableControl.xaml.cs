@@ -10,7 +10,7 @@ using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.QuietBackgroundProcesses.UI.Views;
 
-public sealed partial class SimpleTableControl : UserControl
+public sealed partial class ProcessPerformanceTableControl : UserControl
 {
     public ObservableCollection<ProcessData> ProcessDatas { get; set; } = new ObservableCollection<ProcessData>();
 
@@ -26,7 +26,7 @@ public sealed partial class SimpleTableControl : UserControl
         set => SetValue(ItemsSourceProperty, value);
     }
 
-    public SimpleTableControl()
+    public ProcessPerformanceTableControl()
     {
         this.InitializeComponent();
     }

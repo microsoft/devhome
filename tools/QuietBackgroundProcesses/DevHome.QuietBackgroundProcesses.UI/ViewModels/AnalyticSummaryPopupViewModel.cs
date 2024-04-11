@@ -28,9 +28,9 @@ public partial class AnalyticSummaryPopupViewModel : ObservableObject
 
     public AdvancedCollectionView ProcessDatasAd { get; private set; }
 
-    private DevHome.QuietBackgroundProcesses.UI.ProcessData.ProcessCategory ConvertProcessType(DevHome.QuietBackgroundProcesses.ProcessCategory inputType)
+    private ProcessData.ProcessCategory ConvertProcessType(DevHome.QuietBackgroundProcesses.ProcessCategory inputType)
     {
-        return (DevHome.QuietBackgroundProcesses.UI.ProcessData.ProcessCategory)inputType;
+        return (ProcessData.ProcessCategory)inputType;
     }
 
     public AnalyticSummaryPopupViewModel(QuietBackgroundProcesses.ProcessPerformanceTable? performanceTable)
@@ -85,6 +85,7 @@ public partial class AnalyticSummaryPopupViewModel : ObservableObject
         ProcessDatasAd.SortDescriptions.Add(new SortDescription("Pid", SortDirection.Descending));
     }
 
+    [RelayCommand]
     public void FilterProcessesTextInputChanged(string filterExpression)
     {
         ProcessDatasAd.Filter = item =>

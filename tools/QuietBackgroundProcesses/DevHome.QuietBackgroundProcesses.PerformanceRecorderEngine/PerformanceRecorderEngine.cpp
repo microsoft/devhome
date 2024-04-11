@@ -62,10 +62,10 @@ struct ProcessPerformanceInfo
 
     // Sampling
     uint64_t sampleCount{};
-    float percentCumulative{};
-    float varianceCumulative{};
-    float sigma4Cumulative{};
-    float maxPercent{};
+    double percentCumulative{};
+    double varianceCumulative{};
+    double sigma4Cumulative{};
+    double maxPercent{};
     uint32_t samplesAboveThreshold{};
 };
 
@@ -189,16 +189,19 @@ std::set<std::wstring> c_background = {
 
 ProcessCategory GetCategory(DWORD pid, std::wstring_view processName)
 {
-    auto search = [&](std::wstring_view processName, const auto& list) {
-        auto it = std::find_if(list.begin(), list.end(), [&](const auto& elem) {
+    auto search = [&](std::wstring_view processName, const auto& list)
+    {
+        auto it = std::find_if(list.begin(), list.end(), [&](const auto& elem)
+        {
             return wil::compare_string_ordinal(processName, elem, true) == 0;
-            });
+        });
         auto found = (it != list.end());
         return found;
     };
 
     if (pid == 4)
     {
+        // PID 4 is the System process
         return ProcessCategory::System;
     }
     if (search(processName.data(), c_user))
@@ -323,7 +326,9 @@ ProcessPerformanceInfo MakeProcessPerformanceInfo(DWORD processId)
     if (!process)
     {
         // We can't open csrss.exe, so we'll just skip processes we can't open
-        return {};
+        auto info = ProcessPerformanceInfo{};
+        info.process = nullptr;
+        info.pid = processId;
     }
 
     auto processPathString = TryGetProcessName(process.get());
@@ -501,9 +506,9 @@ struct MonitorThread
                         auto cpuTime = CpuTimeDuration(info.previousUserTime, info.currentUserTime);
                         cpuTime += CpuTimeDuration(info.previousKernelTime, info.currentKernelTime);
 
-                        float percent = (float)cpuTime.count() / std::chrono::duration_cast<std::chrono::microseconds>(periodMs).count() / (float)numCpus * 100.0f;
-                        auto variance = (float)std::pow(percent, 2.0f);
-                        auto sigma4 = (float)std::pow(percent, 4.0f);
+                        double percent = (double)cpuTime.count() / std::chrono::duration_cast<std::chrono::microseconds>(periodMs).count() / (double)numCpus * 100.0f;
+                        double variance = (double)std::pow(percent, 2.0f);
+                        double sigma4 = (double)std::pow(percent, 4.0f);
 
                         info.sampleCount++;
                         info.percentCumulative += percent;

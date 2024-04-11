@@ -66,7 +66,9 @@ namespace ABI::DevHome::QuietBackgroundProcesses
             // Start performance recorder
             g_performanceRecorderEngine.reset();
             THROW_IF_FAILED(Microsoft::WRL::MakeAndInitialize<PerformanceRecorderEngine>(&g_performanceRecorderEngine));
-            THROW_IF_FAILED(g_performanceRecorderEngine->Start(1000));
+            ABI::Windows::Foundation::TimeSpan samplingPeriod;
+            samplingPeriod.Duration = 1000 * 10000; // 1 second
+            THROW_IF_FAILED(g_performanceRecorderEngine->Start(samplingPeriod));
 
             // Return duration for showing countdown
             *result = g_activeTimer->TimeLeftInSeconds();

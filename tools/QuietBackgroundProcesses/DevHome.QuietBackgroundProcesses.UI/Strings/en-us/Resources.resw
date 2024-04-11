@@ -102,6 +102,10 @@
     <value>Related links</value>
     <comment>Label for the doc links</comment>
   </data>
+  <data name="AnalyticSummaryButton.Content" xml:space="preserve">
+    <value>Analytic summary</value>
+    <comment>Button to open the analytic summary dialog</comment>
+  </data>
 
   <!-- Analytic Summary -->
   <data name="AnalyticSummary_Title.Text" xml:space="preserve">
@@ -142,17 +146,17 @@
   </data>
 
   <!-- Simple table control -->
-  <data name="SimpleTableControl_Heading_Process.Text" xml:space="preserve">
+  <data name="ProcessPerformanceTableControl_Heading_Process.Text" xml:space="preserve">
     <value>Process</value>
     <comment>Table heading for Process column</comment>
   </data>
-  <data name="SimpleTableControl_Heading_ProcessType.Text" xml:space="preserve">
+  <data name="ProcessPerformanceTableControl_Heading_ProcessType.Text" xml:space="preserve">
     <value>Type</value>
     <comment>Table heading for Type column</comment>
   </data>
-  <data name="SimpleTableControl_Heading_CpuAboveThreshold.Text" xml:space="preserve">
-    <value>Process</value>
-    <comment>Table heading for 'CPU above threshold' column</comment>
+  <data name="ProcessPerformanceTableControl_Heading_CpuAboveThreshold.Text" xml:space="preserve">
+    <value>CPU above threshold</value>
+    <comment>Table heading for 'CPU time above threshold' column</comment>
   </data>
   <data name="MinutesAbbreviation.Text" xml:space="preserve">
     <value>min</value>

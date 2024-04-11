@@ -92,7 +92,7 @@
         {
           "buildType": "canary",
           "enabledByDefault": false,
-          "visible": true
+          "visible": false
         },
         {
           "buildType": "stable",

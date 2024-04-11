@@ -4,6 +4,7 @@
 using DevHome.Customization.ViewModels;
 using DevHome.Customization.ViewModels.DevDriveInsights;
 using DevHome.Customization.Views;
+using DevHome.QuietBackgroundProcesses.UI.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -23,7 +24,7 @@ public static class ServiceExtensions
         services.AddSingleton<DevDriveInsightsViewModel>();
         services.AddTransient<DevDriveInsightsPage>();
 
-        services.AddTransient<DevHome.QuietBackgroundProcesses.UI.ViewModels.QuietBackgroundProcessesViewModel>();
+        services.AddTransient<QuietBackgroundProcessesViewModel>();
 
         return services;
     }

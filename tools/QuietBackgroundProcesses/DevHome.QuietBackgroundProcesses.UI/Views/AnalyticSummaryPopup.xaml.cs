@@ -25,14 +25,4 @@ public sealed partial class AnalyticSummaryPopup : ContentDialog
     {
         this.Hide();
     }
-
-    private void FilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        var textBox = sender as Microsoft.UI.Xaml.Controls.TextBox;
-        if (textBox != null)
-        {
-            var filterExpression = textBox.Text.Trim();
-            ViewModel.FilterProcessesTextInputChanged(filterExpression);
-        }
-    }
 }

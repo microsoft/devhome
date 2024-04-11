@@ -23,7 +23,7 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         STDMETHODIMP RuntimeClassInitialize() noexcept;
 
         // IPerformanceRecorderEngine
-        STDMETHODIMP Start(int periodInMs) noexcept override;
+        STDMETHODIMP Start(ABI::Windows::Foundation::TimeSpan samplingPeriod) noexcept override;
 
         STDMETHODIMP Stop(ABI::DevHome::QuietBackgroundProcesses::IProcessPerformanceTable** result) noexcept override;
     private:
