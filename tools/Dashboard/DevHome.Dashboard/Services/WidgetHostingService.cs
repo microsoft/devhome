@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
@@ -16,6 +17,10 @@ public class WidgetHostingService : IWidgetHostingService
     private WidgetHost _widgetHost;
     private WidgetCatalog _widgetCatalog;
 
+    // RPC error codes to recover from
+    private const int RpcServerUnavailable = unchecked((int)0x800706BA);
+    private const int RpcCallFailed = unchecked((int)0x800706BE);
+
     public async Task<Widget[]> GetWidgetsAsync()
     {
         // If we already have a WidgetHost, check if the COM object is still alive and use it if it is.
@@ -25,9 +30,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 return await Task.Run(() => _widgetHost.GetWidgets());
             }
-            catch (Exception ex)
+            catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
-                _log.Warning(ex, "Exception trying to use WidgetHost");
+                _log.Warning(e, $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}");
                 _widgetHost = null;
             }
         }
@@ -39,9 +44,9 @@ public class WidgetHostingService : IWidgetHostingService
                 _widgetHost = await Task.Run(() => WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031")));
                 return await Task.Run(() => _widgetHost.GetWidgets());
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _log.Error(ex, "Exception getting widgets from service:");
+                _log.Error(e, "Exception getting widgets from service:");
             }
         }
 
@@ -57,9 +62,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 return await Task.Run(async () => await _widgetHost.CreateWidgetAsync(widgetDefinitionId, widgetSize));
             }
-            catch (Exception ex)
+            catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
-                _log.Warning(ex, "Exception trying to use WidgetHost");
+                _log.Warning(e, $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}");
                 _widgetHost = null;
             }
         }
@@ -71,9 +76,9 @@ public class WidgetHostingService : IWidgetHostingService
                 _widgetHost = await Task.Run(() => WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031")));
                 return await Task.Run(async () => await _widgetHost.CreateWidgetAsync(widgetDefinitionId, widgetSize));
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _log.Error(ex, "Exception getting widgets from service:");
+                _log.Error(e, "Exception getting widgets from service:");
             }
         }
 
@@ -89,9 +94,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 await Task.Run(() => _widgetCatalog.GetProviderDefinitions());
             }
-            catch (Exception ex)
+            catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
-                _log.Warning(ex, "Exception trying to use WidgetCatalog");
+                _log.Warning(e, $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}");
                 _widgetCatalog = null;
             }
         }
@@ -102,9 +107,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 _widgetCatalog = await Task.Run(() => WidgetCatalog.GetDefault());
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _log.Error(ex, "Exception in WidgetCatalog.GetDefault:");
+                _log.Error(e, "Exception in WidgetCatalog.GetDefault:");
             }
         }
 
@@ -120,9 +125,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 return await Task.Run(() => _widgetCatalog.GetProviderDefinitions());
             }
-            catch (Exception ex)
+            catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
-                _log.Warning("Exception trying to use WidgetCatalog", ex);
+                _log.Warning(e, $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}");
                 _widgetCatalog = null;
             }
         }
@@ -152,9 +157,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 return await Task.Run(() => _widgetCatalog.GetWidgetDefinitions());
             }
-            catch (Exception ex)
+            catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
-                _log.Warning("WidgetCatalog was not still alive", ex.Message);
+                _log.Warning(e, $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}");
                 _widgetCatalog = null;
             }
         }
@@ -184,9 +189,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 return await Task.Run(() => _widgetCatalog.GetWidgetDefinition(widgetDefinitionId));
             }
-            catch (Exception ex)
+            catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
-                _log.Warning("WidgetCatalog was not still alive", ex.Message);
+                _log.Warning(e, $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}");
                 _widgetCatalog = null;
             }
         }
