@@ -96,6 +96,11 @@ public partial class ComputeSystemsListViewModel : ObservableObject
         }
     }
 
+    public override string ToString()
+    {
+        return AccessibilityName;
+    }
+
     public ComputeSystemsListViewModel(ComputeSystemsLoadedData loadedData)
     {
         Provider = loadedData.ProviderDetails.ComputeSystemProvider;
@@ -146,13 +151,11 @@ public partial class ComputeSystemsListViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                _log.Error($"Failed to filter Compute system cards. Error: {ex.Message}");
+                _log.Error(ex, $"Failed to filter Compute system cards");
             }
 
             return true;
         };
-
-        ComputeSystemCardAdvancedCollectionView.RefreshFilter();
     }
 
     /// <summary>
@@ -190,5 +193,13 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
         ComputeSystemCardAdvancedCollectionView.SortDescriptions.Clear();
         ComputeSystemCardAdvancedCollectionView.SortDescriptions.Add(new SortDescription(sortOption, direction));
+    }
+
+    public void SetAllSelectionFlagsToFalse()
+    {
+        foreach (var cardViewModel in ComputeSystemCardCollection)
+        {
+            cardViewModel.IsSelected = false;
+        }
     }
 }

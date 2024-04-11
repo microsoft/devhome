@@ -1397,7 +1397,7 @@
     <comment>Title of the 'Setup Target' page where users can select a remote machine to setup using Dev Home.</comment>
   </data>
   <data name="SetupTargetAllComboBoxOption" xml:space="preserve">
-    <value>All providers</value>
+    <value>All</value>
     <comment>value in combo box that will allow the user to view all the Dev Home extensions that are for interacting with remote machines or virtual machines</comment>
   </data>
   <data name="SetupTarget_Filter.PlaceholderText" xml:space="preserve">
@@ -1413,11 +1413,11 @@
     <comment>Textblock that appears on the side of the combo box that will contain a list of options to sort items on a page.</comment>
   </data>
   <data name="SetupTargetSortAToZLabel" xml:space="preserve">
-    <value>Name: A-Z</value>
+    <value>Name: Ascending</value>
     <comment>Textblock that appears inside of a combo box that is used to sort a list of remote computer names in Ascending order.</comment>
   </data>
   <data name="SetupTargetSortZToALabel" xml:space="preserve">
-    <value>Name: Z-A</value>
+    <value>Name: Descending</value>
     <comment>Textblock that appears inside of a combo box that is used to sort a list of remote computer names in descending order</comment>
   </data>
   <data name="SetupTarget_TargetProvider_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
@@ -1758,11 +1758,11 @@
   </data>
   <data name="SelectEnvironmentPage.Description" xml:space="preserve">
     <value>Choose an environment provider to create a new dev environment</value>
-    <comment>Description for the setup target page</comment>
+    <comment>Description for the select environment provider</comment>
   </data>
   <data name="ConfigureEnvironmentPage.Description" xml:space="preserve">
     <value>Add options to create your environment</value>
-    <comment>Description for the setup target page</comment>
+    <comment>Description for the configure environment page</comment>
   </data>
   <data name="ErrorRetrievingAdaptiveCardSession.Title" xml:space="preserve">
     <value>There was an error retreiving the adaptive card session from the extension</value>
