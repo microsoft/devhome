@@ -2,7 +2,7 @@
 
 ##########################################################################################################
 # This configuration will install the tools necessary to get started with Python development on Windows  #
-# Reference: https://learn.microsoft.com/en-us/windows/python/beginners                                  #
+# Reference: https://learn.microsoft.com/windows/python/beginners                                        #
 #                                                                                                        #
 # This will:                                                                                             #
 #     * Enable Developer Mode                                                                            #

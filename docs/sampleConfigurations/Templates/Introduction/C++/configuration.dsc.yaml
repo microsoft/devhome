@@ -2,7 +2,7 @@
 
 ##########################################################################################################
 # This configuration will install the tools necessary to get started with C++ development on Windows     #
-# Reference: https://learn.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-170         #
+# Reference: https://learn.microsoft.com/cpp/build/vscpp-step-0-installation?view=msvc-170               #
 #                                                                                                        #
 # This will:                                                                                             #
 #     * Enable Developer Mode                                                                            #

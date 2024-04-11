@@ -4,7 +4,7 @@ A **compute system provider** is the provider type that Dev Home will query when
 
 1. Retrieve a list of `IComputeSystem`s
 2. Create a new compute system
-3. Provide Dev Home with an [Adaptive card](https://learn.microsoft.com/en-us/adaptive-cards/) for the creation of a new compute system
+3. Provide Dev Home with an [Adaptive card](https://learn.microsoft.com/adaptive-cards/) for the creation of a new compute system
 4. Provide Dev Home with an Adaptive card for the modification of a compute systems properties
 
 Dev Home will look at the [ComputeSystemProviderOperations](https://github.com/microsoft/devhome/blob/3dc0dd739b0175357cc3e74c713d305c09248537/extensionsdk/Microsoft.Windows.DevHome.SDK/Microsoft.Windows.DevHome.SDK.idl#L461) enum to determine what operations the provider supports.

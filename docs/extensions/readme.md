@@ -1,8 +1,8 @@
 # Extensions
 
-Dev Home is an app extension host which uses [out-of-process COM](https://learn.microsoft.com/en-us/samples/dotnet/samples/out-of-process-com-server/) to talk to external COM Server processes that declare themselves to be extensions of Dev Home.
+Dev Home is an app extension host which uses [out-of-process COM](https://learn.microsoft.com/samples/dotnet/samples/out-of-process-com-server/) to talk to external COM Server processes that declare themselves to be extensions of Dev Home.
 
-Dev Home currently supports extending two interfaces through the Extension SDK. In addition, extensions can provide widgets to Dev Home using [Widget providers](https://learn.microsoft.com/en-us/windows/apps/develop/widgets/widget-providers).
+Dev Home currently supports extending two interfaces through the Extension SDK. In addition, extensions can provide widgets to Dev Home using [Widget providers](https://learn.microsoft.com/windows/apps/develop/widgets/widget-providers).
 
 ## Extension basics
 
@@ -13,9 +13,9 @@ An extension can provide functionality for one or more extensibility points. Cur
 - Developer IDs: Allow developers to sign in and out of a service by implementing the [`IDeveloperIdProvider`](#ideveloperidprovider) interface.
 - Repositories: Allow developers to get available repositories associated with their Developer IDs or parse repositories from URLs and clone them by implementing the [`IRepositoryProvider`](#irepositoryprovider) interface.
 
-Read more about [Provider interfaces](#provider-interfaces) below. Each extension also must have a class that implements `IExtension`. DevHome needs to create an instance of this class. The GUID of this class must be reflected in the manifest. See [Sample Extension](../SampleExtension/SampleExtension.cs)
+Read more about [Provider interfaces](#provider-interfaces) below. Each extension also must have a class that implements `IExtension`. DevHome needs to create an instance of this class. The GUID of this class must be reflected in the manifest. See [Sample Extension](../../extensions/SampleExtension/SampleExtension.cs)
 
-![Extension Flow](./images/extension-flow.png)
+![Extension Flow](../images/extension-flow.png)
 
 ## Extension manifest
 
@@ -120,7 +120,7 @@ public interface IRepository
 
 ## Sequence diagram
 
-![Extension Sequence](./images/extension-sequence.png)
+![Extension Sequence](../images/extension-sequence.png)
 
 ## Runtime logic
 
