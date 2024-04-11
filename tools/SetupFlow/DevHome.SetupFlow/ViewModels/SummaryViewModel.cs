@@ -75,7 +75,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         get
         {
             var repositoriesCloned = new ObservableCollection<RepoViewListItem>();
-            if (!_orchestrator.IsSettingUpATargetMachine)
+            if (!IsSettingUpATargetMachine)
             {
                 var taskGroup = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
                 var group = taskGroup.SingleOrDefault(x => x.GetType() == typeof(RepoConfigTaskGroup));
@@ -103,7 +103,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         get
         {
             var packagesInstalled = new ObservableCollection<PackageViewModel>();
-            if (!_orchestrator.IsSettingUpATargetMachine)
+            if (!IsSettingUpATargetMachine)
             {
                 var packages = _packageProvider.SelectedPackages.Where(sp => sp.CanInstall && sp.InstallPackageTask.WasInstallSuccessful).ToList();
                 packages.ForEach(p => packagesInstalled.Add(p));
@@ -139,11 +139,25 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     public List<ConfigurationUnitResultViewModel> TargetFailedResults { get; private set; } = [];
 
+    public bool IsSettingUpATargetMachine => _orchestrator.IsSettingUpATargetMachine;
+
     public bool ShowConfigurationUnitResults => ConfigurationUnitResults.Count > 0;
+
+    public bool ShowConfigurationFileResults => ShowConfigurationUnitResults && !IsSettingUpATargetMachine;
 
     public bool CompletedWithErrors => TargetFailedResults.Count > 0;
 
     public int ConfigurationUnitSucceededCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsSuccess);
+
+    public int ConfigurationUnitFailedCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsError);
+
+    public int ConfigurationUnitSkippedCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsSkipped);
+
+    public string ConfigurationUnitStats => StringResource.GetLocalized(
+        StringResourceKey.ConfigurationUnitStats,
+        ConfigurationUnitSucceededCount,
+        ConfigurationUnitFailedCount,
+        ConfigurationUnitSkippedCount);
 
     [ObservableProperty]
     private string _repositoriesClonedText;
@@ -310,7 +324,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
             FailedTasks.Add(summaryMessageViewModel);
         }
 
-        if (_orchestrator.IsSettingUpATargetMachine)
+        if (IsSettingUpATargetMachine)
         {
             foreach (var targetFailedResult in TargetFailedResults)
             {
@@ -369,7 +383,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         List<ConfigurationUnitResultViewModel> unitResults = new();
 
         // If we are setting up a target machine, we need to get the configuration results from the setup target task group.
-        if (_orchestrator.IsSettingUpATargetMachine)
+        if (IsSettingUpATargetMachine)
         {
             var setupTaskGroup = _orchestrator.GetTaskGroup<SetupTargetTaskGroup>();
             if (setupTaskGroup?.ConfigureTask?.ConfigurationResults != null)
@@ -392,7 +406,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private List<ConfigurationUnitResultViewModel> InitializeTargetResults(Func<ConfigurationUnitResultViewModel, bool> predicate)
     {
         List<ConfigurationUnitResultViewModel> unitResults = new();
-        if (_orchestrator.IsSettingUpATargetMachine)
+        if (IsSettingUpATargetMachine)
         {
             unitResults.AddRange(ConfigurationUnitResults.Where(unitResult => predicate(unitResult)));
         }

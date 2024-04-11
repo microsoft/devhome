@@ -117,7 +117,77 @@
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_HeaderWithErrors"/>
                 </Grid>
 
-                <Grid Grid.Row="2" ColumnSpacing="50" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}">
+                <!-- Setup using configuration file results -->
+                <Grid Grid.Row="2" ColumnSpacing="25" Visibility="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.77*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Configuration unit results -->
+                    <Grid RowSpacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopLeftQuadrantThickness}" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <!-- Section header -->
+                        <Grid Padding="0,20,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Summary"
+                                Style="{ThemeResource BodyStrongTextBlockStyle}" />
+                            <TextBlock
+                                Grid.Column="1"
+                                Text="{x:Bind ViewModel.ConfigurationUnitStats}"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Style="{ThemeResource CaptionTextBlockStyle}" />
+                        </Grid>
+                        <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
+                            <ItemsRepeater ItemsSource="{x:Bind ViewModel.ConfigurationUnitResults, Mode=OneWay}">
+                                <ItemsRepeater.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontFamily" Value="{StaticResource CascadiaMonoFontFamily}"/>
+                                        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <Setter Property="LineHeight" Value="20"/>
+                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                        <Setter Property="IsTextSelectionEnabled" Value="True"/>
+                                    </Style>
+                                </ItemsRepeater.Resources>
+                                <ItemsRepeater.ItemTemplate>
+                                    <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
+                                        <StackPanel>
+                                            <TextBlock Text="{x:Bind Title}"/>
+                                            <StackPanel Margin="20,0,0,0">
+                                                <TextBlock Text="{x:Bind ApplyResult}">
+                                                    <i:Interaction.Behaviors>
+                                                        <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
+                                                            <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}"/>
+                                                        </ic:DataTriggerBehavior>
+                                                        <ic:DataTriggerBehavior Binding="{x:Bind IsSkipped}" Value="True">
+                                                            <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCautionBrush}"/>
+                                                        </ic:DataTriggerBehavior>
+                                                    </i:Interaction.Behaviors>
+                                                </TextBlock>
+                                                <TextBlock Text="{x:Bind ErrorDescription}"
+                                                           Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                           Visibility="{x:Bind ErrorDescription, Converter={StaticResource StringVisibilityConverter}}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsRepeater.ItemTemplate>
+                            </ItemsRepeater>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <!-- Next steps section -->
+                    <ContentControl Grid.Column="1" Template="{ThemeResource LinksTemplate}" />
+                </Grid>
+
+                <!-- Target setup results -->
+                <Grid Grid.Row="2" ColumnSpacing="50" Visibility="{x:Bind ViewModel.IsSettingUpATargetMachine, Mode=OneWay}">
                     <Grid.ColumnDefinitions>
                         <!-- repos cloned/apps downloaded and next steps column -->
                         <ColumnDefinition/>
@@ -254,12 +324,12 @@
                                     Text="{x:Bind ViewModel.RepositoriesClonedText}"
                                     Foreground="{ThemeResource TextFillColorSecondary}"/>
                             </Grid>
-                            <Button Grid.Row="1" Grid.ColumnSpan="2"
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" 
+                            <Button Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
+                                Content="{x:Bind ViewModel.PageRedirectButtonText}"
                                 HorizontalAlignment="Center" 
-                                Command="{x:Bind ViewModel.GoToDashboardCommand, Mode=OneWay}" 
+                                Command="{x:Bind ViewModel.RedirectToNextPageCommand, Mode=OneWay}" 
                                 Style="{StaticResource AccentButtonStyle}"
-                                Margin="0, 50, 0, 0"/>
+                                Margin="0, 50, 0, 0"/>                            
                         </Grid>
                         <!-- Next steps section -->
                         <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.NextSteps, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
