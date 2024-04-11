@@ -1429,7 +1429,7 @@
     <comment>Label for combo box that will sort the users remote machines in ascending and descending order.</comment>
   </data>
   <data name="SetupTarget_SyncButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Sync your compute systems</value>
+    <value>Sync your environments</value>
     <comment>Label for the sync button that allows users to refresh the list of remote machines and virtual machines. Dev Home calls these Compute systems.</comment>
   </data>
   <data name="SetupTargetNoEnvironmentsFound.Text" xml:space="preserve">

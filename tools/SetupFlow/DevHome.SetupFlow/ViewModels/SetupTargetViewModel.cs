@@ -364,7 +364,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
                 // Remove any cards that don't support the ApplyConfiguration flag.
                 if (!wrapper.SupportedOperations.HasFlag(ComputeSystemOperations.ApplyConfiguration))
                 {
-                    // continue;
+                    continue;
                 }
 
                 var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
