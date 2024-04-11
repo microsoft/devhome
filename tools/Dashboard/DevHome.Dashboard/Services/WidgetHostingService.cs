@@ -17,6 +17,21 @@ public class WidgetHostingService : IWidgetHostingService
 
     public async Task<WidgetHost> GetWidgetHostAsync()
     {
+        // If we already have a WidgetHost, check if the COM object is still alive and use it if it is.
+        if (_widgetHost != null)
+        {
+            try
+            {
+                await Task.Run(() => _widgetHost.GetWidgets());
+                return _widgetHost;
+            }
+            catch (Exception ex)
+            {
+                _log.Warning(ex, "Exception trying to use WidgetHost");
+                _widgetHost = null;
+            }
+        }
+
         if (_widgetHost == null)
         {
             try
@@ -34,6 +49,20 @@ public class WidgetHostingService : IWidgetHostingService
 
     public async Task<WidgetCatalog> GetWidgetCatalogAsync()
     {
+        // If we already have a WidgetCatalog, check if the COM object is still alive and use it if it is.
+        if (_widgetCatalog != null)
+        {
+            try
+            {
+                await Task.Run(() => _widgetCatalog.GetType());
+            }
+            catch (Exception ex)
+            {
+                _log.Warning(ex, "Exception trying to use WidgetCatalog");
+                _widgetCatalog = null;
+            }
+        }
+
         if (_widgetCatalog == null)
         {
             try
