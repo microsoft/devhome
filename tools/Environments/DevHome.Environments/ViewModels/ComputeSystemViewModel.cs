@@ -128,12 +128,11 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         Task.Run(async () =>
         {
             IsOperationInProgress = true;
-            var providerId = ComputeSystem?.AssociatedProviderId ?? string.Empty;
 
             TelemetryFactory.Get<ITelemetry>().Log(
-            "Environments_Launch_Event",
+            "Environment_Launch_Event",
             LogLevel.Critical,
-            new EnvironmentLaunchEvent(providerId, EnvironmentsTelemetryStatus.Started));
+            new EnvironmentLaunchEvent(ComputeSystem!.AssociatedProviderId, EnvironmentsTelemetryStatus.Started));
 
             var operationResult = await ComputeSystem!.ConnectAsync(string.Empty);
 
@@ -145,9 +144,9 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
             }
 
             TelemetryFactory.Get<ITelemetry>().Log(
-                "Environments_Launch_Event",
+                "Environment_Launch_Event",
                 LogLevel.Critical,
-                new EnvironmentLaunchEvent(providerId, completionStatus));
+                new EnvironmentLaunchEvent(ComputeSystem!.AssociatedProviderId, completionStatus));
 
             IsOperationInProgress = false;
         });

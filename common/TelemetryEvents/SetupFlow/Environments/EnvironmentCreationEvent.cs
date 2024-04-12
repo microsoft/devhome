@@ -36,8 +36,8 @@ public class EnvironmentCreationEvent : EventBase
         ProviderId = providerId;
     }
 
+    // Inherited but unused.
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // The only sensitive string is the developerID.  GetHashedDeveloperId is used to hash the developerId.
     }
 }
