@@ -21,4 +21,9 @@ public sealed partial class QuietBackgroundProcessesView : UserControl
 
         ViewModel = Application.Current.GetService<QuietBackgroundProcessesViewModel>();
     }
+
+    private async void UserControl_Loaded(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.LoadViewModelContentAsync();
+    }
 }
