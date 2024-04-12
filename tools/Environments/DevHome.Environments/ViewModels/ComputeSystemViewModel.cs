@@ -130,15 +130,15 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
             IsOperationInProgress = true;
 
             TelemetryFactory.Get<ITelemetry>().Log(
-            "Environment_Launch_Event",
-            LogLevel.Critical,
-            new EnvironmentLaunchEvent(ComputeSystem!.AssociatedProviderId, EnvironmentsTelemetryStatus.Started));
+                "Environment_Launch_Event",
+                LogLevel.Critical,
+                new EnvironmentLaunchEvent(ComputeSystem!.AssociatedProviderId, EnvironmentsTelemetryStatus.Started));
 
             var operationResult = await ComputeSystem!.ConnectAsync(string.Empty);
 
             var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
 
-            if (operationResult == null || operationResult.Result.Status == ProviderOperationStatus.Failure)
+            if ((operationResult == null) || (operationResult.Result.Status == ProviderOperationStatus.Failure))
             {
                 completionStatus = EnvironmentsTelemetryStatus.Failed;
             }

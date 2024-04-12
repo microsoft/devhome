@@ -22,7 +22,7 @@ public class EnvironmentLaunchEvent : EventBase
     /// Initializes a new instance of the <see cref="EnvironmentLaunchEvent"/> class.
     /// </summary>
     /// <param name="providerId">The Id of the compute system provider that owns the compute system that is being launched</param>
-    /// <param name="status">The status of the creation operation</param>
+    /// <param name="status">The status of the launch operation</param>
     public EnvironmentLaunchEvent(string providerId, EnvironmentsTelemetryStatus status)
     {
         Status = status.ToString();

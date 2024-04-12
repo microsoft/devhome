@@ -110,7 +110,7 @@ public class CreateComputeSystemOperation : IDisposable
             try
             {
                 TelemetryFactory.Get<ITelemetry>().Log(
-                    "Environments_Creation_Event",
+                    "Environment_Creation_Event",
                     LogLevel.Critical,
                     new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, EnvironmentsTelemetryStatus.Started));
 
@@ -126,13 +126,13 @@ public class CreateComputeSystemOperation : IDisposable
 
             var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
 
-            if (CreateComputeSystemResult == null || CreateComputeSystemResult.Result.Status == ProviderOperationStatus.Failure)
+            if ((CreateComputeSystemResult == null) || (CreateComputeSystemResult.Result.Status == ProviderOperationStatus.Failure))
             {
                 completionStatus = EnvironmentsTelemetryStatus.Failed;
             }
 
             TelemetryFactory.Get<ITelemetry>().Log(
-                "Environments_Creation_Event",
+                "Environment_Creation_Event",
                 LogLevel.Critical,
                 new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, completionStatus));
 

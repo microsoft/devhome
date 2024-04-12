@@ -37,7 +37,7 @@ public class ComputeSystem
 
     public IDeveloperId AssociatedDeveloperId { get; private set; }
 
-    public string? AssociatedProviderId { get; private set; } = string.Empty;
+    public string AssociatedProviderId { get; private set; } = string.Empty;
 
     public ComputeSystem(IComputeSystem computeSystem)
     {
