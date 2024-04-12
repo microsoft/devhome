@@ -10,7 +10,7 @@ using Microsoft.Diagnostics.Telemetry.Internal;
 namespace DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 
 [EventData]
-public class EnvironmentLaunchEvent : EventBase
+public class EnvironmentLaunchUserEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
@@ -19,14 +19,14 @@ public class EnvironmentLaunchEvent : EventBase
     public string Status { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EnvironmentLaunchEvent"/> class.
+    /// Initializes a new instance of the <see cref="EnvironmentLaunchUserEvent"/> class.
     /// </summary>
     /// <param name="providerId">The Id of the compute system provider that owns the compute system that is being launched</param>
     /// <param name="status">The status of the launch operation</param>
-    public EnvironmentLaunchEvent(string providerId, EnvironmentsTelemetryStatus status)
+    public EnvironmentLaunchUserEvent(string providerId, EnvironmentsTelemetryStatus status)
     {
-        Status = status.ToString();
         ProviderId = providerId;
+        Status = status.ToString();
     }
 
     // Inherited but unused.

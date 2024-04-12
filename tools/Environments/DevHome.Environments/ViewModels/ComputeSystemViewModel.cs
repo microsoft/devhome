@@ -132,7 +132,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
             TelemetryFactory.Get<ITelemetry>().Log(
                 "Environment_Launch_Event",
                 LogLevel.Critical,
-                new EnvironmentLaunchEvent(ComputeSystem!.AssociatedProviderId, EnvironmentsTelemetryStatus.Started));
+                new EnvironmentLaunchUserEvent(ComputeSystem!.AssociatedProviderId, EnvironmentsTelemetryStatus.Started));
 
             var operationResult = await ComputeSystem!.ConnectAsync(string.Empty);
 
@@ -141,14 +141,27 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
             if ((operationResult == null) || (operationResult.Result.Status == ProviderOperationStatus.Failure))
             {
                 completionStatus = EnvironmentsTelemetryStatus.Failed;
+                LogFailure(operationResult);
             }
 
             TelemetryFactory.Get<ITelemetry>().Log(
                 "Environment_Launch_Event",
                 LogLevel.Critical,
-                new EnvironmentLaunchEvent(ComputeSystem!.AssociatedProviderId, completionStatus));
+                new EnvironmentLaunchUserEvent(ComputeSystem!.AssociatedProviderId, completionStatus));
 
             IsOperationInProgress = false;
         });
+    }
+
+    private void LogFailure(ComputeSystemOperationResult? computeSystemOperationResult)
+    {
+        if (computeSystemOperationResult == null)
+        {
+            _log.Error($"Launch operation failed for {ComputeSystem}. The ComputeSystemOperationResult was null");
+        }
+        else
+        {
+            _log.Error(computeSystemOperationResult.Result.ExtendedError, $"Launch operation failed for {ComputeSystem} error: {computeSystemOperationResult.Result.DiagnosticText}");
+        }
     }
 }

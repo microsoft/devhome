@@ -17,7 +17,7 @@ public enum EnvironmentsTelemetryStatus
 }
 
 [EventData]
-public class EnvironmentCreationEvent : EventBase
+public class EnvironmentCreationUserEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
@@ -26,14 +26,14 @@ public class EnvironmentCreationEvent : EventBase
     public string Status { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EnvironmentCreationEvent"/> class.
+    /// Initializes a new instance of the <see cref="EnvironmentCreationUserEvent"/> class.
     /// </summary>
     /// <param name="providerId">The Id of the compute system provider that initiated the creation operation</param>
     /// <param name="status">The status of the creation operation</param>
-    public EnvironmentCreationEvent(string providerId, EnvironmentsTelemetryStatus status)
+    public EnvironmentCreationUserEvent(string providerId, EnvironmentsTelemetryStatus status)
     {
-        Status = status.ToString();
         ProviderId = providerId;
+        Status = status.ToString();
     }
 
     // Inherited but unused.
