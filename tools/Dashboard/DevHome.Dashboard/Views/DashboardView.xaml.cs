@@ -237,26 +237,27 @@ public partial class DashboardView : ToolPage, IDisposable
         }
     }
 
-    private async Task<Widget[]> GetPreviouslyPinnedWidgets()
+    private async Task<ComSafeWidget[]> GetPreviouslyPinnedWidgets()
     {
         _log.Information("Get widgets for current host");
-        var hostWidgets = await ViewModel.WidgetHostingService.GetWidgetsAsync();
+        var unsafeHostWidgets = await ViewModel.WidgetHostingService.GetWidgetsAsync();
 
-        if (hostWidgets == null)
+        if (unsafeHostWidgets == null)
         {
             _log.Information($"Found 0 widgets for this host");
             return null;
         }
 
-        _log.Information($"Found {hostWidgets.Length} widgets for this host");
+        var comSafeHostWidgets = unsafeHostWidgets.Select(x => new ComSafeWidget(x)).ToArray();
+        _log.Information($"Found {comSafeHostWidgets.Length} widgets for this host");
 
-        return hostWidgets;
+        return comSafeHostWidgets;
     }
 
-    private async Task RestorePinnedWidgetsAsync(Widget[] hostWidgets)
+    private async Task RestorePinnedWidgetsAsync(ComSafeWidget[] hostWidgets)
     {
-        var restoredWidgetsWithPosition = new SortedDictionary<int, Widget>();
-        var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
+        var restoredWidgetsWithPosition = new SortedDictionary<int, ComSafeWidget>();
+        var restoredWidgetsWithoutPosition = new SortedDictionary<int, ComSafeWidget>();
         var numUnorderedWidgets = 0;
 
         var pinnedSingleInstanceWidgets = new List<string>();
@@ -342,8 +343,7 @@ public partial class DashboardView : ToolPage, IDisposable
         var finalPlace = 0;
         foreach (var orderedWidget in restoredWidgetsWithPosition)
         {
-            var widget = orderedWidget.Value;
-            var comSafeWidget = new ComSafeWidget(widget);
+            var comSafeWidget = orderedWidget.Value;
             var size = await comSafeWidget.GetSizeAsync();
             await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, finalPlace++);
         }
@@ -358,7 +358,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
     }
 
-    private async Task DeleteAbandonedWidgetAsync(Widget widget)
+    private async Task DeleteAbandonedWidgetAsync(ComSafeWidget widget)
     {
         var widgetList = await ViewModel.WidgetHostingService.GetWidgetsAsync();
         var length = widgetList.Length;
