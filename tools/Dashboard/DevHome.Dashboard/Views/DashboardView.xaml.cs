@@ -88,7 +88,6 @@ public partial class DashboardView : ToolPage, IDisposable
 
             widgetCatalog!.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
             widgetCatalog!.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
-            widgetCatalog!.WidgetDefinitionAdded += WidgetCatalog_WidgetDefinitionAdded;
             widgetCatalog!.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
             widgetCatalog!.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
         }
@@ -115,7 +114,6 @@ public partial class DashboardView : ToolPage, IDisposable
 
             widgetCatalog!.WidgetProviderDefinitionAdded -= WidgetCatalog_WidgetProviderDefinitionAdded;
             widgetCatalog!.WidgetProviderDefinitionDeleted -= WidgetCatalog_WidgetProviderDefinitionDeleted;
-            widgetCatalog!.WidgetDefinitionAdded -= WidgetCatalog_WidgetDefinitionAdded;
             widgetCatalog!.WidgetDefinitionUpdated -= WidgetCatalog_WidgetDefinitionUpdated;
             widgetCatalog!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
         }
@@ -595,9 +593,6 @@ public partial class DashboardView : ToolPage, IDisposable
     private void WidgetCatalog_WidgetProviderDefinitionDeleted(WidgetCatalog sender, WidgetProviderDefinitionDeletedEventArgs args) =>
         _log.Information("DashboardView", $"WidgetCatalog_WidgetProviderDefinitionDeleted {args.ProviderDefinitionId}");
 
-    private void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args) =>
-        _log.Information("DashboardView", $"WidgetCatalog_WidgetDefinitionAdded {args.Definition.Id}");
-
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
     {
         var updatedDefinitionId = args.Definition.Id;
@@ -673,7 +668,7 @@ public partial class DashboardView : ToolPage, IDisposable
     }
 
     // If a widget is removed from the list, update the saved positions of the following widgets.
-    // If not updated, widges pinned later may be assigned the same position as existing widgets,
+    // If not updated, widgets pinned later may be assigned the same position as existing widgets,
     // since the saved position may be greater than the number of pinned widgets.
     // Unsubscribe from this event during drag and drop, since the drop event takes care of re-numbering.
     private async void OnPinnedWidgetsCollectionChangedAsync(object sender, NotifyCollectionChangedEventArgs e)
