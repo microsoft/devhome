@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Dashboard.ComSafeWidgetObjects;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;

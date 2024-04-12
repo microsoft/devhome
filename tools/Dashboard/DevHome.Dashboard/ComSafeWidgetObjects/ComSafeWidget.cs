@@ -11,7 +11,7 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.Foundation;
 
-namespace DevHome.Dashboard.Helpers;
+namespace DevHome.Dashboard.ComSafeWidgetObjects;
 
 /// <summary>
 /// Since Widgets are OOP COM objects, we need to wrap them in a safe way to handle COM exceptions
