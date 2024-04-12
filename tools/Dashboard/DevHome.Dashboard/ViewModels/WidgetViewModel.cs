@@ -9,6 +9,7 @@ using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
+using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Telemetry;
@@ -32,7 +33,7 @@ namespace DevHome.Dashboard.ViewModels;
 /// <param name="widgetDefinition">WidgetDefinition</param>
 /// <returns>Widget view model</returns>
 public delegate WidgetViewModel WidgetViewModelFactory(
-    Widget widget,
+    ComSafeWidget widget,
     WidgetSize widgetSize,
     WidgetDefinition widgetDefinition);
 
@@ -46,7 +47,7 @@ public partial class WidgetViewModel : ObservableObject
     private RenderedAdaptiveCard _renderedCard;
 
     [ObservableProperty]
-    private Widget _widget;
+    private ComSafeWidget _widget;
 
     [ObservableProperty]
     private WidgetDefinition _widgetDefinition;
@@ -66,7 +67,7 @@ public partial class WidgetViewModel : ObservableObject
     [ObservableProperty]
     private FrameworkElement _widgetFrameworkElement;
 
-    partial void OnWidgetChanging(Widget value)
+    partial void OnWidgetChanging(ComSafeWidget value)
     {
         if (Widget != null)
         {
@@ -74,7 +75,7 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    partial void OnWidgetChanged(Widget value)
+    partial void OnWidgetChanged(ComSafeWidget value)
     {
         if (Widget != null)
         {
@@ -94,7 +95,7 @@ public partial class WidgetViewModel : ObservableObject
     }
 
     public WidgetViewModel(
-        Widget widget,
+        ComSafeWidget widget,
         WidgetSize widgetSize,
         WidgetDefinition widgetDefinition,
         WidgetAdaptiveCardRenderingService adaptiveCardRenderingService,
@@ -329,7 +330,7 @@ public partial class WidgetViewModel : ObservableObject
         // https://github.com/microsoft/devhome/issues/644
     }
 
-    private async void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
+    private async void HandleWidgetUpdated(ComSafeWidget sender, WidgetUpdatedEventArgs args)
     {
         _log.Debug($"HandleWidgetUpdated for widget {sender.Id}");
         await RenderWidgetFrameworkElementAsync();
