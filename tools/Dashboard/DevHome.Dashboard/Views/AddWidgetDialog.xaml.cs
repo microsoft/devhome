@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
@@ -85,7 +86,16 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
         var unsafeCurrentlyPinnedWidgets = await _hostingService.GetWidgetsAsync();
-        var comSafeCurrentlyPinnedWidgets = unsafeCurrentlyPinnedWidgets.Select(x => new ComSafeWidget(x)).ToArray();
+        var comSafeCurrentlyPinnedWidgets = new List<ComSafeWidget>();
+        foreach (var unsafeWidget in unsafeCurrentlyPinnedWidgets)
+        {
+            var id = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
+            if (!string.IsNullOrEmpty(id))
+            {
+                comSafeCurrentlyPinnedWidgets.Add(new ComSafeWidget(id));
+            }
+        }
+
         foreach (var providerDef in providerDefinitions)
         {
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
@@ -102,7 +112,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
                         var subItemContent = await BuildWidgetNavItem(widgetDef);
-                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, comSafeCurrentlyPinnedWidgets);
+                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, [.. comSafeCurrentlyPinnedWidgets]);
                         var subItem = new NavigationViewItem
                         {
                             Tag = widgetDef,

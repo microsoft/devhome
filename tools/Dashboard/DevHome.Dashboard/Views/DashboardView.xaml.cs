@@ -248,10 +248,19 @@ public partial class DashboardView : ToolPage, IDisposable
             return null;
         }
 
-        var comSafeHostWidgets = unsafeHostWidgets.Select(x => new ComSafeWidget(x)).ToArray();
-        _log.Information($"Found {comSafeHostWidgets.Length} widgets for this host");
+        var comSafeHostWidgets = new List<ComSafeWidget>();
+        foreach (var unsafeWidget in unsafeHostWidgets)
+        {
+            var id = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
+            if (!string.IsNullOrEmpty(id))
+            {
+                comSafeHostWidgets.Add(new ComSafeWidget(id));
+            }
+        }
 
-        return comSafeHostWidgets;
+        _log.Information($"Found {comSafeHostWidgets.Count} widgets for this host");
+
+        return [.. comSafeHostWidgets];
     }
 
     private async Task RestorePinnedWidgetsAsync(ComSafeWidget[] hostWidgets)
@@ -392,10 +401,18 @@ public partial class DashboardView : ToolPage, IDisposable
         {
             // Create widget
             var size = WidgetHelpers.GetDefaultWidgetSize(defaultWidgetDefinition.GetWidgetCapabilities());
-            var id = defaultWidgetDefinition.Id;
-            var unsafeWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(id, size);
-            var comSafeWidget = new ComSafeWidget(unsafeWidget);
-            _log.Information($"Created default widget {id}");
+            var definitionId = defaultWidgetDefinition.Id;
+            var unsafeWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(definitionId, size);
+
+            var unsafeWidgetId = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
+            if (unsafeWidgetId == string.Empty)
+            {
+                _log.Error($"Couldn't get Widget.Id, can't create the widget: {unsafeWidgetId}");
+                return;
+            }
+
+            var comSafeWidget = new ComSafeWidget(unsafeWidgetId);
+            _log.Information($"Created default widget {unsafeWidgetId}");
 
             // Set custom state on new widget.
             var position = PinnedWidgets.Count;
@@ -405,7 +422,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
             // Put new widget on the Dashboard.
             await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, position);
-            _log.Information($"Inserted default widget {id} at position {position}");
+            _log.Information($"Inserted default widget {unsafeWidgetId} at position {position}");
         }
         catch (Exception ex)
         {
@@ -445,7 +462,16 @@ public partial class DashboardView : ToolPage, IDisposable
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(newWidgetDefinition.GetWidgetCapabilities());
                 var unsafeWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(newWidgetDefinition.Id, size);
-                var comSafeWidget = new ComSafeWidget(unsafeWidget);
+                var unsafeWidgetId = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
+                if (unsafeWidgetId == string.Empty)
+                {
+                    // TODO: Show an error message if Widget creation fails
+                    // https://github.com/microsoft/devhome/issues/2623
+                    _log.Error($"Couldn't get Widget.Id, can't create the widget: {unsafeWidgetId}");
+                    return;
+                }
+
+                var comSafeWidget = new ComSafeWidget(unsafeWidgetId);
 
                 // Set custom state on new widget.
                 var position = PinnedWidgets.Count;
@@ -508,7 +534,7 @@ public partial class DashboardView : ToolPage, IDisposable
         });
     }
 
-    private async Task DeleteWidgetWithNoDefinition(Widget widget, string widgetDefinitionId)
+    private async Task DeleteWidgetWithNoDefinition(ComSafeWidget widget, string widgetDefinitionId)
     {
         // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
         _log.Information($"No widget definition '{widgetDefinitionId}', delete widget with that definition");
