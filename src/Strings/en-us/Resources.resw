@@ -294,4 +294,20 @@
     <value>Navigation pane closed</value>
     <comment>Navigation pane has been closed</comment>
   </data>
+  <data name="AppDescriptionCoreExt" xml:space="preserve">
+    <value>Core Widget Extension</value>
+    <comment>Core Extension Description</comment>
+  </data>
+  <data name="AppDescriptionHyperVExt" xml:space="preserve">
+    <value>Hyper-V Extension</value>
+    <comment>{Locked="Hyper-V"} Extension Description</comment>
+  </data>
+  <data name="AppDisplayNameCoreExt" xml:space="preserve">
+    <value>Core Widget Extension</value>
+    <comment>Core Extension Display Name</comment>
+  </data>
+  <data name="AppDisplayNameHyperVExt" xml:space="preserve">
+    <value>Hyper-V Extension</value>
+    <comment>{Locked="Hyper-V"} Extension Display Name</comment>
+  </data>
 </root>

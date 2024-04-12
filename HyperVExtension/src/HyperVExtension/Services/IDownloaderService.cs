@@ -35,4 +35,6 @@ public interface IDownloaderService
     /// <param name="cancellationToken">A token that can allow the operation to be cancelled while it is running</param>
     /// <returns>Content returned by web server represented as an array of bytes</returns>
     public Task<byte[]> DownloadByteArrayAsync(string sourceWebUri, CancellationToken cancellationToken);
+
+    public Task<long> GetHeaderContentLength(Uri sourceWebUri, CancellationToken cancellationToken);
 }

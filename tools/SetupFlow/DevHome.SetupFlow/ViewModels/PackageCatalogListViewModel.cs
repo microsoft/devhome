@@ -14,8 +14,8 @@ using DevHome.Common.Services;
 using DevHome.SetupFlow.Behaviors;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
-using Microsoft.UI.Dispatching;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -25,7 +25,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
     private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
     private readonly IExtensionService _extensionService;
     private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
-    private readonly DispatcherQueue _dispatcher;
+    private readonly WindowEx _windowEx;
     private readonly SemaphoreSlim _loadCatalogsSemaphore = new(1, 1);
 
     [ObservableProperty]
@@ -55,10 +55,11 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
     public PackageCatalogListViewModel(
         IExtensionService extensionService,
         ICatalogDataSourceLoader catalogDataSourceLoader,
-        PackageCatalogViewModelFactory packageCatalogViewModelFactory)
+        PackageCatalogViewModelFactory packageCatalogViewModelFactory,
+        WindowEx windowEx)
     {
         _extensionService = extensionService;
-        _dispatcher = DispatcherQueue.GetForCurrentThread();
+        _windowEx = windowEx;
         _catalogDataSourceLoader = catalogDataSourceLoader;
         _packageCatalogViewModelFactory = packageCatalogViewModelFactory;
     }
@@ -92,7 +93,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to load catalogs.", e);
+            _log.Error(e, $"Failed to load catalogs.");
         }
         finally
         {
@@ -171,7 +172,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
 
     private async void OnExtensionChangedAsync(object sender, EventArgs e)
     {
-        await _dispatcher.EnqueueAsync(() => LoadCatalogsAsync());
+        await _windowEx.DispatcherQueue.EnqueueAsync(() => LoadCatalogsAsync());
     }
 
     private void Dispose(bool disposing)

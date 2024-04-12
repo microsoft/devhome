@@ -3,9 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
@@ -18,6 +15,7 @@ using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using Serilog;
 using Windows.ApplicationModel.Activation;
+using WinUIEx;
 
 namespace DevHome.Common.Services;
 
@@ -27,22 +25,20 @@ public class NotificationService
 
     private readonly IWindowsIdentityService _windowsIdentityService;
 
-    private readonly string _componentName = "NotificationService";
-
     private readonly string _hyperVText = "Hyper-V";
 
     private readonly string _microsoftText = "Microsoft";
 
     private readonly StringResource _stringResource;
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly WindowEx _windowEx;
 
     private StackedNotificationsBehavior? _notificationQueue;
 
-    public NotificationService(IWindowsIdentityService windowsIdentityService)
+    public NotificationService(IWindowsIdentityService windowsIdentityService, WindowEx windowEx)
     {
         _windowsIdentityService = windowsIdentityService;
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _windowEx = windowEx;
         _stringResource = new StringResource("DevHome.Common.pri", "DevHome.Common/Resources");
     }
 
@@ -74,7 +70,7 @@ public class NotificationService
             {
                 if (toastArgs.Argument.Contains("action=AddUserToHyperVAdminGroup"))
                 {
-                    // Launch compmgmt.msc in powershell
+                    // Launch compmgmt.msc in PowerShell
                     var psi = new ProcessStartInfo();
                     psi.FileName = "powershell";
                     psi.Arguments = "Start-Process compmgmt.msc -Verb RunAs";
@@ -83,7 +79,7 @@ public class NotificationService
             }
             catch (Exception ex)
             {
-                _log.Error(_componentName, $"Unable to launch computer management due to exception", ex);
+                _log.Error(ex, $"Unable to launch computer management due to exception");
             }
         }
     }
@@ -94,20 +90,24 @@ public class NotificationService
         {
             var command = new RelayCommand(() =>
             {
-                var startInfo = new System.Diagnostics.ProcessStartInfo();
-                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                var startInfo = new ProcessStartInfo
+                {
+                    WindowStyle = ProcessWindowStyle.Hidden,
 
-                // Restart the computer
-                startInfo.FileName = Environment.SystemDirectory + "\\shutdown.exe";
-                startInfo.Arguments = "-r -t 0";
-                startInfo.Verb = string.Empty;
+                    // Restart the computer
+                    FileName = Environment.SystemDirectory + "\\shutdown.exe",
+                    Arguments = "-r -t 0",
+                    Verb = string.Empty,
+                };
 
-                var process = new System.Diagnostics.Process();
-                process.StartInfo = startInfo;
+                var process = new Process
+                {
+                    StartInfo = startInfo,
+                };
                 process.Start();
             });
 
-            _dispatcher.EnqueueAsync(() =>
+            _windowEx.DispatcherQueue.EnqueueAsync(() =>
                 _notificationQueue?.Show(new Notification
                 {
                     Title = _stringResource.GetLocalized("HyperVErrorTitle", _microsoftText, _hyperVText),
@@ -122,7 +122,7 @@ public class NotificationService
         }
         else
         {
-            _log.Error(_componentName, "Notification queue is not initialized");
+            _log.Error("Notification queue is not initialized");
         }
     }
 
@@ -147,7 +147,7 @@ public class NotificationService
                     var user = _windowsIdentityService.GetCurrentUserName();
                     if (user == null)
                     {
-                        _log.Error(_componentName, "Unable to get the current user name");
+                        _log.Error("Unable to get the current user name");
                         return;
                     }
 
@@ -183,12 +183,12 @@ public class NotificationService
                     }
                     catch (Exception ex)
                     {
-                        _log.Error(_componentName, "Unable to add the user to the Hyper-V Administrators group", ex);
+                        _log.Error(ex, "Unable to add the user to the Hyper-V Administrators group");
                         ShowUnableToAddToHyperVAdminGroupNotification();
                     }
                 });
 
-                _dispatcher.EnqueueAsync(() =>
+                _windowEx.DispatcherQueue.EnqueueAsync(() =>
                 {
                     notification = new Notification
                     {
@@ -207,19 +207,19 @@ public class NotificationService
             }
             else
             {
-                _log.Error(_componentName, "Notification queue is not initialized");
+                _log.Error("Notification queue is not initialized");
             }
         }
     }
 
     public void CloseNotification(Notification notification)
     {
-        _dispatcher.EnqueueAsync(() => _notificationQueue?.Remove(notification));
+        _windowEx.DispatcherQueue.EnqueueAsync(() => _notificationQueue?.Remove(notification));
     }
 
     public async Task ShowNotificationAsync(string title, string message, InfoBarSeverity severity)
     {
-        await _dispatcher.EnqueueAsync(() =>
+        await _windowEx.DispatcherQueue.EnqueueAsync(() =>
         {
             var notification = new Notification
             {

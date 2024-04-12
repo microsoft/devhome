@@ -107,7 +107,7 @@ public class ConfigureTask : ISetupTask
             }
             catch (Exception e)
             {
-                _log.Error($"Failed to apply configuration.", e);
+                _log.Error(e, $"Failed to apply configuration.");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();

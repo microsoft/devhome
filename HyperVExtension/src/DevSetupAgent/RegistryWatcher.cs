@@ -76,14 +76,14 @@ internal sealed class RegistryWatcher : IDisposable
                                 }
                                 catch (Exception ex)
                                 {
-                                    _log.Error("RegistryChanged delegate failed.", ex);
+                                    _log.Error(ex, "RegistryChanged delegate failed.");
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        _log.Error("Registry Watcher thread failed.", ex);
+                        _log.Error(ex, "Registry Watcher thread failed.");
                     }
                 });
                 _log.Information("Registry Watcher thread started.");

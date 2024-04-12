@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>DevHome.Customization</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>
-    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
@@ -24,6 +24,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+    <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
+    <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
+    <ProjectReference Include="..\..\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,8 +36,11 @@
   <ItemGroup>
     <None Remove="Views\DeveloperFileExplorerPage.xaml" />
     <None Remove="Views\DeveloperFileExplorerView.xaml" />
+    <None Remove="Views\DevDriveInsightsPage.xaml" />
+    <None Remove="Views\DevDriveInsightsView.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\MainPageView.xaml" />
+    <None Remove="Views\QuietBackgroundProcessesPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +58,9 @@
     </Page>
     <Page Update="Views\MainPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\QuietBackgroundProcessesPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>

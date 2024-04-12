@@ -54,11 +54,14 @@ public static class StringResourceKey
     public static readonly string EditClonePathDialog = nameof(EditClonePathDialog);
     public static readonly string EditClonePathDialogUncheckCheckMark = nameof(EditClonePathDialogUncheckCheckMark);
     public static readonly string FilePickerFileTypeOption = nameof(FilePickerFileTypeOption);
+    public static readonly string FilePickerSingleFileTypeOption = nameof(FilePickerSingleFileTypeOption);
     public static readonly string FileTypeNotSupported = nameof(FileTypeNotSupported);
     public static readonly string InstalledPackage = nameof(InstalledPackage);
     public static readonly string InstalledPackageReboot = nameof(InstalledPackageReboot);
     public static readonly string InstallingPackage = nameof(InstallingPackage);
     public static readonly string InstallationNotesTitle = nameof(InstallationNotesTitle);
+    public static readonly string MainPageEnvironmentSetupGroup = nameof(MainPageEnvironmentSetupGroup);
+    public static readonly string MainPageQuickConfigurationGroup = nameof(MainPageQuickConfigurationGroup);
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
     public static readonly string PackagesCount = nameof(PackagesCount);
@@ -258,4 +261,28 @@ public static class StringResourceKey
     public static readonly string SetupTargetConfigurationProgressUpdate = nameof(SetupTargetConfigurationProgressUpdate);
     public static readonly string SetupTargetConfigurationUnitProgressErrorWithMsg = nameof(SetupTargetConfigurationUnitProgressErrorWithMsg);
     public static readonly string SetupTargetConfigurationUnitUnknown = nameof(SetupTargetConfigurationUnitUnknown);
+
+    // Create Environment flow
+    public static readonly string SelectEnvironmentPageTitle = nameof(SelectEnvironmentPageTitle);
+    public static readonly string ConfigureEnvironmentPageTitle = nameof(ConfigureEnvironmentPageTitle);
+    public static readonly string EnvironmentCreationReviewPageTitle = nameof(EnvironmentCreationReviewPageTitle);
+    public static readonly string EnvironmentCreationReviewTabTitle = nameof(EnvironmentCreationReviewTabTitle);
+    public static readonly string EnvironmentCreationError = nameof(EnvironmentCreationError);
+    public static readonly string StartingEnvironmentCreation = nameof(StartingEnvironmentCreation);
+    public static readonly string EnvironmentCreationOperationInitializationFinished = nameof(EnvironmentCreationOperationInitializationFinished);
+    public static readonly string EnvironmentCreationForProviderStarted = nameof(EnvironmentCreationForProviderStarted);
+    public static readonly string EnvironmentCreationFailedToGetProviderInformation = nameof(EnvironmentCreationFailedToGetProviderInformation);
+    public static readonly string EnvironmentCreationReviewExpanderDescription = nameof(EnvironmentCreationReviewExpanderDescription);
+    public static readonly string CreateEnvironmentButtonText = nameof(CreateEnvironmentButtonText);
+    public static readonly string SetupShellReviewPageDescriptionForEnvironmentCreation = nameof(SetupShellReviewPageDescriptionForEnvironmentCreation);
+
+    // Summary page
+    public static readonly string SummaryPageOpenDashboard = nameof(SummaryPageOpenDashboard);
+    public static readonly string SummaryPageRedirectToEnvironmentPageButton = nameof(SummaryPageRedirectToEnvironmentPageButton);
+    public static readonly string SummaryPageHeader = nameof(SummaryPageHeader);
+    public static readonly string SummaryPageHeaderForEnvironmentCreationText = nameof(SummaryPageHeaderForEnvironmentCreationText);
+
+    // Review page
+    public static readonly string ReviewExpanderDescription = nameof(ReviewExpanderDescription);
+    public static readonly string SetupShellReviewPageDescription = nameof(SetupShellReviewPageDescription);
 }

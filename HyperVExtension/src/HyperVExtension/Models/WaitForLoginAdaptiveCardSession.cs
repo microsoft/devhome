@@ -144,7 +144,7 @@ public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSess
             }
             catch (Exception ex)
             {
-                _log.Error($"Exception in OnAction: {ex}");
+                _log.Error(ex, $"Exception in OnAction: {ex}");
                 operationResult = new ProviderOperationResult(ProviderOperationStatus.Failure, ex, "Something went wrong", ex.Message);
             }
 

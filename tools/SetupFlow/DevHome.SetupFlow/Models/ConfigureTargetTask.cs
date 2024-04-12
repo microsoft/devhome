@@ -8,11 +8,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Environments.Services;
+using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Common.Views;
-using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.WingetConfigure;
@@ -23,7 +23,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;
 using Windows.Foundation;
-using Windows.Storage;
+using WinUIEx;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -32,7 +32,7 @@ public class ConfigureTargetTask : ISetupTask
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigureTargetTask));
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue;
+    private readonly WindowEx _windowEx;
 
     private readonly ISetupFlowStringResource _stringResource;
 
@@ -42,9 +42,7 @@ public class ConfigureTargetTask : ISetupTask
 
     private readonly ConfigurationFileBuilder _configurationFileBuilder;
 
-    private readonly IThemeSelectorService _themeSelectorService;
-
-    public AdaptiveCardRenderer Renderer { get; private set; }
+    private readonly AdaptiveCardRenderingService _adaptiveCardRenderingService;
 
     // Inherited via ISetupTask but unused
     public bool RequiresAdmin => false;
@@ -60,14 +58,6 @@ public class ConfigureTargetTask : ISetupTask
 
     // Inherited via ISetupTask
     public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
-
-    public Dictionary<ElementTheme, string> AdaptiveCardHostConfigs { get; set; } = new();
-
-    private readonly Dictionary<ElementTheme, string> _hostConfigFileNames = new()
-    {
-        { ElementTheme.Dark, "DarkHostConfig.json" },
-        { ElementTheme.Light, "LightHostConfig.json" },
-    };
 
     public ActionCenterMessages ActionCenterMessages { get; set; } = new() { ExtensionAdaptiveCardPanel = new(), };
 
@@ -102,15 +92,14 @@ public class ConfigureTargetTask : ISetupTask
         IComputeSystemManager computeSystemManager,
         ConfigurationFileBuilder configurationFileBuilder,
         SetupFlowOrchestrator setupFlowOrchestrator,
-        IThemeSelectorService themeSelectorService)
+        WindowEx windowEx)
     {
         _stringResource = stringResource;
         _computeSystemManager = computeSystemManager;
         _configurationFileBuilder = configurationFileBuilder;
-        _themeSelectorService = themeSelectorService;
         _setupFlowOrchestrator = setupFlowOrchestrator;
-        _dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-        _themeSelectorService.ThemeChanged += OnThemeChanged;
+        _windowEx = windowEx;
+        _adaptiveCardRenderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
     }
 
     public void OnAdaptiveCardSessionStopped(IExtensionAdaptiveCardSession2 cardSession, SDK.ExtensionAdaptiveCardSessionStoppedEventArgs data)
@@ -142,7 +131,7 @@ public class ConfigureTargetTask : ISetupTask
 
     public void OnActionRequired(IApplyConfigurationOperation operation, SDK.ApplyConfigurationActionRequiredEventArgs actionRequiredEventArgs)
     {
-        _log.Information($"adaptive card receieved from extension");
+        _log.Information($"adaptive card received from extension");
         var correctiveCard = actionRequiredEventArgs?.CorrectiveActionCardSession;
 
         if (correctiveCard != null)
@@ -217,7 +206,7 @@ public class ConfigureTargetTask : ISetupTask
             }
 
             // Example of a message that will be displayed in the UI:
-            // ---- Configuration progress recieved! ----
+            // ---- Configuration progress received! ----
             // There was an issue applying part of the configuration using DSC resource: 'GitClone'.Check the extension's logs
             //      - Assert : GitClone[Clone: wil - C:\Users\Public\Documents\source\repos\wil]
             //            - This part of the configuration is now complete
@@ -225,7 +214,7 @@ public class ConfigureTargetTask : ISetupTask
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to process configuration progress data on target machine.'{ComputeSystemName}'", ex);
+            _log.Error(ex, $"Failed to process configuration progress data on target machine.'{ComputeSystemName}'");
         }
     }
 
@@ -265,7 +254,7 @@ public class ConfigureTargetTask : ISetupTask
 
             if (resultStatus == ProviderOperationStatus.Failure)
             {
-                _log.Error($"Extension failed to configure config file with exception. Diagnostic text: {result.DiagnosticText}", result.ExtendedError);
+                _log.Error(result.ExtendedError, $"Extension failed to configure config file with exception. Diagnostic text: {result.DiagnosticText}");
                 throw new SDKApplyConfigurationSetResultException(applyConfigurationResult.Result.DiagnosticText);
             }
 
@@ -299,7 +288,7 @@ public class ConfigureTargetTask : ISetupTask
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to apply configuration on target machine. '{ComputeSystemName}'", ex);
+            _log.Error(ex, $"Failed to apply configuration on target machine. '{ComputeSystemName}'");
         }
 
         var tempResultInfo = !string.IsNullOrEmpty(resultInformation) ? resultInformation : string.Empty;
@@ -319,7 +308,7 @@ public class ConfigureTargetTask : ISetupTask
     /// </summary>
     public void RemoveAdaptiveCardPanelFromLoadingUI()
     {
-        _dispatcherQueue.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             if (ActionCenterMessages.ExtensionAdaptiveCardPanel != null)
             {
@@ -345,7 +334,7 @@ public class ConfigureTargetTask : ISetupTask
                 applyConfigurationOperation.ConfigurationSetStateChanged += OnApplyConfigurationOperationChanged;
                 applyConfigurationOperation.ActionRequired += OnActionRequired;
 
-                // We'll cancell the operation after 10 minutes. This is arbitrary for now and will need to be adjusted in the future.
+                // We'll cancel the operation after 10 minutes. This is arbitrary for now and will need to be adjusted in the future.
                 // but we'll need to give the user the ability to cancel the operation in the UI as well. This is just a safety net.
                 // More work is needed to give the user the ability to cancel the operation as the capability is not currently available.
                 // in the UI of Dev Home's Loading page.
@@ -382,7 +371,7 @@ public class ConfigureTargetTask : ISetupTask
             }
             catch (Exception e)
             {
-                _log.Error($"Failed to apply configuration on target machine.", e);
+                _log.Error(e, $"Failed to apply configuration on target machine.");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -420,46 +409,18 @@ public class ConfigureTargetTask : ISetupTask
     }
 
     /// <summary>
-    /// Gets the host config files for the light and dark themes and sets them in the AdaptiveCardHostConfigs dictionary.
-    /// </summary>
-    public async Task SetupHostConfigFiles()
-    {
-        try
-        {
-            foreach (var elementPairing in _hostConfigFileNames)
-            {
-                var uri = new Uri($"ms-appx:///DevHome.Settings//Assets/{_hostConfigFileNames[elementPairing.Key]}");
-                var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
-                AdaptiveCardHostConfigs.Add(elementPairing.Key, await FileIO.ReadTextAsync(file));
-            }
-        }
-        catch (Exception ex)
-        {
-            _log.Error($"Failure occurred while retrieving the HostConfig file", ex);
-        }
-    }
-
-    /// <summary>
-    /// Creates the adaptive card that will appear in the action center of the loading page. This
-    /// was adapted from the LoginUI adaptive card code for the account page in Dev Home settings.
+    /// Creates the adaptive card that will appear in the action center of the loading page.
     /// The theming for the adaptive card isn't dynamic but in the future we can make it so.
     /// </summary>
-    /// <param name="session">Adaptive card session sent by the entension when it needs a user to perform an action</param>
+    /// <param name="session">Adaptive card session sent by the extension when it needs a user to perform an action</param>
     public async Task CreateCorrectiveActionPanel(IExtensionAdaptiveCardSession2 session)
     {
-        await _dispatcherQueue.EnqueueAsync(async () =>
+        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
-            await SetupHostConfigFiles();
-            var correctiveAction = session;
-            Renderer ??= new AdaptiveCardRenderer();
-            var elementTheme = _themeSelectorService.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
-            UpdateHostConfig();
-
-            Renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+            var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
 
             var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
-            extensionAdaptiveCardPanel.Bind(correctiveAction, Renderer);
-            extensionAdaptiveCardPanel.RequestedTheme = elementTheme;
+            extensionAdaptiveCardPanel.Bind(session, renderer);
 
             if (ActionCenterMessages.ExtensionAdaptiveCardPanel != null)
             {
@@ -498,30 +459,4 @@ public class ConfigureTargetTask : ISetupTask
 
         return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, unit.Intent, unit.Type, unit.Identifier, unitDescription);
     }
-
-    public void UpdateHostConfig()
-    {
-        if (Renderer != null)
-        {
-            _dispatcherQueue.TryEnqueue(() =>
-            {
-                var elementTheme = _themeSelectorService.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
-
-                // Add host config for current theme to renderer
-                if (AdaptiveCardHostConfigs.TryGetValue(elementTheme, out var hostConfigContents))
-                {
-                    Renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
-
-                    // Remove margins from selectAction.
-                    Renderer.AddSelectActionMargin = false;
-                }
-                else
-                {
-                    _log.Information($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
-                }
-            });
-        }
-    }
-
-    private void OnThemeChanged(object sender, ElementTheme e) => UpdateHostConfig();
 }

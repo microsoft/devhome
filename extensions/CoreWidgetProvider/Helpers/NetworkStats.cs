@@ -87,7 +87,7 @@ internal sealed class NetworkStats : IDisposable
             }
             catch (Exception ex)
             {
-                Log.Error("Error getting network data.", ex);
+                Log.Error(ex, "Error getting network data.");
             }
         }
     }

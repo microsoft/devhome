@@ -124,7 +124,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         }
         catch (Exception e)
         {
-            _log.Error(e.Message, e);
+            _log.Error(e, e.Message);
             RepositoryTypeIcon = GetGitIcon(theme);
             return;
         }
@@ -259,7 +259,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
                 }
                 catch (Exception e)
                 {
-                    _log.Error(e.Message, e);
+                    _log.Error(e, e.Message);
                 }
             }
 

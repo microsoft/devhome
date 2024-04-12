@@ -111,29 +111,6 @@ public partial class AddRepoDialog : ContentDialog
     }
 
     /// <summary>
-    /// Validate the user put in a rooted, non-null path.
-    /// </summary>
-    private void CloneLocation_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        // just in case something other than a text box calls this.
-        if (sender is TextBox cloneLocationTextBox)
-        {
-            var location = cloneLocationTextBox.Text;
-            if (string.Equals(cloneLocationTextBox.Name, "DevDriveCloneLocationAliasTextBox", StringComparison.Ordinal))
-            {
-                location = (AddRepoViewModel.EditDevDriveViewModel.DevDrive != null) ? AddRepoViewModel.EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
-            }
-
-            // In cases where location is empty don't update the cloneLocation. Only update when there are actual values.
-            AddRepoViewModel.FolderPickerViewModel.CloneLocation = string.IsNullOrEmpty(location) ? AddRepoViewModel.FolderPickerViewModel.CloneLocation : location;
-        }
-
-        AddRepoViewModel.FolderPickerViewModel.ValidateCloneLocation();
-
-        AddRepoViewModel.ToggleCloneButton();
-    }
-
-    /// <summary>
     /// If any items in reposToSelect exist in the UI, select them.
     /// An side-effect of SelectRange is SelectionChanged is fired for each item SelectRange is called on.
     /// IsCallingSelectRange is used to prevent modifying EverythingToClone when repos are being re-selected after filtering.
@@ -304,26 +281,6 @@ public partial class AddRepoDialog : ContentDialog
             AddRepoViewModel.FolderPickerViewModel.EnableBrowseButton();
             AddRepoViewModel.FolderPickerViewModel.CloneLocation = _oldCloneLocation;
         }
-    }
-
-    /// <summary>
-    /// User wants to customize the default dev drive.
-    /// </summary>
-    private async void CustomizeDevDriveHyperlinkButton_ClickAsync(object sender, RoutedEventArgs e)
-    {
-        await AddRepoViewModel.EditDevDriveViewModel.PopDevDriveCustomizationAsync();
-        AddRepoViewModel.ToggleCloneButton();
-    }
-
-    private void RepoUrlTextBox_TextChanged(object sender, RoutedEventArgs e)
-    {
-        // just in case something other than a text box calls this.
-        if (sender is TextBox)
-        {
-            AddRepoViewModel.Url = (sender as TextBox).Text;
-        }
-
-        AddRepoViewModel.ToggleCloneButton();
     }
 
     /// <summary>

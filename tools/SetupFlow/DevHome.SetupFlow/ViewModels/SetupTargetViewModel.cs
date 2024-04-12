@@ -15,6 +15,7 @@ using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -22,7 +23,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupTargetViewModel));
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly WindowEx _windowEx;
 
     private readonly NotificationService _toastNotificationService;
 
@@ -72,11 +73,12 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
     public SetupTargetViewModel(
         ISetupFlowStringResource stringResource,
-        SetupFlowViewModel setupflowModel,
+        SetupFlowViewModel setupFlowModel,
         SetupFlowOrchestrator orchestrator,
         IComputeSystemManager computeSystemManager,
         ComputeSystemViewModelFactory computeSystemViewModelFactory,
-        NotificationService toastNotificationService)
+        NotificationService toastNotificationService,
+        WindowEx windowEx)
         : base(stringResource, orchestrator)
     {
         // Setup initial state for page.
@@ -102,10 +104,10 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         // Add AdvancedCollectionView to make filtering and sorting the list of ComputeSystemsListViewModels easier.
         ComputeSystemsCollectionView = new AdvancedCollectionView(_computeSystemViewModelList, true);
 
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _windowEx = windowEx;
         _computeSystemViewModelFactory = computeSystemViewModelFactory;
         ComputeSystemManagerObj = computeSystemManager;
-        _setupFlowViewModel = setupflowModel;
+        _setupFlowViewModel = setupFlowModel;
         _setupFlowViewModel.EndSetupFlow += OnRemovingComputeSystems;
         _toastNotificationService = toastNotificationService;
     }
@@ -194,7 +196,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
         catch (Exception ex)
         {
-            _log.Error($"Error filtering ComputeSystemsListViewModel", ex);
+            _log.Error(ex, $"Error filtering ComputeSystemsListViewModel");
         }
 
         return true;
@@ -216,26 +218,26 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     /// since we want to select only one ComputeSystemCardViewModel from one ComputeSystemsListViewModel at a time, we need to deselect
     /// all other cards in every other ComputeSystemsListViewModel object except for the one the user selected. This method will de-select
     /// all the cards in the other ListViewModels and set the ComputeSystemManager's ComputeSystemSetupItem property to the
-    /// ComputeSystem and provider assocated with the currently selected ComputeSystemCardViewModel.
+    /// ComputeSystem and provider associated with the currently selected ComputeSystemCardViewModel.
     /// </summary>
     /// <param name="sender">The ComputeSystemsListViewModel object that contains the ComputeSystemCardViewModel the user selected.</param>
     /// <param name="computeSystem">The compute system wrapper associated with the ComputeSystemCardViewModel.</param>
     public void OnListSelectionChanged(object sender, ComputeSystem computeSystem)
     {
-        if (sender is not ComputeSystemsListViewModel senderlistViewModel)
+        if (sender is not ComputeSystemsListViewModel senderListViewModel)
         {
             return;
         }
 
         foreach (var viewModel in _computeSystemViewModelList)
         {
-            if (senderlistViewModel != viewModel)
+            if (senderListViewModel != viewModel)
             {
                 viewModel.SelectedItem = null;
             }
         }
 
-        ComputeSystemManagerObj.ComputeSystemSetupItem = new(computeSystem, senderlistViewModel.Provider);
+        ComputeSystemManagerObj.ComputeSystemSetupItem = new(computeSystem, senderListViewModel.Provider);
         UpdateNextButtonState();
     }
 
@@ -287,7 +289,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         // We need to run this on a background thread so we don't block the UI thread.
         Task.Run(() =>
         {
-            _dispatcher.EnqueueAsync(async () =>
+            _windowEx.DispatcherQueue.EnqueueAsync(async () =>
             {
                 // Remove any existing ComputeSystemsListViewModels from the list if they exist. E.g when sync button is
                 // pressed.
@@ -364,7 +366,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
         catch (Exception ex)
         {
-            _log.Error($"Error loading ComputeSystemViewModels data", ex);
+            _log.Error(ex, $"Error loading ComputeSystemViewModels data");
         }
 
         ShouldShowShimmerBelowList = false;
@@ -385,7 +387,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
     public async Task UpdateListViewModelList(ComputeSystemsLoadedData data)
     {
-        await _dispatcher.EnqueueAsync(async () =>
+        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
             var curListViewModel = new ComputeSystemsListViewModel(data);
 
@@ -398,7 +400,12 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
                 }
 
                 var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
-                var card = await _computeSystemViewModelFactory.CreateCardViewModelAsync(ComputeSystemManagerObj, wrapper, curListViewModel.Provider, packageFullName);
+                var card = await _computeSystemViewModelFactory.CreateCardViewModelAsync(
+                    ComputeSystemManagerObj,
+                    wrapper,
+                    curListViewModel.Provider,
+                    packageFullName,
+                    _windowEx);
                 curListViewModel.ComputeSystemCardCollection.Add(card);
                 curListViewModel.CardSelectionChanged += OnListSelectionChanged;
             }

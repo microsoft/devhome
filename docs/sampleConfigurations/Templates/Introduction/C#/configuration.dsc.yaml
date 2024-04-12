@@ -2,7 +2,7 @@
 
 ##########################################################################################################
 # This configuration will install the tools necessary to get started with C# development on Windows      #
-# Reference: https://learn.microsoft.com/en-us/visualstudio/get-started/csharp/tutorial-console          #
+# Reference: https://learn.microsoft.com/visualstudio/get-started/csharp/tutorial-console                #
 #                                                                                                        #
 # This will:                                                                                             #
 #     * Enable Developer Mode                                                                            #

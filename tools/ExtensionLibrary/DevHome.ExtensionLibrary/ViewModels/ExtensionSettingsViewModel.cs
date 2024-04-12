@@ -20,13 +20,18 @@ public partial class ExtensionSettingsViewModel : ObservableObject
 
     private readonly IExtensionService _extensionService;
     private readonly INavigationService _navigationService;
+    private readonly AdaptiveCardRenderingService _adaptiveCardRenderingService;
 
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
-    public ExtensionSettingsViewModel(IExtensionService extensionService, INavigationService navigationService)
+    public ExtensionSettingsViewModel(
+        IExtensionService extensionService,
+        INavigationService navigationService,
+        AdaptiveCardRenderingService adaptiveCardRenderingService)
     {
         _extensionService = extensionService;
         _navigationService = navigationService;
+        _adaptiveCardRenderingService = adaptiveCardRenderingService;
 
         Breadcrumbs = new ObservableCollection<Breadcrumb>();
     }
@@ -41,7 +46,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
             if ((_navigationService.LastParameterUsed != null) &&
                 ((string)_navigationService.LastParameterUsed == extensionWrapper.ExtensionUniqueId))
             {
-                FillBreadcrumbBar(extensionWrapper.Name);
+                FillBreadcrumbBar(extensionWrapper.ExtensionDisplayName);
 
                 var settingsProvider = Task.Run(() => extensionWrapper.GetProviderAsync<ISettingsProvider>()).Result;
                 if (settingsProvider != null)
@@ -55,8 +60,8 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                     }
 
                     var adaptiveCardSession = adaptiveCardSessionResult.AdaptiveCardSession;
-                    var renderer = new AdaptiveCardRenderer();
-                    renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+                    var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
+                    renderer.HostConfig.Actions.ActionAlignment = ActionAlignment.Left;
 
                     extensionAdaptiveCardPanel.Bind(adaptiveCardSession, renderer);
                 }

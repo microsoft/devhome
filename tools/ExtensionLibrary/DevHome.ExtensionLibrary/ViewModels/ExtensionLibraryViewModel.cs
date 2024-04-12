@@ -18,6 +18,7 @@ using Windows.ApplicationModel;
 using Windows.Data.Json;
 using Windows.Storage;
 using Windows.System;
+using WinUIEx;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
 
@@ -27,8 +28,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
     private readonly string devHomeProductId = "9N8MHTPHNGVV";
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly IExtensionService _extensionService;
+    private readonly WindowEx _windowEx;
 
     public ObservableCollection<StorePackageViewModel> StorePackagesList { get; set; }
 
@@ -37,10 +38,10 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowStoreError = false;
 
-    public ExtensionLibraryViewModel(IExtensionService extensionService)
+    public ExtensionLibraryViewModel(IExtensionService extensionService, WindowEx windowEx)
     {
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _extensionService = extensionService;
+        _windowEx = windowEx;
 
         extensionService.OnExtensionsChanged -= OnExtensionsChanged;
         extensionService.OnExtensionsChanged += OnExtensionsChanged;
@@ -64,7 +65,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
     private async void OnExtensionsChanged(object? sender, EventArgs e)
     {
-        await _dispatcher.EnqueueAsync(async () =>
+        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
             ShouldShowStoreError = false;
             await GetInstalledExtensionsAsync();
@@ -78,7 +79,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
         InstalledPackagesList.Clear();
 
-        extensionWrappers = extensionWrappers.OrderBy(extensionWrapper => extensionWrapper.Name);
+        extensionWrappers = extensionWrappers.OrderBy(extensionWrapper => extensionWrapper.PackageDisplayName);
 
         foreach (var extensionWrapper in extensionWrappers)
         {
@@ -89,7 +90,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
             }
 
             var hasSettingsProvider = extensionWrapper.HasProviderType(ProviderType.Settings);
-            var extension = new InstalledExtensionViewModel(extensionWrapper.Name, extensionWrapper.ExtensionUniqueId, hasSettingsProvider);
+            var extension = new InstalledExtensionViewModel(extensionWrapper.ExtensionDisplayName, extensionWrapper.ExtensionUniqueId, hasSettingsProvider);
 
             // Each extension is shown under the package that contains it. Check if we have the package in the list
             // already and if not, create it and add it to the list of packages. Then add the extension to that
@@ -98,7 +99,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
             if (package == null)
             {
                 package = new InstalledPackageViewModel(
-                    extensionWrapper.Name,
+                    extensionWrapper.PackageDisplayName,
                     extensionWrapper.Publisher,
                     extensionWrapper.PackageFamilyName,
                     extensionWrapper.InstalledDate,
@@ -123,7 +124,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            _log.Error("Error retrieving packages", ex);
+            _log.Error(ex, "Error retrieving packages");
             ShouldShowStoreError = true;
         }
 
@@ -179,7 +180,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
                     continue;
                 }
 
-                _log.Error($"Found package: {productId}, {packageFamilyName}");
+                _log.Information($"Found package: {productId}, {packageFamilyName}");
                 var storePackage = new StorePackageViewModel(productId, title, publisher, packageFamilyName);
                 tempStorePackagesList.Add(storePackage);
             }

@@ -48,7 +48,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private readonly SemaphoreSlim _pinnedWidgetsLock = new(1, 1);
 
-    private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private static WindowEx _windowEx;
     private readonly ILocalSettingsService _localSettingsService;
     private bool _disposedValue;
 
@@ -66,7 +66,7 @@ public partial class DashboardView : ToolPage, IDisposable
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
         PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
 
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _windowEx = Application.Current.GetService<WindowEx>();
         _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
 
 #if DEBUG
@@ -94,7 +94,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error("Exception in SubscribeToWidgetCatalogEvents:", ex);
+            _log.Error(ex, "Exception in SubscribeToWidgetCatalogEvents:");
             return false;
         }
 
@@ -119,7 +119,7 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     private async Task OnUnloadedAsync()
     {
-        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
+        Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
 
         _log.Debug($"Leaving Dashboard, deactivating widgets.");
 
@@ -175,7 +175,7 @@ public partial class DashboardView : ToolPage, IDisposable
             }
         }
 
-        Application.Current.GetService<IAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
+        Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
         LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
         ViewModel.IsLoading = false;
     }
@@ -220,6 +220,11 @@ public partial class DashboardView : ToolPage, IDisposable
         var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
         var numUnorderedWidgets = 0;
 
+        var catalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+        var pinnedSingleInstanceWidgets = new List<string>();
+
+        _log.Information($"Restore pinned widgets");
+
         // Widgets do not come from the host in a deterministic order, so save their order in each widget's CustomState.
         // Iterate through all the widgets and put them in order. If a widget does not have a position assigned to it,
         // append it at the end. If a position is missing, just show the next widget in order.
@@ -246,6 +251,24 @@ public partial class DashboardView : ToolPage, IDisposable
                     continue;
                 }
 
+                // Ensure only one copy of a widget is pinned if that widget's definition only allows for one instance.
+                var widgetDefinitionId = widget.DefinitionId;
+                var widgetDefinition = await Task.Run(() => catalog?.GetWidgetDefinition(widgetDefinitionId));
+                if (widgetDefinition?.AllowMultiple == false)
+                {
+                    if (pinnedSingleInstanceWidgets.Contains(widgetDefinitionId))
+                    {
+                        _log.Information($"No longer allowed to have multiple of widget {widgetDefinitionId}");
+                        await widget.DeleteAsync();
+                        _log.Information($"Deleted Widget {widgetDefinitionId} and not adding it to PinnedWidgets");
+                        continue;
+                    }
+                    else
+                    {
+                        pinnedSingleInstanceWidgets.Add(widgetDefinitionId);
+                    }
+                }
+
                 var position = stateObj.Position;
                 if (position >= 0)
                 {
@@ -264,7 +287,7 @@ public partial class DashboardView : ToolPage, IDisposable
             }
             catch (Exception ex)
             {
-                _log.Error($"RestorePinnedWidgets(): ", ex);
+                _log.Error(ex, $"RestorePinnedWidgets(): ");
             }
         }
 
@@ -351,7 +374,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error($"PinDefaultWidget failed: ", ex);
+            _log.Error(ex, $"PinDefaultWidget failed: ");
         }
     }
 
@@ -401,7 +424,7 @@ public partial class DashboardView : ToolPage, IDisposable
             }
             catch (Exception ex)
             {
-                _log.Warning($"Creating widget failed: ", ex);
+                _log.Warning(ex, $"Creating widget failed: ");
                 var mainWindow = Application.Current.GetService<WindowEx>();
                 var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
                 await mainWindow.ShowErrorMessageDialogAsync(
@@ -431,7 +454,7 @@ public partial class DashboardView : ToolPage, IDisposable
                     new ReportPinnedWidgetEvent(widgetDefinition.ProviderDefinition.Id, widgetDefinitionId));
 
                 var wvm = _widgetViewModelFactory(widget, size, widgetDefinition);
-                _dispatcher.TryEnqueue(() =>
+                _windowEx.DispatcherQueue.TryEnqueue(() =>
                 {
                     try
                     {
@@ -441,7 +464,7 @@ public partial class DashboardView : ToolPage, IDisposable
                     {
                         // TODO Support concurrency in dashboard. Today concurrent async execution can cause insertion errors.
                         // https://github.com/microsoft/devhome/issues/1215
-                        _log.Warning($"Couldn't insert pinned widget", ex);
+                        _log.Warning(ex, $"Couldn't insert pinned widget");
                     }
                 });
             }
@@ -456,7 +479,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    _log.Information($"Error deleting widget", ex);
+                    _log.Information(ex, $"Error deleting widget");
                 }
             }
         });
@@ -476,6 +499,8 @@ public partial class DashboardView : ToolPage, IDisposable
         var updatedDefinitionId = args.Definition.Id;
         _log.Information($"WidgetCatalog_WidgetDefinitionUpdated {updatedDefinitionId}");
 
+        var matchingWidgetsFound = 0;
+
         foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
         {
             // Things in the definition that we need to update to if they have changed:
@@ -483,10 +508,10 @@ public partial class DashboardView : ToolPage, IDisposable
             var oldDef = widgetToUpdate.WidgetDefinition;
             var newDef = args.Definition;
 
-            // If we're no longer allowed to have multiple instances of this widget, delete all of them.
-            if (newDef.AllowMultiple == false && oldDef.AllowMultiple == true)
+            // If we're no longer allowed to have multiple instances of this widget, delete all but the first.
+            if (++matchingWidgetsFound > 1 && newDef.AllowMultiple == false && oldDef.AllowMultiple == true)
             {
-                _dispatcher.TryEnqueue(async () =>
+                _windowEx.DispatcherQueue.TryEnqueue(async () =>
                 {
                     _log.Information($"No longer allowed to have multiple of widget {newDef.Id}");
                     _log.Information($"Delete widget {widgetToUpdate.Widget.Id}");
@@ -526,7 +551,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
         var definitionId = args.DefinitionId;
-        _dispatcher.TryEnqueue(async () =>
+        _windowEx.DispatcherQueue.TryEnqueue(async () =>
         {
             _log.Information($"WidgetDefinitionDeleted {definitionId}");
             foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())

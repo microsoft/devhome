@@ -57,7 +57,7 @@ public sealed class HyperVExtension : IExtension, IDisposable
         }
         catch (Exception ex)
         {
-            log.Error($"Failed to get provider for provider type {providerType}", ex);
+            log.Error(ex, $"Failed to get provider for provider type {providerType}");
         }
 
         return provider;

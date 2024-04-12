@@ -4,6 +4,7 @@
 using System.Text.Json;
 using HyperVExtension.Common;
 using HyperVExtension.Helpers;
+using HyperVExtension.Models;
 using HyperVExtension.Models.VirtualMachineCreation;
 using HyperVExtension.Services;
 using Microsoft.Windows.DevHome.SDK;
@@ -25,14 +26,21 @@ public class HyperVProvider : IComputeSystemProvider
 
     private readonly VmGalleryCreationOperationFactory _vmGalleryCreationOperationFactory;
 
+    private readonly IVMGalleryService _vmGalleryService;
+
     // Temporary will need to add more error strings for different operations.
     public string OperationErrorString => _stringResource.GetLocalized(errorResourceKey);
 
-    public HyperVProvider(IHyperVManager hyperVManager, IStringResource stringResource, VmGalleryCreationOperationFactory vmGalleryCreationOperationFactory)
+    public HyperVProvider(
+        IHyperVManager hyperVManager,
+        IStringResource stringResource,
+        VmGalleryCreationOperationFactory vmGalleryCreationOperationFactory,
+        IVMGalleryService vmGalleryService)
     {
         _hyperVManager = hyperVManager;
         _stringResource = stringResource;
         _vmGalleryCreationOperationFactory = vmGalleryCreationOperationFactory;
+        _vmGalleryService = vmGalleryService;
     }
 
     /// <summary> Gets or sets the default compute system properties. </summary>
@@ -67,7 +75,7 @@ public class HyperVProvider : IComputeSystemProvider
             }
             catch (Exception ex)
             {
-                _log.Error($"Failed to retrieved all virtual machines on: {DateTime.Now}", ex);
+                _log.Error(ex, $"Failed to retrieved all virtual machines on: {DateTime.Now}");
                 return new ComputeSystemsResult(ex, OperationErrorString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -75,9 +83,8 @@ public class HyperVProvider : IComputeSystemProvider
 
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForDeveloperId(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
     {
-        // This won't be supported until creation is supported.
-        var notImplementedException = new NotImplementedException($"Method not implemented by Hyper-V Compute System Provider");
-        return new ComputeSystemAdaptiveCardResult(notImplementedException, OperationErrorString, notImplementedException.Message);
+        var imageList = _vmGalleryService.GetGalleryImagesAsync().GetAwaiter().GetResult();
+        return new ComputeSystemAdaptiveCardResult(new VMGalleryCreationAdaptiveCardSession(imageList, _stringResource));
     }
 
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForComputeSystem(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind)
@@ -98,7 +105,7 @@ public class HyperVProvider : IComputeSystemProvider
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to create a new virtual machine on: {DateTime.Now}", ex);
+            _log.Error(ex, $"Failed to create a new virtual machine on: {DateTime.Now}");
 
             // Dev Home will handle null values as failed operations. We can't throw because this is an out of proc
             // COM call, so we'll lose the error information. We'll log the error and return null.

@@ -14,6 +14,7 @@ using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Xaml.Navigation;
 using Serilog;
 using Windows.Storage;
 
@@ -25,6 +26,8 @@ public partial class SetupFlowViewModel : ObservableObject
     private readonly IHost _host;
     private readonly MainPageViewModel _mainPageViewModel;
     private readonly PackageProvider _packageProvider;
+
+    private readonly string _creationFlowNavigationParameter = "StartCreationFlow";
 
     public SetupFlowOrchestrator Orchestrator { get; }
 
@@ -118,5 +121,26 @@ public partial class SetupFlowViewModel : ObservableObject
     {
         Orchestrator.FlowPages = [_mainPageViewModel];
         await _mainPageViewModel.StartConfigurationFileAsync(file);
+    }
+
+    public void StartCreationFlowAsync()
+    {
+        Orchestrator.FlowPages = [_mainPageViewModel];
+        _mainPageViewModel.StartCreateEnvironment(string.Empty);
+    }
+
+    public void OnNavigatedTo(NavigationEventArgs args)
+    {
+        // The setup flow isn't setup to support using the navigation service to navigate to specific
+        // pages. Instead we need to navigate to the main page and then start the creation flow template manually.
+        var parameter = args.Parameter?.ToString();
+
+        if ((!string.IsNullOrEmpty(parameter)) &&
+            _creationFlowNavigationParameter.Equals(parameter, StringComparison.OrdinalIgnoreCase) &&
+            Orchestrator.CurrentSetupFlowKind != SetupFlowKind.CreateEnvironment)
+        {
+            Cancel();
+            StartCreationFlowAsync();
+        }
     }
 }

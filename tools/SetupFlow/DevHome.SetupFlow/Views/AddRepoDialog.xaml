@@ -61,9 +61,14 @@
             <TextBox x:Name="RepoUrlTextBox"
                      x:Uid="RepoUrl"
                      Visibility="{x:Bind AddRepoViewModel.ShowUrlPage, Mode=OneWay}"
-                     TextChanged="RepoUrlTextBox_TextChanged"
                      Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}"
-                     Margin="0, 20, 0, 0"/>
+                     Margin="0, 20, 0, 0">
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="TextChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.SaveRepoUrlCommand}" CommandParameter="{x:Bind RepoUrlTextBox.Text, Mode=OneWay}"/>
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </TextBox>
             <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.UrlParsingError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlError, Mode=OneWay}"/>
 
             <!-- Log into account -->
@@ -163,7 +168,7 @@
                 <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.RepositoriesToDisplay, Mode=OneWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:RepoViewListItem">
-                            <Grid ColumnSpacing="7">
+                            <Grid ColumnSpacing="7" AutomationProperties.Name="{x:Bind RepoDisplayName}">
                                 <ToolTipService.ToolTip>
                                     <ToolTip IsEnabled="{x:Bind IsRepoNameTrimmed, Mode=OneWay}" Content="{x:Bind RepoDisplayName}"/>
                                 </ToolTipService.ToolTip>
@@ -211,17 +216,29 @@
                     <TextBlock 
                         x:Uid="ClonePathForTextBlock" />
                     <TextBox
-                        TextChanged="CloneLocation_TextChanged"
                         Text="{x:Bind AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
                         IsEnabled="False"
                         Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario, Mode=OneWay}"
-                        x:Name="DevDriveCloneLocationAliasTextBox" />
+                        x:Name="DevDriveCloneLocationAliasTextBox">
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="TextChanged">
+                                <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.DevDriveCloneLocationChangedCommand}"/>
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </TextBox>
                 </StackPanel>
                 <TextBox x:Uid="ClonePath"
-                     TextChanged="CloneLocation_TextChanged" Grid.Column="0" 
+                     Grid.Column="0" 
+                     x:Name="ClonePathTextBox"
                      Text="{x:Bind AddRepoViewModel.FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
                      IsEnabled="{x:Bind AddRepoViewModel.FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
-                     Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
+                     Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="TextChanged">
+                            <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.SaveCloneLocationCommand}" CommandParameter="{x:Bind ClonePathTextBox.Text, Mode=OneWay}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </TextBox>
                 <Grid Grid.Column="1">
                     <!-- Workaround to show a tooltip on a disabled button.
                          https://github.com/microsoft/microsoft-ui-xaml/issues/2262 -->
@@ -264,7 +281,7 @@
                         x:Uid="CustomizeHyperLink"
                         Grid.Column="1" 
                         Visibility="{x:Bind AddRepoViewModel.EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" 
-                        Click="CustomizeDevDriveHyperlinkButton_ClickAsync"
+                        Command="{x:Bind AddRepoViewModel.ShowCustomizeDevDriveWindowCommand}"
                         Grid.Row="0"
                         Margin="0 -3 0 0"
                         Padding="3" />

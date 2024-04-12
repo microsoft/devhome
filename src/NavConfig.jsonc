@@ -27,14 +27,6 @@
             "icon": "E83B"
           },
           {
-            "identity": "DevHome.QuietBackgroundProcesses.UI",
-            "assembly": "DevHome.QuietBackgroundProcesses.UI",
-            "viewFullName": "DevHome.QuietBackgroundProcesses.UI.Views.QuietBackgroundProcessesPage",
-            "viewModelFullName": "DevHome.QuietBackgroundProcesses.UI.ViewModels.QuietBackgroundProcessesViewModel",
-            "icon": "f5b0",
-            "experimentalFeatureIdentity": "QuietBackgroundProcessesExperiment"
-          },
-          {
             "identity": "DevHome.Customization",
             "assembly": "DevHome.Customization",
             "viewFullName": "DevHome.Customization.Views.MainPage",
@@ -61,9 +53,9 @@
           "visible": true
         },
         {
-          "buildType": "release",
+          "buildType": "stable",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
         }
       ]
     },
@@ -78,13 +70,13 @@
         },
         {
           "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": false
+          "enabledByDefault": true,
+          "visible": true
         },
         {
-          "buildType": "release",
+          "buildType": "stable",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
         }
       ]
     },
@@ -103,9 +95,30 @@
           "visible": false
         },
         {
-          "buildType": "release",
+          "buildType": "stable",
           "enabledByDefault": false,
           "visible": false
+        }
+      ]
+    },
+    {
+      "identity": "EnvironmentsCreationFlow",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": true
         }
       ]
     }

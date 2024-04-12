@@ -100,11 +100,25 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         get
         {
             var packagesInstalled = new ObservableCollection<PackageViewModel>();
-            var packages = _packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true).ToList();
+            var packages = _packageProvider.SelectedPackages.Where(sp => sp.CanInstall && sp.InstallPackageTask.WasInstallSuccessful).ToList();
             packages.ForEach(p => packagesInstalled.Add(p));
             var localizedHeader = (packagesInstalled.Count == 1) ? StringResourceKey.SummaryPageOneApplicationInstalled : StringResourceKey.SummaryPageAppsDownloadedCount;
             ApplicationsClonedText = StringResource.GetLocalized(localizedHeader);
             return packagesInstalled;
+        }
+    }
+
+    public bool WasCreateEnvironmentOperationStarted
+    {
+        get
+        {
+            var taskGroup = Orchestrator.GetTaskGroup<EnvironmentCreationOptionsTaskGroup>();
+            if (taskGroup == null)
+            {
+                return false;
+            }
+
+            return taskGroup.CreateEnvironmentTask.CreationOperationStarted;
         }
     }
 
@@ -134,6 +148,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private string _applicationsClonedText;
 
+    [ObservableProperty]
+    private string _summaryPageEnvironmentCreatingText;
+
     [RelayCommand]
     public void RemoveRestartGrid()
     {
@@ -157,12 +174,31 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToMainPage");
     }
 
-    [RelayCommand]
     public void GoToDashboard()
     {
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("Dashboard"), Orchestrator.ActivityId);
         _host.GetService<INavigationService>().NavigateTo(KnownPageKeys.Dashboard);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToDashboard");
+    }
+
+    [RelayCommand]
+    public void RedirectToNextPage()
+    {
+        if (WasCreateEnvironmentOperationStarted)
+        {
+            GoToEnvironmentsPage();
+            return;
+        }
+
+        // Default behavior is to go to the dashboard
+        GoToDashboard();
+    }
+
+    public void GoToEnvironmentsPage()
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("Environments"), Orchestrator.ActivityId);
+        _host.GetService<INavigationService>().NavigateTo(KnownPageKeys.Environments);
+        _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToEnvironments");
     }
 
     [RelayCommand]
@@ -179,6 +215,12 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("WindowsDeveloperSettings"), Orchestrator.ActivityId);
         Task.Run(() => Launcher.LaunchUriAsync(new Uri("ms-settings:developers"))).Wait();
     }
+
+    [ObservableProperty]
+    private string _pageRedirectButtonText;
+
+    [ObservableProperty]
+    private string _pageHeaderText;
 
     public SummaryViewModel(
         ISetupFlowStringResource stringResource,
@@ -199,6 +241,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _showRestartNeeded = Visibility.Collapsed;
         _appManagementInitializer = appManagementInitializer;
         _cloneRepoNextSteps = new();
+        PageRedirectButtonText = StringResource.GetLocalized(StringResourceKey.SummaryPageOpenDashboard);
+        PageHeaderText = StringResource.GetLocalized(StringResourceKey.SummaryPageHeader);
 
         IsNavigationBarVisible = true;
         IsStepPage = false;
@@ -242,15 +286,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         // Send telemetry about the number of next steps tasks found broken down by their type.
         ReportSummaryTaskCounts(_cloneRepoNextSteps.Count);
 
-        BitmapImage statusSymbol;
-        if (_host.GetService<IThemeSelectorService>().Theme == ElementTheme.Dark)
-        {
-            statusSymbol = DarkError;
-        }
-        else
-        {
-            statusSymbol = LightError;
-        }
+        var statusSymbol = _host.GetService<IThemeSelectorService>().IsDarkTheme() ? DarkError : LightError;
 
         foreach (var failedTask in failedTasks)
         {
@@ -265,6 +301,12 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         if (failedTasks.Count != 0)
         {
             TelemetryFactory.Get<ITelemetry>().LogCritical("Summary_NavigatedTo_Event", false, Orchestrator.ActivityId);
+        }
+
+        if (WasCreateEnvironmentOperationStarted)
+        {
+            PageRedirectButtonText = StringResource.GetLocalized(StringResourceKey.SummaryPageRedirectToEnvironmentPageButton);
+            PageHeaderText = StringResource.GetLocalized(StringResourceKey.SummaryPageHeaderForEnvironmentCreationText);
         }
 
         await ReloadCatalogsAsync();
@@ -283,7 +325,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         // After installing packages, reconnect to catalogs to
         // reflect the latest changes when new Package COM objects are created
         _log.Information($"Checking if a new catalog connections should be established");
-        if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
+        if (_packageProvider.SelectedPackages.Any(package => package.CanInstall && package.InstallPackageTask.WasInstallSuccessful))
         {
             await _appManagementInitializer.ReinitializeAsync();
         }

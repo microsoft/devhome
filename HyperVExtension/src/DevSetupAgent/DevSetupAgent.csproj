@@ -6,8 +6,8 @@
     <UserSecretsId>dotnet-DevSetupAgent-674f51cd-70a6-4b78-8376-66efbf84c412</UserSecretsId>
     <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
     <Platforms>x86;x64;arm64</Platforms>
-    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
-    <PublishProfile Condition="'$(BuildingInsideVisualStudio)' != 'True'">Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <PublishProfile Condition="'$(BuildingInsideVisualStudio)' != 'True'">Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfile>
     <SelfContained>true</SelfContained>
   </PropertyGroup>
 
@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\DevSetupEngineProjection\DevSetupEngineProjection.csproj" />
     <ProjectReference Include="..\DevSetupEngine\DevSetupEngine.csproj" />
     <ProjectReference Include="..\HyperVExtension.HostGuestCommunication\HyperVExtension.HostGuestCommunication.csproj" />

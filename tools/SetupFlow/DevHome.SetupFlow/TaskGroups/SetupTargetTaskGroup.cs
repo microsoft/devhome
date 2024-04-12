@@ -3,10 +3,10 @@
 
 using System.Collections.Generic;
 using DevHome.Common.Environments.Services;
-using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.TaskGroups;
 
@@ -24,7 +24,7 @@ public class SetupTargetTaskGroup : ISetupTaskGroup
         IComputeSystemManager computeSystemManager,
         ConfigurationFileBuilder configurationFileBuilder,
         SetupFlowOrchestrator setupFlowOrchestrator,
-        IThemeSelectorService themeSelectorService)
+        WindowEx windowEx)
     {
         _setupTargetViewModel = setupTargetViewModel;
         _setupTargetReviewViewModel = setupTargetReviewViewModel;
@@ -34,7 +34,7 @@ public class SetupTargetTaskGroup : ISetupTaskGroup
             computeSystemManager,
             configurationFileBuilder,
             setupFlowOrchestrator,
-            themeSelectorService);
+            windowEx);
     }
 
     /// <summary>
@@ -44,6 +44,8 @@ public class SetupTargetTaskGroup : ISetupTaskGroup
     public ConfigureTargetTask ConfigureTask => _setupTargetTaskGroup;
 
     public IEnumerable<ISetupTask> SetupTasks => new List<ISetupTask>() { _setupTargetTaskGroup };
+
+    public IEnumerable<ISetupTask> DSCTasks => SetupTasks;
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _setupTargetViewModel;
 

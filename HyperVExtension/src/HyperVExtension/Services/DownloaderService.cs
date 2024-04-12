@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using HyperVExtension.Extensions;
+using HyperVExtension.Models;
 using HyperVExtension.Models.VirtualMachineCreation;
 
 namespace HyperVExtension.Services;
@@ -32,13 +33,12 @@ public class DownloaderService : IDownloaderService
         using var outputFileStream = File.OpenWrite(destinationFile);
         outputFileStream.SetLength(totalBytesToReceive);
 
-        var downloadProgress = new Progress<long>(bytesCopied =>
+        var downloadProgress = new Progress<ByteTransferProgress>(progressObj =>
         {
-            var percentage = (uint)(bytesCopied / (double)totalBytesToReceive * 100D);
-            progressProvider.Report(new DownloadOperationReport((ulong)bytesCopied, (ulong)totalBytesToReceive));
+            progressProvider.Report(new DownloadOperationReport(progressObj));
         });
 
-        await webFileStream.CopyToAsync(outputFileStream, downloadProgress, _transferBufferSize, cancellationToken);
+        await webFileStream.CopyToAsync(outputFileStream, downloadProgress, _transferBufferSize, totalBytesToReceive, cancellationToken);
     }
 
     /// <inheritdoc cref="IDownloaderService.DownloadStringAsync"/>
@@ -53,6 +53,12 @@ public class DownloaderService : IDownloaderService
     {
         var httpClient = _httpClientFactory.CreateClient();
         return await httpClient.GetByteArrayAsync(sourceWebUri, cancellationToken);
+    }
+
+    public async Task<long> GetHeaderContentLength(Uri sourceWebUri, CancellationToken cancellationToken)
+    {
+        var httpClient = _httpClientFactory.CreateClient();
+        return GetTotalBytesToReceive(await httpClient.GetAsync(sourceWebUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken));
     }
 
     private long GetTotalBytesToReceive(HttpResponseMessage response)
