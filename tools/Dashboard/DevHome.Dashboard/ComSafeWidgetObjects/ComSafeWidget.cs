@@ -22,7 +22,7 @@ namespace DevHome.Dashboard.ComSafeWidgetObjects;
 /// </summary>
 public class ComSafeWidget
 {
-    public Widget OopWidget { get; set; }
+    private Widget _oopWidget;
 
     // Not currently used.
     public DateTimeOffset DataLastUpdated => throw new NotImplementedException();
@@ -39,7 +39,8 @@ public class ComSafeWidget
 
     public ComSafeWidget(Widget widget)
     {
-        OopWidget = widget;
+        _oopWidget = widget;
+
         DefinitionId = widget.DefinitionId;
         Id = widget.Id;
         widget.WidgetUpdated += OopWidgetUpdated;
@@ -58,12 +59,12 @@ public class ComSafeWidget
         {
             try
             {
-                return await OopWidget.GetCardTemplateAsync();
+                return await _oopWidget.GetCardTemplateAsync();
             }
             catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
                 await GetNewOopWidgetAsync();
-                return await OopWidget.GetCardTemplateAsync();
+                return await _oopWidget.GetCardTemplateAsync();
             }
         });
     }
@@ -74,12 +75,12 @@ public class ComSafeWidget
         {
             try
             {
-                return await OopWidget.GetCardDataAsync();
+                return await _oopWidget.GetCardDataAsync();
             }
             catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
                 await GetNewOopWidgetAsync();
-                return await OopWidget.GetCardDataAsync();
+                return await _oopWidget.GetCardDataAsync();
             }
         });
     }
@@ -90,12 +91,12 @@ public class ComSafeWidget
         {
             try
             {
-                return await OopWidget.GetCustomStateAsync();
+                return await _oopWidget.GetCustomStateAsync();
             }
             catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
                 await GetNewOopWidgetAsync();
-                return await OopWidget.GetCustomStateAsync();
+                return await _oopWidget.GetCustomStateAsync();
             }
         });
     }
@@ -106,12 +107,12 @@ public class ComSafeWidget
         {
             try
             {
-                return await OopWidget.GetSizeAsync();
+                return await _oopWidget.GetSizeAsync();
             }
             catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
                 await GetNewOopWidgetAsync();
-                return await OopWidget.GetSizeAsync();
+                return await _oopWidget.GetSizeAsync();
             }
         });
     }
@@ -122,12 +123,12 @@ public class ComSafeWidget
         {
             try
             {
-                await OopWidget.NotifyActionInvokedAsync(verb, data);
+                await _oopWidget.NotifyActionInvokedAsync(verb, data);
             }
             catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
                 await GetNewOopWidgetAsync();
-                await OopWidget.NotifyActionInvokedAsync(verb, data);
+                await _oopWidget.NotifyActionInvokedAsync(verb, data);
             }
         });
     }
@@ -138,12 +139,12 @@ public class ComSafeWidget
         {
             try
             {
-                await OopWidget.DeleteAsync();
+                await _oopWidget.DeleteAsync();
             }
             catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
                 await GetNewOopWidgetAsync();
-                await OopWidget.DeleteAsync();
+                await _oopWidget.DeleteAsync();
             }
         });
     }
@@ -154,12 +155,12 @@ public class ComSafeWidget
         {
             try
             {
-                await OopWidget.SetCustomStateAsync(state);
+                await _oopWidget.SetCustomStateAsync(state);
             }
             catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
                 await GetNewOopWidgetAsync();
-                await OopWidget.SetCustomStateAsync(state);
+                await _oopWidget.SetCustomStateAsync(state);
             }
         });
     }
@@ -170,12 +171,12 @@ public class ComSafeWidget
         {
             try
             {
-                await OopWidget.SetSizeAsync(widgetSize);
+                await _oopWidget.SetSizeAsync(widgetSize);
             }
             catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
                 await GetNewOopWidgetAsync();
-                await OopWidget.SetSizeAsync(widgetSize);
+                await _oopWidget.SetSizeAsync(widgetSize);
             }
         });
     }
@@ -186,12 +187,12 @@ public class ComSafeWidget
         {
             try
             {
-                await OopWidget.NotifyCustomizationRequestedAsync();
+                await _oopWidget.NotifyCustomizationRequestedAsync();
             }
             catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
             {
                 await GetNewOopWidgetAsync();
-                await OopWidget.NotifyCustomizationRequestedAsync();
+                await _oopWidget.NotifyCustomizationRequestedAsync();
             }
         });
     }
@@ -206,9 +207,9 @@ public class ComSafeWidget
     {
         var hostingService = Application.Current.GetService<IWidgetHostingService>();
         var host = await hostingService.GetWidgetHostAsync();
-        OopWidget = host.GetWidget(Id);
+        _oopWidget = host.GetWidget(Id);
 
-        DefinitionId = OopWidget.DefinitionId;
-        Id = OopWidget.Id;
+        DefinitionId = _oopWidget.DefinitionId;
+        Id = _oopWidget.Id;
     }
 }
