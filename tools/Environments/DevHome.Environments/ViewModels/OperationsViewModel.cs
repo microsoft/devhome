@@ -20,25 +20,13 @@ public partial class OperationsViewModel
 
     public string IconGlyph { get; }
 
-    private Func<string, Task<ComputeSystemOperationResult>>? CommandWithString { get; }
-
-    private Func<bool, Task<ComputeSystemOperationResult>>? CommandWithBool { get; }
-
-    private readonly bool commandBool;
+    private Func<string, Task<ComputeSystemOperationResult>> Command { get; }
 
     public OperationsViewModel(string name, string icon, Func<string, Task<ComputeSystemOperationResult>> command)
     {
         Name = name;
         IconGlyph = icon;
-        CommandWithString = command;
-    }
-
-    public OperationsViewModel(string name, string icon, Func<bool, Task<ComputeSystemOperationResult>> command, bool value)
-    {
-        Name = name;
-        IconGlyph = icon;
-        CommandWithBool = command;
-        commandBool = value;
+        Command = command;
     }
 
     [RelayCommand]
@@ -47,14 +35,7 @@ public partial class OperationsViewModel
         // We'll need to disable the card UI while the operation is in progress and handle failures.
         Task.Run(async () =>
         {
-            if (CommandWithString != null)
-            {
-                await CommandWithString(string.Empty);
-            }
-            else if (CommandWithBool != null)
-            {
-                await CommandWithBool(commandBool);
-            }
+            await Command(string.Empty);
         });
     }
 }
