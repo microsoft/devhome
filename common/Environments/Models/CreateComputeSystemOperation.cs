@@ -7,6 +7,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Helpers;
+using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
+using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation;
@@ -107,6 +109,11 @@ public class CreateComputeSystemOperation : IDisposable
         {
             try
             {
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    "Environments_Creation_Event",
+                    LogLevel.Critical,
+                    new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, EnvironmentsTelemetryStatus.Started));
+
                 CreateComputeSystemResult = await _createComputeSystemOperation.StartAsync().AsTask(_cancellationTokenSource.Token);
                 Completed?.Invoke(this, CreateComputeSystemResult);
             }
@@ -116,6 +123,18 @@ public class CreateComputeSystemOperation : IDisposable
                 CreateComputeSystemResult = new CreateComputeSystemResult(ex, StringResourceHelper.GetResource("CreationOperationStoppedUnexpectedly"), ex.Message);
                 Completed?.Invoke(this, CreateComputeSystemResult);
             }
+
+            var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
+
+            if (CreateComputeSystemResult == null || CreateComputeSystemResult.Result.Status == ProviderOperationStatus.Failure)
+            {
+                completionStatus = EnvironmentsTelemetryStatus.Failed;
+            }
+
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environments_Creation_Event",
+                LogLevel.Critical,
+                new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, completionStatus));
 
             RemoveEventHandlers();
         });
