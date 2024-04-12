@@ -76,10 +76,11 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
 
     public async Task InitializePinDataAsync()
     {
-        var operations = new ObservableCollection<OperationsViewModel>(await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem));
+        // We know ComputeSystem and DotOperations are initialized in the constructor so it's safe to use
+        var operations = new ObservableCollection<OperationsViewModel>(await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem!));
         foreach (var operation in operations)
         {
-            DotOperations.Add(operation);
+            DotOperations!.Add(operation);
         }
     }
 
