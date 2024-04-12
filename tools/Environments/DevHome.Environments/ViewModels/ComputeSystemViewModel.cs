@@ -16,6 +16,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using WinUIEx;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -31,8 +32,6 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
 
     private readonly IComputeSystemManager _computeSystemManager;
 
-    public bool IsOperationInProgress { get; set; }
-
     // Launch button operations
     public ObservableCollection<OperationsViewModel> LaunchOperations { get; set; }
 
@@ -40,10 +39,13 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
 
     public string PackageFullName { get; set; }
 
+    private readonly Func<ComputeSystemCardBase, bool> _removalAction;
+
     public ComputeSystemViewModel(
         IComputeSystemManager manager,
         IComputeSystem system,
         ComputeSystemProvider provider,
+        Func<ComputeSystemCardBase, bool> removalAction,
         string packageFullName,
         WindowEx windowEx)
     {
@@ -54,6 +56,10 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         ProviderDisplayName = provider.DisplayName;
         PackageFullName = packageFullName;
         Name = ComputeSystem.DisplayName;
+        AssociatedProviderId = ComputeSystem.AssociatedProviderId!;
+        ComputeSystemId = ComputeSystem.Id!;
+        _removalAction = removalAction;
+        ShouldShowLaunchOperation = true;
 
         if (!string.IsNullOrEmpty(ComputeSystem.SupplementalDisplayName))
         {
@@ -84,6 +90,12 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
 
         State = result.State;
         StateColor = ComputeSystemHelpers.GetColorBasedOnState(State);
+
+        if (State == ComputeSystemState.Creating || State == ComputeSystemState.Deleting)
+        {
+            IsOperationInProgress = true;
+            ShouldShowLaunchOperation = false;
+        }
     }
 
     private async Task SetBodyImageAsync()
@@ -107,6 +119,16 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
             {
                 State = state;
                 StateColor = ComputeSystemHelpers.GetColorBasedOnState(state);
+
+                if (State != ComputeSystemState.Creating || State != ComputeSystemState.Deleting)
+                {
+                    ShouldShowLaunchOperation = true;
+                }
+
+                if (State == ComputeSystemState.Deleted)
+                {
+                    RemoveComputeSystem();
+                }
             }
         });
     }
@@ -125,9 +147,16 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         // We'll need to disable the card UI while the operation is in progress and handle failures.
         Task.Run(async () =>
         {
-            IsOperationInProgress = true;
             await ComputeSystem!.ConnectAsync(string.Empty);
-            IsOperationInProgress = false;
+        });
+    }
+
+    private void RemoveComputeSystem()
+    {
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        {
+            _removalAction(this);
+            RemoveStateChangedHandler();
         });
     }
 }

@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
@@ -41,6 +43,11 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
     /// </summary>
     private readonly Func<ComputeSystemCardBase, bool> _removalAction;
 
+    /// <summary>
+    /// Callback action to add the newly created compute system.
+    /// </summary>
+    private readonly Action<ComputeSystemViewModel> _addComputeSystemAction;
+
     public CreateComputeSystemOperation Operation { get; }
 
     public CreateComputeSystemOperationViewModel(
@@ -48,11 +55,13 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
         StringResource stringResource,
         WindowEx windowsEx,
         Func<ComputeSystemCardBase, bool> removalAction,
+        Action<ComputeSystemViewModel> addComputeSystemAction,
         CreateComputeSystemOperation operation)
     {
-        IsCreationInProgress = true;
+        IsOperationInProgress = true;
         _windowEx = windowsEx;
         _removalAction = removalAction;
+        _addComputeSystemAction = addComputeSystemAction;
         _stringResource = stringResource;
         _computeSystemManager = computeSystemManager;
         Operation = operation;
@@ -93,13 +102,11 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
         _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             // Update the creation status
-            IsCreationInProgress = false;
+            IsOperationInProgress = false;
             if (createComputeSystemResult.Result.Status == ProviderOperationStatus.Success)
             {
-                UpdateUiMessage(_stringResource.GetLocalized("SuccessMessageForCreateComputeSystem", ProviderDisplayName));
-                ComputeSystem = new(createComputeSystemResult.ComputeSystem);
-                State = ComputeSystemState.Created;
-                StateColor = CardStateColor.Success;
+                RemoveViewModelFromUI();
+                AddComputeSystemToUI(createComputeSystemResult);
             }
             else
             {
@@ -107,8 +114,6 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
                 State = ComputeSystemState.Unknown;
                 StateColor = CardStateColor.Failure;
             }
-
-            RemoveEventHandlers();
         });
     }
 
@@ -145,6 +150,23 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
             RemoveEventHandlers();
             Operation.CancelOperation();
             _computeSystemManager.RemoveOperation(Operation);
+        });
+    }
+
+    private void AddComputeSystemToUI(CreateComputeSystemResult result)
+    {
+        _windowEx.DispatcherQueue.TryEnqueue(async () =>
+        {
+            var newComputeSystemViewModel = new ComputeSystemViewModel(
+                _computeSystemManager,
+                result.ComputeSystem,
+                Operation.ProviderDetails.ComputeSystemProvider,
+                _removalAction,
+                Operation.ProviderDetails.ExtensionWrapper.PackageFullName,
+                _windowEx);
+
+            await newComputeSystemViewModel.InitializeCardDataAsync();
+            _addComputeSystemAction(newComputeSystemViewModel);
         });
     }
 }

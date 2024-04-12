@@ -36,10 +36,11 @@
             <!-- Launch Button template -->
             <DataTemplate x:Key="LaunchButton" x:DataType="vm:ComputeSystemViewModel">
                 <SplitButton
-                        VerticalAlignment="Top"
-                        Command="{x:Bind LaunchActionCommand}"
-                        x:Uid="ms-resource:///DevHome.Environments/Resources/LaunchButton"
-                        Style="{StaticResource CardBodySplitButtonStyle}">
+                    Visibility="{x:Bind ShouldShowLaunchOperation, Mode=OneWay}"
+                    VerticalAlignment="Top"
+                    Command="{x:Bind LaunchActionCommand}"
+                    x:Uid="ms-resource:///DevHome.Environments/Resources/LaunchButton"
+                    Style="{StaticResource CardBodySplitButtonStyle}">
                     <SplitButton.Flyout>
                         <customControls:CardFlyout ItemsViewModels="{x:Bind LaunchOperations}"/>
                     </SplitButton.Flyout>
@@ -147,7 +148,8 @@
                             StateColor="{x:Bind StateColor, Mode=OneWay}"
                             ComputeSystemProperties="{x:Bind Properties, Mode=OneWay}"
                             ComputeSystemPropertyTemplate="{StaticResource BottomRowProperties}"
-                            ActionControlTemplate="{StaticResource LaunchButton}"/>
+                            ActionControlTemplate="{StaticResource LaunchButton}"
+                            ShouldShowInDefiniteProgress="{x:Bind IsOperationInProgress, Mode=OneWay}"/>
                     </Grid>
                 </Grid>
             </DataTemplate>
@@ -171,7 +173,7 @@
                             ComputeSystemTitle="{x:Bind EnvironmentName, Mode=OneWay}"
                             StateColor="{x:Bind StateColor, Mode=OneWay}"
                             ComputeSystemCreationStatus="{x:Bind UiMessageToDisplay, Mode=OneWay}"
-                            ShouldShowInDefiniteProgress="{x:Bind IsCreationInProgress, Mode=OneWay}"/>
+                            ShouldShowInDefiniteProgress="{x:Bind IsOperationInProgress, Mode=OneWay}"/>
                     </Grid>
                 </Grid>
             </DataTemplate>
