@@ -105,12 +105,24 @@ public class WidgetHostingService : IWidgetHostingService
     /// <summary>
     /// Get the catalog of widgets from the WidgetService.
     /// </summary>
-    /// <returns>The catalog of widgets, or null if one could not be created.
-    /// The returned OOP COM object is not guaranteed to still be alive.</returns>
+    /// <returns>The catalog of widgets, or null if one could not be created.</returns>
     public async Task<WidgetCatalog> GetWidgetCatalogAsync()
     {
-        // Don't check whether the existing WidgetCatalog COM object is still alive and just return what we have.
-        // If the object is dead and we try to subscribe to an event on it, the calling code will handle the error.
+        // If we already have a WidgetCatalog, check if the COM object is still alive and use it if it is.
+        if (_widgetCatalog != null)
+        {
+            try
+            {
+                // Need to use an arbitrary method to check if the COM object is still alive.
+                await Task.Run(() => _widgetCatalog.GetWidgetDefinition("fakeWidgetDefinitionId"));
+            }
+            catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
+            {
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+                _widgetCatalog = null;
+            }
+        }
+
         if (_widgetCatalog == null)
         {
             try
