@@ -7,7 +7,7 @@ When run, the `configuration.dsc.yaml` file will install the following list of a
 * GitHub Desktop
 
 
-The `configuration.dsc.yaml` file will also enable [Developer Mode](https://learn.microsoft.com/en-us/windows/apps/get-started/developer-mode-features-and-debugging) on your device. 
+The `configuration.dsc.yaml` file will also enable [Developer Mode](https://learn.microsoft.com/windows/apps/get-started/developer-mode-features-and-debugging) on your device. 
 
 ## How to use the WinGet Configuration File
 

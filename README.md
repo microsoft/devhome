@@ -94,21 +94,6 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
 * You must be running Windows 11 21H2 (build >= 10.0.22000.0) to run Dev Home
 * You must [enable Developer Mode in the Windows Settings app](https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development)
 
-## Building the code
-
-1. Clone the repository
-2. Configure your system
-   * Please use the [configuration file](.configurations/configuration.dsc.yaml). This can be applied by either:
-     * Dev Home's machine configuration tool
-     * WinGet configuration. If you have WinGet version [v1.6.2631 or later](https://github.com/microsoft/winget-cli/releases), run `winget configure .configurations/configuration.dsc.yaml` in an elevated shell from the project root so relative paths resolve correctly
-   * Alternatively, if you already are running the minimum OS version, have Visual Studio installed, and have developer mode enabled, you may configure your Visual Studio directly via the .vsconfig file. To do this:
-     * Open the Visual Studio Installer, select “More” on your product card and then "Import configuration"
-     * Specify the .vsconfig file at the root of the repo and select “Review Details”
-
-## Running & debugging
-
-In Visual Studio, you should be able to build and debug Dev Home by hitting <kbd>F5</kbd>. Make sure to select either the `x64` or the `x86` platform and set DevHome as the selected startup project.
-
 ---
 
 ## Code of conduct

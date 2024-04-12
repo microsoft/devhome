@@ -2,7 +2,7 @@
 
 ##########################################################################################################
 # This configuration will install the tools necessary to get started with NodeJS development on Windows  #
-# Reference: https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows      #
+# Reference: https://learn.microsoft.com/windows/dev-environment/javascript/nodejs-on-windows            #
 #                                                                                                        #
 # This will:                                                                                             #
 #     * Enable Developer Mode                                                                            #

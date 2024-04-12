@@ -6,7 +6,7 @@
     - <i id="/navMenu">path: #/navMenu</i>
     - **_Properties_**
         - <b id="#/navMenu/groups">groups</b> `required`
-            - Future: Items in navigation menu can be put into expand/collapsable groupings
+            - Future: Items in navigation menu can be put into expand/collapsible groupings
             - This is not yet supported and all tools are placed in top-level list
             - Type: `array`
             - <i id="/navMenu/groups">path: #/navMenu/groups</i>

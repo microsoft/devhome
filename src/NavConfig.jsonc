@@ -45,7 +45,7 @@
         {
           "buildType": "dev",
           "enabledByDefault": true,
-          "visible": false
+          "visible": true
         },
         {
           "buildType": "canary",
@@ -55,7 +55,7 @@
         {
           "buildType": "stable",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
         }
       ]
     },
@@ -70,13 +70,13 @@
         },
         {
           "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": false
+          "enabledByDefault": true,
+          "visible": true
         },
         {
           "buildType": "stable",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
         }
       ]
     },
@@ -118,7 +118,7 @@
         {
           "buildType": "stable",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
         }
       ]
     }
