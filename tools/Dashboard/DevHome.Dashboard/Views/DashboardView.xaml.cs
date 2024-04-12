@@ -120,7 +120,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error("Exception in UnsubscribeFromWidgetCatalogEventsAsync:", ex);
+            _log.Error(ex, "Exception in UnsubscribeFromWidgetCatalogEventsAsync:");
         }
     }
 
@@ -152,7 +152,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error("Exception in UnsubscribeFromWidgets:", ex);
+            _log.Error(ex, "Exception in UnsubscribeFromWidgets:");
         }
 
         await UnsubscribeFromWidgetCatalogEventsAsync();
@@ -169,7 +169,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error("Exception in UnsubscribeFromWidgets:", ex);
+            _log.Error(ex, "Exception in UnsubscribeFromWidgets:");
         }
     }
 

@@ -59,7 +59,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
         catch (Exception ex)
         {
-            _log.Error("Exception in OnLoadedAsync:", ex);
+            // If there was an error getting the widget catalog, log it and continue.
+            // If a WidgetDefinition is deleted while the dialog is open, we won't know to remove it from
+            // the list automatically, but we can show a helpful error message if the user tries to pin it.
+            // https://github.com/microsoft/devhome/issues/2623
+            _log.Error(ex, "Exception in AddWidgetDialog.OnLoadedAsync:");
         }
 
         await FillAvailableWidgetsAsync();
@@ -277,7 +281,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
         catch (Exception ex)
         {
-            _log.Error("Exception in HideDialogAsync:", ex);
+            // If there was an error getting the widget catalog, log it and continue.
+            _log.Error(ex, "Exception in HideDialogAsync:");
         }
 
         this.Hide();

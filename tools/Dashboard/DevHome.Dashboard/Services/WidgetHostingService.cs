@@ -21,9 +21,13 @@ public class WidgetHostingService : IWidgetHostingService
     private const int RpcServerUnavailable = unchecked((int)0x800706BA);
     private const int RpcCallFailed = unchecked((int)0x800706BE);
 
+    /// <summary>
+    /// Get the list of current widgets from the WidgetService.
+    /// </summary>
+    /// <returns>A list of widgets, or null if there were no widgets or the list could not be retrieved.</returns>
     public async Task<Widget[]> GetWidgetsAsync()
     {
-        // If we already have a WidgetHost, check if the COM object is still alive and use it if it is.
+        // If we already have a WidgetHost, check if the OOP COM object is still alive and use it if it is.
         if (_widgetHost != null)
         {
             try
@@ -37,6 +41,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
         }
 
+        // If we lost the object, create a new one. This call will get the WidgetService back up and running.
         if (_widgetHost == null)
         {
             try
@@ -50,9 +55,13 @@ public class WidgetHostingService : IWidgetHostingService
             }
         }
 
-        return [];
+        return null;
     }
 
+    /// <summary>
+    /// Create and return a new widget.
+    /// </summary>
+    /// <returns>The new widget, or null if one could ont be created.</returns>
     public async Task<Widget> CreateWidgetAsync(string widgetDefinitionId, WidgetSize widgetSize)
     {
         // If we already have a WidgetHost, check if the COM object is still alive and use it if it is.
@@ -85,6 +94,10 @@ public class WidgetHostingService : IWidgetHostingService
         return null;
     }
 
+    /// <summary>
+    /// Get the catalog of widgets from the WidgetService.
+    /// </summary>
+    /// <returns>The catalog of widgets, or null if one could ont be created.</returns>
     public async Task<WidgetCatalog> GetWidgetCatalogAsync()
     {
         // If we already have a WidgetCatalog, check if the COM object is still alive and use it if it is.
@@ -116,6 +129,11 @@ public class WidgetHostingService : IWidgetHostingService
         return _widgetCatalog;
     }
 
+    /// <summary>
+    /// Get the list of WidgetProviderDefinitions from the WidgetService.
+    /// </summary>
+    /// <returns>A list of WidgetProviderDefinitions, or an empty list if there were no widgets
+    /// or the list could not be retrieved.</returns>
     public async Task<WidgetProviderDefinition[]> GetProviderDefinitionsAsync()
     {
         // If we already have a WidgetCatalog, check if the COM object is still alive.
@@ -141,13 +159,18 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                _log.Error("Exception in GetWidgetDefinitionAsync:", ex);
+                _log.Error(ex, "Exception in GetWidgetDefinitionAsync:");
             }
         }
 
         return [];
     }
 
+    /// <summary>
+    /// Get the list of WidgetDefinitions from the WidgetService.
+    /// </summary>
+    /// <returns>A list of WidgetDefinitions, or an empty list if there were no widgets
+    /// or the list could not be retrieved.</returns>
     public async Task<WidgetDefinition[]> GetWidgetDefinitionsAsync()
     {
         // If we already have a WidgetCatalog, check if the COM object is still alive.
@@ -173,13 +196,18 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                _log.Error("Exception in GetWidgetDefinitionAsync:", ex);
+                _log.Error(ex, "Exception in GetWidgetDefinitionAsync:");
             }
         }
 
         return [];
     }
 
+    /// <summary>
+    /// Get the WidgetDefinition for the given WidgetDefinitionId from the WidgetService.
+    /// </summary>
+    /// <returns>The WidgetDefinition, or null if the widget definition could not be found
+    /// or there was an error retrieving it.</returns>
     public async Task<WidgetDefinition> GetWidgetDefinitionAsync(string widgetDefinitionId)
     {
         // If we already have a WidgetCatalog, check if the COM object is still alive.
@@ -205,7 +233,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                _log.Error("Exception in GetWidgetDefinitionAsync:", ex);
+                _log.Error(ex, "Exception in GetWidgetDefinitionAsync:");
             }
         }
 
