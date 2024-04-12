@@ -61,9 +61,9 @@ public partial class MainPageViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void NavigateToDeveloperFileExplorerPage()
+    private void NavigateToFileExplorerPage()
     {
-        NavigationService.NavigateTo(typeof(DeveloperFileExplorerViewModel).FullName!);
+        NavigationService.NavigateTo(typeof(FileExplorerViewModel).FullName!);
     }
 
     [RelayCommand]
