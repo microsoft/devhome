@@ -816,14 +816,17 @@ public partial class AddRepoViewModel : ObservableObject
     public async Task ChangeToRepoPageAsync()
     {
         await GetAccountsAsync(_selectedRepoProvider, LoginUiContent);
-        if (Accounts.Any())
+
+        if (Accounts.Count == 0)
         {
-            FolderPickerViewModel.ShowFolderPicker();
-            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-            SelectedAccount = Accounts.First();
-            ShouldEnablePrimaryButton = false;
-            MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
+            return;
         }
+
+        FolderPickerViewModel.ShowFolderPicker();
+        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+        SelectedAccount = Accounts.First();
+        ShouldEnablePrimaryButton = false;
+        MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
 
         _log.Information("Changing to Repo page");
         ShowUrlPage = false;
@@ -951,18 +954,11 @@ public partial class AddRepoViewModel : ObservableObject
 
         // AddRepoDialog can handle the close button click.  Don't show the x button.
         ShouldShowXButtonInLoginUi = shouldShowXCancelButton;
+        _addRepoDialog.CloseButtonText = _host.GetService<ISetupFlowStringResource>().GetLocalized(StringResourceKey.UrlCancelButtonText);
         await InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), loginFrame);
 
-        // Wait 30 seconds for user to log in.
-        var maxIterationsToWait = 30;
-        var currentIteration = 0;
-        var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
-        while ((IsLoggingIn && !IsCancelling) && currentIteration++ <= maxIterationsToWait)
-        {
-            await Task.Delay(waitDelay);
-        }
-
         ShouldShowLoginUi = false;
+        ShouldShowXButtonInLoginUi = false;
     }
 
     /// <summary>
@@ -975,7 +971,7 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
-            await LogUserIn(repositoryProviderName, loginFrame);
+            await LogUserIn(repositoryProviderName, loginFrame, true);
             loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false), _activityId);
         }
@@ -1102,7 +1098,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// If ShouldShowUrlError == Visible the repo is not added to the list of repos to clone.
     /// </remarks>
     /// <param name="cloneLocation">The location to clone the repo to</param>
-    public void AddRepositoryViaUri(string url, string cloneLocation)
+    public async Task AddRepositoryViaUri(string url, string cloneLocation)
     {
         ShouldEnablePrimaryButton = false;
         Uri uri = null;
@@ -1117,7 +1113,7 @@ public partial class AddRepoViewModel : ObservableObject
         // Causing GetCloningInformationFromURL to fall back to git.
         var provider = _providers?.CanAnyProviderSupportThisUri(uri);
 
-        var cloningInformation = GetCloningInformationFromUrl(provider, cloneLocation, uri, LoginUiContent);
+        var cloningInformation = await GetCloningInformationFromUrl(provider, cloneLocation, uri, LoginUiContent);
         if (cloningInformation == null)
         {
             // Error information is already set.
@@ -1154,7 +1150,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="loginFrame">The frame to show OAUTH login if the user needs to log in.</param>
     /// <returns>non-null cloning information if a provider is selected for cloning.  Null for all other cases.</returns>
     /// <remarks>If the repo is either private, or does not exist, this will ask the user to log in.</remarks>
-    private CloningInformation GetCloningInformationFromUrl(RepositoryProvider provider, string cloneLocation, Uri uri, Frame loginFrame)
+    private async Task<CloningInformation> GetCloningInformationFromUrl(RepositoryProvider provider, string cloneLocation, Uri uri, Frame loginFrame)
     {
         if (provider == null)
         {
@@ -1204,11 +1200,8 @@ public partial class AddRepoViewModel : ObservableObject
             // TODO: Figure out a better error message?
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
             ShouldShowUrlError = true;
-
-            _dispatcherQueue.TryEnqueue(async () =>
-            {
-                await InitiateAddAccountUserExperienceAsync(provider, loginFrame);
-            });
+            _addRepoDialog.CloseButtonText = _host.GetService<ISetupFlowStringResource>().GetLocalized(StringResourceKey.UrlCancelButtonText);
+            await InitiateAddAccountUserExperienceAsync(provider, loginFrame);
             return null;
         }
 
@@ -1220,10 +1213,8 @@ public partial class AddRepoViewModel : ObservableObject
         UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
         ShouldShowUrlError = true;
         IsLoggingIn = true;
-        _dispatcherQueue.TryEnqueue(async () =>
-        {
-            await InitiateAddAccountUserExperienceAsync(provider, loginFrame);
-        });
+        _addRepoDialog.CloseButtonText = _host.GetService<ISetupFlowStringResource>().GetLocalized(StringResourceKey.UrlCancelButtonText);
+        await InitiateAddAccountUserExperienceAsync(provider, loginFrame);
         return null;
     }
 
@@ -1263,6 +1254,15 @@ public partial class AddRepoViewModel : ObservableObject
         {
             var loginUi = await _providers.GetLoginUiAsync(provider.ExtensionDisplayName);
             loginFrame.Content = loginUi;
+
+            // Wait 30 seconds for user to log in.
+            var maxIterationsToWait = 30;
+            var currentIteration = 0;
+            var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
+            while ((IsLoggingIn && !IsCancelling) && currentIteration++ <= maxIterationsToWait)
+            {
+                await Task.Delay(waitDelay);
+            }
         }
         else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
         {
@@ -1270,7 +1270,8 @@ public partial class AddRepoViewModel : ObservableObject
             var windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
             try
             {
-                var developerIdResult = provider.ShowLogonBehavior(windowPtr).AsTask().Result;
+                var developerIdResult = await provider.ShowLogonBehavior(windowPtr);
+
                 if (developerIdResult.Result.Status == ProviderOperationStatus.Failure)
                 {
                     _log.Error($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");

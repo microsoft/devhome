@@ -10,11 +10,13 @@ using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using LibGit2Sharp;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.Windows.DevHome.SDK;
+using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.Views;
@@ -175,40 +177,31 @@ public partial class AddRepoDialog : ContentDialog
             // Get the number of repos already selected to clone in a previous instance.
             // Used to figure out if the repo was added after the user logged into an account.
             var numberOfReposToCloneCount = AddRepoViewModel.EverythingToClone.Count;
-            AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
+
+            // Get deferral to prevent the dialog from closing when awaiting operations.
+            var deferral = args.GetDeferral();
+
+            await AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
 
             // On the first run, ignore any warnings.
             // If this is set to visible and the user needs to log in they'll see an error message after the log-in
             // prompt exits even if they logged in successfully.
             AddRepoViewModel.ShouldShowUrlError = false;
 
-            // Get deferral to prevent the dialog from closing when awaiting operations.
-            var deferral = args.GetDeferral();
-
-            // Two click events can not be processed at the same time.
-            // UI will not respond to the close button when inside this method.
-            // Change the text of the close button to notify users of the X button in the upper-right corner of the log-in ui.
-            if (AddRepoViewModel.IsLoggingIn)
-            {
-                AddRepoContentDialog.CloseButtonText = _host.GetService<ISetupFlowStringResource>().GetLocalized(StringResourceKey.UrlCancelButtonText);
-            }
-
-            // Wait roughly 30 seconds for the user to log in.
-            var maxIterationsToWait = 30;
-            var currentIteration = 0;
-            var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
-            while ((AddRepoViewModel.IsLoggingIn && !AddRepoViewModel.IsCancelling) && currentIteration++ <= maxIterationsToWait)
-            {
-                await Task.Delay(waitDelay);
-            }
-
-            deferral.Complete();
             AddRepoViewModel.ShouldShowLoginUi = false;
             AddRepoViewModel.ShouldShowXButtonInLoginUi = false;
 
             // User cancelled the login prompt.  Don't re-check repo access.
             if (AddRepoViewModel.IsCancelling)
             {
+                _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+                {
+                    AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
+                });
+                AddRepoViewModel.IsLoggingIn = false;
+                AddRepoViewModel.IsCancelling = false;
+                args.Cancel = true;
+                deferral.Complete();
                 return;
             }
 
@@ -216,7 +209,21 @@ public partial class AddRepoDialog : ContentDialog
             // and the number of repos to clone will not be changed.
             if (numberOfReposToCloneCount == AddRepoViewModel.EverythingToClone.Count)
             {
-                AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
+                AddRepoViewModel.ShouldShowLoginUi = true;
+                AddRepoViewModel.ShouldShowXButtonInLoginUi = true;
+                await AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
+                if (AddRepoViewModel.IsCancelling)
+                {
+                    _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+                    {
+                        AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
+                    });
+                    AddRepoViewModel.IsLoggingIn = false;
+                    AddRepoViewModel.IsCancelling = false;
+                    args.Cancel = true;
+                    deferral.Complete();
+                    return;
+                }
             }
 
             if (AddRepoViewModel.ShouldShowUrlError)
@@ -227,6 +234,11 @@ public partial class AddRepoDialog : ContentDialog
 
             // Revert the close button text.
             AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
+            AddRepoViewModel.IsLoggingIn = false;
+            AddRepoViewModel.IsCancelling = false;
+            AddRepoViewModel.ShouldShowLoginUi = false;
+            AddRepoViewModel.ShouldShowXButtonInLoginUi = false;
+            deferral.Complete();
         }
         else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
         {
@@ -234,8 +246,20 @@ public partial class AddRepoDialog : ContentDialog
             var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
             if (!string.IsNullOrEmpty(repositoryProviderName))
             {
+                var originalCloseButtonText = AddRepoContentDialog.CloseButtonText;
+
                 var deferral = args.GetDeferral();
                 await AddRepoViewModel.ChangeToRepoPageAsync();
+
+                if (AddRepoViewModel.Accounts.Count == 0)
+                {
+                    AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
+                    AddRepoViewModel.IsLoggingIn = false;
+                    AddRepoViewModel.IsCancelling = false;
+                    AddRepoViewModel.ShouldShowLoginUi = false;
+                    AddRepoViewModel.ShouldShowXButtonInLoginUi = false;
+                }
+
                 deferral.Complete();
             }
         }
