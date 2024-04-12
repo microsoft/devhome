@@ -393,15 +393,15 @@ public partial class DashboardView : ToolPage, IDisposable
             // Create widget
             var size = WidgetHelpers.GetDefaultWidgetSize(defaultWidgetDefinition.GetWidgetCapabilities());
             var id = defaultWidgetDefinition.Id;
-            var newWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(id, size);
-            var comSafeWidget = new ComSafeWidget(newWidget);
+            var unsafeWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(id, size);
+            var comSafeWidget = new ComSafeWidget(unsafeWidget);
             _log.Information($"Created default widget {id}");
 
             // Set custom state on new widget.
             var position = PinnedWidgets.Count;
             var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
             _log.Debug($"SetCustomState: {newCustomState}");
-            await newWidget.SetCustomStateAsync(newCustomState);
+            await comSafeWidget.SetCustomStateAsync(newCustomState);
 
             // Put new widget on the Dashboard.
             await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, position);
@@ -441,18 +441,17 @@ public partial class DashboardView : ToolPage, IDisposable
 
         if (newWidgetDefinition != null)
         {
-            Widget newWidget;
             try
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(newWidgetDefinition.GetWidgetCapabilities());
-                newWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(newWidgetDefinition.Id, size);
-                var comSafeWidget = new ComSafeWidget(newWidget);
+                var unsafeWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(newWidgetDefinition.Id, size);
+                var comSafeWidget = new ComSafeWidget(unsafeWidget);
 
                 // Set custom state on new widget.
                 var position = PinnedWidgets.Count;
                 var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
                 _log.Debug($"SetCustomState: {newCustomState}");
-                await newWidget.SetCustomStateAsync(newCustomState);
+                await comSafeWidget.SetCustomStateAsync(newCustomState);
 
                 // Put new widget on the Dashboard.
                 await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, position);
