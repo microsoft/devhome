@@ -39,6 +39,10 @@ public class WidgetHostingService : IWidgetHostingService
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 _widgetHost = null;
             }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception getting widgets from service:");
+            }
         }
 
         // If we lost the object, create a new one. This call will get the WidgetService back up and running.
@@ -76,6 +80,10 @@ public class WidgetHostingService : IWidgetHostingService
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 _widgetHost = null;
             }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception creating a widget:");
+            }
         }
 
         if (_widgetHost == null)
@@ -87,7 +95,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Exception getting widgets from service:");
+                _log.Error(ex, "Exception creating a widget:");
             }
         }
 
@@ -97,23 +105,12 @@ public class WidgetHostingService : IWidgetHostingService
     /// <summary>
     /// Get the catalog of widgets from the WidgetService.
     /// </summary>
-    /// <returns>The catalog of widgets, or null if one could ont be created.</returns>
+    /// <returns>The catalog of widgets, or null if one could not be created.
+    /// The returned OOP COM object is not guaranteed to still be alive.</returns>
     public async Task<WidgetCatalog> GetWidgetCatalogAsync()
     {
-        // If we already have a WidgetCatalog, check if the COM object is still alive and use it if it is.
-        if (_widgetCatalog != null)
-        {
-            try
-            {
-                await Task.Run(() => _widgetCatalog.GetProviderDefinitions());
-            }
-            catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
-            {
-                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
-                _widgetCatalog = null;
-            }
-        }
-
+        // Don't check whether the existing WidgetCatalog COM object is still alive and just return what we have.
+        // If the object is dead and we try to subscribe to an event on it, the calling code will handle the error.
         if (_widgetCatalog == null)
         {
             try
