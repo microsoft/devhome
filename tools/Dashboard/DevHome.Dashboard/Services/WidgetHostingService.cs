@@ -38,6 +38,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 _widgetHost = null;
+
+                // If the host died, the catalog probably did too.
+                _widgetCatalog = null;
             }
             catch (Exception ex)
             {
@@ -79,6 +82,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 _widgetHost = null;
+
+                // If the host died, the catalog probably did too.
+                _widgetCatalog = null;
             }
             catch (Exception ex)
             {
@@ -120,6 +126,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 _widgetCatalog = null;
+
+                // If the catalog died, the host probably did too.
+                _widgetHost = null;
             }
         }
 
@@ -156,6 +165,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 _widgetCatalog = null;
+
+                // If the catalog died, the host probably did too.
+                _widgetHost = null;
             }
         }
 
@@ -193,6 +205,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 _widgetCatalog = null;
+
+                // If the catalog died, the host probably did too.
+                _widgetHost = null;
             }
         }
 
@@ -230,6 +245,9 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 _widgetCatalog = null;
+
+                // If the catalog died, the host probably did too.
+                _widgetHost = null;
             }
         }
 
