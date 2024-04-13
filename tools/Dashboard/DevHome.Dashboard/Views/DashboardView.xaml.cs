@@ -23,7 +23,6 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
@@ -139,7 +138,7 @@ public partial class DashboardView : ToolPage, IDisposable
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
         ViewModel.IsLoading = true;
 
-        if (ViewModel.WidgetHostingService.CheckForWidgetServiceAsync())
+        if (ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
         {
             ViewModel.HasWidgetService = true;
             if (await SubscribeToWidgetCatalogEventsAsync())
@@ -161,9 +160,9 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         else
         {
-            var widgetServiceState = ViewModel.WidgetHostingService.GetWidgetServiceState();
-            if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion ||
-                widgetServiceState == WidgetHostingService.WidgetServiceStates.HasWebExperienceNoOrBadVersion)
+            var widgetServiceState = ViewModel.WidgetServiceService.GetWidgetServiceState();
+            if (widgetServiceState == WidgetServiceService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion ||
+                widgetServiceState == WidgetServiceService.WidgetServiceStates.HasWebExperienceNoOrBadVersion)
             {
                 // Show error message that updating may help
                 UpdateWidgetsMessageStackPanel.Visibility = Visibility.Visible;

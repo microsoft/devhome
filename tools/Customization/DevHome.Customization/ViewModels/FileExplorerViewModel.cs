@@ -11,13 +11,13 @@ using Microsoft.Internal.Windows.DevHome.Helpers;
 
 namespace DevHome.Customization.ViewModels;
 
-public partial class DeveloperFileExplorerViewModel : ObservableObject
+public partial class FileExplorerViewModel : ObservableObject
 {
     private readonly ShellSettings _shellSettings;
 
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
-    public DeveloperFileExplorerViewModel()
+    public FileExplorerViewModel()
     {
         _shellSettings = new ShellSettings();
 
@@ -25,37 +25,37 @@ public partial class DeveloperFileExplorerViewModel : ObservableObject
         Breadcrumbs =
         [
             new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
-            new(stringResource.GetLocalized("DeveloperFileExplorer_Header"), typeof(DeveloperFileExplorerViewModel).FullName!)
+            new(stringResource.GetLocalized("FileExplorer_Header"), typeof(FileExplorerViewModel).FullName!)
         ];
     }
 
     public bool ShowFileExtensions
     {
-        get => DeveloperFileExplorerSettings.ShowFileExtensionsEnabled();
+        get => FileExplorerSettings.ShowFileExtensionsEnabled();
         set
         {
             SettingChangedEvent.Log("ShowFileExtensions", value.ToString());
-            DeveloperFileExplorerSettings.SetShowFileExtensionsEnabled(value);
+            FileExplorerSettings.SetShowFileExtensionsEnabled(value);
         }
     }
 
     public bool ShowHiddenAndSystemFiles
     {
-        get => DeveloperFileExplorerSettings.ShowHiddenAndSystemFilesEnabled();
+        get => FileExplorerSettings.ShowHiddenAndSystemFilesEnabled();
         set
         {
             SettingChangedEvent.Log("ShowHiddenAndSystemFiles", value.ToString());
-            DeveloperFileExplorerSettings.SetShowHiddenAndSystemFilesEnabled(value);
+            FileExplorerSettings.SetShowHiddenAndSystemFilesEnabled(value);
         }
     }
 
     public bool ShowFullPathInTitleBar
     {
-        get => DeveloperFileExplorerSettings.ShowFullPathInTitleBarEnabled();
+        get => FileExplorerSettings.ShowFullPathInTitleBarEnabled();
         set
         {
             SettingChangedEvent.Log("ShowFullPathInTitleBar", value.ToString());
-            DeveloperFileExplorerSettings.SetShowFullPathInTitleBarEnabled(value);
+            FileExplorerSettings.SetShowFullPathInTitleBarEnabled(value);
         }
     }
 

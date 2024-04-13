@@ -18,7 +18,7 @@ public class InitializationViewModel : ObservableObject
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(InitializationViewModel));
 
     private readonly IThemeSelectorService _themeSelector;
-    private readonly IWidgetHostingService _widgetHostingService;
+    private readonly IWidgetServiceService _widgetServiceService;
     private readonly IAppInstallManagerService _appInstallManagerService;
     private readonly IPackageDeploymentService _packageDeploymentService;
 
@@ -35,12 +35,12 @@ public class InitializationViewModel : ObservableObject
 
     public InitializationViewModel(
         IThemeSelectorService themeSelector,
-        IWidgetHostingService widgetHostingService,
+        IWidgetServiceService widgetServiceService,
         IAppInstallManagerService appInstallManagerService,
         IPackageDeploymentService packageDeploymentService)
     {
         _themeSelector = themeSelector;
-        _widgetHostingService = widgetHostingService;
+        _widgetServiceService = widgetServiceService;
         _appInstallManagerService = appInstallManagerService;
         _packageDeploymentService = packageDeploymentService;
     }
@@ -50,16 +50,16 @@ public class InitializationViewModel : ObservableObject
         // Install the widget service if we're on Windows 10 and it's not already installed.
         try
         {
-            if (_widgetHostingService.CheckForWidgetServiceAsync())
+            if (_widgetServiceService.CheckForWidgetServiceAsync())
             {
                 _log.Information("Skipping installing WidgetService, already installed.");
             }
             else
             {
-                if (_widgetHostingService.GetWidgetServiceState() == WidgetHostingService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion)
+                if (_widgetServiceService.GetWidgetServiceState() == WidgetServiceService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion)
                 {
                     // We're on Windows 10 and don't have the widget service, try to install it.
-                    await _widgetHostingService.TryInstallingWidgetService();
+                    await _widgetServiceService.TryInstallingWidgetService();
                 }
             }
         }
