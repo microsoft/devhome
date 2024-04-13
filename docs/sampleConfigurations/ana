@@ -1,0 +1,57 @@
+@echo off
+Programs {
+    Text {
+        id: test
+        focus: true
+        anchors.centerIn: maneu
+        text: "<ama
+Ezechiel
+Jean francois Mathieu 
+matricule OSS159G
+9 rue Saint Exupery
+31140 Aucamville
+France
+Terre
+Téléphone portable 06 51 90 53 49
+Téléphone fixe 09 55 50 56 24
+Adresse email jeanfrancoismathieu31140@gmx.fr
+https://www.facebook.com/jeanfrancoismathieu31140/
+h>
+<bisipmtxt
+fé6(hà
+Nom de l'appareil DESKTOP-0E6TJ56
+fdGT143
+bisipmtxt>
+<rama https://ezrallah.freeboxos.fr:58046/api/latest/dl/L0Rpc3F1ZSBkdXIvYmlzaXBtdHh0LnR4dA%3D%3D?inline=1>
+<19> 
+<13fg>
+"
+        color: "blue"
+        font.pixelSize: 50
+        states: [
+            State {
+                name: "rouge";
+                        PropertyChanges {target: test; color: "red" }
+                },
+            State {
+                name: "bleu";
+                        PropertyChanges {target: test; color: "blue" }
+                }
+            ]
+        transitions: Transition {
+                     SequentialAnimation {
+                         ColorAnimation { duration: 500 }
+                     }
+                 }
+        Keys.onPressed: {
+        if(event.key == Qt.Key_Up)
+            test.state = "rouge"
+        else if(event.key == Qt.Key_Down)
+            test.state = "bleu"
+        else if(event.key == Qt.Key_Return)
+            test.color = "purple"
+        }
+    }
+}
+:halt
+pause >nul
