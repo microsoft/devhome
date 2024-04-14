@@ -13,7 +13,7 @@ public class ExperimentControlStyleBehavior : ExperimentControlBehavior
         set => SetValue(ExperimentStyleProperty, value);
     }
 
-    public static readonly DependencyProperty ExperimentStyleProperty = DependencyProperty.Register(nameof(ExperimentStyle), typeof(Style), typeof(ExperimentControlBehavior), new PropertyMetadata(null, OnExperimentChanged));
+    public static readonly DependencyProperty ExperimentStyleProperty = DependencyProperty.Register(nameof(ExperimentStyle), typeof(Style), typeof(ExperimentControlStyleBehavior), new PropertyMetadata(null, OnExperimentChanged));
 
     protected override void OnExperimentControlUpdate(bool isExperimentEnabled)
     {
