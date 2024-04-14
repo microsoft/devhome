@@ -12,7 +12,7 @@ public sealed partial class ExperimentControl : ContentControl
 {
     public ExperimentControl()
     {
-        this.InitializeComponent();
+        IsTabStop = false;
     }
 
     public string? ExperimentKey
@@ -46,8 +46,6 @@ public sealed partial class ExperimentControl : ContentControl
     private object GetContent()
     {
         var experimentationService = Application.Current.GetService<IExperimentationService>();
-        var isExperimentEnabled = !string.IsNullOrWhiteSpace(ExperimentKey) && experimentationService.IsExperimentEnabled(ExperimentKey);
-        isExperimentEnabled = isExperimentEnabled && false;
-        return isExperimentEnabled ? ExperimentContent : DefaultContent;
+        return experimentationService.IsExperimentEnabled(ExperimentKey) ? ExperimentContent : DefaultContent;
     }
 }

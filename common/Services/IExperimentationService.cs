@@ -10,9 +10,9 @@ public interface IExperimentationService
 {
     List<ExperimentalFeature> ExperimentalFeatures { get; }
 
-    bool IsFeatureEnabled(string key);
+    bool IsFeatureEnabled(string? key);
 
     void AddExperimentalFeature(ExperimentalFeature experimentalFeature);
 
-    bool IsExperimentEnabled(string key);
+    bool IsExperimentEnabled(string? key);
 }
