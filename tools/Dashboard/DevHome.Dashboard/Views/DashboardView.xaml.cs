@@ -403,11 +403,28 @@ public partial class DashboardView : ToolPage, IDisposable
             var size = WidgetHelpers.GetDefaultWidgetSize(defaultWidgetDefinition.GetWidgetCapabilities());
             var definitionId = defaultWidgetDefinition.Id;
             var unsafeWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(definitionId, size);
+            if (unsafeWidget == null)
+            {
+                // Fail silently, since this is only the default widget and not a response to user action.
+                return;
+            }
 
             var unsafeWidgetId = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
             if (unsafeWidgetId == string.Empty)
             {
-                _log.Error($"Couldn't get Widget.Id, can't create the widget: {unsafeWidgetId}");
+                _log.Error($"Couldn't get Widget.Id, can't create the widget");
+
+                // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
+                // Again, we can fail silently since this isn't in response to user action.
+                try
+                {
+                    await unsafeWidget.DeleteAsync();
+                }
+                catch (Exception)
+                {
+                    _log.Error($"Error deleting the widget that we couldn't create a ComSafeWidget for");
+                }
+
                 return;
             }
 
@@ -462,12 +479,30 @@ public partial class DashboardView : ToolPage, IDisposable
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(newWidgetDefinition.GetWidgetCapabilities());
                 var unsafeWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(newWidgetDefinition.Id, size);
+                if (unsafeWidget == null)
+                {
+                    // Couldn't create the widget, show an error message.
+                    await ShowCreateWidgetErrorMessage();
+                    return;
+                }
+
                 var unsafeWidgetId = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
                 if (unsafeWidgetId == string.Empty)
                 {
-                    // TODO: Show an error message if Widget creation fails
-                    // https://github.com/microsoft/devhome/issues/2623
-                    _log.Error($"Couldn't get Widget.Id, can't create the widget: {unsafeWidgetId}");
+                    _log.Error($"Couldn't get Widget.Id, can't create the widget");
+                    await ShowCreateWidgetErrorMessage();
+
+                    // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
+                    // We can try and catch silently, since the user already saw an error that the widget couldn't be created.
+                    try
+                    {
+                        await unsafeWidget.DeleteAsync();
+                    }
+                    catch (Exception)
+                    {
+                        _log.Error($"Error deleting the widget that we couldn't create a ComSafeWidget for");
+                    }
+
                     return;
                 }
 
@@ -485,14 +520,19 @@ public partial class DashboardView : ToolPage, IDisposable
             catch (Exception ex)
             {
                 _log.Warning(ex, $"Creating widget failed: ");
-                var mainWindow = Application.Current.GetService<WindowEx>();
-                var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-                await mainWindow.ShowErrorMessageDialogAsync(
-                    title: string.Empty,
-                    content: stringResource.GetLocalized("CouldNotCreateWidgetError"),
-                    buttonText: stringResource.GetLocalized("CloseButtonText"));
+                await ShowCreateWidgetErrorMessage();
             }
         }
+    }
+
+    private async Task ShowCreateWidgetErrorMessage()
+    {
+        var mainWindow = Application.Current.GetService<WindowEx>();
+        var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+        await mainWindow.ShowErrorMessageDialogAsync(
+            title: string.Empty,
+            content: stringResource.GetLocalized("CouldNotCreateWidgetError"),
+            buttonText: stringResource.GetLocalized("CloseButtonText"));
     }
 
     private async Task InsertWidgetInPinnedWidgetsAsync(ComSafeWidget widget, WidgetSize size, int index)
