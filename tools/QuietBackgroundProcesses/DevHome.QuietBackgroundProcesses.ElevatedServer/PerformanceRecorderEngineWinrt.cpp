@@ -216,7 +216,7 @@ namespace ABI::DevHome::QuietBackgroundProcesses
             if (m_context)
             {
                 // We have a live context, read performance data from it
-                THROW_IF_FAILED(GetMonitoringProcessUtilization(m_context.get(), summariesCoarray.addressof(), summariesCoarray.size_address()));
+                THROW_IF_FAILED(GetMonitoringProcessUtilization(m_context.get(), nullptr, summariesCoarray.addressof(), summariesCoarray.size_address()));
 
                 // Make span from cotaskmem_array
                 span = std::span<ProcessPerformanceSummary>{ summariesCoarray.get(), summariesCoarray.size() };
@@ -284,20 +284,14 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         {
             THROW_IF_FAILED(StopMonitoringProcessUtilization(m_context.get()));
 
-            if (result)
             {
-                wil::com_ptr<ProcessPerformanceTable> performanceTable;
-                THROW_IF_FAILED(Microsoft::WRL::MakeAndInitialize<ProcessPerformanceTable>(&performanceTable, std::move(m_context)));
-                *result = performanceTable.detach();
-            }
-            else
-            {
-                // No one (no client) is currently asking for the performance data (presumably Dev Home is closed) so write it to disk
+                // Get the performance data from the monitoring engine
+                std::chrono::milliseconds samplingPeriod;
                 wil::unique_cotaskmem_array_ptr<ProcessPerformanceSummary> summaries;
-                THROW_IF_FAILED(GetMonitoringProcessUtilization(m_context.get(), summaries.addressof(), summaries.size_address()));
-
-                // Write the performance .csv data to disk
+                THROW_IF_FAILED(GetMonitoringProcessUtilization(m_context.get(), &samplingPeriod, summaries.addressof(), summaries.size_address()));
                 std::span<ProcessPerformanceSummary> data(summaries.get(), summaries.size());
+
+                // Write the performance .csv data to disk (if Dev Home is closed, enables user to see the Analytic Summary later)
                 try
                 {
                     auto performanceDataFile = GetTemporaryPerformanceDataPath();
@@ -305,9 +299,24 @@ namespace ABI::DevHome::QuietBackgroundProcesses
                 }
                 CATCH_LOG();
 
-                // Destroy the performance engine instance
-                m_context.reset();
+                // Upload the performance data telemetry
+                try
+                {
+                    bool manuallyStopped = result != nullptr;
+                    UploadPerformanceDataTelemetry(samplingPeriod, data);
+                }
+                CATCH_LOG();
             }
+
+            if (result)
+            {
+                wil::com_ptr<ProcessPerformanceTable> performanceTable;
+                THROW_IF_FAILED(Microsoft::WRL::MakeAndInitialize<ProcessPerformanceTable>(&performanceTable, std::move(m_context)));
+                *result = performanceTable.detach();
+            }
+
+            // Destroy the performance engine instance
+            m_context.reset();
 
             return S_OK;
         }
