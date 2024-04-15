@@ -738,6 +738,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
+
     // An enum value that extensions will use in the ComputeSystemProperty to tell Dev Home if the property is
     // one of the predefined properties or a custom property. Dev Home will use this value as a way to keep
     // predefined types formatted the same in the UI across compute system providers. The custom enum value
