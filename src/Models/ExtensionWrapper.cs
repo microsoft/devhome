@@ -33,7 +33,9 @@ public class ExtensionWrapper : IExtensionWrapper
     public ExtensionWrapper(AppExtension appExtension, string classId)
     {
         PackageDisplayName = appExtension.Package.DisplayName;
-        ExtensionDisplayName = appExtension.DisplayName;
+
+        // ExtensionDisplayName = appExtension.DisplayName;
+        ExtensionDisplayName = "appExtension.DisplayName";
         PackageFullName = appExtension.Package.Id.FullName;
         PackageFamilyName = appExtension.Package.Id.FamilyName;
         ExtensionClassId = classId ?? throw new ArgumentNullException(nameof(classId));

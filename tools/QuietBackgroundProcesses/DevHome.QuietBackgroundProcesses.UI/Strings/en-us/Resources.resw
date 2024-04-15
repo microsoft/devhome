@@ -136,11 +136,11 @@
     <value>Search for a process</value>
     <comment>Label for analytic summary save report button</comment>
   </data>
-  <data name="AnalyticSummary_SaveReportButton.Text" xml:space="preserve">
+  <data name="AnalyticSummaryContentDialog.PrimaryButtonText" xml:space="preserve">
     <value>Save report</value>
     <comment>Label for analytic summary save report button</comment>
   </data>
-  <data name="AnalyticSummary_CloseButton.Text" xml:space="preserve">
+  <data name="AnalyticSummaryContentDialog.CloseButtonText" xml:space="preserve">
     <value>Close</value>
     <comment>Label for analytic summary close button</comment>
   </data>

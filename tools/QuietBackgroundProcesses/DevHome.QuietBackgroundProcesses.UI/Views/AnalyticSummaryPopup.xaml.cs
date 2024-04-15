@@ -1,14 +1,20 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.IO;
+using DevHome.Common.Extensions;
+using DevHome.Common.Windows.FileDialog;
 using DevHome.QuietBackgroundProcesses.UI.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using WinUIEx;
 
 namespace DevHome.QuietBackgroundProcesses.UI.Views;
 
 public sealed partial class AnalyticSummaryPopup : ContentDialog
 {
+    private readonly WindowEx _mainWindow;
+
     public AnalyticSummaryPopupViewModel ViewModel
     {
         get;
@@ -16,13 +22,22 @@ public sealed partial class AnalyticSummaryPopup : ContentDialog
 
     public AnalyticSummaryPopup(QuietBackgroundProcesses.ProcessPerformanceTable? performanceTable)
     {
+        _mainWindow = Application.Current.GetService<WindowEx>();
+
         ViewModel = new AnalyticSummaryPopupViewModel(performanceTable);
 
         this.InitializeComponent();
     }
 
-    private void CloseButton_Click(object sender, RoutedEventArgs e)
+    private void SaveReportButtonClicked(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        this.Hide();
+        using var fileDialog = new WindowSaveFileDialog();
+        fileDialog.AddFileType("CSV files", ".csv");
+
+        var filePath = fileDialog.Show(_mainWindow);
+        if (filePath != null)
+        {
+            ViewModel.SaveReport(filePath);
+        }
     }
 }

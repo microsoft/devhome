@@ -8,12 +8,8 @@ using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Collections;
-using DevHome.Common.Extensions;
-using DevHome.Common.Windows.FileDialog;
 using DevHome.Telemetry;
-using Microsoft.UI.Xaml;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
 
@@ -21,8 +17,6 @@ public partial class AnalyticSummaryPopupViewModel : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AnalyticSummaryPopupViewModel));
     private readonly List<ProcessData> _processDatas = new();
-    private readonly List<DevHome.QuietBackgroundProcesses.ProcessRow> _processDatas2 = new();
-    private readonly WindowEx _mainWindow;
 
     public int SortComboBoxIndex { get; set; }
 
@@ -36,8 +30,6 @@ public partial class AnalyticSummaryPopupViewModel : ObservableObject
     public AnalyticSummaryPopupViewModel(QuietBackgroundProcesses.ProcessPerformanceTable? performanceTable)
     {
         TelemetryFactory.Get<ITelemetry>().Log("QuietBackgroundProcesses_AnalyticSummary_Open", LogLevel.Info, new QuietBackgroundProcessesEvent());
-
-        _mainWindow = Application.Current.GetService<WindowEx>();
 
         try
         {
@@ -131,18 +123,8 @@ public partial class AnalyticSummaryPopupViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    public void SaveReportButtonClicked()
+    public void SaveReport(string filePath)
     {
-        using var fileDialog = new WindowSaveFileDialog();
-        fileDialog.AddFileType("CSV files", ".csv");
-
-        var filePath = fileDialog.Show(_mainWindow);
-        if (filePath == null)
-        {
-            return;
-        }
-
         // Save the report to a .csv
         using (StreamWriter writer = new StreamWriter(filePath))
         {
