@@ -61,12 +61,12 @@ public class ComSafeWidget
     /// <returns>The card template, or empty JSON in the case of failure.</returns>
     public async Task<string> GetCardTemplateAsync()
     {
-        await LazilyLoadOopWidget();
         var attempt = 0;
         while (attempt++ < MaxAttempts)
         {
             try
             {
+                await LazilyLoadOopWidget();
                 return await Task.Run(async () => await _oopWidget.GetCardTemplateAsync());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
@@ -90,12 +90,12 @@ public class ComSafeWidget
     /// <returns>The card data, or empty JSON in case of failure.</returns>
     public async Task<string> GetCardDataAsync()
     {
-        await LazilyLoadOopWidget();
         var attempt = 0;
         while (attempt++ < MaxAttempts)
         {
             try
             {
+                await LazilyLoadOopWidget();
                 return await Task.Run(async () => await _oopWidget.GetCardDataAsync());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
@@ -115,12 +115,12 @@ public class ComSafeWidget
 
     public async Task<string> GetCustomStateAsync()
     {
-        await LazilyLoadOopWidget();
         var attempt = 0;
         while (attempt++ < MaxAttempts)
         {
             try
             {
+                await LazilyLoadOopWidget();
                 return await Task.Run(async () => await _oopWidget.GetCustomStateAsync());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
@@ -144,12 +144,12 @@ public class ComSafeWidget
     /// <returns>The size of the widget. Returns WidgetSize.Medium in the case of failure.</returns>
     public async Task<WidgetSize> GetSizeAsync()
     {
-        await LazilyLoadOopWidget();
         var attempt = 0;
         while (attempt++ < MaxAttempts)
         {
             try
             {
+                await LazilyLoadOopWidget();
                 return await Task.Run(async () => await _oopWidget.GetSizeAsync());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
@@ -169,12 +169,12 @@ public class ComSafeWidget
 
     public async Task NotifyActionInvokedAsync(string verb, string data)
     {
-        await LazilyLoadOopWidget();
         var attempt = 0;
         while (attempt++ < MaxAttempts)
         {
             try
             {
+                await LazilyLoadOopWidget();
                 await Task.Run(async () => await _oopWidget.NotifyActionInvokedAsync(verb, data));
                 return;
             }
@@ -193,12 +193,12 @@ public class ComSafeWidget
 
     public async Task DeleteAsync()
     {
-        await LazilyLoadOopWidget();
         var attempt = 0;
         while (attempt++ < MaxAttempts)
         {
             try
             {
+                await LazilyLoadOopWidget();
                 await Task.Run(async () => await _oopWidget.DeleteAsync());
                 return;
             }
@@ -217,12 +217,12 @@ public class ComSafeWidget
 
     public async Task SetCustomStateAsync(string state)
     {
-        await LazilyLoadOopWidget();
         var attempt = 0;
         while (attempt++ < MaxAttempts)
         {
             try
             {
+                await LazilyLoadOopWidget();
                 await Task.Run(async () => await _oopWidget.SetCustomStateAsync(state));
                 return;
             }
@@ -241,12 +241,12 @@ public class ComSafeWidget
 
     public async Task SetSizeAsync(WidgetSize widgetSize)
     {
-        await LazilyLoadOopWidget();
         var attempt = 0;
         while (attempt++ < MaxAttempts)
         {
             try
             {
+                await LazilyLoadOopWidget();
                 await Task.Run(async () => await _oopWidget.SetSizeAsync(widgetSize));
                 return;
             }
@@ -265,12 +265,12 @@ public class ComSafeWidget
 
     public async Task NotifyCustomizationRequestedAsync()
     {
-        await LazilyLoadOopWidget();
         var attempt = 0;
         while (attempt++ < MaxAttempts)
         {
             try
             {
+                await LazilyLoadOopWidget();
                 await Task.Run(async () => await _oopWidget.NotifyCustomizationRequestedAsync());
                 return;
             }
