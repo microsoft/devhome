@@ -69,6 +69,11 @@ public class ComSafeWidget
                 await GetNewOopWidgetAsync();
                 return await _oopWidget.GetCardTemplateAsync();
             }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception getting card template from widget:");
+                return "{}";
+            }
         });
     }
 
@@ -86,6 +91,11 @@ public class ComSafeWidget
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
                 return await _oopWidget.GetCardDataAsync();
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception getting card data from widget:");
+                return "{}";
             }
         });
     }
@@ -105,6 +115,11 @@ public class ComSafeWidget
                 await GetNewOopWidgetAsync();
                 return await _oopWidget.GetCustomStateAsync();
             }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception getting custom state from widget:");
+                return string.Empty;
+            }
         });
     }
 
@@ -122,6 +137,11 @@ public class ComSafeWidget
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
                 return await _oopWidget.GetSizeAsync();
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception getting size from widget:");
+                return WidgetSize.Medium;
             }
         });
     }
@@ -141,6 +161,10 @@ public class ComSafeWidget
                 await GetNewOopWidgetAsync();
                 await _oopWidget.NotifyActionInvokedAsync(verb, data);
             }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception notifying action invoked on widget:");
+            }
         });
     }
 
@@ -158,6 +182,10 @@ public class ComSafeWidget
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
                 await _oopWidget.DeleteAsync();
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception deleting widget:");
             }
         });
     }
@@ -177,6 +205,10 @@ public class ComSafeWidget
                 await GetNewOopWidgetAsync();
                 await _oopWidget.SetCustomStateAsync(state);
             }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception setting custom state on widget:");
+            }
         });
     }
 
@@ -195,6 +227,10 @@ public class ComSafeWidget
                 await GetNewOopWidgetAsync();
                 await _oopWidget.SetSizeAsync(widgetSize);
             }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception setting size on widget:");
+            }
         });
     }
 
@@ -212,6 +248,10 @@ public class ComSafeWidget
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
                 await _oopWidget.NotifyCustomizationRequestedAsync();
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception notifying customization requested on widget:");
             }
         });
     }
