@@ -46,6 +46,7 @@ public sealed partial class ExperimentControl : ContentControl
     private object GetContent()
     {
         var experimentationService = Application.Current.GetService<IExperimentationService>();
-        return experimentationService.IsExperimentEnabled(ExperimentKey) ? ExperimentContent : DefaultContent;
+        var isExperimentEnabled = experimentationService.IsExperimentEnabled(ExperimentKey);
+        return isExperimentEnabled ? ExperimentContent : DefaultContent;
     }
 }
