@@ -97,7 +97,7 @@
                     <TextBlock Grid.Column="0" x:Uid="LoginUIDialogTitle" HorizontalAlignment="Left"
                        Style="{ThemeResource SubtitleTextBlockStyle}" 
                        Margin="16,10,0,0"/>
-                    <Button Command="{x:Bind AddRepoViewModel.CancelButtonPressedCommand, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowXButtonInLoginUi, Mode=OneWay}" Grid.Column="1" DataContext="{x:Bind}" Style="{ThemeResource AlternateCloseButtonStyle}" VerticalAlignment="Center">
+                    <Button Command="{x:Bind AddRepoViewModel.CancelButtonPressedCommand, Mode=OneWay}" Grid.Column="1" DataContext="{x:Bind}" Style="{ThemeResource AlternateCloseButtonStyle}" VerticalAlignment="Center">
                         <Button.Content>
                             <SymbolIcon Symbol="Cancel"/>
                         </Button.Content>

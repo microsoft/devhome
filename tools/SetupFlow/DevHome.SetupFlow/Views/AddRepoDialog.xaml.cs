@@ -165,79 +165,36 @@ public partial class AddRepoDialog : ContentDialog
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
-            // If the user is logging in, the close button text will change.
-            // Keep a copy of the original to revert when this button click is done.
-            var originalCloseButtonText = AddRepoContentDialog.CloseButtonText;
-
-            // Try to pair a provider with the repo to clone.
-            // If the repo is private or does not exist the user will be asked to log in.
-            AddRepoViewModel.ShouldShowLoginUi = true;
-            AddRepoViewModel.ShouldShowXButtonInLoginUi = true;
-
             // Get the number of repos already selected to clone in a previous instance.
             // Used to figure out if the repo was added after the user logged into an account.
             var numberOfReposToCloneCount = AddRepoViewModel.EverythingToClone.Count;
 
-            // Get deferral to prevent the dialog from closing when awaiting operations.
-            var deferral = args.GetDeferral();
+            // If the user is logging in, the close button text will change.
+            // Keep a copy of the original to revert when this button click is done.
+            var originalCloseButtonText = AddRepoContentDialog.CloseButtonText;
 
+            var deferral = args.GetDeferral();
             await AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
 
-            // On the first run, ignore any warnings.
-            // If this is set to visible and the user needs to log in they'll see an error message after the log-in
-            // prompt exits even if they logged in successfully.
-            AddRepoViewModel.ShouldShowUrlError = false;
+            _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+            {
+                AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
+            });
 
-            AddRepoViewModel.ShouldShowLoginUi = false;
-            AddRepoViewModel.ShouldShowXButtonInLoginUi = false;
-
-            // User cancelled the login prompt.  Don't re-check repo access.
-            if (AddRepoViewModel.IsCancelling)
+            // If the repo was not added.
+            if (numberOfReposToCloneCount == AddRepoViewModel.EverythingToClone.Count)
             {
                 _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
                 {
                     AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
                 });
-                AddRepoViewModel.IsLoggingIn = false;
-                AddRepoViewModel.IsCancelling = false;
+
+                AddRepoViewModel.ShouldEnablePrimaryButton = false;
                 args.Cancel = true;
                 deferral.Complete();
                 return;
             }
 
-            // If the repo was rejected and the user needed to sign in, no repos would've been added
-            // and the number of repos to clone will not be changed.
-            if (numberOfReposToCloneCount == AddRepoViewModel.EverythingToClone.Count)
-            {
-                AddRepoViewModel.ShouldShowLoginUi = true;
-                AddRepoViewModel.ShouldShowXButtonInLoginUi = true;
-                await AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
-                if (AddRepoViewModel.IsCancelling)
-                {
-                    _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
-                    {
-                        AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
-                    });
-                    AddRepoViewModel.IsLoggingIn = false;
-                    AddRepoViewModel.IsCancelling = false;
-                    args.Cancel = true;
-                    deferral.Complete();
-                    return;
-                }
-            }
-
-            if (AddRepoViewModel.ShouldShowUrlError)
-            {
-                AddRepoViewModel.ShouldEnablePrimaryButton = false;
-                args.Cancel = true;
-            }
-
-            // Revert the close button text.
-            AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
-            AddRepoViewModel.IsLoggingIn = false;
-            AddRepoViewModel.IsCancelling = false;
-            AddRepoViewModel.ShouldShowLoginUi = false;
-            AddRepoViewModel.ShouldShowXButtonInLoginUi = false;
             deferral.Complete();
         }
         else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
@@ -255,7 +212,7 @@ public partial class AddRepoDialog : ContentDialog
                 {
                     AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
                     AddRepoViewModel.IsLoggingIn = false;
-                    AddRepoViewModel.IsCancelling = false;
+                    AddRepoViewModel.IsCancelling = true;
                     AddRepoViewModel.ShouldShowLoginUi = false;
                     AddRepoViewModel.ShouldShowXButtonInLoginUi = false;
                 }
