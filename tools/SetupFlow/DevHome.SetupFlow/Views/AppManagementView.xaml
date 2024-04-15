@@ -77,7 +77,7 @@
                     </common:ExperimentControl.DefaultContent>
 
                     <common:ExperimentControl.ExperimentContent>
-                        <AutoSuggestBox x:Uid="SearchBox_Experiment" PlaceholderText="">
+                        <AutoSuggestBox x:Uid="SearchBox_Experiment">
                             <i:Interaction.Behaviors>
                                 <ic:EventTriggerBehavior EventName="TextChanged">
                                     <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchTextChangedCommand}" CommandParameter="{x:Bind Path=((AutoSuggestBox)SearchBox.Content).Text, Mode=OneWay}"/>
