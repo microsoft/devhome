@@ -10,7 +10,9 @@ using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Environments.Helpers;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
@@ -126,8 +128,40 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         Task.Run(async () =>
         {
             IsOperationInProgress = true;
-            await ComputeSystem!.ConnectAsync(string.Empty);
+
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_Launch_Event",
+                LogLevel.Critical,
+                new EnvironmentLaunchUserEvent(ComputeSystem!.AssociatedProviderId, EnvironmentsTelemetryStatus.Started));
+
+            var operationResult = await ComputeSystem!.ConnectAsync(string.Empty);
+
+            var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
+
+            if ((operationResult == null) || (operationResult.Result.Status == ProviderOperationStatus.Failure))
+            {
+                completionStatus = EnvironmentsTelemetryStatus.Failed;
+                LogFailure(operationResult);
+            }
+
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_Launch_Event",
+                LogLevel.Critical,
+                new EnvironmentLaunchUserEvent(ComputeSystem!.AssociatedProviderId, completionStatus));
+
             IsOperationInProgress = false;
         });
+    }
+
+    private void LogFailure(ComputeSystemOperationResult? computeSystemOperationResult)
+    {
+        if (computeSystemOperationResult == null)
+        {
+            _log.Error($"Launch operation failed for {ComputeSystem}. The ComputeSystemOperationResult was null");
+        }
+        else
+        {
+            _log.Error(computeSystemOperationResult.Result.ExtendedError, $"Launch operation failed for {ComputeSystem} error: {computeSystemOperationResult.Result.DiagnosticText}");
+        }
     }
 }
