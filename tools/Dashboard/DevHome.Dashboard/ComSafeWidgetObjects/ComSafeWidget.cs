@@ -41,6 +41,7 @@ public class ComSafeWidget
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComSafeWidget));
 
     private bool _hasValidProperties;
+    private const int MaxAttempts = 3;
 
     public ComSafeWidget(string widgetId)
     {
@@ -54,206 +55,231 @@ public class ComSafeWidget
         WidgetUpdated.Invoke(this, args);
     }
 
+    /// <summary>
+    /// Gets the card template from the widget. Tries multiple times in case of COM exceptions.
+    /// </summary>
+    /// <returns>The card template, or empty JSON in the case of failure.</returns>
     public async Task<string> GetCardTemplateAsync()
     {
-        return await Task.Run(async () =>
+        await LazilyLoadOopWidget();
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
-                await LazilyLoadOopWidget();
-                return await _oopWidget.GetCardTemplateAsync();
+                return await Task.Run(async () => await _oopWidget.GetCardTemplateAsync());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
-                return await _oopWidget.GetCardTemplateAsync();
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "Exception getting card template from widget:");
                 return "{}";
             }
-        });
+        }
+
+        return "{}";
     }
 
+    /// <summary>
+    /// Gets the card data from the widget. Tries multiple times in case of COM exceptions.
+    /// </summary>
+    /// <returns>The card data, or empty JSON in case of failure.</returns>
     public async Task<string> GetCardDataAsync()
     {
-        return await Task.Run(async () =>
+        await LazilyLoadOopWidget();
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
-                await LazilyLoadOopWidget();
-                return await _oopWidget.GetCardDataAsync();
+                return await Task.Run(async () => await _oopWidget.GetCardDataAsync());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
-                return await _oopWidget.GetCardDataAsync();
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Exception getting card data from widget:");
+                _log.Error(ex, "Exception getting card template from widget:");
                 return "{}";
             }
-        });
+        }
+
+        return "{}";
     }
 
     public async Task<string> GetCustomStateAsync()
     {
-        return await Task.Run(async () =>
+        await LazilyLoadOopWidget();
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
-                await LazilyLoadOopWidget();
-                return await _oopWidget.GetCustomStateAsync();
+                return await Task.Run(async () => await _oopWidget.GetCustomStateAsync());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
-                return await _oopWidget.GetCustomStateAsync();
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "Exception getting custom state from widget:");
                 return string.Empty;
             }
-        });
+        }
+
+        return string.Empty;
     }
 
+    /// <summary>
+    /// Gets the size of the widget. Tries multiple times in case of COM exceptions.
+    /// </summary>
+    /// <returns>The size of the widget. Returns WidgetSize.Medium in the case of failure.</returns>
     public async Task<WidgetSize> GetSizeAsync()
     {
-        return await Task.Run(async () =>
+        await LazilyLoadOopWidget();
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
-                await LazilyLoadOopWidget();
-                return await _oopWidget.GetSizeAsync();
+                return await Task.Run(async () => await _oopWidget.GetSizeAsync());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
-                return await _oopWidget.GetSizeAsync();
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "Exception getting size from widget:");
                 return WidgetSize.Medium;
             }
-        });
+        }
+
+        return WidgetSize.Medium;
     }
 
     public async Task NotifyActionInvokedAsync(string verb, string data)
     {
-        await Task.Run(async () =>
+        await LazilyLoadOopWidget();
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
-                await LazilyLoadOopWidget();
-                await _oopWidget.NotifyActionInvokedAsync(verb, data);
+                await Task.Run(async () => await _oopWidget.NotifyActionInvokedAsync(verb, data));
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
-                await _oopWidget.NotifyActionInvokedAsync(verb, data);
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Exception notifying action invoked on widget:");
+                _log.Error(ex, "Exception calling NotifyActionInvokedAsync on widget:");
+                return;
             }
-        });
+        }
     }
 
     public async Task DeleteAsync()
     {
-        await Task.Run(async () =>
+        await LazilyLoadOopWidget();
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
-                await LazilyLoadOopWidget();
-                await _oopWidget.DeleteAsync();
+                await Task.Run(async () => await _oopWidget.DeleteAsync());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
-                await _oopWidget.DeleteAsync();
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "Exception deleting widget:");
+                return;
             }
-        });
+        }
     }
 
     public async Task SetCustomStateAsync(string state)
     {
-        await Task.Run(async () =>
+        await LazilyLoadOopWidget();
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
-                await LazilyLoadOopWidget();
-                await _oopWidget.SetCustomStateAsync(state);
+                await Task.Run(async () => await _oopWidget.SetCustomStateAsync(state));
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
-                await _oopWidget.SetCustomStateAsync(state);
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "Exception setting custom state on widget:");
+                return;
             }
-        });
+        }
     }
 
     public async Task SetSizeAsync(WidgetSize widgetSize)
     {
-        await Task.Run(async () =>
+        await LazilyLoadOopWidget();
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
-                await LazilyLoadOopWidget();
-                await _oopWidget.SetSizeAsync(widgetSize);
+                await Task.Run(async () => await _oopWidget.SetSizeAsync(widgetSize));
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
-                await _oopWidget.SetSizeAsync(widgetSize);
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "Exception setting size on widget:");
+                return;
             }
-        });
+        }
     }
 
     public async Task NotifyCustomizationRequestedAsync()
     {
-        await Task.Run(async () =>
+        await LazilyLoadOopWidget();
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
-                await LazilyLoadOopWidget();
-                await _oopWidget.NotifyCustomizationRequestedAsync();
+                await Task.Run(async () => await _oopWidget.NotifyCustomizationRequestedAsync());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
                 await GetNewOopWidgetAsync();
-                await _oopWidget.NotifyCustomizationRequestedAsync();
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "Exception notifying customization requested on widget:");
+                return;
             }
-        });
+        }
     }
 
     // Not currently used.
@@ -272,7 +298,7 @@ public class ComSafeWidget
     private async Task LazilyLoadOopWidget()
     {
         var attempt = 0;
-        while (attempt++ < 3)
+        while (attempt++ < 3 && (_oopWidget == null || _hasValidProperties == false))
         {
             try
             {
