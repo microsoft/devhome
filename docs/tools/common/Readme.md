@@ -7,6 +7,10 @@ List of common controls that are generic, customizable and reusable from all pag
 
 ## Controls
 - [CloseButton](./CloseButton.md)
+- [ExperimentControl](./ExperimentControl.md)
+
+## Markup extensions
+- [StringResourceExtension](./StringResourceExtension.md)
 
 ## File dialog
 > [!NOTE]
