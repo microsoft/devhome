@@ -21,40 +21,30 @@ public class WidgetHostingService : IWidgetHostingService
     private const int RpcServerUnavailable = unchecked((int)0x800706BA);
     private const int RpcCallFailed = unchecked((int)0x800706BE);
 
+    private const int MaxAttempts = 3;
+
     /// <summary>
     /// Get the list of current widgets from the WidgetService.
     /// </summary>
     /// <returns>A list of widgets, or null if there were no widgets or the list could not be retrieved.</returns>
     public async Task<Widget[]> GetWidgetsAsync()
     {
-        // If we already have a WidgetHost, check if the OOP COM object is still alive and use it if it is.
-        if (_widgetHost != null)
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
+                _widgetHost ??= await Task.Run(() => WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031")));
                 return await Task.Run(() => _widgetHost.GetWidgets());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+
+                // Force getting a new WidgetHost before trying again. Also reset the WidgetCatalog,
+                // since if we lost the host we probably lost the catalog too.
                 _widgetHost = null;
-
-                // If the host died, the catalog probably did too.
                 _widgetCatalog = null;
-            }
-            catch (Exception ex)
-            {
-                _log.Error(ex, "Exception getting widgets from service:");
-            }
-        }
-
-        // If we lost the object, create a new one. This call will get the WidgetService back up and running.
-        if (_widgetHost == null)
-        {
-            try
-            {
-                _widgetHost = await Task.Run(() => WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031")));
-                return await Task.Run(() => _widgetHost.GetWidgets());
             }
             catch (Exception ex)
             {
@@ -68,36 +58,23 @@ public class WidgetHostingService : IWidgetHostingService
     /// <summary>
     /// Create and return a new widget.
     /// </summary>
-    /// <returns>The new widget, or null if one could ont be created.</returns>
+    /// <returns>The new widget, or null if one could not be created.</returns>
     public async Task<Widget> CreateWidgetAsync(string widgetDefinitionId, WidgetSize widgetSize)
     {
-        // If we already have a WidgetHost, check if the COM object is still alive and use it if it is.
-        if (_widgetHost != null)
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
+                _widgetHost ??= await Task.Run(() => WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031")));
                 return await Task.Run(async () => await _widgetHost.CreateWidgetAsync(widgetDefinitionId, widgetSize));
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+
                 _widgetHost = null;
-
-                // If the host died, the catalog probably did too.
                 _widgetCatalog = null;
-            }
-            catch (Exception ex)
-            {
-                _log.Error(ex, "Exception creating a widget:");
-            }
-        }
-
-        if (_widgetHost == null)
-        {
-            try
-            {
-                _widgetHost = await Task.Run(() => WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031")));
-                return await Task.Run(async () => await _widgetHost.CreateWidgetAsync(widgetDefinitionId, widgetSize));
             }
             catch (Exception ex)
             {
@@ -114,33 +91,30 @@ public class WidgetHostingService : IWidgetHostingService
     /// <returns>The catalog of widgets, or null if one could not be created.</returns>
     public async Task<WidgetCatalog> GetWidgetCatalogAsync()
     {
-        // If we already have a WidgetCatalog, check if the COM object is still alive and use it if it is.
-        if (_widgetCatalog != null)
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
+                _widgetCatalog ??= await Task.Run(() => WidgetCatalog.GetDefault());
+
                 // Need to use an arbitrary method to check if the COM object is still alive.
                 await Task.Run(() => _widgetCatalog.GetWidgetDefinition("fakeWidgetDefinitionId"));
+
+                // If the above call didn't throw, the object is still alive.
+                return _widgetCatalog;
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
-                _widgetCatalog = null;
 
-                // If the catalog died, the host probably did too.
                 _widgetHost = null;
-            }
-        }
-
-        if (_widgetCatalog == null)
-        {
-            try
-            {
-                _widgetCatalog = await Task.Run(() => WidgetCatalog.GetDefault());
+                _widgetCatalog = null;
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Exception in WidgetCatalog.GetDefault:");
+                _log.Error(ex, "Exception in GetWidgetDefinitionAsync:");
+                _widgetCatalog = null;
             }
         }
 
@@ -154,29 +128,22 @@ public class WidgetHostingService : IWidgetHostingService
     /// or the list could not be retrieved.</returns>
     public async Task<WidgetProviderDefinition[]> GetProviderDefinitionsAsync()
     {
-        // If we already have a WidgetCatalog, check if the COM object is still alive.
-        if (_widgetCatalog != null)
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
+                _widgetCatalog ??= await Task.Run(() => WidgetCatalog.GetDefault());
                 return await Task.Run(() => _widgetCatalog.GetProviderDefinitions());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
-                _widgetCatalog = null;
 
-                // If the catalog died, the host probably did too.
+                // Force getting a new WidgetCatalog before trying again. Also reset the WidgetHost,
+                // since if we lost the catalog we probably lost the host too.
                 _widgetHost = null;
-            }
-        }
-
-        if (_widgetCatalog == null)
-        {
-            try
-            {
-                _widgetCatalog = await Task.Run(() => WidgetCatalog.GetDefault());
-                return await Task.Run(() => _widgetCatalog.GetProviderDefinitions());
+                _widgetCatalog = null;
             }
             catch (Exception ex)
             {
@@ -194,29 +161,22 @@ public class WidgetHostingService : IWidgetHostingService
     /// or the list could not be retrieved.</returns>
     public async Task<WidgetDefinition[]> GetWidgetDefinitionsAsync()
     {
-        // If we already have a WidgetCatalog, check if the COM object is still alive.
-        if (_widgetCatalog != null)
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
+                _widgetCatalog ??= await Task.Run(() => WidgetCatalog.GetDefault());
                 return await Task.Run(() => _widgetCatalog.GetWidgetDefinitions());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
-                _widgetCatalog = null;
 
-                // If the catalog died, the host probably did too.
+                // Force getting a new WidgetCatalog before trying again. Also reset the WidgetHost,
+                // since if we lost the catalog we probably lost the host too.
                 _widgetHost = null;
-            }
-        }
-
-        if (_widgetCatalog == null)
-        {
-            try
-            {
-                _widgetCatalog = await Task.Run(() => WidgetCatalog.GetDefault());
-                return await Task.Run(() => _widgetCatalog.GetWidgetDefinitions());
+                _widgetCatalog = null;
             }
             catch (Exception ex)
             {
@@ -234,29 +194,22 @@ public class WidgetHostingService : IWidgetHostingService
     /// or there was an error retrieving it.</returns>
     public async Task<WidgetDefinition> GetWidgetDefinitionAsync(string widgetDefinitionId)
     {
-        // If we already have a WidgetCatalog, check if the COM object is still alive.
-        if (_widgetCatalog != null)
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
         {
             try
             {
+                _widgetCatalog ??= await Task.Run(() => WidgetCatalog.GetDefault());
                 return await Task.Run(() => _widgetCatalog.GetWidgetDefinition(widgetDefinitionId));
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
-                _widgetCatalog = null;
 
-                // If the catalog died, the host probably did too.
+                // Force getting a new WidgetCatalog before trying again. Also reset the WidgetHost,
+                // since if we lost the catalog we probably lost the host too.
                 _widgetHost = null;
-            }
-        }
-
-        if (_widgetCatalog == null)
-        {
-            try
-            {
-                _widgetCatalog = await Task.Run(() => WidgetCatalog.GetDefault());
-                return await Task.Run(() => _widgetCatalog.GetWidgetDefinition(widgetDefinitionId));
+                _widgetCatalog = null;
             }
             catch (Exception ex)
             {
