@@ -9,9 +9,6 @@ List of common controls that are generic, customizable and reusable from all pag
 - [CloseButton](./CloseButton.md)
 - [ExperimentControl](./ExperimentControl.md)
 
-## Markup extensions
-- [LocalizeExtension](./LocalizeExtension.md)
-
 ## File dialog
 > [!NOTE]
 > File picker fails when running the application as admin.
