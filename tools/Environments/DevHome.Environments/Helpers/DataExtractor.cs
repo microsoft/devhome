@@ -47,11 +47,11 @@ public class DataExtractor
             {
                 if (pinResultTaskbar.IsPinned)
                 {
-                    operations.Add(new OperationsViewModel("Unpin From Taskbar", "\uE74D", computeSystem.UnpinFromTaskbarAsync));
+                    operations.Add(new OperationsViewModel("Unpin From Taskbar", "\uE77A", computeSystem.UnpinFromTaskbarAsync));
                 }
                 else
                 {
-                    operations.Add(new OperationsViewModel("Pin To Taskbar", "\uE74D", computeSystem.PinToTaskbarAsync));
+                    operations.Add(new OperationsViewModel("Pin To Taskbar", "\uE718", computeSystem.PinToTaskbarAsync));
                 }
             }
         }
@@ -63,11 +63,11 @@ public class DataExtractor
             {
                 if (pinResultStartMenu.IsPinned)
                 {
-                    operations.Add(new OperationsViewModel("Unpin From Start Menu", "\uE74D", computeSystem.UnpinFromStartMenuAsync));
+                    operations.Add(new OperationsViewModel("Unpin From Start Menu", "\uE77A", computeSystem.UnpinFromStartMenuAsync));
                 }
                 else
                 {
-                    operations.Add(new OperationsViewModel("Pin To Start Menu", "\uE74D", computeSystem.PinToStartMenuAsync));
+                    operations.Add(new OperationsViewModel("Pin To Start Menu", "\uE718", computeSystem.PinToStartMenuAsync));
                 }
             }
         }
