@@ -176,6 +176,7 @@ public class ComSafeWidget
             try
             {
                 await Task.Run(async () => await _oopWidget.NotifyActionInvokedAsync(verb, data));
+                return;
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
@@ -199,6 +200,7 @@ public class ComSafeWidget
             try
             {
                 await Task.Run(async () => await _oopWidget.DeleteAsync());
+                return;
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
@@ -222,6 +224,7 @@ public class ComSafeWidget
             try
             {
                 await Task.Run(async () => await _oopWidget.SetCustomStateAsync(state));
+                return;
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
@@ -245,6 +248,7 @@ public class ComSafeWidget
             try
             {
                 await Task.Run(async () => await _oopWidget.SetSizeAsync(widgetSize));
+                return;
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
@@ -268,6 +272,7 @@ public class ComSafeWidget
             try
             {
                 await Task.Run(async () => await _oopWidget.NotifyCustomizationRequestedAsync());
+                return;
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
