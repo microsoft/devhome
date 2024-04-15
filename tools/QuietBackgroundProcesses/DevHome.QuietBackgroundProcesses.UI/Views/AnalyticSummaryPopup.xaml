@@ -12,7 +12,7 @@
     PrimaryButtonClick="SaveReportButtonClicked"
     Style="{StaticResource DefaultContentDialogStyle}">
 
-    <Grid Height="480" Width="500">
+    <Grid Height="480" Width="600">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -27,7 +27,8 @@
             <TextBlock
                 x:Uid="AnalyticSummary_Description"
                 HorizontalAlignment="Left"
-                Margin="16,10,0,0" />
+                TextWrapping="Wrap"
+                Margin="16,10,100,0" />
 
             <!-- Filters & sorting -->
             <Grid Margin="15 40 15 5">
@@ -60,7 +61,7 @@
                     Grid.Column="2"
                     x:Uid="AnalyticSummary_FilterProcesses_PlaceholderText"
                     x:Name="FilterTextBox"
-                    Margin="50 0 0 0">
+                    Margin="30 0 100 0">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="TextChanged">
                             <ic:InvokeCommandAction
@@ -72,7 +73,7 @@
             </Grid>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0 20 0 0">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0 20 100 0">
             <local:ProcessPerformanceTableControl x:Name="processListControl" ItemsSource="{x:Bind ViewModel.ProcessDatasAd}" />
         </ScrollViewer>
     </Grid>

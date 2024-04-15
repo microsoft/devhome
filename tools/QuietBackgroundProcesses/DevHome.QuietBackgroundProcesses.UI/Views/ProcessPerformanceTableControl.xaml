@@ -37,15 +37,15 @@
                     </Grid.RowDefinitions>
                     
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="180" />
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="200" />
                     </Grid.ColumnDefinitions>
                     
                     <Border Grid.Column="0" Style="{StaticResource BorderStyle}">
                         <TextBlock
                             x:Uid="ProcessPerformanceTableControl_Heading_Process"
-                            Padding="10 0 0 0"
+                            Padding="20 0 0 0"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             HorizontalTextAlignment="Left" />
@@ -53,7 +53,7 @@
                     <Border Grid.Column="1" Style="{StaticResource BorderStyle}">
                         <TextBlock
                             x:Uid="ProcessPerformanceTableControl_Heading_ProcessType"
-                            Margin="20 0 0 0"
+                            Margin="40 0 0 0"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             HorizontalTextAlignment="Left" />
@@ -61,7 +61,7 @@
                     <Border Grid.Column="2" Grid.ColumnSpan="2" Style="{StaticResource BorderStyle}">
                         <TextBlock
                             x:Uid="ProcessPerformanceTableControl_Heading_CpuAboveThreshold"
-                            Margin="20 0 0 0"
+                            Margin="40 0 0 0"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             HorizontalTextAlignment="Left"
@@ -74,9 +74,9 @@
                 <DataTemplate x:DataType="local:ProcessData">
                     <Grid ColumnSpacing="5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="130" />
+                            <ColumnDefinition Width="200" />
                         </Grid.ColumnDefinitions>
 
                         <Border Grid.Column="0" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 0">
