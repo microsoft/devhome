@@ -76,10 +76,10 @@
     x86 binaries can be deployed on both x64 and x86 VMs.
     -->
   <ItemGroup>
-    <None Include="..\DevSetupAgent\bin\x86\$(Configuration)\DevSetupAgent_x86.zip" Condition="('$(Platform)'=='x64' or '$(Platform)'=='x86') and ('$(BuildingInsideVisualStudio)' != 'True' or Exists('..\HyperVExtension\src\DevSetupAgent\bin\x86\$(Configuration)\DevSetupAgent_x86.zip'))">
+    <None Include="..\DevSetupAgent\bin\x86\$(Configuration)\DevSetupAgent_x86.zip" Condition="('$(Platform)'=='x64' or '$(Platform)'=='x86') and ('$(BuildingInsideVisualStudio)' != 'True' or Exists('..\HyperVExtension\src\DevSetupAgent\bin\x86\$(Configuration)\DevSetupAgent_x86.zip')) and ('$(IgnoreZipPackages)' != 'True')">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\DevSetupAgent\bin\arm64\$(Configuration)\DevSetupAgent_arm64.zip" Condition="'$(Platform)'=='arm64' and ('$(BuildingInsideVisualStudio)' != 'True' or Exists('..\HyperVExtension\src\DevSetupAgent\bin\arm64\$(Configuration)\DevSetupAgent_arm64.zip'))">
+    <None Include="..\DevSetupAgent\bin\arm64\$(Configuration)\DevSetupAgent_arm64.zip" Condition="'$(Platform)'=='arm64' and ('$(BuildingInsideVisualStudio)' != 'True' or Exists('..\HyperVExtension\src\DevSetupAgent\bin\arm64\$(Configuration)\DevSetupAgent_arm64.zip')) and ('$(IgnoreZipPackages)' != 'True')">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
