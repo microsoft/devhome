@@ -25,9 +25,9 @@ public class ExperimentationService : IExperimentationService
         TelemetryFactory.Get<ITelemetry>().Log("Seeker_Event", LogLevel.Critical, new SeekerEvent(isSeeker));
     }
 
-    public bool IsFeatureEnabled(string? key)
+    public bool IsFeatureEnabled(string key)
     {
-        return !string.IsNullOrWhiteSpace(key) && (ExperimentalFeatures.FirstOrDefault(f => f.Id == key)?.IsEnabled ?? false);
+        return ExperimentalFeatures.FirstOrDefault(f => f.Id == key)?.IsEnabled ?? false;
     }
 
     public void AddExperimentalFeature(ExperimentalFeature experimentalFeature)
@@ -35,8 +35,8 @@ public class ExperimentationService : IExperimentationService
         ExperimentalFeatures.Add(experimentalFeature);
     }
 
-    public bool IsExperimentEnabled(string? key)
+    public bool IsExperimentEnabled(string key)
     {
-        return !string.IsNullOrWhiteSpace(key) && _experimentHelper.IsEnabled(key);
+        return _experimentHelper.IsEnabled(key);
     }
 }
