@@ -100,6 +100,30 @@ public partial class DashboardView : ToolPage, IDisposable
         return true;
     }
 
+    private async Task UnsubscribeFromWidgetCatalogEventsAsync()
+    {
+        _log.Information("UnsubscribeFromWidgetCatalogEvents");
+
+        try
+        {
+            var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+            if (widgetCatalog == null)
+            {
+                return;
+            }
+
+            widgetCatalog!.WidgetProviderDefinitionAdded -= WidgetCatalog_WidgetProviderDefinitionAdded;
+            widgetCatalog!.WidgetProviderDefinitionDeleted -= WidgetCatalog_WidgetProviderDefinitionDeleted;
+            widgetCatalog!.WidgetDefinitionAdded -= WidgetCatalog_WidgetDefinitionAdded;
+            widgetCatalog!.WidgetDefinitionUpdated -= WidgetCatalog_WidgetDefinitionUpdated;
+            widgetCatalog!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Exception in UnsubscribeFromWidgetCatalogEventsAsync:");
+        }
+    }
+
     private async void HandleRendererUpdated(object sender, object args)
     {
         // Re-render the widgets with the new theme and renderer.
@@ -122,14 +146,30 @@ public partial class DashboardView : ToolPage, IDisposable
 
         _log.Debug($"Leaving Dashboard, deactivating widgets.");
 
-        await Task.Run(() => UnsubscribeFromWidgets());
+        try
+        {
+            await Task.Run(() => UnsubscribeFromWidgets());
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Exception in UnsubscribeFromWidgets:");
+        }
+
+        await UnsubscribeFromWidgetCatalogEventsAsync();
     }
 
     private void UnsubscribeFromWidgets()
     {
-        foreach (var widget in PinnedWidgets)
+        try
         {
-            widget.UnsubscribeFromWidgetUpdates();
+            foreach (var widget in PinnedWidgets)
+            {
+                widget.UnsubscribeFromWidgetUpdates();
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Exception in UnsubscribeFromWidgets:");
         }
     }
 
@@ -199,8 +239,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private async Task<Widget[]> GetPreviouslyPinnedWidgets()
     {
         _log.Information("Get widgets for current host");
-        var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
-        var hostWidgets = await Task.Run(() => widgetHost?.GetWidgets());
+        var hostWidgets = await ViewModel.WidgetHostingService.GetWidgetsAsync();
 
         if (hostWidgets == null)
         {
@@ -219,7 +258,6 @@ public partial class DashboardView : ToolPage, IDisposable
         var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
         var numUnorderedWidgets = 0;
 
-        var catalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
         var pinnedSingleInstanceWidgets = new List<string>();
 
         _log.Information($"Restore pinned widgets");
@@ -252,8 +290,13 @@ public partial class DashboardView : ToolPage, IDisposable
 
                 // Ensure only one copy of a widget is pinned if that widget's definition only allows for one instance.
                 var widgetDefinitionId = widget.DefinitionId;
-                var widgetDefinition = await Task.Run(() => catalog?.GetWidgetDefinition(widgetDefinitionId));
-                if (widgetDefinition?.AllowMultiple == false)
+                var widgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
+                if (widgetDefinition == null)
+                {
+                    await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
+                }
+
+                if (widgetDefinition.AllowMultiple == false)
                 {
                     if (pinnedSingleInstanceWidgets.Contains(widgetDefinitionId))
                     {
@@ -315,30 +358,21 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private async Task DeleteAbandonedWidgetAsync(Widget widget)
     {
-        var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
-
-        var length = await Task.Run(() => widgetHost!.GetWidgets().Length);
+        var widgetList = await ViewModel.WidgetHostingService.GetWidgetsAsync();
+        var length = widgetList.Length;
         _log.Information($"Found abandoned widget, try to delete it...");
         _log.Information($"Before delete, {length} widgets for this host");
 
         await widget.DeleteAsync();
 
-        var newWidgetList = await Task.Run(() => widgetHost.GetWidgets());
+        var newWidgetList = await ViewModel.WidgetHostingService.GetWidgetsAsync();
         length = (newWidgetList == null) ? 0 : newWidgetList.Length;
         _log.Information($"After delete, {length} widgets for this host");
     }
 
     private async Task PinDefaultWidgetsAsync()
     {
-        var catalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
-
-        if (catalog is null)
-        {
-            _log.Error($"Trying to pin default widgets, but WidgetCatalog is null.");
-            return;
-        }
-
-        var widgetDefinitions = await Task.Run(() => catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle));
+        var widgetDefinitions = (await ViewModel.WidgetHostingService.GetWidgetDefinitionsAsync()).OrderBy(x => x.DisplayTitle);
         foreach (var widgetDefinition in widgetDefinitions)
         {
             var id = widgetDefinition.Id;
@@ -355,10 +389,9 @@ public partial class DashboardView : ToolPage, IDisposable
         try
         {
             // Create widget
-            var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
             var size = WidgetHelpers.GetDefaultWidgetSize(defaultWidgetDefinition.GetWidgetCapabilities());
             var id = defaultWidgetDefinition.Id;
-            var newWidget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(id, size));
+            var newWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(id, size);
             _log.Information($"Created default widget {id}");
 
             // Set custom state on new widget.
@@ -409,8 +442,7 @@ public partial class DashboardView : ToolPage, IDisposable
             try
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(newWidgetDefinition.GetWidgetCapabilities());
-                var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
-                newWidget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(newWidgetDefinition.Id, size));
+                newWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(newWidgetDefinition.Id, size);
 
                 // Set custom state on new widget.
                 var position = PinnedWidgets.Count;
@@ -440,8 +472,7 @@ public partial class DashboardView : ToolPage, IDisposable
         {
             var widgetDefinitionId = widget.DefinitionId;
             var widgetId = widget.Id;
-            var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
-            var widgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(widgetDefinitionId));
+            var widgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
 
             if (widgetDefinition != null)
             {
@@ -469,19 +500,24 @@ public partial class DashboardView : ToolPage, IDisposable
             }
             else
             {
-                // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
-                _log.Information($"No widget definition '{widgetDefinitionId}', delete widget {widgetId} with that definition");
-                try
-                {
-                    await widget.SetCustomStateAsync(string.Empty);
-                    await widget.DeleteAsync();
-                }
-                catch (Exception ex)
-                {
-                    _log.Information(ex, $"Error deleting widget");
-                }
+                await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
             }
         });
+    }
+
+    private async Task DeleteWidgetWithNoDefinition(Widget widget, string widgetDefinitionId)
+    {
+        // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
+        _log.Information($"No widget definition '{widgetDefinitionId}', delete widget with that definition");
+        try
+        {
+            await widget.SetCustomStateAsync(string.Empty);
+            await widget.DeleteAsync();
+        }
+        catch (Exception ex)
+        {
+            _log.Information(ex, $"Error deleting widget");
+        }
     }
 
     private void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args) =>
