@@ -1,4 +1,4 @@
-# String resource extension
+# Localize extension
 This markup extension allows to bind a string resource to a control's property.
 
 ## Example
@@ -8,7 +8,7 @@ This markup extension allows to bind a string resource to a control's property.
   xmlns:mu="using:DevHome.Common.Markups">
 
   <!-- Localized add button: [ Add ] -->
-  <Button Content="{mu:StringResource Name=AddApplication, Source=SetupFlow}" />
+  <Button Content="{mu:Localize Name=AddApplication, Source=SetupFlow}" />
 
 </UserControl
 ```

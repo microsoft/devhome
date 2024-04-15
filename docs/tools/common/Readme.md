@@ -10,7 +10,7 @@ List of common controls that are generic, customizable and reusable from all pag
 - [ExperimentControl](./ExperimentControl.md)
 
 ## Markup extensions
-- [StringResourceExtension](./StringResourceExtension.md)
+- [LocalizeExtension](./LocalizeExtension.md)
 
 ## File dialog
 > [!NOTE]

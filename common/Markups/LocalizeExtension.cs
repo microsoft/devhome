@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml.Markup;
 namespace DevHome.Common.Markups;
 
 [MarkupExtensionReturnType(ReturnType = typeof(string))]
-public sealed class StringResourceExtension : MarkupExtension
+public sealed class LocalizeExtension : MarkupExtension
 {
     // TODO https://github.com/microsoft/devhome/issues/1288
     private static readonly Lazy<StringResource> _stringResourceSetupFlow = new(() => new StringResource("DevHome.SetupFlow.pri", "DevHome.SetupFlow/Resources"));
