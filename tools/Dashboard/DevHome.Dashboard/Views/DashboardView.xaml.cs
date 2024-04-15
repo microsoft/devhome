@@ -359,7 +359,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private async Task DeleteAbandonedWidgetAsync(Widget widget)
     {
         var widgetList = await ViewModel.WidgetHostingService.GetWidgetsAsync();
-        var length = await Task.Run(() => widgetList.Length);
+        var length = widgetList.Length;
         _log.Information($"Found abandoned widget, try to delete it...");
         _log.Information($"Before delete, {length} widgets for this host");
 
