@@ -33,8 +33,6 @@ public sealed partial class QuietBackgroundProcessesView : UserControl
         var analyticSummaryPopup = new AnalyticSummaryPopup(ViewModel.GetProcessPerformanceTable());
         analyticSummaryPopup.XamlRoot = this.Content.XamlRoot;
         analyticSummaryPopup.RequestedTheme = this.ActualTheme;
-        analyticSummaryPopup.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-        analyticSummaryPopup.DefaultButton = ContentDialogButton.Primary;
         await analyticSummaryPopup.ShowAsync();
     }
 }

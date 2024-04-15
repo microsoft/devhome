@@ -26,6 +26,8 @@ public sealed partial class AnalyticSummaryPopup : ContentDialog
 
         ViewModel = new AnalyticSummaryPopupViewModel(performanceTable);
 
+        this.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+        this.DefaultButton = ContentDialogButton.Primary;
         this.InitializeComponent();
     }
 
