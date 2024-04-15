@@ -84,12 +84,14 @@ private:
 
     void TimerThread()
     {
-        // Pause until timer expired or cancelled
-        auto lock = std::unique_lock<std::mutex>(m_mutex);
+		{
+            // Pause until timer expired or cancelled
+            auto lock = std::unique_lock<std::mutex>(m_mutex);
 
-        m_cancelCondition.wait_for(lock, m_duration, [this] {
-            return this->m_cancelled;
-        });
+            m_cancelCondition.wait_for(lock, m_duration, [this] {
+                return this->m_cancelled;
+            });
+        }
 
         // Do the callback
         if (!this->m_cancelled)
