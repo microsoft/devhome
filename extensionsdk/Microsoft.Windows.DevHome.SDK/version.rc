@@ -1,8 +1,8 @@
 #include "winres.h"
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0
- PRODUCTVERSION 1,0,0
+ FILEVERSION VERSION_COMMAS
+ PRODUCTVERSION VERSION_COMMAS
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -19,9 +19,9 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Microsoft Corporation"
             VALUE "FileDescription", "Microsoft.Windows.DevHome.SDK" 
-            VALUE "FileVersion", "1.0.0"
+            VALUE "FileVersion", VERSION_NUMBER
             VALUE "ProductName", "Microsoft.Windows.DevHome.SDK"
-            VALUE "ProductVersion", "1.0.0"
+            VALUE "ProductVersion", VERSION_NUMBER
             VALUE "LegalCopyright", "Copyright (c) Microsoft Corporation"
         END
     END
