@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Services;
 using DevHome.Environments.ViewModels;
 using Microsoft.Windows.DevHome.SDK;
 
@@ -11,6 +12,8 @@ namespace DevHome.Environments.Helpers;
 
 public class DataExtractor
 {
+    private static StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
+
     /// <summary>
     /// Checks for supported operations and adds the text, icon, and function associated with the operation.
     /// Returns the list of operations to be added to the dot button.
@@ -47,11 +50,13 @@ public class DataExtractor
             {
                 if (pinResultTaskbar.IsPinned)
                 {
-                    operations.Add(new OperationsViewModel("Unpin From Taskbar", "\uE77A", computeSystem.UnpinFromTaskbarAsync));
+                    var itemText = _stringResource.GetLocalized("UnpinFromTaskbarButtonContextMenuItem");
+                    operations.Add(new OperationsViewModel(itemText, "\uE77A", computeSystem.UnpinFromTaskbarAsync));
                 }
                 else
                 {
-                    operations.Add(new OperationsViewModel("Pin To Taskbar", "\uE718", computeSystem.PinToTaskbarAsync));
+                    var itemText = _stringResource.GetLocalized("PinToTaskbarButtonContextMenuItem");
+                    operations.Add(new OperationsViewModel(itemText, "\uE718", computeSystem.PinToTaskbarAsync));
                 }
             }
         }
@@ -63,16 +68,17 @@ public class DataExtractor
             {
                 if (pinResultStartMenu.IsPinned)
                 {
-                    operations.Add(new OperationsViewModel("Unpin From Start Menu", "\uE77A", computeSystem.UnpinFromStartMenuAsync));
+                    var itemText = _stringResource.GetLocalized("UnpinFromStartButtonContextMenuItem");
+                    operations.Add(new OperationsViewModel(itemText, "\uE77A", computeSystem.UnpinFromStartMenuAsync));
                 }
                 else
                 {
-                    operations.Add(new OperationsViewModel("Pin To Start Menu", "\uE718", computeSystem.PinToStartMenuAsync));
+                    var itemText = _stringResource.GetLocalized("PinToStartButtonContextMenuItem");
+                    operations.Add(new OperationsViewModel(itemText, "\uE718", computeSystem.PinToStartMenuAsync));
                 }
             }
         }
 
-        // TODO: _log.Error($"Failed to get state for {ComputeSystem.DisplayName} due to {result.Result.DiagnosticText}");
         return operations;
     }
 

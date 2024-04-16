@@ -79,7 +79,7 @@
     <comment>Text for pause button in the context menu that will pause the virtual machine.</comment>
   </data>
   <data name="PinToStartButtonContextMenuItem" xml:space="preserve">
-    <value>Add to Start</value>
+    <value>Pin to Start Menu</value>
     <comment>Text that will pin a virtual machine's launcher app to the Start menu.</comment>
   </data>
   <data name="PinToTaskbarButtonContextMenuItem" xml:space="preserve">
@@ -217,5 +217,11 @@
   <data name="EnvironmentsToManageHeader.Text" xml:space="preserve">
     <value>Manage environments:</value>
     <comment>Header text for the cards that in the UI that are not being created.</comment>
+  </data>
+  <data name="UnpinFromStartButtonContextMenuItem" xml:space="preserve">
+    <value>Unpin From Start Menu</value>
+  </data>
+  <data name="UnpinFromTaskbarButtonContextMenuItem" xml:space="preserve">
+    <value>Unpin From Taskbar</value>
   </data>
 </root>

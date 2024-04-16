@@ -72,9 +72,10 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         await InitializeStateAsync();
         await SetBodyImageAsync();
         await SetPropertiesAsync();
+        await InitializePinDataAsync();
     }
 
-    public async Task InitializePinDataAsync()
+    private async Task InitializePinDataAsync()
     {
         // We know ComputeSystem and DotOperations are initialized in the constructor so it's safe to use
         var operations = new ObservableCollection<OperationsViewModel>(await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem!));

@@ -290,7 +290,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                         packageFullName,
                         _windowEx);
                     await computeSystemViewModel.InitializeCardDataAsync();
-                    await computeSystemViewModel.InitializePinDataAsync();
                     ComputeSystemCards.Add(computeSystemViewModel);
                 }
             }
