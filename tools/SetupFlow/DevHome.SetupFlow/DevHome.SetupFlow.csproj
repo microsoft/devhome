@@ -82,7 +82,6 @@
     <None Remove="Styles\AppManagement_ThemeResources.xaml" />
     <None Remove="Styles\SetupFlowStyles.xaml" />
     <None Remove="Styles\SetupFlow_ThemeResources.xaml" />
-    <None Remove="Styles\SetupToolStyles.xaml" />
     <None Remove="Views\AddRepoDialog.xaml" />
     <None Remove="Views\CloneRepoSummaryInformationView.xaml" />
     <None Remove="Views\DevDriveReviewView.xaml" />
@@ -121,11 +120,6 @@
     </Page>
     <Page Update="SetupFlowPage.xaml">
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Styles\SetupToolStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\AddRepoDialog.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -34,8 +34,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Views\DeveloperFileExplorerPage.xaml" />
-    <None Remove="Views\DeveloperFileExplorerView.xaml" />
+    <None Remove="Views\FileExplorerPage.xaml" />
+    <None Remove="Views\FileExplorerView.xaml" />
     <None Remove="Views\DevDriveInsightsPage.xaml" />
     <None Remove="Views\DevDriveInsightsView.xaml" />
     <None Remove="Views\MainPage.xaml" />
@@ -44,11 +44,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Views\DeveloperFileExplorerPage.xaml">
+    <Page Update="Views\FileExplorerPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Views\DeveloperFileExplorerView.xaml">
+    <Page Update="Views\FileExplorerView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>

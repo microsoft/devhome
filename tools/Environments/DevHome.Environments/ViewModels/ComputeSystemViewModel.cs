@@ -10,13 +10,14 @@ using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Environments.Helpers;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using WinUIEx;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -147,6 +148,26 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         // We'll need to disable the card UI while the operation is in progress and handle failures.
         Task.Run(async () =>
         {
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_Launch_Event",
+                LogLevel.Critical,
+                new EnvironmentLaunchUserEvent(ComputeSystem!.AssociatedProviderId, EnvironmentsTelemetryStatus.Started));
+
+            var operationResult = await ComputeSystem!.ConnectAsync(string.Empty);
+
+            var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
+
+            if ((operationResult == null) || (operationResult.Result.Status == ProviderOperationStatus.Failure))
+            {
+                completionStatus = EnvironmentsTelemetryStatus.Failed;
+                LogFailure(operationResult);
+            }
+
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_Launch_Event",
+                LogLevel.Critical,
+                new EnvironmentLaunchUserEvent(ComputeSystem!.AssociatedProviderId, completionStatus));
+
             await ComputeSystem!.ConnectAsync(string.Empty);
         });
     }
@@ -158,5 +179,17 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
             _removalAction(this);
             RemoveStateChangedHandler();
         });
+    }
+
+    private void LogFailure(ComputeSystemOperationResult? computeSystemOperationResult)
+    {
+        if (computeSystemOperationResult == null)
+        {
+            _log.Error($"Launch operation failed for {ComputeSystem}. The ComputeSystemOperationResult was null");
+        }
+        else
+        {
+            _log.Error(computeSystemOperationResult.Result.ExtendedError, $"Launch operation failed for {ComputeSystem} error: {computeSystemOperationResult.Result.DiagnosticText}");
+        }
     }
 }

@@ -11,7 +11,7 @@ public static class PageExtensions
 {
     public static void ConfigureCustomizationPages(this IPageService pageService)
     {
-        pageService.Configure<DeveloperFileExplorerViewModel, DeveloperFileExplorerPage>();
+        pageService.Configure<FileExplorerViewModel, FileExplorerPage>();
         pageService.Configure<DevDriveInsightsViewModel, DevDriveInsightsPage>();
     }
 }

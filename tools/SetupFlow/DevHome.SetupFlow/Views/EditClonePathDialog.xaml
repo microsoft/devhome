@@ -18,7 +18,6 @@
     <ContentDialog.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupToolStyles.xaml" />
                 <ResourceDictionary>
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
                 </ResourceDictionary>

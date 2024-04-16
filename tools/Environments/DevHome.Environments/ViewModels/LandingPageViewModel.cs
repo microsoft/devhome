@@ -33,7 +33,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly WindowEx _windowEx;
 
-    private readonly EnvironmentsExtensionsService _extensionsService;
+    private readonly EnvironmentsExtensionsService _environmentExtensionsService;
 
     private readonly NotificationService _notificationService;
 
@@ -72,6 +72,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
+    [ObservableProperty]
+    private bool _shouldShowCreateEnvironmentButton;
+
     public ObservableCollection<string> Providers { get; set; }
 
     private CancellationTokenSource _cancellationTokenSource = new();
@@ -84,7 +87,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         WindowEx windowEx)
     {
         _computeSystemManager = manager;
-        _extensionsService = extensionsService;
+        _environmentExtensionsService = extensionsService;
         _notificationService = notificationService;
         _windowEx = windowEx;
         _navigationService = navigationService;
@@ -195,6 +198,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 return;
             }
 
+            ShouldShowCreateEnvironmentButton = _environmentExtensionsService.IsEnvironmentCreationEnabled;
+
             // If the page has already loaded once, then we don't need to re-load the compute systems as that can take a while.
             // The user can click the sync button to refresh the compute systems. However, there may be new operations that have started
             // since the last time the page was loaded. So we need to add those to the view model quickly.
@@ -217,7 +222,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
 
         ShowLoadingShimmer = true;
-        await _extensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
+        await _environmentExtensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
         ShowLoadingShimmer = false;
 
         lock (_lock)
