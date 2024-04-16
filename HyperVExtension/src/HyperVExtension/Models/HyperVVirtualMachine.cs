@@ -800,7 +800,7 @@ public class HyperVVirtualMachine : IComputeSystem
     {
         if (operation == ComputeSystemOperations.Delete)
         {
-            return $"Failed to complete{operation} operation on {DateTime.Now}: for VM {DisplayName}";
+            return $"Failed to complete {operation} operation on {DateTime.Now}: for VM {DisplayName}";
         }
 
         return $"Failed to complete {operation} operation on {DateTime.Now}: VM details: {this}";
