@@ -4,10 +4,18 @@
 using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Environments.Models;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Foundation;
 
 namespace DevHome.Environments.ViewModels;
 
+/// <summary>
+/// OperationKind represents two different types of operations
+/// the view model can perform.
+/// 1. ExtensionTask: An environment extension's method that returns a task
+/// 2. DevHomeAction: A Action that is internal to Dev Home. E.g an Action to Remove an item from the UI.
+/// </summary>
 public enum OperationKind
 {
     ExtensionTask,
@@ -24,7 +32,7 @@ public partial class OperationsViewModel
 
     public string Name { get; }
 
-    public string? Description { get; set; }
+    public ComputeSystemOperations ComputeSystemOperation { get; }
 
     public string IconGlyph { get; }
 
@@ -32,12 +40,17 @@ public partial class OperationsViewModel
 
     private Action? DevHomeAction { get; }
 
-    public OperationsViewModel(string name, string icon, Func<string, Task<ComputeSystemOperationResult>> command)
+    public event TypedEventHandler<OperationsViewModel, ComputeSystemOperationStartedEventArgs>? OperationStarted;
+
+    public event TypedEventHandler<OperationsViewModel, ComputeSystemOperationCompletedEventArgs>? OperationCompleted;
+
+    public OperationsViewModel(string name, string icon, Func<string, Task<ComputeSystemOperationResult>> command, ComputeSystemOperations computeSystemOperation)
     {
         _operationKind = OperationKind.ExtensionTask;
         Name = name;
         IconGlyph = icon;
         ExtensionTask = command;
+        ComputeSystemOperation = computeSystemOperation;
     }
 
     public OperationsViewModel(string name, string icon, Action command)
@@ -51,7 +64,6 @@ public partial class OperationsViewModel
     [RelayCommand]
     public void InvokeAction()
     {
-        // We'll need to disable the card UI while the operation is in progress and handle failures.
         Task.Run(async () =>
         {
             if (_operationKind == OperationKind.DevHomeAction)
@@ -60,8 +72,10 @@ public partial class OperationsViewModel
                 return;
             }
 
-            // We'll need to handle the case where the DevHome service is not available.
-            await ExtensionTask!(string.Empty);
+            var activityId = Guid.NewGuid();
+            OperationStarted?.Invoke(this, new ComputeSystemOperationStartedEventArgs(ComputeSystemOperation, activityId));
+            var result = await ExtensionTask!(string.Empty);
+            OperationCompleted?.Invoke(this, new ComputeSystemOperationCompletedEventArgs(ComputeSystemOperation, result, activityId));
         });
     }
 }

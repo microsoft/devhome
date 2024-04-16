@@ -10,8 +10,10 @@ using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents.Environments;
 using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Environments.Helpers;
+using DevHome.Environments.Models;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -163,5 +165,39 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         {
             _log.Error(computeSystemOperationResult.Result.ExtendedError, $"Launch operation failed for {ComputeSystem} error: {computeSystemOperationResult.Result.DiagnosticText}");
         }
+    }
+
+    private void OnComputeSystemOperationStarted(object sender, ComputeSystemOperationStartedEventArgs args)
+    {
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        {
+            IsOperationInProgress = true;
+
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_OperationInvoked_Event",
+                LogLevel.Measure,
+                new EnvironmentOperationUserEvent(args.TelemetryStatus, args.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, args.ActivityId));
+        });
+    }
+
+    private void OnComputeSystemOperationCompleted(object sender, ComputeSystemOperationCompletedEventArgs args)
+    {
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        {
+            var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
+
+            if ((args.OperationResult == null) || (args.OperationResult.Result.Status == ProviderOperationStatus.Failure))
+            {
+                completionStatus = EnvironmentsTelemetryStatus.Failed;
+                LogFailure(args.OperationResult);
+            }
+
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_OperationInvoked_Event",
+                LogLevel.Measure,
+                new EnvironmentOperationUserEvent(completionStatus, args.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, args.ActivityId));
+
+            IsOperationInProgress = false;
+        });
     }
 }
