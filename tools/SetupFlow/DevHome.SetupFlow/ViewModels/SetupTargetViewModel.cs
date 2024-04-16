@@ -3,16 +3,19 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Behaviors;
 using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using WinUIEx;
@@ -25,8 +28,6 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
     private readonly WindowEx _windowEx;
 
-    private readonly NotificationService _toastNotificationService;
-
     private const string SortByDisplayName = "DisplayName";
 
     private readonly string _allKeyWordLocalized;
@@ -34,10 +35,6 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     private readonly SetupFlowViewModel _setupFlowViewModel;
 
     private readonly ObservableCollection<ComputeSystemsListViewModel> _computeSystemViewModelList = new();
-
-    private readonly ISetupFlowStringResource _setupFlowStringResource;
-
-    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
 
     private readonly ComputeSystemViewModelFactory _computeSystemViewModelFactory;
 
@@ -77,16 +74,13 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         SetupFlowOrchestrator orchestrator,
         IComputeSystemManager computeSystemManager,
         ComputeSystemViewModelFactory computeSystemViewModelFactory,
-        NotificationService toastNotificationService,
         WindowEx windowEx)
         : base(stringResource, orchestrator)
     {
         // Setup initial state for page.
-        _setupFlowOrchestrator = orchestrator;
-        _setupFlowOrchestrator.CurrentSetupFlowKind = SetupFlowKind.SetupTarget;
-        _setupFlowStringResource = stringResource;
-        PageTitle = _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetPageTitle);
-        _allKeyWordLocalized = _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetAllComboBoxOption);
+        Orchestrator.CurrentSetupFlowKind = SetupFlowKind.SetupTarget;
+        PageTitle = StringResource.GetLocalized(StringResourceKey.SetupTargetPageTitle);
+        _allKeyWordLocalized = StringResource.GetLocalized(StringResourceKey.SetupTargetAllComboBoxOption);
 
         // Add the "All" option to the combo box and make sure its always sorted.
         SelectedComputeSystemProviderComboBoxName = _allKeyWordLocalized;
@@ -97,8 +91,8 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         // Add sort options like A-Z, Z-A, etc.
         ComputeSystemsSortOptions = new ObservableCollection<string>
         {
-            _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetSortAToZLabel),
-            _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetSortZToALabel),
+            StringResource.GetLocalized(StringResourceKey.SetupTargetSortAToZLabel),
+            StringResource.GetLocalized(StringResourceKey.SetupTargetSortZToALabel),
         };
 
         // Add AdvancedCollectionView to make filtering and sorting the list of ComputeSystemsListViewModels easier.
@@ -109,7 +103,6 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         ComputeSystemManagerObj = computeSystemManager;
         _setupFlowViewModel = setupFlowModel;
         _setupFlowViewModel.EndSetupFlow += OnRemovingComputeSystems;
-        _toastNotificationService = toastNotificationService;
     }
 
     /// <summary>
@@ -124,7 +117,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         RemoveComputeSystemsListViewModels();
 
         // reset the SetupFlowVersion to LocalMachine so we can start the flow over again.
-        _setupFlowOrchestrator.CurrentSetupFlowKind = SetupFlowKind.LocalMachine;
+        Orchestrator.CurrentSetupFlowKind = SetupFlowKind.LocalMachine;
 
         // Unsubscribe from the EndSetupFlow event handler.
         _setupFlowViewModel.EndSetupFlow -= OnRemovingComputeSystems;
@@ -147,8 +140,6 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
             return false;
         };
-
-        ComputeSystemsCollectionView.Refresh();
     }
 
     /// <summary>
@@ -159,7 +150,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void FilterComboBoxChanged(string text)
     {
-        FilterTextChangedCommand.Execute(ComputeSystemFilterText);
+        FilterTextChanged(ComputeSystemFilterText);
     }
 
     /// <summary>
@@ -184,13 +175,6 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             if (listViewModel.ComputeSystemCardAdvancedCollectionView.Count == 0)
             {
                 RemoveSelectedItemIfNotInUI(listViewModel);
-
-                // We still want to show the ComputeSystemsListViewModel in the UI if we're showing all providers or if the provider name matches the current provider.
-                if (shouldShowAllProviders || providerNameMatchesCurrentProvider)
-                {
-                    return true;
-                }
-
                 return false;
             }
         }
@@ -234,6 +218,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             if (senderListViewModel != viewModel)
             {
                 viewModel.SelectedItem = null;
+                viewModel.SetAllSelectionFlagsToFalse();
             }
         }
 
@@ -247,12 +232,9 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(CanEnableSyncButton))]
-    public void SyncComputeSystems()
+    public async Task SyncComputeSystems()
     {
-        // temporary, we'll need to give the users a way to disable this.
-        // if they don't want to use hyper-v
-        _toastNotificationService.CheckIfUserIsAHyperVAdmin();
-        GetComputeSystems();
+        await GetComputeSystemsAsync();
     }
 
     /// <summary>
@@ -261,14 +243,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     /// </summary>
     protected async override Task OnFirstNavigateToAsync()
     {
-        // Do nothing, but we need to override this as the base expects a task to be returned.
-        await Task.CompletedTask;
-
-        // temporary, we'll need to give the users a way to disable this.
-        // if they don't want to use hyper-v
-        _toastNotificationService.CheckIfUserIsAHyperVAdmin();
-
-        GetComputeSystems();
+        await GetComputeSystemsAsync();
     }
 
     public void UpdateNextButtonState()
@@ -276,7 +251,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         // Only enable the next button if the ComputeSystemManager has a ComputeSystem selected to apply the configuration to.
         // and if the ComputeSystemManager has finished loading the compute systems.
         CanGoToNextPage = ComputeSystemManagerObj.ComputeSystemSetupItem != null;
-        _setupFlowOrchestrator.NotifyNavigationCanExecuteChanged();
+        Orchestrator.NotifyNavigationCanExecuteChanged();
         SyncComputeSystemsCommand.NotifyCanExecuteChanged();
     }
 
@@ -284,30 +259,25 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     /// Starts the process of getting the list of ComputeSystems from all providers. the sync and next
     /// buttons should be disabled when work is being done.
     /// </summary>
-    private void GetComputeSystems()
+    private async Task GetComputeSystemsAsync()
     {
-        // We need to run this on a background thread so we don't block the UI thread.
-        Task.Run(() =>
-        {
-            _windowEx.DispatcherQueue.EnqueueAsync(async () =>
-            {
-                // Remove any existing ComputeSystemsListViewModels from the list if they exist. E.g when sync button is
-                // pressed.
-                RemoveComputeSystemsListViewModels();
+        // Remove any existing ComputeSystemsListViewModels from the list if they exist. E.g when sync button is
+        // pressed.
+        RemoveComputeSystemsListViewModels();
 
-                // Disable the sync and next buttons while we're getting the compute systems.
-                ComputeSystemLoadingCompleted = false;
-                UpdateNextButtonState();
+        // Disable the sync and next buttons while we're getting the compute systems.
+        ComputeSystemLoadingCompleted = false;
+        UpdateNextButtonState();
 
-                // load the compute systems so we can show them in the UI.
-                await LoadAllComputeSystemsInTheUI();
+        // load the compute systems so we can show them in the UI.
+        await Task.Run(LoadAllComputeSystemsInTheUIAsync);
+        ShouldShowShimmerBelowList = false;
+        ComputeSystemLoadingCompleted = true;
 
-                // Enable the sync and next buttons when we're done getting the compute systems.
-                UpdateNextButtonState();
+        // Enable the sync and next buttons when we're done getting the compute systems.
+        UpdateNextButtonState();
 
-                ComputeSystemsCollectionView.Refresh();
-            });
-        });
+        ComputeSystemsCollectionView.Refresh();
     }
 
     /// <summary>
@@ -358,7 +328,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     /// <summary>
     /// Loads all the ComputeSystems from all providers and updates the UI with the results.
     /// </summary>
-    public async Task LoadAllComputeSystemsInTheUI()
+    public async Task LoadAllComputeSystemsInTheUIAsync()
     {
         try
         {
@@ -368,8 +338,6 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         {
             _log.Error(ex, $"Error loading ComputeSystemViewModels data");
         }
-
-        ShouldShowShimmerBelowList = false;
     }
 
     private void RemoveSelectedItemIfNotInUI(ComputeSystemsListViewModel listViewModel)
@@ -410,8 +378,14 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
                 curListViewModel.CardSelectionChanged += OnListSelectionChanged;
             }
 
+            // Don't add view model to list if it doesn't contain any cards.
+            if (curListViewModel.ComputeSystemCardCollection.Count == 0)
+            {
+                _log.Information($"The {data.ProviderDetails.ComputeSystemProvider.DisplayName} was found but does not contain environments that support configuration");
+                return;
+            }
+
             AddListViewModelToList(curListViewModel);
-            ComputeSystemLoadingCompleted = true;
             ShouldShowShimmerBelowList = true;
         });
     }
@@ -423,14 +397,21 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void SortComboBoxChanged(int index)
     {
-        var direction = index == 0 ? SortDirection.Ascending : SortDirection.Descending;
-        ComputeSystemsCollectionView.SortDescriptions.Clear();
-        ComputeSystemsCollectionView.SortDescriptions.Add(new SortDescription(SortByDisplayName, direction));
-
-        foreach (var viewModel in _computeSystemViewModelList)
+        try
         {
-            // For now , we only support sorting by the ComputeSystemTitle.
-            viewModel.SortBySpecificProperty(SortByKind.ComputeSystemTitle, direction);
+            var direction = index == 0 ? SortDirection.Ascending : SortDirection.Descending;
+            ComputeSystemsCollectionView.SortDescriptions.Clear();
+            ComputeSystemsCollectionView.SortDescriptions.Add(new SortDescription(SortByDisplayName, direction));
+
+            foreach (var viewModel in _computeSystemViewModelList)
+            {
+                // For now , we only support sorting by the ComputeSystemTitle.
+                viewModel.SortBySpecificProperty(SortByKind.ComputeSystemTitle, direction);
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Unable to perform sort operation");
         }
     }
 }

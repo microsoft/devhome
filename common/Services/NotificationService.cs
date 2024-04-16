@@ -221,14 +221,21 @@ public class NotificationService
     {
         await _windowEx.DispatcherQueue.EnqueueAsync(() =>
         {
-            var notification = new Notification
+            try
             {
-                Title = title,
-                Message = message,
-                Severity = severity,
-            };
+                var notification = new Notification
+                {
+                    Title = title,
+                    Message = message,
+                    Severity = severity,
+                };
 
-            _notificationQueue?.Show(notification);
+                _notificationQueue?.Show(notification);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "unable to show user notification message due to an exception");
+            }
         });
     }
 
