@@ -45,7 +45,7 @@
                     </InfoBar>
                 </Grid>
 
-                <!--- Show the adaptive card on the page if its loaded. -20 Padding added as the adaptive card add an extra 40px of padding on all sides -->
+                <!--- Show the adaptive card on the page if its loaded. -15 Padding added as the adaptive card adds an extra 40px of padding on all sides -->
                 <Grid
                     Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay}"
                     x:Name="AdaptiveCardGrid" 
