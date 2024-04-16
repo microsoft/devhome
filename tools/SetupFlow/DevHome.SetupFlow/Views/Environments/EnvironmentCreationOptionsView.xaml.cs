@@ -31,7 +31,7 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecip
 
     private void ViewUnloaded(object sender, RoutedEventArgs e)
     {
-        // View unloaded so readd elements back to original card now that we're done
+        // View unloaded so re-add elements back to original card now that we're done
         if (_adaptiveCardFrameWorkElement is Grid cardGrid)
         {
             AddUIElementsToGrid(AdaptiveCardGrid, cardGrid);
@@ -88,17 +88,17 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecip
         }
     }
 
-    private void AddUIElementsToGrid(Grid gridRemoveItems, Grid gridToAddItems)
+    private void AddUIElementsToGrid(Grid gridToRemoveItems, Grid gridToAddItems)
     {
         var listOfElements = new List<UIElement>();
-        foreach (var item in gridRemoveItems.Children)
+        foreach (var item in gridToRemoveItems.Children)
         {
             listOfElements.Add(item);
         }
 
         if (listOfElements.Count > 0)
         {
-            gridRemoveItems.Children.Clear();
+            gridToRemoveItems.Children.Clear();
             gridToAddItems.Children.Clear();
             foreach (var item in listOfElements)
             {
