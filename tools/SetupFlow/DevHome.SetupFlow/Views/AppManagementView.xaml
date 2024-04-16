@@ -57,6 +57,7 @@
                 <!-- Search bar -->
                 <AutoSuggestBox
                     x:Name="SearchBox"
+                    Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}"
                     QueryIcon="Find"
                     HorizontalAlignment="Left"
                     Width="400"

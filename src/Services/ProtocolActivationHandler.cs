@@ -19,6 +19,11 @@ public class ProtocolActivationHandler : ActivationHandler<ProtocolActivatedEven
         this._navigationService = navigationService;
     }
 
+    protected override bool CanHandleInternal(ProtocolActivatedEventArgs args)
+    {
+        return args.Uri != null && args.Uri.LocalPath.Equals(SettingsAccountsUri, StringComparison.OrdinalIgnoreCase);
+    }
+
     protected override Task HandleInternalAsync(ProtocolActivatedEventArgs args)
     {
         if (args.Uri.AbsolutePath == SettingsAccountsUri)
