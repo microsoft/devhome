@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Contracts.Services;
+using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.ViewModels;
 
@@ -28,7 +28,7 @@ public partial class AddWidgetViewModel : ObservableObject
     [ObservableProperty]
     private bool _pinButtonVisibility;
 
-    private WidgetDefinition _selectedWidgetDefinition;
+    private ComSafeWidgetDefinition _selectedWidgetDefinition;
 
     public AddWidgetViewModel(
         IWidgetScreenshotService widgetScreenshotService,
@@ -38,13 +38,13 @@ public partial class AddWidgetViewModel : ObservableObject
         _themeSelectorService = themeSelectorService;
     }
 
-    public async Task SetWidgetDefinition(WidgetDefinition selectedWidgetDefinition)
+    public async Task SetWidgetDefinition(ComSafeWidgetDefinition selectedWidgetDefinition)
     {
         _selectedWidgetDefinition = selectedWidgetDefinition;
         var bitmap = await _widgetScreenshotService.GetScreenshotFromCacheAsync(selectedWidgetDefinition, _themeSelectorService.GetActualTheme());
 
         WidgetDisplayTitle = selectedWidgetDefinition.DisplayTitle;
-        WidgetProviderDisplayTitle = selectedWidgetDefinition.ProviderDefinition.DisplayName;
+        WidgetProviderDisplayTitle = selectedWidgetDefinition.ProviderDefinitionDisplayName;
         WidgetScreenshot = new ImageBrush
         {
             ImageSource = bitmap,

@@ -28,9 +28,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AddWidgetDialog));
 
-    private WidgetDefinition _selectedWidget;
+    private ComSafeWidgetDefinition _selectedWidget;
 
-    public WidgetDefinition AddedWidget { get; private set; }
+    public ComSafeWidgetDefinition AddedWidget { get; private set; }
 
     public AddWidgetViewModel ViewModel { get; set; }
 
@@ -78,9 +78,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         // Show the providers and widgets underneath them in alphabetical order.
         var providerDefinitions = (await _hostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
-        var widgetDefinitions = (await _hostingService.GetWidgetDefinitionsAsync()).OrderBy(x => x.DisplayTitle);
+        var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(_hostingService);
 
-        _log.Information($"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
+        _log.Information($"Filling available widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
 
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
@@ -107,9 +107,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     Content = providerDef.DisplayName,
                 };
 
-                foreach (var widgetDef in widgetDefinitions)
+                foreach (var widgetDef in comSafeWidgetDefinitions)
                 {
-                    if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
+                    if (widgetDef.ProviderDefinitionId.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
                         var subItemContent = await BuildWidgetNavItem(widgetDef);
                         var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, [.. comSafeCurrentlyPinnedWidgets]);
@@ -141,7 +141,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
-    private async Task<StackPanel> BuildWidgetNavItem(WidgetDefinition widgetDefinition)
+    private async Task<StackPanel> BuildWidgetNavItem(ComSafeWidgetDefinition widgetDefinition)
     {
         var image = await _widgetIconService.GetIconFromCacheAsync(widgetDefinition, ActualTheme);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
@@ -180,7 +180,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         return itemContent;
     }
 
-    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef, ComSafeWidget[] currentlyPinnedWidgets)
+    private bool IsSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[] currentlyPinnedWidgets)
     {
         // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
         if (!widgetDef.AllowMultiple)
@@ -235,7 +235,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
 
         // If the user has selected a widget, show preview. If they selected a provider, leave space blank.
-        if (selectedTag as WidgetDefinition is WidgetDefinition selectedWidgetDefinition)
+        if (selectedTag as ComSafeWidgetDefinition is ComSafeWidgetDefinition selectedWidgetDefinition)
         {
             _selectedWidget = selectedWidgetDefinition;
             await ViewModel.SetWidgetDefinition(selectedWidgetDefinition);
@@ -254,7 +254,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         {
             foreach (var widgetItem in providerItem.MenuItems.OfType<NavigationViewItem>())
             {
-                if (widgetItem.Tag is WidgetDefinition widgetDefinition)
+                if (widgetItem.Tag is ComSafeWidgetDefinition widgetDefinition)
                 {
                     var image = await _widgetIconService.GetIconFromCacheAsync(widgetDefinition, ActualTheme);
                     widgetItem.Content = BuildNavItem(image, widgetDefinition.DisplayTitle);
@@ -321,7 +321,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             {
                 foreach (var widgetItem in providerItem.MenuItems.OfType<NavigationViewItem>())
                 {
-                    if (widgetItem.Tag is WidgetDefinition tagDefinition)
+                    if (widgetItem.Tag is ComSafeWidgetDefinition tagDefinition)
                     {
                         if (tagDefinition.Id.Equals(deletedDefinitionId, StringComparison.Ordinal))
                         {
