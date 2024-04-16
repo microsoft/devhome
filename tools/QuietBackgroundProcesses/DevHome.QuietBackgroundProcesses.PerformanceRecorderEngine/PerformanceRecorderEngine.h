@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <wil/resource.h>
 #include <appmodel.h>
 
 struct ProcessPerformanceSummary

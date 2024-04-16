@@ -87,7 +87,14 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             }
 
             var isFeaturePresent = QuietBackgroundProcessesSessionManager.IsFeaturePresent();
-            IsAnalyticSummaryAvailable = _table != null;
+
+            var isAvailable = false;
+            isAvailable = _table != null;
+            if (!isAvailable)
+            {
+                isAvailable = QuietBackgroundProcessesSessionManager.HasLastPerformanceRecording();
+            }
+
             var running = false;
             long? timeLeftInSeconds = null;
             if (isFeaturePresent)
@@ -105,6 +112,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             await _windowEx.DispatcherQueue.EnqueueAsync(() =>
             {
                 IsFeaturePresent = isFeaturePresent;
+                IsAnalyticSummaryAvailable = isAvailable;
                 if (IsFeaturePresent)
                 {
                     // Resume countdown if there's an existing quiet window
@@ -125,11 +133,16 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             var seconds = timeLeftInSeconds ?? GetTimeRemaining();
             StartCountdownTimer(seconds);
             QuietButtonText = GetString("QuietBackgroundProcesses_QuietButton_Stop");
+            IsAnalyticSummaryAvailable = false;
         }
         else
         {
             _dispatcherTimer?.Stop();
             QuietButtonText = GetString("QuietBackgroundProcesses_QuietButton_Start");
+            if (!IsAnalyticSummaryAvailable)
+            {
+                IsAnalyticSummaryAvailable = QuietBackgroundProcessesSessionManager.HasLastPerformanceRecording();
+            }
         }
 
         QuietButtonChecked = !running;
@@ -271,6 +284,19 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
 
     public ProcessPerformanceTable? GetProcessPerformanceTable()
     {
+        if (_table == null)
+        {
+            try
+            {
+                _table = QuietBackgroundProcessesSessionManager.TryGetLastPerformanceRecording();
+            }
+            catch (Exception ex)
+            {
+                SessionStateText = GetStatusString("SessionError");
+                _log.Error(ex, "QuietBackgroundProcessesSessionManager.TryGetLastPerformanceRecording failed");
+            }
+        }
+
         return _table;
     }
 }

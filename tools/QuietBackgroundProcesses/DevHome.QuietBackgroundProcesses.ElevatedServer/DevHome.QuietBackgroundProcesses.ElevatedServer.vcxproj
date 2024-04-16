@@ -112,7 +112,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)..\DevHome.QuietBackgroundProcesses.Common\;$(ProjectDir)..\DevHome.QuietBackgroundProcesses.Common\$(GeneratedFilesDir)midl;$(ProjectDir)..\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -135,13 +135,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="PerformanceRecorderEngineWinrt.h" />
+    <ClInclude Include="Helpers.h" />
     <ClInclude Include="TimedQuietSession.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="QuietState.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

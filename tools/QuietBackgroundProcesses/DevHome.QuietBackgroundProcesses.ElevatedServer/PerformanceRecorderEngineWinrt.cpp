@@ -6,6 +6,7 @@
 #include <chrono>
 #include <memory>
 #include <mutex>
+#include <span>
 
 #include <wrl/client.h>
 #include <wrl/implements.h>
@@ -19,33 +20,12 @@
 #include <Windows.Foundation.h>
 #include <Windows.Foundation.Collections.h>
 
+#include "Common.h"
 #include "TimedQuietSession.h"
 #include "DevHome.QuietBackgroundProcesses.h"
 #include "PerformanceRecorderEngine.h"
+#include "Helpers.h"
 
-
-struct com_ptr_deleter
-{
-    template<typename T>
-    void operator()(_Pre_opt_valid_ _Frees_ptr_opt_ T p) const
-    {
-        if (p)
-        {
-            p.reset();
-        }
-    }
-};
-
-template<typename T, typename ArrayDeleter = wil::process_heap_deleter>
-using unique_comptr_array = wil::unique_any_array_ptr<typename wil::com_ptr_nothrow<T>, ArrayDeleter, com_ptr_deleter>;
-
-template<typename T>
-unique_comptr_array<T> make_unique_comptr_array(size_t numOfElements)
-{
-    auto list = unique_comptr_array<T>(reinterpret_cast<wil::com_ptr_nothrow<T>*>(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, numOfElements * sizeof(wil::com_ptr_nothrow<T>))), numOfElements);
-    THROW_IF_NULL_ALLOC(list.get());
-    return list;
-}
 
 namespace ABI::DevHome::QuietBackgroundProcesses
 {
@@ -219,19 +199,39 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         STDMETHODIMP get_Rows(unsigned int* valueLength, ABI::DevHome::QuietBackgroundProcesses::IProcessRow*** value) noexcept override
         try
         {
-            wil::unique_cotaskmem_array_ptr<ProcessPerformanceSummary> summaries;
-            THROW_IF_FAILED(GetMonitoringProcessUtilization(m_context.get(), summaries.addressof(), summaries.size_address()));
+            std::span<ProcessPerformanceSummary> span;
+            wil::unique_cotaskmem_array_ptr<ProcessPerformanceSummary> summariesCoarray;
+            std::vector<ProcessPerformanceSummary> summariesVector;
 
-            // Add rows
-            auto list = make_unique_comptr_array<IProcessRow>(summaries.size());
-            for (uint32_t i = 0; i < summaries.size(); i++)
+            if (m_context)
             {
-                auto& summary = summaries[i];
+                // We have a live context, read performance data from it
+                THROW_IF_FAILED(GetMonitoringProcessUtilization(m_context.get(), summariesCoarray.addressof(), summariesCoarray.size_address()));
+
+                // Make span from cotaskmem_array
+                span = std::span<ProcessPerformanceSummary>{ summariesCoarray.get(), summariesCoarray.size() };
+            }
+            else
+            {
+                // We don't have a live context. Let's try to read performance data from disk.
+                auto performanceDataFile = GetTemporaryPerformanceDataPath();
+                THROW_HR_IF(E_FAIL, !std::filesystem::exists(performanceDataFile));
+
+                // Make span from vector
+                summariesVector = ReadPerformanceDataFromDisk(performanceDataFile.c_str());
+                span = std::span<ProcessPerformanceSummary>{ summariesVector };
+            }
+
+            // Create IProcessRow entries
+            auto list = make_unique_comptr_array<IProcessRow>(span.size());
+            for (uint32_t i = 0; i < span.size(); i++)
+            {
+                auto& summary = span[i];
                 wil::com_ptr<ProcessRow> row;
                 THROW_IF_FAILED(Microsoft::WRL::MakeAndInitialize<ProcessRow>(&row, summary));
                 list[i] = std::move(row);
             }
-            *valueLength = static_cast<unsigned int>(summaries.size());
+            *valueLength = static_cast<unsigned int>(span.size());
             *value = (ABI::DevHome::QuietBackgroundProcesses::IProcessRow**)list.release();
             return S_OK;
         }
@@ -280,6 +280,24 @@ namespace ABI::DevHome::QuietBackgroundProcesses
                 THROW_IF_FAILED(Microsoft::WRL::MakeAndInitialize<ProcessPerformanceTable>(&performanceTable, std::move(m_context)));
                 *result = performanceTable.detach();
             }
+            else
+            {
+                // No one (no client) is currently asking for the performance data (presumably Dev Home is closed) so write it to disk
+                wil::unique_cotaskmem_array_ptr<ProcessPerformanceSummary> summaries;
+                THROW_IF_FAILED(GetMonitoringProcessUtilization(m_context.get(), summaries.addressof(), summaries.size_address()));
+
+                // Write the performance .csv data to disk
+                std::span<ProcessPerformanceSummary> data(summaries.get(), summaries.size());
+                try
+                {
+                    auto performanceDataFile = GetTemporaryPerformanceDataPath();
+                    WritePerformanceDataToDisk(performanceDataFile.c_str(), data);
+                }
+                CATCH_LOG();
+
+                // Destroy the performance engine instance
+                m_context.reset();
+            }
 
             return S_OK;
         }
@@ -289,5 +307,40 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         unique_process_utilization_monitoring_thread m_context;
     };
 
-    ActivatableClass(PerformanceRecorderEngine);
+    class PerformanceRecorderEngineStatics WrlFinal :
+        public Microsoft::WRL::AgileActivationFactory<
+            Microsoft::WRL::Implements<IPerformanceRecorderEngineStatics>>
+    {
+        InspectableClassStatic(RuntimeClass_DevHome_QuietBackgroundProcesses_PerformanceRecorderEngine, BaseTrust);
+
+    public:
+        STDMETHODIMP ActivateInstance(_COM_Outptr_ IInspectable**) noexcept
+        {
+            // Disallow activation - must use GetSingleton()
+            return E_NOTIMPL;
+        }
+
+        // IPerformanceRecorderEngineStatics
+        STDMETHODIMP TryGetLastPerformanceRecording(_COM_Outptr_ ABI::DevHome::QuietBackgroundProcesses::IProcessPerformanceTable** result) noexcept override
+        try
+        {
+            // Reconstruct a perform table from disk (passing nullptr for context)
+            wil::com_ptr<ProcessPerformanceTable> performanceTable;
+            THROW_IF_FAILED(Microsoft::WRL::MakeAndInitialize<ProcessPerformanceTable>(&performanceTable, nullptr));
+            *result = performanceTable.detach();
+            
+            return S_OK;
+        }
+        CATCH_RETURN()
+    };
+
+    ActivatableClassWithFactory(PerformanceRecorderEngine, PerformanceRecorderEngineStatics);
+}
+
+wil::com_ptr<ABI::DevHome::QuietBackgroundProcesses::IPerformanceRecorderEngine> MakePerformanceRecorderEngine()
+{
+    using namespace ABI::DevHome::QuietBackgroundProcesses;
+    wil::com_ptr<PerformanceRecorderEngine> result;
+    THROW_IF_FAILED(Microsoft::WRL::MakeAndInitialize<PerformanceRecorderEngine>(&result));
+    return result;
 }

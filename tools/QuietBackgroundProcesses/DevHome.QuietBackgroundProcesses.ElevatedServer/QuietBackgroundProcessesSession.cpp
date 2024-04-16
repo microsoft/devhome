@@ -19,13 +19,11 @@
 #include "TimedQuietSession.h"
 
 #include "DevHome.QuietBackgroundProcesses.h"
-#include "PerformanceRecorderEngineWinrt.h"
 
 constexpr auto DEFAULT_QUIET_DURATION = std::chrono::hours(2);
 
 std::mutex g_mutex;
 std::unique_ptr<TimedQuietSession> g_activeTimer;
-wil::com_ptr<ABI::DevHome::QuietBackgroundProcesses::IPerformanceRecorderEngine> g_performanceRecorderEngine;
 
 namespace ABI::DevHome::QuietBackgroundProcesses
 {
@@ -51,7 +49,7 @@ namespace ABI::DevHome::QuietBackgroundProcesses
             // Stop and discard the previous timer
             if (g_activeTimer)
             {
-                g_activeTimer->Cancel();
+                g_activeTimer->Cancel(nullptr);
             }
 
             std::chrono::seconds duration = DEFAULT_QUIET_DURATION;
@@ -62,13 +60,6 @@ namespace ABI::DevHome::QuietBackgroundProcesses
 
             // Start timer
             g_activeTimer.reset(new TimedQuietSession(duration));
-
-            // Start performance recorder
-            g_performanceRecorderEngine.reset();
-            THROW_IF_FAILED(Microsoft::WRL::MakeAndInitialize<PerformanceRecorderEngine>(&g_performanceRecorderEngine));
-            ABI::Windows::Foundation::TimeSpan samplingPeriod;
-            samplingPeriod.Duration = 1000 * 10000; // 1 second
-            THROW_IF_FAILED(g_performanceRecorderEngine->Start(samplingPeriod));
 
             // Return duration for showing countdown
             *result = g_activeTimer->TimeLeftInSeconds();
@@ -82,16 +73,10 @@ namespace ABI::DevHome::QuietBackgroundProcesses
             auto lock = std::scoped_lock(g_mutex);
             *result = nullptr;
 
-            if (g_performanceRecorderEngine)
-            {
-                THROW_IF_FAILED(g_performanceRecorderEngine->Stop(result));
-                g_performanceRecorderEngine.reset();
-            }
-
             // Turn off quiet mode and cancel timer
             if (g_activeTimer)
             {
-                g_activeTimer->Cancel();
+                g_activeTimer->Cancel(result);
                 g_activeTimer.reset();
             }
 

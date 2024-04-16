@@ -47,6 +47,8 @@ namespace DevHome.QuietBackgroundProcesses
     [default_interface]
     runtimeclass PerformanceRecorderEngine
     {
+        static ProcessPerformanceTable TryGetLastPerformanceRecording();
+
         PerformanceRecorderEngine();
         void Start(Windows.Foundation.TimeSpan periodInMs);
         ProcessPerformanceTable Stop();
@@ -57,6 +59,7 @@ namespace DevHome.QuietBackgroundProcesses
     runtimeclass QuietBackgroundProcessesSession
     {
         static QuietBackgroundProcessesSession GetSingleton();
+
         Int64 Start();
         ProcessPerformanceTable Stop();
         Boolean IsActive { get; };
@@ -69,5 +72,7 @@ namespace DevHome.QuietBackgroundProcesses
         static Boolean IsFeaturePresent();
         static QuietBackgroundProcessesSession GetSession();
         static QuietBackgroundProcessesSession TryGetSession();
+        static Boolean HasLastPerformanceRecording();
+        static ProcessPerformanceTable TryGetLastPerformanceRecording();
     }
 }
