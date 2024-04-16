@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -1157,12 +1156,6 @@ public partial class AddRepoViewModel : ObservableObject
         // 2. The repo is not public and no logged iin accounts have access to the repo.
         // Ask the user to log in and try again.
         await LogUserIn(provider.ExtensionDisplayName);
-
-        // User did not log in.
-        if (Accounts.Count == 0)
-        {
-            return;
-        }
 
         cloningInformation = MakeCloningInformationFromUrl(provider, cloneLocation, uri);
         if (cloningInformation != null)

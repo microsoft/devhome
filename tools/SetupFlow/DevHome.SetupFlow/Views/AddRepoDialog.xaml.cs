@@ -5,18 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using LibGit2Sharp;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.Windows.DevHome.SDK;
-using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.Views;
@@ -176,19 +173,11 @@ public partial class AddRepoDialog : ContentDialog
             var deferral = args.GetDeferral();
             await AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
 
-            _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
-            {
-                AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
-            });
+            AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
 
             // If the repo was not added.
             if (numberOfReposToCloneCount == AddRepoViewModel.EverythingToClone.Count)
             {
-                _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
-                {
-                    AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
-                });
-
                 AddRepoViewModel.ShouldEnablePrimaryButton = false;
                 args.Cancel = true;
                 deferral.Complete();
@@ -208,14 +197,7 @@ public partial class AddRepoDialog : ContentDialog
                 var deferral = args.GetDeferral();
                 await AddRepoViewModel.ChangeToRepoPageAsync();
 
-                if (AddRepoViewModel.Accounts.Count == 0)
-                {
-                    AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
-                    AddRepoViewModel.IsLoggingIn = false;
-                    AddRepoViewModel.IsCancelling = true;
-                    AddRepoViewModel.ShouldShowLoginUi = false;
-                    AddRepoViewModel.ShouldShowXButtonInLoginUi = false;
-                }
+                AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
 
                 deferral.Complete();
             }
