@@ -121,8 +121,14 @@
                                         {
                                             "type": "TextBlock",
                                             "text": "${loginRequiredText}",
+                                            "weight": "Bolder",
+                                            "spacing": "Small"
+                                        },
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "${loginRequiredDescriptionText}",
                                             "wrap": true,
-                                            "weight": "Bolder"
+                                            "spacing": "Small"
                                         }
                                     ]
                                 }
@@ -139,12 +145,20 @@
                                     "items": [
                                         {
                                             "type": "TextBlock",
-                                            "text": "${loginRequiredDescriptionText}",
-                                            "wrap": true
+                                            "text": "${loginRequiredText2}",
+                                            "weight": "Bolder",
+                                            "spacing": "Small"
+                                        },
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "${loginRequiredDescriptionText2}",
+                                            "wrap": true,
+                                            "spacing": "Small"
                                         }
                                     ]
                                 }
-                            ]
+                            ],
+                            "$when": "${!empty($root.loginRequiredText2)}"
                         }
                     ],
                     "showGridLines": false,
