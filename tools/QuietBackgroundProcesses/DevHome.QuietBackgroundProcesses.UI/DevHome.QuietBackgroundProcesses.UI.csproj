@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(SolutionDir)ToolingVersions.props" />
+
   <PropertyGroup>
     <RootNamespace>DevHome.QuietBackgroundProcesses.UI</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>
@@ -7,10 +8,9 @@
     <UseWinUI>true</UseWinUI>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
   <ItemGroup>
-    <None Remove="Views\QuietBackgroundProcessesView.xaml" />
-  </ItemGroup>
-  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.WinUI.Collections" Version="8.1.240328-rc" />
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
@@ -18,24 +18,14 @@
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
   </ItemGroup>
-  <ItemGroup>
-    <None Remove="SimpleTableControl.xaml" />
-    <None Remove="Views\AnalyticSummaryPopup.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="CommunityToolkit.WinUI.Collections" Version="8.1.240328-rc" />
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <Page Update="Views\AnalyticSummaryPopup.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="SimpleTableControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
