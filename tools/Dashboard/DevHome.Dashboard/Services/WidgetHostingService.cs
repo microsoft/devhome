@@ -55,6 +55,34 @@ public class WidgetHostingService : IWidgetHostingService
         return null;
     }
 
+    /// <summary>Gets the widget with the given ID.</summary>
+    /// <returns>The widget, or null if one could not be retrieved.</returns>
+    public async Task<Widget> GetWidgetAsync(string widgetId)
+    {
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
+        {
+            try
+            {
+                _widgetHost ??= await Task.Run(() => WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031")));
+                return await Task.Run(() => _widgetHost.GetWidget(widgetId));
+            }
+            catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
+            {
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+
+                _widgetHost = null;
+                _widgetCatalog = null;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"Exception getting widget with id {widgetId}:");
+            }
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// Create and return a new widget.
     /// </summary>

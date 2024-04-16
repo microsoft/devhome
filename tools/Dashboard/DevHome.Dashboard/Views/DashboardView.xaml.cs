@@ -14,6 +14,7 @@ using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
@@ -236,26 +237,36 @@ public partial class DashboardView : ToolPage, IDisposable
         }
     }
 
-    private async Task<Widget[]> GetPreviouslyPinnedWidgets()
+    private async Task<ComSafeWidget[]> GetPreviouslyPinnedWidgets()
     {
         _log.Information("Get widgets for current host");
-        var hostWidgets = await ViewModel.WidgetHostingService.GetWidgetsAsync();
+        var unsafeHostWidgets = await ViewModel.WidgetHostingService.GetWidgetsAsync();
 
-        if (hostWidgets == null)
+        if (unsafeHostWidgets == null)
         {
             _log.Information($"Found 0 widgets for this host");
             return null;
         }
 
-        _log.Information($"Found {hostWidgets.Length} widgets for this host");
+        var comSafeHostWidgets = new List<ComSafeWidget>();
+        foreach (var unsafeWidget in unsafeHostWidgets)
+        {
+            var id = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
+            if (!string.IsNullOrEmpty(id))
+            {
+                comSafeHostWidgets.Add(new ComSafeWidget(id));
+            }
+        }
 
-        return hostWidgets;
+        _log.Information($"Found {comSafeHostWidgets.Count} widgets for this host");
+
+        return [.. comSafeHostWidgets];
     }
 
-    private async Task RestorePinnedWidgetsAsync(Widget[] hostWidgets)
+    private async Task RestorePinnedWidgetsAsync(ComSafeWidget[] hostWidgets)
     {
-        var restoredWidgetsWithPosition = new SortedDictionary<int, Widget>();
-        var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
+        var restoredWidgetsWithPosition = new SortedDictionary<int, ComSafeWidget>();
+        var restoredWidgetsWithoutPosition = new SortedDictionary<int, ComSafeWidget>();
         var numUnorderedWidgets = 0;
 
         var pinnedSingleInstanceWidgets = new List<string>();
@@ -341,9 +352,9 @@ public partial class DashboardView : ToolPage, IDisposable
         var finalPlace = 0;
         foreach (var orderedWidget in restoredWidgetsWithPosition)
         {
-            var widget = orderedWidget.Value;
-            var size = await widget.GetSizeAsync();
-            await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace++);
+            var comSafeWidget = orderedWidget.Value;
+            var size = await comSafeWidget.GetSizeAsync();
+            await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, finalPlace++);
         }
 
         // Go through the newly created list of pinned widgets and update any positions that may have changed.
@@ -356,7 +367,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
     }
 
-    private async Task DeleteAbandonedWidgetAsync(Widget widget)
+    private async Task DeleteAbandonedWidgetAsync(ComSafeWidget widget)
     {
         var widgetList = await ViewModel.WidgetHostingService.GetWidgetsAsync();
         var length = widgetList.Length;
@@ -390,19 +401,45 @@ public partial class DashboardView : ToolPage, IDisposable
         {
             // Create widget
             var size = WidgetHelpers.GetDefaultWidgetSize(defaultWidgetDefinition.GetWidgetCapabilities());
-            var id = defaultWidgetDefinition.Id;
-            var newWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(id, size);
-            _log.Information($"Created default widget {id}");
+            var definitionId = defaultWidgetDefinition.Id;
+            var unsafeWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(definitionId, size);
+            if (unsafeWidget == null)
+            {
+                // Fail silently, since this is only the default widget and not a response to user action.
+                return;
+            }
+
+            var unsafeWidgetId = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
+            if (unsafeWidgetId == string.Empty)
+            {
+                _log.Error($"Couldn't get Widget.Id, can't create the widget");
+
+                // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
+                // Again, we can fail silently since this isn't in response to user action.
+                try
+                {
+                    await unsafeWidget.DeleteAsync();
+                }
+                catch (Exception)
+                {
+                    _log.Error($"Error deleting the widget that we couldn't create a ComSafeWidget for");
+                }
+
+                return;
+            }
+
+            var comSafeWidget = new ComSafeWidget(unsafeWidgetId);
+            _log.Information($"Created default widget {unsafeWidgetId}");
 
             // Set custom state on new widget.
             var position = PinnedWidgets.Count;
             var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
             _log.Debug($"SetCustomState: {newCustomState}");
-            await newWidget.SetCustomStateAsync(newCustomState);
+            await comSafeWidget.SetCustomStateAsync(newCustomState);
 
             // Put new widget on the Dashboard.
-            await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
-            _log.Information($"Inserted default widget {id} at position {position}");
+            await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, position);
+            _log.Information($"Inserted default widget {unsafeWidgetId} at position {position}");
         }
         catch (Exception ex)
         {
@@ -438,35 +475,67 @@ public partial class DashboardView : ToolPage, IDisposable
 
         if (newWidgetDefinition != null)
         {
-            Widget newWidget;
             try
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(newWidgetDefinition.GetWidgetCapabilities());
-                newWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(newWidgetDefinition.Id, size);
+                var unsafeWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(newWidgetDefinition.Id, size);
+                if (unsafeWidget == null)
+                {
+                    // Couldn't create the widget, show an error message.
+                    await ShowCreateWidgetErrorMessage();
+                    return;
+                }
+
+                var unsafeWidgetId = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
+                if (unsafeWidgetId == string.Empty)
+                {
+                    _log.Error($"Couldn't get Widget.Id, can't create the widget");
+                    await ShowCreateWidgetErrorMessage();
+
+                    // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
+                    // We can try and catch silently, since the user already saw an error that the widget couldn't be created.
+                    try
+                    {
+                        await unsafeWidget.DeleteAsync();
+                    }
+                    catch (Exception)
+                    {
+                        _log.Error($"Error deleting the widget that we couldn't create a ComSafeWidget for");
+                    }
+
+                    return;
+                }
+
+                var comSafeWidget = new ComSafeWidget(unsafeWidgetId);
 
                 // Set custom state on new widget.
                 var position = PinnedWidgets.Count;
                 var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
                 _log.Debug($"SetCustomState: {newCustomState}");
-                await newWidget.SetCustomStateAsync(newCustomState);
+                await comSafeWidget.SetCustomStateAsync(newCustomState);
 
                 // Put new widget on the Dashboard.
-                await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
+                await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, position);
             }
             catch (Exception ex)
             {
                 _log.Warning(ex, $"Creating widget failed: ");
-                var mainWindow = Application.Current.GetService<WindowEx>();
-                var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-                await mainWindow.ShowErrorMessageDialogAsync(
-                    title: string.Empty,
-                    content: stringResource.GetLocalized("CouldNotCreateWidgetError"),
-                    buttonText: stringResource.GetLocalized("CloseButtonText"));
+                await ShowCreateWidgetErrorMessage();
             }
         }
     }
 
-    private async Task InsertWidgetInPinnedWidgetsAsync(Widget widget, WidgetSize size, int index)
+    private async Task ShowCreateWidgetErrorMessage()
+    {
+        var mainWindow = Application.Current.GetService<WindowEx>();
+        var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+        await mainWindow.ShowErrorMessageDialogAsync(
+            title: string.Empty,
+            content: stringResource.GetLocalized("CouldNotCreateWidgetError"),
+            buttonText: stringResource.GetLocalized("CloseButtonText"));
+    }
+
+    private async Task InsertWidgetInPinnedWidgetsAsync(ComSafeWidget widget, WidgetSize size, int index)
     {
         await Task.Run(async () =>
         {
@@ -505,7 +574,7 @@ public partial class DashboardView : ToolPage, IDisposable
         });
     }
 
-    private async Task DeleteWidgetWithNoDefinition(Widget widget, string widgetDefinitionId)
+    private async Task DeleteWidgetWithNoDefinition(ComSafeWidget widget, string widgetDefinitionId)
     {
         // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
         _log.Information($"No widget definition '{widgetDefinitionId}', delete widget with that definition");
