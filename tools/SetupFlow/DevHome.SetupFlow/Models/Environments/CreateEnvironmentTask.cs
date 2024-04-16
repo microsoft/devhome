@@ -61,6 +61,11 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
 
     public bool RequiresReboot => false;
 
+    /// <summary>
+    /// Gets target device name. Inherited via ISetupTask but unused.
+    /// </summary>
+    public string TargetName => string.Empty;
+
     public bool DependsOnDevDriveToBeInstalled => false;
 
     public bool CreationOperationStarted { get; private set; }

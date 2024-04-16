@@ -85,7 +85,13 @@ public static class StringResourceKey
     public static readonly string SelectedPackagesCount = nameof(SelectedPackagesCount);
     public static readonly string SetUpButton = nameof(SetUpButton);
     public static readonly string SizeWithColon = nameof(SizeWithColon);
+    public static readonly string LoadingPageHeaderLocalText = nameof(LoadingPageHeaderLocalText);
+    public static readonly string LoadingPageHeaderTargetText = nameof(LoadingPageHeaderTargetText);
+    public static readonly string LoadingPageSetupTargetText = nameof(LoadingPageSetupTargetText);
+    public static readonly string LoadingTasksTitleText = nameof(LoadingTasksTitleText);
+    public static readonly string LoadingLogsTitleText = nameof(LoadingLogsTitleText);
     public static readonly string LoadingExecutingProgress = nameof(LoadingExecutingProgress);
+    public static readonly string LoadingExecutingProgressForTarget = nameof(LoadingExecutingProgressForTarget);
     public static readonly string ActionCenterDisplay = nameof(ActionCenterDisplay);
     public static readonly string NeedsRebootMessage = nameof(NeedsRebootMessage);
     public static readonly string ApplicationsPageTitle = nameof(ApplicationsPageTitle);
