@@ -74,6 +74,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
         _experimentationService = experimentationService;
         _windowEx = windowEx;
         _sessionStateText = string.Empty;
+        _dispatcherTimer = new DispatcherTimer();
     }
 
     public async Task LoadViewModelContentAsync()
@@ -85,7 +86,6 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
                 return;
             }
 
-            _dispatcherTimer = new DispatcherTimer();
             var isFeaturePresent = QuietBackgroundProcessesSessionManager.IsFeaturePresent();
             IsAnalyticSummaryAvailable = _table != null;
             var running = false;

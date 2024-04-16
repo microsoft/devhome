@@ -6,12 +6,8 @@
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     Loaded="UserControl_Loaded">
 
-<<<<<<< HEAD
     <StackPanel Orientation="Vertical"
                 Visibility="{x:Bind ViewModel.IsQuietBackgroundProcessesFeatureEnabled, Mode=OneWay}">
-=======
-    <StackPanel Orientation="Vertical" Visibility="{x:Bind ViewModel.IsQuietBackgroundProcessesFeatureEnabled, Mode=OneWay}">
->>>>>>> 3d94e1e7 (Iteration 4 - Addressed PR comments)
         <ctControls:SettingsExpander x:Uid="QuietBackgroundProcesses" IsExpanded="False" Margin="{ThemeResource SettingsCardMargin}">
 
             <!-- Header icon -->
