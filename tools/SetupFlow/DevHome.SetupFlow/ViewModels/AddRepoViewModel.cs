@@ -1126,6 +1126,8 @@ public partial class AddRepoViewModel : ObservableObject
         // Causing GetCloningInformationFromURL to fall back to git.
         var provider = _providers?.CanAnyProviderSupportThisUri(uri);
 
+        // This code is duplicated once.  If cloningInformation is null the user is asked to log in.
+        // DevHome then makes another attempt to get the repo information from the URL.
         var cloningInformation = MakeCloningInformationFromUrl(provider, cloneLocation, uri);
         if (cloningInformation != null)
         {
@@ -1146,7 +1148,6 @@ public partial class AddRepoViewModel : ObservableObject
 
             EverythingToClone.Add(cloningInformation);
             ShouldEnablePrimaryButton = true;
-            ShouldShowUrlError = false;
 
             return;
         }
@@ -1177,7 +1178,6 @@ public partial class AddRepoViewModel : ObservableObject
 
             EverythingToClone.Add(cloningInformation);
             ShouldEnablePrimaryButton = true;
-            ShouldShowUrlError = false;
 
             return;
         }
