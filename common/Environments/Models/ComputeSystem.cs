@@ -31,7 +31,21 @@ public class ComputeSystem
 
     public string DisplayName { get; private set; } = string.Empty;
 
-    public ComputeSystemOperations SupportedOperations { get; private set; }
+    public ComputeSystemOperations SupportedOperations
+    {
+        get
+        {
+            try
+            {
+                return _computeSystem.SupportedOperations;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"Failed to get supported operations for {DisplayName}");
+                return ComputeSystemOperations.None;
+            }
+        }
+    }
 
     public string SupplementalDisplayName { get; private set; } = string.Empty;
 
@@ -44,7 +58,6 @@ public class ComputeSystem
         _computeSystem = computeSystem;
         Id = new string(computeSystem.Id);
         DisplayName = new string(computeSystem.DisplayName);
-        SupportedOperations = computeSystem.SupportedOperations;
         SupplementalDisplayName = new string(computeSystem.SupplementalDisplayName);
         AssociatedDeveloperId = computeSystem.AssociatedDeveloperId;
         AssociatedProviderId = new string(computeSystem.AssociatedProviderId);

@@ -149,6 +149,7 @@
                             ComputeSystemProperties="{x:Bind Properties, Mode=OneWay}"
                             ComputeSystemPropertyTemplate="{StaticResource BottomRowProperties}"
                             ActionControlTemplate="{StaticResource LaunchButton}"
+                            ComputeSystemOperationStatus="{x:Bind UiMessageToDisplay, Mode=OneWay}"
                             ShouldShowInDefiniteProgress="{x:Bind IsOperationInProgress, Mode=OneWay}"/>
                     </Grid>
                 </Grid>
@@ -172,7 +173,7 @@
                         <commonCustomControls:CardBody
                             ComputeSystemTitle="{x:Bind EnvironmentName, Mode=OneWay}"
                             StateColor="{x:Bind StateColor, Mode=OneWay}"
-                            ComputeSystemCreationStatus="{x:Bind UiMessageToDisplay, Mode=OneWay}"
+                            ComputeSystemOperationStatus="{x:Bind UiMessageToDisplay, Mode=OneWay}"
                             ShouldShowInDefiniteProgress="{x:Bind IsOperationInProgress, Mode=OneWay}"/>
                     </Grid>
                 </Grid>
