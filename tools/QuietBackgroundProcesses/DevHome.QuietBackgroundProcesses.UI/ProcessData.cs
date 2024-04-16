@@ -2,9 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Drawing;
-using System.Numerics;
-using Windows.UI;
 
 namespace DevHome.QuietBackgroundProcesses.UI;
 

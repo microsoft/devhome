@@ -3,10 +3,8 @@
 
 using System.Collections.ObjectModel;
 using DevHome.QuietBackgroundProcesses.UI.ViewModels;
-using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.QuietBackgroundProcesses.UI.Views;
 

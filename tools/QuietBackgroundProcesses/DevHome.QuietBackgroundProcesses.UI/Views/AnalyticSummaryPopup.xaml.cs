@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.IO;
 using DevHome.Common.Extensions;
 using DevHome.Common.Windows.FileDialog;
 using DevHome.QuietBackgroundProcesses.UI.ViewModels;
