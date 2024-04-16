@@ -38,7 +38,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" x:Uid="AnalyticSummary_SortBy_Label" Margin="5 5 5 5" />
+                <TextBlock Grid.Column="0" x:Uid="AnalyticSummary_SortBy_Label" Margin="5" />
 
                 <ComboBox
                     Grid.Column="1"
@@ -46,13 +46,13 @@
                     Margin="5 0 5 0"
                     SelectedValue=""
                     SelectedIndex="{x:Bind ViewModel.SortComboBoxIndex, Mode=TwoWay}">
-                    <ComboBoxItem x:Uid="ComboBox_SortBy_Process" />
-                    <ComboBoxItem x:Uid="ComboBox_SortBy_Type" />
-                    <ComboBoxItem x:Uid="ComboBox_SortBy_CpuAboveThreshold" />
+                    <ComboBoxItem x:Uid="ComboBox_SortBy_Process" Tag="Process" />
+                    <ComboBoxItem x:Uid="ComboBox_SortBy_Type" Tag="Type" />
+                    <ComboBoxItem x:Uid="ComboBox_SortBy_CpuAboveThreshold" Tag="CPUAboveThreshold" />
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="SelectionChanged">
                             <ic:InvokeCommandAction Command="{x:Bind ViewModel.SortProcessesComboBoxChangedCommand, Mode=OneWay}"
-                                    CommandParameter="{x:Bind ((ComboBoxItem)SortComboBox.SelectedItem).Content, Mode=OneWay}" />
+                                    CommandParameter="{x:Bind ((ComboBoxItem)SortComboBox.SelectedItem).Tag.ToString(), Mode=OneWay}" />
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ComboBox>

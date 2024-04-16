@@ -9,12 +9,21 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Collections;
 using DevHome.Telemetry;
+using Microsoft.UI.Xaml.Controls;
 using Serilog;
 
 namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
 
 public partial class AnalyticSummaryPopupViewModel : ObservableObject
 {
+    // Enum for process category
+    public enum ProcessTableColumn
+    {
+        Process,
+        Type,
+        CPUAboveThreshold,
+    }
+
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AnalyticSummaryPopupViewModel));
     private readonly List<ProcessData> _processDatas = new();
 
@@ -77,6 +86,24 @@ public partial class AnalyticSummaryPopupViewModel : ObservableObject
         ProcessDatasAd.SortDescriptions.Add(new SortDescription("Pid", SortDirection.Descending));
     }
 
+    private ProcessTableColumn GetProcessTableColumnFromString(string value)
+    {
+        if (string.Equals(value, "Process", StringComparison.Ordinal))
+        {
+            return ProcessTableColumn.Process;
+        }
+        else if (string.Equals(value, "Type", StringComparison.Ordinal))
+        {
+            return ProcessTableColumn.Type;
+        }
+        else if (string.Equals(value, "CPUAboveThreshold", StringComparison.Ordinal))
+        {
+            return ProcessTableColumn.CPUAboveThreshold;
+        }
+
+        throw new ArgumentException("Invalid value for ProcessTableColumn");
+    }
+
     [RelayCommand]
     public void FilterProcessesTextInputChanged(string filterExpression)
     {
@@ -106,20 +133,22 @@ public partial class AnalyticSummaryPopupViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void SortProcessesComboBoxChanged(string selectedValue)
+    public void SortProcessesComboBoxChanged(string selectedValueString)
     {
         ProcessDatasAd.SortDescriptions.Clear();
-        if (selectedValue == "Process")
+
+        var selectedValue = GetProcessTableColumnFromString(selectedValueString);
+        switch (selectedValue)
         {
-            ProcessDatasAd.SortDescriptions.Add(new SortDescription("Name", SortDirection.Ascending));
-        }
-        else if (selectedValue == "Type")
-        {
-            ProcessDatasAd.SortDescriptions.Add(new SortDescription("Category", SortDirection.Descending));
-        }
-        else if (selectedValue == "CPU above threshold")
-        {
-            ProcessDatasAd.SortDescriptions.Add(new SortDescription("TimeAboveThreshold", SortDirection.Descending));
+            case ProcessTableColumn.Process:
+                ProcessDatasAd.SortDescriptions.Add(new SortDescription("Name", SortDirection.Ascending));
+                break;
+            case ProcessTableColumn.Type:
+                ProcessDatasAd.SortDescriptions.Add(new SortDescription("Category", SortDirection.Descending));
+                break;
+            case ProcessTableColumn.CPUAboveThreshold:
+                ProcessDatasAd.SortDescriptions.Add(new SortDescription("TimeAboveThreshold", SortDirection.Descending));
+                break;
         }
     }
 

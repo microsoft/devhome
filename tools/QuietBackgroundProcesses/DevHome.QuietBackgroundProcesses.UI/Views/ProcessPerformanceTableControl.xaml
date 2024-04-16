@@ -19,10 +19,6 @@
     </UserControl.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-        </Grid.RowDefinitions>
-
         <ListView
             ItemsSource="{x:Bind ItemsSource}"
             SelectionMode="Extended"
@@ -86,7 +82,7 @@
                                 HorizontalAlignment="Left"
                                 HorizontalTextAlignment="Left"
                                 TextTrimming="CharacterEllipsis"
-                                Padding="11 11 11 11" />
+                                Padding="11" />
                         </Border>
 
                         <Border Grid.Column="1" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 0">
