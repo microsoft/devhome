@@ -2,22 +2,22 @@
 // Licensed under the MIT License.
 
 using System;
-using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Environments.Models;
 
-public class ComputeSystemOperationStartedEventArgs : EventArgs
+public class ComputeSystemOperationCompletedData
 {
     public ComputeSystemOperations ComputeSystemOperation { get; private set; }
 
-    public EnvironmentsTelemetryStatus TelemetryStatus => EnvironmentsTelemetryStatus.Started;
+    public ComputeSystemOperationResult OperationResult { get; private set; }
 
     public Guid ActivityId { get; private set; }
 
-    public ComputeSystemOperationStartedEventArgs(ComputeSystemOperations computeSystemOperation, Guid activityId)
+    public ComputeSystemOperationCompletedData(ComputeSystemOperations computeSystemOperation, ComputeSystemOperationResult operationResult, Guid activityId)
     {
         ComputeSystemOperation = computeSystemOperation;
+        OperationResult = operationResult;
         ActivityId = activityId;
     }
 }

@@ -4,8 +4,10 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Antlr4.Runtime.Misc;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
@@ -15,11 +17,10 @@ using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Environments.Helpers;
 using DevHome.Environments.Models;
 using DevHome.Telemetry;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using WinUIEx;
+using WinUIEx.Messaging;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -27,7 +28,7 @@ namespace DevHome.Environments.ViewModels;
 /// View model for a compute system. Each 'card' in the UI represents a compute system.
 /// Contains an instance of the compute system object as well.
 /// </summary>
-public partial class ComputeSystemViewModel : ComputeSystemCardBase
+public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<ComputeSystemOperationStartedData>, IRecipient<ComputeSystemOperationCompletedData>
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
 
@@ -119,6 +120,9 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
     {
         ComputeSystem!.StateChanged -= _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged -= OnComputeSystemStateChanged;
+
+        // Unregister from all operation messages
+        WeakReferenceMessenger.Default.UnregisterAll(this);
     }
 
     [RelayCommand]
@@ -167,37 +171,72 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         }
     }
 
-    private void OnComputeSystemOperationStarted(object sender, ComputeSystemOperationStartedEventArgs args)
+    /// <summary>
+    /// Implements the Receive method from the IRecipient<ComputeSystemOperationStartedData> interface. When this message
+    /// is received we fire the first telemetry event to capture which operation and provider is starting.
+    /// </summary>
+    /// <param name="message">The object that holds the data needed to capture the operationInvoked telemetry data</param>
+    public void Receive(ComputeSystemOperationStartedData message)
     {
         _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             IsOperationInProgress = true;
 
+            _log.Information($"operation '{message.ComputeSystemOperation}' starting for Compute System: {Name} at {DateTime.Now}");
             TelemetryFactory.Get<ITelemetry>().Log(
                 "Environment_OperationInvoked_Event",
                 LogLevel.Measure,
-                new EnvironmentOperationUserEvent(args.TelemetryStatus, args.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, args.ActivityId));
+                new EnvironmentOperationUserEvent(message.TelemetryStatus, message.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, message.ActivityId));
         });
     }
 
-    private void OnComputeSystemOperationCompleted(object sender, ComputeSystemOperationCompletedEventArgs args)
+    /// <summary>
+    /// Implements the Receive method from the IRecipient<ComputeSystemOperationCompletedData> interface. When this message
+    /// is received the operation is completed and we can log the result of the operation.
+    /// </summary>
+    /// <param name="message">The object that holds the data needed to capture the operationInvoked telemetry data</param>
+    public void Receive(ComputeSystemOperationCompletedData message)
     {
         _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
+            _log.Information($"operation '{message.ComputeSystemOperation}' completed for Compute System: {Name} at {DateTime.Now}");
+
             var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
 
-            if ((args.OperationResult == null) || (args.OperationResult.Result.Status == ProviderOperationStatus.Failure))
+            if ((message.OperationResult == null) || (message.OperationResult.Result.Status == ProviderOperationStatus.Failure))
             {
                 completionStatus = EnvironmentsTelemetryStatus.Failed;
-                LogFailure(args.OperationResult);
+                LogFailure(message.OperationResult);
             }
 
             TelemetryFactory.Get<ITelemetry>().Log(
                 "Environment_OperationInvoked_Event",
                 LogLevel.Measure,
-                new EnvironmentOperationUserEvent(completionStatus, args.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, args.ActivityId));
+                new EnvironmentOperationUserEvent(completionStatus, message.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, message.ActivityId));
 
             IsOperationInProgress = false;
         });
+    }
+
+    /// <summary>
+    /// Register the ViewModel to receive messages for the start and completion of operations from all view models within the
+    /// DotOperation and LaunchOperation lists. When there is an operation this ViewModel will receive the started and
+    /// the completed messages.
+    /// </summary>
+    private void RegisterForAllOperationMessages()
+    {
+        _log.Information($"Registering ComputeSystemViewModel '{Name}' from provider '{ProviderDisplayName}' with WeakReferenceMessenger at {DateTime.Now}");
+
+        foreach (var dotOperation in DotOperations!)
+        {
+            WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedData, OperationsViewModel>(this, dotOperation);
+            WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedData, OperationsViewModel>(this, dotOperation);
+        }
+
+        foreach (var launchOperation in LaunchOperations!)
+        {
+            WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedData, OperationsViewModel>(this, launchOperation);
+            WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedData, OperationsViewModel>(this, launchOperation);
+        }
     }
 }

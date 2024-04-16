@@ -2,8 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Configuration.Provider;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Environments.Models;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
@@ -26,8 +28,10 @@ public enum OperationKind
 /// Represents an operation that can be performed on a compute system.
 /// This is used to populate the launch and dot buttons on the compute system card.
 /// </summary>
-public partial class OperationsViewModel
+public partial class OperationsViewModel : IEquatable<OperationsViewModel>
 {
+    private readonly Guid _operationId = Guid.NewGuid();
+
     private readonly OperationKind _operationKind;
 
     public string Name { get; }
@@ -40,10 +44,6 @@ public partial class OperationsViewModel
 
     private Action? DevHomeAction { get; }
 
-    public event TypedEventHandler<OperationsViewModel, ComputeSystemOperationStartedEventArgs>? OperationStarted;
-
-    public event TypedEventHandler<OperationsViewModel, ComputeSystemOperationCompletedEventArgs>? OperationCompleted;
-
     public OperationsViewModel(string name, string icon, Func<string, Task<ComputeSystemOperationResult>> command, ComputeSystemOperations computeSystemOperation)
     {
         _operationKind = OperationKind.ExtensionTask;
@@ -51,6 +51,7 @@ public partial class OperationsViewModel
         IconGlyph = icon;
         ExtensionTask = command;
         ComputeSystemOperation = computeSystemOperation;
+
     }
 
     public OperationsViewModel(string name, string icon, Action command)
@@ -73,9 +74,46 @@ public partial class OperationsViewModel
             }
 
             var activityId = Guid.NewGuid();
-            OperationStarted?.Invoke(this, new ComputeSystemOperationStartedEventArgs(ComputeSystemOperation, activityId));
+            WeakReferenceMessenger.Default.Send(new ComputeSystemOperationStartedData(ComputeSystemOperation, activityId));
+
             var result = await ExtensionTask!(string.Empty);
-            OperationCompleted?.Invoke(this, new ComputeSystemOperationCompletedEventArgs(ComputeSystemOperation, result, activityId));
+
+            WeakReferenceMessenger.Default.Send(new ComputeSystemOperationCompletedData(ComputeSystemOperation, result, activityId));
         });
+    }
+
+    /// <summary>
+    /// Compares the current instance of the object with another instance of the object to check if they are the same.
+    /// </summary>
+    /// <param name="other">A OperationsViewModel to compare the current object with</param>
+    /// <returns>True is the object in parameter is equal to the current object</returns>
+    public bool Equals(OperationsViewModel? other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        if (ReferenceEquals(null, other))
+        {
+            return false;
+        }
+
+        return false;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as OperationsViewModel);
+    }
+
+    public override int GetHashCode()
+    {
+        return $"{Name}#{_operationKind}#{IconGlyph}#{_operationId}".GetHashCode();
     }
 }
