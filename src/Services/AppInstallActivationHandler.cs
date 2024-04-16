@@ -17,7 +17,7 @@ using Windows.Storage;
 namespace DevHome.Services;
 
 /// <summary>
-/// Class that handles the activation of the application when a DSC file (*.winget) is opened
+/// Class that handles the activation of the application when an add-apps-to-cart URI protcol is used.
 /// </summary>
 public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEventArgs>
 {
