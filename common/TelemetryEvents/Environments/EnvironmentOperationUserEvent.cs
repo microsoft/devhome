@@ -30,6 +30,7 @@ public class EnvironmentOperationUserEvent : EventBase
     /// <param name="status">The status of the launch operation</param>
     /// <param name="computeSystemOperation">An enum representing the compute system operation that was invoked</param>
     /// <param name="providerId">The Id of the compute system provider that owns the compute system that is being launched</param>
+    /// <param name="activityId">The activity Id associated with the compute system operation that was invoked by the user</param>
     public EnvironmentOperationUserEvent(EnvironmentsTelemetryStatus status, ComputeSystemOperations computeSystemOperation, string providerId, Guid activityId)
     {
         Status = status.ToString();

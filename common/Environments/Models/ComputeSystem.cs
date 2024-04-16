@@ -275,7 +275,7 @@ public class ComputeSystem
         }
     }
 
-    public IApplyConfigurationOperation ApplyConfiguration(string configuration)
+    public IApplyConfigurationOperation CreateApplyConfigurationOperation(string configuration)
     {
         try
         {
@@ -283,7 +283,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"ApplyConfiguration for: {this} failed due to exception");
+            _log.Error(ex, $"CreateApplyConfigurationOperation for: {this} failed due to exception");
             throw;
         }
     }
