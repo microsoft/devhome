@@ -94,7 +94,7 @@
                     <TextBlock
                         Style="{ThemeResource BodyStrongTextBlockStyle}"
                         Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Header"/>
+                        Text="{x:Bind ViewModel.PageHeaderText}"/>
                     <TextBlock
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay}"

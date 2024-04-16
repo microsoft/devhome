@@ -147,7 +147,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     public bool ShowConfigurationFileResults => ShowConfigurationUnitResults && !IsSettingUpATargetMachine;
 
-    public bool CompletedWithErrors => TargetFailedResults.Count > 0;
+    public bool CompletedWithErrors => TargetFailedResults.Count > 0 || FailedTasks.Count > 0;
 
     public int ConfigurationUnitSucceededCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsSuccess);
 
