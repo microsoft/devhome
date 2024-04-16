@@ -121,6 +121,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
                 else
                 {
                     SessionStateText = GetStatusString("FeatureNotSupported");
+                    QuietButtonText = GetString("QuietBackgroundProcesses_QuietButton_Start");
                 }
             });
         });
