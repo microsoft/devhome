@@ -129,12 +129,40 @@ public partial class AnalyticSummaryPopupViewModel : ObservableObject
         using (StreamWriter writer = new StreamWriter(filePath))
         {
             // Write the .csv header
-            writer.WriteLine("Pid,Name,Samples,Percent,StandardDeviation,Sigma4Deviation,MaxPercent,TimeAboveThreshold,TotalCpuTimeInMicroseconds,PackageFullName,Aumid,Path,Category,CreateTime,ExitTime");
+            writer.WriteLine("Pid," +
+                "Name," +
+                "Samples," +
+                "Percent," +
+                "StandardDeviation," +
+                "Sigma4Deviation," +
+                "MaxPercent," +
+                "TimeAboveThreshold," +
+                "TotalCpuTimeInMicroseconds," +
+                "PackageFullName," +
+                "Aumid," +
+                "Path," +
+                "Category," +
+                "CreateTime," +
+                "ExitTime");
 
             // Write each item from the list to the file
             foreach (var data in this._processDatas)
             {
-                string row = $"{data.Pid},{data.Name},{data.Samples},{data.Percent},{data.StandardDeviation},{data.Sigma4Deviation},{data.MaxPercent},{data.TimeAboveThreshold},{data.TotalCpuTimeInMicroseconds},{data.PackageFullName},{data.Aumid},{data.Path},{data.Category},{data.CreateTime},{data.ExitTime}";
+                var row = $"{data.Pid}," +
+                    $"{data.Name}," +
+                    $"{data.Samples}," +
+                    $"{data.Percent}," +
+                    $"{data.StandardDeviation}," +
+                    $"{data.Sigma4Deviation}," +
+                    $"{data.MaxPercent}," +
+                    $"{data.TimeAboveThreshold}," +
+                    $"{data.TotalCpuTimeInMicroseconds}," +
+                    $"{data.PackageFullName}," +
+                    $"{data.Aumid}," +
+                    $"{data.Path}," +
+                    $"{data.Category}," +
+                    $"{data.CreateTime}," +
+                    $"{data.ExitTime}";
                 writer.WriteLine(row);
             }
         }

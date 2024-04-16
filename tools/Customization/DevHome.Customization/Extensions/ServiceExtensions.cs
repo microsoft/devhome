@@ -20,7 +20,9 @@ public static class ServiceExtensions
         services.AddSingleton<FileExplorerViewModel>();
         services.AddTransient<FileExplorerPage>();
 
-        services.AddSingleton<OptimizeDevDriveDialogViewModelFactory>(sp => (cacheLocation, environmentVariable, exampleDevDriveLocation, existingDevDriveLetters) => ActivatorUtilities.CreateInstance<OptimizeDevDriveDialogViewModel>(sp, cacheLocation, environmentVariable, exampleDevDriveLocation, existingDevDriveLetters));
+        services.AddSingleton<OptimizeDevDriveDialogViewModelFactory>(sp =>
+            (cacheLocation, environmentVariable, exampleDevDriveLocation, existingDevDriveLetters) =>
+                ActivatorUtilities.CreateInstance<OptimizeDevDriveDialogViewModel>(sp, cacheLocation, environmentVariable, exampleDevDriveLocation, existingDevDriveLetters));
         services.AddSingleton<DevDriveInsightsViewModel>();
         services.AddTransient<DevDriveInsightsPage>();
 
