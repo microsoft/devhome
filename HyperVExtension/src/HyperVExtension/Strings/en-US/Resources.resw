@@ -330,7 +330,7 @@
     <comment>Label text for a list of cards that appear in the UI</comment>
   </data>
   <data name="WaitForLoginRequest.LoginRequiredDescriptionTextAfterLastAttempt2" xml:space="preserve">
-    <value>After 3 attempts, failed to find a logged in user . This ends the set up.</value>
+    <value>After 3 attempts, failed to find a logged in user. This ends the set up.</value>
     <comment>Error description text shown in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
   </data>
   <data name="WaitForLoginRequest.LoginRequiredTextAfterLastAttempt2" xml:space="preserve">
