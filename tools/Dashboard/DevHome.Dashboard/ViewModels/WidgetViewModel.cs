@@ -9,6 +9,7 @@ using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
+using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Telemetry;
@@ -32,9 +33,9 @@ namespace DevHome.Dashboard.ViewModels;
 /// <param name="widgetDefinition">WidgetDefinition</param>
 /// <returns>Widget view model</returns>
 public delegate WidgetViewModel WidgetViewModelFactory(
-    Widget widget,
+    ComSafeWidget widget,
     WidgetSize widgetSize,
-    WidgetDefinition widgetDefinition);
+    ComSafeWidgetDefinition widgetDefinition);
 
 public partial class WidgetViewModel : ObservableObject
 {
@@ -46,10 +47,10 @@ public partial class WidgetViewModel : ObservableObject
     private RenderedAdaptiveCard _renderedCard;
 
     [ObservableProperty]
-    private Widget _widget;
+    private ComSafeWidget _widget;
 
     [ObservableProperty]
-    private WidgetDefinition _widgetDefinition;
+    private ComSafeWidgetDefinition _widgetDefinition;
 
     [ObservableProperty]
     private WidgetSize _widgetSize;
@@ -66,7 +67,7 @@ public partial class WidgetViewModel : ObservableObject
     [ObservableProperty]
     private FrameworkElement _widgetFrameworkElement;
 
-    partial void OnWidgetChanging(Widget value)
+    partial void OnWidgetChanging(ComSafeWidget value)
     {
         if (Widget != null)
         {
@@ -74,7 +75,7 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    partial void OnWidgetChanged(Widget value)
+    partial void OnWidgetChanged(ComSafeWidget value)
     {
         if (Widget != null)
         {
@@ -83,20 +84,20 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    partial void OnWidgetDefinitionChanged(WidgetDefinition value)
+    partial void OnWidgetDefinitionChanged(ComSafeWidgetDefinition value)
     {
         if (WidgetDefinition != null)
         {
             WidgetDisplayTitle = WidgetDefinition.DisplayTitle;
-            WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinition.DisplayName;
+            WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinitionDisplayName;
             IsCustomizable = WidgetDefinition.IsCustomizable;
         }
     }
 
     public WidgetViewModel(
-        Widget widget,
+        ComSafeWidget widget,
         WidgetSize widgetSize,
-        WidgetDefinition widgetDefinition,
+        ComSafeWidgetDefinition widgetDefinition,
         WidgetAdaptiveCardRenderingService adaptiveCardRenderingService,
         WindowEx windowEx)
     {
@@ -323,13 +324,13 @@ public partial class WidgetViewModel : ObservableObject
         TelemetryFactory.Get<ITelemetry>().Log(
             "Dashboard_ReportWidgetInteraction",
             LogLevel.Critical,
-            new ReportWidgetInteractionEvent(WidgetDefinition.ProviderDefinition.Id, WidgetDefinition.Id, args.Action.ActionTypeString));
+            new ReportWidgetInteractionEvent(WidgetDefinition.ProviderDefinitionId, WidgetDefinition.Id, args.Action.ActionTypeString));
 
         // TODO: Handle other ActionTypes
         // https://github.com/microsoft/devhome/issues/644
     }
 
-    private async void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
+    private async void HandleWidgetUpdated(ComSafeWidget sender, WidgetUpdatedEventArgs args)
     {
         _log.Debug($"HandleWidgetUpdated for widget {sender.Id}");
         await RenderWidgetFrameworkElementAsync();

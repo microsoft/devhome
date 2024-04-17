@@ -31,20 +31,33 @@ public class ComputeSystem
 
     public string DisplayName { get; private set; } = string.Empty;
 
-    public ComputeSystemOperations SupportedOperations { get; private set; }
+    public ComputeSystemOperations SupportedOperations
+    {
+        get
+        {
+            try
+            {
+                return _computeSystem.SupportedOperations;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"Failed to get supported operations for {DisplayName}");
+                return ComputeSystemOperations.None;
+            }
+        }
+    }
 
     public string SupplementalDisplayName { get; private set; } = string.Empty;
 
     public IDeveloperId AssociatedDeveloperId { get; private set; }
 
-    public string? AssociatedProviderId { get; private set; } = string.Empty;
+    public string AssociatedProviderId { get; private set; } = string.Empty;
 
     public ComputeSystem(IComputeSystem computeSystem)
     {
         _computeSystem = computeSystem;
         Id = new string(computeSystem.Id);
         DisplayName = new string(computeSystem.DisplayName);
-        SupportedOperations = computeSystem.SupportedOperations;
         SupplementalDisplayName = new string(computeSystem.SupplementalDisplayName);
         AssociatedDeveloperId = computeSystem.AssociatedDeveloperId;
         AssociatedProviderId = new string(computeSystem.AssociatedProviderId);
@@ -275,7 +288,115 @@ public class ComputeSystem
         }
     }
 
-    public IApplyConfigurationOperation ApplyConfiguration(string configuration)
+    public async Task<ComputeSystemOperationResult> PinToStartMenuAsync(string options)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.PinToStartMenuAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"PinToStartMenuAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemOperationResult> UnpinFromStartMenuAsync(string options)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.UnpinFromStartMenuAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"UnpinFromStartMenuAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemOperationResult> PinToTaskbarAsync(string options)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.PinToTaskbarAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"PinToTaskbarAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemOperationResult> UnpinFromTaskbarAsync(string options)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.UnpinFromTaskbarAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"UnpinFromTaskbarAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemPinnedResult> GetIsPinnedToStartMenuAsync()
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.GetIsPinnedToStartMenuAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"GetIsPinnedToStartMenuAsync for: {this} failed due to exception");
+            return new ComputeSystemPinnedResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemPinnedResult> GetIsPinnedToTaskbarAsync()
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.GetIsPinnedToTaskbarAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"GetIsPinnedToTaskbarAsync for: {this} failed due to exception");
+            return new ComputeSystemPinnedResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public IApplyConfigurationOperation CreateApplyConfigurationOperation(string configuration)
     {
         try
         {
@@ -283,7 +404,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"ApplyConfiguration for: {this} failed due to exception");
+            _log.Error(ex, $"CreateApplyConfigurationOperation for: {this} failed due to exception");
             throw;
         }
     }

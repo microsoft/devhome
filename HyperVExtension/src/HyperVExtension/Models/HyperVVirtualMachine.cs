@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Management.Automation;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -18,6 +19,7 @@ using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.Win32;
 using Windows.Win32.Foundation;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
@@ -451,7 +453,29 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             try
             {
-                _hyperVManager.ConnectToVirtualMachine(VmId);
+                _log.Information($"Starting vmconnect launch attempt on {DateTime.Now}: VM details: {this}");
+                ProcessStartInfo processStartInfo = new ProcessStartInfo("vmconnect.exe");
+                processStartInfo.UseShellExecute = true;
+
+                // The -G flag allows us to use the Id of the VM to tell vmconnect.exe which VM to launch into.
+                processStartInfo.Arguments = $"localhost -G {Id}";
+
+                using (Process vmConnectProcess = new Process())
+                {
+                    vmConnectProcess.StartInfo = processStartInfo;
+
+                    // We start the process and will return success if it does not throw an exception.
+                    // If vmconnect has an error, it will be displayed to the user in a message dialog
+                    // outside of our control.
+                    vmConnectProcess.Start();
+
+                    // Note: Just because the vmconnect.exe launches in the foreground does not mean it will launch
+                    // in front of the Dev Home window. Since the vmconnect.exe is a separate process being launched
+                    // outside of Dev Home, it will not be parented to the Dev Home window. The shell will launch it
+                    // in its last known location.
+                    PInvoke.SetForegroundWindow((HWND)vmConnectProcess.MainWindowHandle);
+                }
+
                 _log.Information($"Successful vmconnect launch attempt on {DateTime.Now}: VM details: {this}");
                 return new ComputeSystemOperationResult();
             }
@@ -798,11 +822,21 @@ public class HyperVVirtualMachine : IComputeSystem
 
     private string OperationErrorString(ComputeSystemOperations operation)
     {
+        if (operation == ComputeSystemOperations.Delete)
+        {
+            return $"Failed to complete {operation} operation on {DateTime.Now}: for VM {DisplayName}";
+        }
+
         return $"Failed to complete {operation} operation on {DateTime.Now}: VM details: {this}";
     }
 
     private string OperationSuccessString(ComputeSystemOperations operation)
     {
+        if (operation == ComputeSystemOperations.Delete)
+        {
+            return $"Successfully completed {operation} operation on {DateTime.Now}: for VM {DisplayName}";
+        }
+
         return $"Successfully completed {operation} operation on {DateTime.Now}: VM details: {this}";
     }
 }

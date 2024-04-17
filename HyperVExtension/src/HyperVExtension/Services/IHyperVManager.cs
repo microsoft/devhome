@@ -63,10 +63,6 @@ public interface IHyperVManager
     /// <returns> True if the virtual machine was removed successfully, false otherwise.</returns>
     public bool RemoveVirtualMachine(Guid vmId);
 
-    /// <summary> Starts a remote session a Hyper-V virtual machine.</summary>
-    /// <param name="vmId"> The id of the virtual machine.</param>
-    public void ConnectToVirtualMachine(Guid vmId);
-
     /// <summary> Gets a list of all checkpoints for a Hyper-V virtual machine.</summary>
     /// <param name="vmId"> The id of the virtual machine.</param>
     /// <returns> A list of checkpoints and their parent checkpoints </returns>

@@ -24,9 +24,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+    <ProjectReference Include="..\..\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.UI\DevHome.QuietBackgroundProcesses.UI.csproj" />
     <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
     <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
-    <ProjectReference Include="..\..\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,21 +34,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Views\DeveloperFileExplorerPage.xaml" />
-    <None Remove="Views\DeveloperFileExplorerView.xaml" />
+    <None Remove="Views\FileExplorerPage.xaml" />
+    <None Remove="Views\FileExplorerView.xaml" />
     <None Remove="Views\DevDriveInsightsPage.xaml" />
     <None Remove="Views\DevDriveInsightsView.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\MainPageView.xaml" />
-    <None Remove="Views\QuietBackgroundProcessesPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Views\DeveloperFileExplorerPage.xaml">
+    <Page Update="Views\FileExplorerPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Views\DeveloperFileExplorerView.xaml">
+    <Page Update="Views\FileExplorerView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
@@ -58,9 +57,6 @@
     </Page>
     <Page Update="Views\MainPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Views\QuietBackgroundProcessesPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>

@@ -36,6 +36,8 @@ public class DevHomeActionSet : IDevHomeActionSetRender
     /// </summary>
     private readonly TopLevelCardActionSetVisibility _actionSetVisibility;
 
+    private const string TopLevelCardActionId = "DevHomeTopLevelActionSet";
+
     /// <summary>
     /// Gets the adaptive card object that will invoke an action within the action set.
     /// </summary>
@@ -73,7 +75,8 @@ public class DevHomeActionSet : IDevHomeActionSetRender
             ActionButtonInvoker = context.ActionInvoker;
             OriginalAdaptiveCard = renderArgs.ParentCard;
 
-            if (_actionSetVisibility == TopLevelCardActionSetVisibility.Hidden)
+            if (_actionSetVisibility == TopLevelCardActionSetVisibility.Hidden &&
+                actionSet.Id.Equals(TopLevelCardActionId, System.StringComparison.OrdinalIgnoreCase))
             {
                 // the page in Dev Home does not want to show the action set in the card.
                 // So we return null to prevent the adaptive card buttons from appearing.

@@ -153,6 +153,36 @@ Once you've discussed your proposed feature/fix/etc. with a team member and you'
 5. Work on your changes
 6. Build and see if it works
 
+## Building the code
+
+1. Clone the repository
+2. Configure your system
+   * Please use the [configuration file](.configurations/configuration.dsc.yaml). This can be applied by either:
+     * Dev Home's machine configuration tool
+     * WinGet configuration. If you have WinGet version [v1.6.2631 or later](https://github.com/microsoft/winget-cli/releases), run `winget configure .configurations/configuration.dsc.yaml` in an elevated shell from the project root so relative paths resolve correctly
+   * Alternatively, if you already are running the minimum OS version, have Visual Studio installed, and have developer mode enabled, you may configure your Visual Studio directly via the .vsconfig file. To do this:
+     * Open the Visual Studio Installer, select “More” on your product card and then "Import configuration"
+     * Specify the .vsconfig file at the root of the repo and select “Review Details”
+
+## Running & debugging
+
+In Visual Studio, you should be able to build and debug Dev Home by hitting <kbd>F5</kbd>. Make sure to select either the `x64` or the `x86` platform and set DevHome as the selected startup project.
+
+Alternatively,
+
+- Open the Developer Command Prompt for Visual Studio
+- Run `Build` from Dev Home's root directory.  You can pass in a list of platforms/configurations
+- The Dev Home MSIX will be in your repo under `AppxPackages\x64\debug`
+
+
+### Rules
+
+- **Follow the pattern of what you already see in the code.**
+- [Coding style](style.md).
+- Try to package new ideas/components into libraries that have nicely defined interfaces.
+- Package new ideas into classes or refactor existing ideas into a class as you extend.
+- When adding new classes/methods/changing existing code: add new unit tests or update the existing tests.
+
 ### Code review
 
 When you'd like the team to take a look (even if the work is not yet fully-complete), mark the PR as 'Ready For Review' so that the team can review your work and provide comments, suggestions, and request changes. It may take several cycles but the end result will be solid, testable, conformant code that is safe for us to merge.

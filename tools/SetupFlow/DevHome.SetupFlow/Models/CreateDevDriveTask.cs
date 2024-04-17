@@ -44,6 +44,11 @@ internal sealed class CreateDevDriveTask : ISetupTask
 
     public bool RequiresReboot => false;
 
+    /// <summary>
+    /// Gets target device name. Inherited via ISetupTask but unused.
+    /// </summary>
+    public string TargetName => string.Empty;
+
     public bool DependsOnDevDriveToBeInstalled => false;
 
     public IDevDrive DevDrive

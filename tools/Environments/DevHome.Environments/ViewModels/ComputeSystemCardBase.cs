@@ -30,10 +30,13 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
     private ComputeSystemState _state;
 
     [ObservableProperty]
-    private bool _isCreationInProgress;
+    private bool _isOperationInProgress;
 
     [ObservableProperty]
     private CardStateColor _stateColor;
+
+    [ObservableProperty]
+    private bool _shouldShowLaunchOperation;
 
     public BitmapImage? HeaderImage { get; protected set; } = new();
 
@@ -43,6 +46,15 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
 
     public string ProviderDisplayName { get; protected set; } = string.Empty;
 
+    public string AssociatedProviderId { get; protected set; } = string.Empty;
+
+    public string ComputeSystemId { get; protected set; } = string.Empty;
+
     [ObservableProperty]
     private string _uiMessageToDisplay = string.Empty;
+
+    public override string ToString()
+    {
+        return $"{Name} {AlternativeName}";
+    }
 }

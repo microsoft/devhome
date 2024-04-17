@@ -49,7 +49,7 @@ namespace ABI::DevHome::QuietBackgroundProcesses
             // Stop and discard the previous timer
             if (g_activeTimer)
             {
-                g_activeTimer->Cancel();
+                g_activeTimer->Cancel(nullptr);
             }
 
             std::chrono::seconds duration = DEFAULT_QUIET_DURATION;
@@ -67,14 +67,16 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         }
         CATCH_RETURN()
 
-        STDMETHODIMP Stop() noexcept override try
+        STDMETHODIMP Stop(ABI::DevHome::QuietBackgroundProcesses::IProcessPerformanceTable** result) noexcept override
+        try
         {
             auto lock = std::scoped_lock(g_mutex);
+            *result = nullptr;
 
             // Turn off quiet mode and cancel timer
             if (g_activeTimer)
             {
-                g_activeTimer->Cancel();
+                g_activeTimer->Cancel(result);
                 g_activeTimer.reset();
             }
 

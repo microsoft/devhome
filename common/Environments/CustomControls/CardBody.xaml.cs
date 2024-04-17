@@ -38,10 +38,10 @@ public sealed partial class CardBody : UserControl
         set => SetValue(ComputeSystemAlternativeTitleProperty, value);
     }
 
-    public string ComputeSystemCreationStatus
+    public string ComputeSystemOperationStatus
     {
-        get => (string)GetValue(ComputeSystemCreationStatusProperty);
-        set => SetValue(ComputeSystemCreationStatusProperty, value);
+        get => (string)GetValue(ComputeSystemOperationStatusProperty);
+        set => SetValue(ComputeSystemOperationStatusProperty, value);
     }
 
     public BitmapImage ComputeSystemImage
@@ -103,7 +103,7 @@ public sealed partial class CardBody : UserControl
     private static readonly DependencyProperty ComputeSystemPropertiesProperty = DependencyProperty.Register(nameof(ComputeSystemProperties), typeof(ObservableCollection<CardProperty>), typeof(CardBody), new PropertyMetadata(null));
     private static readonly DependencyProperty ComputeSystemPropertyTemplateProperty = DependencyProperty.Register(nameof(ComputeSystemPropertyTemplate), typeof(DataTemplate), typeof(CardBody), new PropertyMetadata(null));
 
-    private static readonly DependencyProperty ComputeSystemCreationStatusProperty = DependencyProperty.Register(nameof(ComputeSystemCreationStatus), typeof(string), typeof(CardBody), new PropertyMetadata(null));
+    private static readonly DependencyProperty ComputeSystemOperationStatusProperty = DependencyProperty.Register(nameof(ComputeSystemOperationStatus), typeof(string), typeof(CardBody), new PropertyMetadata(null));
 
     private static readonly DependencyProperty ShouldShowInDefiniteProgressProperty = DependencyProperty.Register(nameof(ShouldShowInDefiniteProgress), typeof(bool), typeof(CardBody), new PropertyMetadata(false));
 }
