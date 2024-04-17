@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Management.Automation;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -18,6 +19,8 @@ using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI.UIAutomation;
+using Windows.Win32;
 using Windows.Win32.Foundation;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
@@ -451,7 +454,25 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             try
             {
-                _hyperVManager.ConnectToVirtualMachine(VmId);
+                _log.Information($"Starting vmconnect launch attempt on {DateTime.Now}: VM details: {this}");
+                ProcessStartInfo processStartInfo = new ProcessStartInfo("vmconnect.exe");
+                processStartInfo.UseShellExecute = true;
+
+                // The -G flag allows us to use the Id of the VM to tell vmconnect.exe which VM to launch into.
+                processStartInfo.Arguments = $"localhost -G {Id}";
+
+                using (Process vmConnectProcess = new Process())
+                {
+                    vmConnectProcess.StartInfo = processStartInfo;
+
+                    // We start the process and will return success if it does not throw an exception.
+                    // If vmconnect has an error, it will be displayed to the user in a message dialog
+                    // outside of our control.
+                    vmConnectProcess.Start();
+                    
+                    PInvoke.SetForegroundWindow((HWND)vmConnectProcess.MainWindowHandle);
+                }
+
                 _log.Information($"Successful vmconnect launch attempt on {DateTime.Now}: VM details: {this}");
                 return new ComputeSystemOperationResult();
             }
