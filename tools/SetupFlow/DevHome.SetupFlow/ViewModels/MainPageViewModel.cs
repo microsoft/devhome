@@ -105,7 +105,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     internal void StartAppManagementFlow(string query)
     {
-        _log.Information("Launching app management flow");
+        _log.Information($"Launching app management flow for query:{query}");
         var appManagementSetupFlow = _host.GetService<AppManagementTaskGroup>();
         StartSetupFlowForTaskGroups(null, "App Search URI", appManagementSetupFlow);
         appManagementSetupFlow.HandleSearchQuery(query);

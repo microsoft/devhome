@@ -21,17 +21,13 @@ public class ProtocolActivationHandler : ActivationHandler<ProtocolActivatedEven
 
     protected override bool CanHandleInternal(ProtocolActivatedEventArgs args)
     {
-        return args.Uri != null && args.Uri.LocalPath.Equals(SettingsAccountsUri, StringComparison.OrdinalIgnoreCase);
+        return args.Uri != null && args.Uri.AbsolutePath.Equals(SettingsAccountsUri, StringComparison.OrdinalIgnoreCase);
     }
 
     protected override Task HandleInternalAsync(ProtocolActivatedEventArgs args)
     {
-        if (args.Uri.AbsolutePath == SettingsAccountsUri)
-        {
-            _navigationService.DefaultPage = typeof(AccountsViewModel).FullName!;
-            _navigationService.NavigateTo(_navigationService.DefaultPage);
-        }
-
+        _navigationService.DefaultPage = typeof(AccountsViewModel).FullName!;
+        _navigationService.NavigateTo(_navigationService.DefaultPage);
         return Task.CompletedTask;
     }
 }

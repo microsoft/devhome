@@ -40,22 +40,18 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
         this._navigationService = navigationService;
         _setupFlowViewModel = setupFlowViewModel;
         _packageProvider = packageProvider;
-        _wpm = wpm;
+        _windowsPackageManager = wpm;
         _setupFlowOrchestrator = setupFlowOrchestrator;
     }
 
     protected override bool CanHandleInternal(ProtocolActivatedEventArgs args)
     {
-        return args.Uri != null && args.Uri.LocalPath.Equals(AppSearchUri, StringComparison.OrdinalIgnoreCase);
+        return args.Uri != null && args.Uri.AbsolutePath.Equals(AppSearchUri, StringComparison.OrdinalIgnoreCase);
     }
 
     protected async override Task<Task> HandleInternalAsync(ProtocolActivatedEventArgs args)
     {
-        if (args.Uri.AbsolutePath == AppSearchUri)
-        {
-            await AppActivationFlowAsync(args.Uri.Query);
-        }
-
+        await AppActivationFlowAsync(args.Uri.Query);
         return Task.CompletedTask;
     }
 
@@ -105,7 +101,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
             return;
         }
 
-        var searchResults = await _wpm.SearchAsync(firstSearchTerm, 1);
+        var searchResults = await _windowsPackageManager.SearchAsync(firstSearchTerm, 1);
         if (searchResults.Count == 0)
         {
             _log.Warning("No results found for the search term: {SearchTerm}", firstSearchTerm);
