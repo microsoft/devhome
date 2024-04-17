@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Dashboard.Services;
 
@@ -27,10 +27,7 @@ internal sealed class ComSafeHelpers
             }
         }
 
-#pragma warning disable CA1309 // Use ordinal string comparison
-        comSafeWidgetDefinitions.Sort((a, b) => string.Compare(a.DisplayTitle, b.DisplayTitle, StringComparison.CurrentCulture));
-#pragma warning restore CA1309 // Use ordinal string comparison
-
+        comSafeWidgetDefinitions = comSafeWidgetDefinitions.OrderBy(def => def.DisplayTitle).ToList();
         return comSafeWidgetDefinitions;
     }
 }
