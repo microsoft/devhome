@@ -68,6 +68,7 @@
     },
     {
       "type": "ActionSet",
+      "id": "DevHomeTopLevelActionSet",
       "actions": [
         {
           "id": "DevHomeMachineConfigurationNextButton",

@@ -202,10 +202,6 @@
     <value>Failed to create environment due to error: {0}</value>
     <comment>Locked="{0}" Text to show the the user when Dev Home receives the notification that the creation of the new environment has failed. {0} is the error that is displayed to the user</comment>
   </data>
-  <data name="SuccessMessageForCreateComputeSystem" xml:space="preserve">
-    <value>The {0} provider has completed its creation steps. Re-sync the page to manage your new environment</value>
-    <comment>Locked="{0}" Text to show the the user when Dev Home receives the notification that the users new environment has been created.  {0} is the of the provider who sent the notification</comment>
-  </data>
   <data name="CreationStatusTextForCreateEnvironmentFlow" xml:space="preserve">
     <value>Status: {0}</value>
     <comment>Locked="{0}" provides the user with status message updates about a currently running operation. {0} is the status message that will appear in the UI</comment>
@@ -217,6 +213,22 @@
   <data name="EnvironmentsToManageHeader.Text" xml:space="preserve">
     <value>Manage environments:</value>
     <comment>Header text for the cards that in the UI that are not being created.</comment>
+  </data>
+  <data name="LaunchingEnvironmentText" xml:space="preserve">
+    <value>Launching Environment</value>
+    <comment>Text to tell the user Dev Home is launching their environment</comment>
+  </data>
+  <data name="LaunchingEnvironmentSuccessText" xml:space="preserve">
+    <value>Environment launched successfully</value>
+    <comment>Text to tell the user Dev Home succeeded in launching their environment</comment>
+  </data>
+  <data name="LaunchingEnvironmentFailedText" xml:space="preserve">
+    <value>Environment failed to launch due to error {0}</value>
+    <comment>Text to tell the user Dev Home failed to launch their environment. {0} is the error message sent by the extension</comment>
+  </data>
+  <data name="LaunchingEnvironmentFailedUnKnownReasonText" xml:space="preserve">
+    <value>The extension failed to launch the environment for an unknown reason. Check the extensions logs for more information</value>
+    <comment>Text to tell the user Dev Home failed to launch their environment. {0} is the error message sent by the extension</comment>
   </data>
   <data name="UnpinFromStartButtonContextMenuItem" xml:space="preserve">
     <value>Unpin From Start Menu</value>

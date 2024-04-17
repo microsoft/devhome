@@ -798,11 +798,21 @@ public class HyperVVirtualMachine : IComputeSystem
 
     private string OperationErrorString(ComputeSystemOperations operation)
     {
+        if (operation == ComputeSystemOperations.Delete)
+        {
+            return $"Failed to complete {operation} operation on {DateTime.Now}: for VM {DisplayName}";
+        }
+
         return $"Failed to complete {operation} operation on {DateTime.Now}: VM details: {this}";
     }
 
     private string OperationSuccessString(ComputeSystemOperations operation)
     {
+        if (operation == ComputeSystemOperations.Delete)
+        {
+            return $"Successfully completed {operation} operation on {DateTime.Now}: for VM {DisplayName}";
+        }
+
         return $"Successfully completed {operation} operation on {DateTime.Now}: VM details: {this}";
     }
 }

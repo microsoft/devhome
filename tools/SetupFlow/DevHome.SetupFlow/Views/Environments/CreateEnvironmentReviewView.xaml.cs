@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.SetupFlow.Models.Environments;
@@ -20,6 +22,8 @@ public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipien
 
     public CreateEnvironmentReviewViewModel ViewModel => (CreateEnvironmentReviewViewModel)this.DataContext;
 
+    private FrameworkElement _adaptiveCardFrameWorkElement;
+
     public CreateEnvironmentReviewView()
     {
         this.InitializeComponent();
@@ -28,12 +32,17 @@ public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipien
 
     private void ViewUnloaded(object sender, RoutedEventArgs e)
     {
-        AdaptiveCardGrid.Children.Clear();
+        // View unloaded so re-add elements back to original card now that we're done
+        if (_adaptiveCardFrameWorkElement is Grid cardGrid)
+        {
+            AddUIElementsToGrid(AdaptiveCardGrid, cardGrid);
+        }
+
         WeakReferenceMessenger.Default.UnregisterAll(this);
     }
 
     /// <summary>
-    /// Recieves the adaptive card from the view model, when the view model finishes loading it.
+    /// Receives the adaptive card from the view model, when the view model finishes loading it.
     /// </summary>
     public void Receive(NewAdaptiveCardAvailableMessage message)
     {
@@ -62,19 +71,38 @@ public sealed partial class CreateEnvironmentReviewView : UserControl, IRecipien
     {
         try
         {
-            var frameworkElement = renderedAdaptiveCard?.FrameworkElement;
-            if (frameworkElement == null)
-            {
-                return;
-            }
+            _adaptiveCardFrameWorkElement = renderedAdaptiveCard?.FrameworkElement;
 
-            AdaptiveCardGrid.Children.Clear();
-            AdaptiveCardGrid.Children.Add(frameworkElement);
+            // The grid may be in use by other views. Remove all the child elements
+            // then add them to this views page to further prevent exceptions.
+            if (_adaptiveCardFrameWorkElement is Grid cardGrid)
+            {
+                AddUIElementsToGrid(cardGrid, AdaptiveCardGrid);
+            }
         }
         catch (Exception ex)
         {
             // Log the exception
             _log.Error(ex, "Error adding adaptive card UI in CreateEnvironmentReviewView");
+        }
+    }
+
+    private void AddUIElementsToGrid(Grid gridToRemoveItems, Grid gridToAddItems)
+    {
+        var listOfElements = new List<UIElement>();
+        foreach (var item in gridToRemoveItems.Children)
+        {
+            listOfElements.Add(item);
+        }
+
+        if (listOfElements.Count > 0)
+        {
+            gridToRemoveItems.Children.Clear();
+            gridToAddItems.Children.Clear();
+            foreach (var item in listOfElements)
+            {
+                gridToAddItems.Children.Add(item);
+            }
         }
     }
 }

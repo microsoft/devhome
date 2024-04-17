@@ -23,4 +23,16 @@
             </controls:SettingsCard>
         </ItemContainer>
     </DataTemplate>
+
+    <DataTemplate x:Key="ChoiceSetWithSubtitleTemplate" x:DataType="cardModels:DevHomeChoicesData">
+        <Grid
+            RowSpacing="5">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="{Binding Title}" />
+            <TextBlock Grid.Row="1" Text="{Binding Subtitle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+        </Grid>
+    </DataTemplate>
 </ResourceDictionary>
