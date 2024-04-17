@@ -86,13 +86,28 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
                 return;
             }
 
-            var isFeaturePresent = QuietBackgroundProcessesSessionManager.IsFeaturePresent();
+            var isFeaturePresent = false;
+            try
+            {
+                isFeaturePresent = QuietBackgroundProcessesSessionManager.IsFeaturePresent();
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "COM error");
+            }
 
             var isAvailable = false;
             isAvailable = _table != null;
             if (!isAvailable)
             {
-                isAvailable = QuietBackgroundProcessesSessionManager.HasLastPerformanceRecording();
+                try
+                {
+                    isAvailable = QuietBackgroundProcessesSessionManager.HasLastPerformanceRecording();
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, "COM error");
+                }
             }
 
             var running = false;
