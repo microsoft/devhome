@@ -29,6 +29,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(LandingPageViewModel));
 
+    private readonly AutoResetEvent _computeSystemLoadWait = new(false);
+
     private readonly WindowEx _windowEx;
 
     private readonly EnvironmentsExtensionsService _environmentExtensionsService;
@@ -42,6 +44,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private readonly StringResource _stringResource;
 
     private readonly object _lock = new();
+
+    private bool _disposed;
 
     private bool _wasSyncButtonClicked;
 
@@ -250,7 +254,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         foreach (var operation in curOperations)
         {
             // this is a new operation so we need to create a view model for it.
-            ComputeSystemCards.Add(new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, ComputeSystemCards.Remove, operation));
+            ComputeSystemCards.Add(new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, ComputeSystemCards.Remove, AddNewlyCreatedComputeSystem, operation));
             _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
         }
     }
@@ -292,6 +296,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                         _computeSystemManager,
                         computeSystemList.ElementAt(i),
                         provider,
+                        ComputeSystemCards.Remove,
                         packageFullName,
                         _windowEx);
                     await computeSystemViewModel.InitializeCardDataAsync();
@@ -303,6 +308,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 _log.Error(ex, $"Exception occurred while adding Compute systems to environments page for provider: {provider.Id}");
             }
         });
+
+        _computeSystemLoadWait.Set();
     }
 
     /// <summary>
@@ -389,8 +396,47 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
     }
 
+    private void AddNewlyCreatedComputeSystem(ComputeSystemViewModel computeSystemViewModel)
+    {
+        Task.Run(() =>
+        {
+            if (IsLoading)
+            {
+                _computeSystemLoadWait.WaitOne();
+            }
+
+            lock (_lock)
+            {
+                var viewModel = ComputeSystemCards.FirstOrDefault(viewBase => viewBase.ComputeSystemId.Equals(computeSystemViewModel.ComputeSystemId, StringComparison.OrdinalIgnoreCase));
+
+                if (viewModel == null)
+                {
+                    _windowEx.DispatcherQueue.EnqueueAsync(() =>
+                    {
+                        ComputeSystemCards.Add(computeSystemViewModel);
+                    });
+                }
+            }
+        });
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _computeSystemLoadWait.Dispose();
+            }
+
+            _disposed = true;
+        }
+    }
+
     public void Dispose()
     {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
 }
