@@ -382,7 +382,7 @@ public class ConfigureTargetTask : ISetupTask
                 TelemetryFactory.Get<ITelemetry>().Log(
                     "Environment_OperationInvoked_Event",
                     LogLevel.Measure,
-                    new EnvironmentOperationUserEvent(EnvironmentsTelemetryStatus.Started, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId, _setupFlowOrchestrator.ActivityId));
+                    new EnvironmentOperationUserEvent(EnvironmentsTelemetryStatus.Started, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId, string.Empty, _setupFlowOrchestrator.ActivityId));
 
                 ApplyConfigurationAsyncOperation = applyConfigurationOperation.StartAsync();
                 var result = await ApplyConfigurationAsyncOperation.AsTask().WaitAsync(tokenSource.Token);
@@ -519,6 +519,6 @@ public class ConfigureTargetTask : ISetupTask
         TelemetryFactory.Get<ITelemetry>().Log(
             "Environment_OperationInvoked_Event",
             LogLevel.Measure,
-            new EnvironmentOperationUserEvent(status, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId, _setupFlowOrchestrator.ActivityId));
+            new EnvironmentOperationUserEvent(status, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId, string.Empty, _setupFlowOrchestrator.ActivityId));
     }
 }

@@ -15,9 +15,12 @@ public class ComputeSystemOperationStartedData
 
     public Guid ActivityId { get; private set; }
 
-    public ComputeSystemOperationStartedData(ComputeSystemOperations computeSystemOperation, Guid activityId)
+    public string AdditionalContext { get; private set; } = string.Empty;
+
+    public ComputeSystemOperationStartedData(ComputeSystemOperations computeSystemOperation, string additionalContext, Guid activityId)
     {
         ComputeSystemOperation = computeSystemOperation;
+        AdditionalContext = additionalContext;
         ActivityId = activityId;
     }
 }

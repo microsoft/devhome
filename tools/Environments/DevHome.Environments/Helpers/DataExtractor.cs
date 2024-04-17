@@ -51,12 +51,12 @@ public class DataExtractor
                 if (pinResultTaskbar.IsPinned)
                 {
                     var itemText = _stringResource.GetLocalized("UnpinFromTaskbarButtonContextMenuItem");
-                    operations.Add(new OperationsViewModel(itemText, "\uE77A", computeSystem.UnpinFromTaskbarAsync));
+                    operations.Add(new OperationsViewModel(itemText, "\uE77A", computeSystem.UnpinFromTaskbarAsync, ComputeSystemOperations.PinToTaskbar, "Unpin"));
                 }
                 else
                 {
                     var itemText = _stringResource.GetLocalized("PinToTaskbarButtonContextMenuItem");
-                    operations.Add(new OperationsViewModel(itemText, "\uE718", computeSystem.PinToTaskbarAsync));
+                    operations.Add(new OperationsViewModel(itemText, "\uE718", computeSystem.PinToTaskbarAsync, ComputeSystemOperations.PinToTaskbar, "Pin"));
                 }
             }
         }
@@ -69,12 +69,12 @@ public class DataExtractor
                 if (pinResultStartMenu.IsPinned)
                 {
                     var itemText = _stringResource.GetLocalized("UnpinFromStartButtonContextMenuItem");
-                    operations.Add(new OperationsViewModel(itemText, "\uE77A", computeSystem.UnpinFromStartMenuAsync));
+                    operations.Add(new OperationsViewModel(itemText, "\uE77A", computeSystem.UnpinFromStartMenuAsync, ComputeSystemOperations.PinToStartMenu, "Unpin"));
                 }
                 else
                 {
                     var itemText = _stringResource.GetLocalized("PinToStartButtonContextMenuItem");
-                    operations.Add(new OperationsViewModel(itemText, "\uE718", computeSystem.PinToStartMenuAsync));
+                    operations.Add(new OperationsViewModel(itemText, "\uE718", computeSystem.PinToStartMenuAsync, ComputeSystemOperations.PinToStartMenu, "Pin"));
                 }
             }
         }

@@ -14,10 +14,13 @@ public class ComputeSystemOperationCompletedData
 
     public Guid ActivityId { get; private set; }
 
-    public ComputeSystemOperationCompletedData(ComputeSystemOperations computeSystemOperation, ComputeSystemOperationResult operationResult, Guid activityId)
+    public string AdditionalContext { get; private set; } = string.Empty;
+
+    public ComputeSystemOperationCompletedData(ComputeSystemOperations computeSystemOperation, ComputeSystemOperationResult operationResult, string additionalContext, Guid activityId)
     {
         ComputeSystemOperation = computeSystemOperation;
         OperationResult = operationResult;
+        AdditionalContext = additionalContext;
         ActivityId = activityId;
     }
 }

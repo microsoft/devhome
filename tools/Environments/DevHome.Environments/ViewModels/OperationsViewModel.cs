@@ -34,6 +34,8 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
 
     private readonly OperationKind _operationKind;
 
+    private readonly string _additionalContext = string.Empty;
+
     public string Name { get; }
 
     public ComputeSystemOperations ComputeSystemOperation { get; }
@@ -51,6 +53,21 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
         IconGlyph = icon;
         ExtensionTask = command;
         ComputeSystemOperation = computeSystemOperation;
+    }
+
+    public OperationsViewModel(
+        string name,
+        string icon,
+        Func<string, Task<ComputeSystemOperationResult>> command,
+        ComputeSystemOperations computeSystemOperation,
+        string additionalContext)
+    {
+        _operationKind = OperationKind.ExtensionTask;
+        Name = name;
+        IconGlyph = icon;
+        ExtensionTask = command;
+        ComputeSystemOperation = computeSystemOperation;
+        _additionalContext = additionalContext;
     }
 
     public OperationsViewModel(string name, string icon, Action command)
@@ -73,11 +90,11 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
             }
 
             var activityId = Guid.NewGuid();
-            WeakReferenceMessenger.Default.Send(new ComputeSystemOperationStartedData(ComputeSystemOperation, activityId));
+            WeakReferenceMessenger.Default.Send(new ComputeSystemOperationStartedData(ComputeSystemOperation, _additionalContext, activityId));
 
             var result = await ExtensionTask!(string.Empty);
 
-            WeakReferenceMessenger.Default.Send(new ComputeSystemOperationCompletedData(ComputeSystemOperation, result, activityId));
+            WeakReferenceMessenger.Default.Send(new ComputeSystemOperationCompletedData(ComputeSystemOperation, result, _additionalContext, activityId));
         });
     }
 

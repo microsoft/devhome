@@ -197,7 +197,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             TelemetryFactory.Get<ITelemetry>().Log(
                 "Environment_OperationInvoked_Event",
                 LogLevel.Measure,
-                new EnvironmentOperationUserEvent(message.TelemetryStatus, message.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, message.ActivityId));
+                new EnvironmentOperationUserEvent(message.TelemetryStatus, message.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, message.AdditionalContext, message.ActivityId));
         });
     }
 
@@ -223,7 +223,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             TelemetryFactory.Get<ITelemetry>().Log(
                 "Environment_OperationInvoked_Event",
                 LogLevel.Measure,
-                new EnvironmentOperationUserEvent(completionStatus, message.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, message.ActivityId));
+                new EnvironmentOperationUserEvent(completionStatus, message.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, message.AdditionalContext, message.ActivityId));
 
             IsOperationInProgress = false;
         });
