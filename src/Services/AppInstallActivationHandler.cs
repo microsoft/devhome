@@ -25,7 +25,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
     private const string AppSearchUri = "add-apps-to-cart";
     private readonly INavigationService _navigationService;
     private readonly SetupFlowViewModel _setupFlowViewModel;
-    private readonly IWindowsPackageManager _wpm;
+    private readonly IWindowsPackageManager _windowsPackageManager;
     private readonly PackageProvider _packageProvider;
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
     private static readonly char[] Separator = [','];
