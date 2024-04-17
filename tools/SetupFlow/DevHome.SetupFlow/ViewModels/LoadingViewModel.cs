@@ -38,11 +38,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private static readonly BitmapImage DarkCaution = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
     private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
     private static readonly BitmapImage DarkSuccess = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkSuccess.png"));
-    private static readonly BitmapImage DarkInfo = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
+    private static readonly BitmapImage DarkInfo = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkInfo.png"));
     private static readonly BitmapImage LightCaution = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightCaution.png"));
     private static readonly BitmapImage LightError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
     private static readonly BitmapImage LightSuccess = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightSuccess.png"));
-    private static readonly BitmapImage LightInfo = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightCaution.png"));
+    private static readonly BitmapImage LightInfo = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightInfo.png"));
 
 #pragma warning disable SA1310 // Field names should not contain underscore
     private const int MAX_RETRIES = 1;
