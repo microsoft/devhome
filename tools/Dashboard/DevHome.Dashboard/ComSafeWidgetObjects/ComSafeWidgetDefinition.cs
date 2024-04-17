@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Dashboard.Services;
@@ -19,7 +20,7 @@ namespace DevHome.Dashboard.ComSafeWidgetObjects;
 /// This class will handle the COM exceptions and get a new OOP WidgetDefinition if needed.
 /// All APIs on the IWidgetDefinition and IWidgetDefinition2 interfaces are reflected here.
 /// </summary>
-public class ComSafeWidgetDefinition
+public class ComSafeWidgetDefinition : IDisposable
 {
     public bool AllowMultiple { get; private set; }
 
@@ -51,6 +52,9 @@ public class ComSafeWidgetDefinition
     private const int RpcCallFailed = unchecked((int)0x800706BE);
 
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComSafeWidgetDefinition));
+
+    private readonly SemaphoreSlim _getDefinitionLock = new(1, 1);
+    private bool _disposedValue;
 
     private bool _hasValidProperties;
     private const int MaxAttempts = 3;
@@ -129,34 +133,43 @@ public class ComSafeWidgetDefinition
     private async Task LazilyLoadOopWidgetDefinition()
     {
         var attempt = 0;
-        while (attempt++ < 3 && (_oopWidgetDefinition == null || _hasValidProperties == false))
+        try
         {
-            try
+            while (attempt++ < 3 && (_oopWidgetDefinition == null || _hasValidProperties == false))
             {
-                _oopWidgetDefinition ??= await Application.Current.GetService<IWidgetHostingService>().GetWidgetDefinitionAsync(Id);
+                await _getDefinitionLock.WaitAsync();
 
-                if (!_hasValidProperties)
+                try
                 {
-                    await Task.Run(() =>
+                    _oopWidgetDefinition ??= await Application.Current.GetService<IWidgetHostingService>().GetWidgetDefinitionAsync(Id);
+
+                    if (!_hasValidProperties)
                     {
-                        AllowMultiple = _oopWidgetDefinition.AllowMultiple;
-                        Description = _oopWidgetDefinition.Description;
-                        DisplayTitle = _oopWidgetDefinition.DisplayTitle;
-                        Id = _oopWidgetDefinition.Id;
-                        ProviderDefinition = _oopWidgetDefinition.ProviderDefinition;
-                        ProviderDefinitionDisplayName = _oopWidgetDefinition.ProviderDefinition.DisplayName;
-                        ProviderDefinitionId = _oopWidgetDefinition.ProviderDefinition.Id;
-                        AdditionalInfoUri = _oopWidgetDefinition.AdditionalInfoUri;
-                        IsCustomizable = _oopWidgetDefinition.IsCustomizable;
-                        Type = _oopWidgetDefinition.Type;
-                        _hasValidProperties = true;
-                    });
+                        await Task.Run(() =>
+                        {
+                            AllowMultiple = _oopWidgetDefinition.AllowMultiple;
+                            Description = _oopWidgetDefinition.Description;
+                            DisplayTitle = _oopWidgetDefinition.DisplayTitle;
+                            Id = _oopWidgetDefinition.Id;
+                            ProviderDefinition = _oopWidgetDefinition.ProviderDefinition;
+                            ProviderDefinitionDisplayName = _oopWidgetDefinition.ProviderDefinition.DisplayName;
+                            ProviderDefinitionId = _oopWidgetDefinition.ProviderDefinition.Id;
+                            AdditionalInfoUri = _oopWidgetDefinition.AdditionalInfoUri;
+                            IsCustomizable = _oopWidgetDefinition.IsCustomizable;
+                            Type = _oopWidgetDefinition.Type;
+                            _hasValidProperties = true;
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _log.Warning(ex, "Failed to get properties of out-of-proc object");
                 }
             }
-            catch (Exception ex)
-            {
-                _log.Warning(ex, "Failed to get properties of out-of-proc object");
-            }
+        }
+        finally
+        {
+            _getDefinitionLock.Release();
         }
     }
 
@@ -180,5 +193,24 @@ public class ComSafeWidgetDefinition
 
             return string.Empty;
         });
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _getDefinitionLock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
     }
 }
