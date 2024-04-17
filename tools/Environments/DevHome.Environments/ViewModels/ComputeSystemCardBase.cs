@@ -52,4 +52,9 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
 
     [ObservableProperty]
     private string _uiMessageToDisplay = string.Empty;
+
+    public override string ToString()
+    {
+        return $"{Name} {AlternativeName}";
+    }
 }

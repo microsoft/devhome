@@ -61,7 +61,7 @@
                     ColumnSpacing="{StaticResource ContainerElementSpacing}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <!-- Colored dot that indicates the visual state of the compute system. -->
                     <Ellipse
