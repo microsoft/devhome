@@ -133,12 +133,11 @@ public class ComSafeWidgetDefinition : IDisposable
     private async Task LazilyLoadOopWidgetDefinitionAsync()
     {
         var attempt = 0;
+        await _getDefinitionLock.WaitAsync();
         try
         {
             while (attempt++ < 3 && (_oopWidgetDefinition == null || _hasValidProperties == false))
             {
-                await _getDefinitionLock.WaitAsync();
-
                 try
                 {
                     _oopWidgetDefinition ??= await Application.Current.GetService<IWidgetHostingService>().GetWidgetDefinitionAsync(Id);
