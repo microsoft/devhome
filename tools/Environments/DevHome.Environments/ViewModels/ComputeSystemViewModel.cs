@@ -288,6 +288,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         {
             WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedData, OperationsViewModel>(this, launchOperation);
             WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedData, OperationsViewModel>(this, launchOperation);
+        }
     }
 
     private bool IsComputeSystemStateTransitioning(ComputeSystemState state)

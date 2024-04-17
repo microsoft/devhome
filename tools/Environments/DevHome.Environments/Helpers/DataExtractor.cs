@@ -99,7 +99,7 @@ public class DataExtractor
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.ShutDown))
         {
-            operations.Add(new OperationsViewModel("Stop", "\uE71A", computeSystem.TerminateAsync, ComputeSystemOperations.ShutDown));
+            operations.Add(new OperationsViewModel("Stop", "\uE71A", computeSystem.ShutDownAsync, ComputeSystemOperations.ShutDown));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.CreateSnapshot))
