@@ -51,7 +51,6 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
         IconGlyph = icon;
         ExtensionTask = command;
         ComputeSystemOperation = computeSystemOperation;
-
     }
 
     public OperationsViewModel(string name, string icon, Action command)
