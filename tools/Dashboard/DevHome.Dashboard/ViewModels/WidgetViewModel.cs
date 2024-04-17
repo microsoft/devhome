@@ -35,7 +35,7 @@ namespace DevHome.Dashboard.ViewModels;
 public delegate WidgetViewModel WidgetViewModelFactory(
     ComSafeWidget widget,
     WidgetSize widgetSize,
-    WidgetDefinition widgetDefinition);
+    ComSafeWidgetDefinition widgetDefinition);
 
 public partial class WidgetViewModel : ObservableObject
 {
@@ -50,7 +50,7 @@ public partial class WidgetViewModel : ObservableObject
     private ComSafeWidget _widget;
 
     [ObservableProperty]
-    private WidgetDefinition _widgetDefinition;
+    private ComSafeWidgetDefinition _widgetDefinition;
 
     [ObservableProperty]
     private WidgetSize _widgetSize;
@@ -84,12 +84,12 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    partial void OnWidgetDefinitionChanged(WidgetDefinition value)
+    partial void OnWidgetDefinitionChanged(ComSafeWidgetDefinition value)
     {
         if (WidgetDefinition != null)
         {
             WidgetDisplayTitle = WidgetDefinition.DisplayTitle;
-            WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinition.DisplayName;
+            WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinitionDisplayName;
             IsCustomizable = WidgetDefinition.IsCustomizable;
         }
     }
@@ -97,7 +97,7 @@ public partial class WidgetViewModel : ObservableObject
     public WidgetViewModel(
         ComSafeWidget widget,
         WidgetSize widgetSize,
-        WidgetDefinition widgetDefinition,
+        ComSafeWidgetDefinition widgetDefinition,
         WidgetAdaptiveCardRenderingService adaptiveCardRenderingService,
         WindowEx windowEx)
     {
@@ -324,7 +324,7 @@ public partial class WidgetViewModel : ObservableObject
         TelemetryFactory.Get<ITelemetry>().Log(
             "Dashboard_ReportWidgetInteraction",
             LogLevel.Critical,
-            new ReportWidgetInteractionEvent(WidgetDefinition.ProviderDefinition.Id, WidgetDefinition.Id, args.Action.ActionTypeString));
+            new ReportWidgetInteractionEvent(WidgetDefinition.ProviderDefinitionId, WidgetDefinition.Id, args.Action.ActionTypeString));
 
         // TODO: Handle other ActionTypes
         // https://github.com/microsoft/devhome/issues/644

@@ -86,9 +86,6 @@ public partial class DashboardView : ToolPage, IDisposable
                 return false;
             }
 
-            widgetCatalog!.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
-            widgetCatalog!.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
-            widgetCatalog!.WidgetDefinitionAdded += WidgetCatalog_WidgetDefinitionAdded;
             widgetCatalog!.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
             widgetCatalog!.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
         }
@@ -113,9 +110,6 @@ public partial class DashboardView : ToolPage, IDisposable
                 return;
             }
 
-            widgetCatalog!.WidgetProviderDefinitionAdded -= WidgetCatalog_WidgetProviderDefinitionAdded;
-            widgetCatalog!.WidgetProviderDefinitionDeleted -= WidgetCatalog_WidgetProviderDefinitionDeleted;
-            widgetCatalog!.WidgetDefinitionAdded -= WidgetCatalog_WidgetDefinitionAdded;
             widgetCatalog!.WidgetDefinitionUpdated -= WidgetCatalog_WidgetDefinitionUpdated;
             widgetCatalog!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
         }
@@ -299,15 +293,24 @@ public partial class DashboardView : ToolPage, IDisposable
                     continue;
                 }
 
-                // Ensure only one copy of a widget is pinned if that widget's definition only allows for one instance.
                 var widgetDefinitionId = widget.DefinitionId;
-                var widgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
-                if (widgetDefinition == null)
+                var unsafeWidgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
+                if (unsafeWidgetDefinition == null)
                 {
                     await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
+                    continue;
                 }
 
-                if (widgetDefinition.AllowMultiple == false)
+                // Ensure only one copy of a widget is pinned if that widget's definition only allows for one instance.
+                var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
+                if (!await comSafeWidgetDefinition.Populate())
+                {
+                    _log.Error($"Error populating widget definition for widget {widgetDefinitionId}");
+                    await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
+                    continue;
+                }
+
+                if (comSafeWidgetDefinition.AllowMultiple == false)
                 {
                     if (pinnedSingleInstanceWidgets.Contains(widgetDefinitionId))
                     {
@@ -383,24 +386,24 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private async Task PinDefaultWidgetsAsync()
     {
-        var widgetDefinitions = (await ViewModel.WidgetHostingService.GetWidgetDefinitionsAsync()).OrderBy(x => x.DisplayTitle);
-        foreach (var widgetDefinition in widgetDefinitions)
+        var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(ViewModel.WidgetHostingService);
+        foreach (var comSafeWidgetDefinition in comSafeWidgetDefinitions)
         {
-            var id = widgetDefinition.Id;
+            var id = comSafeWidgetDefinition.Id;
             if (WidgetHelpers.DefaultWidgetDefinitionIds.Contains(id))
             {
                 _log.Information($"Found default widget {id}");
-                await PinDefaultWidgetAsync(widgetDefinition);
+                await PinDefaultWidgetAsync(comSafeWidgetDefinition);
             }
         }
     }
 
-    private async Task PinDefaultWidgetAsync(WidgetDefinition defaultWidgetDefinition)
+    private async Task PinDefaultWidgetAsync(ComSafeWidgetDefinition defaultWidgetDefinition)
     {
         try
         {
             // Create widget
-            var size = WidgetHelpers.GetDefaultWidgetSize(defaultWidgetDefinition.GetWidgetCapabilities());
+            var size = WidgetHelpers.GetDefaultWidgetSize(await defaultWidgetDefinition.GetWidgetCapabilitiesAsync());
             var definitionId = defaultWidgetDefinition.Id;
             var unsafeWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(definitionId, size);
             if (unsafeWidget == null)
@@ -477,7 +480,7 @@ public partial class DashboardView : ToolPage, IDisposable
         {
             try
             {
-                var size = WidgetHelpers.GetDefaultWidgetSize(newWidgetDefinition.GetWidgetCapabilities());
+                var size = WidgetHelpers.GetDefaultWidgetSize(await newWidgetDefinition.GetWidgetCapabilitiesAsync());
                 var unsafeWidget = await ViewModel.WidgetHostingService.CreateWidgetAsync(newWidgetDefinition.Id, size);
                 if (unsafeWidget == null)
                 {
@@ -541,18 +544,25 @@ public partial class DashboardView : ToolPage, IDisposable
         {
             var widgetDefinitionId = widget.DefinitionId;
             var widgetId = widget.Id;
-            var widgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
+            _log.Information($"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
 
-            if (widgetDefinition != null)
+            var unsafeWidgetDefinition = await ViewModel.WidgetHostingService.GetWidgetDefinitionAsync(widgetDefinitionId);
+            if (unsafeWidgetDefinition != null)
             {
-                _log.Information($"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
+                var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
+                if (!await comSafeWidgetDefinition.Populate())
+                {
+                    _log.Error($"Error inserting widget in pinned widgets, id = {widgetId}, index = {index}");
+                    await widget.DeleteAsync();
+                    return;
+                }
 
                 TelemetryFactory.Get<ITelemetry>().Log(
                     "Dashboard_ReportPinnedWidget",
                     LogLevel.Critical,
-                    new ReportPinnedWidgetEvent(widgetDefinition.ProviderDefinition.Id, widgetDefinitionId));
+                    new ReportPinnedWidgetEvent(comSafeWidgetDefinition.ProviderDefinitionId, widgetDefinitionId));
 
-                var wvm = _widgetViewModelFactory(widget, size, widgetDefinition);
+                var wvm = _widgetViewModelFactory(widget, size, comSafeWidgetDefinition);
                 _windowEx.DispatcherQueue.TryEnqueue(() =>
                 {
                     try
@@ -589,18 +599,34 @@ public partial class DashboardView : ToolPage, IDisposable
         }
     }
 
-    private void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args) =>
-        _log.Information("DashboardView", $"WidgetCatalog_WidgetProviderDefinitionAdded {args.ProviderDefinition.Id}");
-
-    private void WidgetCatalog_WidgetProviderDefinitionDeleted(WidgetCatalog sender, WidgetProviderDefinitionDeletedEventArgs args) =>
-        _log.Information("DashboardView", $"WidgetCatalog_WidgetProviderDefinitionDeleted {args.ProviderDefinitionId}");
-
-    private void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args) =>
-        _log.Information("DashboardView", $"WidgetCatalog_WidgetDefinitionAdded {args.Definition.Id}");
-
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
     {
-        var updatedDefinitionId = args.Definition.Id;
+        WidgetDefinition unsafeWidgetDefinition;
+        try
+        {
+            unsafeWidgetDefinition = await Task.Run(() => args.Definition);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "WidgetCatalog_WidgetDefinitionUpdated: Couldn't get args.WidgetDefinition");
+            return;
+        }
+
+        if (unsafeWidgetDefinition == null)
+        {
+            _log.Error("WidgetCatalog_WidgetDefinitionUpdated: Couldn't get WidgetDefinition");
+            return;
+        }
+
+        var widgetDefinitionId = await ComSafeWidgetDefinition.GetIdFromUnsafeWidgetDefinitionAsync(unsafeWidgetDefinition);
+        var comSafeNewDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
+        if (!await comSafeNewDefinition.Populate())
+        {
+            _log.Error($"Error populating widget definition for widget {widgetDefinitionId}");
+            return;
+        }
+
+        var updatedDefinitionId = comSafeNewDefinition.Id;
         _log.Information($"WidgetCatalog_WidgetDefinitionUpdated {updatedDefinitionId}");
 
         var matchingWidgetsFound = 0;
@@ -610,14 +636,13 @@ public partial class DashboardView : ToolPage, IDisposable
             // Things in the definition that we need to update to if they have changed:
             // AllowMultiple, DisplayTitle, Capabilities (size), ThemeResource (icons)
             var oldDef = widgetToUpdate.WidgetDefinition;
-            var newDef = args.Definition;
 
             // If we're no longer allowed to have multiple instances of this widget, delete all but the first.
-            if (++matchingWidgetsFound > 1 && newDef.AllowMultiple == false && oldDef.AllowMultiple == true)
+            if (++matchingWidgetsFound > 1 && comSafeNewDefinition.AllowMultiple == false && oldDef.AllowMultiple == true)
             {
                 _windowEx.DispatcherQueue.TryEnqueue(async () =>
                 {
-                    _log.Information($"No longer allowed to have multiple of widget {newDef.Id}");
+                    _log.Information($"No longer allowed to have multiple of widget {updatedDefinitionId}");
                     _log.Information($"Delete widget {widgetToUpdate.Widget.Id}");
                     PinnedWidgets.Remove(widgetToUpdate);
                     await widgetToUpdate.Widget.DeleteAsync();
@@ -627,19 +652,19 @@ public partial class DashboardView : ToolPage, IDisposable
             else
             {
                 // Changing the definition updates the DisplayTitle.
-                widgetToUpdate.WidgetDefinition = newDef;
+                widgetToUpdate.WidgetDefinition = comSafeNewDefinition;
 
                 // If the size the widget is currently set to is no longer supported by the widget, revert to its default size.
                 // TODO: Need to update WidgetControl with now-valid sizes.
                 // TODO: Properly compare widget capabilities.
                 // https://github.com/microsoft/devhome/issues/641
-                if (oldDef.GetWidgetCapabilities() != newDef.GetWidgetCapabilities())
+                if (await oldDef.GetWidgetCapabilitiesAsync() != await comSafeNewDefinition.GetWidgetCapabilitiesAsync())
                 {
                     // TODO: handle the case where this change is made while Dev Home is not running -- how do we restore?
                     // https://github.com/microsoft/devhome/issues/641
-                    if (!newDef.GetWidgetCapabilities().Any(cap => cap.Size == widgetToUpdate.WidgetSize))
+                    if (!(await comSafeNewDefinition.GetWidgetCapabilitiesAsync()).Any(cap => cap.Size == widgetToUpdate.WidgetSize))
                     {
-                        var newDefaultSize = WidgetHelpers.GetDefaultWidgetSize(newDef.GetWidgetCapabilities());
+                        var newDefaultSize = WidgetHelpers.GetDefaultWidgetSize(await comSafeNewDefinition.GetWidgetCapabilitiesAsync());
                         widgetToUpdate.WidgetSize = newDefaultSize;
                         await widgetToUpdate.Widget.SetSizeAsync(newDefaultSize);
                     }
@@ -673,7 +698,7 @@ public partial class DashboardView : ToolPage, IDisposable
     }
 
     // If a widget is removed from the list, update the saved positions of the following widgets.
-    // If not updated, widges pinned later may be assigned the same position as existing widgets,
+    // If not updated, widgets pinned later may be assigned the same position as existing widgets,
     // since the saved position may be greater than the number of pinned widgets.
     // Unsubscribe from this event during drag and drop, since the drop event takes care of re-numbering.
     private async void OnPinnedWidgetsCollectionChangedAsync(object sender, NotifyCollectionChangedEventArgs e)
