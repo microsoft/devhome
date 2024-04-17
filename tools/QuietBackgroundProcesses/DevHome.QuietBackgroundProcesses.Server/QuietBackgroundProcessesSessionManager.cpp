@@ -3,6 +3,7 @@
 
 #include <pch.h>
 
+#include <filesystem>
 #include <mutex>
 
 #include <wrl/client.h>
@@ -10,6 +11,8 @@
 #include <wrl/implements.h>
 #include <wrl/module.h>
 #include <wil/winrt.h>
+
+#include <Common.h>
 
 #include <QuietBackgroundProcesses.h>
 
@@ -76,6 +79,24 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         {
             auto lock = std::scoped_lock(m_mutex);
             m_sessionReference.try_copy_to(session);
+            return S_OK;
+        }
+        CATCH_RETURN()
+
+        STDMETHODIMP TryGetLastPerformanceRecording(_COM_Outptr_ ABI::DevHome::QuietBackgroundProcesses::IProcessPerformanceTable** result) noexcept override
+        try
+        {
+            auto factory = wil::GetActivationFactory<ABI::DevHome::QuietBackgroundProcesses::IPerformanceRecorderEngineStatics>(RuntimeClass_DevHome_QuietBackgroundProcesses_PerformanceRecorderEngine);
+            THROW_IF_FAILED(factory->TryGetLastPerformanceRecording(result));
+
+            return S_OK;
+        }
+        CATCH_RETURN()
+
+        STDMETHODIMP HasLastPerformanceRecording(boolean* result) noexcept override
+        try
+        {
+            *result = std::filesystem::exists(GetTemporaryPerformanceDataPath());
             return S_OK;
         }
         CATCH_RETURN()

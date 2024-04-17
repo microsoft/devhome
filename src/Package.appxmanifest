@@ -22,6 +22,7 @@
         <Path>DevHome.QuietBackgroundProcesses.ElevatedServer.exe</Path>
         <Instancing>singleInstance</Instancing>
         <ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession" />
+        <ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine" />
       </OutOfProcessServer>
     </Extension>
   </Extensions>

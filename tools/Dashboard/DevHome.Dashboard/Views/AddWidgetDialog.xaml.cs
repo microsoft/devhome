@@ -2,11 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
@@ -83,7 +85,17 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
-        var currentlyPinnedWidgets = await _hostingService.GetWidgetsAsync();
+        var unsafeCurrentlyPinnedWidgets = await _hostingService.GetWidgetsAsync();
+        var comSafeCurrentlyPinnedWidgets = new List<ComSafeWidget>();
+        foreach (var unsafeWidget in unsafeCurrentlyPinnedWidgets)
+        {
+            var id = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
+            if (!string.IsNullOrEmpty(id))
+            {
+                comSafeCurrentlyPinnedWidgets.Add(new ComSafeWidget(id));
+            }
+        }
+
         foreach (var providerDef in providerDefinitions)
         {
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
@@ -100,7 +112,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
                         var subItemContent = await BuildWidgetNavItem(widgetDef);
-                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
+                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, [.. comSafeCurrentlyPinnedWidgets]);
                         var subItem = new NavigationViewItem
                         {
                             Tag = widgetDef,
@@ -168,7 +180,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         return itemContent;
     }
 
-    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef, Widget[] currentlyPinnedWidgets)
+    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef, ComSafeWidget[] currentlyPinnedWidgets)
     {
         // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
         if (!widgetDef.AllowMultiple)

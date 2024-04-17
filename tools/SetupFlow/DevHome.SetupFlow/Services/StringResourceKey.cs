@@ -101,6 +101,8 @@ public static class StringResourceKey
     public static readonly string SummaryPageOneRepositoryCloned = nameof(SummaryPageOneRepositoryCloned);
     public static readonly string SummaryPageAppsDownloadedCount = nameof(SummaryPageAppsDownloadedCount);
     public static readonly string SummaryPageReposClonedCount = nameof(SummaryPageReposClonedCount);
+    public static readonly string SummaryConfigurationErrorsCountText = nameof(SummaryConfigurationErrorsCountText);
+    public static readonly string SummaryPageTargetMachineFailedTaskText = nameof(SummaryPageTargetMachineFailedTaskText);
     public static readonly string SSHConnectionStringNotAllowed = nameof(SSHConnectionStringNotAllowed);
 
     // Repository loading screen messages
@@ -254,6 +256,7 @@ public static class StringResourceKey
     public static readonly string SetupTargetReviewPageDefaultInfoBarTitle = nameof(SetupTargetReviewPageDefaultInfoBarTitle);
     public static readonly string SetupTargetReviewPageDefaultInfoBarMessage = nameof(SetupTargetReviewPageDefaultInfoBarMessage);
     public static readonly string SetupTargetReviewPageHyperVInfoBarMessage = nameof(SetupTargetReviewPageHyperVInfoBarMessage);
+    public static readonly string SetupTargetReviewTabTitle = nameof(SetupTargetReviewTabTitle);
     public static readonly string SetupTargetUnknownStatus = nameof(SetupTargetUnknownStatus);
     public static readonly string SetupTargetSortAToZLabel = nameof(SetupTargetSortAToZLabel);
     public static readonly string SetupTargetSortZToALabel = nameof(SetupTargetSortZToALabel);

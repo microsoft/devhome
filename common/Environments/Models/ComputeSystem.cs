@@ -288,6 +288,114 @@ public class ComputeSystem
         }
     }
 
+    public async Task<ComputeSystemOperationResult> PinToStartMenuAsync(string options)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.PinToStartMenuAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"PinToStartMenuAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemOperationResult> UnpinFromStartMenuAsync(string options)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.UnpinFromStartMenuAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"UnpinFromStartMenuAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemOperationResult> PinToTaskbarAsync(string options)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.PinToTaskbarAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"PinToTaskbarAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemOperationResult> UnpinFromTaskbarAsync(string options)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.UnpinFromTaskbarAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"UnpinFromTaskbarAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemPinnedResult> GetIsPinnedToStartMenuAsync()
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.GetIsPinnedToStartMenuAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"GetIsPinnedToStartMenuAsync for: {this} failed due to exception");
+            return new ComputeSystemPinnedResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemPinnedResult> GetIsPinnedToTaskbarAsync()
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                return await computeSystem2.GetIsPinnedToTaskbarAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"GetIsPinnedToTaskbarAsync for: {this} failed due to exception");
+            return new ComputeSystemPinnedResult(ex, errorString, ex.Message);
+        }
+    }
+
     public IApplyConfigurationOperation ApplyConfiguration(string configuration)
     {
         try

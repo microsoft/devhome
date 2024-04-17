@@ -11,6 +11,8 @@ public interface IWidgetHostingService
 {
     public Task<Widget[]> GetWidgetsAsync();
 
+    public Task<Widget> GetWidgetAsync(string widgetId);
+
     public Task<Widget> CreateWidgetAsync(string widgetDefinitionId, WidgetSize widgetSize);
 
     public Task<WidgetCatalog> GetWidgetCatalogAsync();

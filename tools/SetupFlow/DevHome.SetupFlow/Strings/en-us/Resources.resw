@@ -534,11 +534,11 @@
     <comment>Header for a card that when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_SetupFlow_For_target.Header" xml:space="preserve">
-    <value>Set up a target</value>
+    <value>Set up an environment</value>
     <comment>Header for a card that when clicked takes the user to a multi-step flow for setting up for a remote machine</comment>
   </data>
   <data name="MainPage_SetupFlow_For_target.Description" xml:space="preserve">
-    <value>Set up a select target</value>
+    <value>Clone repositories, install applications, and generate a Winget Configuration file to apply to an environment.</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="NoAppsToInstall.Text" xml:space="preserve">
@@ -658,11 +658,11 @@
     <comment>Checkbox label that needs to be checked before starting the setup</comment>
   </data>
   <data name="Review_TermsTitle.Text" xml:space="preserve">
-    <value>Terms &amp; agreements</value>
+    <value>Terms and agreements</value>
     <comment>As in "Terms of use"</comment>
   </data>
   <data name="Review_Terms.Text" xml:space="preserve">
-    <value>By continuing, you acknowledge that these applications are licensed to you by the owner. Microsoft is not responsible for, nor does it grant any licenses to, third-party applications. You are responsible for reviewing any agreements related to your use of these applications, which you can view by selecting the Learn more links.</value>
+    <value>By continuing, you acknowledge that these applications are licensed to you by the owner. Microsoft is not responsible for, nor does it grant any licenses to third-party applications. You are responsible for reviewing any agreements related to your use of these applications, you can select the ‘Applications’ tab to view ‘learn more’ links.</value>
     <comment>Terms of use shown before starting installation of apps.</comment>
   </data>
   <data name="Review_MSStoreTerms.Text" xml:space="preserve">
@@ -706,15 +706,15 @@
     <comment>Description for the repo config page</comment>
   </data>
   <data name="SetupShellRepoConfigTargetMachine" xml:space="preserve">
-    <value>Add public repositories to clone to your target machine.</value>
+    <value>Add public repositories to clone to your environment.</value>
     <comment>Description for the repo config page</comment>
   </data>
   <data name="SetupShell_SetupTarget.Description" xml:space="preserve">
-    <value>Select a target machine to set up.</value>
+    <value>Select an environment to set up.</value>
     <comment>Description for the setup target page</comment>
   </data>
   <data name="SetupShellReviewPageDescription" xml:space="preserve">
-    <value>Review the terms and setup details below before applying these changes to your computer.</value>
+    <value>Review your set up details and our terms below, then apply these changes to your environment.</value>
     <comment>Description for the review page</comment>
   </data>
   <data name="SetupShellReviewPageDescriptionForEnvironmentCreation" xml:space="preserve">
@@ -758,7 +758,7 @@
     <comment>Install Apps label for the stepper</comment>
   </data>
   <data name="ReviewPageTitle" xml:space="preserve">
-    <value>Review &amp; finish</value>
+    <value>Review and finish</value>
     <comment>Review and Setup label for the stepper</comment>
   </data>
   <data name="AddDevDriveLabel.Text" xml:space="preserve">
@@ -814,7 +814,7 @@
     <comment>Shown when Clone Location isn't an absolute path</comment>
   </data>
   <data name="RepoReview_NoReposSelected.Text" xml:space="preserve">
-    <value>No repository is added yet</value>
+    <value>Add your first repository</value>
     <comment>Shown when no repos are selected when the user gets to the repo page</comment>
   </data>
   <data name="RepoReview_NoReposSelectedLink.Content" xml:space="preserve">
@@ -854,7 +854,7 @@
     <comment>Shows to the user how many tasks have been completed</comment>
   </data>
   <data name="LoadingExecutingProgressForTarget" xml:space="preserve">
-    <value>Configuring the package...</value>
+    <value>Configuring your environment...</value>
     <comment>Text shown under progress bar while configuring a target device.</comment>
   </data>
   <data name="Loading_StopButton.Content" xml:space="preserve">
@@ -1259,6 +1259,14 @@
     <value>Repositories cloned</value>
     <comment>Bottom header of the count of all repos cloned</comment>
   </data>
+  <data name="SummaryConfigurationErrorsCountText" xml:space="preserve">
+    <value>Number of configuration errors: {0}</value>
+    <comment>Number of configuration errors shown on Summary page. {0} in the number of errors.</comment>
+  </data>
+  <data name="SummaryPageTargetMachineFailedTaskText" xml:space="preserve">
+    <value>We could not apply the configuration to the environment</value>
+    <comment>Error message on Environment configuration summary page when we don't have more specific individual units results.</comment>
+  </data>
   <data name="RepositoryClonePathHeader.Text" xml:space="preserve">
     <value>Clone path</value>
     <comment>Header for the repo grid in the repo tool</comment>
@@ -1405,8 +1413,12 @@
     <value>This configuration unit was not run because an assert failed or was false.</value>
   </data>
   <data name="SetupTargetPageTitle" xml:space="preserve">
-    <value>Setup target</value>
+    <value>Select environment</value>
     <comment>Title of the 'Setup Target' page where users can select a remote machine to setup using Dev Home.</comment>
+  </data>
+  <data name="SetupTargetReviewTabTitle" xml:space="preserve">
+    <value>Environment</value>
+    <comment>Title of the 'Environment' tab on review page where users can review selected options.</comment>
   </data>
   <data name="SetupTargetAllComboBoxOption" xml:space="preserve">
     <value>All</value>
@@ -1453,7 +1465,7 @@
     <comment>Label for when we're loading compute systems from a Dev Home extension. A compute system can be a remote machine or virtual machine.</comment>
   </data>
   <data name="SetupTargetCloneRepositoryInfoBar.Message" xml:space="preserve">
-    <value>Only public Git repositories are supported at this time for the setup target flow</value>
+    <value>Only public Git repositories are supported in environments at this time.</value>
     <comment>Message text advising the use that Dev Home currently only supports cloning public Git repositories in the setup target flow.</comment>
   </data>
   <data name="SetupTargetCloneRepositoryInfoBar.Title" xml:space="preserve">
@@ -1481,8 +1493,8 @@
     <comment>Title for info bar that will warn users that proceeding with the setup may result in the restart and re-login of the targeted remote machine or virtual machine.</comment>
   </data>
   <data name="SetupTargetReviewPageHyperVInfoBarMessage" xml:space="preserve">
-    <value>Proceeding with the next step may result in the target machine being rebooted and logging in may be required. Dev Home's Dev Setup Agent service will be installed as it is required to setup a Hyper-V virtual machine</value>
-    <comment>Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
+    <value>The next step may require you to reboot and sign in again. The Dev Home's DevSetupAgent service will be installed for setup of a Hyper-V virtual machine</value>
+    <comment>{Locked="DevSetupAgent"} Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
   </data>
   <data name="SetupTargetUnknownStatus" xml:space="preserve">
     <value>Unknown</value>
@@ -1749,8 +1761,8 @@
     <comment>Button content for viewing a file.</comment>
   </data>
   <data name="SelectEnvironmentPageTitle" xml:space="preserve">
-    <value>Select your environment</value>
-    <comment>Title of the 'Select your environment' page in the create environment flow where users can select the provider they will use to create the environment, like Microsoft Hyper-V and Microsoft Dev Box</comment>
+    <value>Select environment</value>
+    <comment>Title of the 'Select environment' page in the create environment flow where users can select the provider they will use to create the environment, like Microsoft Hyper-V and Microsoft Dev Box</comment>
   </data>
   <data name="ConfigureEnvironmentPageTitle" xml:space="preserve">
     <value>Configure your environment</value>
@@ -1761,7 +1773,7 @@
     <comment>subtitle text advise the user that they can select an environment option in a list below the text</comment>
   </data>
   <data name="MainPageCreateEnvironment.Header" xml:space="preserve">
-    <value>Create virtual environment</value>
+    <value>Create your new environment</value>
     <comment>Header for a card that when clicked takes the user to a multi-step flow for creating an environment</comment>
   </data>
   <data name="MainPageCreateEnvironment.Description" xml:space="preserve">
@@ -1785,7 +1797,7 @@
     <comment>Title for create environment review tab</comment>
   </data>
   <data name="EnvironmentCreationReviewExpanderDescription" xml:space="preserve">
-    <value>Your environment's details</value>
+    <value>Environment details</value>
     <comment>Title for create environment review tab</comment>
   </data>
   <data name="EnvironmentCreationReviewPageTitle" xml:space="preserve">
