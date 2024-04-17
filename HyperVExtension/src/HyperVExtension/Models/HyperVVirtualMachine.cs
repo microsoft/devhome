@@ -469,7 +469,11 @@ public class HyperVVirtualMachine : IComputeSystem
                     // If vmconnect has an error, it will be displayed to the user in a message dialog
                     // outside of our control.
                     vmConnectProcess.Start();
-                    
+
+                    // Note: Just because the vmconnect.exe launches in the foreground does not mean it will launch
+                    // in front of the Dev Home window. Since the vmconnect.exe is a separate process being launched
+                    // outside of Dev Home, it will not be parented to the Dev Home window. The shell will launch it
+                    // in its last known location.
                     PInvoke.SetForegroundWindow((HWND)vmConnectProcess.MainWindowHandle);
                 }
 
