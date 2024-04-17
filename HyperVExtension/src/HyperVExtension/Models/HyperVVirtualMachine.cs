@@ -19,7 +19,6 @@ using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.UI.UIAutomation;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using SDK = Microsoft.Windows.DevHome.SDK;
