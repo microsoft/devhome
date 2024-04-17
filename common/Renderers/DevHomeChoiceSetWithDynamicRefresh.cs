@@ -21,11 +21,11 @@ namespace DevHome.Common.Renderers;
 /// is used to retrieve new data for other elements in the adaptive card based on that selection.
 /// </summary>
 /// <remarks>
-/// Adaptive cards do not currently support dynamically updating the one or more elements within a card
-/// in response to data in another element within the card changing.
+/// Adaptive cards do not currently support dynamically updating one or more elements within a card
+/// in response to the data in another element within the card changing.
 /// See issue in the adaptive card repository: https://github.com/microsoft/AdaptiveCards/issues/8598
-/// To work around this we attach an callback to a UI element representing a choice set. Which will then
-/// update the data of another choiceSet in the adaptive card based on the current selection of the originating
+/// To work around this we attach a callback to a UI element representing a choice set. This callback will then
+/// update the data of another choiceSet or element in the adaptive card based on the current selection of the originating
 /// choiceSet. This allows extensions to create an adaptive card where the selection in one combo box dynamically
 /// updates the data in another combo box.
 ///
@@ -93,8 +93,8 @@ public partial class DevHomeChoiceSetWithDynamicRefresh : IAdaptiveElementRender
         // Use the choiceSets Id as the name of the combo box.
         comboBox.Name = choiceSet.Id;
         comboBox.PlaceholderText = choiceSet.Placeholder;
-        var stackPanelForComboBoxWithRefresh = new Grid();
-        stackPanelForComboBoxWithRefresh.Children.Add(comboBox);
+        var gridForComboBoxWithRefresh = new Grid();
+        gridForComboBoxWithRefresh.Children.Add(comboBox);
 
         // Link the input value to the renders context so the correct index/value is sent when the user submit the adaptive card.
         context.AddInputValue(new CustomComboBoxInputValue(choiceSet, comboBox), renderArgs);
@@ -104,7 +104,7 @@ public partial class DevHomeChoiceSetWithDynamicRefresh : IAdaptiveElementRender
         AddChildChoiceSetDataForSelectionChanged(choiceSet, comboBox);
         LinkParentIdToChildId(choiceSet);
         AddChoiceSetIdToMap(choiceSet.Id, comboBox);
-        return stackPanelForComboBoxWithRefresh;
+        return gridForComboBoxWithRefresh;
     }
 
     private Grid SetupComboBoxWithSubtitleTemplate(

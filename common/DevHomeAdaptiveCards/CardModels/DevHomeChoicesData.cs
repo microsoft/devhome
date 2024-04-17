@@ -10,6 +10,10 @@ namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 /// type in the adaptive card schema with an added subtitle property. This can be updated in the future
 /// to add other properties.
 /// </summary>
+/// <remarks>
+/// This class should be kept in sync with the Adaptive card Input.Choice.
+/// See: https://www.adaptivecards.io/explorer/Input.Choice.html
+/// </remarks>
 public class DevHomeChoicesData
 {
     [JsonPropertyName("title")]
