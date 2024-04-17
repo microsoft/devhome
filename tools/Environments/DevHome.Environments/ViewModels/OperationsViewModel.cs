@@ -90,11 +90,11 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
             }
 
             var activityId = Guid.NewGuid();
-            WeakReferenceMessenger.Default.Send(new ComputeSystemOperationStartedData(ComputeSystemOperation, _additionalContext, activityId));
+            WeakReferenceMessenger.Default.Send(new ComputeSystemOperationStartedMessage(new(ComputeSystemOperation, _additionalContext, activityId)), this);
 
             var result = await ExtensionTask!(string.Empty);
 
-            WeakReferenceMessenger.Default.Send(new ComputeSystemOperationCompletedData(ComputeSystemOperation, result, _additionalContext, activityId));
+            WeakReferenceMessenger.Default.Send(new ComputeSystemOperationCompletedMessage(new(ComputeSystemOperation, result, _additionalContext, activityId)), this);
         });
     }
 
