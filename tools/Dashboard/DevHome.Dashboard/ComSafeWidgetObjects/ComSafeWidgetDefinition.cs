@@ -66,7 +66,7 @@ public class ComSafeWidgetDefinition : IDisposable
 
     public async Task<bool> Populate()
     {
-        await LazilyLoadOopWidgetDefinition();
+        await LazilyLoadOopWidgetDefinitionAsync();
         return _hasValidProperties;
     }
 
@@ -81,13 +81,13 @@ public class ComSafeWidgetDefinition : IDisposable
         {
             try
             {
-                await LazilyLoadOopWidgetDefinition();
+                await LazilyLoadOopWidgetDefinitionAsync();
                 return await Task.Run(() => _oopWidgetDefinition.GetThemeResource(theme));
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
-                ResetOopWidgetDefinitionAsync();
+                ResetOopWidgetDefinition();
             }
             catch (Exception ex)
             {
@@ -106,13 +106,13 @@ public class ComSafeWidgetDefinition : IDisposable
         {
             try
             {
-                await LazilyLoadOopWidgetDefinition();
+                await LazilyLoadOopWidgetDefinitionAsync();
                 return await Task.Run(() => _oopWidgetDefinition.GetWidgetCapabilities());
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
-                ResetOopWidgetDefinitionAsync();
+                ResetOopWidgetDefinition();
             }
             catch (Exception ex)
             {
@@ -124,13 +124,13 @@ public class ComSafeWidgetDefinition : IDisposable
         return null;
     }
 
-    private void ResetOopWidgetDefinitionAsync()
+    private void ResetOopWidgetDefinition()
     {
         _oopWidgetDefinition = null;
         _hasValidProperties = false;
     }
 
-    private async Task LazilyLoadOopWidgetDefinition()
+    private async Task LazilyLoadOopWidgetDefinitionAsync()
     {
         var attempt = 0;
         try
