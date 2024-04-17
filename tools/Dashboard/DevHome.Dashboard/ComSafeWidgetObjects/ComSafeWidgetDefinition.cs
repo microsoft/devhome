@@ -87,7 +87,7 @@ public class ComSafeWidgetDefinition : IDisposable
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
-                await GetNewOopWidgetDefinitionAsync();
+                ResetOopWidgetDefinitionAsync();
             }
             catch (Exception ex)
             {
@@ -112,7 +112,7 @@ public class ComSafeWidgetDefinition : IDisposable
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
                 _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
-                await GetNewOopWidgetDefinitionAsync();
+                ResetOopWidgetDefinitionAsync();
             }
             catch (Exception ex)
             {
@@ -124,10 +124,10 @@ public class ComSafeWidgetDefinition : IDisposable
         return null;
     }
 
-    private async Task GetNewOopWidgetDefinitionAsync()
+    private void ResetOopWidgetDefinitionAsync()
     {
         _oopWidgetDefinition = null;
-        await LazilyLoadOopWidgetDefinition();
+        _hasValidProperties = false;
     }
 
     private async Task LazilyLoadOopWidgetDefinition()
