@@ -12,12 +12,15 @@ using CommunityToolkit.WinUI;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.Environments;
+using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.WingetConfigure;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
@@ -359,11 +362,12 @@ public class ConfigureTargetTask : ISetupTask
         {
             try
             {
+                _log.Information($"Starting configuration on {ComputeSystemName}");
                 UserNumberOfAttempts = 1;
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyingConfiguration, ComputeSystemName), MessageSeverityKind.Info);
                 WingetConfigFileString = _configurationFileBuilder.BuildConfigFileStringFromTaskGroups(_setupFlowOrchestrator.TaskGroups, ConfigurationFileKind.SetupTarget);
                 var computeSystem = _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup;
-                var applyConfigurationOperation = computeSystem.ApplyConfiguration(WingetConfigFileString);
+                var applyConfigurationOperation = computeSystem.CreateApplyConfigurationOperation(WingetConfigFileString);
 
                 applyConfigurationOperation.ConfigurationSetStateChanged += OnApplyConfigurationOperationChanged;
                 applyConfigurationOperation.ActionRequired += OnActionRequired;
@@ -374,6 +378,11 @@ public class ConfigureTargetTask : ISetupTask
                 // in the UI of Dev Home's Loading page.
                 var tokenSource = new CancellationTokenSource();
                 tokenSource.CancelAfter(TimeSpan.FromMinutes(10));
+
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    "Environment_OperationInvoked_Event",
+                    LogLevel.Measure,
+                    new EnvironmentOperationUserEvent(EnvironmentsTelemetryStatus.Started, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId, string.Empty, _setupFlowOrchestrator.ActivityId));
 
                 ApplyConfigurationAsyncOperation = applyConfigurationOperation.StartAsync();
                 var result = await ApplyConfigurationAsyncOperation.AsTask().WaitAsync(tokenSource.Token);
@@ -401,11 +410,13 @@ public class ConfigureTargetTask : ISetupTask
                     throw Result.ProviderResult.ExtendedError ?? throw new SDKApplyConfigurationSetResultException("Applying the configuration failed but we weren't able to check the ProviderOperation results extended error.");
                 }
 
+                LogCompletionTelemetry(TaskFinishedState.Success);
                 return TaskFinishedState.Success;
             }
             catch (Exception e)
             {
                 _log.Error(e, $"Failed to apply configuration on target machine.");
+                LogCompletionTelemetry(TaskFinishedState.Failure);
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -498,5 +509,16 @@ public class ConfigureTargetTask : ISetupTask
         }
 
         return (_stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, unit.Intent, unit.Type, packageId, unitDescription), packageName);
+    }
+
+    private void LogCompletionTelemetry(TaskFinishedState taskFinishedState)
+    {
+        var status = taskFinishedState == TaskFinishedState.Success ? EnvironmentsTelemetryStatus.Succeeded : EnvironmentsTelemetryStatus.Failed;
+        var computeSystem = _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup;
+
+        TelemetryFactory.Get<ITelemetry>().Log(
+            "Environment_OperationInvoked_Event",
+            LogLevel.Measure,
+            new EnvironmentOperationUserEvent(status, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId, string.Empty, _setupFlowOrchestrator.ActivityId));
     }
 }
