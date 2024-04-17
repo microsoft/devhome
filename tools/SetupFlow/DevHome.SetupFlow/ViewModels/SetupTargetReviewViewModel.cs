@@ -46,7 +46,7 @@ public partial class SetupTargetReviewViewModel : ReviewTabViewModelBase
     public SetupTargetReviewViewModel(ISetupFlowStringResource stringResource, IComputeSystemManager computeSystemManager)
     {
         _stringResource = stringResource;
-        TabTitle = stringResource.GetLocalized(StringResourceKey.SetupTargetPageTitle);
+        TabTitle = stringResource.GetLocalized(StringResourceKey.SetupTargetReviewTabTitle);
         _computeSystemManager = computeSystemManager;
     }
 

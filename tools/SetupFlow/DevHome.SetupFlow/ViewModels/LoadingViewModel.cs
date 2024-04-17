@@ -297,7 +297,15 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         }
         else
         {
-            HeaderText = StringResource.GetLocalized(StringResourceKey.LoadingPageHeaderLocalText);
+            if (Orchestrator.CurrentSetupFlowKind == SetupFlowKind.CreateEnvironment)
+            {
+                HeaderText = StringResource.GetLocalized(StringResourceKey.LoadingPageHeaderTargetText);
+            }
+            else
+            {
+                HeaderText = StringResource.GetLocalized(StringResourceKey.LoadingPageHeaderLocalText);
+            }
+
             TasksTitleText = StringResource.GetLocalized(StringResourceKey.LoadingTasksTitleText);
             SetupTargetText = string.Empty;
             IsIndeterminateProgressBar = false;

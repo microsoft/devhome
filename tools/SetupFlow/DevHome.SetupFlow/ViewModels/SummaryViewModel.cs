@@ -55,6 +55,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private Visibility _showRestartNeeded;
 
+    [ObservableProperty]
+    private string _targetFailedCountText;
+
     [RelayCommand]
     public async Task ShowLogFiles()
     {
@@ -328,16 +331,30 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
         if (IsSettingUpATargetMachine)
         {
+            if (TargetCloneResults.Count > 0)
+            {
+                var localizedHeader = (TargetCloneResults.Count == 1) ? StringResourceKey.SummaryPageOneRepositoryCloned : StringResourceKey.SummaryPageReposClonedCount;
+                RepositoriesClonedText = StringResource.GetLocalized(localizedHeader);
+            }
+
+            if (TargetInstallResults.Count > 0)
+            {
+                var localizedHeader = (TargetInstallResults.Count == 1) ? StringResourceKey.SummaryPageOneApplicationInstalled : StringResourceKey.SummaryPageAppsDownloadedCount;
+                ApplicationsClonedText = StringResource.GetLocalized(localizedHeader);
+            }
+
             foreach (var targetFailedResult in TargetFailedResults)
             {
                 targetFailedResult.StatusSymbolIcon = statusSymbol;
             }
 
-            var localizedHeader = (TargetCloneResults.Count == 1) ? StringResourceKey.SummaryPageOneRepositoryCloned : StringResourceKey.SummaryPageReposClonedCount;
-            RepositoriesClonedText = StringResource.GetLocalized(localizedHeader);
+            TargetFailedCountText = StringResource.GetLocalized(StringResourceKey.SummaryConfigurationErrorsCountText, TargetFailedResults.Count);
 
-            localizedHeader = (TargetInstallResults.Count == 1) ? StringResourceKey.SummaryPageOneApplicationInstalled : StringResourceKey.SummaryPageAppsDownloadedCount;
-            ApplicationsClonedText = StringResource.GetLocalized(localizedHeader);
+            if (FailedTasks.Count > 0)
+            {
+                // There is only one task group for setting up a target machine.
+                FailedTasks[0].MessageToShow = StringResource.GetLocalized(StringResourceKey.SummaryPageTargetMachineFailedTaskText);
+            }
         }
 
         // If any tasks failed in the loading screen, the user has to click on the "Next" button

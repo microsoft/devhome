@@ -115,8 +115,8 @@
     <comment>Text for sorting in ascending order of name</comment>
   </data>
   <data name="SortByAltName.Content" xml:space="preserve">
-    <value>Alternative Name: Ascending</value>
-    <comment>Text for sorting by alternative name</comment>
+    <value>Secondary Name: Ascending</value>
+    <comment>Text for sorting by secondary name</comment>
   </data>
   <data name="SortByTextBlock.Text" xml:space="preserve">
     <value>Sort:</value>
@@ -167,8 +167,8 @@
     <comment>Text for sorting in descending order of name</comment>
   </data>
   <data name="SortByAltNameDesc.Content" xml:space="preserve">
-    <value>Alternative Name: Descending</value>
-    <comment>Text for sorting by alternative name in descending order</comment>
+    <value>Secondary Name: Descending</value>
+    <comment>Text for sorting by secondary name in descending order</comment>
   </data>
   <data name="SortByLastConnected.Content" xml:space="preserve">
     <value>Last Connected</value>
@@ -203,7 +203,7 @@
     <comment>Locked="{0}" Text to show the the user when Dev Home receives the notification that the creation of the new environment has failed. {0} is the error that is displayed to the user</comment>
   </data>
   <data name="SuccessMessageForCreateComputeSystem" xml:space="preserve">
-    <value>The {0} provider has completed its creation steps. Re-sync the page to manage you're new environment</value>
+    <value>The {0} provider has completed its creation steps. Re-sync the page to manage your new environment</value>
     <comment>Locked="{0}" Text to show the the user when Dev Home receives the notification that the users new environment has been created.  {0} is the of the provider who sent the notification</comment>
   </data>
   <data name="CreationStatusTextForCreateEnvironmentFlow" xml:space="preserve">

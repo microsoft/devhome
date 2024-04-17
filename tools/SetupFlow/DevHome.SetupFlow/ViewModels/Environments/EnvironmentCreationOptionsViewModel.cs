@@ -129,7 +129,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         var curSelectedProviderId = _curProviderDetails?.ComputeSystemProvider?.Id ?? string.Empty;
         var upcomingSelectedProviderId = _upcomingProviderDetails?.ComputeSystemProvider?.Id;
 
-        // Selected compute system provider  may havechanged so we need to update the adaptive card in the UI
+        // Selected compute system provider may have changed so we need to update the adaptive card in the UI
         // with new a adaptive card from the new provider.
         _curProviderDetails = _upcomingProviderDetails;
 
