@@ -38,6 +38,20 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     [NotifyCanExecuteChangedFor(nameof(SetUpCommand))]
     private bool _canSetUp;
 
+<<<<<<< Updated upstream
+=======
+    [ObservableProperty]
+    private string _reviewPageTitle;
+
+    [ObservableProperty]
+    private string _reviewPageExpanderDescription;
+
+    [ObservableProperty]
+    private string _reviewPageDescription;
+
+    public bool ShouldShowGenerateConfigurationFile => !Orchestrator.IsInCreateEnvironmentFlow;
+
+>>>>>>> Stashed changes
     public bool HasApplicationsToInstall => Orchestrator.GetTaskGroup<AppManagementTaskGroup>()?.SetupTasks.Any() == true;
 
     public bool RequiresTermsAgreement => HasApplicationsToInstall;

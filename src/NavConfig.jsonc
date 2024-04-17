@@ -94,18 +94,18 @@
       "buildTypeOverrides": [
         {
           "buildType": "dev",
-          "enabledByDefault": false,
+          "enabledByDefault": true,
           "visible": true
         },
         {
           "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": false
+          "enabledByDefault": true,
+          "visible": true
         },
         {
           "buildType": "release",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
         }
       ]
     }

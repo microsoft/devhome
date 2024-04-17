@@ -33,10 +33,11 @@
             <!-- Launch Button template -->
             <DataTemplate x:Key="LaunchButton" x:DataType="vm:ComputeSystemViewModel">
                 <SplitButton
-                        VerticalAlignment="Top"
-                        Command="{x:Bind LaunchActionCommand}"
-                        x:Uid="ms-resource:///DevHome.Environments/Resources/LaunchButton"
-                        Style="{StaticResource CardBodySplitButtonStyle}">
+                    Visibility="{x:Bind ShouldShowLaunchOperation, Mode=OneWay}"
+                    VerticalAlignment="Top"
+                    Command="{x:Bind LaunchActionCommand}"
+                    x:Uid="ms-resource:///DevHome.Environments/Resources/LaunchButton"
+                    Style="{StaticResource CardBodySplitButtonStyle}">
                     <SplitButton.Flyout>
                         <customControls:CardFlyout ItemsViewModels="{x:Bind LaunchOperations}"/>
                     </SplitButton.Flyout>
@@ -108,6 +109,68 @@
                 </ListView>
             </DataTemplate>
 
+<<<<<<< Updated upstream
+=======
+            <DataTemplate x:Key="ComputeSystemTemplate" x:DataType="vm:ComputeSystemViewModel">
+                <Grid Style="{StaticResource HorizontalCardRootForEnvironmentsPage}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <!-- Card Header : Title, small icon, '...' button -->
+                    <Grid Grid.Row="0">
+                        <commonCustomControls:CardHeader
+                            HeaderCaption="{x:Bind ProviderDisplayName, Mode=OneWay}"
+                            HeaderIcon="{x:Bind HeaderImage, Mode=OneWay}"
+                            ActionControlTemplate="{StaticResource ThreeDotsButton}" />
+                    </Grid>
+                    <!-- Card Body : Name, thumbnail, 'Launch' button -->
+                    <Grid Grid.Row="1">
+                        <commonCustomControls:CardBody
+                            ComputeSystemTitle="{x:Bind Name, Mode=OneWay}"
+                            ComputeSystemAlternativeTitle="{x:Bind AlternativeName, Mode=OneWay}"
+                            ComputeSystemImage="{x:Bind BodyImage, Mode=OneWay}"
+                            CardState="{x:Bind State, Mode=OneWay}"
+                            StateColor="{x:Bind StateColor, Mode=OneWay}"
+                            ComputeSystemProperties="{x:Bind Properties, Mode=OneWay}"
+                            ComputeSystemPropertyTemplate="{StaticResource BottomRowProperties}"
+                            ActionControlTemplate="{StaticResource LaunchButton}"
+                            ComputeSystemOperationStatus="{x:Bind UiMessageToDisplay, Mode=OneWay}"
+                            ShouldShowInDefiniteProgress="{x:Bind IsOperationInProgress, Mode=OneWay}"/>
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+            
+            <DataTemplate x:Key="CreateComputeSystemOperationTemplate" x:DataType="vm:CreateComputeSystemOperationViewModel">
+                <Grid Style="{StaticResource HorizontalCardRootForEnvironmentsPage}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <!-- Card Header : Title, small icon, '...' button -->
+                    <Grid Grid.Row="0">
+                        <commonCustomControls:CardHeader
+                            HeaderCaption="{x:Bind ProviderDisplayName, Mode=OneWay}"
+                            HeaderIcon="{x:Bind HeaderImage, Mode=OneWay}"
+                            ActionControlTemplate="{StaticResource ThreeDotsButtonForCreation}" />
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <commonCustomControls:CardBody
+                            ComputeSystemTitle="{x:Bind EnvironmentName, Mode=OneWay}"
+                            StateColor="{x:Bind StateColor, Mode=OneWay}"
+                            ComputeSystemOperationStatus="{x:Bind UiMessageToDisplay, Mode=OneWay}"
+                            ShouldShowInDefiniteProgress="{x:Bind IsOperationInProgress, Mode=OneWay}"/>
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+
+            <selectors:CardItemTemplateSelector x:Key="CardItemTemplateSelector"
+                ComputeSystemTemplate="{StaticResource ComputeSystemTemplate}"
+                CreateComputeSystemOperationTemplate="{StaticResource CreateComputeSystemOperationTemplate}"/>
+
+>>>>>>> Stashed changes
         </Grid.Resources>
         <!-- Templates end here -->
 

@@ -32,11 +32,17 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+<<<<<<< Updated upstream
     <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.300.443" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240311-x1907" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
+=======
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.400.460" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
+>>>>>>> Stashed changes
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />

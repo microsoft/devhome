@@ -11,6 +11,12 @@
     <UserControl.Resources>
         <devEnvConverters:CardStateColorToBrushConverter x:Key="CardStateColorToBrushConverter"/>
         <devEnvConverters:CardStateToLocalizedTextConverter x:Key="CardStateToLocalizedTextConverter"/>
+<<<<<<< Updated upstream
+=======
+        <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        <converters:EmptyStringToObjectConverter x:Key="EmptyStringToVisibleConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+        <converters:EmptyStringToObjectConverter x:Key="EmptyStringToCollapsedConverter" NotEmptyValue="Collapsed" EmptyValue="Visible"/>
+>>>>>>> Stashed changes
     </UserControl.Resources>
 
         <Grid
@@ -67,10 +73,26 @@
                     <!-- String that indicates the internal state of the compute system. -->
                     <TextBlock
                         Grid.Column="1"
+<<<<<<< Updated upstream
                         Text="{x:Bind CardState, Converter={StaticResource CardStateToLocalizedTextConverter}, Mode=OneWay}"
                         Style="{StaticResource CardBodyStateTextBlockStyle}"
                         IsTextSelectionEnabled="True"/>
                 </Grid>
+=======
+                        Visibility="{x:Bind ComputeSystemOperationStatus, Mode=OneWay, Converter={StaticResource EmptyStringToCollapsedConverter}}"
+                        Text="{x:Bind CardState, Converter={StaticResource CardStateToLocalizedTextConverter}, Mode=OneWay}"
+                        Style="{StaticResource CardBodyStateTextBlockStyle}"
+                        IsTextSelectionEnabled="True"/>
+                    <TextBlock
+                        Grid.Column="1"
+                        Visibility="{x:Bind ComputeSystemOperationStatus, Mode=OneWay, Converter={StaticResource EmptyStringToVisibleConverter}}"
+                        Text="{x:Bind ComputeSystemOperationStatus, Mode=OneWay}"
+                        Style="{StaticResource CardBodyStateTextBlockStyle}"
+                        TextWrapping="Wrap"
+                        TextTrimming="CharacterEllipsis"
+                        IsTextSelectionEnabled="True"/>
+            </Grid>
+>>>>>>> Stashed changes
                 <!-- Wrap panel from community toolkit that will display properties of variable length. -->
                 <ItemsRepeater 
                     ItemsSource="{x:Bind ComputeSystemProperties, Mode=OneWay}" 

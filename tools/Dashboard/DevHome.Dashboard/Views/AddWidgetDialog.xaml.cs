@@ -2,11 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
@@ -52,8 +54,19 @@ public sealed partial class AddWidgetDialog : ContentDialog
     [RelayCommand]
     public async Task OnLoadedAsync()
     {
-        var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
-        widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        try
+        {
+            var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+            widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        }
+        catch (Exception ex)
+        {
+            // If there was an error getting the widget catalog, log it and continue.
+            // If a WidgetDefinition is deleted while the dialog is open, we won't know to remove it from
+            // the list automatically, but we can show a helpful error message if the user tries to pin it.
+            // https://github.com/microsoft/devhome/issues/2623
+            _log.Error(ex, "Exception in AddWidgetDialog.OnLoadedAsync:");
+        }
 
         await FillAvailableWidgetsAsync();
         SelectFirstWidgetByDefault();
@@ -63,26 +76,26 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         AddWidgetNavigationView.MenuItems.Clear();
 
-        var catalog = await _hostingService.GetWidgetCatalogAsync();
-        var host = await _hostingService.GetWidgetHostAsync();
-
-        if (catalog is null || host is null)
-        {
-            // We should never have gotten here if we don't have a WidgetCatalog.
-            _log.Error($"Opened the AddWidgetDialog, but WidgetCatalog is null.");
-            return;
-        }
-
         // Show the providers and widgets underneath them in alphabetical order.
-        var providerDefinitions = await Task.Run(() => catalog!.GetProviderDefinitions().OrderBy(x => x.DisplayName));
-        var widgetDefinitions = await Task.Run(() => catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle));
+        var providerDefinitions = (await _hostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
+        var widgetDefinitions = (await _hostingService.GetWidgetDefinitionsAsync()).OrderBy(x => x.DisplayTitle);
 
         _log.Information($"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
 
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
-        var currentlyPinnedWidgets = await Task.Run(() => host.GetWidgets());
+        var unsafeCurrentlyPinnedWidgets = await _hostingService.GetWidgetsAsync();
+        var comSafeCurrentlyPinnedWidgets = new List<ComSafeWidget>();
+        foreach (var unsafeWidget in unsafeCurrentlyPinnedWidgets)
+        {
+            var id = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
+            if (!string.IsNullOrEmpty(id))
+            {
+                comSafeCurrentlyPinnedWidgets.Add(new ComSafeWidget(id));
+            }
+        }
+
         foreach (var providerDef in providerDefinitions)
         {
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
@@ -99,7 +112,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
                         var subItemContent = await BuildWidgetNavItem(widgetDef);
-                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
+                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, [.. comSafeCurrentlyPinnedWidgets]);
                         var subItem = new NavigationViewItem
                         {
                             Tag = widgetDef,
@@ -167,7 +180,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         return itemContent;
     }
 
-    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef, Widget[] currentlyPinnedWidgets)
+    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef, ComSafeWidget[] currentlyPinnedWidgets)
     {
         // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
         if (!widgetDef.AllowMultiple)
@@ -273,8 +286,16 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _selectedWidget = null;
         ViewModel = null;
 
-        var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
-        widgetCatalog!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        try
+        {
+            var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+            widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        }
+        catch (Exception ex)
+        {
+            // If there was an error getting the widget catalog, log it and continue.
+            _log.Error(ex, "Exception in HideDialogAsync:");
+        }
 
         this.Hide();
     }

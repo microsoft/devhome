@@ -82,7 +82,13 @@ public static class StringResourceKey
     public static readonly string SelectedPackagesCount = nameof(SelectedPackagesCount);
     public static readonly string SetUpButton = nameof(SetUpButton);
     public static readonly string SizeWithColon = nameof(SizeWithColon);
+    public static readonly string LoadingPageHeaderLocalText = nameof(LoadingPageHeaderLocalText);
+    public static readonly string LoadingPageHeaderTargetText = nameof(LoadingPageHeaderTargetText);
+    public static readonly string LoadingPageSetupTargetText = nameof(LoadingPageSetupTargetText);
+    public static readonly string LoadingTasksTitleText = nameof(LoadingTasksTitleText);
+    public static readonly string LoadingLogsTitleText = nameof(LoadingLogsTitleText);
     public static readonly string LoadingExecutingProgress = nameof(LoadingExecutingProgress);
+    public static readonly string LoadingExecutingProgressForTarget = nameof(LoadingExecutingProgressForTarget);
     public static readonly string ActionCenterDisplay = nameof(ActionCenterDisplay);
     public static readonly string NeedsRebootMessage = nameof(NeedsRebootMessage);
     public static readonly string ApplicationsPageTitle = nameof(ApplicationsPageTitle);
@@ -92,6 +98,8 @@ public static class StringResourceKey
     public static readonly string SummaryPageOneRepositoryCloned = nameof(SummaryPageOneRepositoryCloned);
     public static readonly string SummaryPageAppsDownloadedCount = nameof(SummaryPageAppsDownloadedCount);
     public static readonly string SummaryPageReposClonedCount = nameof(SummaryPageReposClonedCount);
+    public static readonly string SummaryConfigurationErrorsCountText = nameof(SummaryConfigurationErrorsCountText);
+    public static readonly string SummaryPageTargetMachineFailedTaskText = nameof(SummaryPageTargetMachineFailedTaskText);
     public static readonly string SSHConnectionStringNotAllowed = nameof(SSHConnectionStringNotAllowed);
 
     // Repository loading screen messages
@@ -245,6 +253,7 @@ public static class StringResourceKey
     public static readonly string SetupTargetReviewPageDefaultInfoBarTitle = nameof(SetupTargetReviewPageDefaultInfoBarTitle);
     public static readonly string SetupTargetReviewPageDefaultInfoBarMessage = nameof(SetupTargetReviewPageDefaultInfoBarMessage);
     public static readonly string SetupTargetReviewPageHyperVInfoBarMessage = nameof(SetupTargetReviewPageHyperVInfoBarMessage);
+    public static readonly string SetupTargetReviewTabTitle = nameof(SetupTargetReviewTabTitle);
     public static readonly string SetupTargetUnknownStatus = nameof(SetupTargetUnknownStatus);
     public static readonly string SetupTargetSortAToZLabel = nameof(SetupTargetSortAToZLabel);
     public static readonly string SetupTargetSortZToALabel = nameof(SetupTargetSortZToALabel);
@@ -258,4 +267,32 @@ public static class StringResourceKey
     public static readonly string SetupTargetConfigurationProgressUpdate = nameof(SetupTargetConfigurationProgressUpdate);
     public static readonly string SetupTargetConfigurationUnitProgressErrorWithMsg = nameof(SetupTargetConfigurationUnitProgressErrorWithMsg);
     public static readonly string SetupTargetConfigurationUnitUnknown = nameof(SetupTargetConfigurationUnitUnknown);
+<<<<<<< Updated upstream
+=======
+
+    // Create Environment flow
+    public static readonly string SelectEnvironmentPageTitle = nameof(SelectEnvironmentPageTitle);
+    public static readonly string ConfigureEnvironmentPageTitle = nameof(ConfigureEnvironmentPageTitle);
+    public static readonly string EnvironmentCreationReviewPageTitle = nameof(EnvironmentCreationReviewPageTitle);
+    public static readonly string EnvironmentCreationReviewTabTitle = nameof(EnvironmentCreationReviewTabTitle);
+    public static readonly string EnvironmentCreationError = nameof(EnvironmentCreationError);
+    public static readonly string StartingEnvironmentCreation = nameof(StartingEnvironmentCreation);
+    public static readonly string EnvironmentCreationOperationInitializationFinished = nameof(EnvironmentCreationOperationInitializationFinished);
+    public static readonly string EnvironmentCreationForProviderStarted = nameof(EnvironmentCreationForProviderStarted);
+    public static readonly string EnvironmentCreationFailedToGetProviderInformation = nameof(EnvironmentCreationFailedToGetProviderInformation);
+    public static readonly string EnvironmentCreationReviewExpanderDescription = nameof(EnvironmentCreationReviewExpanderDescription);
+    public static readonly string CreateEnvironmentButtonText = nameof(CreateEnvironmentButtonText);
+    public static readonly string SetupShellReviewPageDescriptionForEnvironmentCreation = nameof(SetupShellReviewPageDescriptionForEnvironmentCreation);
+    public static readonly string EnvironmentCreationAdaptiveCardLoadingMessage = nameof(EnvironmentCreationAdaptiveCardLoadingMessage);
+
+    // Summary page
+    public static readonly string SummaryPageOpenDashboard = nameof(SummaryPageOpenDashboard);
+    public static readonly string SummaryPageRedirectToEnvironmentPageButton = nameof(SummaryPageRedirectToEnvironmentPageButton);
+    public static readonly string SummaryPageHeader = nameof(SummaryPageHeader);
+    public static readonly string SummaryPageHeaderForEnvironmentCreationText = nameof(SummaryPageHeaderForEnvironmentCreationText);
+
+    // Review page
+    public static readonly string ReviewExpanderDescription = nameof(ReviewExpanderDescription);
+    public static readonly string SetupShellReviewPageDescription = nameof(SetupShellReviewPageDescription);
+>>>>>>> Stashed changes
 }

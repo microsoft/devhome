@@ -24,6 +24,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+<<<<<<< Updated upstream
+=======
+    <ProjectReference Include="..\..\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.UI\DevHome.QuietBackgroundProcesses.UI.csproj" />
+    <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
+    <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
+>>>>>>> Stashed changes
   </ItemGroup>
 
   <ItemGroup>

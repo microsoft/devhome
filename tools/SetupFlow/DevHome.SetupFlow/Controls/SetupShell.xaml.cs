@@ -54,7 +54,17 @@ public sealed partial class SetupShell : UserControl
         get => (Visibility)GetValue(HeaderVisibilityProperty);
         set => SetValue(HeaderVisibilityProperty, value);
     }
+<<<<<<< Updated upstream
 
+=======
+
+    public Visibility ContentVisibility
+    {
+        get => (Visibility)GetValue(ContentVisibilityProperty);
+        set => SetValue(ContentVisibilityProperty, value);
+    }
+
+>>>>>>> Stashed changes
     public SetupShell()
     {
         this.InitializeComponent();

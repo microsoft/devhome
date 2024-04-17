@@ -6,17 +6,42 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="using:CommunityToolkit.WinUI"
+<<<<<<< Updated upstream
     mc:Ignorable="d">
+=======
+    xmlns:views="using:DevHome.Customization.Views"
+    xmlns:quietviews="using:DevHome.QuietBackgroundProcesses.UI.Views"
+    Loaded="UserControl_Loaded">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
+>>>>>>> Stashed changes
 
     <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
         <!--  Primary settings group (untitled)  -->
         <controls:SettingsCard
             x:Uid="DeveloperFileExplorerCard"
             AutomationProperties.AccessibilityView="Control"
+<<<<<<< Updated upstream
             AutomationProperties.AutomationId="NavigateDeveloperFileExplorerCardButton"
             Command="{x:Bind ViewModel.NavigateToDeveloperFileExplorerPageCommand}"
             HeaderIcon="{ui:FontIcon Glyph=&#xEC50;}"
             IsClickEnabled="True" />
+=======
+            AutomationProperties.AutomationId="NavigateDevDriveInsightsCardButton"
+            Command="{x:Bind ViewModel.NavigateToDevDriveInsightsPageCommand}"
+            Visibility="{Binding AnyDevDrivesPresent, Converter={StaticResource BoolToVisibilityConverter}}"
+            IsClickEnabled="True"
+            Margin="{ThemeResource SettingsCardMargin}">
+            <controls:SettingsCard.HeaderIcon>
+                <FontIcon Glyph="&#xE3AF;" FontFamily="{ThemeResource AmcFluentIcons}"/>
+            </controls:SettingsCard.HeaderIcon>
+        </controls:SettingsCard>
+
+            <!--  Quiet Background Processes  -->
+            <quietviews:QuietBackgroundProcessesView />
+        </StackPanel>
+>>>>>>> Stashed changes
 
         <!--  More Windows settings  -->
         <StackPanel>

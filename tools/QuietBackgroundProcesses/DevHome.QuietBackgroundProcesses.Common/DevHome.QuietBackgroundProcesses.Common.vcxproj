@@ -145,6 +145,7 @@
     <Midl Include="DevHome.QuietBackgroundProcesses.idl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Common.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>

@@ -284,4 +284,9 @@ public partial class CardProperty : ObservableObject
 
         return "-";
     }
+
+    public override string ToString()
+    {
+        return Title + " - " + Value;
+    }
 }

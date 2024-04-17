@@ -116,8 +116,13 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
+<<<<<<< Updated upstream
   
   <!-- Quiet Background Processes bins -->
+=======
+
+  <!-- Quiet background processes bins -->
+>>>>>>> Stashed changes
   <PropertyGroup>
     <_DevHomeInternal_CppPlatform>$(Platform)</_DevHomeInternal_CppPlatform>
     <_DevHomeInternal_CppPlatform Condition="'$(Platform)' == 'x86'">Win32</_DevHomeInternal_CppPlatform>
@@ -134,6 +139,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Common\DevHome.QuietBackgroundProcesses.winmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

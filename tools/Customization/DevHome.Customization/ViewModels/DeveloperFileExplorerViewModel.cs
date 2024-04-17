@@ -1,10 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+<<<<<<< Updated upstream
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+=======
+using CommunityToolkit.Mvvm.ComponentModel;
+>>>>>>> Stashed changes
 using DevHome.Customization.Models;
 using DevHome.Customization.TelemetryEvents;
 using Microsoft.Internal.Windows.DevHome.Helpers;
@@ -13,6 +17,7 @@ namespace DevHome.Customization.ViewModels;
 
 public partial class DeveloperFileExplorerViewModel : ObservableObject
 {
+<<<<<<< Updated upstream
     private readonly ShellSettings _shellSettings;
 
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
@@ -27,6 +32,13 @@ public partial class DeveloperFileExplorerViewModel : ObservableObject
             new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
             new(stringResource.GetLocalized("DeveloperFileExplorer_Header"), typeof(DeveloperFileExplorerViewModel).FullName!)
         ];
+=======
+    private readonly ShellSettings _shellSettings;
+
+    public DeveloperFileExplorerViewModel()
+    {
+        _shellSettings = new ShellSettings();
+>>>>>>> Stashed changes
     }
 
     public bool ShowFileExtensions

@@ -21,6 +21,11 @@
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+<<<<<<< Updated upstream
+=======
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.400.460" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
+>>>>>>> Stashed changes
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />

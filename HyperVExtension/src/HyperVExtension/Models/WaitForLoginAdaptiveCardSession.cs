@@ -58,7 +58,9 @@ public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSess
         bool showOkButton;
         string cancelText;
         string loginRequiredText;
+        var loginRequiredText2 = string.Empty;
         string loginRequiredDescriptionText;
+        var loginRequiredDescriptionText2 = string.Empty;
         string icon;
         if (_attemptNumber > MaxAttempts)
         {
@@ -67,7 +69,9 @@ public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSess
             attemptNumberInText = MaxAttempts;
             showOkButton = false;
             loginRequiredText = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredTextAfterLastAttempt");
+            loginRequiredText2 = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredTextAfterLastAttempt2");
             loginRequiredDescriptionText = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredDescriptionTextAfterLastAttempt");
+            loginRequiredDescriptionText2 = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredDescriptionTextAfterLastAttempt2");
             cancelText = _stringResource.GetLocalized("WaitForLoginRequest/DismissText");
             icon = ConvertIconToDataString("DarkError.png");
         }
@@ -92,7 +96,9 @@ public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSess
             { "title", title },
             { "description", description },
             { "loginRequiredText", loginRequiredText },
+            { "loginRequiredText2", loginRequiredText2 },
             { "loginRequiredDescriptionText", loginRequiredDescriptionText },
+            { "loginRequiredDescriptionText2", loginRequiredDescriptionText2 },
             { "okText", okText },
             { "cancelText", cancelText },
             { "attempt", _attemptNumber },

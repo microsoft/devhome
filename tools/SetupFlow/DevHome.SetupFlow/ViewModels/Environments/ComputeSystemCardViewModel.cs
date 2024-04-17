@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Helpers;
@@ -53,7 +55,6 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     [ObservableProperty]
     private CardStateColor _stateColor;
 
-    // This will be used for the accessibility name of the compute system card.
     [ObservableProperty]
     private Lazy<string> _accessibilityName;
 
@@ -82,6 +83,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
         ComputeSystemWrapper = computeSystem;
         ComputeSystemWrapper.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;
+        AccessibilityName = new Lazy<string>(BuildAutomationName);
     }
 
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
@@ -113,5 +115,19 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     {
         ComputeSystemWrapper.StateChanged -= _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged -= OnComputeSystemStateChanged;
+    }
+
+    private string BuildAutomationName()
+    {
+        var stringBuilder = new StringBuilder();
+        stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{ComputeSystemTitle}");
+        stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{CardState}");
+
+        foreach (var property in ComputeSystemProperties)
+        {
+            stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{property}");
+        }
+
+        return stringBuilder.ToString();
     }
 }
