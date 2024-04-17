@@ -26,8 +26,7 @@ public class ProtocolActivationHandler : ActivationHandler<ProtocolActivatedEven
 
     protected override Task HandleInternalAsync(ProtocolActivatedEventArgs args)
     {
-        _navigationService.DefaultPage = typeof(AccountsViewModel).FullName!;
-        _navigationService.NavigateTo(_navigationService.DefaultPage);
+        _navigationService.NavigateTo(typeof(AccountsViewModel).FullName!);
         return Task.CompletedTask;
     }
 }

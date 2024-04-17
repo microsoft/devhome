@@ -37,7 +37,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
         IWindowsPackageManager wpm,
         SetupFlowOrchestrator setupFlowOrchestrator)
     {
-        this._navigationService = navigationService;
+        _navigationService = navigationService;
         _setupFlowViewModel = setupFlowViewModel;
         _packageProvider = packageProvider;
         _windowsPackageManager = wpm;
