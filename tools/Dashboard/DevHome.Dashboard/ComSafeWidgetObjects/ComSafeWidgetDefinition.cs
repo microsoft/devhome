@@ -161,26 +161,21 @@ public class ComSafeWidgetDefinition
     }
 
     /// <summary>
-    /// Get a WidgetDefinition's ID from a WidgetDefinition object. Tries multiple times in case of COM exceptions.
+    /// Get a WidgetDefinition's ID from a WidgetDefinition object.
     /// </summary>
     /// <param name="widgetDefinition">WidgetDefinition</param>
     /// <returns>The Widget's Id, or in the case of failure string.Empty</returns>
     public static async Task<string> GetIdFromUnsafeWidgetDefinitionAsync(WidgetDefinition widgetDefinition)
     {
-        var retries = 5;
-
         return await Task.Run(() =>
         {
-            while (retries-- > 0)
+            try
             {
-                try
-                {
-                    return widgetDefinition.Id;
-                }
-                catch (Exception ex)
-                {
-                    Log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}, try {retries} more times");
-                }
+                return widgetDefinition.Id;
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
             }
 
             return string.Empty;
