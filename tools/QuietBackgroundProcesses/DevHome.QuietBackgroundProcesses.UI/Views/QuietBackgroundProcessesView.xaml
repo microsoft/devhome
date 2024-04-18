@@ -12,7 +12,7 @@
 
             <!-- Header icon -->
             <ctControls:SettingsExpander.HeaderIcon>
-                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xefff;"/>
+                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9d9;"/>
             </ctControls:SettingsExpander.HeaderIcon>
 
             <!-- Quiet session setting area -->
