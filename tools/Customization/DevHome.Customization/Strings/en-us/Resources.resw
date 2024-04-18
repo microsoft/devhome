@@ -201,6 +201,10 @@
     <value>Global environment variable {0} is set to {1}, which is not located on Dev Drive. Move contents of this folder to a directory on Dev Drive such as {2} and set {3} to that chosen directory on Dev Drive</value>
     <comment>Optimizer dev drive description</comment>
   </data>
+  <data name="OptimizerDevDriveDescriptionWithEnvVarNotSet" xml:space="preserve">
+    <value>Move contents of {0} to a directory on Dev Drive such as {1} and set {2} to that chosen directory on Dev Drive</value>
+    <comment>Optimizer dev drive description when environment variable is not set</comment>
+  </data>
   <data name="SettingsAutoSuggestBox.PlaceholderText" xml:space="preserve">
     <value>Search</value>
     <comment>The placholder text for the settings auto suggest box</comment>
