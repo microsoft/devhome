@@ -224,7 +224,7 @@ public partial class DashboardView : ToolPage, IDisposable
             _log.Information($"Pin default widgets");
             await PinDefaultWidgetsAsync();
         }
-        else if (hostWidgets != null)
+        else
         {
             await RestorePinnedWidgetsAsync(hostWidgets);
         }
@@ -237,7 +237,7 @@ public partial class DashboardView : ToolPage, IDisposable
         if (unsafeHostWidgets.Length == 0)
         {
             _log.Information($"Found 0 widgets for this host");
-            return null;
+            return [];
         }
 
         var comSafeHostWidgets = new List<ComSafeWidget>();
