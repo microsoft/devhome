@@ -7,7 +7,7 @@
     Loaded="UserControl_Loaded">
 
     <StackPanel Orientation="Vertical"
-                Visibility="{x:Bind ViewModel.IsQuietBackgroundProcessesFeatureEnabled, Mode=OneWay}">
+                Visibility="{x:Bind ViewModel.IsFeaturePresent, Mode=OneWay}">
         <ctControls:SettingsExpander x:Uid="QuietBackgroundProcesses" IsExpanded="False" Margin="{ThemeResource SettingsCardMargin}">
 
             <!-- Header icon -->
