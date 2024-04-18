@@ -77,6 +77,11 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     public bool RequiresReboot => false;
 
     /// <summary>
+    /// Gets target device name. Inherited via ISetupTask but unused.
+    /// </summary>
+    public string TargetName => string.Empty;
+
+    /// <summary>
     /// The developer ID that is used when a repository is being cloned.
     /// </summary>
     private readonly IDeveloperId _developerId;
@@ -232,7 +237,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
 
                 if (result.Status == ProviderOperationStatus.Failure)
                 {
-                    _log.Error($"Could not clone {RepositoryToClone.DisplayName} because {result.DisplayMessage}", result.ExtendedError);
+                    _log.Error(result.ExtendedError, $"Could not clone {RepositoryToClone.DisplayName} because {result.DisplayMessage}");
                     TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_CouldNotClone_Event", LogLevel.Critical, new ExceptionEvent(result.ExtendedError.HResult, result.DisplayMessage));
 
                     _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, result.DisplayMessage);
@@ -242,7 +247,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             }
             catch (Exception e)
             {
-                _log.Error($"Could not clone {RepositoryToClone.DisplayName}", e);
+                _log.Error(e, $"Could not clone {RepositoryToClone.DisplayName}");
                 _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, e.HResult.ToString("X", CultureInfo.CurrentCulture));
                 TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_CouldNotClone_Event", LogLevel.Critical, new ExceptionEvent(e.HResult));
                 return TaskFinishedState.Failure;

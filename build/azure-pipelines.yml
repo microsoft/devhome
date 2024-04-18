@@ -21,8 +21,8 @@ parameters:
 
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
-  MSIXVersion: '0.1201'
-  VersionOfSDK: '0.300'
+  MSIXVersion: '0.1301'
+  VersionOfSDK: '0.400'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
   testOutputArtifactDir: 'TestResults'

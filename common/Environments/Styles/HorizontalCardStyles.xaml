@@ -23,7 +23,7 @@
     <Style
         x:Key="HorizontalCardRootForSetupTargetFlow"
         TargetType="Grid">
-        <Setter Property="Padding" Value="0 15 10 20" />
+        <Setter Property="Padding" Value="10 10 10 20" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
     </Style>
@@ -34,6 +34,7 @@
         BasedOn="{StaticResource DefaultListViewItemStyle}">
         <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="Margin" Value="0 0 0 10" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
     </Style>

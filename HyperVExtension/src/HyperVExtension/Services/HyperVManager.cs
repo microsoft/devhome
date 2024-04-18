@@ -432,34 +432,6 @@ public class HyperVManager : IHyperVManager, IDisposable
         }
     }
 
-    /// <inheritdoc cref="IHyperVManager.ConnectToVirtualMachine"/>
-    public void ConnectToVirtualMachine(Guid vmId)
-    {
-        StartVirtualMachineManagementService();
-        AddVirtualMachineToOperationsMap(vmId);
-
-        try
-        {
-            // Build command line statement to connect to the VM.
-            var commandLineStatements = new StatementBuilder()
-                .AddScript($"{HyperVStrings.VmConnectScript} {vmId}", true)
-                .Build();
-
-            var result = _powerShellService.Execute(commandLineStatements, PipeType.PipeOutput);
-
-            // Note: We use the vmconnect application to connect to the VM. VM connect will display a message box with
-            // an error if one occurs. We will only throw this error if an error occurs within the PowerShell session.
-            if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
-            {
-                throw new HyperVManagerException($"Unable to launch VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
-            }
-        }
-        finally
-        {
-            RemoveVirtualMachineFromOperationsMap(vmId);
-        }
-    }
-
     /// <inheritdoc cref="IHyperVManager.GetVirtualMachineCheckpoints"/>
     public IEnumerable<Checkpoint> GetVirtualMachineCheckpoints(Guid vmId)
     {

@@ -206,6 +206,7 @@
     <ClInclude Include="ApplyConfigurationUnitResult.h" />
     <ClInclude Include="ComputeSystemAdaptiveCardResult.h" />
     <ClInclude Include="ComputeSystemOperationResult.h" />
+    <ClInclude Include="ComputeSystemPinnedResult.h" />
     <ClInclude Include="ComputeSystemProperty.h" />
     <ClInclude Include="ComputeSystemsResult.h" />
     <ClInclude Include="ComputeSystemStateResult.h" />
@@ -239,6 +240,7 @@
     <ClCompile Include="ApplyConfigurationUnitResult.cpp" />
     <ClCompile Include="ComputeSystemAdaptiveCardResult.cpp" />
     <ClCompile Include="ComputeSystemOperationResult.cpp" />
+    <ClCompile Include="ComputeSystemPinnedResult.cpp" />
     <ClCompile Include="ComputeSystemProperty.cpp" />
     <ClCompile Include="ComputeSystemsResult.cpp" />
     <ClCompile Include="ComputeSystemStateResult.cpp" />
@@ -296,4 +298,7 @@
     <Error Condition="!Exists('..\..\packages\Microsoft.WindowsAppSDK.1.5.240227000\build\native\Microsoft.WindowsAppSDK.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.WindowsAppSDK.1.5.240227000\build\native\Microsoft.WindowsAppSDK.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.WindowsAppSDK.1.5.240227000\build\native\Microsoft.WindowsAppSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.WindowsAppSDK.1.5.240227000\build\native\Microsoft.WindowsAppSDK.targets'))" />
   </Target>
+  <ItemGroup>
+    <ResourceCompile Include="version.rc" />
+  </ItemGroup>
 </Project>

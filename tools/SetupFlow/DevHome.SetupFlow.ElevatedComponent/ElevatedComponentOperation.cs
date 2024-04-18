@@ -43,7 +43,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to parse tasks arguments", e);
+            _log.Error(e, $"Failed to parse tasks arguments");
             throw;
         }
     }
@@ -182,7 +182,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to validate or execute operation", e);
+            _log.Error(e, $"Failed to validate or execute operation");
             EndOperation(taskArguments, false);
             throw;
         }

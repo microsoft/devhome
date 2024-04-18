@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
@@ -88,7 +89,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to initialize elevated process.", e);
+            _log.Error(e, $"Failed to initialize elevated process.");
         }
     }
 
@@ -112,7 +113,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to get configuration unit details.", e);
+            _log.Error(e, $"Failed to get configuration unit details.");
         }
     }
 
@@ -122,10 +123,20 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// <returns>True if a YAML configuration file was selected, false otherwise</returns>
     public async Task<bool> PickConfigurationFileAsync()
     {
-        // Create and configure file picker
-        _log.Information("Launching file picker to select configuration file");
-        var file = await _mainWindow.OpenFilePickerAsync(Log.Logger, ("*.yaml;*.yml;*.winget", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
-        return await LoadConfigurationFileInternalAsync(file);
+        try
+        {
+            // Create and configure file picker
+            _log.Information("Launching file picker to select configuration file");
+            using var fileDialog = new WindowOpenFileDialog();
+            fileDialog.AddFileType(StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML"), ".yaml", ".yml", ".winget");
+            var file = await fileDialog.ShowAsync(_mainWindow);
+            return await LoadConfigurationFileInternalAsync(file);
+        }
+        catch (Exception e)
+        {
+            _log.Error(e, $"Failed to open file picker.");
+            return false;
+        }
     }
 
     /// <summary>
@@ -173,7 +184,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (OpenConfigurationSetException e)
         {
-            _log.Error($"Opening configuration set failed.", e);
+            _log.Error(e, $"Opening configuration set failed.");
             await _mainWindow.ShowErrorMessageDialogAsync(
                 StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
                 GetErrorMessage(e),
@@ -181,7 +192,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error($"Unknown error while opening configuration set.", e);
+            _log.Error(e, $"Unknown error while opening configuration set.");
 
             await _mainWindow.ShowErrorMessageDialogAsync(
                 file.Name,

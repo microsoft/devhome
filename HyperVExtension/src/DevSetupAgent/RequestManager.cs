@@ -102,7 +102,7 @@ public class RequestManager : IRequestManager
             }
             catch (Exception ex)
             {
-                _log.Error($"Failed to execute request.", ex);
+                _log.Error(ex, $"Failed to execute request.");
             }
         }
     }

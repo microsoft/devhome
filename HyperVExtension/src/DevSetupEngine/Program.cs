@@ -25,9 +25,9 @@ internal sealed class Program
     public static int Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
     {
         // Set up Logging
-        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(DevHome.Common.Logging.LogFolderRoot, "HyperV"));
+        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Logging.LogFolderRoot, "HyperV"));
         var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile("appsettings_hypervsetup.json")
             .Build();
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
@@ -58,7 +58,7 @@ internal sealed class Program
         }
         catch (Exception ex)
         {
-            Log.Error($"Exception: {ex}", ex);
+            Log.Error(ex, $"Exception: {ex}");
             Log.CloseAndFlush();
             return ex.HResult;
         }

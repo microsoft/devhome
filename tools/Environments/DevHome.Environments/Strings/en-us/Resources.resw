@@ -79,7 +79,7 @@
     <comment>Text for pause button in the context menu that will pause the virtual machine.</comment>
   </data>
   <data name="PinToStartButtonContextMenuItem" xml:space="preserve">
-    <value>Add to Start</value>
+    <value>Pin to Start Menu</value>
     <comment>Text that will pin a virtual machine's launcher app to the Start menu.</comment>
   </data>
   <data name="PinToTaskbarButtonContextMenuItem" xml:space="preserve">
@@ -115,8 +115,8 @@
     <comment>Text for sorting in ascending order of name</comment>
   </data>
   <data name="SortByAltName.Content" xml:space="preserve">
-    <value>Alternative Name: Ascending</value>
-    <comment>Text for sorting by alternative name</comment>
+    <value>Secondary Name: Ascending</value>
+    <comment>Text for sorting by secondary name</comment>
   </data>
   <data name="SortByTextBlock.Text" xml:space="preserve">
     <value>Sort:</value>
@@ -125,6 +125,10 @@
   <data name="SyncButtonTextBlock.Text" xml:space="preserve">
     <value>Sync</value>
     <comment>Text for the sync button on the top right side</comment>
+  </data>
+  <data name="CreateEnvironmentButton.Text" xml:space="preserve">
+    <value>Create Environment</value>
+    <comment>Text for button that will redirect the user to the Create Environment page in Dev Home</comment>
   </data>
   <data name="Titlebar.Text" xml:space="preserve">
     <value>Environments</value>
@@ -163,8 +167,8 @@
     <comment>Text for sorting in descending order of name</comment>
   </data>
   <data name="SortByAltNameDesc.Content" xml:space="preserve">
-    <value>Alternative Name: Descending</value>
-    <comment>Text for sorting by alternative name in descending order</comment>
+    <value>Secondary Name: Descending</value>
+    <comment>Text for sorting by secondary name in descending order</comment>
   </data>
   <data name="SortByLastConnected.Content" xml:space="preserve">
     <value>Last Connected</value>
@@ -189,5 +193,47 @@
   <data name="AllProviders" xml:space="preserve">
     <value>All</value>
     <comment>Text for the default value of all providers for filtering</comment>
+  </data>
+  <data name="RemoveButtonTextForCreateComputeSystem" xml:space="preserve">
+    <value>Remove</value>
+    <comment>Text for the remove button when the user wants to remove an environment being created from the UI</comment>
+  </data>
+  <data name="FailureMessageForCreateComputeSystem" xml:space="preserve">
+    <value>Failed to create environment due to error: {0}</value>
+    <comment>Locked="{0}" Text to show the the user when Dev Home receives the notification that the creation of the new environment has failed. {0} is the error that is displayed to the user</comment>
+  </data>
+  <data name="CreationStatusTextForCreateEnvironmentFlow" xml:space="preserve">
+    <value>Status: {0}</value>
+    <comment>Locked="{0}" provides the user with status message updates about a currently running operation. {0} is the status message that will appear in the UI</comment>
+  </data>
+  <data name="CreationListHeaderCreateEnvironmentFlow.Text" xml:space="preserve">
+    <value>Environments being created:</value>
+    <comment>header text for the cards in the UI that will be displayed when they are being created</comment>
+  </data>
+  <data name="EnvironmentsToManageHeader.Text" xml:space="preserve">
+    <value>Manage environments:</value>
+    <comment>Header text for the cards that in the UI that are not being created.</comment>
+  </data>
+  <data name="LaunchingEnvironmentText" xml:space="preserve">
+    <value>Launching Environment</value>
+    <comment>Text to tell the user Dev Home is launching their environment</comment>
+  </data>
+  <data name="LaunchingEnvironmentSuccessText" xml:space="preserve">
+    <value>Environment launched successfully</value>
+    <comment>Text to tell the user Dev Home succeeded in launching their environment</comment>
+  </data>
+  <data name="LaunchingEnvironmentFailedText" xml:space="preserve">
+    <value>Environment failed to launch due to error {0}</value>
+    <comment>Text to tell the user Dev Home failed to launch their environment. {0} is the error message sent by the extension</comment>
+  </data>
+  <data name="LaunchingEnvironmentFailedUnKnownReasonText" xml:space="preserve">
+    <value>The extension failed to launch the environment for an unknown reason. Check the extensions logs for more information</value>
+    <comment>Text to tell the user Dev Home failed to launch their environment. {0} is the error message sent by the extension</comment>
+  </data>
+  <data name="UnpinFromStartButtonContextMenuItem" xml:space="preserve">
+    <value>Unpin From Start Menu</value>
+  </data>
+  <data name="UnpinFromTaskbarButtonContextMenuItem" xml:space="preserve">
+    <value>Unpin From Taskbar</value>
   </data>
 </root>

@@ -53,9 +53,9 @@
           "visible": true
         },
         {
-          "buildType": "release",
+          "buildType": "stable",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
         }
       ]
     },
@@ -70,13 +70,13 @@
         },
         {
           "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": false
+          "enabledByDefault": true,
+          "visible": true
         },
         {
-          "buildType": "release",
+          "buildType": "stable",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
         }
       ]
     },
@@ -86,18 +86,39 @@
       "buildTypeOverrides": [
         {
           "buildType": "dev",
-          "enabledByDefault": false,
+          "enabledByDefault": true,
           "visible": true
         },
         {
           "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": false
+          "enabledByDefault": true,
+          "visible": true
         },
         {
-          "buildType": "release",
+          "buildType": "stable",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
+        }
+      ]
+    },
+    {
+      "identity": "EnvironmentsCreationFlow",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": true
         }
       ]
     }

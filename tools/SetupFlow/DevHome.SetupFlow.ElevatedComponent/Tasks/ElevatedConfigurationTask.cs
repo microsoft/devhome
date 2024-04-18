@@ -56,7 +56,7 @@ public sealed class ElevatedConfigurationTask
             }
             catch (Exception e)
             {
-                log.Error($"Failed to apply configuration.", e);
+                log.Error(e, $"Failed to apply configuration.");
                 taskResult.TaskSucceeded = false;
             }
 

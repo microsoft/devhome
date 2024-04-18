@@ -93,7 +93,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
         }
         catch (Exception e)
         {
-            _log.Error($"Failed to load catalogs.", e);
+            _log.Error(e, $"Failed to load catalogs.");
         }
         finally
         {

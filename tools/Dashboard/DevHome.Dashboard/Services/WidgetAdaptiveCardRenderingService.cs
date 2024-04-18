@@ -115,7 +115,7 @@ public class WidgetAdaptiveCardRenderingService : IAdaptiveCardRenderingService,
             }
             catch (Exception ex)
             {
-                _log.Error("Error retrieving HostConfig", ex);
+                _log.Error(ex, "Error retrieving HostConfig");
             }
 
             _windowEx.DispatcherQueue.TryEnqueue(() =>

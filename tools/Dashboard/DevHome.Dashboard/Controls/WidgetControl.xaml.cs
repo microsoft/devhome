@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Dashboard.Views;
@@ -105,6 +106,8 @@ public sealed partial class WidgetControl : UserControl
                 var widgetIdToDelete = widgetViewModel.Widget.Id;
                 var widgetToDelete = widgetViewModel.Widget;
                 _log.Debug($"User removed widget, delete widget {widgetIdToDelete}");
+                var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+                Application.Current.GetService<IScreenReaderService>().Announce(stringResource.GetLocalized("WidgetRemoved"));
                 DashboardView.PinnedWidgets.Remove(widgetViewModel);
                 try
                 {
@@ -113,7 +116,7 @@ public sealed partial class WidgetControl : UserControl
                 }
                 catch (Exception ex)
                 {
-                    _log.Error($"Didn't delete Widget {widgetIdToDelete}", ex);
+                    _log.Error(ex, $"Didn't delete Widget {widgetIdToDelete}");
                 }
             }
         }
@@ -121,9 +124,28 @@ public sealed partial class WidgetControl : UserControl
 
     private async Task AddSizesToWidgetMenuAsync(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel)
     {
-        var widgetCatalog = await Application.Current.GetService<IWidgetHostingService>().GetWidgetCatalogAsync();
-        var widgetDefinition = await Task.Run(() => widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId));
-        var capabilities = widgetDefinition.GetWidgetCapabilities();
+        var unsafeWidgetDefinition = await Application.Current.GetService<IWidgetHostingService>().GetWidgetDefinitionAsync(widgetViewModel.Widget.DefinitionId);
+        if (unsafeWidgetDefinition == null)
+        {
+            // If we can't get the widgetDefinition, bail and don't show sizes.
+            return;
+        }
+
+        var widgetDefinitionId = await ComSafeWidgetDefinition.GetIdFromUnsafeWidgetDefinitionAsync(unsafeWidgetDefinition);
+        if (string.IsNullOrEmpty(widgetDefinitionId))
+        {
+            // If we can't get the widgetDefinitionId, bail and don't show sizes.
+            return;
+        }
+
+        var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
+        if (!await comSafeWidgetDefinition.Populate())
+        {
+            // If we can't populate the widgetDefinition, bail and don't show sizes.
+            return;
+        }
+
+        var capabilities = await comSafeWidgetDefinition.GetWidgetCapabilitiesAsync();
         var sizeMenuItems = new List<SelectableMenuFlyoutItem>();
 
         // Add the three possible sizes. Each side should only be enabled if it is included in the widget's capabilities.
@@ -202,7 +224,7 @@ public sealed partial class WidgetControl : UserControl
         };
         menuSizeItem.Icon = fontIcon;
         var peer = FrameworkElementAutomationPeer.FromElement(menuSizeItem) as SelectableMenuFlyoutItemAutomationPeer;
-        peer.Select();
+        peer.AddToSelection();
     }
 
     private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel)

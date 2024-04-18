@@ -74,7 +74,7 @@ public class AppManagementInitializer : IAppManagementInitializer
         }
         catch (Exception e)
         {
-            _log.Error($"Unable to correctly initialize app management at the moment. Further attempts will be performed later.", e);
+            _log.Error(e, $"Unable to correctly initialize app management at the moment. Further attempts will be performed later.");
         }
     }
 

@@ -18,7 +18,7 @@
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.22000.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.22621.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
     <WindowsAppContainer>false</WindowsAppContainer>
     <MdmergeMergedDir>AnyCPU\$(Configuration)\Merged\</MdmergeMergedDir>
@@ -145,6 +145,7 @@
     <Midl Include="DevHome.QuietBackgroundProcesses.idl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Common.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>

@@ -12,7 +12,9 @@ namespace DevHome.Environments.TestModels;
 
 public class TestExtensionWrapper : IExtensionWrapper
 {
-    public string Name => throw new NotImplementedException();
+    public string PackageDisplayName => throw new NotImplementedException();
+
+    public string ExtensionDisplayName => throw new NotImplementedException();
 
     public string PackageFullName => "Microsoft.Windows.DevHome.Dev_0.0.0.0_x64__8wekyb3d8bbwe";
 

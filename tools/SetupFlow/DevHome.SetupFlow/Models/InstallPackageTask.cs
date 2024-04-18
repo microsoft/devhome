@@ -45,6 +45,11 @@ public class InstallPackageTask : ISetupTask
     // installation in the WinGet COM API, but we do get it after installation.
     public bool RequiresReboot { get; set; }
 
+    /// <summary>
+    /// Gets target device name. Inherited via ISetupTask but unused.
+    /// </summary>
+    public string TargetName => string.Empty;
+
     // May potentially be moved to a central list in the future.
     public bool WasInstallSuccessful
     {
@@ -153,7 +158,7 @@ public class InstallPackageTask : ISetupTask
             catch (Exception e)
             {
                 ReportAppInstallFailedEvent();
-                _log.Error($"Exception thrown while installing package.", e);
+                _log.Error(e, $"Exception thrown while installing package.");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -189,7 +194,7 @@ public class InstallPackageTask : ISetupTask
             catch (Exception e)
             {
                 ReportAppInstallFailedEvent();
-                _log.Error($"Exception thrown while installing package.", e);
+                _log.Error(e, $"Exception thrown while installing package.");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -281,7 +286,7 @@ public class InstallPackageTask : ISetupTask
 
     private void ReportAppSelectedForInstallEvent()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_AppSelected", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId), _activityId);
+        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_AppSelected", LogLevel.Critical, new AppInstallUserEvent(_package.Id, _package.CatalogId), _activityId);
     }
 
     private void ReportAppInstallSucceededEvent()

@@ -41,13 +41,13 @@ public class DevAgentService : BackgroundService
                 }
                 catch (Exception ex)
                 {
-                    _log.Error($"Exception in DevAgentService.", ex);
+                    _log.Error(ex, $"Exception in DevAgentService.");
                 }
             }
         }
         catch (Exception ex)
         {
-            _log.Error($"Failed to run DevSetupAgent.", ex);
+            _log.Error(ex, $"Failed to run DevSetupAgent.");
             throw;
         }
         finally

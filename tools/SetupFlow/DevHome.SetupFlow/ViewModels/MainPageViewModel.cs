@@ -34,6 +34,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     private const string EnvironmentsSetupFlowFeatureName = "EnvironmentsSetupTargetFlow";
 
+    private const string EnvironmentsCreationFlowFeatureName = "EnvironmentsCreationFlow";
+
     private readonly IHost _host;
     private readonly IWindowsPackageManager _wpm;
     private readonly IDesiredStateConfiguration _dsc;
@@ -53,7 +55,13 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private bool _showAppInstallerUpdateNotification;
 
+    public string MainPageEnvironmentSetupGroupName => StringResource.GetLocalized(StringResourceKey.MainPageEnvironmentSetupGroup);
+
+    public string MainPageQuickStepsGroupName => StringResource.GetLocalized(StringResourceKey.MainPageQuickConfigurationGroup);
+
     public bool ShouldShowSetupTargetItem => _experimentationService.IsFeatureEnabled(EnvironmentsSetupFlowFeatureName);
+
+    public bool ShouldShowCreateEnvironmentItem => _experimentationService.IsFeatureEnabled(EnvironmentsCreationFlowFeatureName);
 
     /// <summary>
     /// Event raised when the user elects to start the setup flow.
@@ -178,6 +186,20 @@ public partial class MainPageViewModel : SetupPageViewModelBase
             "RepoConfig",
             _host.GetService<RepoConfigTaskGroup>(),
             _host.GetService<DevDriveTaskGroup>());
+    }
+
+    /// <summary>
+    /// Starts the create environment flow.
+    /// </summary>
+    [RelayCommand]
+    public void StartCreateEnvironment(string flowTitle)
+    {
+        _log.Information("Starting flow for environment creation");
+        StartSetupFlowForTaskGroups(
+            flowTitle,
+            "CreateEnvironment",
+            _host.GetService<SelectEnvironmentProviderTaskGroup>(),
+            _host.GetService<EnvironmentCreationOptionsTaskGroup>());
     }
 
     /// <summary>

@@ -9,14 +9,20 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Customization.Helpers;
 using DevHome.Customization.ViewModels.DevDriveInsights;
 using DevHome.Customization.Views;
+using Microsoft.Internal.Windows.DevHome.Helpers;
 using Serilog;
 
 namespace DevHome.Customization.ViewModels;
 
 public partial class DevDriveInsightsViewModel : ObservableObject
 {
+    private readonly ShellSettings _shellSettings;
+
+    public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
+
     public ObservableCollection<DevDriveCardViewModel> DevDriveCardCollection { get; private set; } = new();
 
     public ObservableCollection<DevDriveOptimizerCardViewModel> DevDriveOptimizerCardCollection { get; private set; } = new();
@@ -47,8 +53,29 @@ public partial class DevDriveInsightsViewModel : ObservableObject
 
     private IEnumerable<IDevDrive> ExistingDevDrives { get; set; } = Enumerable.Empty<IDevDrive>();
 
+    private static readonly string _appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+    private static readonly string _localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+    private static readonly string _userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+    private const string PackagesStr = "packages";
+
+    private const string CacheStr = "cache";
+
+    private const string ArchivesStr = "archives";
+
     public DevDriveInsightsViewModel(IDevDriveManager devDriveManager, OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory)
     {
+        _shellSettings = new ShellSettings();
+
+        var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
+        Breadcrumbs =
+        [
+            new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
+            new(stringResource.GetLocalized("DevDriveInsights_Header"), typeof(DevDriveInsightsViewModel).FullName!)
+        ];
+
         _optimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
         DevDriveManagerObj = devDriveManager;
     }
@@ -170,7 +197,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Log.Error($"Error loading Dev Drives data. Error: {ex}");
+            Log.Error(ex, $"Error loading Dev Drives data. Error: {ex}");
         }
     }
 
@@ -190,7 +217,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Log.Error($"Error loading Dev Drive Optimizers data. Error: {ex}");
+            Log.Error(ex, $"Error loading Dev Drive Optimizers data. Error: {ex}");
         }
     }
 
@@ -210,7 +237,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Log.Error($"Error loading Dev Drive Optimized data. Error: {ex}");
+            Log.Error(ex, $"Error loading Dev Drive Optimized data. Error: {ex}");
         }
     }
 
@@ -224,33 +251,103 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         DevDriveLoadingCompleted = true;
     }
 
-    private string? GetExistingCacheLocation(string rootDirectory, string targetDirectoryName)
-    {
-        var fullDirectoryPath = rootDirectory + targetDirectoryName;
-        if (Directory.Exists(fullDirectoryPath))
+    private readonly List<DevDriveCacheData> _cacheInfo =
+    [
+        new DevDriveCacheData
         {
-            return fullDirectoryPath;
-        }
-        else
-        {
-            var subDirPrefix = rootDirectory + "\\Packages\\PythonSoftwareFoundation.Python";
-            var subDirectories = Directory.GetDirectories(rootDirectory + "\\Packages", "*", SearchOption.TopDirectoryOnly);
-            var matchingSubdirectory = subDirectories.FirstOrDefault(subdir => subdir.StartsWith(subDirPrefix, StringComparison.OrdinalIgnoreCase));
-            var alternateFullDirectoryPath = matchingSubdirectory + "\\localcache\\local" + targetDirectoryName;
-            if (Directory.Exists(alternateFullDirectoryPath))
+            CacheName = "Pip cache (Python)",
+            EnvironmentVariable = "PIP_CACHE_DIR",
+            CacheDirectory = new List<string>
             {
-                return alternateFullDirectoryPath;
+                Path.Join(_localAppDataPath, "pip", CacheStr),
+                Path.Join(_localAppDataPath, PackagesStr, "PythonSoftwareFoundation.Python"),
+            },
+            ExampleSubDirectory = Path.Join(PackagesStr, "pip", CacheStr),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "NuGet cache (dotnet)",
+            EnvironmentVariable = "NUGET_PACKAGES",
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".nuget", PackagesStr) },
+            ExampleSubDirectory = Path.Join(PackagesStr, "NuGet", CacheStr),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Npm cache (NodeJS)",
+            EnvironmentVariable = "NPM_CONFIG_CACHE",
+            CacheDirectory = new List<string>
+            {
+                Path.Join(_appDataPath, "npm-cache"),
+                Path.Join(_localAppDataPath, "npm-cache"),
+            },
+            ExampleSubDirectory = Path.Join(PackagesStr, "npm"),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Vcpkg cache",
+            EnvironmentVariable = "VCPKG_DEFAULT_BINARY_CACHE",
+            CacheDirectory = new List<string>
+            {
+                Path.Join(_appDataPath, "vcpkg", ArchivesStr),
+                Path.Join(_localAppDataPath, "vcpkg", ArchivesStr),
+            },
+            ExampleSubDirectory = Path.Join(PackagesStr, "vcpkg"),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Cargo cache (Rust)",
+            EnvironmentVariable = "CARGO_HOME",
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".cargo") },
+            ExampleSubDirectory = Path.Join(PackagesStr, "cargo"),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Maven cache (Java)",
+            EnvironmentVariable = "MAVEN_OPTS",
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".m2") },
+            ExampleSubDirectory = Path.Join(PackagesStr, "m2"),
+        },
+        new DevDriveCacheData
+        {
+            CacheName = "Gradle cache (Java)",
+            EnvironmentVariable = "GRADLE_USER_HOME",
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".gradle") },
+            ExampleSubDirectory = Path.Join(PackagesStr, "gradle"),
+        }
+    ];
+
+    private string? GetExistingCacheLocation(DevDriveCacheData cache)
+    {
+        foreach (var cacheDirectory in cache.CacheDirectory!)
+        {
+            if (Directory.Exists(cacheDirectory))
+            {
+                return cacheDirectory;
+            }
+            else
+            {
+                var subDirectories = Directory.GetDirectories(Path.Join(_localAppDataPath, PackagesStr), "*", SearchOption.TopDirectoryOnly);
+                var matchingSubdirectory = subDirectories.FirstOrDefault(subdir => subdir.StartsWith(cacheDirectory, StringComparison.OrdinalIgnoreCase));
+                if (Directory.Exists(matchingSubdirectory))
+                {
+                    if (matchingSubdirectory.Contains("PythonSoftwareFoundation"))
+                    {
+                        return Path.Join(matchingSubdirectory, "LocalCache", "Local", "pip", CacheStr);
+                    }
+
+                    return matchingSubdirectory;
+                }
             }
         }
 
         return null;
     }
 
-    private bool CacheInDevDrive(string existingPipCacheLocation)
+    private bool CacheInDevDrive(string existingCacheLocation)
     {
         foreach (var existingDrive in ExistingDevDrives)
         {
-            if (existingPipCacheLocation.StartsWith(existingDrive.DriveLetter.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (existingCacheLocation.StartsWith(existingDrive.DriveLetter.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
@@ -261,35 +358,50 @@ public partial class DevDriveInsightsViewModel : ObservableObject
 
     public void UpdateOptimizerListViewModelList()
     {
-        var cacheSubDir = "\\pip\\cache";
-        var environmentVariable = "PIP_CACHE_DIR";
-        var localAppDataDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        var existingPipCacheLocation = GetExistingCacheLocation(localAppDataDir.ToString(), cacheSubDir);
-        if (existingPipCacheLocation != null && !CacheInDevDrive(existingPipCacheLocation))
+        foreach (var cache in _cacheInfo)
         {
+            var existingCacheLocation = GetExistingCacheLocation(cache);
+            var environmentVariablePath = Environment.GetEnvironmentVariable(cache.EnvironmentVariable!, EnvironmentVariableTarget.User);
+            if (environmentVariablePath is not null && CacheInDevDrive(environmentVariablePath!))
+            {
+                continue;
+            }
+
+            if (existingCacheLocation == null || CacheInDevDrive(existingCacheLocation))
+            {
+                continue;
+            }
+
+            List<string> existingDevDriveLetters = ExistingDevDrives.Select(x => x.DriveLetter.ToString()).ToList();
+
+            var exampleDirectory = Path.Join(existingDevDriveLetters[0] + ":", cache.ExampleSubDirectory);
             var card = new DevDriveOptimizerCardViewModel(
                 _optimizeDevDriveDialogViewModelFactory,
-                "Pip cache (Python)",
-                existingPipCacheLocation,
-                "D:\\packages" + cacheSubDir /*example location on dev drive to move cache to*/,
-                environmentVariable /*environmentVariableToBeSet*/);
+                cache.CacheName!,
+                existingCacheLocation,
+                exampleDirectory!, // example location on dev drive to move cache to
+                cache.EnvironmentVariable!, // environmentVariableToBeSet
+                existingDevDriveLetters);
             DevDriveOptimizerCardCollection.Add(card);
-            DevDriveOptimizerLoadingCompleted = true;
         }
+
+        DevDriveOptimizerLoadingCompleted = true;
     }
 
     public void UpdateOptimizedListViewModelList()
     {
-        var environmentVariable = "PIP_CACHE_DIR";
-
-        // We retrieve the cache location from environment variable, because if the cache might have already moved.
-        var movedPipCacheLocation = Environment.GetEnvironmentVariable(environmentVariable);
-        if (!string.IsNullOrEmpty(movedPipCacheLocation) && CacheInDevDrive(movedPipCacheLocation))
+        foreach (var cache in _cacheInfo)
         {
-            // Cache already in dev drive, show the "Optimized" card
-            var card = new DevDriveOptimizedCardViewModel("Pip cache (Python)", movedPipCacheLocation, environmentVariable);
-            DevDriveOptimizedCardCollection.Add(card);
-            DevDriveOptimizedLoadingCompleted = true;
+            // We retrieve the cache location from environment variable, because if the cache might have already moved.
+            var movedCacheLocation = Environment.GetEnvironmentVariable(cache.EnvironmentVariable!, EnvironmentVariableTarget.User);
+            if (!string.IsNullOrEmpty(movedCacheLocation) && CacheInDevDrive(movedCacheLocation))
+            {
+                // Cache already in dev drive, show the "Optimized" card
+                var card = new DevDriveOptimizedCardViewModel(cache.CacheName!, movedCacheLocation, cache.EnvironmentVariable!);
+                DevDriveOptimizedCardCollection.Add(card);
+            }
         }
+
+        DevDriveOptimizedLoadingCompleted = true;
     }
 }

@@ -44,6 +44,11 @@ internal sealed class CreateDevDriveTask : ISetupTask
 
     public bool RequiresReboot => false;
 
+    /// <summary>
+    /// Gets target device name. Inherited via ISetupTask but unused.
+    /// </summary>
+    public string TargetName => string.Empty;
+
     public bool DependsOnDevDriveToBeInstalled => false;
 
     public IDevDrive DevDrive
@@ -111,7 +116,7 @@ internal sealed class CreateDevDriveTask : ISetupTask
             try
             {
                 // Critical level approved by subhasan
-                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDrive_CreatingDevDrive_Event", LogLevel.Critical, new EmptyEvent(), _activityId);
+                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDrive_CreatingDevDrive_Event", LogLevel.Critical, new DevDriveCreationEvent(), _activityId);
                 var manager = _host.GetService<IDevDriveManager>();
                 var validation = manager.GetDevDriveValidationResults(DevDrive);
                 manager.RemoveAllDevDrives();
@@ -129,7 +134,7 @@ internal sealed class CreateDevDriveTask : ISetupTask
             catch (Exception ex)
             {
                 result = ex.HResult;
-                _log.Error($"Failed to create Dev Drive.", ex);
+                _log.Error(ex, $"Failed to create Dev Drive.");
                 _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, _stringResource.GetLocalizedErrorMsg(ex.HResult, Identity.Component.DevDrive));
                 TelemetryFactory.Get<ITelemetry>().LogException("CreatingDevDriveException", ex);
                 return TaskFinishedState.Failure;

@@ -9,10 +9,11 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal class ErrorRequest : IHostRequest
 {
-    public ErrorRequest(IRequestMessage requestMessage)
+    public ErrorRequest(IRequestMessage requestMessage, Exception? ex = null)
     {
         Timestamp = DateTime.UtcNow;
         RequestId = requestMessage.RequestId!;
+        Error = ex;
     }
 
     public virtual uint Version { get; set; } = 1;
@@ -27,6 +28,8 @@ internal class ErrorRequest : IHostRequest
 
     public virtual IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
     {
-        return new ErrorResponse(RequestId);
+        return new ErrorResponse(RequestId, Error);
     }
+
+    private Exception? Error { get; }
 }

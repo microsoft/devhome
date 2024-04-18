@@ -35,7 +35,7 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Error($"Failed to get thumbnail for compute system {computeSystemWrapper}.", ex);
+            Log.Error(ex, $"Failed to get thumbnail for compute system {computeSystemWrapper}.");
             return null;
         }
     }
@@ -56,7 +56,7 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Error($"Failed to get all properties for compute system {computeSystemWrapper}.", ex);
+            Log.Error(ex, $"Failed to get all properties for compute system {computeSystemWrapper}.");
             return propertyList;
         }
     }

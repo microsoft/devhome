@@ -176,6 +176,9 @@ Try {
         if (-not([string]::IsNullOrWhiteSpace($VersionOfSDK))) {
           $msbuildArgs += ("/p:DevHomeSDKVersion="+$env:sdk_version)
         }
+        if ($BuildStep -ieq "msix") {
+          $msbuildArgs += ("/p:IgnoreZipPackages=true")
+        }
 
         & $msbuildPath $msbuildArgs
         if (-not($IsAzurePipelineBuild) -And $isAdmin) {

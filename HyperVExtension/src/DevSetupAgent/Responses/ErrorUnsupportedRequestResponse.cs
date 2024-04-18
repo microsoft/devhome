@@ -13,7 +13,7 @@ internal sealed class ErrorUnsupportedRequestResponse : ResponseBase
         : base(requestId, requestType)
     {
         Status = Windows.Win32.Foundation.HRESULT.E_FAIL;
-        ErrorDescription = "Missing Request type.";
+        ErrorDescription = "Unsupported Request type.";
         GenerateJsonData();
     }
 }

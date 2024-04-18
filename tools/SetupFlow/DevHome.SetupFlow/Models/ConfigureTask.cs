@@ -38,6 +38,11 @@ public class ConfigureTask : ISetupTask
 
     public bool RequiresReboot { get; private set; }
 
+    /// <summary>
+    /// Gets target device name. Inherited via ISetupTask but unused.
+    /// </summary>
+    public string TargetName => string.Empty;
+
     public bool DependsOnDevDriveToBeInstalled => false;
 
     public IList<ConfigurationUnitResult> UnitResults
@@ -107,7 +112,7 @@ public class ConfigureTask : ISetupTask
             }
             catch (Exception e)
             {
-                _log.Error($"Failed to apply configuration.", e);
+                _log.Error(e, $"Failed to apply configuration.");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
