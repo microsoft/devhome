@@ -126,7 +126,7 @@
     <comment>Dev drive size free</comment>
   </data>
   <data name="DevDriveInsightsCard.Description" xml:space="preserve">
-    <value>All things Dev Drives, optimizations, etc.</value>
+    <value>All things Dev Drive, optimizations, etc.</value>
     <comment>The description for the Dev Drive Insights settings card</comment>
   </data>
   <data name="DevDriveInsightsCard.Header" xml:space="preserve">
