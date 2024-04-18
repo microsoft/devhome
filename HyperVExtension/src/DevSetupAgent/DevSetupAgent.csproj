@@ -11,6 +11,23 @@
     <SelfContained>true</SelfContained>
   </PropertyGroup>
 
+  <!--
+  Self-contained projects get automatic RuntimeIdentifier (https://learn.microsoft.com/en-us/dotnet/core/compatibility/sdk/7.0/automatic-runtimeidentifier).
+  It looks like VS doesn't set it correctly for the ARM64 platform, so we set it manually here (for all supported platforms).
+  -->
+  <PropertyGroup Condition="$(PlatformTarget)=='x86'">
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(PlatformTarget)=='x64'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(PlatformTarget)=='arm64'">
+    <RuntimeIdentifier>win-arm64</RuntimeIdentifier>
+  </PropertyGroup>
+
+
   <PropertyGroup>
     <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
     <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
