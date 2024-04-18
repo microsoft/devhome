@@ -274,7 +274,7 @@
                                             Style="{ThemeResource BodyTextStyle}"
                                             Text="{x:Bind Title}" />
 
-                                        <controls:WrapPanel Margin="0 16 0 20">
+                                        <StackPanel Margin="0 16 0 20">
                                             <TextBlock
                                                 Margin="0 0 0 5"
                                                 TextWrapping="Wrap"
@@ -290,7 +290,7 @@
                                                 Padding="0"
                                                 Margin="0"
                                                 Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
-                                        </controls:WrapPanel>
+                                        </StackPanel>
                                     </StackPanel>
                                 </ScrollViewer>
 
