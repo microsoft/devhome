@@ -217,8 +217,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private async Task InitializePinnedWidgetListAsync(bool isFirstDashboardRun)
     {
         var hostWidgets = await GetPreviouslyPinnedWidgets();
-
-        if ((hostWidgets == null || hostWidgets.Length == 0) && isFirstDashboardRun)
+        if ((hostWidgets.Length == 0) && isFirstDashboardRun)
         {
             // If it's the first time the Dashboard has been displayed and we have no other widgets pinned to a
             // different version of Dev Home, pin some default widgets.
@@ -235,8 +234,7 @@ public partial class DashboardView : ToolPage, IDisposable
     {
         _log.Information("Get widgets for current host");
         var unsafeHostWidgets = await ViewModel.WidgetHostingService.GetWidgetsAsync();
-
-        if (unsafeHostWidgets == null)
+        if (unsafeHostWidgets.Length == 0)
         {
             _log.Information($"Found 0 widgets for this host");
             return null;
@@ -380,7 +378,7 @@ public partial class DashboardView : ToolPage, IDisposable
         await widget.DeleteAsync();
 
         var newWidgetList = await ViewModel.WidgetHostingService.GetWidgetsAsync();
-        length = (newWidgetList == null) ? 0 : newWidgetList.Length;
+        length = newWidgetList.Length;
         _log.Information($"After delete, {length} widgets for this host");
     }
 

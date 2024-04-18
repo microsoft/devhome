@@ -26,7 +26,7 @@ public class WidgetHostingService : IWidgetHostingService
     /// <summary>
     /// Get the list of current widgets from the WidgetService.
     /// </summary>
-    /// <returns>A list of widgets, or null if there were no widgets or the list could not be retrieved.</returns>
+    /// <returns>A list of widgets, or empty list if there were no widgets or the list could not be retrieved.</returns>
     public async Task<Widget[]> GetWidgetsAsync()
     {
         var attempt = 0;
@@ -35,7 +35,7 @@ public class WidgetHostingService : IWidgetHostingService
             try
             {
                 _widgetHost ??= await Task.Run(() => WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031")));
-                return await Task.Run(() => _widgetHost.GetWidgets());
+                return await Task.Run(() => _widgetHost.GetWidgets()) ?? [];
             }
             catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
             {
@@ -52,7 +52,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
         }
 
-        return null;
+        return [];
     }
 
     /// <summary>Gets the widget with the given ID.</summary>
