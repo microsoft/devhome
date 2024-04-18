@@ -222,8 +222,8 @@
     <comment>{Locked="{0}"}Title for the page showing the contents of a configuration file. {0} is replaced by the configuration file name.</comment>
   </data>
   <data name="ConfigurationActivationFailedDisabled" xml:space="preserve">
-    <value>Winget configuration is currently disabled on your machine. We are initiating the enablement process, which may take a few minutes. Please try again soon.</value>
-    <comment>Message displayed to the user when they attempt to activate Dev Home from a file but the Winget configuration feature is disabled.</comment>
+    <value>WinGet configuration is currently disabled on your machine. We are initiating the enablement process, which may take a few minutes. Please try again soon.</value>
+    <comment>Message displayed to the user when they attempt to activate Dev Home from a file but the WinGet configuration feature is disabled.</comment>
   </data>
   <data name="ConfigurationActivationFailedBusy" xml:space="preserve">
     <value>The DSC flow cannot be activated while machine configuration is in progress. Please complete your current configuration tasks and then try again.</value>
@@ -526,7 +526,7 @@
     <comment>Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
   </data>
   <data name="MainPage_SetupFlow.Description" xml:space="preserve">
-    <value>Clone repositories, install applications, and generate Winget Configuration files together</value>
+    <value>Clone repositories, install applications, and generate WinGet Configuration files together.</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_SetupFlow.Header" xml:space="preserve">
@@ -538,7 +538,7 @@
     <comment>Header for a card that when clicked takes the user to a multi-step flow for setting up for a remote machine</comment>
   </data>
   <data name="MainPage_SetupFlow_For_target.Description" xml:space="preserve">
-    <value>Clone repositories, install applications, and generate a Winget Configuration file to apply to an environment.</value>
+    <value>Clone repositories, install applications, and generate a WinGet Configuration file to apply to an environment.</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="NoAppsToInstall.Text" xml:space="preserve">
@@ -1573,7 +1573,7 @@
     <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for the current user to logon to the machine</comment>
   </data>
   <data name="SetupTargetConfigurationSkipped" xml:space="preserve">
-    <value>Winget skipped this unit</value>
+    <value>WinGet skipped this unit</value>
     <comment>Text for when the a part of the configuration on the remove machine was completed but its completed status was set to skipped.</comment>
   </data>
   <data name="SetupTargetConfigurationOpenConfigFailed" xml:space="preserve">

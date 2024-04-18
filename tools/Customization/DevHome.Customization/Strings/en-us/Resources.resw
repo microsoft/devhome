@@ -126,15 +126,15 @@
     <comment>Dev drive size free</comment>
   </data>
   <data name="DevDriveInsightsCard.Description" xml:space="preserve">
-    <value>All things, Dev Drives, optimizations, etc.</value>
+    <value>All things Dev Drive, optimizations, etc.</value>
     <comment>The description for the Dev Drive Insights settings card</comment>
   </data>
   <data name="DevDriveInsightsCard.Header" xml:space="preserve">
-    <value>Dev Drive Insights</value>
+    <value>Dev Drive insights</value>
     <comment>The header for the Dev Drive Insights settings card</comment>
   </data>
   <data name="DevDriveInsights_Header" xml:space="preserve">
-    <value>Dev Drive Insights</value>
+    <value>Dev Drive insights</value>
     <comment>Header for Dev Drive insights page in the breadcrumb bar</comment>
   </data>
   <data name="DevDriveSizeText" xml:space="preserve">
@@ -200,6 +200,10 @@
   <data name="OptimizerDevDriveDescription" xml:space="preserve">
     <value>Global environment variable {0} is set to {1}, which is not located on Dev Drive. Move contents of this folder to a directory on Dev Drive such as {2} and set {3} to that chosen directory on Dev Drive</value>
     <comment>Optimizer dev drive description</comment>
+  </data>
+  <data name="OptimizerDevDriveDescriptionWithEnvVarNotSet" xml:space="preserve">
+    <value>Move contents of {0} to a directory on Dev Drive such as {1} and set {2} to that chosen directory on Dev Drive</value>
+    <comment>Optimizer dev drive description when environment variable is not set</comment>
   </data>
   <data name="SettingsAutoSuggestBox.PlaceholderText" xml:space="preserve">
     <value>Search</value>

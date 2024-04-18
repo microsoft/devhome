@@ -24,10 +24,10 @@
 
             <!--- Template for dev drive horizontal cards on the dev insights page. -->
             <DataTemplate x:Key="HorizontalCardForDevDriveInsightsPage" x:DataType="devViewModels:DevDriveCardViewModel">
-                <ctControls:SettingsExpander Header="{Binding DevDriveLabel, Mode=OneWay}">
-                    <ctControls:SettingsExpander.HeaderIcon>
+                <ctControls:SettingsCard Header="{Binding DevDriveLabel, Mode=OneWay}">
+                    <ctControls:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xEDA2;" FontSize="25" FontFamily="{ThemeResource AmcFluentIcons}"/>
-                    </ctControls:SettingsExpander.HeaderIcon>
+                    </ctControls:SettingsCard.HeaderIcon>
                     <Grid Grid.Column="2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"  />
@@ -39,15 +39,15 @@
                         </TextBlock>
                         <ProgressBar Grid.Row="1" Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
                         <Grid Grid.Row="2">
-                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0">                        
+                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0">
                                     <Run Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
                             </TextBlock>
-                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right">                        
+                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right">
                                     <Run Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
                             </TextBlock>
                         </Grid>
                     </Grid>
-                </ctControls:SettingsExpander>
+                </ctControls:SettingsCard>
             </DataTemplate>
 
 
