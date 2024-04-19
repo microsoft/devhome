@@ -129,6 +129,7 @@ extends:
       - ${{ each configuration in parameters.Configurations }}:
         - ${{ each platform in parameters.Platforms }}:
           - job: Build_${{ platform }}_${{ configuration }}
+            timeoutInMinutes: 120
             steps:
             - task: NuGetToolInstaller@1
 
