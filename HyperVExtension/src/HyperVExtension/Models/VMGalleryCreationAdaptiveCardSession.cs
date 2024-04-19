@@ -26,7 +26,7 @@ public enum SessionState
 
 public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSession2
 {
-    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(HyperVVirtualMachine));
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(VMGalleryCreationAdaptiveCardSession));
 
     private readonly string _pathToInitialCreationFormTemplate = Path.Combine(AppContext.BaseDirectory, @"HyperVExtension\Templates\", "InitialVMGalleryCreationForm.json");
 

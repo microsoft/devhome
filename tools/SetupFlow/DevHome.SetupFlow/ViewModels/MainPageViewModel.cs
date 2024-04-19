@@ -30,7 +30,7 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class MainPageViewModel : SetupPageViewModelBase
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(EnvironmentsSetupFlowFeatureName));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(MainPageViewModel));
 
     private const string EnvironmentsSetupFlowFeatureName = "EnvironmentsSetupTargetFlow";
 
