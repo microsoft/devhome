@@ -329,7 +329,7 @@ public sealed partial class FeedbackPage : Page
 
     private async void BuildExtensionButtonClicked(object sender, RoutedEventArgs e)
     {
-        await Launcher.LaunchUriAsync(new("https://go.microsoft.com/fwlink/?linkid=2234795"));
+        await Launcher.LaunchUriAsync(new("https://github.com/microsoft/devhome/blob/main/docs/extensions/readme.md"));
     }
 
     private async void ReportSecurityButtonClicked(object sender, RoutedEventArgs e)
