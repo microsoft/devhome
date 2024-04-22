@@ -43,10 +43,10 @@ body:
     required: true
 
 - id: publicdocumentation
-  type: input
+  type: textarea
   attributes:
     label: Public Documentation
-    placeholder: If there is public documentation for this feature, please provide the link here. If not applicable, please enter "None".
+    description: If there is public documentation for this feature, please provide the link here. If not applicable, please enter "None".
   validations:
     required: true 
     
