@@ -57,6 +57,8 @@ public partial class ShellViewModel : ObservableObject
             case ExtendedActivationKind.File:
                 // Allow the file activation handler to navigate to the appropriate page.
                 break;
+            case ExtendedActivationKind.Protocol:
+                break;
             case ExtendedActivationKind.Launch:
             default:
                 var isNotFirstRun = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun);

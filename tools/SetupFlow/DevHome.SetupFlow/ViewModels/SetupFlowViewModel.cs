@@ -143,4 +143,10 @@ public partial class SetupFlowViewModel : ObservableObject
             StartCreationFlowAsync();
         }
     }
+
+    public void StartAppManagementFlow(string query)
+    {
+        Orchestrator.FlowPages = [_mainPageViewModel];
+        _mainPageViewModel.StartAppManagementFlow(query);
+    }
 }

@@ -23,6 +23,9 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
     private readonly PackageProvider _packageProvider;
 
+    [ObservableProperty]
+    private string _searchText;
+
     /// <summary>
     /// Current view to display in the main content control
     /// </summary>
@@ -126,5 +129,10 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
 
         // Show warning if any selected package is installed
         ShowInstalledPackageWarning = SelectedPackages.Any(p => !p.CanInstall);
+    }
+
+    internal void PerformSearch(string searchParameter)
+    {
+        SearchText = searchParameter;
     }
 }
