@@ -3,7 +3,6 @@
 
 extern alias Projection;
 
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Management.Configuration;
 using Projection::DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Windows.Win32.Foundation;

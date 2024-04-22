@@ -1,11 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json;
 using HyperVExtension.Common;
-using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
+using HyperVExtension.Models;
+using HyperVExtension.Models.VirtualMachineCreation;
 using HyperVExtension.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
 
 namespace HyperVExtension.Providers;
@@ -13,19 +16,31 @@ namespace HyperVExtension.Providers;
 /// <summary> Class that provides compute system information for Hyper-V Virtual machines. </summary>
 public class HyperVProvider : IComputeSystemProvider
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(HyperVProvider));
+
     private readonly string errorResourceKey = "ErrorPerformingOperation";
 
     private readonly IStringResource _stringResource;
 
     private readonly IHyperVManager _hyperVManager;
 
+    private readonly VmGalleryCreationOperationFactory _vmGalleryCreationOperationFactory;
+
+    private readonly IVMGalleryService _vmGalleryService;
+
     // Temporary will need to add more error strings for different operations.
     public string OperationErrorString => _stringResource.GetLocalized(errorResourceKey);
 
-    public HyperVProvider(IHyperVManager hyperVManager, IStringResource stringResource)
+    public HyperVProvider(
+        IHyperVManager hyperVManager,
+        IStringResource stringResource,
+        VmGalleryCreationOperationFactory vmGalleryCreationOperationFactory,
+        IVMGalleryService vmGalleryService)
     {
         _hyperVManager = hyperVManager;
         _stringResource = stringResource;
+        _vmGalleryCreationOperationFactory = vmGalleryCreationOperationFactory;
+        _vmGalleryService = vmGalleryService;
     }
 
     /// <summary> Gets or sets the default compute system properties. </summary>
@@ -45,20 +60,7 @@ public class HyperVProvider : IComputeSystemProvider
     /// won't be supported.
     public ComputeSystemProviderOperations SupportedOperations => ComputeSystemProviderOperations.CreateComputeSystem;
 
-    public Uri? Icon
-    {
-        get => new(Constants.ExtensionIcon);
-        set => throw new NotSupportedException("Setting the icon is not supported");
-    }
-
-    /// <summary> Creates a new Hyper-V compute system. </summary>
-    /// <param name="options">Optional string with parameters that the Hyper-V provider can recognize</param>
-    public ICreateComputeSystemOperation? CreateComputeSystem(IDeveloperId developerId, string options)
-    {
-        // This is temporary until we have a proper implementation for this.
-        Logging.Logger()?.ReportError($"creation not supported yet for hyper-v");
-        return null;
-    }
+    public Uri Icon => new(Constants.ExtensionIcon);
 
     /// <summary> Gets a list of all Hyper-V compute systems. The developerId is not used by the Hyper-V provider </summary>
     public IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId)
@@ -68,12 +70,12 @@ public class HyperVProvider : IComputeSystemProvider
             try
             {
                 var computeSystems = _hyperVManager.GetAllVirtualMachines();
-                Logging.Logger()?.ReportInfo($"Successfully retrieved all virtual machines on: {DateTime.Now}");
+                _log.Information($"Successfully retrieved all virtual machines on: {DateTime.Now}");
                 return new ComputeSystemsResult(computeSystems);
             }
             catch (Exception ex)
             {
-                Logging.Logger()?.ReportError($"Failed to retrieved all virtual machines on: {DateTime.Now}", ex);
+                _log.Error(ex, $"Failed to retrieved all virtual machines on: {DateTime.Now}");
                 return new ComputeSystemsResult(ex, OperationErrorString, ex.Message);
             }
         }).AsAsyncOperation();
@@ -81,9 +83,8 @@ public class HyperVProvider : IComputeSystemProvider
 
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForDeveloperId(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
     {
-        // This won't be supported until creation is supported.
-        var notImplementedException = new NotImplementedException($"Method not implemented by Hyper-V Compute System Provider");
-        return new ComputeSystemAdaptiveCardResult(notImplementedException, OperationErrorString, notImplementedException.Message);
+        var imageList = _vmGalleryService.GetGalleryImagesAsync().GetAwaiter().GetResult();
+        return new ComputeSystemAdaptiveCardResult(new VMGalleryCreationAdaptiveCardSession(imageList, _stringResource));
     }
 
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForComputeSystem(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind)
@@ -93,6 +94,22 @@ public class HyperVProvider : IComputeSystemProvider
         return new ComputeSystemAdaptiveCardResult(notImplementedException, OperationErrorString, notImplementedException.Message);
     }
 
-    // This will be implemented in a future release, but will be available for Dev Environments 1.0.
-    public ICreateComputeSystemOperation CreateCreateComputeSystemOperation(IDeveloperId developerId, string inputJson) => throw new NotImplementedException();
+    /// <summary> Creates an operation that will create a new Hyper-V virtual machine. </summary>
+    public ICreateComputeSystemOperation? CreateCreateComputeSystemOperation(IDeveloperId? developerId, string inputJson)
+    {
+        try
+        {
+            var deserializedObject = JsonSerializer.Deserialize(inputJson, typeof(VMGalleryCreationUserInput));
+            var inputForGalleryOperation = deserializedObject as VMGalleryCreationUserInput ?? throw new InvalidOperationException($"Json deserialization failed for input Json: {inputJson}");
+            return _vmGalleryCreationOperationFactory(inputForGalleryOperation);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to create a new virtual machine on: {DateTime.Now}");
+
+            // Dev Home will handle null values as failed operations. We can't throw because this is an out of proc
+            // COM call, so we'll lose the error information. We'll log the error and return null.
+            return null;
+        }
+    }
 }

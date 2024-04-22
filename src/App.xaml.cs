@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using CommunityToolkit.WinUI;
 using DevHome.Activation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Contracts.Services;
@@ -9,6 +10,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Customization.Extensions;
 using DevHome.Dashboard.Extensions;
 using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
@@ -19,11 +21,13 @@ using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
 using DevHome.Views;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
+using Serilog;
 
 namespace DevHome;
 
@@ -73,6 +77,15 @@ public partial class App : Application, IApp
         InitializeComponent();
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
+        // Set up Logging
+        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHome"));
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
         UseContentRoot(AppContext.BaseDirectory).
@@ -82,11 +95,15 @@ public partial class App : Application, IApp
         }).
         ConfigureServices((context, services) =>
         {
+            // Add Serilog logging for ILogger.
+            services.AddLogging(lb => lb.AddSerilog(dispose: true));
+
             // Default Activation Handler
-            services.AddTransient<ActivationHandler<Microsoft.UI.Xaml.LaunchActivatedEventArgs>, DefaultActivationHandler>();
+            services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
 
             // Other Activation Handlers
             services.AddTransient<IActivationHandler, ProtocolActivationHandler>();
+            services.AddTransient<IActivationHandler, DSCFileActivationHandler>();
 
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
@@ -108,7 +125,8 @@ public partial class App : Application, IApp
             services.AddSingleton<IScreenReaderService, ScreenReaderService>();
             services.AddSingleton<IComputeSystemService, ComputeSystemService>();
             services.AddSingleton<IComputeSystemManager, ComputeSystemManager>();
-            services.AddSingleton<ToastNotificationService>();
+            services.AddTransient<NotificationService>();
+            services.AddTransient<AdaptiveCardRenderingService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -141,6 +159,9 @@ public partial class App : Application, IApp
 
             // Environments
             services.AddEnvironments(context);
+
+            // Windows customization
+            services.AddWindowsCustomization(context);
         }).
         Build();
 
@@ -181,17 +202,24 @@ public partial class App : Application, IApp
             GetService<IAppManagementInitializer>().InitializeAsync());
     }
 
-    private void OnActivated(object? sender, AppActivationArguments args)
+    private async void OnActivated(object? sender, AppActivationArguments args)
     {
         if (args.Kind == ExtendedActivationKind.ToastNotification)
         {
-            GetService<ToastNotificationService>().HandlerNotificationActions(args);
+            GetService<NotificationService>().HandlerNotificationActions(args);
             return;
         }
 
-        _dispatcherQueue.TryEnqueue(async () =>
-        {
-            await GetService<IActivationService>().ActivateAsync(args.Data);
-        });
+        // Note: Keep the reference to 'args.Data' object, as 'args' may be
+        // disposed before the async operation completes (RpcCallFailed: 0x800706be)
+        var localArgsDataReference = args.Data;
+
+        // Activate the app and ensure the appropriate handlers are called.
+        await _dispatcherQueue.EnqueueAsync(async () => await GetService<IActivationService>().ActivateAsync(localArgsDataReference));
+    }
+
+    private void Window_Closed(object sender, EventArgs e)
+    {
+        Log.CloseAndFlush();
     }
 }

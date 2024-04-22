@@ -47,7 +47,7 @@ public partial class ExperimentalFeature : ObservableObject
     {
         get
         {
-            var stringResource = new StringResource("DevHome.Settings/Resources");
+            var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
             return stringResource.GetLocalized(Id + "_Name");
         }
     }
@@ -56,7 +56,7 @@ public partial class ExperimentalFeature : ObservableObject
     {
         get
         {
-            var stringResource = new StringResource("DevHome.Settings/Resources");
+            var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
             return stringResource.GetLocalized(Id + "_Description");
         }
     }

@@ -8,7 +8,6 @@ using HyperVExtension.Helpers;
 using HyperVExtension.Models;
 using HyperVExtension.Services;
 using HyperVExtension.UnitTest.Mocks;
-using Moq;
 using TimeoutException = System.ServiceProcess.TimeoutException;
 
 namespace HyperVExtension.UnitTest.HyperVExtensionTests.Services;
@@ -301,24 +300,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
 
         // Assert
         Assert.IsTrue(wasVMRemoved);
-    }
-
-    [TestMethod]
-    public void ConnectToVirtualMachineDoesNotThrow()
-    {
-        // Arrange
-        SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
-        var hyperVManager = TestHost.GetService<IHyperVManager>();
-        SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
-            .Returns(() =>
-            {
-                // Simulate PowerShell won't return an object here, so simulate this.
-                return CreatePSObjectCollection(new PSCustomObjectMock());
-            });
-
-        // This should not throw an exception
-        hyperVManager.ConnectToVirtualMachine(Guid.NewGuid());
     }
 
     [TestMethod]

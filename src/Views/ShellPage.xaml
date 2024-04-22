@@ -62,9 +62,16 @@
                 <NavigationViewItem x:Uid="Shell_IGNORE" helpers:NavigationHelper.NavigateTo="DevHome.Settings.ViewModels.SettingsViewModel" Visibility="Collapsed"/>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem x:Uid="WhatsNew" helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.WhatsNewViewModel">
+                <NavigationViewItem x:Uid="WhatsNew"
+                                    helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.WhatsNewViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE789;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Uid="ms-resource:///DevHome.ExtensionLibrary/Resources/NavigationPane"
+                                    helpers:NavigationHelper.NavigateTo="DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xEA86;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>
@@ -119,7 +126,7 @@
              from reading the control value. -->
         <TextBlock Width="0" Height="0" IsTabStop="False" Text="{x:Bind ViewModel.AnnouncementText, Mode=OneWay}">
             <i:Interaction.Behaviors>
-                <behaviors:TextBlockAutomationBehavior RaiseLiveRegionChangedEvent="True" LiveSetting="Polite" />
+                <behaviors:TextBlockAutomationBehavior RaiseLiveRegionChangedEvent="True" LiveSetting="Assertive" />
             </i:Interaction.Behaviors>
         </TextBlock>
     </Grid>

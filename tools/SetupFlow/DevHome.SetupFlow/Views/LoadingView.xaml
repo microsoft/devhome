@@ -52,7 +52,7 @@
     </UserControl.Resources>
 
     <!-- Page split layout -->
-    <Grid RowSpacing="10">
+    <Grid RowSpacing="10" MaxWidth="{ThemeResource MaxPageContentWidth}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="*" />
@@ -95,8 +95,11 @@
                         </Button>
                     </StackPanel>
                 </Grid>
-                <TextBlock Grid.Row="1" Style="{ThemeResource SubtitleTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_Header"/>
-                <ProgressBar Grid.Row="2" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_SetupProgressBar_Description" x:Name="SetupTaskProgressBar" Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
+                <StackPanel Grid.Row="1" Spacing="0" >
+                    <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{x:Bind ViewModel.HeaderText, Mode=OneWay}"/>
+                    <TextBlock Visibility="{x:Bind ViewModel.ShowSetupTarget, Mode=OneWay}" Text="{x:Bind ViewModel.SetupTargetText, Mode=OneWay}" />
+                </StackPanel>
+                <ProgressBar Grid.Row="2" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_SetupProgressBar_Description" x:Name="SetupTaskProgressBar" IsIndeterminate="{x:Bind ViewModel.IsIndeterminateProgressBar, Mode=OneWay}" Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
                 <TextBlock Grid.Row="3" Text="{x:Bind ViewModel.ExecutingTasks, Mode=OneWay}" />
         </Grid>
         <Grid
@@ -114,7 +117,7 @@
                     <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
                 <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
-                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Bottom" Padding="0, 0, 0, 6"/>
+                    <TextBlock Text="{x:Bind ViewModel.TasksTitleText, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Bottom" Padding="0, 0, 0, 6"/>
                 </Border>
                 <Border Grid.Column="1" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
                     <Grid>
@@ -160,14 +163,15 @@
                             </Grid.Resources>
                             <ImageIcon
                                 Grid.Column="0"
-                                    Visibility="{x:Bind ShouldShowStatusSymbolIcon, Mode=OneWay}"
-                                    Source="{x:Bind StatusSymbolIcon, Mode=OneWay}"/>
+                                VerticalAlignment="Top"
+                                Visibility="{x:Bind ShouldShowStatusSymbolIcon, Mode=OneWay}"
+                                Source="{x:Bind StatusSymbolIcon, Mode=OneWay}"/>
                             <ProgressRing
                                 Grid.Column="0"
                                 Height="18"
                                 Width="18"
-                                    IsActive="{x:Bind ShouldShowProgressRing, Mode=OneWay}"
-                                    Visibility="{x:Bind ShouldShowProgressRing, Mode=OneWay}"/>
+                                IsActive="{x:Bind ShouldShowProgressRing, Mode=OneWay}"
+                                Visibility="{x:Bind ShouldShowProgressRing, Mode=OneWay}"/>
                             <TextBlock Grid.Column="1" Text="{x:Bind MessageToShow, Mode=OneWay}" VerticalAlignment="Center" Style="{x:Bind ShouldShowProgressRing, Mode=OneWay, Converter={StaticResource BoolToTextBrush}}" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
                         </Grid>
                     </DataTemplate>

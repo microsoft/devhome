@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
-using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.Services.WinGet;
 using DevHome.SetupFlow.Services.WinGet.Operations;
@@ -34,6 +33,8 @@ public static class ServiceExtensions
         services.AddRepoConfig();
         services.AddReview();
         services.AddSummary();
+        services.AddSummaryInformation();
+        services.AddCreateEnvironment();
 
         // View-models
         services.AddSingleton<SetupFlowViewModel>();
@@ -116,6 +117,14 @@ public static class ServiceExtensions
         return services;
     }
 
+    private static IServiceCollection AddSummaryInformation(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<CloneRepoSummaryInformationViewModel>();
+
+        return services;
+    }
+
     private static IServiceCollection AddDevDrive(this IServiceCollection services)
     {
         // View models
@@ -135,6 +144,7 @@ public static class ServiceExtensions
     {
         // View models
         services.AddTransient<LoadingViewModel>();
+        services.AddTransient<LoadingMessageViewModel>();
 
         return services;
     }
@@ -183,6 +193,20 @@ public static class ServiceExtensions
         services.AddTransient<SetupTargetViewModel>();
         services.AddTransient<SetupTargetReviewViewModel>();
         services.AddTransient<SetupTargetTaskGroup>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCreateEnvironment(this IServiceCollection services)
+    {
+        // Task groups
+        services.AddTransient<EnvironmentCreationOptionsTaskGroup>();
+        services.AddTransient<SelectEnvironmentProviderTaskGroup>();
+
+        // View models
+        services.AddTransient<CreateEnvironmentReviewViewModel>();
+        services.AddTransient<EnvironmentCreationOptionsViewModel>();
+        services.AddTransient<SelectEnvironmentProviderViewModel>();
 
         return services;
     }

@@ -5,17 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
+using Serilog;
 using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
 internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WinGetCatalogConnector));
     private readonly IWinGetPackageCache _packageCache;
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly Dictionary<string, WinGetCatalog> _customCatalogs = new();
@@ -178,7 +179,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
             var recoverSearchCatalog = !IsCatalogAlive(_customSearchCatalog);
             var recoverWinGetCatalog = !IsCatalogAlive(_predefinedWingetCatalog);
             var recoverMsStoreCatalog = !IsCatalogAlive(_predefinedMsStoreCatalog);
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Recovering disconnected catalogs [should recover?]: Search [{recoverSearchCatalog}], WinGet [{recoverWinGetCatalog}], MsStore [{recoverMsStoreCatalog}]");
+            _log.Information($"Recovering disconnected catalogs [should recover?]: Search [{recoverSearchCatalog}], WinGet [{recoverWinGetCatalog}], MsStore [{recoverMsStoreCatalog}]");
             await Task.WhenAll(
                 recoverSearchCatalog ? CreateAndConnectSearchCatalogAsync() : Task.CompletedTask,
                 recoverWinGetCatalog ? CreateAndConnectWinGetCatalogAsync() : Task.CompletedTask,
@@ -222,7 +223,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create or connect to search catalog.", e);
+            _log.Error(e, $"Failed to create or connect to search catalog.");
         }
     }
 
@@ -240,7 +241,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create or connect to 'winget' catalog source.", e);
+            _log.Error(e, $"Failed to create or connect to 'winget' catalog source.");
         }
     }
 
@@ -258,7 +259,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create or connect to 'msstore' catalog source.", e);
+            _log.Error(e, $"Failed to create or connect to 'msstore' catalog source.");
         }
     }
 
@@ -277,7 +278,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create or connect to custom catalog with name {catalogName}", e);
+            _log.Error(e, $"Failed to create or connect to custom catalog with name {catalogName}");
             return null;
         }
     }
@@ -297,7 +298,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
             return connectResult.PackageCatalog;
         }
 
-        Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to catalog with status {connectResult.Status}");
+        _log.Error($"Failed to connect to catalog with status {connectResult.Status}");
         return null;
     }
 

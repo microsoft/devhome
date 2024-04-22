@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using HyperVExtension.Common.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace HyperVExtension;
 
@@ -40,6 +41,7 @@ public sealed class HyperVExtension : IExtension, IDisposable
     /// </returns>
     public object? GetProvider(ProviderType providerType)
     {
+        var log = Log.ForContext("SourceContext", nameof(HyperVExtension));
         object? provider = null;
         try
         {
@@ -49,13 +51,13 @@ public sealed class HyperVExtension : IExtension, IDisposable
                     provider = _host.GetService<IComputeSystemProvider>();
                     break;
                 default:
-                    Providers.Logging.Logger()?.ReportInfo($"Unsupported provider: {providerType}");
+                    log.Information($"Unsupported provider: {providerType}");
                     break;
             }
         }
         catch (Exception ex)
         {
-            Providers.Logging.Logger()?.ReportError($"Failed to get provider for provider type {providerType}", ex);
+            log.Error(ex, $"Failed to get provider for provider type {providerType}");
         }
 
         return provider;

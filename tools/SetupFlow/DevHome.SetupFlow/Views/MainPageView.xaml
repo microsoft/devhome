@@ -75,7 +75,7 @@
 
         <!-- Main content -->
         <controls:SetupShell Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid>
                 <StackPanel>
                     <commonviews:Banner
                         TextWidth="345"
@@ -87,8 +87,8 @@
                         BackgroundSource="{ThemeResource Setup_Banner_Back}"
                         OverlaySource="{ThemeResource Setup_Banner_Front}" />
 
-                    <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                        <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_EnvironmentSetup" />
+                    <StackPanel Spacing="{StaticResource SettingsCardSpacing}" AutomationProperties.Name="{x:Bind ViewModel.MainPageEnvironmentSetupGroupName}">
+                        <TextBlock x:Name="SetupEnvironmentHeader"  Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_EnvironmentSetup"/>
                         <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
                         <Grid Background="Transparent">
                             <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
@@ -162,8 +162,26 @@
                         </ctControls:SettingsCard>
                     </StackPanel>
 
-                    <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+                    <StackPanel Spacing="{StaticResource SettingsCardSpacing}" AutomationProperties.Name="{x:Bind ViewModel.MainPageQuickStepsGroupName}">
                         <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
+
+                        <!-- settings card for creating an environment -->
+                        <ctControls:SettingsCard 
+                           Visibility="{x:Bind ViewModel.ShouldShowCreateEnvironmentItem}"
+                           x:Uid="MainPageCreateEnvironment"
+                           AutomationProperties.AutomationId="CreateEnvironment"
+                           IsClickEnabled="True"
+                           Command="{x:Bind ViewModel.StartCreateEnvironmentCommand}"
+                           CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                           ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                           AutomationProperties.AccessibilityView="Control"
+                           ActionIcon="{x:Null}" >
+                            <ctControls:SettingsCard.HeaderIcon>
+                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/CreateVirtualEnvironment.png" />
+                            </ctControls:SettingsCard.HeaderIcon>
+                        </ctControls:SettingsCard>
+
+                        <!-- settings card for cloning repositories -->
                         <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos"
                                            AutomationProperties.AutomationId="CloneRepoButton"
                                            IsClickEnabled="True"
@@ -217,7 +235,7 @@
                         </ctControls:SettingsCard>
                     </StackPanel>
                 </StackPanel>
-            </ScrollViewer>
+            </Grid>
         </controls:SetupShell>
     </Grid>
 </UserControl>

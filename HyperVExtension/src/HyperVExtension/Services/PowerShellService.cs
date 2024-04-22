@@ -1,20 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
-using System.Threading;
-using DevHome.Logging;
 using HyperVExtension.Common;
 using HyperVExtension.Models;
-using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace HyperVExtension.Services;
 
 /// <summary> Class that handles PowerShell commands.</summary>
 public class PowerShellService : IPowerShellService, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(PowerShellService));
+
     private readonly IStringResource _stringResource;
 
     private readonly IPowerShellSession _powerShellSession;
@@ -61,14 +60,7 @@ public class PowerShellService : IPowerShellService, IDisposable
         catch (Exception ex)
         {
             var commandStrings = string.Join(Environment.NewLine, commandLineStatements.Select(cmd => cmd.ToString()));
-
-            LogEvent.Create(
-                nameof(PowerShellService),
-                string.Empty,
-                SeverityLevel.Error,
-                $"Error running PowerShell commands: {commandStrings}",
-                ex);
-
+            _log.Error(ex, $"Error running PowerShell commands: {commandStrings}");
             throw;
         }
     }
@@ -174,11 +166,7 @@ public class PowerShellService : IPowerShellService, IDisposable
     {
         if (!_disposed)
         {
-            LogEvent.Create(
-                nameof(PowerShellService),
-                string.Empty,
-                SeverityLevel.Debug,
-                "Disposing PowerShellHostService.");
+            _log.Debug("Disposing PowerShellService");
         }
 
         _disposed = true;

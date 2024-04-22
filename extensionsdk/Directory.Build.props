@@ -15,8 +15,15 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <VersionNumber Condition="'$(VersionNumber)'==''">0.0.0.0</VersionNumber>
     <_PropertySheetDisplayName>DevHome.Root.Props</_PropertySheetDisplayName>
     <ForceImportBeforeCppProps>$(MsbuildThisFileDirectory)\Cpp.Build.props</ForceImportBeforeCppProps>
   </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ResourceCompile>
+      <PreprocessorDefinitions>VERSION_NUMBER=\"$(VersionNumber)\";VERSION_COMMAS=$(VersionNumber.Replace('.', ','));%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
 
 </Project>

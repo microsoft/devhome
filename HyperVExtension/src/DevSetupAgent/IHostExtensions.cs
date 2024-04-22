@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
 namespace HyperVExtension.DevSetupAgent;
 
 public static class IHostExtensions

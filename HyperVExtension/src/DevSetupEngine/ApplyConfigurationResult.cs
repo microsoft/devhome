@@ -97,7 +97,7 @@ public class OpenConfigurationSetResult : IOpenConfigurationSetResult
 [ComDefaultInterface(typeof(IConfigurationUnit))]
 public class ConfigurationUnit : IConfigurationUnit
 {
-    public ConfigurationUnit(string type, string identifier, DevSetupEngineTypes.ConfigurationUnitState state, bool isGroup, IList<IConfigurationUnit>? units, ValueSet settings, ConfigurationUnitIntent intent)
+    public ConfigurationUnit(string type, string identifier, DevSetupEngineTypes.ConfigurationUnitState state, bool isGroup, IList<IConfigurationUnit>? units, ValueSet? settings, ConfigurationUnitIntent intent)
     {
         Type = type;
         Identifier = identifier;
@@ -193,14 +193,14 @@ public class ApplyConfigurationUnitResult : IApplyConfigurationUnitResult
 [ComDefaultInterface(typeof(IApplyConfigurationSetResult))]
 public class ApplyConfigurationSetResult : IApplyConfigurationSetResult
 {
-    public ApplyConfigurationSetResult(Exception? resultCode, IReadOnlyList<IApplyConfigurationUnitResult> unitResults)
+    public ApplyConfigurationSetResult(Exception? resultCode, IReadOnlyList<IApplyConfigurationUnitResult>? unitResults)
     {
         ResultCode = resultCode;
         UnitResults = unitResults;
     }
 
     // Results for each configuration unit in the set.
-    public IReadOnlyList<IApplyConfigurationUnitResult> UnitResults { get; }
+    public IReadOnlyList<IApplyConfigurationUnitResult>? UnitResults { get; }
 
     // The overall result from applying the configuration set.
     public Exception? ResultCode { get; }

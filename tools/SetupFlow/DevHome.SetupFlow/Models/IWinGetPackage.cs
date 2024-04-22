@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
 using Windows.Storage.Streams;
 

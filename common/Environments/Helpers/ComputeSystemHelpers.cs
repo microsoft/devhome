@@ -4,14 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
-using DevHome.Common.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.Common.Environments.Helpers;
 
@@ -25,7 +23,7 @@ public static class ComputeSystemHelpers
 
             if ((result.Result.Status == ProviderOperationStatus.Failure) || (result.ThumbnailInBytes.Length <= 0))
             {
-                Log.Logger()?.ReportError($"Failed to get thumbnail for compute system {computeSystemWrapper}. Error: {result.Result.DiagnosticText}");
+                Log.Error($"Failed to get thumbnail for compute system {computeSystemWrapper}. Error: {result.Result.DiagnosticText}");
 
                 // No thumbnail available, return null so that the card will display the default image.
                 return null;
@@ -37,7 +35,7 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError($"Failed to get thumbnail for compute system {computeSystemWrapper}.", ex);
+            Log.Error(ex, $"Failed to get thumbnail for compute system {computeSystemWrapper}.");
             return null;
         }
     }
@@ -58,7 +56,7 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError($"Failed to get all properties for compute system {computeSystemWrapper}.", ex);
+            Log.Error(ex, $"Failed to get all properties for compute system {computeSystemWrapper}.");
             return propertyList;
         }
     }

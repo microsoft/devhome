@@ -6,7 +6,6 @@ using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.UI.Xaml;
 
 namespace DevHome.SetupFlow.UnitTest;
 

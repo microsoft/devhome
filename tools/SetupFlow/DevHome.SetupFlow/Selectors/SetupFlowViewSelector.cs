@@ -3,6 +3,7 @@
 
 using System;
 using DevHome.SetupFlow.ViewModels;
+using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -30,6 +31,10 @@ public class SetupFlowViewSelector : DataTemplateSelector
     public DataTemplate SummaryTemplate { get; set; }
 
     public DataTemplate ConfigurationFileTemplate { get; set; }
+
+    public DataTemplate SelectEnvironmentsProviderTemplate { get; set; }
+
+    public DataTemplate EnvironmentCreationOptionsTemplate { get; set; }
 
     protected override DataTemplate SelectTemplateCore(object item)
     {
@@ -59,6 +64,8 @@ public class SetupFlowViewSelector : DataTemplateSelector
             SummaryViewModel => SummaryTemplate,
             ConfigurationFileViewModel => ConfigurationFileTemplate,
             SetupTargetViewModel => SetupTargetTemplate,
+            SelectEnvironmentProviderViewModel => SelectEnvironmentsProviderTemplate,
+            EnvironmentCreationOptionsViewModel => EnvironmentCreationOptionsTemplate,
             _ => defaultDataTemplate(),
         };
     }

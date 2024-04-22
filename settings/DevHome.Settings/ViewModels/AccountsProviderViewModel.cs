@@ -4,14 +4,16 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Logging;
 using DevHome.Settings.Models;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.Settings.ViewModels;
 
 public partial class AccountsProviderViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AccountsProviderViewModel));
+
     public IDeveloperIdProvider DeveloperIdProvider { get; }
 
     public string ProviderName => DeveloperIdProvider.DisplayName;
@@ -30,7 +32,7 @@ public partial class AccountsProviderViewModel : ObservableObject
         var developerIdsResult = DeveloperIdProvider.GetLoggedInDeveloperIds();
         if (developerIdsResult.Result.Status == ProviderOperationStatus.Failure)
         {
-            GlobalLog.Logger?.ReportError($"{developerIdsResult.Result.DisplayMessage} - {developerIdsResult.Result.DiagnosticText}");
+            _log.Error($"{developerIdsResult.Result.DisplayMessage} - {developerIdsResult.Result.DiagnosticText}");
             return;
         }
 
@@ -48,7 +50,7 @@ public partial class AccountsProviderViewModel : ObservableObject
             var providerOperationResult = DeveloperIdProvider.LogoutDeveloperId(accountToRemove.GetDevId());
             if (providerOperationResult.Status == ProviderOperationStatus.Failure)
             {
-                GlobalLog.Logger?.ReportError($"{providerOperationResult.DisplayMessage} - {providerOperationResult.DiagnosticText}");
+                _log.Error($"{providerOperationResult.DisplayMessage} - {providerOperationResult.DiagnosticText}");
                 return;
             }
         }

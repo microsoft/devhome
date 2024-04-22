@@ -8,7 +8,8 @@ using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Renderers;
-using DevHome.Dashboard.Helpers;
+using DevHome.Common.Services;
+using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Telemetry;
@@ -17,6 +18,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 using Windows.Data.Json;
 using Windows.System;
 using WinUIEx;
@@ -31,22 +33,24 @@ namespace DevHome.Dashboard.ViewModels;
 /// <param name="widgetDefinition">WidgetDefinition</param>
 /// <returns>Widget view model</returns>
 public delegate WidgetViewModel WidgetViewModelFactory(
-    Widget widget,
+    ComSafeWidget widget,
     WidgetSize widgetSize,
-    WidgetDefinition widgetDefinition);
+    ComSafeWidgetDefinition widgetDefinition);
 
 public partial class WidgetViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetViewModel));
+
     private readonly WindowEx _windowEx;
-    private readonly IAdaptiveCardRenderingService _renderingService;
+    private readonly WidgetAdaptiveCardRenderingService _renderingService;
 
     private RenderedAdaptiveCard _renderedCard;
 
     [ObservableProperty]
-    private Widget _widget;
+    private ComSafeWidget _widget;
 
     [ObservableProperty]
-    private WidgetDefinition _widgetDefinition;
+    private ComSafeWidgetDefinition _widgetDefinition;
 
     [ObservableProperty]
     private WidgetSize _widgetSize;
@@ -63,7 +67,7 @@ public partial class WidgetViewModel : ObservableObject
     [ObservableProperty]
     private FrameworkElement _widgetFrameworkElement;
 
-    partial void OnWidgetChanging(Widget value)
+    partial void OnWidgetChanging(ComSafeWidget value)
     {
         if (Widget != null)
         {
@@ -71,7 +75,7 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    partial void OnWidgetChanged(Widget value)
+    partial void OnWidgetChanged(ComSafeWidget value)
     {
         if (Widget != null)
         {
@@ -80,21 +84,21 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    partial void OnWidgetDefinitionChanged(WidgetDefinition value)
+    partial void OnWidgetDefinitionChanged(ComSafeWidgetDefinition value)
     {
         if (WidgetDefinition != null)
         {
             WidgetDisplayTitle = WidgetDefinition.DisplayTitle;
-            WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinition.DisplayName;
+            WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinitionDisplayName;
             IsCustomizable = WidgetDefinition.IsCustomizable;
         }
     }
 
     public WidgetViewModel(
-        Widget widget,
+        ComSafeWidget widget,
         WidgetSize widgetSize,
-        WidgetDefinition widgetDefinition,
-        IAdaptiveCardRenderingService adaptiveCardRenderingService,
+        ComSafeWidgetDefinition widgetDefinition,
+        WidgetAdaptiveCardRenderingService adaptiveCardRenderingService,
         WindowEx windowEx)
     {
         _renderingService = adaptiveCardRenderingService;
@@ -119,14 +123,14 @@ public partial class WidgetViewModel : ObservableObject
 
             if (string.IsNullOrEmpty(cardData) || string.IsNullOrEmpty(cardTemplate))
             {
-                Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
+                _log.Warning("Widget.GetCardDataAsync returned empty, cannot render card.");
                 ShowErrorCard("WidgetErrorCardDisplayText");
                 return;
             }
 
             // Uncomment for extra debugging output
-            // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
-            // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
+            // _log.Debug($"cardTemplate = {cardTemplate}");
+            // _log.Debug($"cardData = {cardData}");
 
             // Use the data to fill in the template.
             AdaptiveCardParseResult card;
@@ -152,7 +156,7 @@ public partial class WidgetViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
+                _log.Warning(ex, "There was an error expanding the Widget template with data: ");
                 ShowErrorCard("WidgetErrorCardDisplayText");
                 return;
             }
@@ -164,7 +168,7 @@ public partial class WidgetViewModel : ObservableObject
 
             if (card == null || card.AdaptiveCard == null)
             {
-                Log.Logger()?.ReportError("WidgetViewModel", "Error in AdaptiveCardParseResult");
+                _log.Error("Error in AdaptiveCardParseResult");
                 ShowErrorCard("WidgetErrorCardDisplayText");
                 return;
             }
@@ -174,7 +178,7 @@ public partial class WidgetViewModel : ObservableObject
             {
                 try
                 {
-                    var renderer = await _renderingService.GetRenderer();
+                    var renderer = await _renderingService.GetRendererAsync();
                     _renderedCard = renderer.RenderAdaptiveCard(card.AdaptiveCard);
                     if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                     {
@@ -183,13 +187,13 @@ public partial class WidgetViewModel : ObservableObject
                     }
                     else
                     {
-                        Log.Logger()?.ReportError("WidgetViewModel", "Error in RenderedAdaptiveCard");
+                        _log.Error("Error in RenderedAdaptiveCard");
                         WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card: ", ex);
+                    _log.Error(ex, "Error rendering widget card: ");
                     WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
                 }
             });
@@ -205,11 +209,11 @@ public partial class WidgetViewModel : ObservableObject
 
             if (string.IsNullOrEmpty(cardTemplate) || string.IsNullOrEmpty(cardData))
             {
-                Log.Logger()?.ReportDebug("WidgetViewModel", "Widget content not available yet.");
+                _log.Debug("Widget content not available yet.");
                 return false;
             }
 
-            Log.Logger()?.ReportDebug("WidgetViewModel", "Widget content available.");
+            _log.Debug("Widget content available.");
             return true;
         });
     }
@@ -231,7 +235,7 @@ public partial class WidgetViewModel : ObservableObject
     // Used to show a loading ring when we don't have widget content.
     public void ShowLoadingCard()
     {
-        Log.Logger()?.ReportDebug("WidgetViewModel", "Show loading card.");
+        _log.Debug("Show loading card.");
         _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             WidgetFrameworkElement = new ProgressRing();
@@ -249,7 +253,7 @@ public partial class WidgetViewModel : ObservableObject
 
     private Grid GetErrorCard(string error, string subError = null)
     {
-        var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+        var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
 
         var grid = new Grid
         {
@@ -267,7 +271,7 @@ public partial class WidgetViewModel : ObservableObject
             HorizontalAlignment = HorizontalAlignment.Center,
             TextWrapping = TextWrapping.WrapWholeWords,
             FontWeight = FontWeights.Bold,
-            Text = resourceLoader.GetString(error),
+            Text = stringResource.GetLocalized(error),
         };
         sp.Children.Add(errorText);
 
@@ -277,7 +281,7 @@ public partial class WidgetViewModel : ObservableObject
             {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextWrapping = TextWrapping.WrapWholeWords,
-                Text = resourceLoader.GetString(subError),
+                Text = stringResource.GetLocalized(subError),
                 Margin = new Thickness(0, 12, 0, 0),
             };
 
@@ -290,10 +294,10 @@ public partial class WidgetViewModel : ObservableObject
 
     private async void HandleAdaptiveAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
     {
-        Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction {args.Action.ActionTypeString} for widget {Widget.Id}");
+        _log.Information($"HandleInvokedAction {args.Action.ActionTypeString} for widget {Widget.Id}");
         if (args.Action is AdaptiveOpenUrlAction openUrlAction)
         {
-            Log.Logger()?.ReportInfo("WidgetViewModel", $"Url = {openUrlAction.Url}");
+            _log.Information($"Url = {openUrlAction.Url}");
             await Launcher.LaunchUriAsync(openUrlAction.Url);
         }
         else if (args.Action is AdaptiveExecuteAction executeAction)
@@ -313,22 +317,22 @@ public partial class WidgetViewModel : ObservableObject
                 }
             }
 
-            Log.Logger()?.ReportInfo("WidgetViewModel", $"Verb = {executeAction.Verb}, Data = {dataToSend}");
+            _log.Information($"Verb = {executeAction.Verb}, Data = {dataToSend}");
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
         }
 
         TelemetryFactory.Get<ITelemetry>().Log(
             "Dashboard_ReportWidgetInteraction",
             LogLevel.Critical,
-            new ReportWidgetInteractionEvent(WidgetDefinition.ProviderDefinition.Id, WidgetDefinition.Id, args.Action.ActionTypeString));
+            new ReportWidgetInteractionEvent(WidgetDefinition.ProviderDefinitionId, WidgetDefinition.Id, args.Action.ActionTypeString));
 
         // TODO: Handle other ActionTypes
         // https://github.com/microsoft/devhome/issues/644
     }
 
-    private async void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
+    private async void HandleWidgetUpdated(ComSafeWidget sender, WidgetUpdatedEventArgs args)
     {
-        Log.Logger()?.ReportDebug("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
+        _log.Debug($"HandleWidgetUpdated for widget {sender.Id}");
         await RenderWidgetFrameworkElementAsync();
     }
 

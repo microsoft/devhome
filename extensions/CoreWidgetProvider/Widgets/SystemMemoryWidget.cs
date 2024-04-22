@@ -12,8 +12,6 @@ internal sealed class SystemMemoryWidget : CoreWidget, IDisposable
 {
     private static Dictionary<string, string> Templates { get; set; } = new();
 
-    private static readonly new string Name = nameof(SystemMemoryWidget);
-
     private readonly DataManager dataManager;
 
     public SystemMemoryWidget()
@@ -52,7 +50,7 @@ internal sealed class SystemMemoryWidget : CoreWidget, IDisposable
 
     public override void LoadContentData()
     {
-        Log.Logger()?.ReportDebug(Name, ShortId, "Getting Memory usage data");
+        Log.Debug("Getting Memory usage data");
 
         try
         {
@@ -77,7 +75,7 @@ internal sealed class SystemMemoryWidget : CoreWidget, IDisposable
         }
         catch (Exception e)
         {
-            Log.Logger()?.ReportError(Name, ShortId, "Error retrieving data.", e);
+            Log.Error(e, "Error retrieving data.");
             var content = new JsonObject
             {
                 { "errorMessage", e.Message },

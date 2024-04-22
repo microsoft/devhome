@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Xml.Linq;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
@@ -314,12 +313,12 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private IPropertySet? GetSubPropertySet(IPropertySet propSet, string name)
     {
-        return propSet[name] as IPropertySet;
+        return propSet.TryGetValue(name, out var value) ? value as IPropertySet : null;
     }
 
     private object[]? GetSubPropertySetArray(IPropertySet propSet, string name)
     {
-        return propSet[name] as object[];
+        return propSet.TryGetValue(name, out var value) ? value as object[] : null;
     }
 
     /// <summary>
@@ -331,7 +330,6 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         var propSetList = new List<string>();
         var singlePropertySet = GetSubPropertySet(activationPropSet, CreateInstanceProperty);
-        var propertySetArray = GetSubPropertySetArray(activationPropSet, CreateInstanceProperty);
         if (singlePropertySet != null)
         {
             var classId = GetProperty(singlePropertySet, ClassIdProperty);
@@ -342,19 +340,23 @@ public class ExtensionService : IExtensionService, IDisposable
                 propSetList.Add(classId);
             }
         }
-        else if (propertySetArray != null)
+        else
         {
-            foreach (var prop in propertySetArray)
+            var propertySetArray = GetSubPropertySetArray(activationPropSet, CreateInstanceProperty);
+            if (propertySetArray != null)
             {
-                if (prop is not IPropertySet propertySet)
+                foreach (var prop in propertySetArray)
                 {
-                    continue;
-                }
+                    if (prop is not IPropertySet propertySet)
+                    {
+                        continue;
+                    }
 
-                var classId = GetProperty(propertySet, ClassIdProperty);
-                if (classId != null)
-                {
-                    propSetList.Add(classId);
+                    var classId = GetProperty(propertySet, ClassIdProperty);
+                    if (classId != null)
+                    {
+                        propSetList.Add(classId);
+                    }
                 }
             }
         }

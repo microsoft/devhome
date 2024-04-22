@@ -1,9 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using HyperVExtension.Providers;
+using Serilog;
 
 namespace HyperVExtension.CommunicationWithGuest;
 
@@ -12,6 +11,8 @@ namespace HyperVExtension.CommunicationWithGuest;
 /// </summary>
 public class ResponseFactory : IResponseFactory
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ResponseFactory));
+
     public delegate IGuestResponse CreateRequestDelegate(IResponseMessage message, JsonNode json);
 
     private static readonly Dictionary<(string, string), CreateRequestDelegate> _responseFactories = new()
@@ -34,7 +35,7 @@ public class ResponseFactory : IResponseFactory
         {
             if (!string.IsNullOrEmpty(message.ResponseData))
             {
-                Logging.Logger()?.ReportInfo($"Received message: ID: '{message.ResponseId}' Data: '{message.ResponseData}'");
+                _log.Information($"Received message: ID: '{message.ResponseId}' Data: '{message.ResponseData}'");
                 var responseJson = JsonNode.Parse(message.ResponseData);
                 var responseType = (string?)responseJson?["ResponseType"];
                 var requestType = (string?)responseJson?["RequestType"];
@@ -51,13 +52,13 @@ public class ResponseFactory : IResponseFactory
                     }
                 }
 
-                Logging.Logger()?.ReportInfo($"Received message with empty Response or Request type: ID: '{message.ResponseId}', Message: '{message.ResponseData}'");
+                _log.Information($"Received message with empty Response or Request type: ID: '{message.ResponseId}', Message: '{message.ResponseData}'");
                 return new ErrorNoTypeResponse(message);
             }
             else
             {
                 // We have message id but no data, log error. Send error response.
-                Logging.Logger()?.ReportInfo($"Received message with empty data: ID: {message.ResponseId}");
+                _log.Information($"Received message with empty data: ID: {message.ResponseId}");
                 return new ErrorResponse(message);
             }
         }
@@ -65,7 +66,7 @@ public class ResponseFactory : IResponseFactory
         {
             var messageId = message?.ResponseId ?? "<unknown>";
             var responseData = message?.ResponseData ?? "<unknown>";
-            Logging.Logger()?.ReportError($"Error processing message. Message ID: {messageId}. Request data: {responseData}", ex);
+            _log.Error(ex, $"Error processing message. Message ID: {messageId}. Request data: {responseData}");
             return new ErrorResponse(message!);
         }
     }

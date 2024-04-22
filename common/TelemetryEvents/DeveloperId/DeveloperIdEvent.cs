@@ -12,10 +12,11 @@ using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Common.TelemetryEvents.DeveloperId;
 
+// This is an event for things which are not direct user actions.
 [EventData]
 public class DeveloperIdEvent : EventBase
 {
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public string DeveloperId
     {

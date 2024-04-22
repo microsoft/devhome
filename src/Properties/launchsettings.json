@@ -1,4 +1,4 @@
-﻿{
+{
   "profiles": {
     "DevHome (Package)": {
       "commandName": "MsixPackage"

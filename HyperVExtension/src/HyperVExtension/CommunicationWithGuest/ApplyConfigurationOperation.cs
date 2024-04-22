@@ -1,19 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.ComponentModel;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
 using HyperVExtension.HostGuestCommunication;
 using HyperVExtension.Models;
-using HyperVExtension.Providers;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.Win32.Foundation;
 using SDK = Microsoft.Windows.DevHome.SDK;
 

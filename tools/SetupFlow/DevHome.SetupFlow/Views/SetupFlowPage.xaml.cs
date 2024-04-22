@@ -6,6 +6,7 @@ using DevHome.Common.Extensions;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.SetupFlow.Views;
 
@@ -19,5 +20,11 @@ public partial class SetupFlowPage : ToolPage
     {
         ViewModel = Application.Current.GetService<SetupFlowViewModel>();
         InitializeComponent();
+    }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+        ViewModel.OnNavigatedTo(e);
     }
 }

@@ -4,10 +4,10 @@
 using System;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 
@@ -19,6 +19,8 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloningInformation : ObservableObject, IEquatable<CloningInformation>
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CloningInformation));
+
     // Use git icons for the generic provider.
     private static readonly BitmapImage LightGit = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitLight.png"));
 
@@ -122,7 +124,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(_repositoryProviderDisplayName, e);
+            _log.Error(e, e.Message);
             RepositoryTypeIcon = GetGitIcon(theme);
             return;
         }
@@ -257,7 +259,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
                 }
                 catch (Exception e)
                 {
-                    Log.Logger?.ReportError(_repositoryProviderDisplayName, e);
+                    _log.Error(e, e.Message);
                 }
             }
 

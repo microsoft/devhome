@@ -3,18 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
-using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Environments.TestModels;
-using DevHome.Environments.ViewModels;
-using DevHome.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 
@@ -24,9 +19,16 @@ public class EnvironmentsExtensionsService
 {
     private readonly IComputeSystemManager _computeSystemManager;
 
-    public EnvironmentsExtensionsService(IComputeSystemManager computeSystemManager)
+    private const string EnvironmentsCreationFlowFeatureName = "EnvironmentsCreationFlow";
+
+    private readonly IExperimentationService _experimentationService;
+
+    public bool IsEnvironmentCreationEnabled => _experimentationService.IsFeatureEnabled(EnvironmentsCreationFlowFeatureName);
+
+    public EnvironmentsExtensionsService(IComputeSystemManager computeSystemManager, IExperimentationService experimentationService)
     {
         _computeSystemManager = computeSystemManager;
+        _experimentationService = experimentationService;
     }
 
     public async Task GetComputeSystemsAsync(bool useDebugValues, Func<ComputeSystemsLoadedData, Task> callback)

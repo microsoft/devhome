@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System.ComponentModel;
-using HyperVExtension.DevSetupEngine;
+using System.Security.AccessControl;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
+using Serilog;
 
 namespace HyperVExtension.DevSetupEngine;
 
@@ -22,9 +24,18 @@ internal sealed class Program
     [MTAThread]
     public static int Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
     {
+        // Set up Logging
+        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Logging.LogFolderRoot, "HyperV"));
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings_hypervsetup.json")
+            .Build();
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+
         try
         {
-            Logging.Logger()?.ReportInfo($"Launched with args: {string.Join(' ', args.ToArray())}");
+            Log.Information($"Launched with args: {string.Join(' ', args.ToArray())}");
 
             BuildHostContainer();
 
@@ -42,21 +53,23 @@ internal sealed class Program
             }
             else
             {
-                Logging.Logger()?.ReportWarn("Unknown arguments... exiting.");
+                Log.Warning("Unknown arguments... exiting.");
             }
         }
         catch (Exception ex)
         {
-            Logging.Logger()?.ReportError($"Exception: {ex}");
+            Log.Error(ex, $"Exception: {ex}");
+            Log.CloseAndFlush();
             return ex.HResult;
         }
 
+        Log.CloseAndFlush();
         return 0;
     }
 
     private static void RegisterProcessAsComServer()
     {
-        Logging.Logger()?.ReportInfo($"Activating COM Server");
+        Log.Information($"Activating COM Server");
 
         // Register and run COM server.
         // This could be called by either of the COM registrations, we will do them all to avoid deadlock and bind all on the extension's lifetime.
@@ -71,7 +84,7 @@ internal sealed class Program
         // This will make the main thread wait until the event is signaled by the extension class.
         // Since we have single instance of the extension object, we exit as soon as it is disposed.
         devSetupEngine.ComServerDisposedEvent.WaitOne();
-        Logging.Logger()?.ReportInfo($"Extension is disposed.");
+        Log.Information($"Extension is disposed.");
     }
 
     private static void RegisterComServer()
@@ -80,6 +93,18 @@ internal sealed class Program
 
         var appIdKey = Registry.LocalMachine.CreateSubKey(AppIdPath + appId, true) ?? throw new Win32Exception();
         appIdKey.SetValue("RunAs", "Interactive User", RegistryValueKind.String);
+
+        // O:PSG: BU Owner: principal self, Group: Built-in users
+        // (A; ; 0xB; ; ; SY)      Allow SYSTEM
+        // (A; ; 0xB; ; ; LS)      Allow Local Service
+        // (A; ; 0xB; ; ; PS)      Allow Principal self
+        // 0xB = (COM_RIGHTS_EXECUTE | COM_RIGHTS_EXECUTE_LOCAL | COM_RIGHTS_ACTIVATE_LOCAL
+        var permissions = "O:PSG:BUD:(A;;0xB;;;SY)(A;;0xB;;;LS)(A;;0xB;;;PS)";
+        RawSecurityDescriptor rawSd = new RawSecurityDescriptor(permissions);
+        var sdBinaryForm = new byte[rawSd.BinaryLength];
+        rawSd.GetBinaryForm(sdBinaryForm, 0);
+        appIdKey.SetValue("AccessPermission", sdBinaryForm, RegistryValueKind.Binary);
+        appIdKey.SetValue("LaunchPermission", sdBinaryForm, RegistryValueKind.Binary);
 
         var clsIdKey = Registry.LocalMachine.CreateSubKey(ClsIdIdPath + appId, true) ?? throw new Win32Exception();
         clsIdKey.SetValue("AppID", appId);

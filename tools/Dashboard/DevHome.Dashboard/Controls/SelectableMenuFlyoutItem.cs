@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Automation.Provider;
@@ -48,7 +47,7 @@ public class SelectableMenuFlyoutItemAutomationPeer : MenuFlyoutItemAutomationPe
 
     public void Select()
     {
-        IsSelected = true;
+        Invoke();
     }
 
     protected override string GetClassNameCore()

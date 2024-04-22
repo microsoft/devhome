@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Globalization;
-using Windows.ApplicationModel.Resources;
+using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace HyperVExtension.Common;
 
@@ -12,12 +12,12 @@ public class StringResource : IStringResource
 
     public StringResource()
     {
-        _resourceLoader = new ResourceLoader("HyperVExtension/Resources");
+        _resourceLoader = new ResourceLoader("HyperVExtension.pri", "HyperVExtension/Resources");
     }
 
-    public StringResource(string name)
+    public StringResource(string name, string path)
     {
-        _resourceLoader = new ResourceLoader(name);
+        _resourceLoader = new ResourceLoader(name, path);
     }
 
     /// <summary> Gets the localized string of a resource key.</summary>

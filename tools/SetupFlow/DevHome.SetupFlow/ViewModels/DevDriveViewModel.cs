@@ -13,7 +13,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
-using DevHome.SetupFlow.Common.Helpers;
+using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -22,6 +22,7 @@ using DevHome.SetupFlow.Windows;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Serilog;
 using Windows.Globalization.NumberFormatting;
 using Windows.Storage.Pickers;
 using Windows.System;
@@ -33,6 +34,7 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewModel
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DevDriveViewModel));
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IDevDriveManager _devDriveManager;
     private readonly IHost _host;
@@ -250,20 +252,24 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [RelayCommand]
     public async Task ChooseFolderLocationAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Opening file picker to select dev drive location");
-        var folderPicker = new FolderPicker();
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, DevDriveWindowContainer.GetWindowHandle());
-        folderPicker.FileTypeFilter.Add("*");
-
-        var location = await folderPicker.PickSingleFolderAsync();
-        if (!string.IsNullOrWhiteSpace(location?.Path))
+        try
         {
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Selected Dev Drive location: {location.Path}");
-            Location = location.Path;
+            _log.Information("Opening file picker to select dev drive location");
+            using var folderPicker = new WindowOpenFolderDialog();
+            var location = await folderPicker.ShowAsync(DevDriveWindowContainer);
+            if (!string.IsNullOrWhiteSpace(location?.Path))
+            {
+                _log.Information($"Selected Dev Drive location: {location.Path}");
+                Location = location.Path;
+            }
+            else
+            {
+                _log.Information("No location selected for Dev Drive");
+            }
         }
-        else
+        catch (Exception e)
         {
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, "No location selected for Dev Drive");
+            _log.Error(e, "Failed to open folder picker.");
         }
     }
 
@@ -275,7 +281,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         if (IsDevDriveWindowOpen)
         {
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Closing dev drive window");
+            _log.Information("Closing dev drive window");
             DevDriveWindowContainer.Close();
         }
     }
@@ -286,7 +292,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     public void UpdateDevDriveInfo(IDevDrive devDrive)
     {
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Updating Dev Drive info");
+        _log.Information("Updating Dev Drive info");
         AssociatedDrive = devDrive;
         if (devDrive.DriveSizeInBytes > DevDriveUtil.MinDevDriveSizeInBytes)
         {
@@ -341,7 +347,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [RelayCommand(CanExecute = nameof(CanSave))]
     private void SaveButton()
     {
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Saving changes to Dev Drive");
+        _log.Information("Saving changes to Dev Drive");
         ByteUnit driveUnitOfMeasure = (ByteUnit)ComboBoxByteUnit;
         var tempDrive = new DevDrive()
         {
@@ -390,7 +396,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     public Task<bool> LaunchDevDriveWindow()
     {
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Launching window to set up Dev Drive");
+        _log.Information("Launching window to set up Dev Drive");
         ResetErrors();
         DevDriveWindowContainer = new(this);
         DevDriveWindowContainer.Closed += ViewContainerClosed;
@@ -436,7 +442,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         FolderLocationError = null;
         foreach (DevDriveValidationResult result in resultSet)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Input validation Error in Dev Drive window: {result}");
+            _log.Error($"Input validation Error in Dev Drive window: {result}");
             switch (result)
             {
                 case DevDriveValidationResult.NoDriveLettersAvailable:
@@ -503,7 +509,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to refresh the drive letter to size mapping.", ex);
+            _log.Error(ex, $"Failed to refresh the drive letter to size mapping.");
 
             // Clear the mapping since it can't be refreshed. This shouldn't happen unless DriveInfo.GetDrives() fails. In that case we won't know which drive
             // in the list is causing GetDrives()'s to throw. If there are values inside the dictionary at this point, they could be stale. Clearing the list

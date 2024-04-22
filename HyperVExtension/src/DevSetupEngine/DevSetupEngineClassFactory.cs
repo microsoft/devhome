@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using Windows.Win32.Foundation;
 using WinRT;

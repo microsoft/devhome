@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Logging;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Serilog;
 
 namespace CoreWidgetProvider.Helpers;
 
@@ -10,7 +10,7 @@ public static class Resources
 {
     private static ResourceLoader? _resourceLoader;
 
-    public static string GetResource(string identifier, Logger? log = null)
+    public static string GetResource(string identifier, ILogger? log = null)
     {
         try
         {
@@ -23,7 +23,7 @@ public static class Resources
         }
         catch (Exception ex)
         {
-            log?.ReportError($"Failed loading resource: {identifier}", ex);
+            log?.Error(ex, $"Failed loading resource: {identifier}");
 
             // If we fail, load the original identifier so it is obvious which resource is missing.
             return identifier;
@@ -33,7 +33,7 @@ public static class Resources
     // Replaces all identifiers in the provided list in the target string. Assumes all identifiers
     // are wrapped with '%' to prevent sub-string replacement errors. This is intended for strings
     // such as a JSON string with resource identifiers embedded.
-    public static string ReplaceIdentifers(string str, string[] resourceIdentifiers, Logger? log = null)
+    public static string ReplaceIdentifers(string str, string[] resourceIdentifiers, ILogger? log = null)
     {
         var start = DateTime.Now;
         foreach (var identifier in resourceIdentifiers)
@@ -45,7 +45,7 @@ public static class Resources
         }
 
         var elapsed = DateTime.Now - start;
-        log?.ReportDebug($"Replaced identifiers in {elapsed.TotalMilliseconds}ms");
+        log?.Debug($"Replaced identifiers in {elapsed.TotalMilliseconds}ms");
         return str;
     }
 

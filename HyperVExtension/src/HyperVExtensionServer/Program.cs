@@ -1,17 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using HyperVExtension.Common;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Extensions;
-using HyperVExtension.ExtensionServer;
-using HyperVExtension.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.AppLifecycle;
-using Microsoft.Windows.AppNotifications;
+using Serilog;
 using Windows.ApplicationModel.Activation;
-using Windows.Management.Deployment;
+using Windows.Storage;
 
 namespace HyperVExtension;
 
@@ -25,7 +23,16 @@ public sealed class Program
     [MTAThread]
     public static void Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
     {
-        Logging.Logger()?.ReportInfo($"Launched with args: {string.Join(' ', args.ToArray())}");
+        // Set up Logging
+        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Helpers.Logging.LogFolderRoot, "HyperV"));
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings_hyperv.json")
+            .Build();
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+
+        Log.Information($"Launched with args: {string.Join(' ', args.ToArray())}");
 
         // Force the app to be single instanced.
         // Get or register the main instance.
@@ -33,8 +40,9 @@ public sealed class Program
         var activationArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
         if (!mainInstance.IsCurrent)
         {
-            Logging.Logger()?.ReportInfo($"Not main instance, redirecting.");
+            Log.Information($"Not main instance, redirecting.");
             mainInstance.RedirectActivationToAsync(activationArgs).AsTask().Wait();
+            Log.CloseAndFlush();
             return;
         }
 
@@ -50,15 +58,15 @@ public sealed class Program
         }
         else
         {
-            Logging.Logger()?.ReportWarn("Not being launched as a ComServer... exiting.");
+            Log.Warning("Not being launched as a ComServer... exiting.");
         }
 
-        Logging.Logger()?.Dispose();
+        Log.CloseAndFlush();
     }
 
     private static void AppActivationRedirected(object? sender, Microsoft.Windows.AppLifecycle.AppActivationArguments activationArgs)
     {
-        Logging.Logger()?.ReportInfo($"Redirected with kind: {activationArgs.Kind}");
+        Log.Information($"Redirected with kind: {activationArgs.Kind}");
 
         // Handle COM server.
         if (activationArgs.Kind == ExtendedActivationKind.Launch)
@@ -68,7 +76,7 @@ public sealed class Program
 
             if (args?.Length > 0 && args[1] == "-RegisterProcessAsComServer")
             {
-                Logging.Logger()?.ReportInfo($"Activation COM Registration Redirect: {string.Join(' ', args.ToList())}");
+                Log.Information($"Activation COM Registration Redirect: {string.Join(' ', args.ToList())}");
                 HandleCOMServerActivation();
             }
         }
@@ -79,7 +87,7 @@ public sealed class Program
             var protocolActivatedEventArgs = activationArgs.Data as IProtocolActivatedEventArgs;
             if (protocolActivatedEventArgs is not null)
             {
-                Logging.Logger()?.ReportInfo($"Protocol Activation redirected from: {protocolActivatedEventArgs.Uri}");
+                Log.Information($"Protocol Activation redirected from: {protocolActivatedEventArgs.Uri}");
                 HandleProtocolActivation(protocolActivatedEventArgs.Uri);
             }
         }
@@ -92,7 +100,7 @@ public sealed class Program
 
     private static void HandleCOMServerActivation()
     {
-        Logging.Logger()?.ReportInfo($"Activating COM Server");
+        Log.Information($"Activating COM Server");
 
         // Register and run COM server.
         // This could be called by either of the COM registrations, we will do them all to avoid deadlock and bind all on the extension's lifetime.
@@ -107,7 +115,7 @@ public sealed class Program
         // This will make the main thread wait until the event is signalled by the extension class.
         // Since we have single instance of the extension object, we exit as soon as it is disposed.
         hyperVExtension.ExtensionDisposedEvent.WaitOne();
-        Logging.Logger()?.ReportInfo($"Extension is disposed.");
+        Log.Information($"Extension is disposed.");
     }
 
     /// <summary>

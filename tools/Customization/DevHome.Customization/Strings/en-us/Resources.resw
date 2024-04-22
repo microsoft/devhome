@@ -1,0 +1,256 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ChooseDirectoryPromptText" xml:space="preserve">
+    <value>Choose directory on Dev Drive...</value>
+    <comment>Choose directory on dev drive</comment>
+  </data>  
+  <data name="DevDriveFreeSizeText" xml:space="preserve">
+    <value>{0} {1} free</value>
+    <comment>Dev drive size free</comment>
+  </data>
+  <data name="DevDriveInsightsCard.Description" xml:space="preserve">
+    <value>All things Dev Drive, optimizations, etc.</value>
+    <comment>The description for the Dev Drive Insights settings card</comment>
+  </data>
+  <data name="DevDriveInsightsCard.Header" xml:space="preserve">
+    <value>Dev Drive insights</value>
+    <comment>The header for the Dev Drive Insights settings card</comment>
+  </data>
+  <data name="DevDriveInsights_Header" xml:space="preserve">
+    <value>Dev Drive insights</value>
+    <comment>Header for Dev Drive insights page in the breadcrumb bar</comment>
+  </data>
+  <data name="DevDriveSizeText" xml:space="preserve">
+    <value>Size - {0} {1}</value>
+    <comment>Dev drive size</comment>
+  </data>
+  <data name="DevDriveUsedSizeText" xml:space="preserve">
+    <value>{0} {1} used</value>
+    <comment>Dev drive size used</comment>
+  </data>
+  <data name="FileExplorerCard.Description" xml:space="preserve">
+    <value>Adjust these settings for a more developer-friendly experience using File Explorer</value>
+    <comment>The description for the File Explorer settings card</comment>
+  </data>
+  <data name="FileExplorerCard.Header" xml:space="preserve">
+    <value>File Explorer</value>
+    <comment>The header for the File Explorer settings card</comment>
+  </data>
+  <data name="FileExplorer_Header" xml:space="preserve">
+    <value>File Explorer</value>
+    <comment>Header for the File Explorer page in the breadcrumb bar</comment>
+  </data>
+  <data name="EndTaskOnTaskBar.Description" xml:space="preserve">
+    <value>Enable end task in taskbar by right click</value>
+    <comment>The description for the end task on task bar settings card</comment>
+  </data>
+  <data name="ExampleText" xml:space="preserve">
+    <value>Example: </value>
+    <comment>Example string, will be followed by a sample location to move the cache to a dev drive location</comment>
+  </data>
+  <data name="EndTaskOnTaskBar.Header" xml:space="preserve">
+    <value>End Task</value>
+    <comment>The header for the end task on task bar settings card</comment>
+  </data>
+  <data name="MakeChangesText" xml:space="preserve">
+    <value>Make changes</value>
+    <comment>Make changes button on dialog</comment>
+  </data>
+  <data name="MakeTheChangeText" xml:space="preserve">
+    <value>Make the change</value>
+    <comment>Make the change button on optimizer card</comment>
+  </data>
+  <data name="MoreWindowsSettingsSectionDescription.Text" xml:space="preserve">
+    <value>Additional settings below can be configured in the system settings app</value>
+    <comment>Description and context for a group of Windows settings in the system settings app</comment>
+  </data>
+  <data name="MoreWindowsSettingsSectionHeader.Text" xml:space="preserve">
+    <value>More Windows settings</value>
+    <comment>Section header for a group of Windows settings in the system settings app</comment>
+  </data>
+  <data name="NavigationPane.Content" xml:space="preserve">
+    <value>Windows customization</value>
+    <comment>Navigation pane content</comment>
+  </data>
+  <data name="OptimizedDevDriveDescription" xml:space="preserve">
+    <value>The environment variable {0} is set to {1}</value>
+    <comment>Optimized dev drive description</comment>
+  </data>
+  <data name="OptimizeDevDriveDialogDescription.Text" xml:space="preserve">
+    <value>Contents of {0} will be copied to chosen directory. And {1} will be set to chosen directory.</value>
+    <comment>Optimize dev drive dialog description</comment>
+  </data>
+  <data name="OptimizerDevDriveDescription" xml:space="preserve">
+    <value>Global environment variable {0} is set to {1}, which is not located on Dev Drive. Move contents of this folder to a directory on Dev Drive such as {2} and set {3} to that chosen directory on Dev Drive</value>
+    <comment>Optimizer dev drive description</comment>
+  </data>
+  <data name="OptimizerDevDriveDescriptionWithEnvVarNotSet" xml:space="preserve">
+    <value>Move contents of {0} to a directory on Dev Drive such as {1} and set {2} to that chosen directory on Dev Drive</value>
+    <comment>Optimizer dev drive description when environment variable is not set</comment>
+  </data>
+  <data name="SettingsAutoSuggestBox.PlaceholderText" xml:space="preserve">
+    <value>Search</value>
+    <comment>The placholder text for the settings auto suggest box</comment>
+  </data>
+  <data name="ShowEmptyDrivesCard.Header" xml:space="preserve">
+    <value>Show empty drives</value>
+    <comment>The header for the show empty drives settings card</comment>
+  </data>
+  <data name="ShowFileExtensionsCard.Header" xml:space="preserve">
+    <value>Show file extensions</value>
+    <comment>The header for the show file extensions setting.</comment>
+  </data>
+  <data name="ShowFilesAfterExtractCard.Header" xml:space="preserve">
+    <value>Show files after extraction is complete</value>
+    <comment>The header for show files after extraction is complete setting</comment>
+  </data>
+  <data name="ShowFullPathInTitleBarCard.Header" xml:space="preserve">
+    <value>Show full path in title bar</value>
+    <comment>The header for the show full path in title bar settings card</comment>
+  </data>
+  <data name="ShowHiddenAndSystemFilesCard.Header" xml:space="preserve">
+    <value>Show hidden and system files</value>
+    <comment>The header for the show hidden and system files setting.</comment>
+  </data>
+  <data name="DevDriveOptimizationSuggestion" xml:space="preserve">
+    <value>Suggestion</value>
+    <comment>Dev drive optimization suggestion</comment>
+  </data>
+  <data name="DevDriveOptimized" xml:space="preserve">
+    <value>Optimized</value>
+    <comment>Dev drive optimized indicator</comment>
+  </data>
+  <data name="MainPage_Header" xml:space="preserve">
+    <value>Windows customization</value>
+    <comment>Header for main Windows customization page in the breadcrumb bar</comment>
+  </data>
+  <data name="WindowsDeveloperCard.ActionIconToolTip" xml:space="preserve">
+    <value>Open the Windows Settings app</value>
+    <comment>The action tool tip for the Windows developer settings card</comment>
+  </data>
+  <data name="WindowsDeveloperCard.Description" xml:space="preserve">
+    <value>Windows Settings intended for development use only</value>
+    <comment>The description for the Windows developer settings card</comment>
+  </data>
+  <data name="WindowsDeveloperCard.Header" xml:space="preserve">
+    <value>Windows developer settings</value>
+    <comment>The header for the Windows developer settings card</comment>
+  </data>
+</root>

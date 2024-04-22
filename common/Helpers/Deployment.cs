@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using DevHome.Logging;
+using Serilog;
 using Windows.Storage;
 
 namespace DevHome.Common.Helpers;
@@ -37,7 +37,7 @@ public static class Deployment
                 // We do not want this identifer's access to ever create a problem in the
                 // application, so if we can't get it, return empty guid. An empty guid is also a
                 // signal that the data is unknown for filtering purposes.
-                GlobalLog.Logger?.ReportError($"Failed getting Deployment Identifier", ex);
+                Log.Error(ex, $"Failed getting Deployment Identifier");
                 return Guid.Empty;
             }
         }

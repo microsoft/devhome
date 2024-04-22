@@ -28,17 +28,23 @@
 
     <i:Interaction.Behaviors >
         <behaviors:AppManagementBehavior />
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
+        </ic:EventTriggerBehavior>
+        <ic:EventTriggerBehavior EventName="Unloaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.UnloadedCommand}" />
+        </ic:EventTriggerBehavior>
     </i:Interaction.Behaviors>
 
     <!-- Page split layout -->
-    <Grid ColumnSpacing="10">
+    <Grid ColumnSpacing="10" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*" MaxWidth="318"/>
         </Grid.ColumnDefinitions>
 
         <!-- Main/Center panel -->
-        <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_AppManagement"
+        <controls:SetupShell x:Uid="SetupShell_AppManagement"
                              x:Name="SetupShell"
                              Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
                              Foreground="{ThemeResource TextFillColorSecondary}">
@@ -55,7 +61,7 @@
                     HorizontalAlignment="Left"
                     Width="400"
                     Margin="0,0,0,20"
-                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SearchBox">
+                    x:Uid="SearchBox">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="TextChanged">
                             <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchTextChangedCommand}" CommandParameter="{Binding Text, ElementName=SearchBox}"/>
@@ -99,43 +105,59 @@
         </controls:SetupShell>
 
         <!-- Right/Side panel -->
-        <Grid
-            AutomationProperties.Name="{x:Bind SidePanelTitle.Text, Mode=OneWay}"
-            Grid.Column="1" RowSpacing="20" Margin="0 0 0 4" Style="{ThemeResource CardGridSecondaryStyle}">
+        <Grid AutomationProperties.Name="{x:Bind SidePanelTitle.Text, Mode=OneWay}"
+              Grid.Column="1"
+              Margin="0,0,0,4"
+              Style="{ThemeResource CardGridSecondaryStyle}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0">
+            <!-- Header -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
                 <!-- Header text -->
                 <StackPanel Grid.Row="0" Padding="5 0" Orientation="Vertical" Spacing="4">
-                    <TextBlock x:Name="SidePanelTitle" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SelectedPackages" />
+                    <TextBlock x:Name="SidePanelTitle" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="SelectedPackages" />
                     <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind ViewModel.ApplicationsAddedText,Mode=OneWay}"/>
                 </StackPanel>
-                <!-- Remove all -->
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <!-- Header remove all button -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
                     <HyperlinkButton
                         AutomationProperties.AutomationControlType="Button"
                         Command="{x:Bind ViewModel.RemoveAllPackagesCommand}"
                         IsEnabled="{x:Bind ViewModel.EnableRemoveAll, Mode=OneWay}">
-                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RemoveAll" />
+                        <TextBlock x:Uid="RemoveAll" />
                     </HyperlinkButton>
                 </StackPanel>
             </Grid>
 
+            <!-- Package notification bar -->
+            <InfoBar Grid.Row="1" IsOpen="{x:Bind ViewModel.ShowInstalledPackageWarning, Mode=OneWay}"
+                     Severity="Informational"
+                     Margin="0,10"
+                     IsClosable="False">
+                <TextBlock x:Uid="AppAlreadyInstalledNotification"
+                           TextWrapping="WrapWholeWords"
+                           Padding="5"/>
+            </InfoBar>
+
             <!-- No package selected -->
-            <TextBlock
-                Grid.Row="1"
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NoApplicationsAdded"
-                Visibility="{x:Bind ViewModel.SelectedPackages.Count,Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}"
-                Style="{ThemeResource CaptionTextBlockStyle}"
-                Foreground="{ThemeResource TextFillColorSecondary}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="2"
+                       x:Uid="NoApplicationsAdded"
+                       Visibility="{x:Bind ViewModel.SelectedPackages.Count,Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}"
+                       Style="{ThemeResource CaptionTextBlockStyle}"
+                       Foreground="{ThemeResource TextFillColorSecondary}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
 
             <!-- Package list view -->
-            <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.SelectedPackages, Mode=OneWay}" SelectionMode="None">
+            <ListView Grid.Row="2" ItemsSource="{x:Bind ViewModel.SelectedPackages, Mode=OneWay}" SelectionMode="None">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:PackageViewModel">
                         <controls:PackageDetailsSettingsCard AutomationProperties.AccessibilityView="Raw" AutomationProperties.Name="{Binding PackageTitle}">

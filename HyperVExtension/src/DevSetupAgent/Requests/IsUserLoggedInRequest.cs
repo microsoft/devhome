@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Diagnostics;
 using System.Security.Principal;
-using System.Text.Json.Nodes;
+using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security.Authentication.Identity;
@@ -16,6 +15,8 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal sealed class IsUserLoggedInRequest : RequestBase
 {
+    private static readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(IsUserLoggedInRequest));
+
     public IsUserLoggedInRequest(IRequestContext requestContext)
         : base(requestContext)
     {
@@ -54,7 +55,7 @@ internal sealed class IsUserLoggedInRequest : RequestBase
                     throw new NtStatusException("LsaEnumerateLogonSessions failed.", status);
                 }
 
-                Logging.Logger()?.ReportDebug($"Number of logon sessions: {count}");
+                _log.Debug($"Number of logon sessions: {count}");
                 for (var i = 0; i < count; i++)
                 {
                     var luid = luidPtr[i];
@@ -72,7 +73,7 @@ internal sealed class IsUserLoggedInRequest : RequestBase
                             case (uint)SECURITY_LOGON_TYPE.RemoteInteractive:
                             case (uint)SECURITY_LOGON_TYPE.CachedRemoteInteractive:
                                 var sid = new SecurityIdentifier((IntPtr)sessionData->Sid.Value);
-                                Logging.Logger()?.ReportDebug(
+                                _log.Debug(
                                     $"Logged on user: {sessionData->UserName.Buffer}, " +
                                     $"Domain: {sessionData->LogonDomain.Buffer}, " +
                                     $"Session: {sessionData->Session}, " +
@@ -97,7 +98,7 @@ internal sealed class IsUserLoggedInRequest : RequestBase
                 foreach (var session in interactiveSessionsWithExplorer)
                 {
                     // TODO: We get OS user names like "DWM-2" or "UMFD-2" into this list. We need to filter them out.
-                    Logging.Logger()?.ReportDebug($"Logged on user: {session.Item2}, Session: {session.Item1}");
+                    _log.Debug($"Logged on user: {session.Item2}, Session: {session.Item1}");
                     interactiveSessions.Add(session.Item2);
                 }
             }

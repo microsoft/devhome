@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using DevHome.SetupFlow.Common.Configuration;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Microsoft.Management.Configuration;
+using Serilog;
 using Windows.Foundation;
 using Windows.Win32.Foundation;
 
@@ -17,17 +17,18 @@ public sealed class ElevatedConfigurationTask
         return Task.Run(async () =>
         {
             var taskResult = new ElevatedConfigureTaskResult();
+            var log = Log.ForContext("SourceContext", nameof(ElevatedConfigurationTask));
 
             try
             {
                 var configurationFileHelper = new ConfigurationFileHelper(activityId);
 
-                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from file: {filePath}");
+                log.Information($"Opening configuration set from file: {filePath}");
                 await configurationFileHelper.OpenConfigurationSetAsync(filePath, content);
 
-                Log.Logger?.ReportInfo(Log.Component.Configuration, "Starting configuration set application");
+                log.Information("Starting configuration set application");
                 var result = await configurationFileHelper.ApplyConfigurationAsync();
-                Log.Logger?.ReportInfo(Log.Component.Configuration, "Configuration application finished");
+                log.Information("Configuration application finished");
 
                 taskResult.TaskAttempted = true;
                 taskResult.TaskSucceeded = result.Succeeded;
@@ -55,7 +56,7 @@ public sealed class ElevatedConfigurationTask
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration.", e);
+                log.Error(e, $"Failed to apply configuration.");
                 taskResult.TaskSucceeded = false;
             }
 

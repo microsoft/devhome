@@ -4,14 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.Views;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.Foundation;
+using Serilog;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -23,6 +23,8 @@ namespace DevHome.SetupFlow.Models;
 /// </remarks>
 internal sealed class RepositoryProviders
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(InstallPackageTask));
+
     /// <summary>
     /// Hold all providers and organize by their names.
     /// </summary>
@@ -35,7 +37,7 @@ internal sealed class RepositoryProviders
 
     public RepositoryProviders(IEnumerable<IExtensionWrapper> extensionWrappers)
     {
-        _providers = extensionWrappers.ToDictionary(extensionWrapper => extensionWrapper.Name, extensionWrapper => new RepositoryProvider(extensionWrapper));
+        _providers = extensionWrappers.ToDictionary(extensionWrapper => extensionWrapper.ExtensionDisplayName, extensionWrapper => new RepositoryProvider(extensionWrapper));
     }
 
     public void StartAllExtensions()
@@ -52,11 +54,43 @@ internal sealed class RepositoryProviders
     /// <param name="providerName">The provider to start.</param>
     public void StartIfNotRunning(string providerName)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Starting RepositoryProvider {providerName}");
+        _log.Information($"Starting RepositoryProvider {providerName}");
         if (_providers.TryGetValue(providerName, out var value))
         {
             value.StartIfNotRunning();
         }
+    }
+
+    /// <summary>
+    /// Asks the provider for search terms for querying repositories.
+    /// </summary>
+    /// <param name="providerName">The provider to ask</param>
+    /// <returns>The names of the search fields.  An empty string is returned if the provider isn't found.</returns>
+    public List<string> GetSearchTerms(string providerName)
+    {
+        if (_providers.TryGetValue(providerName, out var repoProvider))
+        {
+            return repoProvider.GetSearchTerms();
+        }
+
+        return new();
+    }
+
+    /// <summary>
+    /// Asks the provider for a list of suggestions, given values of other search terms.
+    /// </summary>
+    /// <param name="providerName">The provider to ask</param>
+    /// <param name="searchTerms">All information found in the search grid</param>
+    /// <param name="fieldName">The field to request data for</param>
+    /// <returns>A list of names that can be used for the field.  An empty list is returned if the provider isn't found</returns>
+    public List<string> GetValuesFor(string providerName, IDeveloperId developerId, Dictionary<string, string> searchTerms, string fieldName)
+    {
+        if (_providers.TryGetValue(providerName, out var repoProvider))
+        {
+            return repoProvider.GetValuesFor(developerId, searchTerms, fieldName);
+        }
+
+        return new();
     }
 
     /// <summary>
@@ -67,15 +101,15 @@ internal sealed class RepositoryProviders
     /// (string.empty, null)</returns>
     public (string, IRepository) GetRepositoryFromUri(Uri uri)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Parsing repository from URI {uri}");
+        _log.Information($"Parsing repository from URI {uri}");
         foreach (var provider in _providers)
         {
             provider.Value.StartIfNotRunning();
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Attempting to parse using provider {provider.Key}");
+            _log.Information($"Attempting to parse using provider {provider.Key}");
             var repository = provider.Value.GetRepositoryFromUri(uri);
             if (repository != null)
             {
-                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Repository parsed to {repository.DisplayName} owned by {repository.OwningAccountName}");
+                _log.Information($"Repository parsed to {repository.DisplayName} owned by {repository.OwningAccountName}");
                 return (provider.Value.DisplayName, repository);
             }
         }
@@ -107,16 +141,15 @@ internal sealed class RepositoryProviders
     /// Gets the login UI for the provider with the name providerName
     /// </summary>
     /// <param name="providerName">The provider to search for.</param>
-    /// <param name="elementTheme">The theme to use for the ui.</param>
-    /// <returns>The ui to show.  Can be null.</returns>
-    public ExtensionAdaptiveCardPanel GetLoginUi(string providerName, ElementTheme elementTheme)
+    /// <returns>The UI to show. Can be null.</returns>
+    public async Task<ExtensionAdaptiveCardPanel> GetLoginUiAsync(string providerName)
     {
         TelemetryFactory.Get<ITelemetry>().Log(
                                                 "EntryPoint_DevId_Event",
                                                 LogLevel.Critical,
                                                 new EntryPointEvent(EntryPointEvent.EntryPoint.SetupFlow));
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting login UI {providerName}");
-        return _providers.GetValueOrDefault(providerName)?.GetLoginUi(elementTheme);
+        _log.Information($"Getting login UI {providerName}");
+        return await _providers.GetValueOrDefault(providerName)?.GetLoginUiAsync();
     }
 
     /// <summary>
@@ -155,7 +188,7 @@ internal sealed class RepositoryProviders
     /// <returns>A collection of developer Ids of all logged in users.  Can be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts(string providerName)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all logged in accounts for repository provider {providerName}");
+        _log.Information($"Getting all logged in accounts for repository provider {providerName}");
         return _providers.GetValueOrDefault(providerName)?.GetAllLoggedInAccounts() ?? new List<IDeveloperId>();
     }
 
@@ -164,15 +197,31 @@ internal sealed class RepositoryProviders
         return _providers.GetValueOrDefault(providerName)?.GetAuthenticationExperienceKind() ?? AuthenticationExperienceKind.CardSession;
     }
 
+    public RepositorySearchInformation SearchForRepos(string providerName, IDeveloperId developerId, Dictionary<string, string> searchInputs)
+    {
+        _log.Information($"Getting all repositories for repository provider {providerName}");
+        return _providers.GetValueOrDefault(providerName)?.SearchForRepositories(developerId, searchInputs) ?? new RepositorySearchInformation();
+    }
+
     /// <summary>
     /// Gets all the repositories for an account and provider.  The account will be logged in if they aren't already.
     /// </summary>
     /// <param name="providerName">The specific provider.  Must match the display name of a provider</param>
     /// <param name="developerId">The account to look for.  May not be logged in.</param>
     /// <returns>All the repositories for an account and provider.</returns>
-    public IEnumerable<IRepository> GetAllRepositories(string providerName, IDeveloperId developerId)
+    public RepositorySearchInformation GetAllRepositories(string providerName, IDeveloperId developerId)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all repositories for repository provider {providerName}");
-        return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId) ?? new List<IRepository>();
+        _log.Information($"Getting all repositories for repository provider {providerName}");
+        return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId) ?? new RepositorySearchInformation();
+    }
+
+    public bool IsSearchingEnabled(string providerName)
+    {
+        return _providers.GetValueOrDefault(providerName)?.IsSearchingEnabled() ?? false;
+    }
+
+    public string GetAskChangeSearchFieldsLabel(string providerName)
+    {
+        return _providers.GetValueOrDefault(providerName)?.GetAskChangeSearchFieldsLabel() ?? string.Empty;
     }
 }

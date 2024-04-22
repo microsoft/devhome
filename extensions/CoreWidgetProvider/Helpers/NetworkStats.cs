@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using Serilog;
 
 namespace CoreWidgetProvider.Helpers;
 
@@ -86,7 +87,7 @@ internal sealed class NetworkStats : IDisposable
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError("Error getting network data.", ex);
+                Log.Error(ex, "Error getting network data.");
             }
         }
     }

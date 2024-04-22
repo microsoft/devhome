@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.ServiceModel.Channels;
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using Windows.Storage;
+using Serilog;
 
 namespace HyperVExtension.DevSetupAgent;
 
@@ -13,6 +11,8 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 public class RequestFactory : IRequestFactory
 {
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(RequestFactory));
+
     public delegate IHostRequest CreateRequestDelegate(IRequestContext requestContext);
 
     private static readonly Dictionary<string, CreateRequestDelegate> _requestFactories = new()
@@ -35,14 +35,13 @@ public class RequestFactory : IRequestFactory
         {
             if (!string.IsNullOrEmpty(requestContext.RequestMessage.RequestData))
             {
-                Logging.Logger()?.ReportInfo($"Received message: ID: '{requestContext.RequestMessage.RequestId}' Data: '{requestContext.RequestMessage.RequestData}'");
+                _log.Information($"Received message: ID: '{requestContext.RequestMessage.RequestId}' Data: '{requestContext.RequestMessage.RequestData}'");
                 var requestJson = JsonNode.Parse(requestContext.RequestMessage.RequestData);
                 var requestType = (string?)requestJson?["RequestType"];
                 if (requestType != null)
                 {
                     if (_requestFactories.TryGetValue(requestType, out var createRequest))
                     {
-                        // TODO: Try/catch error.
                         requestContext.JsonData = requestJson!;
                         return createRequest(requestContext);
                     }
@@ -57,7 +56,7 @@ public class RequestFactory : IRequestFactory
             else
             {
                 // We have message id but no data, log error. Send error response.
-                Logging.Logger()?.ReportInfo($"Received message with empty data: ID: {requestContext.RequestMessage.RequestId}");
+                _log.Information($"Received message with empty data: ID: {requestContext.RequestMessage.RequestId}");
                 return new ErrorRequest(requestContext.RequestMessage);
             }
         }
@@ -65,7 +64,7 @@ public class RequestFactory : IRequestFactory
         {
             var messageId = requestContext.RequestMessage.RequestId ?? "<unknown>";
             var requestData = requestContext.RequestMessage.RequestData ?? "<unknown>";
-            Logging.Logger()?.ReportError($"Error processing message. Message ID: {messageId}. Request data: {requestData}", ex);
+            _log.Error(ex, $"Error processing message. Message ID: {messageId}. Request data: {requestData}");
             return new ErrorRequest(requestContext.RequestMessage);
         }
     }

@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.Input;
 using DevHome.Environments.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

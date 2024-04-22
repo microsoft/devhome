@@ -1,47 +1,21 @@
-// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Logging;
 using Windows.Storage;
 
 namespace HyperVExtension.DevSetupAgent;
 
 public class Logging
 {
-    private static Logger? _logger;
+    public static readonly string LogExtension = ".dhlog";
 
-    public static Logger? Logger()
-    {
-        try
-        {
-            _logger ??= new Logger("DevSetupAgent", GetLoggingOptions());
-        }
-        catch
-        {
-            // Do nothing if logger fails.
-        }
+    public static readonly string LogFolderName = "Logs";
 
-        return _logger;
-    }
+    public static readonly string AppName = "DevSetupAgent";
 
-    public static Options GetLoggingOptions()
-    {
-        return new Options
-        {
-            LogFileFolderRoot = ApplicationData.Current.TemporaryFolder.Path,
-            LogFileName = "DevSetupAgent_{now}.log",
-            LogFileFolderName = "DevSetupAgent",
-            DebugListenerEnabled = true,
-#if DEBUG
-            LogStdoutEnabled = true,
-            LogStdoutFilter = SeverityLevel.Debug,
-            LogFileFilter = SeverityLevel.Debug,
-#else
-            LogStdoutEnabled = false,
-            LogStdoutFilter = SeverityLevel.Info,
-            LogFileFilter = SeverityLevel.Info,
-#endif
-            FailFastSeverity = FailFastSeverityLevel.Critical,
-        };
-    }
+    public static readonly string DefaultLogFileName = "hyperv_setup";
+
+    private static readonly Lazy<string> _logFolderRoot = new(() => Path.Combine(Path.GetTempPath(), AppName, LogFolderName));
+
+    public static readonly string LogFolderRoot = _logFolderRoot.Value;
 }

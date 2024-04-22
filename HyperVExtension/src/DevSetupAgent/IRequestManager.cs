@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using HyperVExtension.DevSetupAgent;
-
 namespace HyperVExtension.DevSetupAgent;
 
 /// <summary>

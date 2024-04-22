@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Serilog;
+
 namespace CoreWidgetProvider.Helpers;
 
 public class IconLoader
@@ -9,12 +11,13 @@ public class IconLoader
 
     public static string GetIconAsBase64(string filename)
     {
-        Log.Logger()?.ReportDebug(nameof(IconLoader), $"Asking for icon: {filename}");
+        var log = Log.ForContext("SourceContext", nameof(IconLoader));
+        log.Debug(nameof(IconLoader), $"Asking for icon: {filename}");
         if (!Base64ImageRegistry.TryGetValue(filename, out var value))
         {
             value = ConvertIconToDataString(filename);
             Base64ImageRegistry.Add(filename, value);
-            Log.Logger()?.ReportDebug(nameof(IconLoader), $"The icon {filename} was converted and is now stored.");
+            log.Debug(nameof(IconLoader), $"The icon {filename} was converted and is now stored.");
         }
 
         return value;

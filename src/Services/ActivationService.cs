@@ -13,6 +13,7 @@ namespace DevHome.Services;
 
 public class ActivationService : IActivationService
 {
+    private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly ILocalSettingsService _localSettingsService;
@@ -20,10 +21,12 @@ public class ActivationService : IActivationService
     private bool _isInitialActivation = true;
 
     public ActivationService(
+        ActivationHandler<LaunchActivatedEventArgs> defaultHandler,
         IEnumerable<IActivationHandler> activationHandlers,
         IThemeSelectorService themeSelectorService,
         ILocalSettingsService localSettingsService)
     {
+        _defaultHandler = defaultHandler;
         _activationHandlers = activationHandlers;
         _themeSelectorService = themeSelectorService;
         _localSettingsService = localSettingsService;
@@ -63,6 +66,11 @@ public class ActivationService : IActivationService
         if (activationHandler != null)
         {
             await activationHandler.HandleAsync(activationArgs);
+        }
+
+        if (_defaultHandler.CanHandle(activationArgs))
+        {
+            await _defaultHandler.HandleAsync(activationArgs);
         }
     }
 

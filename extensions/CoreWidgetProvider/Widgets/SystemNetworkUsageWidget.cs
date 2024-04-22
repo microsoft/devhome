@@ -11,13 +11,11 @@ namespace CoreWidgetProvider.Widgets;
 
 internal sealed class SystemNetworkUsageWidget : CoreWidget, IDisposable
 {
+    private readonly DataManager dataManager;
+
     private static Dictionary<string, string> Templates { get; set; } = new();
 
     private int networkIndex;
-
-    private static readonly new string Name = nameof(SystemNetworkUsageWidget);
-
-    private readonly DataManager dataManager;
 
     public SystemNetworkUsageWidget()
         : base()
@@ -54,7 +52,7 @@ internal sealed class SystemNetworkUsageWidget : CoreWidget, IDisposable
 
     public override void LoadContentData()
     {
-        Log.Logger()?.ReportDebug(Name, ShortId, "Getting network Data");
+        Log.Debug("Getting network Data");
 
         try
         {
@@ -78,7 +76,7 @@ internal sealed class SystemNetworkUsageWidget : CoreWidget, IDisposable
         }
         catch (Exception e)
         {
-            Log.Logger()?.ReportError(Name, ShortId, "Error retrieving data.", e);
+            Log.Error(e, "Error retrieving data.");
             var content = new JsonObject
             {
                 { "errorMessage", e.Message },
@@ -126,7 +124,7 @@ internal sealed class SystemNetworkUsageWidget : CoreWidget, IDisposable
     public override void OnActionInvoked(WidgetActionInvokedArgs actionInvokedArgs)
     {
         var verb = GetWidgetActionForVerb(actionInvokedArgs.Verb);
-        Log.Logger()?.ReportDebug(Name, ShortId, $"ActionInvoked: {verb}");
+        Log.Debug($"ActionInvoked: {verb}");
 
         switch (verb)
         {
@@ -139,7 +137,7 @@ internal sealed class SystemNetworkUsageWidget : CoreWidget, IDisposable
                 break;
 
             case WidgetAction.Unknown:
-                Log.Logger()?.ReportError(Name, ShortId, $"Unknown verb: {actionInvokedArgs.Verb}");
+                Log.Error($"Unknown verb: {actionInvokedArgs.Verb}");
                 break;
         }
     }

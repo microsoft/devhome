@@ -12,20 +12,25 @@
     <Nullable>enable</Nullable>
     <CsWinRTEnabled>false</CsWinRTEnabled>
     <Platforms>x86;x64;arm64</Platforms>
-    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
-    <PublishProfileFullPath Condition="'$(BuildingInsideVisualStudio)' != 'True'">$(SolutionDir)\src\Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfileFullPath>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <PublishProfileFullPath Condition="'$(BuildingInsideVisualStudio)' != 'True'">$(SolutionDir)\src\Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfileFullPath>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.400.460" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\common\DevHome.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,5 +61,11 @@
     <Content Update="Widgets\Assets\arrow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="corewidgets_appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

@@ -13,7 +13,7 @@ namespace DevHome.ExtensionLibrary.TelemetryEvents;
 [EventData]
 public class ReportInstalledExtensionEvent : EventBase
 {
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public Guid DeploymentIdentifier
     {

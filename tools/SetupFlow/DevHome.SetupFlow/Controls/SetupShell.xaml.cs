@@ -1,11 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Markup;
 
 namespace DevHome.SetupFlow.Controls;
@@ -57,6 +55,12 @@ public sealed partial class SetupShell : UserControl
         set => SetValue(HeaderVisibilityProperty, value);
     }
 
+    public Visibility ContentVisibility
+    {
+        get => (Visibility)GetValue(ContentVisibilityProperty);
+        set => SetValue(ContentVisibilityProperty, value);
+    }
+
     public SetupShell()
     {
         this.InitializeComponent();
@@ -68,4 +72,5 @@ public sealed partial class SetupShell : UserControl
     public static readonly DependencyProperty HeaderProperty = DependencyProperty.RegisterAttached(nameof(Header), typeof(object), typeof(SetupShell), new PropertyMetadata(null));
     public static readonly DependencyProperty OrchestratorProperty = DependencyProperty.RegisterAttached(nameof(Orchestrator), typeof(SetupFlowOrchestrator), typeof(SetupShell), new PropertyMetadata(null));
     public static readonly DependencyProperty HeaderVisibilityProperty = DependencyProperty.RegisterAttached(nameof(HeaderVisibility), typeof(Visibility), typeof(SetupShell), new PropertyMetadata(Visibility.Visible));
+    public static readonly DependencyProperty ContentVisibilityProperty = DependencyProperty.RegisterAttached(nameof(ContentVisibility), typeof(Visibility), typeof(SetupShell), new PropertyMetadata(Visibility.Visible));
 }

@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
+using Serilog;
 
 namespace DevHome.SetupFlow.Services;
 
 public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CatalogDataSourceLoader));
     private readonly SemaphoreSlim _lock = new(initialCount: 1, maxCount: 1);
     private readonly IEnumerable<WinGetPackageDataSource> _dataSources;
     private bool _disposedValue;
@@ -66,12 +67,12 @@ public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
     {
         try
         {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing package list from data source {dataSource.GetType().Name}");
+            _log.Information($"Initializing package list from data source {dataSource.GetType().Name}");
             await dataSource.InitializeAsync();
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while initializing data source of type {dataSource.GetType().Name}", e);
+            _log.Error(e, $"Exception thrown while initializing data source of type {dataSource.GetType().Name}");
         }
     }
 
@@ -83,12 +84,12 @@ public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
     {
         try
         {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
+            _log.Information($"Loading winget packages from data source {dataSource.GetType().Name}");
             return await Task.Run(async () => await dataSource.LoadCatalogsAsync());
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while loading data source of type {dataSource.GetType().Name}", e);
+            _log.Error(e, $"Exception thrown while loading data source of type {dataSource.GetType().Name}");
         }
 
         return null;

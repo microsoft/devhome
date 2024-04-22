@@ -3,10 +3,7 @@
 
 extern alias Projection;
 
-using System;
-using DevHome.Common.Views;
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
@@ -51,6 +48,14 @@ public interface ISetupTask
     /// https://github.com/microsoft/devhome/issues/637
     /// </remarks>
     public bool RequiresReboot
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets target device name.
+    /// </summary>
+    public string TargetName
     {
         get;
     }
@@ -116,6 +121,8 @@ public interface ISetupTask
     /// Use this event to insert a message into the loading screen.
     /// </summary>
     public event ChangeMessageHandler AddMessage;
+
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
 
     public delegate void ChangeActionCenterMessageHandler(ActionCenterMessages message, ActionMessageRequestKind requestKind);
 

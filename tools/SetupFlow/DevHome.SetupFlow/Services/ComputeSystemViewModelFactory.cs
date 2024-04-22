@@ -2,13 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ViewModels.Environments;
+using Serilog;
+using WinUIEx;
 
 namespace DevHome.Common.Services;
 
@@ -17,9 +17,14 @@ namespace DevHome.Common.Services;
 /// </summary>
 public class ComputeSystemViewModelFactory
 {
-    public async Task<ComputeSystemCardViewModel> CreateCardViewModelAsync(IComputeSystemManager manager, ComputeSystem computeSystem, ComputeSystemProvider provider, string packageFullName)
+    public async Task<ComputeSystemCardViewModel> CreateCardViewModelAsync(
+        IComputeSystemManager manager,
+        ComputeSystem computeSystem,
+        ComputeSystemProvider provider,
+        string packageFullName,
+        WindowEx windowEx)
     {
-        var cardViewModel = new ComputeSystemCardViewModel(computeSystem, manager);
+        var cardViewModel = new ComputeSystemCardViewModel(computeSystem, manager, windowEx);
 
         try
         {
@@ -31,7 +36,8 @@ public class ComputeSystemViewModelFactory
         }
         catch (Exception ex)
         {
-            Log.Logger.ReportError(Log.Component.ComputeSystemViewModelFactory, $"Failed to get initial properties for compute system {computeSystem}. Error: {ex.Message}");
+            var log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModelFactory));
+            log.Error(ex, $"Failed to get initial properties for compute system {computeSystem}. Error: {ex.Message}");
         }
 
         return cardViewModel;

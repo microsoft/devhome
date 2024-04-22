@@ -5,16 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Models;
-using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.SetupFlow.Models.Environments;
 
@@ -28,6 +26,8 @@ public enum SortByKind
 /// </summary>
 public partial class ComputeSystemsListViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemsListViewModel));
+
     private const string SortByComputeSystemTitle = "ComputeSystemTitle";
 
     private const string HyperVExtensionProviderName = "Microsoft.HyperV";
@@ -88,12 +88,17 @@ public partial class ComputeSystemsListViewModel : ObservableObject
             var result = CurrentResult.Result;
             if (result?.Status == ProviderOperationStatus.Failure)
             {
-                Log.Logger.ReportError(Log.Component.ComputeSystemsListViewModel, $"Failed to get Compute system due to error. Display: {result.DisplayMessage}, DiagnosticText: {result.DiagnosticText}, ExtendedError: {result.ExtendedError}");
+                _log.Error($"Failed to get Compute system due to error. Display: {result.DisplayMessage}, DiagnosticText: {result.DiagnosticText}, ExtendedError: {result.ExtendedError}");
                 return string.IsNullOrEmpty(result.DisplayMessage) ? result.DiagnosticText : result.DisplayMessage;
             }
 
             return string.Empty;
         }
+    }
+
+    public override string ToString()
+    {
+        return AccessibilityName;
     }
 
     public ComputeSystemsListViewModel(ComputeSystemsLoadedData loadedData)
@@ -146,7 +151,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                Log.Logger.ReportError(Log.Component.ComputeSystemsListViewModel, $"Failed to filter Compute system cards. Error: {ex.Message}");
+                _log.Error(ex, $"Failed to filter Compute system cards");
             }
 
             return true;
@@ -190,5 +195,13 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
         ComputeSystemCardAdvancedCollectionView.SortDescriptions.Clear();
         ComputeSystemCardAdvancedCollectionView.SortDescriptions.Add(new SortDescription(sortOption, direction));
+    }
+
+    public void SetAllSelectionFlagsToFalse()
+    {
+        foreach (var cardViewModel in ComputeSystemCardCollection)
+        {
+            cardViewModel.IsSelected = false;
+        }
     }
 }

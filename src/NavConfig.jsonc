@@ -19,19 +19,19 @@
             "icon": "f156"
           },
           {
-            "identity": "DevHome.ExtensionLibrary",
-            "assembly": "DevHome.ExtensionLibrary",
-            "viewFullName": "DevHome.ExtensionLibrary.Views.ExtensionLibraryView",
-            "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
-            "icon": "ea86"
-          },
-          {
             "experimentalFeatureIdentity": "EnvironmentsManagementPage",
             "identity": "DevHome.Environments",
             "assembly": "DevHome.Environments",
             "viewFullName": "DevHome.Environments.Views.LandingPage",
             "viewModelFullName": "DevHome.Environments.ViewModels.LandingPageViewModel",
             "icon": "E83B"
+          },
+          {
+            "identity": "DevHome.Customization",
+            "assembly": "DevHome.Customization",
+            "viewFullName": "DevHome.Customization.Views.MainPage",
+            "viewModelFullName": "DevHome.Customization.ViewModels.MainPageViewModel",
+            "icon": "e9f5"
           }
         ]
       }
@@ -49,13 +49,13 @@
         },
         {
           "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": false
+          "enabledByDefault": true,
+          "visible": true
         },
         {
-          "buildType": "release",
+          "buildType": "stable",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
         }
       ]
     },
@@ -70,13 +70,55 @@
         },
         {
           "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": false
+          "enabledByDefault": true,
+          "visible": true
         },
         {
-          "buildType": "release",
+          "buildType": "stable",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
+        }
+      ]
+    },
+    {
+      "identity": "QuietBackgroundProcessesExperiment",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "identity": "EnvironmentsCreationFlow",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": true
         }
       ]
     }

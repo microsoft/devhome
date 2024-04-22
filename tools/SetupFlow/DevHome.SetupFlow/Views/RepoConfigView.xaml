@@ -32,7 +32,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <setupControls:SetupShell 
+    <setupControls:SetupShell
             Description="{x:Bind ViewModel.PageSubTitle, Mode=OneWay}"
             Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
             Foreground="{ThemeResource TextFillColorSecondary}">
@@ -146,14 +146,26 @@
                                             VerticalAlignment="Center"/>
                                     <!-- Need to use view methods here because DataType is CloningInformation-->
                                     <!-- Each button needs a unique name for screen readers. -->
-                                    <Button Click="EditClonePathButton_Click" DataContext="{x:Bind}" AutomationProperties.Name="{x:Bind EditClonePathAutomationName}" Grid.Column="1" >
+                                    <Button
+                                        Click="EditClonePathButton_Click"
+                                        DataContext="{x:Bind}"
+                                        AutomationProperties.Name="{x:Bind EditClonePathAutomationName}"
+                                        Grid.Column="1"
+                                        ToolTipService.ToolTip="{x:Bind EditClonePathAutomationName}">
                                         <Button.Content>
                                             <SymbolIcon Symbol="Edit"/>
                                         </Button.Content>
                                     </Button>
                                 </Grid>
                             </Border>
-                            <Button Click="RemoveCloningInformationButton_Click" DataContext="{x:Bind}" Grid.Column="3" Style="{ThemeResource AlternateCloseButtonStyle}" AutomationProperties.Name="{x:Bind RemoveFromCloningAutomationName}" VerticalAlignment="Center">
+                            <Button 
+                                Click="RemoveCloningInformationButton_Click"
+                                DataContext="{x:Bind}"
+                                Grid.Column="3"
+                                Style="{ThemeResource AlternateCloseButtonStyle}"
+                                AutomationProperties.Name="{x:Bind RemoveFromCloningAutomationName}"
+                                VerticalAlignment="Center"
+                                ToolTipService.ToolTip="{x:Bind RemoveFromCloningAutomationName}">
                                 <Button.Content>
                                     <SymbolIcon Symbol="Cancel"/>
                                 </Button.Content>

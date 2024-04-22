@@ -9,7 +9,6 @@
     xmlns:models="using:DevHome.Models"
     xmlns:behaviors="using:DevHome.Common.Behaviors" 
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
-    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="OnLoaded"
     SizeChanged="OnSizeChanged"
@@ -30,14 +29,21 @@
                     <Color x:Key="ButtonAccentForeground">#000000</Color>
                     <Color x:Key="LearnMoreForeground">#60CDFF</Color>
                 </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast">
+                    <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
+                </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Page.Resources>
 
-    <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" MaxWidth="{ThemeResource MaxPageBackgroundWidth}">
-        <RelativePanel>
+    <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto">
+        <RelativePanel MaxWidth="{ThemeResource MaxPageBackgroundWidth}">
             <Grid>
-                <Image Source="{ThemeResource Background}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="UniformToFill" />
+                <Image Source="{ThemeResource Background}"
+                       MinWidth="{ThemeResource MaxPageBackgroundWidth}"
+                       VerticalAlignment="Top"
+                       HorizontalAlignment="Center"
+                       Stretch="UniformToFill" />
             </Grid>
             <Grid x:Name="ContentArea" Padding="35 0 35 30" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:genTemplate="http://schemas.microsoft.com/appx/developer/templatestudio" xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6" IgnorableNamespaces="uap uap3 rescap genTemplate desktop6">
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:genTemplate="http://schemas.microsoft.com/appx/developer/templatestudio" xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6" IgnorableNamespaces="uap uap3 uap5 rescap genTemplate desktop6">
   <Extensions>
     <Extension Category="windows.activatableClass.proxyStub">
       <ProxyStub ClassId="00000355-0000-0000-C000-000000000046">
@@ -7,6 +7,23 @@
         <Interface Name="Microsoft.Windows.Widgets.Providers.IWidgetProvider" InterfaceId="5C5774CC-72A0-452D-B9ED-075C0DD25EED" />
         <Interface Name="Microsoft.Windows.Widgets.Providers.IWidgetProvider2" InterfaceId="38C3A963-DD93-479D-9276-04BF84EE1816" />
       </ProxyStub>
+    </Extension>
+    <!-- QuietBackgroundProcesses unelevated server which initiates & obtains a reference to a quiet session -->
+    <Extension Category="windows.activatableClass.outOfProcessServer">
+      <OutOfProcessServer ServerName="DevHome.QuietBackgroundProcesses.Server" uap5:IdentityType="activateAsPackage" uap5:RunFullTrust="true">
+        <Path>DevHome.QuietBackgroundProcesses.Server.exe</Path>
+        <Instancing>singleInstance</Instancing>
+        <ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager" />
+      </OutOfProcessServer>
+    </Extension>
+    <!-- QuietBackgroundProcesses elevated server owns the quiet session -->
+    <Extension Category="windows.activatableClass.outOfProcessServer">
+      <OutOfProcessServer ServerName="DevHome.QuietBackgroundProcesses.ElevatedServer" uap5:IdentityType="activateAsPackage" uap5:RunFullTrust="true">
+        <Path>DevHome.QuietBackgroundProcesses.ElevatedServer.exe</Path>
+        <Instancing>singleInstance</Instancing>
+        <ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession" />
+        <ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine" />
+      </OutOfProcessServer>
     </Extension>
   </Extensions>
   <Identity Name="Microsoft.Windows.DevHome.Dev" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.0.0.0" />
@@ -64,11 +81,23 @@
           </com:ComServer>
         </com:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameCoreExt" Description="ms-resource:AppDescriptionCoreExt">
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>
                   <CreateInstance ClassId="426A52D6-8007-4894-A946-CF80F39507F1" />
+                </Activation>
+                <!-- Best practice is to define SupportedInterfaces, even if it is empty -->
+                <SupportedInterfaces />
+              </DevHomeProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID2" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameHyperVExt" Description="ms-resource:AppDescriptionHyperVExt">
+            <uap3:Properties>
+              <DevHomeProvider>
+                <Activation>
                   <CreateInstance ClassId="F8B26528-976A-488C-9B40-7198FB425C9E" />
                 </Activation>
                 <SupportedInterfaces>
@@ -123,7 +152,7 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_Memory" DisplayName="ms-resource:WidgetDisplayNameMemory" Description="ms-resource:WidgetDescriptionMemory" AllowMultiple="true" IsCustomizable="false">
+                  <Definition Id="System_Memory" DisplayName="ms-resource:WidgetDisplayNameMemory" Description="ms-resource:WidgetDescriptionMemory" AllowMultiple="false" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -213,7 +242,7 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_CPUUsage" DisplayName="ms-resource:WidgetDisplayNameCPU" Description="ms-resource:WidgetDescriptionCPU" AllowMultiple="true" IsCustomizable="false">
+                  <Definition Id="System_CPUUsage" DisplayName="ms-resource:WidgetDisplayNameCPU" Description="ms-resource:WidgetDescriptionCPU" AllowMultiple="false" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -248,6 +277,13 @@
             </uap3:Properties>
           </uap3:AppExtension>
         </uap3:Extension>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="winget">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.winget</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
       </Extensions>
     </Application>
   </Applications>

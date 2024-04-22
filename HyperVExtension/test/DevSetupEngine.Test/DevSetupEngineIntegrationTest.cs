@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
-using System.Text.Json;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
 using Microsoft.Windows.DevHome.DevSetupEngine;

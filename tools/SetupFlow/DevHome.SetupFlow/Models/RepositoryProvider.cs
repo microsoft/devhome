@@ -3,20 +3,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
-using DevHome.Common.Renderers;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Views;
-using DevHome.Logging;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
-using Windows.Storage;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -26,6 +24,8 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 internal sealed class RepositoryProvider
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryProvider));
+
     /// <summary>
     /// Wrapper for the extension that is providing a repository and developer id.
     /// </summary>
@@ -34,6 +34,8 @@ internal sealed class RepositoryProvider
     /// This is for lazy loading and starting and prevents all extensions from starting all at once.
     /// </remarks>
     private readonly IExtensionWrapper _extensionWrapper;
+
+    private readonly AdaptiveCardRenderingService _renderingService;
 
     /// <summary>
     /// Dictionary with all the repositories per account.
@@ -53,13 +55,12 @@ internal sealed class RepositoryProvider
     public RepositoryProvider(IExtensionWrapper extensionWrapper)
     {
         _extensionWrapper = extensionWrapper;
+        _renderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
     }
 
     public string DisplayName => _repositoryProvider.DisplayName;
 
-    public string ExtensionDisplayName => _extensionWrapper.Name;
-
-    private readonly object _getRepoLock = new();
+    public string ExtensionDisplayName => _extensionWrapper.ExtensionDisplayName;
 
     /// <summary>
     /// Starts the extension if it isn't running.
@@ -68,7 +69,7 @@ internal sealed class RepositoryProvider
     {
         // The task.run inside GetProvider makes a deadlock when .Result is called.
         // https://stackoverflow.com/a/17248813.  Solution is to wrap in Task.Run().
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider extensions");
+        _log.Information("Starting DevId and Repository provider extensions");
         try
         {
             _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
@@ -76,13 +77,42 @@ internal sealed class RepositoryProvider
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repository provider from extension.", ex);
+            _log.Error(ex, $"Could not get repository provider from extension.");
         }
     }
 
     public IRepositoryProvider GetProvider()
     {
         return _repositoryProvider;
+    }
+
+    public string GetAskChangeSearchFieldsLabel()
+    {
+        var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
+        return repositoryProvider2?.AskToSearchLabel ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Asks the provider for search terms for querying repositories.
+    /// </summary>
+    /// <returns>The names of the search fields.</returns>
+    public List<string> GetSearchTerms()
+    {
+        var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
+        return repositoryProvider2?.SearchFieldNames.ToList() ?? new List<string>();
+    }
+
+    /// <summary>
+    /// Asks the provider for a list of suggestions, given values of other search terms.
+    /// </summary>
+    /// <param name="developerId">The logged in user.</param>
+    /// <param name="searchTerms">All information found in the search grid</param>
+    /// <param name="fieldName">The field to request data for</param>
+    /// <returns>A list of names that can be used for the field.  An empty list is returned if the provider isn't found</returns>
+    public List<string> GetValuesFor(IDeveloperId developerId, Dictionary<string, string> searchTerms, string fieldName)
+    {
+        var repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
+        return repositoryProvider2?.GetValuesForSearchFieldAsync(searchTerms, fieldName, developerId).AsTask().Result.ToList() ?? new List<string>();
     }
 
     /// <summary>
@@ -119,8 +149,8 @@ internal sealed class RepositoryProvider
 
         if (getResult.Result.Status == ProviderOperationStatus.Failure)
         {
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Could not get repo from Uri.");
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, getResult.Result.DisplayMessage);
+            _log.Information("Could not get repo from Uri.");
+            _log.Information(getResult.Result.DisplayMessage);
             return null;
         }
 
@@ -148,79 +178,31 @@ internal sealed class RepositoryProvider
     /// </summary>
     /// <param name="elementTheme">The theme to use.</param>
     /// <returns>The adaptive panel to show to the user.  Can be null.</returns>
-    public ExtensionAdaptiveCardPanel GetLoginUi(ElementTheme elementTheme)
+    public async Task<ExtensionAdaptiveCardPanel> GetLoginUiAsync()
     {
         try
         {
             var adaptiveCardSessionResult = _devIdProvider.GetLoginAdaptiveCardSession();
             if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
             {
-                GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                _log.Error($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
                 return null;
             }
 
             var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
-            var renderer = new AdaptiveCardRenderer();
-            ConfigureLoginUIRenderer(renderer, elementTheme).Wait();
-            renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+            var renderer = await _renderingService.GetRendererAsync();
 
             var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
             extensionAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
-            extensionAdaptiveCardPanel.RequestedTheme = elementTheme;
 
             return extensionAdaptiveCardPanel;
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
+            _log.Error(ex, $"ShowLoginUIAsync(): loginUIContentDialog failed.");
         }
 
         return null;
-    }
-
-    /// <summary>
-    /// Sets the renderer in the UI.
-    /// </summary>
-    /// <param name="renderer">The ui to show</param>
-    /// <param name="elementTheme">The theme to use</param>
-    /// <returns>A task to await on.</returns>
-    private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer, ElementTheme elementTheme)
-    {
-        var dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-
-        // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
-        renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
-        renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
-
-        var hostConfigContents = string.Empty;
-        var hostConfigFileName = (elementTheme == ElementTheme.Light) ? "LightHostConfig.json" : "DarkHostConfig.json";
-        try
-        {
-            var uri = new Uri($"ms-appx:////DevHome.Settings/Assets/{hostConfigFileName}");
-            var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
-            hostConfigContents = await FileIO.ReadTextAsync(file);
-        }
-        catch (Exception ex)
-        {
-            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file - HostConfigFileName: {hostConfigFileName}.", ex);
-        }
-
-        // Add host config for current theme to renderer
-        dispatcher.TryEnqueue(() =>
-        {
-            if (!string.IsNullOrEmpty(hostConfigContents))
-            {
-                renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
-
-                // Remove margins from selectAction.
-                renderer.AddSelectActionMargin = false;
-            }
-            else
-            {
-                GlobalLog.Logger?.ReportInfo($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
-            }
-        });
-        return;
     }
 
     public AuthenticationExperienceKind GetAuthenticationExperienceKind()
@@ -242,44 +224,125 @@ internal sealed class RepositoryProvider
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
         if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
         {
-            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}", developerIdsResult.Result.ExtendedError);
+            _log.Error(developerIdsResult.Result.ExtendedError, $"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}");
             return new List<IDeveloperId>();
         }
 
         return developerIdsResult.DeveloperIds;
     }
 
-    /// <summary>
-    /// Gets all the repositories an account has for this provider.
-    /// </summary>
-    /// <param name="developerId">The account to search in.</param>
-    /// <returns>A collection of repositories.  May be empty</returns>
-    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
+    public RepositorySearchInformation SearchForRepositories(IDeveloperId developerId, Dictionary<string, string> searchInputs)
     {
-        IEnumerable<IRepository> repositoriesForAccount;
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
 
-        lock (_getRepoLock)
+        var repoSearchInformation = new RepositorySearchInformation();
+        try
         {
-            if (!_repositories.TryGetValue(developerId, out repositoriesForAccount))
+            if (_repositoryProvider is IRepositoryProvider2 repositoryProvider2 &&
+                IsSearchingEnabled() && searchInputs != null)
             {
-                TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
-                var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
-                if (result.Result.Status != ProviderOperationStatus.Success)
+                var result = repositoryProvider2.GetRepositoriesAsync(searchInputs, developerId).AsTask().Result;
+                if (result.Result.Status == ProviderOperationStatus.Success)
                 {
-                    _repositories.Add(developerId, new List<IRepository>());
+                    repoSearchInformation.Repositories = result.Repositories;
+                    repoSearchInformation.SelectionOptionsPlaceHolderText = result.SelectionOptionsName;
+                    repoSearchInformation.SelectionOptionsLabel = result.SelectionOptionsLabel;
+                    repoSearchInformation.SelectionOptions = result.SelectionOptions.ToList();
                 }
                 else
                 {
-                    _repositories.Add(developerId, result.Repositories);
+                    _log.Error(result.Result.ExtendedError, $"Could not get repositories.  Message: {result.Result.DisplayMessage}");
+                }
+            }
+            else
+            {
+                // Fallback in case this is called with IRepositoryProvider.
+                RepositoriesResult result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+                if (result.Result.Status == ProviderOperationStatus.Success)
+                {
+                    repoSearchInformation.Repositories = result.Repositories;
+                }
+                else
+                {
+                    _log.Error(result.Result.ExtendedError, $"Could not get repositories.  Message: {result.Result.DisplayMessage}");
                 }
             }
         }
+        catch (AggregateException aggregateException)
+        {
+            // Because tasks can be canceled DevHome should emit different logs.
+            if (aggregateException.InnerException is OperationCanceledException)
+            {
+                _log.Information($"Get Repos operation was cancalled.");
+            }
+            else
+            {
+                _log.Information(aggregateException.ToString());
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Could not get repositories.  Message: {ex}");
+        }
 
-        // _repositories should have an entry for developerId by now.
-        repositoriesForAccount ??= _repositories[developerId];
+        _repositories[developerId] = repoSearchInformation.Repositories;
+
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
+        return repoSearchInformation;
+    }
+
+    public RepositorySearchInformation GetAllRepositories(IDeveloperId developerId)
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
+        var repoSearchInformation = new RepositorySearchInformation();
+        try
+        {
+            var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+            if (result.Result.Status == ProviderOperationStatus.Success)
+            {
+                repoSearchInformation.Repositories = result.Repositories;
+            }
+            else
+            {
+                _log.Error(result.Result.ExtendedError, $"Could not get repositories.  Message: {result.Result.DisplayMessage}");
+            }
+        }
+        catch (AggregateException aggregateException)
+        {
+            // Because tasks can be canceled DevHome should emit different logs.
+            if (aggregateException.InnerException is OperationCanceledException)
+            {
+                _log.Information($"Get Repos operation was cancalled.");
+            }
+            else
+            {
+                _log.Error(aggregateException, aggregateException.Message);
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Could not get repositories.  Message: {ex}");
+        }
+
+        _repositories[developerId] = repoSearchInformation.Repositories;
 
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
+        return repoSearchInformation;
+    }
 
-        return repositoriesForAccount;
+    /// <summary>
+    /// Checks if
+    /// 1. _repositoryProvider is IRepositoryProvider2,
+    /// 2. if it is, calls IsSearchingSupported.
+    /// </summary>
+    /// <returns>If the extension implements IRepositoryProvider2.</returns>
+    public bool IsSearchingEnabled()
+    {
+        if (_repositoryProvider is IRepositoryProvider2 repoProviderWithSearch)
+        {
+            return repoProviderWithSearch.IsSearchingSupported;
+        }
+
+        return false;
     }
 }

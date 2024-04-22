@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using DevHome.Common.Models;
-using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Common.Environments.Models;

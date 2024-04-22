@@ -8,10 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Helpers;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
+using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -35,6 +36,7 @@ public partial class SearchViewModel : ObservableObject
         ExceptionThrown,
     }
 
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SearchViewModel));
     private readonly IWindowsPackageManager _wpm;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly PackageProvider _packageProvider;
@@ -90,8 +92,8 @@ public partial class SearchViewModel : ObservableObject
         try
         {
             // Run the search on a separate (non-UI) thread to prevent lagging the UI.
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Running package search for query [{text}]");
-            TelemetryFactory.Get<ITelemetry>().LogCritical("Search_SerchingForApplication_Event");
+            _log.Information($"Running package search for query [{text}]");
+            TelemetryFactory.Get<ITelemetry>().Log("Search_SearchingForApplication_Event", LogLevel.Critical, new SearchEvent());
             var matches = await Task.Run(async () => await _wpm.SearchAsync(text, SearchResultLimit), cancellationToken);
 
             // Don't update the UI if the operation was canceled
@@ -126,7 +128,7 @@ public partial class SearchViewModel : ObservableObject
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Search error.", e);
+            _log.Error(e, $"Search error.");
             return (SearchResultStatus.ExceptionThrown, null);
         }
     }

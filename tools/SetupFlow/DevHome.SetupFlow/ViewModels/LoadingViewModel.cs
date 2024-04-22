@@ -8,34 +8,27 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.Common.Renderers;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.Common.Views;
 using DevHome.Contracts.Services;
-using DevHome.Logging;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.Windows.DevHome.SDK;
-using Windows.Foundation;
-using Windows.Storage;
+using Serilog;
 using WinUIEx;
-using WinUIEx.Messaging;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class LoadingViewModel : SetupPageViewModelBase
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileViewModel));
+
     private readonly IHost _host;
 
     private readonly ElementTheme _currentTheme;
@@ -45,13 +38,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private static readonly BitmapImage DarkCaution = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
     private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
     private static readonly BitmapImage DarkSuccess = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkSuccess.png"));
+    private static readonly BitmapImage DarkInfo = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkInfo.png"));
     private static readonly BitmapImage LightCaution = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightCaution.png"));
     private static readonly BitmapImage LightError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
     private static readonly BitmapImage LightSuccess = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightSuccess.png"));
-
-#pragma warning disable SA1310 // Field names should not contain underscore
-    private const int NUMBER_OF_PARALLEL_RUNNING_TASKS = 5;
-#pragma warning restore SA1310 // Field names should not contain underscore
+    private static readonly BitmapImage LightInfo = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightInfo.png"));
 
 #pragma warning disable SA1310 // Field names should not contain underscore
     private const int MAX_RETRIES = 1;
@@ -88,6 +79,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ObservableCollection<LoadingMessageViewModel> _messages;
 
+    [ObservableProperty]
+    private ObservableCollection<ISummaryInformationViewModel> _summaryInformation;
+
     /// <summary>
     /// List of all messages that shows up in the "action center" of the loading screen.
     /// </summary>
@@ -118,6 +112,36 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     [ObservableProperty]
     private int _tasksFailed;
+
+    /// <summary>
+    /// Used in the UI header text.
+    /// </summary>
+    [ObservableProperty]
+    private string _headerText;
+
+    /// <summary>
+    /// Used in the UI as title for the executed tasks/logs.
+    /// </summary>
+    [ObservableProperty]
+    private string _tasksTitleText;
+
+    /// <summary>
+    /// Used in the UI as setup target text (target name).
+    /// </summary>
+    [ObservableProperty]
+    private string _setupTargetText;
+
+    /// <summary>
+    /// Controls if SetupTargetText should be shown.
+    /// </summary>
+    [ObservableProperty]
+    private bool _showSetupTarget;
+
+    /// <summary>
+    /// Controls if indeterminate progress bar should be shown.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isIndeterminateProgressBar;
 
     /// <summary>
     /// Used in the UI to show the user how many tasks have been executed.
@@ -158,8 +182,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [RelayCommand]
     public async Task RestartFailedTasksAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().LogCritical("Loading_RestartFailedTasks_Event");
-        Log.Logger?.ReportInfo(Log.Component.Loading, "Restarting all failed tasks");
+        TelemetryFactory.Get<ITelemetry>().Log("Loading_RestartFailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count), _activityId);
+        _log.Information("Restarting all failed tasks");
 
         // Keep the number of successful tasks and needs attention tasks the same.
         // Change failed tasks to 0 because, once restarted, all tasks haven't failed yet.
@@ -173,6 +197,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         _failedTasks.Clear();
         ActionCenterItems = new ObservableCollection<ActionCenterMessages>();
         ShowRetryButton = Visibility.Collapsed;
+        if (Orchestrator.IsSettingUpATargetMachine)
+        {
+            IsIndeterminateProgressBar = true;
+        }
+
         await StartAllTasks(TasksToRun);
     }
 
@@ -189,7 +218,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     {
         Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
-            var messageToDisplay = new LoadingMessageViewModel(message);
+            var messageToDisplay = _host.GetService<LoadingMessageViewModel>();
+            messageToDisplay.MessageToShow = message;
             messageToDisplay.ShouldShowStatusSymbolIcon = false;
             messageToDisplay.ShouldShowProgressRing = false;
 
@@ -207,6 +237,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             {
                 messageToDisplay.ShouldShowStatusSymbolIcon = true;
                 messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkSuccess : LightSuccess;
+            }
+            else if (severityKind == MessageSeverityKind.Info)
+            {
+                messageToDisplay.ShouldShowStatusSymbolIcon = true;
+                messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkInfo : LightInfo;
             }
 
             Messages.Insert(Messages.Count - _numberOfExecutingTasks, messageToDisplay);
@@ -252,11 +287,36 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         IsStepPage = false;
         IsNavigationBarVisible = false;
         NextPageButtonText = stringResource.GetLocalized(StringResourceKey.LoadingScreenGoToSummaryButtonContent);
+        if (Orchestrator.IsSettingUpATargetMachine)
+        {
+            HeaderText = StringResource.GetLocalized(StringResourceKey.LoadingPageHeaderTargetText);
+            TasksTitleText = StringResource.GetLocalized(StringResourceKey.LoadingLogsTitleText);
+            ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgressForTarget);
+            ShowSetupTarget = true;
+            IsIndeterminateProgressBar = true;
+        }
+        else
+        {
+            if (Orchestrator.CurrentSetupFlowKind == SetupFlowKind.CreateEnvironment)
+            {
+                HeaderText = StringResource.GetLocalized(StringResourceKey.LoadingPageHeaderTargetText);
+            }
+            else
+            {
+                HeaderText = StringResource.GetLocalized(StringResourceKey.LoadingPageHeaderLocalText);
+            }
+
+            TasksTitleText = StringResource.GetLocalized(StringResourceKey.LoadingTasksTitleText);
+            SetupTargetText = string.Empty;
+            IsIndeterminateProgressBar = false;
+        }
+
         ShowRetryButton = Visibility.Collapsed;
         _failedTasks = new List<TaskInformation>();
         ActionCenterItems = new();
         Messages = new();
         _activityId = orchestrator.ActivityId;
+        _summaryInformation = new ObservableCollection<ISummaryInformationViewModel>();
     }
 
     // Remove all tasks except for the SetupTarget
@@ -267,7 +327,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     private void FetchTaskInformation()
     {
-        Log.Logger?.ReportDebug(Log.Component.Loading, "Fetching task information");
+        _log.Debug("Fetching task information");
         var taskIndex = 0;
 
         if (Orchestrator.IsSettingUpATargetMachine)
@@ -308,7 +368,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     private void SetExecutingTaskAndActionCenter()
     {
-        ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
+        if (!Orchestrator.IsSettingUpATargetMachine)
+        {
+            ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
+        }
+
         ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, 0);
     }
 
@@ -323,7 +387,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </remarks>
     private void ChangeMessage(TaskInformation information, LoadingMessageViewModel loadingMessage, TaskFinishedState taskFinishedState)
     {
-        Log.Logger?.ReportDebug(Log.Component.Loading, $"Updating message for task {information.MessageToShow} with state {taskFinishedState}");
+        _log.Debug($"Updating message for task {information.MessageToShow} with state {taskFinishedState}");
         var stringToReplace = string.Empty;
         BitmapImage statusSymbolIcon = null;
 
@@ -334,14 +398,14 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             if (information.TaskToExecute.RequiresReboot)
             {
-                Log.Logger?.ReportDebug(Log.Component.Loading, "Task succeeded but requires reboot; adding to action center");
+                _log.Debug("Task succeeded but requires reboot; adding to action center");
                 stringToReplace = information.TaskToExecute.GetLoadingMessages().NeedsReboot;
                 statusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkCaution : LightCaution;
                 ActionCenterItems.Insert(0, information.TaskToExecute.GetRebootMessage());
             }
             else
             {
-                Log.Logger?.ReportDebug(Log.Component.Loading, "Task succeeded");
+                _log.Debug("Task succeeded");
                 stringToReplace = information.TaskToExecute.GetLoadingMessages().Finished;
                 statusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkSuccess : LightSuccess;
             }
@@ -350,13 +414,13 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         }
         else if (taskFinishedState == TaskFinishedState.Failure)
         {
-            Log.Logger?.ReportDebug(Log.Component.Loading, "Task failed");
+            _log.Debug("Task failed");
             stringToReplace = information.TaskToExecute.GetLoadingMessages().Error;
             statusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkError : LightError;
             ActionCenterItems.Insert(0, information.TaskToExecute.GetErrorMessages());
             TasksFailed++;
 
-            Log.Logger?.ReportDebug(Log.Component.Loading, "Adding task to list for retry");
+            _log.Debug("Adding task to list for retry");
             _failedTasks.Add(information);
         }
 
@@ -372,7 +436,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         Messages.Insert(Messages.Count - _numberOfExecutingTasks, loadingMessage);
 
         // Add the "Execution finished" message
-        var newLoadingScreenMessage = new LoadingMessageViewModel(stringToReplace);
+        var newLoadingScreenMessage = _host.GetService<LoadingMessageViewModel>();
+        newLoadingScreenMessage.MessageToShow = stringToReplace;
         newLoadingScreenMessage.StatusSymbolIcon = statusSymbolIcon;
         newLoadingScreenMessage.ShouldShowProgressRing = false;
         newLoadingScreenMessage.ShouldShowStatusSymbolIcon = true;
@@ -397,7 +462,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// <returns>An awaitable task</returns>
     private async Task StartAllTasks(ObservableCollection<TaskInformation> tasks)
     {
-        Log.Logger?.ReportInfo(Log.Component.Loading, "Starting all tasks");
+        _log.Information("Starting all tasks");
         var window = Application.Current.GetService<WindowEx>();
         await Task.Run(async () =>
         {
@@ -419,39 +484,36 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 }
             }
 
-            var options = new ParallelOptions()
-            {
-                MaxDegreeOfParallelism = NUMBER_OF_PARALLEL_RUNNING_TASKS,
-            };
-
             // Run all tasks that don't need dev drive installed.
-            await Parallel.ForEachAsync(tasksToRunFirst, options, async (taskInformation, token) =>
+            await Parallel.ForEachAsync(tasksToRunFirst, async (taskInformation, token) =>
             {
                 await StartTaskAndReportResult(window, taskInformation);
             });
 
             // Run all the tasks that need dev drive installed.
-            await Parallel.ForEachAsync(tasksToRunSecond, options, async (taskInformation, token) =>
+            await Parallel.ForEachAsync(tasksToRunSecond, async (taskInformation, token) =>
             {
                 await StartTaskAndReportResult(window, taskInformation);
             });
         });
 
         // All the tasks are done.  Re-try logic follows.
+        IsIndeterminateProgressBar = false;
+
         if (_failedTasks.Count == 0)
         {
-            Log.Logger?.ReportInfo(Log.Component.Loading, "All tasks succeeded.  Moving to next page");
+            _log.Information("All tasks succeeded.  Moving to next page");
             ExecutionFinished.Invoke(null, null);
         }
         else if (_retryCount >= MAX_RETRIES)
         {
-            Log.Logger?.ReportInfo(Log.Component.Loading, "Max number of retries reached; moving to next page");
+            _log.Information("Max number of retries reached; moving to next page");
             ShowOutOfRetriesBanner = true;
             ShowRetryButton = Visibility.Collapsed;
         }
         else
         {
-            Log.Logger?.ReportInfo(Log.Component.Loading, "Some tasks failed; showing retry button");
+            _log.Information("Some tasks failed; showing retry button");
 
             // At this point some tasks ran into an error.
             // Give the user the option to re try them all or move to the next screen.
@@ -476,11 +538,19 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // Start the task and wait for it to complete.
         try
         {
-            var loadingMessage = new LoadingMessageViewModel(taskInformation.MessageToShow);
+            var loadingMessage = _host.GetService<LoadingMessageViewModel>();
+            loadingMessage.MessageToShow = taskInformation.MessageToShow;
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
-                ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
+                if (!Orchestrator.IsSettingUpATargetMachine)
+                {
+                    ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
+                }
+                else
+                {
+                    SetupTargetText = StringResource.GetLocalized(StringResourceKey.LoadingPageSetupTargetText, taskInformation.TaskToExecute.TargetName);
+                }
 
                 loadingMessage.ShouldShowProgressRing = true;
                 Messages.Add(loadingMessage);
@@ -492,7 +562,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             TaskFinishedState taskFinishedState;
             if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedOperation != null)
             {
-                Log.Logger?.ReportInfo(Log.Component.Loading, "Starting task as admin");
+                _log.Information("Starting task as admin");
                 taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedOperation.Value);
             }
             else
@@ -502,7 +572,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
             window.DispatcherQueue.TryEnqueue(() =>
             {
-                // Keep decrement inside TryEnqueue to encorce "locking"
+                // Keep decrement inside TryEnqueue to enforce "locking"
                 _numberOfExecutingTasks--;
                 ChangeMessage(taskInformation, loadingMessage, taskFinishedState);
                 TasksCompleted++;

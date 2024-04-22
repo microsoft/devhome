@@ -5,9 +5,9 @@ using System.Diagnostics;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.DeveloperId;
-using DevHome.Logging;
 using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 
@@ -15,6 +15,8 @@ namespace DevHome.Services;
 
 public class AccountsService : IAccountsService
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AccountsService));
+
     private readonly IExtensionService _extensionService;
 
     public AccountsService(IExtensionService extensionService)
@@ -29,7 +31,7 @@ public class AccountsService : IAccountsService
             var developerIdsResult = devIdProvider.GetLoggedInDeveloperIds();
             if (developerIdsResult.Result.Status == ProviderOperationStatus.Failure)
             {
-                GlobalLog.Logger?.ReportError($"{developerIdsResult.Result.DisplayMessage} - {developerIdsResult.Result.DiagnosticText}");
+                _log.Error($"{developerIdsResult.Result.DisplayMessage} - {developerIdsResult.Result.DiagnosticText}");
                 return;
             }
 
@@ -57,7 +59,7 @@ public class AccountsService : IAccountsService
             }
             catch (Exception ex)
             {
-                GlobalLog.Logger?.ReportError($"Failed to get {nameof(IDeveloperIdProvider)} provider from '{extension.Name}'", ex);
+                _log.Error(ex, $"Failed to get {nameof(IDeveloperIdProvider)} provider from '{extension.PackageFamilyName}/{extension.ExtensionDisplayName}'");
             }
         }
 
@@ -69,7 +71,7 @@ public class AccountsService : IAccountsService
         var developerIdsResult = iDevIdProvider.GetLoggedInDeveloperIds();
         if (developerIdsResult.Result.Status == ProviderOperationStatus.Failure)
         {
-            GlobalLog.Logger?.ReportError($"{developerIdsResult.Result.DisplayMessage} - {developerIdsResult.Result.DiagnosticText}");
+            _log.Error($"{developerIdsResult.Result.DisplayMessage} - {developerIdsResult.Result.DiagnosticText}");
             return (IReadOnlyList<IDeveloperId>)Enumerable.Empty<IDeveloperId>();
         }
 
@@ -95,14 +97,14 @@ public class AccountsService : IAccountsService
 
             if (authenticationState == AuthenticationState.LoggedIn)
             {
-                TelemetryFactory.Get<ITelemetry>().Log("Login_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.DisplayName, developerId));
+                TelemetryFactory.Get<ITelemetry>().Log("Login_DevId_Event", LogLevel.Critical, new DeveloperIdUserEvent(devIdProvider.DisplayName, developerId));
 
                 // Bring focus back to DevHome after login
                 _ = PInvoke.SetForegroundWindow((HWND)Process.GetCurrentProcess().MainWindowHandle);
             }
             else if (authenticationState == AuthenticationState.LoggedOut)
             {
-                TelemetryFactory.Get<ITelemetry>().Log("Logout_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.DisplayName, developerId));
+                TelemetryFactory.Get<ITelemetry>().Log("Logout_DevId_Event", LogLevel.Critical, new DeveloperIdUserEvent(devIdProvider.DisplayName, developerId));
             }
         }
     }

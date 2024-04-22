@@ -1,17 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Globalization;
-using System.Management.Automation;
-using System.Security.Principal;
 using System.ServiceProcess;
-using DevHome.Logging;
+using System.Xml.Linq;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Models;
-using HyperVExtension.Providers;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace HyperVExtension.Services;
 
@@ -21,6 +18,8 @@ namespace HyperVExtension.Services;
 /// </summary>
 public class HyperVManager : IHyperVManager, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(HyperVManager));
+
     private readonly IPowerShellService _powerShellService;
 
     private readonly HyperVVirtualMachineFactory _hyperVVirtualMachineFactory;
@@ -80,7 +79,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         if (!moduleFound)
         {
-            Logging.Logger()?.ReportWarn($"PowerShell could not find the Hyper-V module in the list of modules loaded into the current session: {result.CommandOutputErrorMessage}");
+            _log.Warning($"PowerShell could not find the Hyper-V module in the list of modules loaded into the current session: {result.CommandOutputErrorMessage}");
         }
 
         return moduleFound;
@@ -104,7 +103,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
         {
-            Logging.Logger()?.ReportWarn($"PowerShell returned an error while attempting to get the Hyper-V module on the first try: {result.CommandOutputErrorMessage}");
+            _log.Warning($"PowerShell returned an error while attempting to get the Hyper-V module on the first try: {result.CommandOutputErrorMessage}");
         }
     }
 
@@ -120,7 +119,7 @@ public class HyperVManager : IHyperVManager, IDisposable
         {
             // we won't throw an exception here. If there is a cmdlet failure due to the module not being loaded, we'll let the
             // PowerShell cmdlet throw the exception.
-            Logging.Logger()?.ReportError("The Hyper-V PowerShell Module is not Loaded");
+            _log.Error("The Hyper-V PowerShell Module is not Loaded");
         }
 
         var serviceController = _host.GetService<IWindowsServiceController>();
@@ -172,8 +171,7 @@ public class HyperVManager : IHyperVManager, IDisposable
         if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
         {
             // Note: errors here could be about retrieving 1 out of N virtual machines, so we log this and return the rest.
-            Logging.Logger()?
-                .ReportWarn($"Unable to get all VMs due to PowerShell error: {result.CommandOutputErrorMessage}");
+            _log.Warning($"Unable to get all VMs due to PowerShell error: {result.CommandOutputErrorMessage}");
         }
 
         var returnList = result.PsObjects?
@@ -434,34 +432,6 @@ public class HyperVManager : IHyperVManager, IDisposable
         }
     }
 
-    /// <inheritdoc cref="IHyperVManager.ConnectToVirtualMachine"/>
-    public void ConnectToVirtualMachine(Guid vmId)
-    {
-        StartVirtualMachineManagementService();
-        AddVirtualMachineToOperationsMap(vmId);
-
-        try
-        {
-            // Build command line statement to connect to the VM.
-            var commandLineStatements = new StatementBuilder()
-                .AddScript($"{HyperVStrings.VmConnectScript} {vmId}", true)
-                .Build();
-
-            var result = _powerShellService.Execute(commandLineStatements, PipeType.PipeOutput);
-
-            // Note: We use the vmconnect application to connect to the VM. VM connect will display a message box with
-            // an error if one occurs. We will only throw this error if an error occurs within the PowerShell session.
-            if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
-            {
-                throw new HyperVManagerException($"Unable to launch VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
-            }
-        }
-        finally
-        {
-            RemoveVirtualMachineFromOperationsMap(vmId);
-        }
-    }
-
     /// <inheritdoc cref="IHyperVManager.GetVirtualMachineCheckpoints"/>
     public IEnumerable<Checkpoint> GetVirtualMachineCheckpoints(Guid vmId)
     {
@@ -482,8 +452,7 @@ public class HyperVManager : IHyperVManager, IDisposable
             if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
             {
                 // Note: errors here could be about retrieving 1 out of N checkpoints, so we log this and return the rest.
-                Logging.Logger()?
-                    .ReportWarn($"Unable to get all checkpoints for VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
+                _log.Warning($"Unable to get all checkpoints for VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
             }
 
             var checkpointList = result.PsObjects?.Select(psObject =>
@@ -714,6 +683,77 @@ public class HyperVManager : IHyperVManager, IDisposable
         return wasHyperVSidFound ?? false;
     }
 
+    /// <inheritdoc cref="IHyperVManager.GetVirtualMachineHost"/>
+    public HyperVVirtualMachineHost GetVirtualMachineHost()
+    {
+        StartVirtualMachineManagementService();
+
+        // Start building command line statement to get the virtual machine host.
+        var statementBuilder = new StatementBuilder().AddCommand(HyperVStrings.GetVMHost).Build();
+        var result = _powerShellService.Execute(statementBuilder, PipeType.None);
+
+        if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
+        {
+            throw new HyperVManagerException($"Unable to get Local Hyper-V host: {result.CommandOutputErrorMessage}");
+        }
+
+        // return the host object. It should be the only object in the list.
+        return new HyperVVirtualMachineHost(result.PsObjects.First());
+    }
+
+    /// <inheritdoc cref="IHyperVManager.CreateVirtualMachineFromGallery"/>
+    public HyperVVirtualMachine CreateVirtualMachineFromGallery(VirtualMachineCreationParameters parameters)
+    {
+        StartVirtualMachineManagementService();
+
+        // Start building command line statement to create the VM.
+        var statementBuilderForNewVm = new StatementBuilder()
+            .AddCommand(HyperVStrings.NewVM)
+            .AddParameter(HyperVStrings.VM, parameters.Name)
+            .AddParameter(HyperVStrings.Generation, parameters.Generation)
+            .AddParameter(HyperVStrings.VHDPath, parameters.VHDPath)
+            .AddParameter(HyperVStrings.SwitchName, HyperVStrings.DefaultSwitchName)
+            .Build();
+
+        var result = _powerShellService.Execute(statementBuilderForNewVm, PipeType.None);
+        if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
+        {
+            throw new HyperVManagerException($"Unable to create the virtual machine: {result.CommandOutputErrorMessage}");
+        }
+
+        var returnedPsObject = result.PsObjects.First();
+        var virtualMachine = _hyperVVirtualMachineFactory(returnedPsObject);
+
+        // Now we can set the processor count.
+        var statementBuilderForVmProperties = new StatementBuilder()
+            .AddCommand(HyperVStrings.SetVM)
+            .AddParameter(HyperVStrings.VM, returnedPsObject.BaseObject)
+            .AddParameter(HyperVStrings.ProcessorCount, parameters.ProcessorCount)
+            .AddParameter(HyperVStrings.EnhancedSessionTransportType, parameters.EnhancedSessionTransportType);
+
+        // Now we can set the startup memory.
+        if (virtualMachine.MemoryMinimum < parameters.MemoryStartupBytes && parameters.MemoryStartupBytes < virtualMachine.MemoryMaximum)
+        {
+            statementBuilderForVmProperties.AddParameter(HyperVStrings.MemoryStartupBytes, parameters.MemoryStartupBytes);
+        }
+
+        // Now we can set the secure boot.
+        statementBuilderForVmProperties.AddCommand(HyperVStrings.SetVMFirmware)
+            .AddParameter(HyperVStrings.VM, returnedPsObject.BaseObject)
+            .AddParameter(HyperVStrings.EnableSecureBoot, parameters.SecureBoot);
+
+        result = _powerShellService.Execute(statementBuilderForVmProperties.Build(), PipeType.None);
+        if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
+        {
+            // don't throw. If we can't set the processor count, we'll just log it. The VM was still created with the default processor count of 1,
+            // and The VM is still created with the default memory size of 512MB. The user can change this  later.
+            _log.Error($"Unable to set VM properties count: {parameters.ProcessorCount} and startUpBytes: {parameters.MemoryStartupBytes} for VM {virtualMachine}: {result.CommandOutputErrorMessage}");
+        }
+
+        // return the created VM object
+        return virtualMachine;
+    }
+
     private bool AreStringsTheSame(string? stringA, string? stringB)
     {
         return stringA?.Equals(stringB, StringComparison.OrdinalIgnoreCase) ?? false;
@@ -729,7 +769,7 @@ public class HyperVManager : IHyperVManager, IDisposable
         var psObject = result.PsObjects.FirstOrDefault();
         if (psObject == null)
         {
-            Logging.Logger()?.ReportError($"Unable to create {nameof(T)} due to PowerShell error: {result.CommandOutputErrorMessage}");
+            _log.Error($"Unable to create {nameof(T)} due to PowerShell error: {result.CommandOutputErrorMessage}");
             return default(T);
         }
 
@@ -804,12 +844,7 @@ public class HyperVManager : IHyperVManager, IDisposable
     {
         if (!_disposed)
         {
-            LogEvent.Create(
-                nameof(HyperVManager),
-                string.Empty,
-                SeverityLevel.Debug,
-                "Disposing HyperVManager");
-
+            _log.Debug("Disposing HyperVManager");
             if (disposing)
             {
                 _operationEventForVirtualMachine.Dispose();

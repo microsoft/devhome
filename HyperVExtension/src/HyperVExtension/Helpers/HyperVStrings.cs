@@ -41,6 +41,9 @@ public static class HyperVStrings
     public const string VMSnapshotId = "VMSnapshotId";
     public const string VMSnapshotName = "VMSnapshotName";
     public const string Size = "Size";
+    public const string VirtualMachinePath = "VirtualMachinePath";
+    public const string VirtualHardDiskPath = "VirtualHardDiskPath";
+    public const string LogicalProcessorCount = "LogicalProcessorCount";
 
     // Hyper-V PowerShell commands strings
     public const string GetModule = "Get-Module";
@@ -59,6 +62,10 @@ public static class HyperVStrings
     public const string RemoveVMSnapshot = "Remove-VMSnapshot";
     public const string CreateVMCheckpoint = "Checkpoint-VM";
     public const string RestartVM = "Restart-VM";
+    public const string GetVMHost = "Get-VMHost";
+    public const string NewVM = "New-VM";
+    public const string SetVM = "Set-VM";
+    public const string SetVMFirmware = "Set-VMFirmware";
 
     // Hyper-V PowerShell command parameter strings
     public const string ListAvailable = "ListAvailable";
@@ -68,6 +75,20 @@ public static class HyperVStrings
     public const string Save = "Save";
     public const string TurnOff = "TurnOff";
     public const string PassThru = "PassThru";
+    public const string NewVHDPath = "NewVHDPath";
+    public const string NewVHDSizeBytes = "NewVHDSizeBytes";
+    public const string EnableSecureBoot = "EnableSecureBoot";
+    public const string EnhancedSessionTransportType = "EnhancedSessionTransportType";
+    public const string Generation = "Generation";
+    public const string VHDPath = "VHDPath";
+    public const string MemoryStartupBytes = "MemoryStartupBytes";
+    public const string VM = "VM";
+    public const string SwitchName = "SwitchName";
+    public const string DefaultSwitchName = "Default Switch";
+    public const string ParameterOnState = "On";
+    public const string ParameterOffState = "Off";
+    public const string ParameterHvSocket = "HvSocket";
+    public const string ParameterVmBus = "VMBus";
 
     // Hyper-V psObject property values
     public const string CanStopService = "CanStop";
@@ -75,7 +96,4 @@ public static class HyperVStrings
     public const string RunningState = "Running";
     public const string PausedState = "Paused";
     public const string SavedState = "Saved";
-
-    // Hyper-V scripts
-    public const string VmConnectScript = "vmconnect.exe localhost -G";
 }

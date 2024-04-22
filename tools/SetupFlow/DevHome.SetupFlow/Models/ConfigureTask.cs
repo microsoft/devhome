@@ -8,11 +8,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Contracts;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
+using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
 
@@ -20,6 +20,7 @@ namespace DevHome.SetupFlow.Models;
 
 public class ConfigureTask : ISetupTask
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigureTask));
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IDesiredStateConfiguration _dsc;
     private readonly StorageFile _file;
@@ -37,12 +38,19 @@ public class ConfigureTask : ISetupTask
 
     public bool RequiresReboot { get; private set; }
 
+    /// <summary>
+    /// Gets target device name. Inherited via ISetupTask but unused.
+    /// </summary>
+    public string TargetName => string.Empty;
+
     public bool DependsOnDevDriveToBeInstalled => false;
 
     public IList<ConfigurationUnitResult> UnitResults
     {
         get; private set;
     }
+
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
 
     public ConfigureTask(
         ISetupFlowStringResource stringResource,
@@ -104,7 +112,7 @@ public class ConfigureTask : ISetupTask
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration.", e);
+                _log.Error(e, $"Failed to apply configuration.");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -116,7 +124,7 @@ public class ConfigureTask : ISetupTask
     {
         return Task.Run(async () =>
         {
-            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file {_file.Path}");
+            _log.Information($"Starting elevated application of configuration file {_file.Path}");
             var elevatedResult = await elevatedComponentOperation.ApplyConfigurationAsync(_activityId);
             RequiresReboot = elevatedResult.RebootRequired;
             UnitResults = new List<ConfigurationUnitResult>();

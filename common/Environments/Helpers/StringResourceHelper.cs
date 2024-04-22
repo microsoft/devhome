@@ -2,18 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using Serilog;
 
 namespace DevHome.Common.Environments.Helpers;
 
 public static class StringResourceHelper
 {
-    private static readonly StringResource _stringResource = new("DevHome.Common/Resources");
+    private static readonly StringResource _stringResource = new("DevHome.Common.pri", "DevHome.Common/Resources");
     private const string ComputeSystemCpu = "ComputeSystemCpu";
     private const string ComputeSystemAssignedMemory = "ComputeSystemAssignedMemory";
     private const string ComputeSystemUptime = "ComputeSystemUptime";
@@ -30,7 +26,7 @@ public static class StringResourceHelper
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError($"Failed to get resource for key {key}.", ex);
+            Log.Error(ex, $"Failed to get resource for key {key}.");
             return key;
         }
     }

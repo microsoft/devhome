@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Globalization;
-
 namespace HyperVExtension.Helpers;
 
 internal sealed class AdaptiveCardActionPayload
@@ -28,6 +26,11 @@ internal sealed class AdaptiveCardActionPayload
     }
 
     public string? Type
+    {
+        get; set;
+    }
+
+    public string? Mode
     {
         get; set;
     }

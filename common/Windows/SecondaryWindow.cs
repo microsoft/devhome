@@ -184,7 +184,7 @@ public class SecondaryWindow : WindowEx
 
         // Initialize window content template
         _windowTemplate = new(this);
-        WindowContent = _windowTemplate;
+        Content = _windowTemplate;
 
         // Register secondary window events handlers
         Activated += OnSecondaryWindowActivated;

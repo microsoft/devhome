@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Exceptions;
@@ -9,6 +11,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.Management.Configuration;
+using Serilog;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
@@ -39,6 +42,7 @@ public class ConfigurationFileHelper
         }
     }
 
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileHelper));
     private const string PowerShellHandlerIdentifier = "pwsh";
     private readonly Guid _activityId;
     private ConfigurationProcessor _processor;
@@ -48,6 +52,8 @@ public class ConfigurationFileHelper
     {
         _activityId = activityId;
     }
+
+    public IList<ConfigurationUnit> Units => _configSet?.Units;
 
     /// <summary>
     /// Open configuration set from the provided <paramref name="content"/>.
@@ -67,6 +73,16 @@ public class ConfigurationFileHelper
             _configSet = null;
             throw;
         }
+    }
+
+    public async Task ResolveConfigurationUnitDetails()
+    {
+        if (_processor == null || _configSet == null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        await _processor.GetSetDetailsAsync(_configSet, ConfigurationUnitDetailFlags.ReadOnly);
     }
 
     private async Task<ConfigurationSet> OpenConfigurationSetInternalAsync(ConfigurationProcessor processor, string filePath, string content)
@@ -94,7 +110,7 @@ public class ConfigurationFileHelper
             throw new InvalidOperationException();
         }
 
-        Log.Logger?.ReportInfo(Log.Component.Configuration, "Starting to apply configuration set");
+        _log.Information("Starting to apply configuration set");
         var result = await _processor.ApplySetAsync(_configSet, ApplyConfigurationSetFlags.None);
 
         foreach (var unitResult in result.UnitResults)
@@ -104,7 +120,7 @@ public class ConfigurationFileHelper
 
         TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Result", LogLevel.Critical, new ConfigurationSetResultEvent(_configSet, result), _activityId);
 
-        Log.Logger?.ReportInfo(Log.Component.Configuration, $"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
+        _log.Information($"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
         return new ApplicationResult(result);
     }
 
@@ -132,22 +148,22 @@ public class ConfigurationFileHelper
     /// <param name="diagnosticInformation">Diagnostic information</param>
     private void LogConfigurationDiagnostics(object sender, IDiagnosticInformation diagnosticInformation)
     {
-        var sourceComponent = nameof(ConfigurationProcessor);
+        var log = _log.ForContext("SourceContext", nameof(ConfigurationProcessor));
         switch (diagnosticInformation.Level)
         {
             case DiagnosticLevel.Warning:
-                Log.Logger?.ReportWarn(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                log.Warning(diagnosticInformation.Message);
                 return;
             case DiagnosticLevel.Error:
-                Log.Logger?.ReportError(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                log.Error(diagnosticInformation.Message);
                 return;
             case DiagnosticLevel.Critical:
-                Log.Logger?.ReportCritical(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                log.Fatal(diagnosticInformation.Message);
                 return;
             case DiagnosticLevel.Verbose:
             case DiagnosticLevel.Informational:
             default:
-                Log.Logger?.ReportInfo(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                log.Information(diagnosticInformation.Message);
                 return;
         }
     }

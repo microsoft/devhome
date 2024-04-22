@@ -6,6 +6,8 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Platforms>x86;x64;arm64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <!-- CsWinRT properties -->
@@ -23,11 +25,17 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
-    <!-- 
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <!--
     The ExcludeAssets=runtime is needed to prevent build errors from System.Management.dll being produced in 2 different locations.
     DevHome.SetupFlow.Common.csproj, uses System.Management instead, to prevent the reference from escaping into here
     and producing a separate dll that will break the build, this package reference overwrites the one inherited from the comInterop the project.
-    The ComInterop project was used since this The ElevatedComponent already depends on it. But a better solution is needed once we figure out 
+    The ComInterop project was used since this The ElevatedComponent already depends on it. But a better solution is needed once we figure out
     why 2 separate dlls get produced.
     -->
   </ItemGroup>

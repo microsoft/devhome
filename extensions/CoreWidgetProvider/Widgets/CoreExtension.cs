@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
-using CoreWidgetProvider.Helpers;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace CoreWidgetProvider;
 
@@ -30,7 +30,7 @@ public sealed class CoreExtension : IExtension
             case ProviderType.FeaturedApplications:
                 return new object();
             default:
-                Log.Logger()?.ReportInfo("Invalid provider");
+                Log.Information("Invalid provider");
                 return null;
         }
     }

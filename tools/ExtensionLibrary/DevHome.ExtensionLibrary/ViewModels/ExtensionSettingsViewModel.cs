@@ -6,26 +6,32 @@ using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
-using DevHome.Logging;
-using DevHome.Settings.Models;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
 
 public partial class ExtensionSettingsViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExtensionSettingsViewModel));
+
     private readonly IExtensionService _extensionService;
     private readonly INavigationService _navigationService;
+    private readonly AdaptiveCardRenderingService _adaptiveCardRenderingService;
 
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
-    public ExtensionSettingsViewModel(IExtensionService extensionService, INavigationService navigationService)
+    public ExtensionSettingsViewModel(
+        IExtensionService extensionService,
+        INavigationService navigationService,
+        AdaptiveCardRenderingService adaptiveCardRenderingService)
     {
         _extensionService = extensionService;
         _navigationService = navigationService;
+        _adaptiveCardRenderingService = adaptiveCardRenderingService;
 
         Breadcrumbs = new ObservableCollection<Breadcrumb>();
     }
@@ -40,7 +46,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
             if ((_navigationService.LastParameterUsed != null) &&
                 ((string)_navigationService.LastParameterUsed == extensionWrapper.ExtensionUniqueId))
             {
-                FillBreadcrumbBar(extensionWrapper.Name);
+                FillBreadcrumbBar(extensionWrapper.ExtensionDisplayName);
 
                 var settingsProvider = Task.Run(() => extensionWrapper.GetProviderAsync<ISettingsProvider>()).Result;
                 if (settingsProvider != null)
@@ -48,14 +54,14 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                     var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
                     if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
                     {
-                        GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage}" +
+                        _log.Error($"{adaptiveCardSessionResult.Result.DisplayMessage}" +
                             $" - {adaptiveCardSessionResult.Result.DiagnosticText}");
                         await Task.CompletedTask;
                     }
 
                     var adaptiveCardSession = adaptiveCardSessionResult.AdaptiveCardSession;
-                    var renderer = new AdaptiveCardRenderer();
-                    renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+                    var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
+                    renderer.HostConfig.Actions.ActionAlignment = ActionAlignment.Left;
 
                     extensionAdaptiveCardPanel.Bind(adaptiveCardSession, renderer);
                 }
@@ -65,19 +71,10 @@ public partial class ExtensionSettingsViewModel : ObservableObject
         await Task.CompletedTask;
     }
 
-    public void FillBreadcrumbBar(string lastCrumbName)
+    private void FillBreadcrumbBar(string lastCrumbName)
     {
-        var stringResource = new StringResource("DevHome.Settings/Resources");
+        var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
         Breadcrumbs.Add(new(stringResource.GetLocalized("Settings_Extensions_Header"), typeof(ExtensionLibraryViewModel).FullName!));
         Breadcrumbs.Add(new Breadcrumb(lastCrumbName, typeof(ExtensionSettingsViewModel).FullName!));
-    }
-
-    public void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
-    {
-        if (args.Index < Breadcrumbs.Count - 1)
-        {
-            var crumb = (Breadcrumb)args.Item;
-            crumb.NavigateTo();
-        }
     }
 }

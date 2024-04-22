@@ -1,17 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Globalization;
-using System.Linq;
-using System.Management;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
-using HyperVExtension.Providers;
-using Microsoft.Win32;
-
 namespace HyperVExtension.CommunicationWithGuest;
 
 /// <summary>

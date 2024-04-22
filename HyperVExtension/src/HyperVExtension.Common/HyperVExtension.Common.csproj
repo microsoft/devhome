@@ -3,12 +3,18 @@
   <PropertyGroup>
     <RootNamespace>HyperVExtension.Common</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>
-    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

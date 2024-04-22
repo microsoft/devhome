@@ -8,34 +8,16 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:models="using:DevHome.Common.Models"
-    xmlns:viewmodels="using:DevHome.Settings.ViewModels"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
+    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
     <Page.Resources>
         <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
     </Page.Resources>
 
-    <behaviors:NavigationViewHeaderBehavior.HeaderTemplate>
-        <DataTemplate x:DataType="viewmodels:ExperimentalFeaturesViewModel">
-            <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-                <BreadcrumbBar
-                    x:Name="BreadcrumbBar"
-                    ItemsSource="{x:Bind Breadcrumbs}">
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="ItemClicked">
-                            <ic:InvokeCommandAction Command="{x:Bind BreadcrumbBarItemClickedCommand}" />
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </BreadcrumbBar>
-            </Grid>
-        </DataTemplate>
-    </behaviors:NavigationViewHeaderBehavior.HeaderTemplate>
-
-    <Grid
-        MaxWidth="{ThemeResource MaxPageContentWidth}"
-        Margin="{ThemeResource ContentPageMargin}">
-        <ScrollViewer VerticalAlignment="Top">
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+        <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <StackPanel>
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.ExperimentalFeatures}">
                     <ItemsRepeater.ItemTemplate>
@@ -60,6 +42,6 @@
                     x:Uid="Settings_ExperimentalFeatures_NoExperimentalFeatures"
                     Visibility="{x:Bind ViewModel.ExperimentalFeatures.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}" />
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>

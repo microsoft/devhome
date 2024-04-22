@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Contracts;
-using DevHome.SetupFlow.Common.Helpers;
+using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Com;
@@ -73,6 +73,10 @@ namespace DevHome.SetupFlow.Common.Elevation;
 ////   to work for different versions of the same type
 public static class IPCSetup
 {
+    private static readonly Lazy<ILogger> _log = new(() => Serilog.Log.ForContext("SourceContext", nameof(IPCSetup)));
+
+    private static readonly ILogger Log = _log.Value;
+
     /// <summary>
     /// Object that is written at the beginning of the shared memory block.
     /// The marshalled remote object is written immediately after this.
@@ -154,7 +158,7 @@ public static class IPCSetup
         var tasksArgumentList = tasksArguments.ToArgumentList();
 
         // Create shared memory block.
-        Log.Logger?.ReportInfo(Log.Component.IPCClient, "Creating shared memory block");
+        Log.Information("Creating shared memory block");
         using var mappedFile = MemoryMappedFile.CreateNew(
             mappedFileName,
             MappedMemoryCapacityInBytes,
@@ -168,7 +172,7 @@ public static class IPCSetup
         using (var mappedFileAccessor = mappedFile.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Write))
         {
             mappedMemoryValue.HResult = unchecked((int)0x80000008); // E_FAIL
-            Log.Logger?.ReportInfo(Log.Component.IPCClient, $"Writing initial value in memory with HResult={mappedMemoryValue.HResult:x}");
+            Log.Information($"Writing initial value in memory with HResult={mappedMemoryValue.HResult:x}");
             mappedFileAccessor.Write(0, ref mappedMemoryValue);
         }
 
@@ -211,11 +215,11 @@ public static class IPCSetup
                 processStartInfo.RedirectStandardOutput = true;
             }
 
-            Log.Logger?.ReportInfo(Log.Component.IPCClient, "Starting server process");
+            Log.Information("Starting server process");
             var process = Process.Start(processStartInfo);
             if (process is null)
             {
-                Log.Logger?.ReportError(Log.Component.IPCClient, "Failed to start background process");
+                Log.Error("Failed to start background process");
                 throw new InvalidOperationException("Failed to start background process");
             }
 
@@ -224,19 +228,19 @@ public static class IPCSetup
             // We also stop waiting if the process exits or has already exited.
             process.Exited += (_, _) =>
             {
-                Log.Logger?.ReportInfo(Log.Component.IPCClient, "Background process exited");
+                Log.Information("Background process exited");
                 initEvent.Set();
             };
 
             if (process.HasExited || !initEvent.WaitOne(60 * 1000))
             {
-                Log.Logger?.ReportError(Log.Component.IPCClient, "Background process failed to initialized in the allowed time");
+                Log.Error("Background process failed to initialized in the allowed time");
                 throw new TimeoutException("Background process failed to initialized in the allowed time");
             }
 
             if (process.HasExited)
             {
-                Log.Logger?.ReportError(Log.Component.IPCClient, $"Background process terminated with error code {process.ExitCode}");
+                Log.Error($"Background process terminated with error code {process.ExitCode}");
                 throw new InvalidOperationException("Background process terminated");
             }
 
@@ -244,7 +248,7 @@ public static class IPCSetup
             using (var mappedFileAccessor = mappedFile.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Read))
             {
                 mappedFileAccessor.Read(0, out mappedMemoryValue);
-                Log.Logger?.ReportInfo(Log.Component.IPCClient, $"Read mapped memory value. HResult: {mappedMemoryValue.HResult:x}");
+                Log.Information($"Read mapped memory value. HResult: {mappedMemoryValue.HResult:x}");
                 Marshal.ThrowExceptionForHR(mappedMemoryValue.HResult);
             }
 
@@ -260,7 +264,7 @@ public static class IPCSetup
                     uint bytesWritten;
                     try
                     {
-                        Log.Logger?.ReportInfo(Log.Component.IPCClient, "Read mapped memory object into stream");
+                        Log.Information("Read mapped memory object into stream");
                         mappedFileAccessor.SafeMemoryMappedViewHandle.AcquirePointer(ref rawPointer);
                         Marshal.ThrowExceptionForHR(stream.Write(rawPointer + MappedMemoryValueSizeInBytes, (uint)mappedMemoryValue.MarshaledObjectSize, &bytesWritten));
                     }
@@ -274,7 +278,7 @@ public static class IPCSetup
 
                     if (bytesWritten != mappedMemoryValue.MarshaledObjectSize)
                     {
-                        Log.Logger?.ReportError(Log.Component.IPCClient, "Shared memory stream has unexpected data");
+                        Log.Error("Shared memory stream has unexpected data");
                         throw new InvalidDataException("Shared memory stream has unexpected data");
                     }
 
@@ -283,16 +287,16 @@ public static class IPCSetup
                 }
             }
 
-            Log.Logger?.ReportInfo(Log.Component.IPCClient, "Unmarshaling object from stream data");
+            Log.Information("Unmarshaling object from stream data");
             Marshal.ThrowExceptionForHR(PInvoke.CoUnmarshalInterface(stream, GetMarshalInterfaceGUID<T>(), out var obj));
             var value = MarshalInterface<T>.FromAbi(Marshal.GetIUnknownForObject(obj));
 
-            Log.Logger?.ReportInfo(Log.Component.IPCClient, "Returning remote object");
+            Log.Information("Returning remote object");
             return (new RemoteObject<T>(value, completionSemaphore), process);
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.IPCClient, $"Error occurring while setting up elevated process:", e);
+            Log.Error(e, $"Error occurring while setting up elevated process:");
 
             // Release the "mutex" if there is any error.
             // On success, the mutex will be released after work is done.
@@ -321,7 +325,7 @@ public static class IPCSetup
         string completionSemaphoreName)
     {
         // Open the shared resources
-        Log.Logger?.ReportInfo(Log.Component.IPCServer, "Opening shared resources");
+        Log.Information("Opening shared resources");
         var mappedFile = MemoryMappedFile.OpenExisting(mappedFileName, MemoryMappedFileRights.Write);
         var initEvent = EventWaitHandle.OpenExisting(initEventName);
         var completionSemaphore = Semaphore.OpenExisting(completionSemaphoreName);
@@ -382,26 +386,26 @@ public static class IPCSetup
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.IPCServer, $"Error occurred during setup.", e);
+            Log.Error(e, $"Error occurred during setup.");
             mappedMemory.HResult = e.HResult;
         }
 
         // Write the init result and if needed the remote object size.
         using (var accessor = mappedFile.CreateViewAccessor())
         {
-            Log.Logger?.ReportInfo(Log.Component.IPCServer, $"Writing value into shared memory block");
+            Log.Information($"Writing value into shared memory block");
             accessor.Write(0, ref mappedMemory);
         }
 
         // Signal to the caller that we finished initialization.
-        Log.Logger?.ReportInfo(Log.Component.IPCServer, "Signaling initialization finished");
+        Log.Information("Signaling initialization finished");
         initEvent.Set();
 
         // Wait until the caller releases the object
-        Log.Logger?.ReportInfo(Log.Component.IPCServer, "Waiting to receive signal to exit");
+        Log.Information("Waiting to receive signal to exit");
         completionSemaphore.WaitOne();
 
-        Log.Logger?.ReportInfo(Log.Component.IPCServer, "Exiting");
+        Log.Information("Exiting");
     }
 #nullable disable
 }

@@ -2,8 +2,7 @@
 // Licensed under the MIT License.
 
 using System.ServiceProcess;
-using DevHome.Logging;
-using HyperVExtension.Services;
+using Serilog;
 
 namespace HyperVExtension.Models;
 
@@ -54,12 +53,8 @@ public class WindowsServiceController : IWindowsServiceController, IDisposable
     {
         if (!_disposed)
         {
-            LogEvent.Create(
-                nameof(WindowsServiceController),
-                string.Empty,
-                SeverityLevel.Debug,
-                "Disposing WindowsServiceController");
-
+            var log = Log.ForContext("SourceContext", nameof(WindowsServiceController));
+            log.Debug("Disposing WindowsServiceController");
             if (disposing)
             {
                 _serviceController.Dispose();

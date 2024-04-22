@@ -21,8 +21,8 @@ parameters:
 
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
-  MSIXVersion: '0.1201'
-  VersionOfSDK: '0.200'
+  MSIXVersion: '0.1301'
+  VersionOfSDK: '0.400'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
   testOutputArtifactDir: 'TestResults'
@@ -583,45 +583,3 @@ extends:
             condition: or(eq(variables['BuildingBranch'], 'staging'), eq(variables['BuildingBranch'], 'release'))
             artifactName: StoreBrokerPackage
             targetPath: '$(System.DefaultWorkingDirectory)\SBOutDir'
-
-    - stage: VPack
-      dependsOn:
-      - Build_MsixBundle
-      condition: |
-        and
-        (
-          in(dependencies.Build_MsixBundle.result, 'Succeeded'),
-          eq(variables['BuildingBranch'], 'release')
-        )
-      jobs:
-      - job: ReleaseVPack
-        steps:
-        - task: DownloadPipelineArtifact@2
-          inputs:
-            buildType: 'current'
-            artifactName: MsixBundle_Release
-            itemPattern: '*.msixbundle'
-            targetPath: $(Build.ArtifactStagingDirectory)\$(appxPackageDir)\vpack
-
-        - task: CmdLine@2
-          inputs:
-            script: ren $(Build.ArtifactStagingDirectory)\$(appxPackageDir)\vpack\*.msixbundle DevHome_8wekyb3d8bbwe.msixbundle
-
-        - task: PkgESVPack@12
-          displayName: Create and push vpack for app
-          env:
-            SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-          inputs:
-            sourceDirectory: $(Build.ArtifactStagingDirectory)\$(appxPackageDir)\vpack
-            description: VPack for DevHome
-            pushPkgName: DevHome.app
-            version: $(MSIXVersion).0
-            owner: chriwall
-            provData: true
-
-        templateContext:
-          outputs:
-          - output: pipelineArtifact
-            displayName: 'Publish vpack\app artifact with vpack manifest'
-            targetPath: $(XES_VPACKMANIFESTDIRECTORY)
-            artifactName: vpackManifest

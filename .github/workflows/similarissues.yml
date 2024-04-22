@@ -10,14 +10,14 @@ jobs:
     outputs:
       message: ${{ steps.getBody.outputs.message }}
     steps:
-      - uses: actions/checkout@v2
       - id: getBody
         uses: craigloewen-msft/GitGudSimilarIssues@main
         with:
           issueTitle: ${{ github.event.issue.title }}
-          repository: ${{ github.repository }}
-          similarityTolerance: "0.7"
-  addComment:
+          issueBody: ${{ github.event.issue.body }}
+          repo: ${{ github.repository }}
+          similarityTolerance: "0.75"
+  add-comment:
     needs: getSimilarIssues
     runs-on: ubuntu-latest
     permissions:
