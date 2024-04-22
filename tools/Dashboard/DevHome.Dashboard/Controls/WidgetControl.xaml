@@ -5,10 +5,21 @@
     x:Class="DevHome.Dashboard.Controls.WidgetControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:helpers="using:DevHome.Dashboard.Helpers"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     AutomationProperties.Name="{x:Bind WidgetSource.WidgetDisplayTitle}">
 
-    <Grid Width="300" Height="{x:Bind helpers:WidgetHelpers.GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize), Mode=OneWay}" 
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind LoadedCommand}" />
+        </ic:EventTriggerBehavior>
+        <ic:EventTriggerBehavior EventName="Unloaded">
+            <ic:InvokeCommandAction Command="{x:Bind UnloadedCommand}" />
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+
+    <Grid Width="{x:Bind WidgetWidth, Mode=OneWay}"
+          Height="{x:Bind WidgetHeight, Mode=OneWay}"
           CornerRadius="7"
           BorderBrush="{ThemeResource WidgetCardBorderBrush}"
           Background="{ThemeResource WidgetCardBackground}"

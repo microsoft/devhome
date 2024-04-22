@@ -5,9 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Dashboard.ComSafeWidgetObjects;
+using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Dashboard.Views;
@@ -17,16 +21,27 @@ using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Serilog;
+using Windows.UI.ViewManagement;
+using WinUIEx;
 
 namespace DevHome.Dashboard.Controls;
 
+[ObservableObject]
 public sealed partial class WidgetControl : UserControl
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetControl));
 
+    private readonly UISettings _uiSettings = new();
+
     private readonly StringResource _stringResource;
 
     private SelectableMenuFlyoutItem _currentSelectedSize;
+
+    [ObservableProperty]
+    private double _widgetHeight;
+
+    [ObservableProperty]
+    private double _widgetWidth;
 
     public WidgetViewModel WidgetSource
     {
@@ -36,6 +51,8 @@ public sealed partial class WidgetControl : UserControl
             SetValue(WidgetSourceProperty, value);
             if (WidgetSource != null)
             {
+                SetScaledWidthAndHeight(_uiSettings.TextScaleFactor);
+
                 // When the WidgetViewModel is updated, the widget icon must also be also updated.
                 // Since the icon update must happen asynchronously on the UI thread, it must be
                 // called in code rather than binding.
@@ -52,6 +69,55 @@ public sealed partial class WidgetControl : UserControl
         this.InitializeComponent();
         _stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
         ActualThemeChanged += OnActualThemeChanged;
+    }
+
+    [RelayCommand]
+    private void OnLoaded()
+    {
+        _uiSettings.TextScaleFactorChanged += HandleTextScaleFactorChanged;
+    }
+
+    [RelayCommand]
+    private void OnUnloaded()
+    {
+        _uiSettings.TextScaleFactorChanged -= HandleTextScaleFactorChanged;
+    }
+
+    private void HandleTextScaleFactorChanged(UISettings sender, object args)
+    {
+        try
+        {
+            if (WidgetSource == null)
+            {
+                return;
+            }
+
+            SetScaledWidthAndHeight(sender.TextScaleFactor);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Failed to handle text scale factor changed.");
+        }
+    }
+
+    private static double GetPixelHeightFromWidgetSize(WidgetSize size)
+    {
+        return size switch
+        {
+            WidgetSize.Small => WidgetHelpers.WidgetPxHeightSmall,
+            WidgetSize.Medium => WidgetHelpers.WidgetPxHeightMedium,
+            WidgetSize.Large => WidgetHelpers.WidgetPxHeightLarge,
+            _ => 0,
+        };
+    }
+
+    private void SetScaledWidthAndHeight(double textScale)
+    {
+        Application.Current.GetService<WindowEx>().DispatcherQueue.EnqueueAsync(() =>
+        {
+            WidgetHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize) * textScale;
+            WidgetWidth = WidgetHelpers.WidgetPxWidth * textScale;
+        });
     }
 
     private async void OpenWidgetMenuAsync(object sender, RoutedEventArgs e)
@@ -208,6 +274,7 @@ public sealed partial class WidgetControl : UserControl
                 var size = (WidgetSize)menuSizeItem.Tag;
                 widgetViewModel.WidgetSize = size;
                 await widgetViewModel.Widget.SetSizeAsync(size);
+                SetScaledWidthAndHeight(_uiSettings.TextScaleFactor);
 
                 // Set mark on new size.
                 _currentSelectedSize = menuSizeItem;
