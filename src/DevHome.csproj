@@ -103,6 +103,9 @@
     <None Update="NavConfig.jsonc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\NOTICE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Page Update="Styles\WindowTitleBar_ThemeResources.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
