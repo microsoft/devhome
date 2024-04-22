@@ -35,8 +35,8 @@ body:
   attributes:
     label: Is this feature publicly documented?
     options:
-      - Yes
-      - No
+      - "Yes"
+      - "No"
     description: Is this feature publicly documented? Is there a public API or documentation available?
   validations:
     required: true
