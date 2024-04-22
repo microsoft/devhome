@@ -46,7 +46,7 @@ body:
   type: textarea
   attributes:
     label: Public Documentation
-    description: If there is public documentation for this feature, please provide the link here. If not applicable, please enter "None".
+    placeholder: If there is public documentation for this feature, please provide the link here. If not applicable, please enter "None".
   validations:
     required: true 
     
