@@ -143,6 +143,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// This is the location that we will save the virtual disk file to.
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DriveLabel))]
     [NotifyCanExecuteChangedFor(nameof(SaveButtonCommand))]
     private string _location;
 
@@ -260,6 +261,16 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
             if (!string.IsNullOrWhiteSpace(location?.Path))
             {
                 _log.Information($"Selected Dev Drive location: {location.Path}");
+
+                // If the user removed the file and wants to clone to the same location
+                // change Location to empty to force setting Location to location.path and
+                // enabling DevDrive validation.
+                if (FileNameAndSizeErrorList.Contains(DevDriveValidationResult.FileNameAlreadyExists)
+                    && string.Equals(Location, location.Path, StringComparison.OrdinalIgnoreCase))
+                {
+                    Location = string.Empty;
+                }
+
                 Location = location.Path;
             }
             else
