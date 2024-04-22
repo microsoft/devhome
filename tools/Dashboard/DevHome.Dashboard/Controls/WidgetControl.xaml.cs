@@ -79,18 +79,18 @@ public sealed partial class WidgetControl : UserControl
     [RelayCommand]
     private void OnLoaded()
     {
-        _uiSettings.TextScaleFactorChanged += HandleTextScaleFactorChanged;
+        _uiSettings.TextScaleFactorChanged += HandleTextScaleFactorChangedAsync;
     }
 
     [RelayCommand]
     private void OnUnloaded()
     {
-        _uiSettings.TextScaleFactorChanged -= HandleTextScaleFactorChanged;
+        _uiSettings.TextScaleFactorChanged -= HandleTextScaleFactorChangedAsync;
     }
 
-    private void HandleTextScaleFactorChanged(UISettings sender, object args)
+    private async void HandleTextScaleFactorChangedAsync(UISettings sender, object args)
     {
-        try
+        await Application.Current.GetService<WindowEx>().DispatcherQueue.EnqueueAsync(() =>
         {
             if (WidgetSource == null)
             {
@@ -98,11 +98,7 @@ public sealed partial class WidgetControl : UserControl
             }
 
             SetScaledWidthAndHeight(sender.TextScaleFactor);
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "Failed to handle text scale factor changed.");
-        }
+        });
     }
 
     private static double GetPixelHeightFromWidgetSize(WidgetSize size)
@@ -118,12 +114,9 @@ public sealed partial class WidgetControl : UserControl
 
     private void SetScaledWidthAndHeight(double textScale)
     {
-        Application.Current.GetService<WindowEx>().DispatcherQueue.EnqueueAsync(() =>
-        {
-            HeaderHeight = new GridLength(_headerHeightUnscaled * textScale);
-            WidgetHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize) * textScale;
-            WidgetWidth = WidgetHelpers.WidgetPxWidth * textScale;
-        });
+        HeaderHeight = new GridLength(_headerHeightUnscaled * textScale);
+        WidgetHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize) * textScale;
+        WidgetWidth = WidgetHelpers.WidgetPxWidth * textScale;
     }
 
     private async void OpenWidgetMenuAsync(object sender, RoutedEventArgs e)
