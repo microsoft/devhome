@@ -118,6 +118,8 @@ If you'd like to suggest a new feature/enhancement in Windows Customization, **y
 
 We will not accept or review PRs that add new features to Windows Customization without an associated issue that follows the `Windows Customization` template.
 
+For bug fixes, simply file an issue with the appropriate label and we'll take a look. If you are able to fix the bug, please indicate that in the issue and we'll be happy to review your PR.
+
 ### To spec or not to spec
 
 Some issues/features may be quick and simple to describe and understand. For such scenarios, once a team member has agreed with your approach, skip ahead to the section headed "Fork, Branch, and Create your PR", below.
