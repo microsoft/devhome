@@ -61,7 +61,7 @@
         VerticalScrollBarVisibility="Auto"
         Padding="0,0,10,0">
         <StackPanel>
-            <Grid RowSpacing="5" MaxWidth="{ThemeResource MaxPageContentWidth}">
+            <Grid RowSpacing="5" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
@@ -363,7 +363,8 @@
                         <!-- Repos cloned -->
                         <Grid Padding="0,13" Visibility="{x:Bind ViewModel.TargetCloneResults, Converter={StaticResource CollectionVisibilityConverter}}"
                             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
+                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
+                              HorizontalAlignment="Stretch">
                             <Expander MaxHeight="200">
                                 <Expander.Header>
                                     <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
