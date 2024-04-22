@@ -18,7 +18,8 @@ body:
   type: input 
   attributes: 
     label: Maximum Supported Windows Version 
-    placeholder: What is the maximum version of Windows that should support this feature? If there is no maximum, please enter "None". 
+    placeholder: "10.0.23400.0" 
+    description: What is the maximum version of Windows that should support this feature? If there is no maximum, please enter "None". 
   validations:
     required: true
 
