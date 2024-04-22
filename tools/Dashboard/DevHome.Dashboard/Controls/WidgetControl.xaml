@@ -25,7 +25,7 @@
           Background="{ThemeResource WidgetCardBackground}"
           BorderThickness="1">
         <Grid.RowDefinitions>
-            <RowDefinition Height="36" />
+            <RowDefinition Height="{x:Bind HeaderHeight, Mode=OneWay}" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 

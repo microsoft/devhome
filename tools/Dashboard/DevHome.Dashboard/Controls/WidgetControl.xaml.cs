@@ -35,7 +35,12 @@ public sealed partial class WidgetControl : UserControl
 
     private readonly StringResource _stringResource;
 
+    private readonly double _headerHeightUnscaled = 36;
+
     private SelectableMenuFlyoutItem _currentSelectedSize;
+
+    [ObservableProperty]
+    private GridLength _headerHeight;
 
     [ObservableProperty]
     private double _widgetHeight;
@@ -115,6 +120,7 @@ public sealed partial class WidgetControl : UserControl
     {
         Application.Current.GetService<WindowEx>().DispatcherQueue.EnqueueAsync(() =>
         {
+            HeaderHeight = new GridLength(_headerHeightUnscaled * textScale);
             WidgetHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize) * textScale;
             WidgetWidth = WidgetHelpers.WidgetPxWidth * textScale;
         });
