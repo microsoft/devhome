@@ -49,10 +49,9 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
         return args.Uri != null && args.Uri.AbsolutePath.Equals(AppSearchUri, StringComparison.OrdinalIgnoreCase);
     }
 
-    protected async override Task<Task> HandleInternalAsync(ProtocolActivatedEventArgs args)
+    protected async override Task HandleInternalAsync(ProtocolActivatedEventArgs args)
     {
         await AppActivationFlowAsync(args.Uri.Query);
-        return Task.CompletedTask;
     }
 
     private async Task AppActivationFlowAsync(string query)
