@@ -83,7 +83,7 @@ public class WidgetAdaptiveCardRenderingService : IAdaptiveCardRenderingService,
         // Add custom Adaptive Card renderer.
         _renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
         _renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
-        _renderer.ElementRenderers.Set("Input.Text", new TextInput());
+        _renderer.ElementRenderers.Set("Input.Text", new TextInputRenderer());
         _renderer.ActionRenderers.Set(ChooseFileAction.CustomTypeString, new ChooseFileActionRenderer());
 
         // A different host config is used to render widgets (adaptive cards) in light and dark themes.

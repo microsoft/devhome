@@ -11,7 +11,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Common.Renderers;
 
-public class TextInput : IAdaptiveElementRenderer
+public class TextInputRenderer : IAdaptiveElementRenderer
 {
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
