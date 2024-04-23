@@ -40,10 +40,7 @@ public class FilePickerAction : IAdaptiveActionElement
         var json = new JsonObject
         {
             ["type"] = JsonValue.CreateStringValue(ActionTypeString),
-            ["title"] = JsonValue.CreateStringValue(Title),
             ["filePath"] = JsonValue.CreateStringValue(FilePath),
-            ["isVisible"] = JsonValue.CreateBooleanValue(IsVisible),
-            ["isEnabled"] = JsonValue.CreateBooleanValue(IsEnabled),
             ["verb"] = JsonValue.CreateStringValue(Verb),
         };
 
@@ -60,10 +57,6 @@ public class FilePickerAction : IAdaptiveActionElement
 
     public JsonObject? AdditionalProperties { get; set; }
 
-    public ElementType ElementType => ElementType.Custom;
-
-    public string ElementTypeString => CustomTypeString;
-
     public IAdaptiveActionElement? FallbackContent { get; set; }
 
     public string IconUrl { get; set; } = string.Empty;
@@ -76,17 +69,9 @@ public class FilePickerAction : IAdaptiveActionElement
 
     public FallbackType FallbackType { get; set; }
 
-    public HeightType Height { get; set; } = HeightType.Auto;
-
     public string? Id { get; set; } = CustomTypeString + "Id";
 
-    public bool IsVisible { get; set; } = true;
-
     public bool IsEnabled { get; set; } = true;
-
-    public bool Separator { get; set; }
-
-    public Spacing Spacing { get; set; } = Spacing.Small;
 
     public void LaunchFilePicker()
     {
@@ -110,7 +95,11 @@ public class FilePickerAction : IAdaptiveActionElement
 
 public class FilePickerParser : IAdaptiveActionParser
 {
-    public IAdaptiveActionElement FromJson(JsonObject inputJson, AdaptiveElementParserRegistration elementParsers, AdaptiveActionParserRegistration actionParsers, IList<AdaptiveWarning> warnings)
+    public IAdaptiveActionElement FromJson(
+        JsonObject inputJson,
+        AdaptiveElementParserRegistration elementParsers,
+        AdaptiveActionParserRegistration actionParsers,
+        IList<AdaptiveWarning> warnings)
     {
         var filePickerAction = new FilePickerAction();
 
@@ -123,48 +112,6 @@ public class FilePickerParser : IAdaptiveActionParser
     }
 }
 
-/*
-public class FilePickerRenderer : IAdaptiveElementRenderer
-{
-    public UIElement? Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
-    {
-        if (element is FilePickerAction filePicker)
-        {
-            var button = new Button
-            {
-                Content = filePicker.ButtonText,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 0),
-            };
-
-            button.Click += async (sender, args) =>
-            {
-                var pickFile = new FileOpenPicker();
-                pickFile.FileTypeFilter.Add("*");
-
-                var mainWindow = Application.Current.GetService<WindowEx>();
-                if (mainWindow != null)
-                {
-                    var hwnd = WindowNative.GetWindowHandle(mainWindow);
-                    InitializeWithWindow.Initialize(filePicker, hwnd);
-                }
-
-                var file = await pickFile.PickSingleFileAsync();
-                if (file != null)
-                {
-                    filePicker.FilePath = file.Path;
-                }
-            };
-
-            return button;
-        }
-
-        return null;
-    }
-}
-*/
-
 public class FilePickerExecuteAction : IAdaptiveActionRenderer
 {
     public UIElement? Render(IAdaptiveActionElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
@@ -175,39 +122,6 @@ public class FilePickerExecuteAction : IAdaptiveActionRenderer
         {
             var button = renderer.Render(element, context, renderArgs) as Button;
 
-            if (button == null)
-            {
-                return null;
-            }
-
-            /*
-            button.Content = "Choose File";
-            button.HorizontalAlignment = HorizontalAlignment.Stretch;
-            button.VerticalAlignment = VerticalAlignment.Center;
-            button.Margin = new Microsoft.UI.Xaml.Thickness(0, 0, 0, 0);
-            */
-
-            /*
-            button.Click += async (sender, args) =>
-            {
-                var filePicker = new FileOpenPicker();
-                filePicker.FileTypeFilter.Add("*");
-
-                var mainWindow = Application.Current.GetService<WindowEx>();
-                if (mainWindow != null)
-                {
-                    var hwnd = WindowNative.GetWindowHandle(mainWindow);
-                    InitializeWithWindow.Initialize(filePicker, hwnd);
-                }
-
-                var file = await filePicker.PickSingleFileAsync();
-                if (file != null)
-                {
-                    filePickerAction.FilePath = file.Path;
-                }
-            };
-            return button;
-            */
             return button;
         }
 
