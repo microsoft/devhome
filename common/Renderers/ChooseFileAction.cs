@@ -16,7 +16,7 @@ using WinUIEx;
 
 namespace DevHome.Common.Renderers;
 
-public class FilePickerAction : IAdaptiveActionElement
+public class ChooseFileAction : IAdaptiveActionElement
 {
     // ChooseFile properties
     public string FilePath { get; set; } = string.Empty;
@@ -99,7 +99,7 @@ public class FilePickerAction : IAdaptiveActionElement
     }
 }
 
-public class FilePickerParser : IAdaptiveActionParser
+public class ChooseFileParser : IAdaptiveActionParser
 {
     public IAdaptiveActionElement FromJson(
         JsonObject inputJson,
@@ -109,30 +109,30 @@ public class FilePickerParser : IAdaptiveActionParser
     {
         var stringResource = new StringResource("DevHome.Common.pri", "DevHome.Common/Resources");
 
-        var filePickerAction = new FilePickerAction
+        var chooseFileAction = new ChooseFileAction
         {
             // Parse the JSON properties of the action.
             // The Verb ChooseFile is not meant to be localized.
             Verb = inputJson.GetNamedString("verb", "ChooseFile"),
-            Title = inputJson.GetNamedString("title", stringResource.GetLocalized("FilePickerTitle")),
-            Tooltip = inputJson.GetNamedString("tooltip", stringResource.GetLocalized("FilePickerToolTip")),
+            Title = inputJson.GetNamedString("title", stringResource.GetLocalized("ChooseFileActionTitle")),
+            Tooltip = inputJson.GetNamedString("tooltip", stringResource.GetLocalized("ChooseFileActionToolTip")),
             UseIcon = inputJson.GetNamedBoolean("useIcon", false),
         };
 
-        return filePickerAction;
+        return chooseFileAction;
     }
 }
 
-public class FilePickerExecuteAction : IAdaptiveActionRenderer
+public class ChooseFileActionRenderer : IAdaptiveActionRenderer
 {
     public UIElement Render(IAdaptiveActionElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
         var renderer = new AdaptiveExecuteActionRenderer();
 
-        if (element as FilePickerAction is FilePickerAction filePickerElement)
+        if (element as ChooseFileAction is ChooseFileAction chooseFileElement)
         {
             // Card author is not allowed to specify a custom icon for the file picker action.
-            filePickerElement.IconUrl = string.Empty;
+            chooseFileElement.IconUrl = string.Empty;
 
             var button = renderer.Render(element, context, renderArgs) as Button;
             if (button != null)
@@ -140,7 +140,7 @@ public class FilePickerExecuteAction : IAdaptiveActionRenderer
                 var content = new StackPanel();
                 content.Orientation = Orientation.Horizontal;
                 content.Spacing = 8;
-                if (filePickerElement.UseIcon)
+                if (chooseFileElement.UseIcon)
                 {
                     content.Children.Add(new FontIcon
                     {
@@ -148,11 +148,11 @@ public class FilePickerExecuteAction : IAdaptiveActionRenderer
                     });
                 }
 
-                if (!string.IsNullOrEmpty(filePickerElement.Title))
+                if (!string.IsNullOrEmpty(chooseFileElement.Title))
                 {
                     content.Children.Add(new TextBlock
                     {
-                        Text = filePickerElement.Title,
+                        Text = chooseFileElement.Title,
                     });
                 }
 

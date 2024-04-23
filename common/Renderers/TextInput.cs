@@ -25,7 +25,7 @@ public class TextInput : IAdaptiveElementRenderer
                 return elementToReturn;
             }
 
-            if (textInputElement.InlineAction is not FilePickerAction)
+            if (textInputElement.InlineAction is not ChooseFileAction)
             {
                 return elementToReturn;
             }

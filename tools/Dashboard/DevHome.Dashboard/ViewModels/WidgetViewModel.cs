@@ -150,7 +150,7 @@ public partial class WidgetViewModel : ObservableObject
                 var elementParser = new AdaptiveElementParserRegistration();
                 elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
                 var actionParser = new AdaptiveActionParserRegistration();
-                actionParser.Set(FilePickerAction.CustomTypeString, new FilePickerParser());
+                actionParser.Set(ChooseFileAction.CustomTypeString, new ChooseFileParser());
 
                 // Create adaptive card.
                 card = AdaptiveCard.FromJsonString(json, elementParser, actionParser);
@@ -321,7 +321,7 @@ public partial class WidgetViewModel : ObservableObject
             _log.Information($"Verb = {executeAction.Verb}, Data = {dataToSend}");
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
         }
-        else if (args.Action is FilePickerAction filePickerAction)
+        else if (args.Action is ChooseFileAction filePickerAction)
         {
             var dataToSend = string.Empty;
             if (!filePickerAction.LaunchFilePicker())
