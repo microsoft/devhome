@@ -8,10 +8,7 @@
       "id": "ConfigFile",
       "label": "%SSH_Widget_Template/ConfigFilePath%",
       "inlineAction": {
-        "type": "Action.Execute",
-        "tooltip": "%Widget_Template_Tooltip/Submit%",
-        "verb": "CheckPath",
-        "iconUrl": "data:image/png;base64,${submitIcon}"
+        "type": "Action.ChooseFile"
       },
       "spacing": "Medium",
       "style": "Url",
@@ -90,11 +87,6 @@
                 {
                   "type": "ActionSet",
                   "actions": [
-                    {
-                      "type": "Action.ChooseFile",
-                      "verb": "ChooseFile",
-                      "isEnabled": "${$root.hasConfiguration}"
-                    },
                     {
                       "type": "Action.Execute",
                       "title": "%Widget_Template_Button/Save%",
