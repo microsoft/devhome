@@ -364,7 +364,7 @@
                         <Grid Padding="0,13" Visibility="{x:Bind ViewModel.TargetCloneResults, Converter={StaticResource CollectionVisibilityConverter}}"
                             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
                             BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
-                              HorizontalAlignment="Stretch">
+                            HorizontalAlignment="Stretch">
                             <Expander MaxHeight="200">
                                 <Expander.Header>
                                     <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
