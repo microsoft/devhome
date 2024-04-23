@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
@@ -104,12 +105,15 @@ public class FilePickerParser : IAdaptiveActionParser
         AdaptiveActionParserRegistration actionParsers,
         IList<AdaptiveWarning> warnings)
     {
-        var filePickerAction = new FilePickerAction();
+        var stringResource = new StringResource("DevHome.Common.pri", "DevHome.Common/Resources");
 
-        // Parse the JSON properties of the action
-        filePickerAction.Verb = inputJson.GetNamedString("verb", string.Empty);
-        filePickerAction.Title = inputJson.GetNamedString("title", "%FilePickerTitle%");
-        filePickerAction.Tooltip = inputJson.GetNamedString("tooltip", "%FilePickerToolTip%");
+        var filePickerAction = new FilePickerAction
+        {
+            // Parse the JSON properties of the action
+            Verb = inputJson.GetNamedString("verb", string.Empty),
+            Title = inputJson.GetNamedString("title", stringResource.GetLocalized("FilePickerTitle")),
+            Tooltip = inputJson.GetNamedString("tooltip", stringResource.GetLocalized("FilePickerToolTip")),
+        };
 
         return filePickerAction;
     }
