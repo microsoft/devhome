@@ -33,8 +33,6 @@ public class FilePickerAction : IAdaptiveActionElement
 
     public string Verb { get; set; } = string.Empty;
 
-    public bool RoundedCorners { get; set; } = true;
-
     public static readonly string CustomTypeString = "Action.ChooseFile";
 
     public JsonObject ToJson()
@@ -44,7 +42,6 @@ public class FilePickerAction : IAdaptiveActionElement
             ["type"] = JsonValue.CreateStringValue(ActionTypeString),
             ["title"] = JsonValue.CreateStringValue(Title),
             ["filePath"] = JsonValue.CreateStringValue(FilePath),
-            ["roundedCorners"] = JsonValue.CreateBooleanValue(RoundedCorners),
             ["isVisible"] = JsonValue.CreateBooleanValue(IsVisible),
             ["isEnabled"] = JsonValue.CreateBooleanValue(IsEnabled),
             ["verb"] = JsonValue.CreateStringValue(Verb),
