@@ -134,7 +134,7 @@ internal sealed class SSHWalletWidget : CoreWidget
                 SetActive();
                 break;
 
-            case WidgetAction.Upload:
+            case WidgetAction.ChooseFile:
                 HandleCheckPath(actionInvokedArgs);
                 break;
         }

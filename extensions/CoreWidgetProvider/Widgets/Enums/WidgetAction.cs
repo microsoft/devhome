@@ -49,5 +49,5 @@ public enum WidgetAction
 
     Cancel,
 
-    Upload,
+    ChooseFile,
 }

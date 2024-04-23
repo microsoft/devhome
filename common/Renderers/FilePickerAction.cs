@@ -109,8 +109,9 @@ public class FilePickerParser : IAdaptiveActionParser
 
         var filePickerAction = new FilePickerAction
         {
-            // Parse the JSON properties of the action
-            Verb = inputJson.GetNamedString("verb", string.Empty),
+            // Parse the JSON properties of the action.
+            // The Verb ChooseFile is not meant to be localized.
+            Verb = inputJson.GetNamedString("verb", "ChooseFile"),
             Title = inputJson.GetNamedString("title", stringResource.GetLocalized("FilePickerTitle")),
             Tooltip = inputJson.GetNamedString("tooltip", stringResource.GetLocalized("FilePickerToolTip")),
         };

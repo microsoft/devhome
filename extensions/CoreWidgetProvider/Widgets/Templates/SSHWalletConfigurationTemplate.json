@@ -92,7 +92,7 @@
                   "actions": [
                     {
                       "type": "Action.ChooseFile",
-                      "verb": "Upload",
+                      "verb": "ChooseFile",
                       "isEnabled": "${$root.hasConfiguration}"
                     },
                     {
