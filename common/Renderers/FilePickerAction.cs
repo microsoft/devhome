@@ -17,23 +17,39 @@ namespace DevHome.Common.Renderers;
 
 public class FilePickerAction : IAdaptiveActionElement
 {
-    public FilePickerAction()
-    {
-    }
-
-    public ActionType ActionType => ActionType.Custom;
-
-    public string ActionTypeString => CustomTypeString;
-
-    public AdaptiveCards.ObjectModel.WinUI3.ActionMode Mode { get; set; }
-
-    public ActionRole Role { get; set; }
-
+    // ChooseFile properties
     public string FilePath { get; set; } = string.Empty;
 
     public string Verb { get; set; } = string.Empty;
 
     public static readonly string CustomTypeString = "Action.ChooseFile";
+
+    // Inherited properties
+    public ActionType ActionType => ActionType.Custom;
+
+    public string ActionTypeString => CustomTypeString;
+
+    public JsonObject? AdditionalProperties { get; set; }
+
+    public IAdaptiveActionElement? FallbackContent { get; set; }
+
+    public FallbackType FallbackType { get; set; }
+
+    public string IconUrl { get; set; } = string.Empty;
+
+    public string? Id { get; set; } = CustomTypeString + "Id";
+
+    public bool IsEnabled { get; set; } = true;
+
+    public AdaptiveCards.ObjectModel.WinUI3.ActionMode Mode { get; set; }
+
+    public ActionRole Role { get; set; }
+
+    public string Style { get; set; } = string.Empty;
+
+    public string Title { get; set; } = string.Empty;
+
+    public string Tooltip { get; set; } = string.Empty;
 
     public JsonObject ToJson()
     {
@@ -54,24 +70,6 @@ public class FilePickerAction : IAdaptiveActionElement
 
         return json;
     }
-
-    public JsonObject? AdditionalProperties { get; set; }
-
-    public IAdaptiveActionElement? FallbackContent { get; set; }
-
-    public string IconUrl { get; set; } = string.Empty;
-
-    public string Style { get; set; } = string.Empty;
-
-    public string Title { get; set; } = string.Empty;
-
-    public string Tooltip { get; set; } = string.Empty;
-
-    public FallbackType FallbackType { get; set; }
-
-    public string? Id { get; set; } = CustomTypeString + "Id";
-
-    public bool IsEnabled { get; set; } = true;
 
     public void LaunchFilePicker()
     {
