@@ -71,7 +71,9 @@ public class FilePickerAction : IAdaptiveActionElement
         return json;
     }
 
-    public void LaunchFilePicker()
+    /// <summary>Launches the file picker dialog to select a file.</summary>
+    /// <returns>true if a file was selected, false otherwise.</returns>
+    public bool LaunchFilePicker()
     {
         var filePicker = new FileOpenPicker();
         filePicker.FileTypeFilter.Add("*");
@@ -87,7 +89,10 @@ public class FilePickerAction : IAdaptiveActionElement
         if (file != null)
         {
             FilePath = file.Path;
+            return true;
         }
+
+        return false;
     }
 }
 

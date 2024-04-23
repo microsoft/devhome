@@ -324,7 +324,12 @@ public partial class WidgetViewModel : ObservableObject
         else if (args.Action is FilePickerAction filePickerAction)
         {
             var dataToSend = string.Empty;
-            filePickerAction.LaunchFilePicker();
+            if (!filePickerAction.LaunchFilePicker())
+            {
+                // Don't send data if the user canceled the file picker.
+                return;
+            }
+
             var dataType = filePickerAction.ToJson().ValueType;
             if (dataType != Windows.Data.Json.JsonValueType.Null)
             {
