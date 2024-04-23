@@ -23,6 +23,8 @@ public class FilePickerAction : IAdaptiveActionElement
 
     public string Verb { get; set; } = string.Empty;
 
+    public bool UseIcon { get; set; }
+
     public static readonly string CustomTypeString = "Action.ChooseFile";
 
     // Inherited properties
@@ -34,7 +36,7 @@ public class FilePickerAction : IAdaptiveActionElement
 
     public IAdaptiveActionElement? FallbackContent { get; set; }
 
-    public FallbackType FallbackType { get; set; }
+    public FallbackType FallbackType { get; set; } = FallbackType.Drop;
 
     public string IconUrl { get; set; } = string.Empty;
 
@@ -114,6 +116,7 @@ public class FilePickerParser : IAdaptiveActionParser
             Verb = inputJson.GetNamedString("verb", "ChooseFile"),
             Title = inputJson.GetNamedString("title", stringResource.GetLocalized("FilePickerTitle")),
             Tooltip = inputJson.GetNamedString("tooltip", stringResource.GetLocalized("FilePickerToolTip")),
+            UseIcon = inputJson.GetNamedBoolean("useIcon", false),
         };
 
         return filePickerAction;
@@ -122,15 +125,41 @@ public class FilePickerParser : IAdaptiveActionParser
 
 public class FilePickerExecuteAction : IAdaptiveActionRenderer
 {
-    public UIElement? Render(IAdaptiveActionElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
+    public UIElement Render(IAdaptiveActionElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
         var renderer = new AdaptiveExecuteActionRenderer();
 
-        if (element is FilePickerAction)
+        if (element as FilePickerAction is FilePickerAction filePickerElement)
         {
-            var button = renderer.Render(element, context, renderArgs) as Button;
+            // Card author is not allowed to specify a custom icon for the file picker action.
+            filePickerElement.IconUrl = string.Empty;
 
-            return button;
+            var button = renderer.Render(element, context, renderArgs) as Button;
+            if (button != null)
+            {
+                var content = new StackPanel();
+                content.Orientation = Orientation.Horizontal;
+                content.Spacing = 8;
+                if (filePickerElement.UseIcon)
+                {
+                    content.Children.Add(new FontIcon
+                    {
+                        Glyph = "\xED25",
+                    });
+                }
+
+                if (!string.IsNullOrEmpty(filePickerElement.Title))
+                {
+                    content.Children.Add(new TextBlock
+                    {
+                        Text = filePickerElement.Title,
+                    });
+                }
+
+                button.Content = content;
+
+                return button;
+            }
         }
 
         return renderer.Render(element, context, renderArgs);
