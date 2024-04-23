@@ -7,8 +7,8 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
     {
         GetLocalRepositoryResult() = default;
 
-        explicit GetLocalRepositoryResult(winrt::Microsoft::Windows::DevHome::SDK::ILocalRepository const& repository);
-        GetLocalRepositoryResult(winrt::hresult const& e, hstring const& displayMessage, hstring const& diagnosticText);
+        const explicit GetLocalRepositoryResult(winrt::Microsoft::Windows::DevHome::SDK::ILocalRepository const& repository);
+        const GetLocalRepositoryResult(winrt::hresult const& e, hstring const& displayMessage, hstring const& diagnosticText);
         winrt::Microsoft::Windows::DevHome::SDK::ILocalRepository Repository();
         winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult Result();
 
