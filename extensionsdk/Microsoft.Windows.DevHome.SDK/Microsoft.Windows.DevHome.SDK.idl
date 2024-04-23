@@ -1390,10 +1390,7 @@ namespace Microsoft.Windows.DevHome.SDK
         // This function returns the requested information on a relative file path (under a
         // tracked repository root folder) from the source control management technology.
         // The requested information includes a predefined set of properties FE is aware of.
-        // These properties are System.VersionControl.Status, System.VersionControl.LastChangeDate, 
-        // System.VersionControl.LastChangeAuthorEmail, System.VersionControl.LastChangeAuthorName,
-        // System.VersionControl.LastChangeID, System.VersionControl.LastChangeMessage, 
-        // System.VersionControl.CurrentFolderStatus
+        // These properties can be found inside docs/extensions/LocalRepository/readme.md
         Windows.Foundation.Collections.IPropertySet GetProperties(String[] properties, String relativePath);
     };
 
