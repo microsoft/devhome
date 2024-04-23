@@ -61,6 +61,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PRIResource Include="Strings\en-us\Resources.resw" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Update="Environments\CustomControls\CardBody.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>

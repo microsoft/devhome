@@ -22,7 +22,6 @@
         <Path>DevHome.QuietBackgroundProcesses.ElevatedServer.exe</Path>
         <Instancing>singleInstance</Instancing>
         <ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession" />
-        <ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine" />
       </OutOfProcessServer>
     </Extension>
   </Extensions>
@@ -37,12 +36,27 @@
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.22000.0" />
     <PackageDependency Name="Microsoft.VCLibs.140.00.UWPDesktop" MinVersion="14.0.24217.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.1.5" MinVersion="5001.58.448.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
   </Dependencies>
   <Resources>
-    <Resource Language="x-generate" />
+    <!-- Manually list the resources available in the package since WAP Project when combined with WinUI 3.0 does not generate them with x-generate -->
+    <Resource Language="EN-US" />
+    <Resource Language="DE-DE" />
+    <Resource Language="ES-ES" />
+    <Resource Language="FR-FR" />
+    <Resource Language="IT-IT" />
+    <Resource Language="JA-JP" />
+    <Resource Language="KO-KR" />
+    <Resource Language="PT-BR" />
+    <Resource Language="QPS-PLOC" />
+    <Resource Language="QPS-PLOCA" />
+    <Resource Language="QPS-PLOCM" />
+    <Resource Language="RU-RU" />
+    <Resource Language="ZH-CN" />
+    <Resource Language="ZH-TW" />
   </Resources>
   <Applications>
-    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Logos\MedTile.png" Square44x44Logo="Assets\Logos\AppList.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Logos\WideTile.png" />
         <uap:SplashScreen Image="Assets\Logos\SplashScreen.png" />
@@ -81,23 +95,11 @@
           </com:ComServer>
         </com:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameCoreExt" Description="ms-resource:AppDescriptionCoreExt">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription">
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>
                   <CreateInstance ClassId="426A52D6-8007-4894-A946-CF80F39507F1" />
-                </Activation>
-                <!-- Best practice is to define SupportedInterfaces, even if it is empty -->
-                <SupportedInterfaces />
-              </DevHomeProvider>
-            </uap3:Properties>
-          </uap3:AppExtension>
-        </uap3:Extension>
-        <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID2" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameHyperVExt" Description="ms-resource:AppDescriptionHyperVExt">
-            <uap3:Properties>
-              <DevHomeProvider>
-                <Activation>
                   <CreateInstance ClassId="F8B26528-976A-488C-9B40-7198FB425C9E" />
                 </Activation>
                 <SupportedInterfaces>
@@ -152,7 +154,7 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_Memory" DisplayName="ms-resource:WidgetDisplayNameMemory" Description="ms-resource:WidgetDescriptionMemory" AllowMultiple="false" IsCustomizable="false">
+                  <Definition Id="System_Memory" DisplayName="ms-resource:WidgetDisplayNameMemory" Description="ms-resource:WidgetDescriptionMemory" AllowMultiple="true" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -242,7 +244,7 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_CPUUsage" DisplayName="ms-resource:WidgetDisplayNameCPU" Description="ms-resource:WidgetDescriptionCPU" AllowMultiple="false" IsCustomizable="false">
+                  <Definition Id="System_CPUUsage" DisplayName="ms-resource:WidgetDisplayNameCPU" Description="ms-resource:WidgetDescriptionCPU" AllowMultiple="true" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />

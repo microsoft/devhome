@@ -42,6 +42,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PRIResource Include="Strings\en-us\Resources.resw" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\common\DevHome.Common.csproj" />
   </ItemGroup>
 
