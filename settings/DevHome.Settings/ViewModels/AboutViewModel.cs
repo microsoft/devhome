@@ -1,14 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+using Serilog;
+using Windows.Storage;
+using Windows.System;
 
 namespace DevHome.Settings.ViewModels;
 
@@ -29,6 +33,20 @@ public partial class AboutViewModel : ObservableObject
             new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
             new(stringResource.GetLocalized("Settings_About_Header"), typeof(AboutViewModel).FullName!),
         };
+    }
+
+    [RelayCommand]
+    private async Task OpenThirdPartyNoticeAsync()
+    {
+        try
+        {
+            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/NOTICE.txt"));
+            await Launcher.LaunchFileAsync(file);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, $"Failed to launch third party notice file. Error: {ex}");
+        }
     }
 
     private static string GetVersionDescription()
