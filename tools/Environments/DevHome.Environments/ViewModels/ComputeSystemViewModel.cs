@@ -270,8 +270,6 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                 "Environment_OperationInvoked_Event",
                 LogLevel.Measure,
                 new EnvironmentOperationUserEvent(completionStatus, data.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, data.AdditionalContext, data.ActivityId));
-
-            IsOperationInProgress = false;
         });
     }
 
