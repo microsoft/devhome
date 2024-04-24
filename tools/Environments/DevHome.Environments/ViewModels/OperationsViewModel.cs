@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
+using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
@@ -36,7 +37,9 @@ public partial class OperationsViewModel
 
     private Action? DevHomeAction { get; }
 
-    private WinUIEx.WindowEx? windowEx;
+    private WinUIEx.WindowEx? _windowEx;
+
+    private StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
     public OperationsViewModel(string name, string icon, Func<string, Task<ComputeSystemOperationResult>> command, WinUIEx.WindowEx? windowEx)
     {
@@ -44,7 +47,7 @@ public partial class OperationsViewModel
         Name = name;
         IconGlyph = icon;
         ExtensionTask = command;
-        this.windowEx = windowEx;
+        this._windowEx = windowEx;
     }
 
     public OperationsViewModel(string name, string icon, Action command)
@@ -62,14 +65,14 @@ public partial class OperationsViewModel
         {
             ContentDialog noWifiDialog = new ContentDialog
             {
-                Title = "Delete Environment",
-                Content = "Are you sure you would like to delete this enviroment permanently?",
-                PrimaryButtonText = "Delete",
-                SecondaryButtonText = "Cancel",
-                XamlRoot = windowEx?.Content.XamlRoot,
+                Title = _stringResource.GetLocalized("DeleteEnviroment_Title"),
+                Content = _stringResource.GetLocalized("DeleteEnviroment_Content"),
+                PrimaryButtonText = _stringResource.GetLocalized("DeleteEnviroment_ConfirmButton"),
+                SecondaryButtonText = _stringResource.GetLocalized("DeleteEnviroment_CancelButton"),
+                XamlRoot = _windowEx?.Content.XamlRoot,
             };
 
-            windowEx?.DispatcherQueue.TryEnqueue(async () =>
+            _windowEx?.DispatcherQueue.TryEnqueue(async () =>
             {
                 var result = await noWifiDialog.ShowAsync();
 
