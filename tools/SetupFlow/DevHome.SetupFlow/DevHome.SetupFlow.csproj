@@ -73,10 +73,6 @@
   </ItemGroup>
 
   <ItemGroup>
-      <PRIResource Include="Strings\en-us\Resources.resw" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Assets\DevHomeFluentIcons.ttf" />
     <None Remove="Controls\PackageDetailsSettingsCard.xaml" />
     <None Remove="Controls\SetupFlowNavigation.xaml" />

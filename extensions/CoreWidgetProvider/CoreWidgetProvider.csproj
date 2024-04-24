@@ -34,10 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PRIResource Include="Strings\en-us\Resources.resw" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Widgets\Templates\LoadingTemplate.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

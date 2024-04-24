@@ -128,7 +128,7 @@ Try {
     $uapAppExtension = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10/3}AppExtension");
 
     # Update the appxmanifest
-    $appxmanifestPath = (Join-Path $env:Build_RootDirectory "src\Package.appxmanifest")
+    $appxmanifestPath = (Join-Path $env:Build_RootDirectory "Packaging\Package.appxmanifest")
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
     $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = $env:msix_version
     if (-not ([string]::IsNullOrEmpty($newPackageName))) {
