@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.UI.Xaml.Automation;
 
 namespace DevHome.QuietBackgroundProcesses.UI;
 
@@ -19,6 +20,8 @@ public class ProcessData
     public ProcessData()
     {
         Name = string.Empty;
+        ServiceName = string.Empty;
+        DisplayName = string.Empty;
         PackageFullName = string.Empty;
         Aumid = string.Empty;
         Path = string.Empty;
@@ -27,6 +30,10 @@ public class ProcessData
     public long Pid { get; set; }
 
     public string Name { get; set; }
+
+    public string ServiceName { get; set; }
+
+    public string DisplayName { get; set; }
 
     public string PackageFullName { get; set; }
 
