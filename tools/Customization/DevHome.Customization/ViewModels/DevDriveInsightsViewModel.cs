@@ -330,12 +330,11 @@ public partial class DevDriveInsightsViewModel : ObservableObject
                 var matchingSubdirectory = subDirectories.FirstOrDefault(subdir => subdir.StartsWith(cacheDirectory, StringComparison.OrdinalIgnoreCase));
                 if (Directory.Exists(matchingSubdirectory))
                 {
-                    if (matchingSubdirectory.Contains("PythonSoftwareFoundation"))
+                    var actualCacheDirectory = Path.Join(matchingSubdirectory, "LocalCache", "Local", "pip", CacheStr);
+                    if (matchingSubdirectory.Contains("PythonSoftwareFoundation") && Directory.Exists(actualCacheDirectory))
                     {
-                        return Path.Join(matchingSubdirectory, "LocalCache", "Local", "pip", CacheStr);
+                        return actualCacheDirectory;
                     }
-
-                    return matchingSubdirectory;
                 }
             }
         }
@@ -381,7 +380,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject
                 existingCacheLocation,
                 exampleDirectory!, // example location on dev drive to move cache to
                 cache.EnvironmentVariable!, // environmentVariableToBeSet
-                existingDevDriveLetters);
+                existingDevDriveLetters,
+                !string.IsNullOrEmpty(environmentVariablePath));
             DevDriveOptimizerCardCollection.Add(card);
         }
 

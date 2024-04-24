@@ -21,7 +21,7 @@ parameters:
 
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
-  MSIXVersion: '0.1201'
+  MSIXVersion: '0.1301'
   VersionOfSDK: '0.400'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -129,6 +129,7 @@ extends:
       - ${{ each configuration in parameters.Configurations }}:
         - ${{ each platform in parameters.Platforms }}:
           - job: Build_${{ platform }}_${{ configuration }}
+            timeoutInMinutes: 120
             steps:
             - task: NuGetToolInstaller@1
 

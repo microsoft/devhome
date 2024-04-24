@@ -230,7 +230,7 @@
     <comment>Cancel button text in the dialog asking to log in to Hyper-V VM.</comment>
   </data>
   <data name="WaitForLoginRequest.Description" xml:space="preserve">
-    <value>You have an action item to follow</value>
+    <value>Complete the action items to continue</value>
     <comment>Text describing the purpose of the dialog asking to log in to Hyper-V VM.</comment>
   </data>
   <data name="WaitForLoginRequest.DismissText" xml:space="preserve">
@@ -238,19 +238,19 @@
     <comment>Dismiss button text in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
   </data>
   <data name="WaitForLoginRequest.LoginRequiredDescriptionText" xml:space="preserve">
-    <value>Please log in to the Hyper-V to continue the set up, once you logged in please click ‘retry’</value>
+    <value>To continue set up, sign into Hyper-V then select 'retry' below</value>
     <comment>Warning description text in the dialog asking to log in to Hyper-V VM.</comment>
   </data>
   <data name="WaitForLoginRequest.LoginRequiredDescriptionTextAfterLastAttempt" xml:space="preserve">
-    <value>Failed to find a logged in user on your Hyper-V</value>
+    <value>To set up this flow, you must start again.</value>
     <comment>Error description text shown in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
   </data>
   <data name="WaitForLoginRequest.LoginRequiredText" xml:space="preserve">
-    <value>Log in required</value>
+    <value>Hyper-V sign in required</value>
     <comment>Warning text in the dialog asking to log in to Hyper-V VM.</comment>
   </data>
   <data name="WaitForLoginRequest.LoginRequiredTextAfterLastAttempt" xml:space="preserve">
-    <value>Terminating setup</value>
+    <value>This set up has ended</value>
     <comment>Error text shown in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
   </data>
   <data name="WaitForLoginRequest.OkText" xml:space="preserve">
@@ -258,7 +258,7 @@
     <comment>Ok button text in the dialog asking to log in to Hyper-V VM.</comment>
   </data>
   <data name="WaitForLoginRequest.Title" xml:space="preserve">
-    <value>Please log on to your Hyper-V</value>
+    <value>Sign in to Hyper-V</value>
     <comment>Title text of the dialog asking to log in to Hyper-V VM.</comment>
   </data>
   <data name="AdaptiveCardStateNotRecognizedError" xml:space="preserve">
@@ -328,5 +328,13 @@
   <data name="SettingsCardLabel" xml:space="preserve">
     <value>Choose an image to use</value>
     <comment>Label text for a list of cards that appear in the UI</comment>
+  </data>
+  <data name="WaitForLoginRequest.LoginRequiredDescriptionTextAfterLastAttempt2" xml:space="preserve">
+    <value>After 3 attempts, failed to find a logged in user. This ends the set up.</value>
+    <comment>Error description text shown in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
+  </data>
+  <data name="WaitForLoginRequest.LoginRequiredTextAfterLastAttempt2" xml:space="preserve">
+    <value>Maximum attempts reached</value>
+    <comment>Error description text shown in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
   </data>
 </root>

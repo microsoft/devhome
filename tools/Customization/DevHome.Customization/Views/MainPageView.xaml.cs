@@ -20,5 +20,11 @@ public sealed partial class MainPageView : UserControl
         InitializeComponent();
 
         ViewModel = Application.Current.GetService<MainPageViewModel>();
+        this.DataContext = ViewModel;
+    }
+
+    private async void UserControl_Loaded(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.LoadViewModelContentAsync();
     }
 }

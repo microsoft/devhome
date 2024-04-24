@@ -38,9 +38,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private static readonly BitmapImage DarkCaution = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
     private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
     private static readonly BitmapImage DarkSuccess = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkSuccess.png"));
+    private static readonly BitmapImage DarkInfo = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkInfo.png"));
     private static readonly BitmapImage LightCaution = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightCaution.png"));
     private static readonly BitmapImage LightError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
     private static readonly BitmapImage LightSuccess = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightSuccess.png"));
+    private static readonly BitmapImage LightInfo = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightInfo.png"));
 
 #pragma warning disable SA1310 // Field names should not contain underscore
     private const int MAX_RETRIES = 1;
@@ -112,6 +114,36 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private int _tasksFailed;
 
     /// <summary>
+    /// Used in the UI header text.
+    /// </summary>
+    [ObservableProperty]
+    private string _headerText;
+
+    /// <summary>
+    /// Used in the UI as title for the executed tasks/logs.
+    /// </summary>
+    [ObservableProperty]
+    private string _tasksTitleText;
+
+    /// <summary>
+    /// Used in the UI as setup target text (target name).
+    /// </summary>
+    [ObservableProperty]
+    private string _setupTargetText;
+
+    /// <summary>
+    /// Controls if SetupTargetText should be shown.
+    /// </summary>
+    [ObservableProperty]
+    private bool _showSetupTarget;
+
+    /// <summary>
+    /// Controls if indeterminate progress bar should be shown.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isIndeterminateProgressBar;
+
+    /// <summary>
     /// Used in the UI to show the user how many tasks have been executed.
     /// </summary>
     [ObservableProperty]
@@ -165,6 +197,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         _failedTasks.Clear();
         ActionCenterItems = new ObservableCollection<ActionCenterMessages>();
         ShowRetryButton = Visibility.Collapsed;
+        if (Orchestrator.IsSettingUpATargetMachine)
+        {
+            IsIndeterminateProgressBar = true;
+        }
+
         await StartAllTasks(TasksToRun);
     }
 
@@ -200,6 +237,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             {
                 messageToDisplay.ShouldShowStatusSymbolIcon = true;
                 messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkSuccess : LightSuccess;
+            }
+            else if (severityKind == MessageSeverityKind.Info)
+            {
+                messageToDisplay.ShouldShowStatusSymbolIcon = true;
+                messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkInfo : LightInfo;
             }
 
             Messages.Insert(Messages.Count - _numberOfExecutingTasks, messageToDisplay);
@@ -245,6 +287,30 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         IsStepPage = false;
         IsNavigationBarVisible = false;
         NextPageButtonText = stringResource.GetLocalized(StringResourceKey.LoadingScreenGoToSummaryButtonContent);
+        if (Orchestrator.IsSettingUpATargetMachine)
+        {
+            HeaderText = StringResource.GetLocalized(StringResourceKey.LoadingPageHeaderTargetText);
+            TasksTitleText = StringResource.GetLocalized(StringResourceKey.LoadingLogsTitleText);
+            ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgressForTarget);
+            ShowSetupTarget = true;
+            IsIndeterminateProgressBar = true;
+        }
+        else
+        {
+            if (Orchestrator.CurrentSetupFlowKind == SetupFlowKind.CreateEnvironment)
+            {
+                HeaderText = StringResource.GetLocalized(StringResourceKey.LoadingPageHeaderTargetText);
+            }
+            else
+            {
+                HeaderText = StringResource.GetLocalized(StringResourceKey.LoadingPageHeaderLocalText);
+            }
+
+            TasksTitleText = StringResource.GetLocalized(StringResourceKey.LoadingTasksTitleText);
+            SetupTargetText = string.Empty;
+            IsIndeterminateProgressBar = false;
+        }
+
         ShowRetryButton = Visibility.Collapsed;
         _failedTasks = new List<TaskInformation>();
         ActionCenterItems = new();
@@ -302,7 +368,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     private void SetExecutingTaskAndActionCenter()
     {
-        ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
+        if (!Orchestrator.IsSettingUpATargetMachine)
+        {
+            ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
+        }
+
         ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, 0);
     }
 
@@ -428,6 +498,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         });
 
         // All the tasks are done.  Re-try logic follows.
+        IsIndeterminateProgressBar = false;
+
         if (_failedTasks.Count == 0)
         {
             _log.Information("All tasks succeeded.  Moving to next page");
@@ -471,7 +543,14 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
-                ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
+                if (!Orchestrator.IsSettingUpATargetMachine)
+                {
+                    ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
+                }
+                else
+                {
+                    SetupTargetText = StringResource.GetLocalized(StringResourceKey.LoadingPageSetupTargetText, taskInformation.TaskToExecute.TargetName);
+                }
 
                 loadingMessage.ShouldShowProgressRing = true;
                 Messages.Add(loadingMessage);
@@ -493,7 +572,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
             window.DispatcherQueue.TryEnqueue(() =>
             {
-                // Keep decrement inside TryEnqueue to encorce "locking"
+                // Keep decrement inside TryEnqueue to enforce "locking"
                 _numberOfExecutingTasks--;
                 ChangeMessage(taskInformation, loadingMessage, taskFinishedState);
                 TasksCompleted++;

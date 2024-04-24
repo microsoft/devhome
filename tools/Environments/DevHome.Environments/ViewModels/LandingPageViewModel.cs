@@ -29,9 +29,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(LandingPageViewModel));
 
+    private readonly AutoResetEvent _computeSystemLoadWait = new(false);
+
     private readonly WindowEx _windowEx;
 
-    private readonly EnvironmentsExtensionsService _extensionsService;
+    private readonly EnvironmentsExtensionsService _environmentExtensionsService;
 
     private readonly NotificationService _notificationService;
 
@@ -42,6 +44,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private readonly StringResource _stringResource;
 
     private readonly object _lock = new();
+
+    private bool _disposed;
 
     private bool _wasSyncButtonClicked;
 
@@ -68,6 +72,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
+    [ObservableProperty]
+    private bool _shouldShowCreateEnvironmentButton;
+
     public ObservableCollection<string> Providers { get; set; }
 
     private CancellationTokenSource _cancellationTokenSource = new();
@@ -80,7 +87,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         WindowEx windowEx)
     {
         _computeSystemManager = manager;
-        _extensionsService = extensionsService;
+        _environmentExtensionsService = extensionsService;
         _notificationService = notificationService;
         _windowEx = windowEx;
         _navigationService = navigationService;
@@ -191,6 +198,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 return;
             }
 
+            ShouldShowCreateEnvironmentButton = _environmentExtensionsService.IsEnvironmentCreationEnabled;
+
             // If the page has already loaded once, then we don't need to re-load the compute systems as that can take a while.
             // The user can click the sync button to refresh the compute systems. However, there may be new operations that have started
             // since the last time the page was loaded. So we need to add those to the view model quickly.
@@ -213,7 +222,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
 
         ShowLoadingShimmer = true;
-        await _extensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
+        await _environmentExtensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
         ShowLoadingShimmer = false;
 
         lock (_lock)
@@ -245,7 +254,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         foreach (var operation in curOperations)
         {
             // this is a new operation so we need to create a view model for it.
-            ComputeSystemCards.Add(new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, ComputeSystemCards.Remove, operation));
+            ComputeSystemCards.Add(new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, ComputeSystemCards.Remove, AddNewlyCreatedComputeSystem, operation));
             _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
         }
     }
@@ -287,10 +296,10 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                         _computeSystemManager,
                         computeSystemList.ElementAt(i),
                         provider,
+                        ComputeSystemCards.Remove,
                         packageFullName,
                         _windowEx);
                     await computeSystemViewModel.InitializeCardDataAsync();
-
                     ComputeSystemCards.Add(computeSystemViewModel);
                 }
             }
@@ -299,6 +308,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 _log.Error(ex, $"Exception occurred while adding Compute systems to environments page for provider: {provider.Id}");
             }
         });
+
+        _computeSystemLoadWait.Set();
     }
 
     /// <summary>
@@ -385,8 +396,47 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
     }
 
+    private void AddNewlyCreatedComputeSystem(ComputeSystemViewModel computeSystemViewModel)
+    {
+        Task.Run(() =>
+        {
+            if (IsLoading)
+            {
+                _computeSystemLoadWait.WaitOne();
+            }
+
+            lock (_lock)
+            {
+                var viewModel = ComputeSystemCards.FirstOrDefault(viewBase => viewBase.ComputeSystemId.Equals(computeSystemViewModel.ComputeSystemId, StringComparison.OrdinalIgnoreCase));
+
+                if (viewModel == null)
+                {
+                    _windowEx.DispatcherQueue.EnqueueAsync(() =>
+                    {
+                        ComputeSystemCards.Add(computeSystemViewModel);
+                    });
+                }
+            }
+        });
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _computeSystemLoadWait.Dispose();
+            }
+
+            _disposed = true;
+        }
+    }
+
     public void Dispose()
     {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
 }

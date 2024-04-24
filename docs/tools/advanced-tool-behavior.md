@@ -2,7 +2,32 @@
 
 ## Headers
 
-Coming soon.
+The default header when you create a Tool page is the string specified in `NavigationPane.Content` in [Creating a tool](./creating-a-tool.md).
+
+### BreadcrumbBar headers
+
+If you would like your page's header to be a [BreadcrumbBar](https://learn.microsoft.com/windows/apps/design/controls/breadcrumbbar), you can easily do this by using the `BreadcrumbBarDataTemplate`.
+
+Add the following attributes to your page's View (.xaml file):
+```xml
+xmlns:behaviors="using:DevHome.Common.Behaviors"
+behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
+behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
+```
+In your page's ViewModel, create a  `Breacrumbs` property and populate it with as many [`Breadcrumb`](../../common/Models/Breadcrumb.cs)s as appropriate
+```cs
+public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
+
+...
+
+Breadcrumbs = new ObservableCollection<Breadcrumb>
+{
+    new(stringResource.GetLocalized("<first breadcrumb string>"), typeof(<first breadcrumb ViewModel>).FullName!),
+    new(stringResource.GetLocalized("<second breadcrumb string>"), typeof(<second breacrumb ViewModel>).FullName!),
+};
+```
+
+For a working example of this in Dev Home, see [AboutPage.xaml](../../settings/DevHome.Settings/Views/AboutPage.xaml) and [AboutViewModel.cs](../../settings/DevHome.Settings/ViewModels/AboutViewModel.cs).
 
 ## Navigation
 

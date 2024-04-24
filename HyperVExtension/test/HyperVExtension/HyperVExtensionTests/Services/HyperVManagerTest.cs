@@ -303,24 +303,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
     }
 
     [TestMethod]
-    public void ConnectToVirtualMachineDoesNotThrow()
-    {
-        // Arrange
-        SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
-        var hyperVManager = TestHost.GetService<IHyperVManager>();
-        SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
-            .Returns(() =>
-            {
-                // Simulate PowerShell won't return an object here, so simulate this.
-                return CreatePSObjectCollection(new PSCustomObjectMock());
-            });
-
-        // This should not throw an exception
-        hyperVManager.ConnectToVirtualMachine(Guid.NewGuid());
-    }
-
-    [TestMethod]
     public void GetVirtualMachineCheckpointsReturnCheckpoints()
     {
         // Arrange

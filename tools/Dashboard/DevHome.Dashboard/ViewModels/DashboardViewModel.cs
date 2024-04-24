@@ -9,6 +9,8 @@ namespace DevHome.Dashboard.ViewModels;
 
 public partial class DashboardViewModel : ObservableObject
 {
+    public IWidgetServiceService WidgetServiceService { get; }
+
     public IWidgetHostingService WidgetHostingService { get; }
 
     public IWidgetIconService WidgetIconService { get; }
@@ -22,10 +24,12 @@ public partial class DashboardViewModel : ObservableObject
     private bool _hasWidgetService;
 
     public DashboardViewModel(
+        IWidgetServiceService widgetServiceService,
         IWidgetHostingService widgetHostingService,
         IWidgetIconService widgetIconService,
         IWidgetScreenshotService widgetScreenshotService)
     {
+        WidgetServiceService = widgetServiceService;
         WidgetHostingService = widgetHostingService;
         WidgetIconService = widgetIconService;
         WidgetScreenshotService = widgetScreenshotService;

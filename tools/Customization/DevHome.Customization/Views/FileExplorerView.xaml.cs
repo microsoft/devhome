@@ -8,16 +8,17 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Customization.Views;
 
-public sealed partial class DeveloperFileExplorerPage : Page
+public sealed partial class FileExplorerView : UserControl
 {
-    public DeveloperFileExplorerViewModel ViewModel
+    public FileExplorerViewModel ViewModel
     {
         get;
     }
 
-    public DeveloperFileExplorerPage()
+    public FileExplorerView()
     {
-        ViewModel = Application.Current.GetService<DeveloperFileExplorerViewModel>();
-        this.InitializeComponent();
+        InitializeComponent();
+
+        ViewModel = Application.Current.GetService<FileExplorerViewModel>();
     }
 }

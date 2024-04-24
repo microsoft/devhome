@@ -25,9 +25,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\InitialVMGalleryCreationForm.json">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</Content>
-	<Content Include="Templates\ReviewFormForVMGallery.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\ReviewFormForVMGallery.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -40,7 +40,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.300.443" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.400.460" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Serilog" Version="3.1.1" />
@@ -76,10 +76,10 @@
     x86 binaries can be deployed on both x64 and x86 VMs.
     -->
   <ItemGroup>
-    <None Include="..\DevSetupAgent\bin\x86\$(Configuration)\DevSetupAgent_x86.zip" Condition="('$(Platform)'=='x64' or '$(Platform)'=='x86') and ('$(BuildingInsideVisualStudio)' != 'True' or Exists('..\HyperVExtension\src\DevSetupAgent\bin\x86\$(Configuration)\DevSetupAgent_x86.zip'))">
+    <None Include="..\DevSetupAgent\bin\x86\$(Configuration)\DevSetupAgent_x86.zip" Condition="('$(Platform)'=='x64' or '$(Platform)'=='x86') and ('$(BuildingInsideVisualStudio)' != 'True' or Exists('..\HyperVExtension\src\DevSetupAgent\bin\x86\$(Configuration)\DevSetupAgent_x86.zip')) and ('$(IgnoreZipPackages)' != 'True')">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\DevSetupAgent\bin\arm64\$(Configuration)\DevSetupAgent_arm64.zip" Condition="'$(Platform)'=='arm64' and ('$(BuildingInsideVisualStudio)' != 'True' or Exists('..\HyperVExtension\src\DevSetupAgent\bin\arm64\$(Configuration)\DevSetupAgent_arm64.zip'))">
+    <None Include="..\DevSetupAgent\bin\arm64\$(Configuration)\DevSetupAgent_arm64.zip" Condition="'$(Platform)'=='arm64' and ('$(BuildingInsideVisualStudio)' != 'True' or Exists('..\HyperVExtension\src\DevSetupAgent\bin\arm64\$(Configuration)\DevSetupAgent_arm64.zip')) and ('$(IgnoreZipPackages)' != 'True')">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

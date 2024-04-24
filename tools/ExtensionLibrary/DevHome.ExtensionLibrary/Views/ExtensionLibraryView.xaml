@@ -74,7 +74,7 @@
                                     <!-- This StackPanel is a workaround for the bug https://github.com/CommunityToolkit/Windows/issues/396 -->
                                     <Button x:Uid="MoreOptionsButton"
                                             Content="&#xe712;"
-                                            Height="36" Width="36"
+                                            Height="36" MinWidth="36"
                                             FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                             Background="Transparent"
                                             BorderThickness="0">

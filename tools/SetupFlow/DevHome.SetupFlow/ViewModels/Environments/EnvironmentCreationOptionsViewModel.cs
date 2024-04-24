@@ -62,6 +62,9 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     [ObservableProperty]
     private string _sessionErrorMessage;
 
+    [ObservableProperty]
+    private string _adaptiveCardLoadingMessage;
+
     public EnvironmentCreationOptionsViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
@@ -92,6 +95,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         _elementRegistration.Set(DevHomeContentDialogContent.AdaptiveElementType, new DevHomeContentDialogContentParser());
         _adaptiveCardRenderingService = renderingService;
         Orchestrator.CurrentSetupFlowKind = SetupFlowKind.CreateEnvironment;
+        IsInitialAdaptiveCardPage = true;
     }
 
     /// <summary>
@@ -124,16 +128,24 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     /// </summary>
     protected async override Task OnEachNavigateToAsync()
     {
+        // Don't get a new adaptive card session if we went from review page back to
+        // configure environment creation page.
+        if (Orchestrator.IsNavigatingBackward)
+        {
+            return;
+        }
+
         await Task.CompletedTask;
 
         var curSelectedProviderId = _curProviderDetails?.ComputeSystemProvider?.Id ?? string.Empty;
         var upcomingSelectedProviderId = _upcomingProviderDetails?.ComputeSystemProvider?.Id;
 
-        // Selected compute system provider  may havechanged so we need to update the adaptive card in the UI
-        // with new a adaptive card from the new provider.
+        // Selected compute system provider changed so we need to update the adaptive card in the UI
+        // with a new adaptive card from the new provider.
         _curProviderDetails = _upcomingProviderDetails;
 
         IsAdaptiveCardSessionLoaded = false;
+        AdaptiveCardLoadingMessage = StringResource.GetLocalized(StringResourceKey.EnvironmentCreationAdaptiveCardLoadingMessage, _curProviderDetails.ComputeSystemProvider.DisplayName);
 
         // Its possible that an extension could take a long time to load the adaptive card session.
         // So we run this on a background thread to prevent the UI from freezing.
@@ -223,6 +235,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         _windowEx.DispatcherQueue.TryEnqueue(async () =>
         {
             IsAdaptiveCardSessionLoaded = false;
+            AdaptiveCardLoadingMessage = StringResource.GetLocalized(StringResourceKey.EnvironmentCreationAdaptiveCardLoadingMessage, _curProviderDetails.ComputeSystemProvider.DisplayName);
 
             // Send the inputs and actions that the user entered back to the extension.
             await _extensionAdaptiveCardSession.OnAction(args.Action.ToJson().Stringify(), args.Inputs.AsJson().Stringify());
@@ -301,6 +314,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     {
         var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
         renderer.ElementRenderers.Set(DevHomeSettingsCardChoiceSet.AdaptiveElementType, new ItemsViewChoiceSet("SettingsCardWithButtonThatLaunchesContentDialog"));
+        renderer.ElementRenderers.Set("Input.ChoiceSet", new DevHomeChoiceSetWithDynamicRefresh());
 
         // We need to keep the same renderer for the ActionSet that is hooked up to the orchestrator as it will have the adaptive card
         // context needed to invoke the adaptive card actions from outside the adaptive card.

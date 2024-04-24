@@ -2,8 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
@@ -19,6 +21,8 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecip
 
     public EnvironmentCreationOptionsViewModel ViewModel => (EnvironmentCreationOptionsViewModel)this.DataContext;
 
+    private FrameworkElement _adaptiveCardFrameWorkElement;
+
     public EnvironmentCreationOptionsView()
     {
         this.InitializeComponent();
@@ -27,7 +31,12 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecip
 
     private void ViewUnloaded(object sender, RoutedEventArgs e)
     {
-        AdaptiveCardGrid.Children.Clear();
+        // View unloaded so re-add elements back to original card now that we're done
+        if (_adaptiveCardFrameWorkElement is Grid cardGrid)
+        {
+            AddUIElementsToGrid(AdaptiveCardGrid, cardGrid);
+        }
+
         WeakReferenceMessenger.Default.UnregisterAll(this);
     }
 
@@ -63,16 +72,38 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecip
     {
         try
         {
-            if (adaptiveCardData?.FrameworkElement != null)
+            _adaptiveCardFrameWorkElement = adaptiveCardData?.FrameworkElement;
+
+            // The grid may be in use by other views. Remove all the child elements
+            // then add them to this views page to further prevent exceptions.
+            if (_adaptiveCardFrameWorkElement is Grid cardGrid)
             {
-                AdaptiveCardGrid.Children.Clear();
-                AdaptiveCardGrid.Children.Add(adaptiveCardData.FrameworkElement);
+                AddUIElementsToGrid(cardGrid, AdaptiveCardGrid);
             }
         }
         catch (Exception ex)
         {
             // Log the exception
             _log.Error(ex, "Error adding adaptive card UI in EnvironmentCreationOptionsView");
+        }
+    }
+
+    private void AddUIElementsToGrid(Grid gridToRemoveItems, Grid gridToAddItems)
+    {
+        var listOfElements = new List<UIElement>();
+        foreach (var item in gridToRemoveItems.Children)
+        {
+            listOfElements.Add(item);
+        }
+
+        if (listOfElements.Count > 0)
+        {
+            gridToRemoveItems.Children.Clear();
+            gridToAddItems.Children.Clear();
+            foreach (var item in listOfElements)
+            {
+                gridToAddItems.Children.Add(item);
+            }
         }
     }
 }

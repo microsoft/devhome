@@ -16,16 +16,16 @@ MainPage hosts links to other pages via SettingsCard controls. These pages conta
 New feature additions to should expect to implement the following:
 
 1. **View**: Generally a StackPanel that contains all the user interface for the new feature or setting(s). This View should generally be implemented as a UserControl that can be hosted in any number of Pages.
-    - e.g. [DeveloperFileExplorerView](Views\DeveloperFileExplorerView.xaml)
+    - e.g. [FileExplorerView](Views\FileExplorerView.xaml)
 
 1. **ViewModel**: Generally the implementation of data binding and commands needed to support the View, including notifications to trigger changes in the View's UI.
-    - e.g. [DeveloperFileExplorerViewModel](ViewModels\DeveloperFileExplorerViewModel.cs)
+    - e.g. [FileExplorerViewModel](ViewModels\FileExplorerViewModel.cs)
 
 1. **Page**: Optionally include a page that hosts the View as a navigation target from the [MainPage](Views\MainPage.xaml). This may not be needed if the settings are minimal and can be hosted on the [MainPageView](Views\MainPageView.xaml) (e.g., as a SettingsExpander).
-    - e.g. [DeveloperFileExplorerPage](Views\DeveloperFileExplorerPage.xaml)
+    - e.g. [FileExplorerPage](Views\FileExplorerPage.xaml)
 
 1. **Model**: Any implementation details for the setting or feature, i.e. the data model and any business or validation logic.
-    - e.g. [DeveloperFileExplorerSettings](Models\DeveloperFileExplorerSettings.cs)
+    - e.g. [FileExplorerSettings](Models\FileExplorerSettings.cs)
 
 1. **Service entries**: Pages, ViewModels, and any other services participating in dependency injection should be placed in AddWindowsCustomization in [ServiceExtensions.cs](Extensions\ServiceExtensions.cs)
 

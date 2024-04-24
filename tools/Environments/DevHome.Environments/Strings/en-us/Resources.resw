@@ -79,7 +79,7 @@
     <comment>Text for pause button in the context menu that will pause the virtual machine.</comment>
   </data>
   <data name="PinToStartButtonContextMenuItem" xml:space="preserve">
-    <value>Add to Start</value>
+    <value>Pin to Start Menu</value>
     <comment>Text that will pin a virtual machine's launcher app to the Start menu.</comment>
   </data>
   <data name="PinToTaskbarButtonContextMenuItem" xml:space="preserve">
@@ -115,8 +115,8 @@
     <comment>Text for sorting in ascending order of name</comment>
   </data>
   <data name="SortByAltName.Content" xml:space="preserve">
-    <value>Alternative Name: Ascending</value>
-    <comment>Text for sorting by alternative name</comment>
+    <value>Secondary Name: Ascending</value>
+    <comment>Text for sorting by secondary name</comment>
   </data>
   <data name="SortByTextBlock.Text" xml:space="preserve">
     <value>Sort:</value>
@@ -167,8 +167,8 @@
     <comment>Text for sorting in descending order of name</comment>
   </data>
   <data name="SortByAltNameDesc.Content" xml:space="preserve">
-    <value>Alternative Name: Descending</value>
-    <comment>Text for sorting by alternative name in descending order</comment>
+    <value>Secondary Name: Descending</value>
+    <comment>Text for sorting by secondary name in descending order</comment>
   </data>
   <data name="SortByLastConnected.Content" xml:space="preserve">
     <value>Last Connected</value>
@@ -201,10 +201,6 @@
   <data name="FailureMessageForCreateComputeSystem" xml:space="preserve">
     <value>Failed to create environment due to error: {0}</value>
     <comment>Locked="{0}" Text to show the the user when Dev Home receives the notification that the creation of the new environment has failed. {0} is the error that is displayed to the user</comment>
-  </data>
-  <data name="SuccessMessageForCreateComputeSystem" xml:space="preserve">
-    <value>The {0} provider has completed its creation steps. Re-sync the page to manage you're new environment</value>
-    <comment>Locked="{0}" Text to show the the user when Dev Home receives the notification that the users new environment has been created.  {0} is the of the provider who sent the notification</comment>
   </data>
   <data name="CreationStatusTextForCreateEnvironmentFlow" xml:space="preserve">
     <value>Status: {0}</value>
@@ -269,5 +265,27 @@
   <data name="Operations_Terminate" xml:space="preserve">
     <value>Terminate</value>
     <comment>Text for the terminate operation shown for the environment.</comment>
+  </data>
+  <data name="LaunchingEnvironmentText" xml:space="preserve">
+    <value>Launching Environment</value>
+    <comment>Text to tell the user Dev Home is launching their environment</comment>
+  </data>
+  <data name="LaunchingEnvironmentSuccessText" xml:space="preserve">
+    <value>Environment launched successfully</value>
+    <comment>Text to tell the user Dev Home succeeded in launching their environment</comment>
+  </data>
+  <data name="LaunchingEnvironmentFailedText" xml:space="preserve">
+    <value>Environment failed to launch due to error {0}</value>
+    <comment>Text to tell the user Dev Home failed to launch their environment. {0} is the error message sent by the extension</comment>
+  </data>
+  <data name="LaunchingEnvironmentFailedUnKnownReasonText" xml:space="preserve">
+    <value>The extension failed to launch the environment for an unknown reason. Check the extensions logs for more information</value>
+    <comment>Text to tell the user Dev Home failed to launch their environment. {0} is the error message sent by the extension</comment>
+  </data>
+  <data name="UnpinFromStartButtonContextMenuItem" xml:space="preserve">
+    <value>Unpin From Start Menu</value>
+  </data>
+  <data name="UnpinFromTaskbarButtonContextMenuItem" xml:space="preserve">
+    <value>Unpin From Taskbar</value>
   </data>
 </root>

@@ -75,12 +75,12 @@ internal sealed class GuestKvpChannel : IDisposable
             string errorDescription;
             if (!WmiUtility.JobCompleted(outParams, _scope, out errorCode, out errorDescription))
             {
-                throw new System.ComponentModel.Win32Exception((int)errorCode, $"Cannot send message to '{_vmId.ToString("D")}' VM: '{errorDescription}'.");
+                throw new System.ComponentModel.Win32Exception((int)errorCode, $"Cannot send message to VM '{_vmId.ToString("D")}': '{errorDescription}'.");
             }
         }
         else if ((uint)outParams["ReturnValue"] != (uint)WmiUtility.ReturnCode.Completed)
         {
-            throw new System.ComponentModel.Win32Exception((int)outParams["ReturnValue"], $"Cannot send message to '{_vmId.ToString("D")}' VM: '{outParams["ReturnValue"]}'.");
+            throw new System.ComponentModel.Win32Exception((int)outParams["ReturnValue"], $"Cannot send message to VM '{_vmId.ToString("D")}': '{outParams["ReturnValue"]}'.");
         }
         else
         {

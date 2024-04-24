@@ -47,6 +47,7 @@
         </setupControls:SetupShell>
         <ScrollViewer 
             MaxWidth="{ThemeResource MaxPageContentWidth}"
+            Margin="{ThemeResource ContentPageMargin}"
             Grid.Row="1">
             <StackPanel Spacing="10">
                 <!--- Show the Select environment subtitle on the page. -->

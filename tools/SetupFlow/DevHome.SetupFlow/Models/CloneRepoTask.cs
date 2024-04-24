@@ -77,6 +77,11 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     public bool RequiresReboot => false;
 
     /// <summary>
+    /// Gets target device name. Inherited via ISetupTask but unused.
+    /// </summary>
+    public string TargetName => string.Empty;
+
+    /// <summary>
     /// The developer ID that is used when a repository is being cloned.
     /// </summary>
     private readonly IDeveloperId _developerId;

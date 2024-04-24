@@ -7,7 +7,7 @@ using Windows.Win32.UI.Shell;
 
 namespace DevHome.Customization.Models;
 
-internal static class DeveloperFileExplorerSettings
+internal static class FileExplorerSettings
 {
     public static bool ShowFileExtensionsEnabled()
     {

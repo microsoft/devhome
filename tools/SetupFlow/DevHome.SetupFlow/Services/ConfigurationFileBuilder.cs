@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Models.WingetConfigure;
@@ -22,6 +23,10 @@ public enum ConfigurationFileKind
 
 public class ConfigurationFileBuilder
 {
+    public const string PackageNameSeparator = " | ";
+    public const string RepoNamePrefix = "Clone ";
+    public const string RepoNameSuffix = ": ";
+
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileBuilder));
 
     /// <summary>
@@ -55,7 +60,7 @@ public class ConfigurationFileBuilder
             .Any(s => s.Id == DscHelpers.GitWinGetPackageId);
         if (!isGitAdded && repoResources.Count > 0)
         {
-            appResources.Add(CreateWinGetInstallForGitPreReq());
+            appResources.Add(CreateWinGetInstallForGitPreReq(configurationFileKind));
         }
 
         List<WinGetConfigResource> listOfResources = [..appResources, ..repoResources];
@@ -180,7 +185,7 @@ public class ConfigurationFileBuilder
         {
             // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
             // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
-            id = $"{arguments.PackageId} | Install: " + task.PackageName;
+            id = $"{arguments.PackageId}{PackageNameSeparator}{task.PackageName}";
         }
 
         return new WinGetConfigResource()
@@ -210,12 +215,13 @@ public class ConfigurationFileBuilder
     {
         // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
         // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
-        var id = $"Clone {task.RepositoryName}: {task.CloneLocation.FullName}";
+        var id = $"{RepoNamePrefix}{task.RepositoryName}{RepoNameSuffix}{task.CloneLocation.FullName}";
+
         var gitDependsOnId = DscHelpers.GitWinGetPackageId;
 
         if (configurationFileKind == ConfigurationFileKind.SetupTarget)
         {
-            gitDependsOnId = $"{DscHelpers.GitWinGetPackageId} | Install: {DscHelpers.GitName}";
+            gitDependsOnId = $"{DscHelpers.GitWinGetPackageId}{PackageNameSeparator}{DscHelpers.GitName}";
         }
 
         return new WinGetConfigResource()
@@ -233,12 +239,21 @@ public class ConfigurationFileBuilder
     /// the GitDsc resource that clones the repository.
     /// </summary>
     /// <returns>The WinGetConfigResource object that represents the block of yaml needed by WinGetDsc to install the Git app.</returns>
-    private WinGetConfigResource CreateWinGetInstallForGitPreReq()
+    private WinGetConfigResource CreateWinGetInstallForGitPreReq(ConfigurationFileKind configurationFileKind)
     {
+        var id = DscHelpers.GitWinGetPackageId;
+
+        if (configurationFileKind == ConfigurationFileKind.SetupTarget)
+        {
+            // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
+            // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
+            id = $"{DscHelpers.GitWinGetPackageId}{PackageNameSeparator}{DscHelpers.GitName}";
+        }
+
         return new WinGetConfigResource()
         {
             Resource = DscHelpers.WinGetDscResource,
-            Id = DscHelpers.GitWinGetPackageId,
+            Id = id,
             Directives = new() { AllowPrerelease = true, Description = $"Installing {DscHelpers.GitName}" },
             Settings = new WinGetDscSettings() { Id = DscHelpers.GitWinGetPackageId, Source = DscHelpers.DscSourceNameForWinGet },
         };

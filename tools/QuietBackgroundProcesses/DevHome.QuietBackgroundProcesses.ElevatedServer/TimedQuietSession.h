@@ -20,6 +20,7 @@
 
 #include "Timer.h"
 #include "QuietState.h"
+#include "Helpers.h"
 
 using ElevatedServerReference = wrl_server_process_ref;
 
@@ -39,7 +40,7 @@ struct UnelevatedServerReference
 };
 
 
-// TimedQuietSession is a 2 hour "Quiet Background Processes" timed window that disables quiet
+// TimedQuietSession is a 2 hour "Quiet background processes" timed window that disables quiet
 // mode when the timer expires or when explicitly cancelled.  It keeps also keeps the server alive.
 // 
 // TimedQuietSession maintains,
@@ -88,6 +89,12 @@ struct TimedQuietSession
 
         // Turn on quiet mode
         m_quietState = QuietState::TurnOn();
+
+        // Start performance recorder
+        ABI::Windows::Foundation::TimeSpan samplingPeriod;
+        samplingPeriod.Duration = 1000 * 10000; // 1 second
+        m_performanceRecorderEngine = MakePerformanceRecorderEngine();
+        THROW_IF_FAILED(m_performanceRecorderEngine->Start(samplingPeriod));
     }
 
     TimedQuietSession(TimedQuietSession&& other) noexcept = default;
@@ -108,11 +115,11 @@ struct TimedQuietSession
         return (bool)m_quietState;
     }
 
-    void Cancel()
+    void Cancel(ABI::DevHome::QuietBackgroundProcesses::IProcessPerformanceTable** result)
     {
         auto lock = std::scoped_lock(m_mutex);
 
-        Deactivate();
+        Deactivate(result);
         m_timer->Cancel();
 
         // Destruct timer on another thread because it's destructor is blocking
@@ -124,10 +131,19 @@ struct TimedQuietSession
     }
 
 private:
-    void Deactivate()
+    void Deactivate(ABI::DevHome::QuietBackgroundProcesses::IProcessPerformanceTable** result = nullptr)
     {
         // Turn off quiet mode
         m_quietState.reset();
+
+        // Stop the performance recorder
+        if (m_performanceRecorderEngine)
+        {
+            LOG_IF_FAILED(m_performanceRecorderEngine->Stop(result));
+        }
+
+        // Disable performance recorder
+        m_performanceRecorderEngine.reset();
 
         // Release lifetime handles to this elevated server and unelevated client server
         m_unelevatedServer.reset();
@@ -139,5 +155,6 @@ private:
 
     QuietState::unique_quietwindowclose_call m_quietState{ false };
     std::unique_ptr<Timer> m_timer;
+    wil::com_ptr<ABI::DevHome::QuietBackgroundProcesses::IPerformanceRecorderEngine> m_performanceRecorderEngine;
     std::mutex m_mutex;
 };
