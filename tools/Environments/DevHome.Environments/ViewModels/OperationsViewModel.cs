@@ -4,7 +4,11 @@
 using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -32,12 +36,15 @@ public partial class OperationsViewModel
 
     private Action? DevHomeAction { get; }
 
-    public OperationsViewModel(string name, string icon, Func<string, Task<ComputeSystemOperationResult>> command)
+    private WinUIEx.WindowEx? windowEx;
+
+    public OperationsViewModel(string name, string icon, Func<string, Task<ComputeSystemOperationResult>> command, WinUIEx.WindowEx? windowEx)
     {
         _operationKind = OperationKind.ExtensionTask;
         Name = name;
         IconGlyph = icon;
         ExtensionTask = command;
+        this.windowEx = windowEx;
     }
 
     public OperationsViewModel(string name, string icon, Action command)
@@ -51,6 +58,31 @@ public partial class OperationsViewModel
     [RelayCommand]
     public void InvokeAction()
     {
+        if (Name == "Delete")
+        {
+            ContentDialog noWifiDialog = new ContentDialog
+            {
+                Title = "Delete Environment",
+                Content = "Are you sure you would like to delete this enviroment permanently?",
+                PrimaryButtonText = "Delete",
+                SecondaryButtonText = "Cancel",
+                XamlRoot = windowEx?.Content.XamlRoot,
+            };
+
+            windowEx?.DispatcherQueue.TryEnqueue(async () =>
+            {
+                var result = await noWifiDialog.ShowAsync();
+
+                // Delete the enviroment after confirmation
+                if (result == ContentDialogResult.Primary)
+                {
+                    await Task.Run(() => ExtensionTask!(string.Empty));
+                }
+            });
+
+            return;
+        }
+
         // We'll need to disable the card UI while the operation is in progress and handle failures.
         Task.Run(async () =>
         {
