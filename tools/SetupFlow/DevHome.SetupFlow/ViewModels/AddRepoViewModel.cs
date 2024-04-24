@@ -324,6 +324,7 @@ public partial class AddRepoViewModel : ObservableObject
             IsCancelling = true;
             ShouldShowLoginUi = false;
             ShouldShowXButtonInLoginUi = false;
+            ShouldShowNoRepoMessage = false;
 
             return;
         }
@@ -336,6 +337,7 @@ public partial class AddRepoViewModel : ObservableObject
             IsCancelling = true;
             ShouldShowLoginUi = false;
             ShouldShowXButtonInLoginUi = false;
+            ShouldShowNoRepoMessage = false;
 
             return;
         }
@@ -485,6 +487,12 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private bool _shouldShowChangeSearchTermsHyperlinkButton;
+
+    [ObservableProperty]
+    private bool _shouldShowNoRepoMessage;
+
+    [ObservableProperty]
+    private string _noRepositoriesMessage;
 
     /// <summary>
     /// Switches the repos shown to the account selected.
@@ -705,6 +713,7 @@ public partial class AddRepoViewModel : ObservableObject
         UrlParsingError = string.Empty;
         ShouldShowUrlError = false;
         ShowErrorTextBox = false;
+        ShouldShowNoRepoMessage = false;
         _accountIndex = -1;
     }
 
@@ -1401,6 +1410,16 @@ public partial class AddRepoViewModel : ObservableObject
             SelectionOptionsPlaceholderText = repoSearchInformation.SelectionOptionsPlaceHolderText;
 
             IsFetchingRepos = false;
+
+            if (!_repositoriesForAccount.Any())
+            {
+                NoRepositoriesMessage = _stringResource.GetLocalized(StringResourceKey.RepoToolNoRepositoriesMessage, _providers.DisplayName(_selectedRepoProvider));
+                ShowRepoPage = false;
+                ShouldShowNoRepoMessage = true;
+                ShouldShowGranularSearch = false;
+                FolderPickerViewModel.ShouldShowFolderPicker = false;
+                EditDevDriveViewModel.ShowDevDriveInformation = false;
+            }
         });
     }
 
