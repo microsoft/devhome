@@ -262,12 +262,13 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
             {
                 _log.Information($"Selected Dev Drive location: {location.Path}");
 
-                // If the user removed the file and wants to clone to the same location
-                // change Location to empty to force setting Location to location.path and
-                // enabling DevDrive validation.
-                if (FileNameAndSizeErrorList.Contains(DevDriveValidationResult.FileNameAlreadyExists)
-                    && string.Equals(Location, location.Path, StringComparison.OrdinalIgnoreCase))
+                // If the user encounteres an error, like file already exists, then they fix the issue
+                // (deleted the file) DevHome won't check if the issue is resolved.  A user needs to
+                // re-enter a path.  If the path is the same as the previously entered path Location
+                // will not update because the two string values are similiar.
+                if (string.Equals(Location, location.Path, StringComparison.OrdinalIgnoreCase))
                 {
+                    // Change Location to empty to force Location updates.
                     Location = string.Empty;
                 }
 
