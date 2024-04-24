@@ -262,7 +262,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
             {
                 _log.Information($"Selected Dev Drive location: {location.Path}");
 
-                // If the user encounteres an error, like file already exists, then they fix the issue
+                // If the user encounters an error, like file already exists, then they fix the issue
                 // (deleted the file) DevHome won't check if the issue is resolved.  A user needs to
                 // re-enter a path.  If the path is the same as the previously entered path Location
                 // will not update because the two string values are similiar.
