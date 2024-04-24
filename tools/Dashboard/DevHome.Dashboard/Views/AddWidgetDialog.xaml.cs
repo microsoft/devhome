@@ -77,10 +77,10 @@ public sealed partial class AddWidgetDialog : ContentDialog
         AddWidgetNavigationView.MenuItems.Clear();
 
         // Show the providers and widgets underneath them in alphabetical order.
-        var providerDefinitions = (await _hostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
+        var comSafeProviderDefinitions = await ComSafeHelpers.GetAllOrderedComSafeProviderDefinitions(_hostingService);
         var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(_hostingService);
 
-        _log.Information($"Filling available widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
+        _log.Information($"Filling available widget list, found {comSafeProviderDefinitions.Count} providers and {comSafeWidgetDefinitions.Count} widgets");
 
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
@@ -100,7 +100,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             }
         }
 
-        foreach (var providerDef in providerDefinitions)
+        foreach (var providerDef in comSafeProviderDefinitions)
         {
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
             {
@@ -115,7 +115,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
                 foreach (var widgetDef in comSafeWidgetDefinitions)
                 {
-                    if (widgetDef.ProviderDefinitionId.Equals(providerDef.Id, StringComparison.Ordinal))
+                    if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
                         var subItemContent = await BuildWidgetNavItem(widgetDef);
                         var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, [.. comSafeCurrentlyPinnedWidgets]);
@@ -256,7 +256,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             _selectedWidget = selectedWidgetDefinition;
             await ViewModel.SetWidgetDefinition(selectedWidgetDefinition);
         }
-        else if (selectedTag as WidgetProviderDefinition is not null)
+        else if (selectedTag as ComSafeWidgetProviderDefinition is not null)
         {
             ViewModel.Clear();
         }

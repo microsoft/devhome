@@ -169,6 +169,35 @@ public class WidgetHostingService : IWidgetHostingService
     }
 
     /// <inheritdoc />
+    public async Task<WidgetProviderDefinition> GetProviderDefinitionAsync(string widgetProviderDefinitionId)
+    {
+        var attempt = 0;
+        while (attempt++ < MaxAttempts)
+        {
+            try
+            {
+                _widgetCatalog ??= await Task.Run(() => WidgetCatalog.GetDefault());
+                return await Task.Run(() => _widgetCatalog.GetProviderDefinition(widgetProviderDefinitionId));
+            }
+            catch (COMException ex) when (ex.HResult == RpcServerUnavailable || ex.HResult == RpcCallFailed)
+            {
+                _log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
+
+                // Force getting a new WidgetCatalog before trying again. Also reset the WidgetHost,
+                // since if we lost the catalog we probably lost the host too.
+                _widgetHost = null;
+                _widgetCatalog = null;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Exception in GetProviderDefinitionAsync:");
+            }
+        }
+
+        return null;
+    }
+
+    /// <inheritdoc />
     public async Task<WidgetDefinition[]> GetWidgetDefinitionsAsync()
     {
         var attempt = 0;

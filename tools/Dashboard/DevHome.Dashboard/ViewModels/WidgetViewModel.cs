@@ -97,7 +97,7 @@ public partial class WidgetViewModel : ObservableObject
         if (WidgetDefinition != null)
         {
             WidgetDisplayTitle = WidgetDefinition.DisplayTitle;
-            WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinitionDisplayName;
+            WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinition.DisplayName;
             IsCustomizable = WidgetDefinition.IsCustomizable;
         }
     }
@@ -368,7 +368,7 @@ public partial class WidgetViewModel : ObservableObject
         TelemetryFactory.Get<ITelemetry>().Log(
             "Dashboard_ReportWidgetInteraction",
             LogLevel.Critical,
-            new ReportWidgetInteractionEvent(WidgetDefinition.ProviderDefinitionId, WidgetDefinition.Id, args.Action.ActionTypeString));
+            new ReportWidgetInteractionEvent(WidgetDefinition.ProviderDefinition.Id, WidgetDefinition.Id, args.Action.ActionTypeString));
 
         // TODO: Handle other ActionTypes
         // https://github.com/microsoft/devhome/issues/644

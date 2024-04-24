@@ -86,7 +86,7 @@ internal sealed class WidgetHelpers
         }
     }
 
-    public static async Task<bool> IsIncludedWidgetProviderAsync(WidgetProviderDefinition provider)
+    public static async Task<bool> IsIncludedWidgetProviderAsync(ComSafeWidgetProviderDefinition provider)
     {
         // Cut WidgetProviderDefinition id down to just the package family name.
         var providerId = provider.Id;

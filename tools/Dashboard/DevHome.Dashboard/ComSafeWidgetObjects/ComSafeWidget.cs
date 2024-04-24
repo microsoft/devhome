@@ -56,6 +56,12 @@ public class ComSafeWidget
         WidgetUpdated.Invoke(this, args);
     }
 
+    public async Task<bool> PopulateAsync()
+    {
+        await LazilyLoadOopWidget();
+        return _hasValidProperties;
+    }
+
     /// <summary>
     /// ComSafeWidgets must be populated before use to guarantee their properties are valid.
     /// Calling methods will populate the object, but referencing properties cannot.

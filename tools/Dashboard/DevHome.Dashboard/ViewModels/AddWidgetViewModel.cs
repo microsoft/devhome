@@ -44,7 +44,7 @@ public partial class AddWidgetViewModel : ObservableObject
         var bitmap = await _widgetScreenshotService.GetScreenshotFromCacheAsync(selectedWidgetDefinition, _themeSelectorService.GetActualTheme());
 
         WidgetDisplayTitle = selectedWidgetDefinition.DisplayTitle;
-        WidgetProviderDisplayTitle = selectedWidgetDefinition.ProviderDefinitionDisplayName;
+        WidgetProviderDisplayTitle = selectedWidgetDefinition.ProviderDefinition.DisplayName;
         WidgetScreenshot = new ImageBrush
         {
             ImageSource = bitmap,

@@ -30,6 +30,11 @@ public interface IWidgetHostingService
     /// or the list could not be retrieved.</returns>
     public Task<WidgetProviderDefinition[]> GetProviderDefinitionsAsync();
 
+    /// <summary>Get the WidgetProviderDefinition for the given WidgetProviderDefinitionId from the WidgetService.</summary>
+    /// <returns>The WidgetProviderDefinition, or null if the widget provider definition could not be found
+    /// or there was an error retrieving it.</returns>
+    public Task<WidgetProviderDefinition> GetProviderDefinitionAsync(string widgetProviderDefinitionId);
+
     /// <summary>Get the list of WidgetDefinitions from the WidgetService.</summary>
     /// <returns>A list of WidgetDefinitions, or an empty list if there were no widgets
     /// or the list could not be retrieved.</returns>
