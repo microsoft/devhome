@@ -35,7 +35,11 @@ public sealed partial class WidgetControl : UserControl
 
     private readonly StringResource _stringResource;
 
-    private readonly double _headerHeightUnscaled = 36;
+    // Each widget has a 16px margin around it and a 48px Attribution area in which content cannot be placed.
+    // https://learn.microsoft.com/en-us/windows/apps/design/widgets/widgets-design-fundamentals
+    // Adaptive cards render with 8px padding on each side, so we subtract that from the header height,
+    // as well as 1px for the border.
+    private const double _headerHeightUnscaled = 39;
 
     private SelectableMenuFlyoutItem _currentSelectedSize;
 

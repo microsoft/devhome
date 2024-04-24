@@ -30,8 +30,8 @@
         </Grid.RowDefinitions>
 
         <!-- Widget header: icon, title, menu -->
-        <Grid Grid.Row="0" CornerRadius="7">
-            <StackPanel Orientation="Horizontal" Margin="16,10,0,0" Spacing="8">
+        <Grid Grid.Row="0" Padding="16,10,16,0">
+            <StackPanel Orientation="Horizontal" Spacing="8">
                 <Rectangle Width="16" Height="16" x:Name="WidgetHeaderIcon" />
                 <TextBlock AutomationProperties.AutomationId="WidgetTitle"
                            Text="{x:Bind WidgetSource.WidgetDisplayTitle, Mode=OneWay}"
@@ -44,7 +44,9 @@
                     x:Uid="WidgetMoreOptionsButton"
                     AutomationProperties.AutomationId="WidgetMoreOptionsButton"
                     FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{ThemeResource CaptionTextBlockFontSize}"
-                    VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,16,0" BorderThickness="0" Padding="5"
+                    VerticalAlignment="Top" HorizontalAlignment="Right"
+                    BorderThickness="0"
+                    Padding="5"
                     Background="Transparent"
                     Click="OpenWidgetMenuAsync">
                 <Button.Flyout>
@@ -54,12 +56,15 @@
         </Grid>
 
         <!-- Widget content -->
-        <Grid Grid.Row="1" x:Name="ScollBarOffsetGridLeft" Width="7"
-                      HorizontalAlignment="Left" />
-        <Grid Grid.Row="1" x:Name="ScollBarOffsetGridRight" Width="7"
-                      HorizontalAlignment="Right" />
-        <ScrollViewer Grid.Row="1" x:Name="WidgetScrollViewer" Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}"
-                      VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled" Padding="7,0" />
-
+        <!-- Each widget has a 16px margin around it in which content cannot be placed.
+             https://learn.microsoft.com/en-us/windows/apps/design/widgets/widgets-design-fundamentals
+             Adaptive cards render with 8px padding on each side and the widget has a 1px border,
+             so we add 7px more of padding on the left and right.-->
+        <ScrollViewer Grid.Row="1" 
+                      x:Name="WidgetScrollViewer"
+                      Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollMode="Disabled"
+                      Padding="7,0" />
     </Grid>
 </UserControl>
