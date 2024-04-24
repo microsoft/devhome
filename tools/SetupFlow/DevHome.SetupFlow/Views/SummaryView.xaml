@@ -225,10 +225,10 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Text="Error logs" Grid.Row="0" Grid.Column="0" Margin="0, 5, 0, 0"/>
+                                    <TextBlock x:Uid="SummaryPage_ErrorLogs" Grid.Row="0" Grid.Column="0" Margin="0, 5, 0, 0"/>
                                     <TextBlock Text="{x:Bind ViewModel.TargetFailedCountText}" Grid.Row="1" Grid.Column="0" Margin="0, 5, 0, 0" Foreground="{ThemeResource TextFillColorSecondary}"/>
                                 </Grid>
-                                <HyperlinkButton Content="View log" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{x:Bind ViewModel.ShowLogFilesCommand, Mode=OneWay}"/>
+                                <HyperlinkButton x:Uid="SummaryPage_ViewLogs" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{x:Bind ViewModel.ShowLogFilesCommand, Mode=OneWay}"/>
                                 <ListView Grid.Row="1" Grid.ColumnSpan="2" SelectionMode="None" ItemsSource="{x:Bind ViewModel.TargetFailedResults, Mode=OneWay}" ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}">
                                     <ListView.ItemTemplate>
                                         <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
@@ -459,13 +459,13 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Text="Error logs" Grid.Row="0" Grid.Column="0" Margin="0, 5, 0, 0"/>
+                                    <TextBlock x:Uid="SummaryPage_ErrorLogs" Grid.Row="0" Grid.Column="0" Margin="0, 5, 0, 0"/>
                                     <StackPanel Orientation="Horizontal" Spacing="5" Grid.Row="1" Grid.Column="0">
                                         <TextBlock Text="{x:Bind ViewModel.FailedTasks.Count}" Foreground="{ThemeResource TextFillColorSecondary}"/>
-                                        <TextBlock Text="installation errors" Foreground="{ThemeResource TextFillColorSecondary}"/>
+                                        <TextBlock x:Uid="SummaryPage_InstallationErrors" Foreground="{ThemeResource TextFillColorSecondary}"/>
                                     </StackPanel>
                                 </Grid>
-                                <HyperlinkButton Content="View log" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{x:Bind ViewModel.ShowLogFilesCommand, Mode=OneWay}"/>
+                                <HyperlinkButton x:Uid="SummaryPage_ViewLogs" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{x:Bind ViewModel.ShowLogFilesCommand, Mode=OneWay}"/>
                                 <ListView Grid.Row="1" Grid.ColumnSpan="2" SelectionMode="None" ItemsSource="{x:Bind ViewModel.FailedTasks, Mode=OneWay}" ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}">
                                     <ListView.ItemTemplate>
                                         <DataTemplate x:DataType="viewModels:SummaryErrorMessageViewModel">
