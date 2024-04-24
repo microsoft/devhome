@@ -61,7 +61,7 @@ public partial class OperationsViewModel
     [RelayCommand]
     public void InvokeAction()
     {
-        if (Name == "Delete")
+        if (Name == _stringResource.GetLocalized("Operations_Delete"))
         {
             ContentDialog noWifiDialog = new ContentDialog
             {
