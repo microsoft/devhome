@@ -28,20 +28,32 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
     private readonly IWindowsPackageManager _windowsPackageManager;
     private readonly PackageProvider _packageProvider;
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+    private readonly WindowEx _mainWindow;
+    private readonly ISetupFlowStringResource _setupFlowStringResource;
     private static readonly char[] Separator = [','];
+
+    public enum ActivationQueryType
+    {
+        Search,
+        WingetIds,
+    }
 
     public AppInstallActivationHandler(
         INavigationService navigationService,
         SetupFlowViewModel setupFlowViewModel,
         PackageProvider packageProvider,
         IWindowsPackageManager wpm,
-        SetupFlowOrchestrator setupFlowOrchestrator)
+        SetupFlowOrchestrator setupFlowOrchestrator,
+        ISetupFlowStringResource setupFlowStringResource,
+        WindowEx mainWindow)
     {
         _navigationService = navigationService;
         _setupFlowViewModel = setupFlowViewModel;
         _packageProvider = packageProvider;
         _windowsPackageManager = wpm;
         _setupFlowOrchestrator = setupFlowOrchestrator;
+        _setupFlowStringResource = setupFlowStringResource;
+        _mainWindow = mainWindow;
     }
 
     protected override bool CanHandleInternal(ProtocolActivatedEventArgs args)
@@ -51,26 +63,55 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
 
     protected async override Task HandleInternalAsync(ProtocolActivatedEventArgs args)
     {
-        await AppActivationFlowAsync(args.Uri.Query);
+        var uri = args.Uri;
+        var parameters = HttpUtility.ParseQueryString(uri.Query);
+
+        if (parameters != null)
+        {
+            var searchQuery = parameters.Get("search");
+            var wingetIdsQuery = parameters.Get("wingetIds");
+
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                await AppActivationFlowAsync(searchQuery, ActivationQueryType.Search);
+            }
+            else if (!string.IsNullOrEmpty(wingetIdsQuery))
+            {
+                await AppActivationFlowAsync(wingetIdsQuery, ActivationQueryType.WingetIds);
+            }
+        }
     }
 
-    private async Task AppActivationFlowAsync(string query)
+    private async Task AppActivationFlowAsync(string query, ActivationQueryType queryType)
+    {
+        if (_setupFlowOrchestrator.IsMachineConfigurationInProgress)
+        {
+            _log.Warning("Cannot activate the add-apps-to-cart flow because the machine configuration is in progress");
+            await _mainWindow.ShowErrorMessageDialogAsync(
+                    _setupFlowStringResource.GetLocalized(StringResourceKey.AppInstallActivationTitle),
+                    _setupFlowStringResource.GetLocalized(StringResourceKey.URIActivationFailedBusy),
+                    _setupFlowStringResource.GetLocalized(StringResourceKey.Close));
+            return;
+        }
+
+        var identifiers = ParseIdentifiers(query, queryType);
+        if (identifiers.Length == 0)
+        {
+            _log.Warning("No valid identifiers provided in the query.");
+            return;
+        }
+
+        _log.Information("Starting add-apps-to-cart activation");
+        _navigationService.NavigateTo(typeof(SetupFlowViewModel).FullName!);
+        _setupFlowViewModel.StartAppManagementFlow(queryType == ActivationQueryType.Search ? identifiers[0] : null);
+        await HandleAppSelectionAsync(identifiers, queryType);
+    }
+
+    private async Task HandleAppSelectionAsync(string[] identifiers, ActivationQueryType queryType)
     {
         try
         {
-            // Don't interrupt the user if the machine configuration is in progress
-            if (_setupFlowOrchestrator.IsMachineConfigurationInProgress)
-            {
-                _log.Warning("Cannot activate the add-apps-to-cart flow because the machine configuration is in progress");
-                return;
-            }
-            else
-            {
-                _log.Information("Starting add-apps-to-cart activation");
-                _navigationService.NavigateTo(typeof(SetupFlowViewModel).FullName!);
-                _setupFlowViewModel.StartAppManagementFlow(query);
-                await SearchAndSelectAsync(query);
-            }
+            await SearchAndSelectAsync(identifiers);
         }
         catch (Exception ex)
         {
@@ -78,36 +119,51 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
         }
     }
 
-    private async Task SearchAndSelectAsync(string query)
+    private string[] ParseIdentifiers(string query, ActivationQueryType queryType)
     {
-        var parameters = HttpUtility.ParseQueryString(query);
-        var searchParameter = parameters["search"];
-
-        if (string.IsNullOrEmpty(searchParameter))
+        switch (queryType)
         {
-            _log.Warning("Search parameter is missing or empty in the query.");
+            case ActivationQueryType.Search:
+                var terms = query.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
+                if (terms.Length > 0)
+                {
+                    var firstTerm = terms[0].Replace("\"", string.Empty).Trim();
+                    return string.IsNullOrEmpty(firstTerm) ? Array.Empty<string>() : new[] { firstTerm };
+                }
+
+                return Array.Empty<string>();
+
+            case ActivationQueryType.WingetIds:
+                return query.Split(Separator, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(id => id.Trim(' ', '"'))
+                            .ToArray();
+
+            default:
+                _log.Warning("Unsupported activation query type: {QueryType}", queryType);
+                return Array.Empty<string>();
+        }
+    }
+
+    private async Task SearchAndSelectAsync(string[] identifiers)
+    {
+        if (identifiers == null || identifiers.Length == 0)
+        {
+            _log.Warning("No valid identifiers provided in the query.");
             return;
         }
 
-        // Currently using the first search term only
-        var firstSearchTerm = searchParameter.Split(Separator, StringSplitOptions.RemoveEmptyEntries)
-                                             .Select(term => term.Trim(' ', '"'))
-                                             .FirstOrDefault();
-
-        if (string.IsNullOrEmpty(firstSearchTerm))
+        foreach (var identifier in identifiers)
         {
-            _log.Warning("No valid search term was extracted from the query.");
-            return;
-        }
+            var searchResults = await _windowsPackageManager.SearchAsync(identifier, 1);
+            if (searchResults.Count == 0)
+            {
+                _log.Warning("No results found for the identifier: {Identifier}", identifier);
+                continue;
+            }
 
-        var searchResults = await _windowsPackageManager.SearchAsync(firstSearchTerm, 1);
-        if (searchResults.Count == 0)
-        {
-            _log.Warning("No results found for the search term: {SearchTerm}", firstSearchTerm);
-            return;
+            var package = _packageProvider.CreateOrGet(searchResults[0]);
+            package.IsSelected = true;
+            _log.Information("Selected package with identifier {Identifier} for addition to cart.", identifier);
         }
-
-        var firstResult = _packageProvider.CreateOrGet(searchResults[0]);
-        firstResult.IsSelected = true;
     }
 }

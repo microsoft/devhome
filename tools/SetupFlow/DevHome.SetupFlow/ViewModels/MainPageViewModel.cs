@@ -103,12 +103,15 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         }
     }
 
-    internal void StartAppManagementFlow(string query)
+    internal void StartAppManagementFlow(string query = null)
     {
-        _log.Information($"Launching app management flow for query:{query}");
+        _log.Information("Launching app management flow");
         var appManagementSetupFlow = _host.GetService<AppManagementTaskGroup>();
-        StartSetupFlowForTaskGroups(null, "App Search URI", appManagementSetupFlow);
-        appManagementSetupFlow.HandleSearchQuery(query);
+        StartSetupFlowForTaskGroups(null, "App Activation URI", appManagementSetupFlow);
+        if (!string.IsNullOrEmpty(query))
+        {
+            appManagementSetupFlow.HandleSearchQuery(query);
+        }
     }
 
     protected async override Task OnFirstNavigateToAsync()
