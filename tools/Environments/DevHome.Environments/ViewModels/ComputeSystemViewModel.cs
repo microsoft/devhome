@@ -76,7 +76,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         }
 
         LaunchOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillLaunchButtonOperations(ComputeSystem));
-        DotOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillDotButtonOperations(ComputeSystem));
+        DotOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillDotButtonOperations(ComputeSystem, _windowEx));
         HeaderImage = CardProperty.ConvertMsResourceToIcon(provider.Icon, packageFullName);
         ComputeSystem.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;
@@ -347,7 +347,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                 LaunchOperations.Add(buttonOperation);
             }
 
-            foreach (var dotOperation in DataExtractor.FillDotButtonOperations(ComputeSystem!))
+            foreach (var dotOperation in DataExtractor.FillDotButtonOperations(ComputeSystem!, _windowEx))
             {
                 LaunchOperations.Add(dotOperation);
             }

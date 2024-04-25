@@ -21,7 +21,7 @@ public class DataExtractor
     /// ToDo: Add a pause after each operation
     /// </summary>
     /// <param name="computeSystem">Compute system used to fill OperationsViewModel's callback function.</param>
-    public static List<OperationsViewModel> FillDotButtonOperations(ComputeSystem computeSystem)
+    public static List<OperationsViewModel> FillDotButtonOperations(ComputeSystem computeSystem, WinUIEx.WindowEx windowEx)
     {
         var operations = new List<OperationsViewModel>();
         var supportedOperations = computeSystem.SupportedOperations;
@@ -33,7 +33,8 @@ public class DataExtractor
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Delete))
         {
-            operations.Add(new OperationsViewModel("Delete", "\uE74D", computeSystem.DeleteAsync, ComputeSystemOperations.Delete));
+            operations.Add(new OperationsViewModel(
+                _stringResource.GetLocalized("Operations_Delete"), "\uE74D", computeSystem.DeleteAsync, ComputeSystemOperations.Delete, windowEx));
         }
 
         return operations;
