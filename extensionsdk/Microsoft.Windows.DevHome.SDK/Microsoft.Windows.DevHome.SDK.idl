@@ -1395,7 +1395,8 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // This interface defines the result objects that can be returned to DevHome when it tries to
-    // obtain an enhanced repository
+    // obtain an enhanced repository. Enhanced repository is the term given to repositories for 
+    // which File Explorer can display property information from version control technologies.
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 5)]
     runtimeclass GetLocalRepositoryResult
     {
