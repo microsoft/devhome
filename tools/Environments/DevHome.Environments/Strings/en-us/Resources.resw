@@ -223,7 +223,7 @@
     <comment>Text for the delete confirmation button of the delete environment confirmation popup.</comment>
   </data>
   <data name="DeleteEnviroment_Content" xml:space="preserve">
-    <value>Choosing to delete your environment means it will be removed permanently.</value>
+    <value>Choosing to delete your environment will remove it permanently.</value>
     <comment>Text for the content of the delete environment confirmation popup.</comment>
   </data>
   <data name="DeleteEnviroment_Title" xml:space="preserve">
