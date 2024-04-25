@@ -18,12 +18,15 @@ public class ActionCenterMessages
         get; set;
     }
 
+    public bool DoesThisHaveActionableItems { get; }
+
     public ExtensionAdaptiveCardPanel ExtensionAdaptiveCardPanel { get; set; }
 
-    public ActionCenterMessages(ExtensionAdaptiveCardPanel panel, string primaryMessage)
+    public ActionCenterMessages(ExtensionAdaptiveCardPanel panel, string primaryMessage, bool doesThisHaveAnyActionableItems)
     {
         ExtensionAdaptiveCardPanel = panel;
         PrimaryMessage = primaryMessage;
+        DoesThisHaveActionableItems = doesThisHaveAnyActionableItems;
     }
 
     public ActionCenterMessages()
