@@ -95,7 +95,7 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
 
     private void RunAction()
     {
-        // We'll need to disable the card UI while the operation is in progress and handle failures.
+        // To Do: Need to disable the card UI while the operation is in progress and handle failures.
         Task.Run(async () =>
         {
             if (_operationKind == OperationKind.DevHomeAction)
