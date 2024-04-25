@@ -84,7 +84,7 @@ jobs:
       run: Compress-Archive -Force -Path HyperVExtension\src\DevSetupAgent\bin\arm64\${{ matrix.configuration }}\net8.0-windows10.0.22621.0\win-arm64\* -DestinationPath "HyperVExtension\src\DevSetupAgent\bin\arm64\${{ matrix.configuration }}\DevSetupAgent_arm64.zip"
 
     - name: Build_DevHome
-      run: cmd /c "$env:VSDevCmd" "&" msbuild /p:Configuration=${{ matrix.configuration }},Platform=${{ matrix.platform }} DevHome.sln
+      run: cmd /c "$env:VSDevCmd" "&" msbuild /p:Configuration=${{ matrix.configuration }},Platform=${{ matrix.platform }} /m:1 DevHome.sln
 
     - name: Find vstest.console.exe
       if: ${{ matrix.platform != 'arm64' }}
