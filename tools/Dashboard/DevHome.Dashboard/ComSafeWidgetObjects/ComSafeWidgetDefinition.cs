@@ -176,7 +176,7 @@ public class ComSafeWidgetDefinition : IDisposable
     /// Get a WidgetDefinition's ID from a WidgetDefinition object.
     /// </summary>
     /// <param name="widgetDefinition">WidgetDefinition</param>
-    /// <returns>The Widget's Id, or in the case of failure string.Empty</returns>
+    /// <returns>The WidgetDefinition's Id, or in the case of failure string.Empty</returns>
     public static async Task<string> GetIdFromUnsafeWidgetDefinitionAsync(WidgetDefinition widgetDefinition)
     {
         return await Task.Run(() =>
