@@ -139,7 +139,7 @@ public sealed partial class WidgetControl : UserControl
         }
 
         var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
-        if (!await comSafeWidgetDefinition.Populate())
+        if (!await comSafeWidgetDefinition.PopulateAsync())
         {
             // If we can't populate the widgetDefinition, bail and don't show sizes.
             return;
