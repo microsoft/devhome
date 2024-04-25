@@ -223,11 +223,11 @@
     <comment>Text for the delete confirmation button of the delete environment confirmation popup.</comment>
   </data>
   <data name="DeleteEnviroment_Content" xml:space="preserve">
-    <value>Are you sure you would like to delete this enviroment permanently?</value>
+    <value>Choosing to delete your environment means it will be removed permanently.</value>
     <comment>Text for the content of the delete environment confirmation popup.</comment>
   </data>
   <data name="DeleteEnviroment_Title" xml:space="preserve">
-    <value>Delete Environment?</value>
+    <value>Do you want to delete your environment?</value>
     <comment>Text for the title of the delete environment confirmation popup.</comment>
   </data>
   <data name="Operations_Checkpoint" xml:space="preserve">

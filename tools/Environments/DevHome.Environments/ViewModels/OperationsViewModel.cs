@@ -117,7 +117,7 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
     public void InvokeAction()
     {
         // Show confirmation popup in case of delete
-        if (Name == _stringResource.GetLocalized("Operations_Delete"))
+        if (ComputeSystemOperation == ComputeSystemOperations.Delete)
         {
             ContentDialog noWifiDialog = new ContentDialog
             {
