@@ -90,7 +90,7 @@ if (-not (Test-Path -Path "AppxPackages")) {
 try {
     foreach ($platform in $env:Build_Platform.Split(",")) {
         foreach ($configuration in $env:Build_Configuration.Split(",")) {
-            # TODO: UI tests are currently disabled in the pipeline until signing is solved
+            # TODO: UI tests are currently disabled in the pipeline until we can run tests as user
             if ($RunUITests) {
                 $DevHomePackage = Get-AppPackage "Microsoft.DevHome" -ErrorAction SilentlyContinue
                 if ($DevHomePackage) {
@@ -122,7 +122,7 @@ try {
             )
 
             & $vstestPath $vstestArgs
-            # TODO: UI tests are currently disabled in the pipeline until signing is solved
+            # TODO: UI tests are currently disabled in the pipeline until we can run tests as user
             if ($RunUITests) {
                 & $vstestPath $winAppTestArgs
             }
