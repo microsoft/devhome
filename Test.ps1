@@ -49,6 +49,8 @@ $isInstalled = Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVe
 if (-not $IsAzurePipelineBuild) {
     if ($isInstalled) {
         Write-Host "WinAppDriver is already installed on this computer."
+
+        Start-Process -FilePath "C:\Program Files\Windows Application Driver\WinAppDriver.exe"
     } else {
         Write-Host "WinAppDriver will be installed in the background."
         $url = "https://github.com/microsoft/WinAppDriver/releases/download/v1.2.99/WindowsApplicationDriver-1.2.99-win-x64.exe"
@@ -62,8 +64,6 @@ if (-not $IsAzurePipelineBuild) {
 
         Start-Process -Wait -FilePath (Join-Path $env:Build_SourcesDirectory "temp\WinAppDriverx64.exe") -ArgumentList "/S" -PassThru
     }
-
-    Start-Process -FilePath "C:\Program Files\Windows Application Driver\WinAppDriver.exe"
 }
 
 function ShutDownTests {
@@ -89,15 +89,27 @@ if (-not (Test-Path -Path "AppxPackages")) {
 try {
     foreach ($platform in $env:Build_Platform.Split(",")) {
         foreach ($configuration in $env:Build_Configuration.Split(",")) {
-            # TODO: UI tests are currently disabled in the pipeline until signing is solved
-            if (-not $IsAzurePipelineBuild) {
-                $DevHomePackage = Get-AppPackage "Microsoft.DevHome" -ErrorAction SilentlyContinue
-                if ($DevHomePackage) {
-                    Write-Host "Uninstalling old Dev Home"
-                    Remove-AppPackage -Package $DevHomePackage.PackageFullName
+            $DevHomePackage = Get-AppPackage "Microsoft.DevHome" -ErrorAction SilentlyContinue
+            if ($DevHomePackage) {
+                Write-Host "Uninstalling old Dev Home"
+                Remove-AppPackage -Package $DevHomePackage.PackageFullName
+            }
+            Write-Host "Installing Dev Home"
+            Add-AppPackage (Join-Path "AppxPackages" "$configuration\DevHome-$platform.msix")
+
+            if ($true) {
+                # Start/stop the app once so that WinAppDriver doesn't time out
+                Start-Process "Shell:AppsFolder\Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App"
+                for ($i - 0; $i -lt 60; $i++) {
+                    $temp = Get-Process -Name "DevHome" -ea SilentlyContinue
+                    if ($temp -eq $Null) {
+                        Write-Host "null"
+                    } else {
+                        Write-host $temp.Id
+                    }
+                    Start-Sleep 1
                 }
-                Write-Host "Installing Dev Home"
-                Add-AppPackage (Join-Path "AppxPackages" "$configuration\DevHome-$platform.msix")
+                Stop-Process -Name "DevHome"
             }
 
             $vstestArgs = @(
@@ -108,35 +120,11 @@ try {
             $winAppTestArgs = @(
                 "/Platform:$platform",
                 "/Logger:trx;LogFileName=DevHome.UITest-$platform-$configuration.trx",
+                "/Settings:uitest\Test.runsettings",
                 "uitest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\DevHome.UITest.dll"
             )
 
-            & $vstestPath $vstestArgs
-            # TODO: UI tests are currently disabled in the pipeline until signing is solved
-            if (-not $IsAzurePipelineBuild) {
-                & $vstestPath $winAppTestArgs
-            }
-
-            foreach ($toolPath in (Get-ChildItem "tools")) {
-                $tool = $toolPath.Name
-                $vstestArgs = @(
-                    "/Platform:$platform",
-                    "/Logger:trx;LogFileName=$tool.Test-$platform-$configuration.trx",
-                    "tools\$tool\*UnitTest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\*.UnitTest.dll"
-                )
-
-                $winAppTestArgs = @(
-                    "/Platform:$platform",
-                    "/Logger:trx;LogFileName=$tool.UITest-$platform-$configuration.trx",
-                    "tools\$tool\*UITest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\*.UITest.dll"
-                )
-
-                & $vstestPath $vstestArgs
-                # TODO: UI tests are currently disabled in the pipeline until signing is solved
-                if (-not $IsAzurePipelineBuild) {
-                    & $vstestPath $winAppTestArgs
-                }
-            }
+            & $vstestPath $winAppTestArgs
         }
     }
 } catch {
