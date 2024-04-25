@@ -60,13 +60,13 @@
     <NoWarn>$(NoWarn);NU1702</NoWarn>
     <EntryPointProjectUniqueName>..\src\DevHome.csproj</EntryPointProjectUniqueName>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-    <PackageCertificateKeyFile>Packaging_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
+    <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
   </PropertyGroup>
   <!-- Default asset scale is 200% but DEV only has 100% scaling images available-->
   <PropertyGroup Condition="'$(BuildRing)' == 'Dev'">
