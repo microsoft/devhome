@@ -114,11 +114,11 @@ Generally, we like to assign issues that generally belong to somebody's area of 
 
 ### Contributing to Windows Customization
 
-If you'd like to suggest a new feature/enhancement in Windows Customization, **you must first file an issue with the provided `Windows Customization` template**. This will help us understand what you're looking for and why, and will help us ensure that the feature is something that we can support in the long run. For changes that rely on registry key behaviors that are undocumented, we may first have to review with internal stakeholders how to support the desired functionality and may not be able to support them in the long run. In these cases, we may have to modify your PR with a different approach after chatting with the internal teams.
+If you'd like to suggest a new feature/improvement to Windows Customization, **you must first file an issue with the provided `Windows Customization` [template](https://github.com/microsoft/devhome/issues/new?template=feature_request_windows_customization.yml)**. This will help us understand what you're looking for and why, and will help us ensure that the feature is something that we can support in the long run. For changes that rely on registry key behaviors that are undocumented, we will first have to review with internal stakeholders how to support the desired functionality and may not be able to support them in the long term. In these cases, we may have to modify your PR with a different approach after chatting with the internal teams.
 
 We will not accept or review PRs that add new features to Windows Customization without an associated issue that follows the `Windows Customization` template.
 
-For bug fixes, simply file an issue with the appropriate label and we'll take a look. If you are able to fix the bug, please indicate that in the issue and we'll be happy to review your PR.
+For bug fixes, please still use the existing [bug template](https://github.com/microsoft/devhome/issues/new?template=Bug_Report.yml). If you are able to fix the bug, please indicate that in the issue and we'll be happy to review your PR.
 
 ### To spec or not to spec
 
