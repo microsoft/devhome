@@ -8,8 +8,10 @@ namespace HyperVExtension.CommunicationWithGuest;
 /// </summary>
 internal sealed class IsUserLoggedInRequest : RequestBase
 {
+    public const string RequestTypeId = "IsUserLoggedIn";
+
     public IsUserLoggedInRequest()
-        : base("IsUserLoggedIn")
+        : base(RequestTypeId)
     {
         GenerateJsonData();
     }

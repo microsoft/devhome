@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Globalization;
 using System.Text;
+using System.Xml.Linq;
 using Microsoft.Win32;
 using Serilog;
 
@@ -16,11 +18,13 @@ namespace HyperVExtension.HostGuestCommunication;
 public static class MessageHelper
 {
     public const char Separator = '~';
-    public const string MessageIdStart = "DevSetup{";
+    public const string DevSetupPrefix = "DevSetup";
+    public const string MessageIdStart = DevSetupPrefix + "{";
+    private static readonly char[] CommunicationIdSeparators = { '{', '}' };
 
     public static bool IsValidMessageName(string[]? message, out int index, out int total)
     {
-        // Number of parts separated by '-' DevSetup{<GUID>}-<index>-<total>
+        // Number of parts separated by '-' DevSetup{<number>}-<index>-<total>
         const int ValueNamePartsCount = 3;
         index = 0;
         total = 0;
@@ -42,22 +46,37 @@ public static class MessageHelper
         return true;
     }
 
+    private sealed class EqualityComparer : IEqualityComparer<(string name, int number)>
+    {
+        public bool Equals((string name, int number) x, (string name, int number) y)
+        {
+            return (x.number == y.number) && x.name.Equals(y.name, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public int GetHashCode((string name, int number) value)
+        {
+            return value.name.GetHashCode(StringComparison.OrdinalIgnoreCase) ^ value.number.GetHashCode();
+        }
+    }
+
     public static Dictionary<string, string> MergeMessageParts(Dictionary<string, string> messageParts)
     {
-        var messages = new Dictionary<string, string>();
-        var guestMessages = new Dictionary<string, string>();
-        var valueNames = messageParts.Keys.Where(k => k.StartsWith(MessageHelper.MessageIdStart, StringComparison.OrdinalIgnoreCase)).ToList();
-        HashSet<string> ignoreMessages = new();
+        var messages = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var valueNames = messageParts.Keys.Where(k => k.StartsWith(MessageIdStart, StringComparison.OrdinalIgnoreCase)).ToList();
+        HashSet<(string, int)> ignoreMessages = new(new EqualityComparer());
 
         foreach (var valueName in valueNames)
         {
             var s = valueName.Split(Separator);
-            if (!MessageHelper.IsValidMessageName(s, out var index, out var total))
+            if (!IsValidMessageName(s, out var index, out var total))
             {
                 continue;
             }
 
-            if (ignoreMessages.Contains(s[0]))
+            // Use communication id (DevSetup{<number>}) and total number of message parts as a key to ignore messages
+            // with the same id, but different total number of parts. This potentially could happen if we have stale messages
+            // that were not cleaned up properly (say, the app crashed).
+            if (ignoreMessages.Contains((s[0], total)))
             {
                 continue;
             }
@@ -68,19 +87,22 @@ public static class MessageHelper
             {
                 if (valueNameTmp.StartsWith(s[0] + $"{Separator}", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    if (!MessageHelper.IsValidMessageName(valueNameTmp.Split(Separator), out var indeTmp, out var totalTmp))
+                    if (!IsValidMessageName(valueNameTmp.Split(Separator), out var indeTmp, out var totalTmp))
                     {
                         continue;
                     }
 
-                    count++;
+                    if (totalTmp == total)
+                    {
+                        count++;
+                    }
                 }
             }
 
             // Either we will process all parts of the message below
             // or will ignore it because we don't have all parts.
             // In both cases we don't want to iterate trough messages with the same id.
-            ignoreMessages.Add(s[0]);
+            ignoreMessages.Add((s[0], total));
             if (count != total)
             {
                 // Ignore this message for now. We don't have all parts.
@@ -121,7 +143,7 @@ public static class MessageHelper
 
     public static Dictionary<string, string> GetRegistryMessageKvp(RegistryKey regKey)
     {
-        var messageParts = new Dictionary<string, string>();
+        var messageParts = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var valueName in regKey.GetValueNames())
         {
             if (!valueName.StartsWith(MessageIdStart, StringComparison.OrdinalIgnoreCase))
@@ -159,5 +181,22 @@ public static class MessageHelper
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Extract number from communication id ("DevSetup{<number>}").
+    /// </summary>
+    /// <param name="communicationId"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Incorrect format of communication id</exception>
+    public static uint GetCounterFromCommunicationId(string communicationId)
+    {
+        var parts = communicationId.Split(CommunicationIdSeparators);
+        if (parts.Length != 2)
+        {
+            throw new ArgumentException("Invalid communication id");
+        }
+
+        return uint.Parse(parts[1], CultureInfo.InvariantCulture);
     }
 }

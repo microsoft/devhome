@@ -15,7 +15,7 @@ internal sealed class ErrorNoTypeRequest : ErrorRequest
 
     public override string RequestType => "ErrorNoType";
 
-    public override IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
+    public override IHostResponse Execute(IProgressHandler progressHandler, CancellationToken stoppingToken)
     {
         return new ErrorNoTypeResponse(RequestId);
     }
