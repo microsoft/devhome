@@ -18,6 +18,8 @@ public class ActionCenterMessages
         get; set;
     }
 
+    public bool ShouldShowAdaptiveCardPanel => ExtensionAdaptiveCardPanel is not null;
+
     public bool DoesThisHaveActionableItems { get; }
 
     public ExtensionAdaptiveCardPanel ExtensionAdaptiveCardPanel { get; set; }

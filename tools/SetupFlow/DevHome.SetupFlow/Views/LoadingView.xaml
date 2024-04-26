@@ -139,6 +139,11 @@
         
         <!-- Task list messages -->
         <ListView  Grid.Column="0" Grid.Row="2" ItemsSource="{x:Bind ViewModel.Messages, Mode=OneWay}" SelectionMode="None">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="IsTabStop" Value="False" />
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:LoadingMessageViewModel">
                     <Grid ColumnSpacing="5">
@@ -182,19 +187,55 @@
         </ListView>
 
         <!-- Action center -->
-        <ListView Grid.Row="2" Grid.Column="1" ItemsSource="{x:Bind ViewModel.ActionCenterItems, Mode=OneWay}" SelectionMode="None" Margin="0, 0, 0, 5" IsTabStop="False">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="commonModels:ActionCenterMessages">
-                    <StackPanel 
+        <Grid
+            Grid.Column="1"
+            Grid.Row="2"
+            RowSpacing="10"
+            IsTabStop="False">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock 
+                    Grid.Row="0" 
+                    Text="{x:Bind ViewModel.NumberOfFailedTasksDisplay, Mode=OneWay}" Margin="18, 0, 0, 5" Foreground="{ThemeResource TextFillColorSecondary}"/>
+            <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.ActionCenterItems, Mode=OneWay}" SelectionMode="None" Margin="0, 0, 0, 5" IsTabStop="False">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="IsTabStop" Value="False" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="commonModels:ActionCenterMessages">
+                        <Grid RowSpacing="10" HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel
+                                HorizontalAlignment="Stretch"
                                 Visibility="{x:Bind PrimaryMessage, Converter={StaticResource EmptyObjectToObjectConverter}}"
-                                Margin="0, 0, 0, 10" 
+                                Grid.Row="0"
                                 Background="{ThemeResource CardBackgroundFillColorDefault}" 
-                                CornerRadius="10" 
+                                CornerRadius="10"
                                 Padding="20">
-                        <TextBlock Text="{x:Bind PrimaryMessage}" Style="{StaticResource BodyStrongTextBlockStyle}" IsTextSelectionEnabled="True" TextWrapping="Wrap"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                                <TextBlock Text="{x:Bind PrimaryMessage}" Style="{StaticResource BodyStrongTextBlockStyle}" IsTextSelectionEnabled="True"/>
+                            </StackPanel>
+                            <ContentControl
+                                Grid.Row="1"
+                                CornerRadius="10"
+                                Unloaded="ContentControl_Unloaded"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch"
+                                Content="{x:Bind ExtensionAdaptiveCardPanel}"
+                                Visibility="{x:Bind ShouldShowAdaptiveCardPanel}">
+                            </ContentControl>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
     </Grid>
 </UserControl>
