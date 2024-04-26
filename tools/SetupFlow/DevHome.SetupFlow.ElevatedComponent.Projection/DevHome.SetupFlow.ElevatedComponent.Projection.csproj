@@ -16,7 +16,7 @@
     <CsWinRTIncludes>DevHome.SetupFlow.ElevatedComponent</CsWinRTIncludes>
   </PropertyGroup>
   <ItemGroup>
-    <CsWinRTInputs Include="..\DevHome.SetupFlow.ElevatedComponent\bin\$(Platform)\$(Configuration)\$(TargetFramework)\win-$(Platform)\DevHome.SetupFlow.ElevatedComponent.winmd" />
+    <CsWinRTInputs Include="..\DevHome.SetupFlow.ElevatedComponent\bin\$(Platform)\$(Configuration)\$(TargetFramework)\DevHome.SetupFlow.ElevatedComponent.winmd" />
   </ItemGroup>
 
   <ItemGroup>
