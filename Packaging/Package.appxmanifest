@@ -37,12 +37,27 @@
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.22000.0" />
     <PackageDependency Name="Microsoft.VCLibs.140.00.UWPDesktop" MinVersion="14.0.24217.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.1.5" MinVersion="5001.58.448.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
   </Dependencies>
   <Resources>
-    <Resource Language="x-generate" />
+    <!-- Manually list the resources available in the package since WAP Project when combined with WinUI 3.0 does not generate them with x-generate -->
+    <Resource Language="EN-US" />
+    <Resource Language="DE-DE" />
+    <Resource Language="ES-ES" />
+    <Resource Language="FR-FR" />
+    <Resource Language="IT-IT" />
+    <Resource Language="JA-JP" />
+    <Resource Language="KO-KR" />
+    <Resource Language="PT-BR" />
+    <Resource Language="QPS-PLOC" />
+    <Resource Language="QPS-PLOCA" />
+    <Resource Language="QPS-PLOCM" />
+    <Resource Language="RU-RU" />
+    <Resource Language="ZH-CN" />
+    <Resource Language="ZH-TW" />
   </Resources>
   <Applications>
-    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Logos\MedTile.png" Square44x44Logo="Assets\Logos\AppList.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Logos\WideTile.png" />
         <uap:SplashScreen Image="Assets\Logos\SplashScreen.png" />
