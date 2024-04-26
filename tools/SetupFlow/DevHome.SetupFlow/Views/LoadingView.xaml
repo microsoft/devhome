@@ -192,22 +192,7 @@
             <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.ActionCenterItems, Mode=OneWay}" SelectionMode="None" Margin="0, 0, 0, 5">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="commonModels:ActionCenterMessages">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <StackPanel 
-                                Visibility="{x:Bind PrimaryMessage, Converter={StaticResource EmptyObjectToObjectConverter}}"
-                                Grid.Row="0"
-                                Margin="0, 0, 0, 10" 
-                                Background="{ThemeResource CardBackgroundFillColorDefault}" 
-                                CornerRadius="10" 
-                                Padding="20">
-                                <TextBlock Text="{x:Bind PrimaryMessage}" Style="{StaticResource BodyStrongTextBlockStyle}" IsTextSelectionEnabled="True" TextWrapping="Wrap"/>
-                            </StackPanel>
-                            <ContentControl
-                                Grid.Row="1"
+                        <ContentControl
                                 CornerRadius="10"
                                 Unloaded="ContentControl_Unloaded"
                                 HorizontalAlignment="Stretch"
@@ -215,8 +200,7 @@
                                 HorizontalContentAlignment="Stretch"
                                 VerticalContentAlignment="Stretch"
                                 Content="{x:Bind ExtensionAdaptiveCardPanel}">
-                            </ContentControl>
-                        </Grid>
+                        </ContentControl>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
