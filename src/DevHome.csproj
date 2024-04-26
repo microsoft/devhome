@@ -94,6 +94,7 @@
     <ProjectReference Include="..\HyperVExtension\src\HyperVExtensionServer\HyperVExtensionServer.csproj" />
     <ProjectReference Include="..\tools\Environments\DevHome.Environments\DevHome.Environments.csproj" />
     <ProjectReference Include="..\tools\Customization\DevHome.Customization\DevHome.Customization.csproj" />
+    <ProjectReference Include="..\WindowsSandboxExtension\WindowsSandboxExtension.csproj" />
   </ItemGroup>
 
   <ItemGroup>

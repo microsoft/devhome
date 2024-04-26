@@ -81,6 +81,13 @@
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
+		  <com:Extension Category="windows.comServer">
+			  <com:ComServer>
+				  <com:ExeServer Executable="WindowsSandboxExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="WindowsSandboxExtension">
+					  <com:Class Id="696E7E4C-2F09-45AF-B6D6-610A1B8F0DA7" DisplayName="WindowsSandboxExtension" />
+				  </com:ExeServer>
+			  </com:ComServer>
+		  </com:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="CoreWidgetProvider">
