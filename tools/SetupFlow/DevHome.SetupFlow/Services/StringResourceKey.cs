@@ -92,7 +92,7 @@ public static class StringResourceKey
     public static readonly string LoadingLogsTitleText = nameof(LoadingLogsTitleText);
     public static readonly string LoadingExecutingProgress = nameof(LoadingExecutingProgress);
     public static readonly string LoadingExecutingProgressForTarget = nameof(LoadingExecutingProgressForTarget);
-    public static readonly string ActionCenterDisplay = nameof(ActionCenterDisplay);
+    public static readonly string NumberOfFailedTasksDisplay = nameof(NumberOfFailedTasksDisplay);
     public static readonly string NeedsRebootMessage = nameof(NeedsRebootMessage);
     public static readonly string ApplicationsPageTitle = nameof(ApplicationsPageTitle);
     public static readonly string ReposConfigPageTitle = nameof(ReposConfigPageTitle);

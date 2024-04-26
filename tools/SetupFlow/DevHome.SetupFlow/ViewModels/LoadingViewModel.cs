@@ -153,7 +153,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// Used in the UI to tell the user the number of tasks that failed and succeeded.
     /// </summary>
     [ObservableProperty]
-    private string _actionCenterDisplay;
+    private string _numberOfFailedTasksDisplay;
 
     /// <summary>
     /// Controls if the UI for "Restart all tasks" and "Continue to summary" are shown.
@@ -250,7 +250,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     public void UpdateActionCenterMessage(ActionCenterMessages message, ActionMessageRequestKind requestKind)
     {
-        // ALl referenced to WindowEx and Application.Current will be removed in the future,
+        // All referenced to WindowEx and Application.Current will be removed in the future,
         // in the loadingViewModel.
         Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
@@ -373,7 +373,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
         }
 
-        ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, 0);
+        NumberOfFailedTasksDisplay = StringResource.GetLocalized(StringResourceKey.NumberOfFailedTasksDisplay, 0);
     }
 
     /// <summary>
@@ -576,7 +576,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 _numberOfExecutingTasks--;
                 ChangeMessage(taskInformation, loadingMessage, taskFinishedState);
                 TasksCompleted++;
-                ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, TasksFailed);
+                NumberOfFailedTasksDisplay = StringResource.GetLocalized(StringResourceKey.NumberOfFailedTasksDisplay, TasksFailed);
             });
         }
         catch

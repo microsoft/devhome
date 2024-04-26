@@ -861,7 +861,7 @@
     <value>Stop</value>
     <comment>Content to stop loading tasks.</comment>
   </data>
-  <data name="ActionCenterDisplay" xml:space="preserve">
+  <data name="NumberOfFailedTasksDisplay" xml:space="preserve">
     <value>Failed tasks: {0}</value>
     <comment>Action center display to see status of all tasks that have finished.</comment>
   </data>
