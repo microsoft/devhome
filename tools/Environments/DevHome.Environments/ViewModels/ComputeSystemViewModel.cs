@@ -93,7 +93,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
     private async Task InitializeOperationDataAsync()
     {
-        RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem!), DataExtractor.FillLaunchButtonOperations(ComputeSystem!));
+        RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem!, _windowEx), DataExtractor.FillLaunchButtonOperations(ComputeSystem!));
 
         foreach (var operation in await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem!))
         {
