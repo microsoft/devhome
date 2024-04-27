@@ -81,7 +81,8 @@ public class WindowsSandboxComputeSystem : IComputeSystem
         {
             try
             {
-                Process.Start("%SYSTEMROOT%\\System32\\WindowsSandbox.exe");
+                var systemRoot = Environment.GetEnvironmentVariable("SYSTEMROOT");
+                Process.Start(Path.Join(systemRoot, "System32\\WindowsSandbox.exe"));
                 return new ComputeSystemOperationResult();
             }
             catch (Exception ex)

@@ -121,4 +121,7 @@
     <value>Lightweight Desktop Environment</value>
     <comment>The diplay name used for the default Windows Sandbox compute system.</comment>
   </data>
+  <data name="WindowsSandboxFailedToStart" xml:space="preserve">
+    <value>Failed to find WindowsSandbox.exe</value>
+  </data>
 </root>

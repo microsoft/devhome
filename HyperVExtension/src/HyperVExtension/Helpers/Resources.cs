@@ -16,7 +16,8 @@ public static class Resources
         {
             if (_resourceLoader == null)
             {
-                _resourceLoader = new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath(), "HyperVExtension/Resources");
+                var path = ResourceLoader.GetDefaultResourceFilePath();
+                _resourceLoader = new ResourceLoader(path, "HyperVExtension/Resources");
             }
 
             return _resourceLoader.GetString(identifier);

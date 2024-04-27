@@ -21,7 +21,8 @@ internal sealed class Resources
         {
             if (_resourceLoader == null)
             {
-                _resourceLoader = new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath(), "HyperVExtension/Resources");
+                var path = ResourceLoader.GetDefaultResourceFilePath();
+                _resourceLoader = new ResourceLoader(path);
             }
 
             return _resourceLoader.GetString(identifier);
