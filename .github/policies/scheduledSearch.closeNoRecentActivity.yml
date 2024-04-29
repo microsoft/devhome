@@ -29,6 +29,8 @@ configuration:
       - noActivitySince:
           days: 5
       actions:
+      - removeLabel:
+          label: Needs-Triage
       - closeIssue
 onFailure: 
 onSuccess: 
