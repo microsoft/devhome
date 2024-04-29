@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.Json.Nodes;
 using CoreWidgetProvider.Helpers;
 using CoreWidgetProvider.Widgets.Enums;
-using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.Windows.Widgets.Providers;
 using Windows.ApplicationModel;
 
