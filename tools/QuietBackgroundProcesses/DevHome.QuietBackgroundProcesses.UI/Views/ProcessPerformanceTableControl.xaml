@@ -29,13 +29,13 @@
             <ListView.Header>
                 <Grid ColumnSpacing="0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition />
                     </Grid.RowDefinitions>
                     
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="180" />
-                        <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     
                     <Border Grid.Column="0" Style="{StaticResource BorderStyle}">
@@ -61,6 +61,7 @@
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             HorizontalTextAlignment="Left"
+                            TextWrapping="WrapWholeWords"
                             TextTrimming="CharacterEllipsis" />
                     </Border>
                 </Grid>
@@ -70,9 +71,9 @@
                 <DataTemplate x:DataType="local:ProcessData">
                     <Grid ColumnSpacing="5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180" />
-                            <ColumnDefinition Width="130" />
-                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
                         <Border Grid.Column="0" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 0">
