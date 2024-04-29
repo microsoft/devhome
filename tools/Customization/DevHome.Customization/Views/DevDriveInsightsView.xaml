@@ -7,6 +7,8 @@
     xmlns:devViewModels="using:DevHome.Customization.ViewModels.DevDriveInsights"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d"
     Loaded="UserControl_Loaded">
     <UserControl.Resources>
@@ -15,19 +17,23 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.Common/Environments/Templates/EnvironmentsTemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
             <converters:BoolToVisibilityConverter x:Key="CollapsedWhenTrueBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
-            <converters:EmptyCollectionToObjectConverter x:Key="NegatedEmptyCollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
-            <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
-            <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
-            <converters:EmptyStringToObjectConverter x:Key="EmptyStringToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
 
             <!--- Template for dev drive horizontal cards on the dev insights page. -->
             <DataTemplate x:Key="HorizontalCardForDevDriveInsightsPage" x:DataType="devViewModels:DevDriveCardViewModel">
-                <ctControls:SettingsCard Header="{Binding DevDriveLabel, Mode=OneWay}">
-                    <ctControls:SettingsCard.HeaderIcon>
+                <ctControls:SettingsExpander IsExpanded="False" Header="{Binding DevDriveLabel, Mode=OneWay}" >
+                    <ctControls:SettingsExpander.Description>
+                        <TextBlock Text="{Binding Path=DevDriveTrustText, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorCautionBrush}">
+                            <i:Interaction.Behaviors>
+                                <ic:DataTriggerBehavior Binding="{x:Bind IsDevDriveTrusted}" Value="True">
+                                    <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorSuccessBrush}"/>
+                                </ic:DataTriggerBehavior>
+                            </i:Interaction.Behaviors>
+                        </TextBlock>
+                    </ctControls:SettingsExpander.Description>   
+                    <ctControls:SettingsExpander.HeaderIcon>
                         <FontIcon Glyph="&#xEDA2;" FontSize="25" FontFamily="{ThemeResource AmcFluentIcons}"/>
-                    </ctControls:SettingsCard.HeaderIcon>
+                    </ctControls:SettingsExpander.HeaderIcon>
                     <Grid Grid.Column="2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"  />
@@ -35,19 +41,31 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 115 5">
-                                <Run Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
+                            <Run Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
                         </TextBlock>
                         <ProgressBar Grid.Row="1" Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
                         <Grid Grid.Row="2">
                             <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0">
-                                    <Run Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
+                                <Run Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
                             </TextBlock>
                             <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right">
-                                    <Run Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
+                                <Run Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
                             </TextBlock>
                         </Grid>
                     </Grid>
-                </ctControls:SettingsCard>
+                    <ctControls:SettingsExpander.Items>
+                        <ctControls:SettingsCard Visibility="{Binding Path=IsDevDriveTrusted, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}" Header="{Binding Path=UntrustedDevDriveText, Mode=OneWay}" Description="{Binding Path=UntrustedDevDriveDescription, Mode=OneWay}">
+                            <Button x:Name="UACLauncher" Command="{Binding MakeDevDriveTrustedCommand}" Width="120">
+                                <Button.Content>
+                                    <TextBlock>
+                                        <Run Text="&#xEA18;" FontSize="10" FontFamily="Segoe MDL2 Assets" />
+                                        <Run Text="{x:Bind MakeTrustedText, Mode=OneWay}" />
+                                    </TextBlock>
+                                </Button.Content>
+                            </Button>
+                        </ctControls:SettingsCard>
+                    </ctControls:SettingsExpander.Items>
+                </ctControls:SettingsExpander>
             </DataTemplate>
 
 
@@ -118,6 +136,17 @@
                 IsMultiSelectCheckBoxEnabled="False"
                 HorizontalContentAlignment="Stretch">
             </ListView>
+            <TextBlock
+                Margin="0 20 0 -10"
+                Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
+                Text="Package Caches"
+                IsTextSelectionEnabled="True"/>
+            <TextBlock
+                Margin="0 20 0 -10"
+                Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                Text="{x:Bind ViewModel.PackageCachesDescription, Mode=OneWay}"
+                IsTextSelectionEnabled="True"
+                TextWrapping="WrapWholeWords"/>
             <!--- List of DevDriveOptimizersListViewModel objects. -->
             <ListView
                 x:Name="DevDriveOptimizersList"
@@ -127,7 +156,7 @@
                 ItemsSource="{x:Bind ViewModel.DevDriveOptimizerCardCollection, Mode=OneWay}"
                 SelectionMode="None"
                 ItemTemplate="{StaticResource HorizontalCardForDevDriveOptimizerInsightsPage}"
-                Margin="0 0 0 10"
+                Margin="0 0 0 -10"
                 IsMultiSelectCheckBoxEnabled="False">
             </ListView>
             <!--- List of DevDriveOptimizedsListViewModel objects. -->
@@ -139,7 +168,6 @@
                 ItemsSource="{x:Bind ViewModel.DevDriveOptimizedCardCollection, Mode=OneWay}"
                 SelectionMode="None"
                 ItemTemplate="{StaticResource HorizontalCardForDevDriveOptimizedInsightsPage}"
-                Margin="0 0 0 10"
                 IsMultiSelectCheckBoxEnabled="False">
             </ListView>
         </StackPanel>

@@ -46,6 +46,10 @@ public class DevDriveManager : IDevDriveManager
     // https://github.com/microsoft/devhome/issues/634
     private readonly uint _devDriveVolumeStateFlag = 0x00002000;
 
+    // Query flag for persistent state info of the volume, the presence of this flag will let us know
+    // its a trusted Dev drive.
+    private readonly uint _devDriveVolumeStateTrustedFlag = 0x00004000;
+
     /// <summary>
     /// Set that holds Dev Drives that have been created through the Dev Drive manager.
     /// </summary>
@@ -191,7 +195,7 @@ public class DevDriveManager : IDevDriveManager
                 uint outputSize;
                 var volumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
                 var inputVolumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
-                inputVolumeInfo.FlagMask = _devDriveVolumeStateFlag;
+                inputVolumeInfo.FlagMask = _devDriveVolumeStateFlag | _devDriveVolumeStateTrustedFlag;
                 inputVolumeInfo.Version = 1;
 
                 SafeFileHandle volumeFileHandle = PInvoke.CreateFile(
@@ -239,6 +243,7 @@ public class DevDriveManager : IDevDriveManager
                             DriveLocation = string.Empty,
                             DriveLabel = volumeLabel,
                             State = DevDriveState.ExistsOnSystem,
+                            IsDevDriveTrusted = (volumeInfo.VolumeFlags & _devDriveVolumeStateTrustedFlag) > 0,
                         };
 
                         devDrives.Add(newDevDrive);
