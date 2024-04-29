@@ -7,7 +7,7 @@ namespace WindowsSandboxExtension.Helpers;
 
 internal sealed class WindowsSandboxAppx
 {
-    private const string PackageFamilyName = "Microsoft.Windows.WindowsSandbox";
+    private const string PackageFamilyName = "MicrosoftWindows.WindowsSandbox_cw5n1h2txyewy";
 
     public static bool IsInstalled()
     {

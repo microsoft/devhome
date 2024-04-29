@@ -39,6 +39,8 @@ public sealed class Program
         if (WindowsSandboxAppx.IsInstalled())
         {
             Log.Information("Windows Sandbox appx package is installed... exiting.");
+            Log.CloseAndFlush();
+            return;
         }
 
         // Force the app to be single instanced.
