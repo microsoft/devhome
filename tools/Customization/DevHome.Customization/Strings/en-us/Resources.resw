@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ChooseDirectoryPlaceholderText" xml:space="preserve">
+    <value>Choose a directory</value>
+    <comment>Choose directory</comment>
+  </data>
   <data name="ChooseDirectoryPromptText" xml:space="preserve">
     <value>Choose directory on Dev Drive...</value>
     <comment>Choose directory on dev drive</comment>
@@ -144,6 +148,10 @@
   <data name="DevDriveUsedSizeText" xml:space="preserve">
     <value>{0} {1} used</value>
     <comment>Dev drive size used</comment>
+  </data>
+  <data name="DevDriveVolumes_Header" xml:space="preserve">
+    <value>Dev Drive volumes</value>
+    <comment>Header for Dev Drive volumes list in Dev Drive insights page</comment>
   </data>
   <data name="FileExplorerCard.Description" xml:space="preserve">
     <value>Adjust these settings for a more developer-friendly experience using File Explorer</value>
