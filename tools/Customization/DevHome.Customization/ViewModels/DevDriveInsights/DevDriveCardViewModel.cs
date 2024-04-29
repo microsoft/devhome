@@ -1,10 +1,17 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Utilities;
+using Microsoft.UI.Xaml;
+using Serilog;
+using Windows.UI.Notifications;
 
 namespace DevHome.Customization.ViewModels.DevDriveInsights;
 
@@ -31,6 +38,47 @@ public partial class DevDriveCardViewModel : ObservableObject
 
     public string DevDriveFreeSizeText { get; set; }
 
+    public bool IsDevDriveTrusted { get; set; }
+
+    public string DevDriveTrustText { get; set; }
+
+    public string UntrustedDevDriveDescription { get; set; }
+
+    public string UntrustedDevDriveText { get; set; }
+
+    public string MakeTrustedText { get; set; }
+
+    public char DriveLetter { get; set; }
+
+    [RelayCommand]
+    private void MakeDevDriveTrusted()
+    {
+        // Launch a UAC prompt
+        var startInfo = new ProcessStartInfo();
+        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+        startInfo.FileName = Environment.SystemDirectory + "\\fsutil.exe";
+
+        // Run the fstutil cmd to trust the dev drive
+        startInfo.Arguments = "devdrv trust /f " + DriveLetter + ":";
+        startInfo.UseShellExecute = true;
+        startInfo.Verb = "runas";
+
+        var process = new Process();
+        process.StartInfo = startInfo;
+
+        // Since a UAC prompt will be shown, we need to wait for the process to exit
+        // This can also be cancelled by the user which will result in an exception
+        try
+        {
+            process.Start();
+            process.WaitForExit();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.ToString());
+        }
+    }
+
     public DevDriveCardViewModel(IDevDrive devDrive)
     {
         DevDriveLabel = devDrive.DriveLabel;
@@ -44,5 +92,11 @@ public partial class DevDriveCardViewModel : ObservableObject
         DevDriveSizeText = stringResource.GetLocalized("DevDriveSizeText", DevDriveSize, DevDriveUnitOfMeasure);
         DevDriveUsedSizeText = stringResource.GetLocalized("DevDriveUsedSizeText", DevDriveUsedSize, DevDriveUnitOfMeasure);
         DevDriveFreeSizeText = stringResource.GetLocalized("DevDriveFreeSizeText", DevDriveFreeSize, DevDriveUnitOfMeasure);
+        IsDevDriveTrusted = devDrive.IsDevDriveTrusted;
+        DevDriveTrustText = IsDevDriveTrusted ? stringResource.GetLocalized("DevDriveTrustedText") : stringResource.GetLocalized("DevDriveUntrustedText");
+        UntrustedDevDriveDescription = stringResource.GetLocalized("UntrustedDevDriveDescription");
+        UntrustedDevDriveText = stringResource.GetLocalized("UntrustedDevDriveText");
+        MakeTrustedText = stringResource.GetLocalized("MakeTrustedText");
+        DriveLetter = devDrive.DriveLetter;
     }
 }

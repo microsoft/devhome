@@ -145,6 +145,14 @@
     <value>Dev Drive insights</value>
     <comment>Header for Dev Drive insights page in the breadcrumb bar</comment>
   </data>
+  <data name="DevDriveOptimizationSuggestion" xml:space="preserve">
+    <value>Suggestion</value>
+    <comment>Dev drive optimization suggestion</comment>
+  </data>
+  <data name="DevDriveOptimized" xml:space="preserve">
+    <value>Optimized</value>
+    <comment>Dev drive optimized indicator</comment>
+  </data>
   <data name="DevDriveSizeText" xml:space="preserve">
     <value>Size - {0} {1}</value>
     <comment>Dev drive size</comment>
@@ -156,6 +164,14 @@
   <data name="DevDriveVolumesHeader.Text" xml:space="preserve">
     <value>Dev Drive volumes</value>
     <comment>Header for Dev Drive volumes list in Dev Drive insights page</comment>
+  </data>
+  <data name="DevDriveTrustedText" xml:space="preserve">
+    <value>Trusted</value>
+    <comment>Dev drive is trusted</comment>
+  </data>
+  <data name="DevDriveUntrustedText" xml:space="preserve">
+    <value>Untrusted</value>
+    <comment>Dev drive is not trusted</comment>
   </data>
   <data name="FileExplorerCard.Description" xml:space="preserve">
     <value>Adjust these settings for a more developer-friendly experience using File Explorer</value>
@@ -181,6 +197,10 @@
     <value>End Task</value>
     <comment>The header for the end task on task bar settings card</comment>
   </data>
+  <data name="MainPage_Header" xml:space="preserve">
+    <value>Windows customization</value>
+    <comment>Header for main Windows customization page in the breadcrumb bar</comment>
+  </data>
   <data name="MakeChangesText" xml:space="preserve">
     <value>Make changes</value>
     <comment>Make changes button on dialog</comment>
@@ -188,6 +208,10 @@
   <data name="MakeTheChangeText" xml:space="preserve">
     <value>Make the change</value>
     <comment>Make the change button on optimizer card</comment>
+  </data>
+  <data name="MakeTrustedText" xml:space="preserve">
+    <value>Trust</value>
+    <comment>Make dev drive trusted</comment>
   </data>
   <data name="MoreWindowsSettingsSectionDescription.Text" xml:space="preserve">
     <value>Additional settings below can be configured in the system settings app</value>
@@ -217,6 +241,10 @@
     <value>Move contents of {0} to a directory on Dev Drive such as {1} and set {2} to that chosen directory on Dev Drive</value>
     <comment>Optimizer dev drive description when environment variable is not set</comment>
   </data>
+  <data name="PackageCachesDescription" xml:space="preserve">
+    <value>A package cache is the global folder location used by application to store files for installed software. These source files are needed when you want to update, uninstall or repair the installed software. Visual Studio is one such application that stores a large portion of it's data in the Package Cache.</value>
+    <comment>Package caches description</comment>
+  </data>
   <data name="SettingsAutoSuggestBox.PlaceholderText" xml:space="preserve">
     <value>Search</value>
     <comment>The placholder text for the settings auto suggest box</comment>
@@ -241,17 +269,17 @@
     <value>Show hidden and system files</value>
     <comment>The header for the show hidden and system files setting.</comment>
   </data>
-  <data name="DevDriveOptimizationSuggestion" xml:space="preserve">
-    <value>Suggestion</value>
-    <comment>Dev drive optimization suggestion</comment>
+  <data name="UntrustedDevDriveDescription" xml:space="preserve">
+    <value>Mircosoft Defender performance mode is only available for Trusted Dev Drive volumes </value>
+    <comment>The meaning of untrusted dev drives.</comment>
   </data>
-  <data name="DevDriveOptimized" xml:space="preserve">
-    <value>Optimized</value>
-    <comment>Dev drive optimized indicator</comment>
+  <data name="UntrustedDevDriveLearnMoreText" xml:space="preserve">
+    <value>Learn more.</value>
+    <comment>Learn more link for untrusted dev drives.</comment>
   </data>
-  <data name="MainPage_Header" xml:space="preserve">
-    <value>Windows customization</value>
-    <comment>Header for main Windows customization page in the breadcrumb bar</comment>
+  <data name="UntrustedDevDriveText" xml:space="preserve">
+    <value>Untrusted Dev Drive</value>
+    <comment>Untrusted Dev Drive</comment>
   </data>
   <data name="WindowsDeveloperCard.ActionIconToolTip" xml:space="preserve">
     <value>Open the Windows Settings app</value>
