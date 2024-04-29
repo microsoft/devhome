@@ -163,7 +163,7 @@
                             </Grid.Resources>
                             <ImageIcon
                                 Grid.Column="0"
-                                VerticalAlignment="Top"
+                                VerticalAlignment="Center"
                                 Visibility="{x:Bind ShouldShowStatusSymbolIcon, Mode=OneWay}"
                                 Source="{x:Bind StatusSymbolIcon, Mode=OneWay}"/>
                             <ProgressRing

@@ -20,7 +20,9 @@ using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.VisualBasic;
 using Serilog;
+using Windows.Networking.Connectivity;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -271,6 +273,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             ActionCenterItems = new(items);
         });
     }
+
+    private readonly Random _randomNumber = new();
 
     public LoadingViewModel(
         ISetupFlowStringResource stringResource,
@@ -535,11 +539,18 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// <returns>An awaitable task</returns>
     private async Task StartTaskAndReportResult(WinUIEx.WindowEx window, TaskInformation taskInformation)
     {
+        // loadingMessage is used in the catch.
+        var loadingMessage = _host.GetService<LoadingMessageViewModel>();
+        loadingMessage.MessageToShow = taskInformation.MessageToShow;
+
         // Start the task and wait for it to complete.
         try
         {
-            var loadingMessage = _host.GetService<LoadingMessageViewModel>();
-            loadingMessage.MessageToShow = taskInformation.MessageToShow;
+            if (_randomNumber.Next(0, 10) < 3)
+            {
+                throw new ArgumentOutOfRangeException(nameof(window));
+            }
+
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
@@ -579,11 +590,20 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, TasksFailed);
             });
         }
-        catch
+        catch (Exception e)
         {
-            // Don't let a single task break everything
-            // TODO: Show failed tasks on UI
-            // https://github.com/microsoft/devhome/issues/629
+            window.DispatcherQueue.TryEnqueue(() =>
+            {
+                loadingMessage.MessageToShow = $"Could not finish {taskInformation.MessageToShow} because {e.Message}";
+                loadingMessage.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkError : LightError;
+                loadingMessage.ShouldShowProgressRing = false;
+                loadingMessage.ShouldShowStatusSymbolIcon = true;
+
+                ChangeMessage(taskInformation, loadingMessage, TaskFinishedState.Failure);
+                TasksCompleted++;
+                ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, TasksFailed);
+            });
+            _log.Error(e, $"Could not finish all tasks.");
         }
     }
 }
