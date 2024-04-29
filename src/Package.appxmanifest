@@ -69,7 +69,7 @@
 		  <com:Extension Category="windows.comServer">
 			  <com:ComServer>
 				  <com:ExeServer Executable="WindowsSandboxExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="WindowsSandboxExtension">
-					  <com:Class Id="38F85370-2728-4A77-B6C9-7D7E99FE040B" DisplayName="WindowsSandboxExtension" />
+					  <com:Class Id="6A52115B-083C-4FB1-85F4-BBE23289220E" DisplayName="WindowsSandboxExtension" />
 				  </com:ExeServer>
 			  </com:ComServer>
 		  </com:Extension>
@@ -119,7 +119,7 @@
 				<uap3:Properties>
 					<DevHomeProvider>
 						<Activation>
-							<CreateInstance ClassId="38F85370-2728-4A77-B6C9-7D7E99FE040B" />
+							<CreateInstance ClassId="6A52115B-083C-4FB1-85F4-BBE23289220E" />
 						</Activation>
 						<SupportedInterfaces>
 							<ComputeSystem />

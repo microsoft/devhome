@@ -8,7 +8,7 @@ using Serilog;
 namespace WindowsSandboxExtension;
 
 [ComVisible(true)]
-[Guid("38F85370-2728-4A77-B6C9-7D7E99FE040B")]
+[Guid("6A52115B-083C-4FB1-85F4-BBE23289220E")]
 [ComDefaultInterface(typeof(IExtension))]
 internal sealed class WindowsSandboxExtension : IExtension, IDisposable
 {

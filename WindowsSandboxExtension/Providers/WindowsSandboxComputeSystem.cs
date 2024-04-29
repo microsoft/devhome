@@ -11,6 +11,7 @@ using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using WindowsSandboxExtension.Helpers;
+using WindowsSandboxExtension.Telemetry;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 #nullable disable
@@ -83,11 +84,14 @@ public class WindowsSandboxComputeSystem : IComputeSystem
             {
                 var systemRoot = Environment.GetEnvironmentVariable("SYSTEMROOT");
                 Process.Start(Path.Join(systemRoot, "System32\\WindowsSandbox.exe"));
+
+                TraceLogging.StartingWindowsSandbox();
                 return new ComputeSystemOperationResult();
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "Failed to start Windows Sandbox");
+                TraceLogging.ExceptionThrown(ex);
                 return new ComputeSystemOperationResult(ex, Resources.GetResource("WindowsSandboxFailedToStart", _log), "Failed to start Windows Sandbox");
             }
         }).AsAsyncOperation();
