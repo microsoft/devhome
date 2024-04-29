@@ -2,6 +2,7 @@ param (
     [string]$Platform = "x64",
     [string]$Configuration = "debug",
     [switch]$IsAzurePipelineBuild = $false,
+    [switch]$RunUITests = $false,
     [switch]$Help = $false
 )
 
@@ -49,6 +50,8 @@ $isInstalled = Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVe
 if (-not $IsAzurePipelineBuild) {
     if ($isInstalled) {
         Write-Host "WinAppDriver is already installed on this computer."
+
+        Start-Process -FilePath "C:\Program Files\Windows Application Driver\WinAppDriver.exe"
     } else {
         Write-Host "WinAppDriver will be installed in the background."
         $url = "https://github.com/microsoft/WinAppDriver/releases/download/v1.2.99/WindowsApplicationDriver-1.2.99-win-x64.exe"
@@ -62,8 +65,6 @@ if (-not $IsAzurePipelineBuild) {
 
         Start-Process -Wait -FilePath (Join-Path $env:Build_SourcesDirectory "temp\WinAppDriverx64.exe") -ArgumentList "/S" -PassThru
     }
-
-    Start-Process -FilePath "C:\Program Files\Windows Application Driver\WinAppDriver.exe"
 }
 
 function ShutDownTests {
@@ -89,8 +90,8 @@ if (-not (Test-Path -Path "AppxPackages")) {
 try {
     foreach ($platform in $env:Build_Platform.Split(",")) {
         foreach ($configuration in $env:Build_Configuration.Split(",")) {
-            # TODO: UI tests are currently disabled in the pipeline until signing is solved
-            if (-not $IsAzurePipelineBuild) {
+            # TODO: UI tests are currently disabled in the pipeline until we can run tests as user
+            if ($RunUITests) {
                 $DevHomePackage = Get-AppPackage "Microsoft.DevHome" -ErrorAction SilentlyContinue
                 if ($DevHomePackage) {
                     Write-Host "Uninstalling old Dev Home"
@@ -98,6 +99,14 @@ try {
                 }
                 Write-Host "Installing Dev Home"
                 Add-AppPackage (Join-Path "AppxPackages" "$configuration\DevHome-$platform.msix")
+
+                if ($true) {
+                    # Start/stop the app once so that WinAppDriver doesn't time out during first time setup
+                    # and wait 60 seconds to give plenty of time
+                    Start-Process "Shell:AppsFolder\Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App"
+                    Start-Sleep 60
+                    Stop-Process -Name "DevHome"
+                }
             }
 
             $vstestArgs = @(
@@ -108,12 +117,13 @@ try {
             $winAppTestArgs = @(
                 "/Platform:$platform",
                 "/Logger:trx;LogFileName=DevHome.UITest-$platform-$configuration.trx",
+                "/Settings:uitest\Test.runsettings",
                 "uitest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\DevHome.UITest.dll"
             )
 
             & $vstestPath $vstestArgs
-            # TODO: UI tests are currently disabled in the pipeline until signing is solved
-            if (-not $IsAzurePipelineBuild) {
+            # TODO: UI tests are currently disabled in the pipeline until we can run tests as user
+            if ($RunUITests) {
                 & $vstestPath $winAppTestArgs
             }
 
@@ -128,12 +138,13 @@ try {
                 $winAppTestArgs = @(
                     "/Platform:$platform",
                     "/Logger:trx;LogFileName=$tool.UITest-$platform-$configuration.trx",
+                    "/Settings:uitest\Test.runsettings",
                     "tools\$tool\*UITest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\*.UITest.dll"
                 )
 
                 & $vstestPath $vstestArgs
                 # TODO: UI tests are currently disabled in the pipeline until signing is solved
-                if (-not $IsAzurePipelineBuild) {
+                if ($RunUITests) {
                     & $vstestPath $winAppTestArgs
                 }
             }
