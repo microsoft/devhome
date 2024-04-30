@@ -165,11 +165,11 @@
     <value>Dev Drive volumes</value>
     <comment>Header for Dev Drive volumes list in Dev Drive insights page</comment>
   </data>
-  <data name="DevDriveTrustedText" xml:space="preserve">
+  <data name="DevDriveTrusted.Text" xml:space="preserve">
     <value>Trusted</value>
     <comment>Dev drive is trusted</comment>
   </data>
-  <data name="DevDriveUntrustedText" xml:space="preserve">
+  <data name="DevDriveUntrusted.Text" xml:space="preserve">
     <value>Untrusted</value>
     <comment>Dev drive is not trusted</comment>
   </data>
@@ -241,8 +241,8 @@
     <value>Move contents of {0} to a directory on Dev Drive such as {1} and set {2} to that chosen directory on Dev Drive</value>
     <comment>Optimizer dev drive description when environment variable is not set</comment>
   </data>
-  <data name="PackageCachesDescription" xml:space="preserve">
-    <value>A package cache is the global folder location used by application to store files for installed software. These source files are needed when you want to update, uninstall or repair the installed software. Visual Studio is one such application that stores a large portion of it's data in the Package Cache.</value>
+  <data name="PackageCachesDescription.Text" xml:space="preserve">
+    <value>A package cache is the global folder location used by an application to store files for installed software. These source files are needed when you want to update, uninstall, or repair the installed software. Visual Studio is one such application that stores a large portion of its data in the Package Cache.</value>
     <comment>Package caches description</comment>
   </data>
   <data name="SettingsAutoSuggestBox.PlaceholderText" xml:space="preserve">

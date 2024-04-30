@@ -32,9 +32,6 @@ public partial class DevDriveInsightsViewModel : ObservableObject
     private readonly OptimizeDevDriveDialogViewModelFactory _optimizeDevDriveDialogViewModelFactory;
 
     [ObservableProperty]
-    private string _packageCachesDescription;
-
-    [ObservableProperty]
     private bool _shouldShowCollectionView;
 
     [ObservableProperty]
@@ -79,7 +76,6 @@ public partial class DevDriveInsightsViewModel : ObservableObject
             new(stringResource.GetLocalized("DevDriveInsights_Header"), typeof(DevDriveInsightsViewModel).FullName!)
         ];
 
-        _packageCachesDescription = new(stringResource.GetLocalized("PackageCachesDescription"));
         _optimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
         DevDriveManagerObj = devDriveManager;
     }

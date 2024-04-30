@@ -25,7 +25,7 @@
                 <StackPanel Orientation="Vertical">
                     <ctControls:SettingsCard Header="{Binding DevDriveLabel, Mode=OneWay}" Visibility="{Binding Path=IsDevDriveTrusted, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                         <ctControls:SettingsCard.Description>
-                            <TextBlock Text="{Binding Path=DevDriveTrustText, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                            <TextBlock x:Uid="DevDriveTrusted" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
                         </ctControls:SettingsCard.Description>
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon Glyph="&#xEDA2;" FontSize="25" FontFamily="{ThemeResource AmcFluentIcons}"/>
@@ -46,8 +46,8 @@
                     </ctControls:SettingsCard>
                     <ctControls:SettingsExpander IsExpanded="False" Header="{Binding DevDriveLabel, Mode=OneWay}" Visibility="{Binding Path=IsDevDriveTrusted, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" >
                         <ctControls:SettingsExpander.Description>
-                            <TextBlock Text="{Binding Path=DevDriveTrustText, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorCautionBrush}" />
-                        </ctControls:SettingsExpander.Description>
+                            <TextBlock x:Uid="DevDriveUntrusted" Foreground="{ThemeResource SystemFillColorCautionBrush}" />
+                        </ctControls:SettingsExpander.Description>   
                         <ctControls:SettingsExpander.HeaderIcon>
                             <FontIcon Glyph="&#xEDA2;" FontSize="25" FontFamily="{ThemeResource AmcFluentIcons}"/>
                         </ctControls:SettingsExpander.HeaderIcon>
@@ -156,7 +156,7 @@
             <TextBlock
                 Margin="0 20 0 -10"
                 Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
-                Text="{x:Bind ViewModel.PackageCachesDescription, Mode=OneWay}"
+                x:Uid ="PackageCachesDescription"
                 IsTextSelectionEnabled="True"
                 TextWrapping="WrapWholeWords"/>
             <!--- List of DevDriveOptimizersListViewModel objects. -->
