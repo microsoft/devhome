@@ -15,13 +15,6 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.Common/Environments/Templates/EnvironmentsTemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
-            <converters:BoolToVisibilityConverter x:Key="CollapsedWhenTrueBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
-            <converters:EmptyCollectionToObjectConverter x:Key="NegatedEmptyCollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
-            <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
-            <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
-            <converters:EmptyStringToObjectConverter x:Key="EmptyStringToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
-
             <!--- Template for dev drive horizontal cards on the dev insights page. -->
             <DataTemplate x:Key="HorizontalCardForDevDriveInsightsPage" x:DataType="devViewModels:DevDriveCardViewModel">
                 <ctControls:SettingsCard Header="{Binding DevDriveLabel, Mode=OneWay}">
@@ -34,17 +27,11 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Left" Margin="0 0 115 5">
-                            <Run Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
-                        </TextBlock>
+                        <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" Margin="0 0 115 5" Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
                         <ProgressBar Grid.Row="1" Width="300" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
                         <Grid Grid.Row="2">
-                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Left" Margin="0 0 120 0">
-                                <Run Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
-                            </TextBlock>
-                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right">
-                                <Run Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
-                            </TextBlock>
+                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" Margin="0 0 120 0" Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
+                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
                         </Grid>
                     </Grid>
                 </ctControls:SettingsCard>
@@ -101,9 +88,9 @@
     <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}">
         <StackPanel Spacing="1">
             <TextBlock
+                x:Uid="DevDriveVolumesHeader"
                 Margin="0 20 0 -10"
                 Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
-                Text="{x:Bind ViewModel.DevDriveVolumesText, Mode=OneWay}"
                 IsTextSelectionEnabled="True"/>
             <!--- List of DevDrivesListViewModel objects. -->
             <ListView
@@ -139,7 +126,6 @@
                 ItemsSource="{x:Bind ViewModel.DevDriveOptimizedCardCollection, Mode=OneWay}"
                 SelectionMode="None"
                 ItemTemplate="{StaticResource HorizontalCardForDevDriveOptimizedInsightsPage}"
-                Margin="0 0 0 0"
                 IsMultiSelectCheckBoxEnabled="False">
             </ListView>
         </StackPanel>

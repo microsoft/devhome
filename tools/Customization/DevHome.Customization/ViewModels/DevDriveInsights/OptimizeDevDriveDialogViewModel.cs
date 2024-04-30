@@ -50,9 +50,6 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
     [ObservableProperty]
     private string _directoryPathTextBox;
 
-    [ObservableProperty]
-    private string _chooseDirectoryPlaceholderText;
-
     public OptimizeDevDriveDialogViewModel(
         string existingCacheLocation,
         string environmentVariableToBeSet,
@@ -68,7 +65,6 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         ExistingCacheLocation = existingCacheLocation;
         EnvironmentVariableToBeSet = environmentVariableToBeSet;
         OptimizeDevDriveDialogDescription = stringResource.GetLocalized("OptimizeDevDriveDialogDescription/Text", ExistingCacheLocation, EnvironmentVariableToBeSet);
-        ChooseDirectoryPlaceholderText = stringResource.GetLocalized("ChooseDirectoryPlaceholderText");
     }
 
     [RelayCommand]

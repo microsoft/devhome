@@ -49,9 +49,6 @@ public partial class DevDriveInsightsViewModel : ObservableObject
     [ObservableProperty]
     private bool _devDriveOptimizedLoadingCompleted;
 
-    [ObservableProperty]
-    private string _devDriveVolumesText;
-
     public IDevDriveManager DevDriveManagerObj { get; private set; }
 
     private IEnumerable<IDevDrive> ExistingDevDrives { get; set; } = Enumerable.Empty<IDevDrive>();
@@ -81,7 +78,6 @@ public partial class DevDriveInsightsViewModel : ObservableObject
 
         _optimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
         DevDriveManagerObj = devDriveManager;
-        DevDriveVolumesText = new(stringResource.GetLocalized("DevDriveVolumes_Header"));
     }
 
     /// <summary>

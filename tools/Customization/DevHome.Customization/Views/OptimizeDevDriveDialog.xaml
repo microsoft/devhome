@@ -23,8 +23,8 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBox HorizontalAlignment="Stretch" x:Name="DirectoryPathTextBox" PlaceholderText="{x:Bind ViewModel.ChooseDirectoryPlaceholderText, Mode=TwoWay}" Text="{x:Bind ViewModel.DirectoryPathTextBox , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <Button HorizontalAlignment="Right" Margin="10 0 0 0" Grid.Column="1" Content="Browse" Command="{x:Bind ViewModel.BrowseButtonClickCommand}"/>
+            <TextBox HorizontalAlignment="Stretch" x:Name="DirectoryPathTextBox" x:Uid="ChooseDirectory" Text="{x:Bind ViewModel.DirectoryPathTextBox, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <Button HorizontalAlignment="Right" Margin="10 0 0 0" Grid.Column="1" x:Uid="BrowseButton" Command="{x:Bind ViewModel.BrowseButtonClickCommand}"/>
         </Grid>
         <TextBlock Margin="0 10 0 0" TextWrapping="Wrap" Text="{x:Bind ViewModel.ExampleDevDriveLocation, Mode=OneWay}"/>
     </StackPanel>
