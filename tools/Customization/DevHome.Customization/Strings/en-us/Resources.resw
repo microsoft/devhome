@@ -209,7 +209,7 @@
     <value>Make the change</value>
     <comment>Make the change button on optimizer card</comment>
   </data>
-  <data name="MakeTrustedText" xml:space="preserve">
+  <data name="MakeTrusted.Text" xml:space="preserve">
     <value>Trust</value>
     <comment>Make dev drive trusted</comment>
   </data>
@@ -269,17 +269,17 @@
     <value>Show hidden and system files</value>
     <comment>The header for the show hidden and system files setting.</comment>
   </data>
-  <data name="UntrustedDevDriveDescription" xml:space="preserve">
-    <value>Mircosoft Defender performance mode is only available for Trusted Dev Drive volumes </value>
+  <data name="UntrustedDevDrive.Description" xml:space="preserve">
+    <value>Microsoft Defender performance mode is only available for trusted Dev Drive volumes </value>
     <comment>The meaning of untrusted dev drives.</comment>
   </data>
-  <data name="UntrustedDevDriveLearnMoreText" xml:space="preserve">
-    <value>Learn more.</value>
-    <comment>Learn more link for untrusted dev drives.</comment>
-  </data>
-  <data name="UntrustedDevDriveText" xml:space="preserve">
+  <data name="UntrustedDevDrive.Header" xml:space="preserve">
     <value>Untrusted Dev Drive</value>
     <comment>Untrusted Dev Drive</comment>
+  </data>
+  <data name="UntrustedDevDriveLearnMoreText" xml:space="preserve">
+    <value>Learn more</value>
+    <comment>Learn more link for untrusted dev drives.</comment>
   </data>
   <data name="WindowsDeveloperCard.ActionIconToolTip" xml:space="preserve">
     <value>Open the Windows Settings app</value>
