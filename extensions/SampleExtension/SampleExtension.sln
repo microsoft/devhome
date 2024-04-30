@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleExtension", "SampleEx
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExtensionSdk", "ExtensionSdk", "{A4E5B553-54A3-4063-8186-6CCE376CE195}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.Windows.DevHome.SDK", "..\extensionsdk\Microsoft.Windows.DevHome.SDK\Microsoft.Windows.DevHome.SDK.vcxproj", "{295DD37E-C85D-4B08-AAFE-7381FA890463}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.Windows.DevHome.SDK", "..\..\extensionsdk\Microsoft.Windows.DevHome.SDK\Microsoft.Windows.DevHome.SDK.vcxproj", "{295DD37E-C85D-4B08-AAFE-7381FA890463}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.DevHome.SDK.Lib", "..\extensionsdk\Microsoft.Windows.DevHome.SDK.Lib\Microsoft.Windows.DevHome.SDK.Lib.csproj", "{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.DevHome.SDK.Lib", "..\..\extensionsdk\Microsoft.Windows.DevHome.SDK.Lib\Microsoft.Windows.DevHome.SDK.Lib.csproj", "{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
