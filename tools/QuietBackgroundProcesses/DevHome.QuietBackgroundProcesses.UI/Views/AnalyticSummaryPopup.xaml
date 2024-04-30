@@ -17,23 +17,17 @@
         <!-- MinWidth here might be useless -->
         <x:Double x:Key="ContentDialogMinWidth">652</x:Double>
         <x:Double x:Key="ContentDialogMaxWidth">700</x:Double>
-        <x:Double x:Key="ContentDialogMaxHeight">590</x:Double>
+        <x:Double x:Key="ContentDialogMaxHeight">650</x:Double>
         <Thickness x:Key="ContentDialogPadding">36</Thickness>
     </ContentDialog.Resources>
 
-    <!-- I would also try removing the Width property on the Grid altogether, but if you leave it, -->
-    <!-- you probably always want it to be ContentDialogMaxWidth - 2*ContentDialogPadding -->
-    <Grid Width="628">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Spacing="24">
-            <TextBlock
-                x:Uid="AnalyticSummary_Title"
-                Style="{StaticResource SubtitleTextBlockStyle}"
-                HorizontalAlignment="Left" />
+        <StackPanel Grid.Row="0" Spacing="36">
             <TextBlock
                 x:Uid="AnalyticSummary_Description"
                 HorizontalAlignment="Left"

@@ -104,10 +104,6 @@
   </data>
 
   <!-- Analytic Summary -->
-  <data name="AnalyticSummary_Title.Text" xml:space="preserve">
-    <value>Analytic Summary</value>
-    <comment>Title of the analytic summary page</comment>
-  </data>
   <data name="AnalyticSummary_Description.Text" xml:space="preserve">
     <value>Analysis of process CPU utilization while the session was in use. Calculated amount of time that the process used CPU above the designated threshold.</value>
     <comment>Desciption of the analytic summary page</comment>
@@ -131,6 +127,10 @@
   <data name="AnalyticSummary_FilterProcesses_PlaceholderText.PlaceholderText" xml:space="preserve">
     <value>Search for a process</value>
     <comment>Label for analytic summary save report button</comment>
+  </data>
+  <data name="AnalyticSummaryContentDialog.Title" xml:space="preserve">
+    <value>Analytic Summary</value>
+    <comment>Title of the analytic summary page</comment>
   </data>
   <data name="AnalyticSummaryContentDialog.PrimaryButtonText" xml:space="preserve">
     <value>Save report</value>
