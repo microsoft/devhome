@@ -378,7 +378,7 @@ bool UpdateProcessPerformanceInfo(ProcessPerformanceInfo& info)
 
     if (exitTime.dwHighDateTime != 0 || exitTime.dwLowDateTime != 0)
     {
-        info.exitTime = info.exitTime;
+        info.exitTime = exitTime;
         return false;
     }
 
