@@ -40,8 +40,6 @@ public partial class DevDriveCardViewModel : ObservableObject
 
     public bool IsDevDriveTrusted { get; set; }
 
-    public string DevDriveTrustText { get; set; }
-
     public char DriveLetter { get; set; }
 
     [RelayCommand]
@@ -87,7 +85,6 @@ public partial class DevDriveCardViewModel : ObservableObject
         DevDriveUsedSizeText = stringResource.GetLocalized("DevDriveUsedSizeText", DevDriveUsedSize, DevDriveUnitOfMeasure);
         DevDriveFreeSizeText = stringResource.GetLocalized("DevDriveFreeSizeText", DevDriveFreeSize, DevDriveUnitOfMeasure);
         IsDevDriveTrusted = devDrive.IsDevDriveTrusted;
-        DevDriveTrustText = IsDevDriveTrusted ? stringResource.GetLocalized("DevDriveTrustedText") : stringResource.GetLocalized("DevDriveUntrustedText");
         DriveLetter = devDrive.DriveLetter;
     }
 }
