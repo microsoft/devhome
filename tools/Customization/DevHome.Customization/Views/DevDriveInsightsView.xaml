@@ -17,55 +17,67 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.Common/Environments/Templates/EnvironmentsTemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <converters:BoolToVisibilityConverter x:Key="CollapsedWhenTrueBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+            <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
 
             <!--- Template for dev drive horizontal cards on the dev insights page. -->
             <DataTemplate x:Key="HorizontalCardForDevDriveInsightsPage" x:DataType="devViewModels:DevDriveCardViewModel">
-                <ctControls:SettingsExpander IsExpanded="False" Header="{Binding DevDriveLabel, Mode=OneWay}" >
-                    <ctControls:SettingsExpander.Description>
-                        <TextBlock Text="{Binding Path=DevDriveTrustText, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorCautionBrush}">
-                            <i:Interaction.Behaviors>
-                                <ic:DataTriggerBehavior Binding="{x:Bind IsDevDriveTrusted}" Value="True">
-                                    <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorSuccessBrush}"/>
-                                </ic:DataTriggerBehavior>
-                            </i:Interaction.Behaviors>
-                        </TextBlock>
-                    </ctControls:SettingsExpander.Description>   
-                    <ctControls:SettingsExpander.HeaderIcon>
-                        <FontIcon Glyph="&#xEDA2;" FontSize="25" FontFamily="{ThemeResource AmcFluentIcons}"/>
-                    </ctControls:SettingsExpander.HeaderIcon>
-                    <Grid Grid.Column="2">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"  />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 115 5">
-                            <Run Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
-                        </TextBlock>
-                        <ProgressBar Grid.Row="1" Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
-                        <Grid Grid.Row="2">
-                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0">
-                                <Run Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
-                            </TextBlock>
-                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right">
-                                <Run Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
-                            </TextBlock>
+                <StackPanel Orientation="Vertical">
+                    <ctControls:SettingsCard Header="{Binding DevDriveLabel, Mode=OneWay}" Visibility="{Binding Path=IsDevDriveTrusted, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <ctControls:SettingsCard.Description>
+                            <TextBlock Text="{Binding Path=DevDriveTrustText, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                        </ctControls:SettingsCard.Description>     
+                        <ctControls:SettingsCard.HeaderIcon>
+                            <FontIcon Glyph="&#xEDA2;" FontSize="25" FontFamily="{ThemeResource AmcFluentIcons}"/>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 115 5" Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
+                            <ProgressBar Grid.Row="1" Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
+                            <Grid Grid.Row="2">
+                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0" Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <ctControls:SettingsExpander.Items>
-                        <ctControls:SettingsCard Visibility="{Binding Path=IsDevDriveTrusted, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}" Header="{Binding Path=UntrustedDevDriveText, Mode=OneWay}" Description="{Binding Path=UntrustedDevDriveDescription, Mode=OneWay}">
-                            <Button x:Name="UACLauncher" Command="{Binding MakeDevDriveTrustedCommand}" Width="120">
-                                <Button.Content>
-                                    <TextBlock>
-                                        <Run Text="&#xEA18;" FontSize="10" FontFamily="Segoe MDL2 Assets" />
-                                        <Run Text="{x:Bind MakeTrustedText, Mode=OneWay}" />
-                                    </TextBlock>
-                                </Button.Content>
-                            </Button>
-                        </ctControls:SettingsCard>
-                    </ctControls:SettingsExpander.Items>
-                </ctControls:SettingsExpander>
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsExpander IsExpanded="False" Header="{Binding DevDriveLabel, Mode=OneWay}" Visibility="{Binding Path=IsDevDriveTrusted, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" >
+                        <ctControls:SettingsExpander.Description>
+                            <TextBlock Text="{Binding Path=DevDriveTrustText, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorCautionBrush}" />
+                        </ctControls:SettingsExpander.Description>   
+                        <ctControls:SettingsExpander.HeaderIcon>
+                            <FontIcon Glyph="&#xEDA2;" FontSize="25" FontFamily="{ThemeResource AmcFluentIcons}"/>
+                        </ctControls:SettingsExpander.HeaderIcon>
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"  />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 115 5" Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
+                            <ProgressBar Grid.Row="1" Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
+                            <Grid Grid.Row="2">
+                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0" Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
+                            </Grid>
+                        </Grid>
+                        <ctControls:SettingsExpander.Items>
+                            <ctControls:SettingsCard x:Uid="UntrustedDevDrive">
+                                <Button x:Name="UACLauncher" Command="{Binding MakeDevDriveTrustedCommand}" MinWidth="120">
+                                    <Button.Content>
+                                        <TextBlock>
+                                            <Run Text="&#xEA18;" FontSize="10" FontFamily="Segoe MDL2 Assets" />
+                                            <Run x:Uid="MakeTrusted" />
+                                        </TextBlock>
+                                    </Button.Content>
+                                </Button>
+                            </ctControls:SettingsCard>
+                        </ctControls:SettingsExpander.Items>
+                    </ctControls:SettingsExpander>
+                </StackPanel>
             </DataTemplate>
 
 
