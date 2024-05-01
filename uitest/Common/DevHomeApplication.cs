@@ -34,6 +34,8 @@ public sealed class DevHomeApplication
 
     private WindowsElement MachineConfigurationNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("DevHome.SetupFlow");
 
+    private WindowsElement IntroducingDevHomeNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("WhatsNew");
+
     private DevHomeApplication()
     {
     }
@@ -54,6 +56,11 @@ public sealed class DevHomeApplication
         _devHomeSession = new(Configuration.WindowsApplicationDriverUrl, $"{Configuration.PackageFamilyName}!App");
     }
 
+    public string GetMainPageId()
+    {
+        return _devHomeSession.Driver.FindElementByAccessibilityId("MainPage").Id;
+    }
+
     public DashboardPage NavigateToDashboardPage()
     {
         Trace.WriteLine("Navigating to Dashboard");
@@ -67,6 +74,13 @@ public sealed class DevHomeApplication
     {
         Trace.WriteLine("Navigating to Machine Configuration");
         MachineConfigurationNavigationItem.Click();
+        return new(_devHomeSession.Driver);
+    }
+
+    public IntroducingDevHomePage NavigateToIntroducingDevHomePage()
+    {
+        Trace.WriteLine("Navigating to Introducing Dev Home");
+        IntroducingDevHomeNavigationItem.Click();
         return new(_devHomeSession.Driver);
     }
 

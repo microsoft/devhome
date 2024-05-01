@@ -54,6 +54,7 @@
                                Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                                VerticalAlignment="Center"/>
                     <Button x:Uid="GetUpdatesButton"
+                            AutomationProperties.AutomationId="GetUpdatesButton"
                             HorizontalAlignment="Right"
                             Style="{ThemeResource AccentButtonStyle}"
                             Visibility="{x:Bind ViewModel.InstalledPackagesList.Count, Converter={StaticResource InverseCountToVisibilityConverter}, Mode=OneWay}"

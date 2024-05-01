@@ -62,7 +62,7 @@
                 <NavigationViewItem x:Uid="Shell_IGNORE" helpers:NavigationHelper.NavigateTo="DevHome.Settings.ViewModels.SettingsViewModel" Visibility="Collapsed"/>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem x:Uid="WhatsNew"
+                <NavigationViewItem x:Uid="WhatsNew" AutomationProperties.AutomationId="WhatsNew"
                                     helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.WhatsNewViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE789;"/>

@@ -14,7 +14,7 @@ namespace DevHome.UITest.Pages;
 /// </summary>
 public class DashboardPage : ApplicationPage
 {
-    private WindowsElement AddWidgetButton => Driver.FindElementByAccessibilityId("AddWidgetButton");
+    public WindowsElement AddWidgetButton => Driver.FindElementByAccessibilityId("AddWidgetButton");
 
     private IReadOnlyCollection<WindowsElement> WidgetItems => Driver.FindElementsByAccessibilityId("WidgetItem");
 
