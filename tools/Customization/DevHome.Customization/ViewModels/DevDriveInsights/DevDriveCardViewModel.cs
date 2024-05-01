@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
@@ -42,16 +43,18 @@ public partial class DevDriveCardViewModel : ObservableObject
 
     public char DriveLetter { get; set; }
 
+    private const string Fsutil = "fsutil.exe";
+
     [RelayCommand]
     private void MakeDevDriveTrusted()
     {
         // Launch a UAC prompt
         var startInfo = new ProcessStartInfo();
         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-        startInfo.FileName = Environment.SystemDirectory + "\\fsutil.exe";
+        startInfo.FileName = Path.Join(Environment.SystemDirectory, Fsutil);
 
         // Run the fstutil cmd to trust the dev drive
-        startInfo.Arguments = "devdrv trust /f " + DriveLetter + ":";
+        startInfo.Arguments = $"devdrv trust /f {DriveLetter}:";
         startInfo.UseShellExecute = true;
         startInfo.Verb = "runas";
 

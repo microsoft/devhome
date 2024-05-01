@@ -19,6 +19,7 @@
 
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
             <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+            <converters:CollectionVisibilityConverter x:Key="CollectionHideWhenEmpty" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
 
             <!--- Template for dev drive horizontal cards on the dev insights page. -->
             <DataTemplate x:Key="HorizontalCardForDevDriveInsightsPage" x:DataType="devViewModels:DevDriveCardViewModel">
@@ -85,8 +86,8 @@
             <DataTemplate x:Key="HorizontalCardForDevDriveOptimizerInsightsPage" x:DataType="devViewModels:DevDriveOptimizerCardViewModel">
                 <ctControls:SettingsExpander IsExpanded="True" Header="{Binding CacheToBeMoved, Mode=OneWay}">
                     <Grid HorizontalAlignment="Right">
-                        <FontIcon HorizontalAlignment="Left" Margin="-10" Glyph="&#xE946;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="5 5 5 5"
+                        <FontIcon HorizontalAlignment="Left" Glyph="&#xE946;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                        <TextBlock HorizontalAlignment="Left" Margin="15 5 5 5"
                                 Foreground="{ThemeResource SystemFillColorAttentionBrush}"                                   
                                 Text="{x:Bind DevDriveOptimizationSuggestion, Mode=OneWay}"
                                 IsTextSelectionEnabled="True"/>
@@ -131,7 +132,7 @@
     <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}">
         <StackPanel Spacing="1">
             <TextBlock
-                Margin="0 20 0 -10"
+                Margin="0 20 0 0"
                 Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
                 Text="Dev Drive Volumes"
                 IsTextSelectionEnabled="True"/>
@@ -144,17 +145,16 @@
                 ItemsSource="{x:Bind ViewModel.DevDriveCardCollection, Mode=OneWay}"
                 SelectionMode="None"
                 ItemTemplate="{StaticResource HorizontalCardForDevDriveInsightsPage}"
-                Margin="0 0 0 10"
                 IsMultiSelectCheckBoxEnabled="False"
                 HorizontalContentAlignment="Stretch">
             </ListView>
             <TextBlock
-                Margin="0 20 0 -10"
+                Margin="0 20 0 0"
                 Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
                 Text="Package Caches"
                 IsTextSelectionEnabled="True"/>
             <TextBlock
-                Margin="0 20 0 -10"
+                Margin="0 10 0 0"
                 Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
                 x:Uid ="PackageCachesDescription"
                 IsTextSelectionEnabled="True"
@@ -166,9 +166,9 @@
                 HeaderTemplate="{StaticResource DevDriveContainerHeaderTemplate}"
                 DataContext="{Binding}"
                 ItemsSource="{x:Bind ViewModel.DevDriveOptimizerCardCollection, Mode=OneWay}"
+                Visibility="{x:Bind ViewModel.DevDriveOptimizerCardCollection, Mode=OneWay, Converter={StaticResource CollectionHideWhenEmpty}}"
                 SelectionMode="None"
                 ItemTemplate="{StaticResource HorizontalCardForDevDriveOptimizerInsightsPage}"
-                Margin="0 0 0 -10"
                 IsMultiSelectCheckBoxEnabled="False">
             </ListView>
             <!--- List of DevDriveOptimizedsListViewModel objects. -->
