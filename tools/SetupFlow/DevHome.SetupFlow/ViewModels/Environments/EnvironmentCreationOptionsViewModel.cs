@@ -30,7 +30,7 @@ namespace DevHome.SetupFlow.ViewModels.Environments;
 /// </summary>
 public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IRecipient<CreationProviderChangedMessage>
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SelectEnvironmentProviderViewModel));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(EnvironmentCreationOptionsViewModel));
 
     private readonly AdaptiveCardRenderingService _adaptiveCardRenderingService;
 
