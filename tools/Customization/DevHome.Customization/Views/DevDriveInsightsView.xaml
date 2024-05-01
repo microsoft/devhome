@@ -19,7 +19,6 @@
 
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
             <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
-            <converters:CollectionVisibilityConverter x:Key="CollectionHideWhenEmpty" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
 
             <!--- Template for dev drive horizontal cards on the dev insights page. -->
             <DataTemplate x:Key="HorizontalCardForDevDriveInsightsPage" x:DataType="devViewModels:DevDriveCardViewModel">
@@ -166,10 +165,10 @@
                 HeaderTemplate="{StaticResource DevDriveContainerHeaderTemplate}"
                 DataContext="{Binding}"
                 ItemsSource="{x:Bind ViewModel.DevDriveOptimizerCardCollection, Mode=OneWay}"
-                Visibility="{x:Bind ViewModel.DevDriveOptimizerCardCollection, Mode=OneWay, Converter={StaticResource CollectionHideWhenEmpty}}"
                 SelectionMode="None"
                 ItemTemplate="{StaticResource HorizontalCardForDevDriveOptimizerInsightsPage}"
-                IsMultiSelectCheckBoxEnabled="False">
+                IsMultiSelectCheckBoxEnabled="False"
+                Margin="0 10 0 -30">
             </ListView>
             <!--- List of DevDriveOptimizedsListViewModel objects. -->
             <ListView
