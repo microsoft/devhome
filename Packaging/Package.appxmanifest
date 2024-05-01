@@ -76,21 +76,21 @@
         </uap:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="HyperVExtensionServer.exe" Arguments="-RegisterProcessAsComServer" DisplayName="HyperVExtensionServer">
+            <com:ExeServer Executable="DevHome\HyperVExtensionServer.exe" Arguments="-RegisterProcessAsComServer" DisplayName="HyperVExtensionServer">
               <com:Class Id="F8B26528-976A-488C-9B40-7198FB425C9E" DisplayName="HyperVExtensionServer" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="CoreWidgetProvider">
+            <com:ExeServer Executable="DevHome\CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="CoreWidgetProvider">
               <com:Class Id="F8B2DBB9-3687-4C6E-99B2-B92C82905937" DisplayName="CoreWidgetProvider" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Core Extension">
+            <com:ExeServer Executable="DevHome\CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Core Extension">
               <com:Class Id="426A52D6-8007-4894-A946-CF80F39507F1" DisplayName="Core Extension" />
             </com:ExeServer>
           </com:ComServer>

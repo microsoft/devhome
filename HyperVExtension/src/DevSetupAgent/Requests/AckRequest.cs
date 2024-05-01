@@ -8,6 +8,8 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal sealed class AckRequest : RequestBase
 {
+    public const string RequestTypeId = "Ack";
+
     public AckRequest(IRequestContext requestContext)
         : base(requestContext)
     {
@@ -18,7 +20,7 @@ internal sealed class AckRequest : RequestBase
 
     public override bool IsStatusRequest => true;
 
-    public override IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
+    public override IHostResponse Execute(IProgressHandler progressHandler, CancellationToken stoppingToken)
     {
         Task.Run(
             () =>
@@ -27,6 +29,6 @@ internal sealed class AckRequest : RequestBase
             },
             stoppingToken);
 
-        return new AckResponse(RequestMessage.RequestId!);
+        return new AckResponse(RequestMessage.CommunicationId!);
     }
 }
