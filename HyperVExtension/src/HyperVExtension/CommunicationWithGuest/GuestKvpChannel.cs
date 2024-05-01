@@ -6,7 +6,6 @@ using System.Xml;
 using System.Xml.XPath;
 using HyperVExtension.HostGuestCommunication;
 using Serilog;
-using Windows.Devices.Sms;
 
 namespace HyperVExtension.CommunicationWithGuest;
 
@@ -26,7 +25,6 @@ internal sealed class GuestKvpChannel : IDisposable
     private readonly ManagementObject _virtualSystemService;
     private readonly ManagementScope _scope;
     private readonly ManagementObject _vmWmi;
-    private readonly List<string> _kvpNamesToCleanup = [];
     private bool _disposed;
 
     public GuestKvpChannel(Guid vmId)
@@ -37,7 +35,7 @@ internal sealed class GuestKvpChannel : IDisposable
         _vmWmi = WmiUtility.GetTargetComputer(_vmId, _scope);
     }
 
-    public void SendMessage(IRequestMessage requestMessage, uint communicationIdCounter, CancellationToken stoppingToken)
+    public void SendMessage(IRequestMessage requestMessage, CancellationToken stoppingToken)
     {
         // Check if message is too large and split into multiple parts.
         var numberOfParts = requestMessage.RequestData.Length / MaxValueCount;
@@ -46,36 +44,16 @@ internal sealed class GuestKvpChannel : IDisposable
             numberOfParts++;
         }
 
-        var kvpNameStart = $"{MessageHelper.DevSetupPrefix}{{{communicationIdCounter}}}{MessageHelper.Separator}";
-        var kvpNameEnd = $"{MessageHelper.Separator}{numberOfParts}";
-
-        // Try to remove all parts of the message first just in case if previous communication session was
-        // abruptly terminates and we got old messages not removed.
-        for (var i = 0; i < numberOfParts; i++)
-        {
-            RemoveKvpItem($"{kvpNameStart}{i}{kvpNameEnd}");
-        }
-
-        if (stoppingToken.IsCancellationRequested)
-        {
-            return;
-        }
-
+        var totalStr = $"{MessageHelper.Separator}{numberOfParts}";
         var index = 0;
         foreach (var subString in requestMessage.RequestData.SplitByLength(MaxValueCount))
         {
             index++;
-            var kvpName = $"{kvpNameStart}{index}{kvpNameEnd}";
-            lock (_kvpNamesToCleanup)
-            {
-                _kvpNamesToCleanup.Add(kvpName);
-            }
-
-            AddKvpItem(kvpName, subString);
+            SendMessage(requestMessage.RequestId + $"{MessageHelper.Separator}{index}" + totalStr, subString, stoppingToken);
         }
     }
 
-    private void AddKvpItem(string name, string value)
+    private void SendMessage(string name, string value, CancellationToken stoppingToken)
     {
         using ManagementClass kvpExchangeDataItem = new ManagementClass(_scope, new ManagementPath("Msvm_KvpExchangeDataItem"), null);
         using ManagementObject dataItem = kvpExchangeDataItem.CreateInstance();
@@ -110,60 +88,13 @@ internal sealed class GuestKvpChannel : IDisposable
         }
     }
 
-    /// <summary>
-    /// Delete Hyper-V KVP message from the VM.
-    /// Best effort. Log error if failed, but don't throw.
-    /// </summary>
-    /// <param name="name">Hyper-V KVP name.</param>
-    private void RemoveKvpItem(string name)
-    {
-        try
-        {
-            using ManagementClass kvpExchangeDataItem = new ManagementClass(_scope, new ManagementPath("Msvm_KvpExchangeDataItem"), null);
-            using ManagementObject dataItem = kvpExchangeDataItem.CreateInstance();
-            dataItem["Data"] = string.Empty;
-            dataItem["Name"] = name;
-            dataItem["Source"] = 0;
-
-            var dataItems = new string[1];
-            dataItems[0] = dataItem.GetText(TextFormat.CimDtd20);
-
-            using ManagementBaseObject inParams = _virtualSystemService.GetMethodParameters("RemoveKvpItems");
-            inParams["TargetSystem"] = _vmWmi.Path.Path;
-            inParams["DataItems"] = dataItems;
-
-            using ManagementBaseObject outParams = _virtualSystemService.InvokeMethod("RemoveKvpItems", inParams, null);
-            if ((uint)outParams["ReturnValue"] == (uint)WmiUtility.ReturnCode.Started)
-            {
-                uint errorCode;
-                string errorDescription;
-                if (!WmiUtility.JobCompleted(outParams, _scope, out errorCode, out errorDescription))
-                {
-                    throw new System.ComponentModel.Win32Exception((int)errorCode, $"Cannot delete message from VM '{_vmId.ToString("D")}': '{errorDescription}'.");
-                }
-            }
-            else if ((uint)outParams["ReturnValue"] != (uint)WmiUtility.ReturnCode.Completed)
-            {
-                throw new System.ComponentModel.Win32Exception((int)outParams["ReturnValue"], $"Cannot delete message from VM '{_vmId.ToString("D")}': '{outParams["ReturnValue"]}'.");
-            }
-            else
-            {
-                _log.Information($"Deleted message from '{_vmId.ToString("D")}' VM. Message ID: '{name}'.");
-            }
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, $"Failed to delete message from '{_vmId.ToString("D")}' VM. Message ID: '{name}'.");
-        }
-    }
-
-    public List<IResponseMessage> WaitForResponseMessages(string communicationId, TimeSpan timeout, bool expectProgressResponse, CancellationToken stoppingToken)
+    public List<IResponseMessage> WaitForResponseMessages(string responseId, TimeSpan timeout, bool expectProgressResponse, CancellationToken stoppingToken)
     {
         var waitTime = TimeSpan.FromMilliseconds(500);
         var waitTimeLeft = timeout;
         while ((waitTimeLeft > TimeSpan.Zero) && !stoppingToken.IsCancellationRequested)
         {
-            var messages = TryReadResponseMessages(communicationId, expectProgressResponse, stoppingToken);
+            var messages = TryReadResponseMessages(responseId, expectProgressResponse, stoppingToken);
             if (messages.Count > 0)
             {
                 return messages;
@@ -176,16 +107,16 @@ internal sealed class GuestKvpChannel : IDisposable
         return new List<IResponseMessage>();
     }
 
-    private List<IResponseMessage> TryReadResponseMessages(string communicationId, bool expectProgressResponse, CancellationToken stoppingToken)
+    private List<IResponseMessage> TryReadResponseMessages(string responseId, bool expectProgressResponse, CancellationToken stoppingToken)
     {
         var guestKvps = ReadGuestKvps();
         var result = new List<IResponseMessage>();
-        guestKvps.TryGetValue(communicationId, out var responseData);
+        guestKvps.TryGetValue(responseId, out var responseData);
 
         IResponseMessage? progressResponse = null;
         if (responseData != null)
         {
-            progressResponse = new ResponseMessage(communicationId, responseData);
+            progressResponse = new ResponseMessage(responseId, responseData);
         }
 
         if (!expectProgressResponse)
@@ -199,7 +130,7 @@ internal sealed class GuestKvpChannel : IDisposable
         {
             // Find all progress message in "<responseId>_Progress_<sequence number>"
             // Then sort them by sequence number and add to the result list.
-            var progressResponseId = $"{communicationId}_Progress_";
+            var progressResponseId = $"{responseId}_Progress_";
             var kvps = guestKvps.Where(kvp => kvp.Key.StartsWith(progressResponseId, StringComparison.OrdinalIgnoreCase));
             var orderedResponses = new Dictionary<uint, KeyValuePair<string, string>>();
             foreach (var kvp in kvps)
@@ -243,7 +174,7 @@ internal sealed class GuestKvpChannel : IDisposable
 
     private Dictionary<string, string> ReadRawGuestKvps()
     {
-        Dictionary<string, string> guestKvps = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, string> guestKvps = new Dictionary<string, string>();
 
         using var collection = _vmWmi.GetRelated("Msvm_KvpExchangeComponent");
         foreach (ManagementObject kvpExchangeComponent in collection)
@@ -270,40 +201,6 @@ internal sealed class GuestKvpChannel : IDisposable
         return guestKvps;
     }
 
-    public void CleanUp()
-    {
-        lock (_kvpNamesToCleanup)
-        {
-            foreach (var kvpName in _kvpNamesToCleanup)
-            {
-                RemoveKvpItem(kvpName);
-            }
-
-            _kvpNamesToCleanup.Clear();
-        }
-    }
-
-    public void CleanUp(string communicationId)
-    {
-        lock (_kvpNamesToCleanup)
-        {
-            List<string> kvpNamesToDelete = [];
-            foreach (var kvpName in _kvpNamesToCleanup)
-            {
-                if (kvpName.StartsWith(communicationId, StringComparison.OrdinalIgnoreCase))
-                {
-                    kvpNamesToDelete.Add(kvpName);
-                    RemoveKvpItem(kvpName);
-                }
-            }
-
-            foreach (var kvpName in kvpNamesToDelete)
-            {
-                _kvpNamesToCleanup.Remove(kvpName);
-            }
-        }
-    }
-
     public void Dispose()
     {
         Dispose(true);
@@ -316,7 +213,6 @@ internal sealed class GuestKvpChannel : IDisposable
         {
             if (disposing)
             {
-                CleanUp();
                 _vmWmi?.Dispose();
                 _virtualSystemService?.Dispose();
             }

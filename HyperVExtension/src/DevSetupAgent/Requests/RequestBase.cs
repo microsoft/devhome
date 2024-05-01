@@ -38,7 +38,7 @@ internal abstract class RequestBase : IHostRequest
 
     public virtual DateTime Timestamp { get; }
 
-    public abstract IHostResponse Execute(IProgressHandler progressHandler, CancellationToken stoppingToken);
+    public abstract IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken);
 
     public IRequestMessage RequestMessage => RequestContext.RequestMessage;
 

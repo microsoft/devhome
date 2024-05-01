@@ -198,9 +198,6 @@
     <value>https://go.microsoft.com/fwlink/?linkid=2234882</value>
     <comment>URL</comment>
   </data>
-  <data name="SettingsPage_OpenThirdPartyNoticeLink.Content" xml:space="preserve">
-    <value>Third Party Notices</value>
-  </data>
   <data name="Settings_Accounts_AddAccountButton.Content" xml:space="preserve">
     <value>Add account</value>
   </data>

@@ -15,7 +15,7 @@ namespace HyperVExtension.DevSetupAgent;
 /// https://learn.microsoft.com/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/dn798287(v=ws.11)
 /// "HKLM\SOFTWARE\Microsoft\Virtual Machine\External" contains data pushed to the guest from the host by a user
 /// "HKLM\SOFTWARE\Microsoft\Virtual Machine\Guest" contains data created on the guest. This data is available to the host as non-intrinsic data.
-/// Host client will create registry value named "DevSetup{<number>}~<index>~<total>" with JSON message as a string value.
+/// Host client will create registry value named "DevSetup{<GUID>}~<index>~<total>" with JSON message as a string value.
 /// The name of the registry value becomes "MessageId" and will be used for response so the client can match
 /// request with response.
 /// </summary>
@@ -43,7 +43,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
         // If running x86 version on x64 OS, we need to open 64-bit registry view.
         _registryHiveKey = RegistryKey.OpenBaseKey(registryChannelSettings.RegistryHive, RegistryView.Registry64);
 
-        // Search and delete all existing registry values with name "DevSetup{<number>}"
+        // Search and delete all existing registry values with name "DevSetup{<GUID>}"
         MessageHelper.DeleteAllMessages(_registryHiveKey, _toHostRegistryKeyPath, MessageHelper.MessageIdStart);
         MessageHelper.DeleteAllMessages(_registryHiveKey, _fromHostRegistryKeyPath, MessageHelper.MessageIdStart);
 
@@ -66,7 +66,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
             while (!stoppingToken.IsCancellationRequested)
             {
                 requestMessage = TryReadMessage();
-                if (!string.IsNullOrEmpty(requestMessage.CommunicationId))
+                if (!string.IsNullOrEmpty(requestMessage.RequestId))
                 {
                     break;
                 }
@@ -108,29 +108,29 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
                     foreach (var subString in responseMessage.ResponseData.SplitByLength(MaxValueCount))
                     {
                         index++;
-                        regKey.SetValue($"{responseMessage.CommunicationId}{MessageHelper.Separator}{index}{totalStr}", subString, RegistryValueKind.String);
+                        regKey.SetValue($"{responseMessage.ResponseId}{MessageHelper.Separator}{index}{totalStr}", subString, RegistryValueKind.String);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _log.Error(ex, $"Could not write host message. Response ID: {responseMessage.CommunicationId}");
+                    _log.Error(ex, $"Could not write host message. Response ID: {responseMessage.ResponseId}");
                 }
             },
             stoppingToken);
     }
 
-    public async void DeleteResponseMessageAsync(string communicationId, CancellationToken stoppingToken)
+    public async void DeleteResponseMessageAsync(string responseId, CancellationToken stoppingToken)
     {
         await Task.Run(
             () =>
             {
                 try
                 {
-                    MessageHelper.DeleteAllMessages(_registryHiveKey, _toHostRegistryKeyPath, communicationId);
+                    MessageHelper.DeleteAllMessages(_registryHiveKey, _toHostRegistryKeyPath, responseId);
                 }
                 catch (Exception ex)
                 {
-                    _log.Error(ex, $"Could not delete host message. Response ID: {communicationId}");
+                    _log.Error(ex, $"Could not delete host message. Response ID: {responseId}");
                 }
             },
             stoppingToken);
@@ -143,7 +143,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
         {
             // Messages are split in parts to workaround HyperV KVP service the 2048 bytes limit of registry value.
             // We need to merge all parts of the message before processing it.
-            // TODO: Modify this class to use MessageHelper.MergeMessageParts (requires changing return value and handling in the caller).
+            // TODO: Modify this class to use MessageHelper.MergeMessageParts (requires changing return valu and handling in the caller).
             HashSet<string> ignoreMessages = new();
             var regKey = _registryHiveKey.OpenSubKey(_fromHostRegistryKeyPath, true);
             var valueNames = regKey?.GetValueNames();
@@ -168,7 +168,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
                         var count = 0;
                         foreach (var valueNameTmp in valueNames)
                         {
-                            if (valueNameTmp.StartsWith($"{s[0]}{MessageHelper.Separator}", StringComparison.InvariantCultureIgnoreCase))
+                            if (valueNameTmp.StartsWith(s[0] + $"{MessageHelper.Separator}", StringComparison.InvariantCultureIgnoreCase))
                             {
                                 if (!MessageHelper.IsValidMessageName(valueNameTmp.Split(MessageHelper.Separator), out var indeTmp, out var totalTmp))
                                 {
@@ -187,14 +187,14 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
                         }
 
                         // Merge all parts of the message
-                        // Preserve communication id ("DevSetup{<number>}"), delete the value and create response even if reading failed.
-                        requestMessage.CommunicationId = s[0];
+                        // Preserve message GUID, delete the value and create response even if reading failed.
+                        requestMessage.RequestId = s[0];
                         try
                         {
                             var sb = new StringBuilder();
                             for (var i = 1; i <= total; i++)
                             {
-                                var value1 = (string?)regKey!.GetValue($"{requestMessage.CommunicationId}{MessageHelper.Separator}{i}{MessageHelper.Separator}{total}");
+                                var value1 = (string?)regKey!.GetValue(s[0] + $"{MessageHelper.Separator}{i}{MessageHelper.Separator}{total}");
                                 if (value1 == null)
                                 {
                                     throw new InvalidOperationException($"Could not read guest message {valueName}");
@@ -210,7 +210,7 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
                             _log.Error(ex, $"Could not read host message {valueName}");
                         }
 
-                        MessageHelper.DeleteAllMessages(_registryHiveKey, _fromHostRegistryKeyPath, requestMessage.CommunicationId);
+                        MessageHelper.DeleteAllMessages(_registryHiveKey, _fromHostRegistryKeyPath, s[0]);
                         break;
                     }
                 }

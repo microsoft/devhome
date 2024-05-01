@@ -146,7 +146,6 @@ public static class StringResourceKey
 
     // Repo tool
     public static readonly string RepoToolNextButtonTooltip = nameof(RepoToolNextButtonTooltip);
-    public static readonly string RepoToolNoRepositoriesMessage = nameof(RepoToolNoRepositoriesMessage);
     public static readonly string RepoAccountPagePrimaryButtonText = nameof(RepoAccountPagePrimaryButtonText);
     public static readonly string RepoEverythingElsePrimaryButtonText = nameof(RepoEverythingElsePrimaryButtonText);
     public static readonly string RepoPageEditClonePathAutomationProperties = nameof(RepoPageEditClonePathAutomationProperties);

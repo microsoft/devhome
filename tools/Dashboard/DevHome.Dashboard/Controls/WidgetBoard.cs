@@ -3,13 +3,9 @@
 
 using System;
 using System.Linq;
-using CommunityToolkit.WinUI;
-using DevHome.Common.Extensions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation;
-using Windows.UI.ViewManagement;
-using WinUIEx;
 
 namespace DevHome.Dashboard.Controls;
 
@@ -17,9 +13,6 @@ public sealed class WidgetBoard : Panel
 {
     private double _columnWidth;
     private const int _maxColumns = 4;
-
-    private readonly UISettings _uiSettings = new();
-    private double _textScale = 1.0;
 
     // We need to control the HorizontalAlignment, so hide this property.
 #pragma warning disable SA1306 // Field names should begin with lower-case letter
@@ -40,9 +33,6 @@ public sealed class WidgetBoard : Panel
     {
         RegisterPropertyChangedCallback(Panel.HorizontalAlignmentProperty, OnHorizontalAlignmentChanged);
         HorizontalAlignment = HorizontalAlignment.Left;
-
-        _textScale = _uiSettings.TextScaleFactor;
-        _uiSettings.TextScaleFactorChanged += HandleTextScaleFactorChanged;
     }
 
     /// <summary>
@@ -129,7 +119,7 @@ public sealed class WidgetBoard : Panel
         var availableWidth = availableSize.Width - Padding.Left - Padding.Right;
         var availableHeight = availableSize.Height - Padding.Top - Padding.Bottom;
 
-        _columnWidth = Math.Min(WidgetWidth * _textScale, availableWidth);
+        _columnWidth = Math.Min(WidgetWidth, availableWidth);
         var numColumns = Math.Max(1, (int)Math.Floor(availableWidth / _columnWidth));
         numColumns = numColumns > _maxColumns ? _maxColumns : numColumns;
 
@@ -261,14 +251,5 @@ public sealed class WidgetBoard : Panel
         }
 
         InvalidateMeasure();
-    }
-
-    private void HandleTextScaleFactorChanged(UISettings sender, object args)
-    {
-        Application.Current.GetService<WindowEx>().DispatcherQueue.EnqueueAsync(() =>
-        {
-            _textScale = sender.TextScaleFactor;
-            InvalidateMeasure();
-        });
     }
 }

@@ -20,7 +20,7 @@ internal sealed class ComSafeHelpers
             if (!string.IsNullOrEmpty(id))
             {
                 var comSafeWidgetDefinition = new ComSafeWidgetDefinition(id);
-                if (await comSafeWidgetDefinition.PopulateAsync())
+                if (await comSafeWidgetDefinition.Populate())
                 {
                     comSafeWidgetDefinitions.Add(comSafeWidgetDefinition);
                 }

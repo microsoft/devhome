@@ -21,17 +21,15 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal sealed class ConfigureRequest : RequestBase
 {
-    public const string RequestTypeId = "Configure";
-
     public ConfigureRequest(IRequestContext requestContext)
         : base(requestContext)
     {
-        ConfigureData = GetRequiredStringValue("Configure").Replace("\\n", Environment.NewLine);
+        ConfigureData = GetRequiredStringValue("Configure").Replace("\\n", System.Environment.NewLine);
     }
 
     public string ConfigureData { get; }
 
-    public override IHostResponse Execute(IProgressHandler progressHandler, CancellationToken stoppingToken)
+    public override IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
     {
         var devSetupEnginePtr = IntPtr.Zero;
         var devSetupEngine = default(IDevSetupEngine);
@@ -52,18 +50,14 @@ internal sealed class ConfigureRequest : RequestBase
             operation.Progress = (operation, data) =>
             {
                 System.Diagnostics.Trace.WriteLine($"  - Unit: {data.Unit.Type} [{data.UnitState}]");
-                var progressResponse = new ProgressResponse(RequestId, data, ++progressCounter);
-                progressHandler.Progress(progressResponse, stoppingToken);
+                var progressResponse = new ProgressResponse(RequestMessage.RequestId!, data, ++progressCounter);
+                progressHandler(progressResponse, stoppingToken);
             };
 
             operation.AsTask().Wait(stoppingToken);
             var result = operation.GetResults();
 
-            return new ConfigureResponse(RequestId, result);
-        }
-        catch (Exception ex)
-        {
-            return new ErrorResponse(RequestId, ex);
+            return new ConfigureResponse(RequestMessage.RequestId!, result);
         }
         finally
         {

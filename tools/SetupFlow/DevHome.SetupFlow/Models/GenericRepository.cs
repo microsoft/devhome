@@ -31,17 +31,7 @@ internal sealed class GenericRepository : Microsoft.Windows.DevHome.SDK.IReposit
     public GenericRepository(Uri cloneUri)
     {
         _displayName = cloneUri.Segments[cloneUri.Segments.Length - 1].ToString().Replace("/", string.Empty);
-
-        if (cloneUri.Host.StartsWith("www.", StringComparison.OrdinalIgnoreCase))
-        {
-            var locationOfHost = cloneUri.OriginalString.IndexOf("www.", StringComparison.OrdinalIgnoreCase);
-            var originalStringWithoutHost = cloneUri.OriginalString.Remove(locationOfHost, 4);
-            _cloneUri = new Uri(originalStringWithoutHost);
-        }
-        else
-        {
-            _cloneUri = cloneUri;
-        }
+        _cloneUri = cloneUri;
     }
 
     public IAsyncAction CloneRepositoryAsync(string cloneDestination, IDeveloperId developerId)

@@ -22,7 +22,7 @@ internal sealed class NtStatusException : Exception
     public NtStatusException(string? message, int ntStatus)
         : base(message)
     {
-        // NTStatus is not an HRESULT, but we will only use it to pass error back to the caller
+        // NTStatus is not an HRESULT, but we will uonly use it to pass error back to the caller
         // for diagnostic. Conversion to HRESULT can be done in more that one way and can be not 1 to 1 mapping anyway
         HResult = ntStatus;
     }

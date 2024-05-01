@@ -106,11 +106,6 @@
                 <Frame Content="{x:Bind AddRepoViewModel.LoginUiContent, Mode=OneWay}" />
             </StackPanel>
 
-            <!-- Message when the account has no repos.-->
-            <Grid VerticalAlignment="Stretch" Height="{x:Bind AddRepoStackPanel.MinWidth}" Visibility="{x:Bind AddRepoViewModel.ShouldShowNoRepoMessage, Mode=OneWay}">
-                <TextBlock Text="{x:Bind AddRepoViewModel.NoRepositoriesMessage, Mode=OneWay}" VerticalAlignment="Center" TextWrapping="WrapWholeWords"/>
-            </Grid>
-
             <!-- Show Repositories -->
             <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
                 <Grid ColumnSpacing="8" RowSpacing="10">
@@ -132,7 +127,7 @@
                         <TextBox x:Name="FilterTextBox" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegateBoolConverter}}" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
                     </Grid>
                     <TextBlock Grid.Row="1" Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="RepositoriesList" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
-
+                    
                     <!-- Granular Search UI -->
                     <Grid x:Name="GranularSearchGrid" Grid.Row="2" Visibility="{x:Bind AddRepoViewModel.ShouldShowGranularSearch, Mode=OneWay}">
                         <Grid.ColumnDefinitions>
@@ -195,7 +190,7 @@
                 </ListView>
                 <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0, 0, 0, 1" Margin="0, 5, 0, 0"/>
             </StackPanel>
-
+            
             <!-- Search page -->
             <Grid x:Name="SearchForMoreReposGrid" Visibility="{x:Bind AddRepoViewModel.ShouldShowSelectingSearchTerms, Mode=OneWay}">
                 <Grid x:Name="GatheringSearchValuesGrid">

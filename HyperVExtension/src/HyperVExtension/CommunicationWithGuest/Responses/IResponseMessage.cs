@@ -8,7 +8,7 @@ namespace HyperVExtension.CommunicationWithGuest;
 /// </summary>
 public interface IResponseMessage
 {
-    string CommunicationId { get; set; }
+    string ResponseId { get; set; }
 
     string ResponseData { get; set; }
 }

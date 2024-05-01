@@ -10,11 +10,11 @@ internal struct ResponseMessage : IResponseMessage
 {
     public ResponseMessage(string requestId, string responseData)
     {
-        CommunicationId = requestId;
+        ResponseId = requestId;
         ResponseData = responseData;
     }
 
-    public string CommunicationId { get; set; }
+    public string ResponseId { get; set; }
 
     public string ResponseData { get; set; }
 }

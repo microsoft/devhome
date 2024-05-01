@@ -15,7 +15,7 @@ internal sealed class ErrorUnsupportedRequest : RequestBase
 
     public override bool IsStatusRequest => true;
 
-    public override IHostResponse Execute(IProgressHandler progressHandler, CancellationToken stoppingToken)
+    public override IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
     {
         return new ErrorUnsupportedRequestResponse(RequestId, RequestType);
     }

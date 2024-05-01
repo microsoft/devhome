@@ -52,7 +52,7 @@
     </UserControl.Resources>
 
     <!-- Page split layout -->
-    <Grid RowSpacing="10" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+    <Grid RowSpacing="10" MaxWidth="{ThemeResource MaxPageContentWidth}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="*" />

@@ -22,7 +22,7 @@ parameters:
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
   MSIXVersion: '0.1301'
-  VersionOfSDK: '0.500'
+  VersionOfSDK: '0.400'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
   testOutputArtifactDir: 'TestResults'
@@ -185,7 +185,7 @@ extends:
                 targetType: inline
                 script: >-
                   $Files = Get-ChildItem . -R -Filter 'Resources.resw' | ? FullName -Like '*en-US\*\Resources.resw'
-
+                  
                   $Files | % { Move-Item -Verbose $_.Directory $_.Directory.Parent.Parent -EA:Ignore }
 
                   $Files = Get-ChildItem . -R -Filter 'PDP.xml' | ? FullName -Like '*en-US\*\PDP.xml'
@@ -200,7 +200,7 @@ extends:
                 targetType: inline
                 script: >-
                   New-Item -Path 'locArchive' -ItemType Directory
-
+                  
                   tar czf locArchive\LocOutput.tar.gz LocOutput
                 pwsh: true
 
@@ -211,18 +211,10 @@ extends:
                 filePath: 'Build.ps1'
                 arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -Version $(MSIXVersion) -BuildStep "fullMsix" -AzureBuildingBranch "$(BuildingBranch)" -IsAzurePipelineBuild
 
-            - task: PowerShell@2
-              displayName: Move BinLog to output directory
-              inputs:
-                targetType: inline
-                script: >-
-                  Move-Item -Path $(Build.SourcesDirectory)\DevHome.${{ platform }}.${{ configuration }}.binlog -Destination $(Build.SourcesDirectory)\src\bin -Force
-                pwsh: true
-
             - task: EsrpCodeSigning@2
               inputs:
                 ConnectedServiceName: 'Xlang Code Signing'
-                FolderPath: '$(appxPackageDir)\${{ configuration }}\DevHome'
+                FolderPath: '$(appxPackageDir)\${{ configuration }}'
                 Pattern: '*.msix'
                 signConfigType: 'inlineSignParams'
                 inlineOperation: |
@@ -344,7 +336,7 @@ extends:
               - output: pipelineArtifact
                 displayName: Publish MSIX Artifact
                 artifactName: msix_${{ platform }}_${{ configuration }}
-                targetPath: $(appxPackageDir)\${{ configuration }}\DevHome
+                targetPath: $(appxPackageDir)\${{ configuration }}
                 sbomPackageName: devhome.msixpackage
                 sbomPackageVersion: $(MSIXVersion)
 
@@ -360,7 +352,7 @@ extends:
               inputs:
                 buildType: 'current'
                 artifactName: msix_${{ platform }}_${{ configuration }}
-                targetPath: $(appxPackageDir)\${{ configuration }}\DevHome
+                targetPath: $(appxPackageDir)\${{ configuration }}
 
           - task: PowerShell@2
             displayName: Create Stub Directory

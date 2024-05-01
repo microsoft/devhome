@@ -4,21 +4,31 @@
 namespace HyperVExtension.CommunicationWithGuest;
 
 /// <summary>
-/// Class that represents a broken response from Hyper-V with request or response type.
-/// This should only happen in case of a programming error that we'd need to investigate.
+/// Class used to handle requests that have no request type.
+/// It creates an error response JSON to send back to the client.
 /// </summary>
-internal sealed class ErrorNoTypeResponse : ErrorResponse
+internal sealed class ErrorNoTypeResponse : IGuestResponse
 {
-    public ErrorNoTypeResponse(IResponseMessage? responseMessage)
-        : base(responseMessage)
+    public ErrorNoTypeResponse(IResponseMessage message)
     {
-        if ((responseMessage != null) && (responseMessage.ResponseData != null))
-        {
-            ErrorDescription = $"Missing Response or Request type. Response data: '{responseMessage.ResponseData}'";
-        }
-        else
-        {
-            ErrorDescription = $"Missing Response or Request type.";
-        }
+        Timestamp = DateTime.UtcNow;
+        ResponseId = message.ResponseId!;
+        RequestId = message.ResponseId!;
     }
+
+    public string RequestId { get; set; }
+
+    public string RequestType { get; set; } = "<unknown>";
+
+    public string ResponseId { get; set; }
+
+    public string ResponseType { get; set; } = "<unknown>";
+
+    public uint Status { get; set; } = 0xFFFFFFFF;
+
+    public string ErrorDescription { get; set; } = "Missing Response or Request type.";
+
+    public uint Version { get; set; } = 1;
+
+    public DateTime Timestamp { get; set; }
 }

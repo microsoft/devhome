@@ -1,6 +1,6 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(5)]
+    [contractversion(4)]
     apicontract DevHomeContract {}
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -1380,48 +1380,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // End of Dev Environments feature.
 
-    // Begin FileExplorerSourceControlIntegration APIs
 
-    // This interface is responsible for obtaining and relaying information on the repository
-    // from source control technology
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 5)]
-    interface ILocalRepository
-    {
-        // This function returns the requested information on a relative file path (under a
-        // tracked repository root folder) from the source control management technology.
-        // The requested information includes a predefined set of properties FE is aware of.
-        // These properties can be found inside docs/extensions/LocalRepository/readme.md
-        Windows.Foundation.Collections.IPropertySet GetProperties(String[] properties, String relativePath);
-    };
 
-    // This interface defines the result objects that can be returned to DevHome when it tries to
-    // obtain an enhanced repository. Enhanced repository is the term given to repositories for 
-    // which File Explorer can display property information from version control technologies.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 5)]
-    runtimeclass GetLocalRepositoryResult
-    {
-        GetLocalRepositoryResult(ILocalRepository repository);
 
-        GetLocalRepositoryResult(HRESULT e, String displayMessage, String diagnosticText);
-
-        ILocalRepository Repository
-        {
-            get;
-        };
-
-        ProviderOperationResult Result
-        {
-            get;
-        };
-    };
-
-    // This interface is responsible for obtaining the ILocalRepository object given a root path
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 5)]
-    interface ILocalRepositoryProvider
-    {
-        // The method responsible for validating and returning the ILocalRepository object given its root path
-        GetLocalRepositoryResult GetRepository(String rootPath);
-    };
-
-    // End FileExplorerSourceControlIntegration APIs
 }

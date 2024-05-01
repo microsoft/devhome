@@ -13,7 +13,7 @@ namespace DevHome.Common.TelemetryEvents;
 [EventData]
 public class SeekerEvent : EventBase
 {
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
     public bool IsSeeker
     {

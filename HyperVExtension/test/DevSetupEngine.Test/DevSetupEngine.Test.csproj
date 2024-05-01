@@ -36,6 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ReferenceCopyLocalPaths Include="$(ProjectDir)..\..\src\DevSetupEngineProjection\bin\$(Platform)\$(Configuration)\**\Microsoft.Windows.DevHome.DevSetupEngine.winmd" />
+    <ReferenceCopyLocalPaths Include="$(ProjectDir)..\DevSetupEngineProjection\bin\$(Platform)\$(Configuration)\**\Microsoft.Windows.DevHome.DevSetupEngine.winmd" />
   </ItemGroup>
 </Project>

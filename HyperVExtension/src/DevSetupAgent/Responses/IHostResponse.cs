@@ -24,7 +24,7 @@ public interface IHostResponse
 
     DateTime Timestamp { get; set; }
 
-    string GetResponseData();
+    IResponseMessage GetResponseMessage();
 
     bool SendResponse { get; set; }
 }

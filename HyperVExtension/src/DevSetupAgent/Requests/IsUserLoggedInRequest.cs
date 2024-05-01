@@ -15,8 +15,6 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal sealed class IsUserLoggedInRequest : RequestBase
 {
-    public const string RequestTypeId = "IsUserLoggedIn";
-
     private static readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(IsUserLoggedInRequest));
 
     public IsUserLoggedInRequest(IRequestContext requestContext)
@@ -26,10 +24,10 @@ internal sealed class IsUserLoggedInRequest : RequestBase
 
     public override bool IsStatusRequest => true;
 
-    public override IHostResponse Execute(IProgressHandler progressHandler, CancellationToken stoppingToken)
+    public override IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
     {
         var loggedInUsers = EnumerateLogonSessions();
-        return new IsUserLoggedInResponse(RequestId, loggedInUsers);
+        return new IsUserLoggedInResponse(RequestMessage.RequestId!, loggedInUsers);
     }
 
     private static List<string> EnumerateLogonSessions()

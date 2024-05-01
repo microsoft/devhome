@@ -8,8 +8,6 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal sealed class GetVersionRequest : RequestBase
 {
-    public const string RequestTypeId = "GetVersion";
-
     public GetVersionRequest(IRequestContext requestContext)
         : base(requestContext)
     {
@@ -17,8 +15,8 @@ internal sealed class GetVersionRequest : RequestBase
 
     public override bool IsStatusRequest => true;
 
-    public override IHostResponse Execute(IProgressHandler progressHandler, CancellationToken stoppingToken)
+    public override IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
     {
-        return new GetVersionResponse(RequestId);
+        return new GetVersionResponse(RequestMessage.RequestId!);
     }
 }

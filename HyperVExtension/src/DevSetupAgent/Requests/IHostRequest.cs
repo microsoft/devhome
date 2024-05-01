@@ -3,6 +3,8 @@
 
 namespace HyperVExtension.DevSetupAgent;
 
+public delegate void ProgressHandler(IHostResponse progressResponse, CancellationToken stoppingToken);
+
 /// <summary>
 /// Interface for handling requests from client (host machine).
 /// </summary>
@@ -18,5 +20,5 @@ public interface IHostRequest
 
     DateTime Timestamp { get; }
 
-    IHostResponse Execute(IProgressHandler progressHandler, CancellationToken stoppingToken);
+    IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken);
 }

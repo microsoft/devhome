@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
-using HyperVExtension.HostGuestCommunication;
 
 namespace HyperVExtension.DevSetupAgent;
 
@@ -11,14 +10,10 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal sealed class RequestContext : IRequestContext
 {
-    public RequestContext(
-        IRequestMessage requestMessage,
-        IHostChannel channel,
-        List<RequestsInQueue> requestsInQueue)
+    public RequestContext(IRequestMessage requestMessage, IHostChannel channel)
     {
         RequestMessage = requestMessage;
         HostChannel = channel;
-        RequestsInQueue = requestsInQueue;
     }
 
     public IRequestMessage RequestMessage
@@ -32,11 +27,6 @@ internal sealed class RequestContext : IRequestContext
     }
 
     public JsonNode? JsonData
-    {
-        get; set;
-    }
-
-    public List<RequestsInQueue> RequestsInQueue
     {
         get; set;
     }

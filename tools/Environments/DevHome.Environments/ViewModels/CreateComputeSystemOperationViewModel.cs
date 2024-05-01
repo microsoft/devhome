@@ -21,7 +21,7 @@ namespace DevHome.Environments.ViewModels;
 /// </summary>
 public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBase
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CreateComputeSystemOperationViewModel));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
 
     private readonly IComputeSystemManager _computeSystemManager;
 

@@ -8,7 +8,7 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal struct RequestMessage : IRequestMessage
 {
-    public string? CommunicationId { get; set; }
+    public string? RequestId { get; set; }
 
     public string? RequestData { get; set; }
 }

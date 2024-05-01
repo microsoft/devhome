@@ -15,13 +15,8 @@
   <PropertyGroup>
     <CsWinRTIncludes>DevHome.SetupFlow.ElevatedComponent</CsWinRTIncludes>
   </PropertyGroup>
-
-  <ItemGroup Condition="'$(BuildingInsideVisualStudio)' == 'True'">
+  <ItemGroup>
     <CsWinRTInputs Include="..\DevHome.SetupFlow.ElevatedComponent\bin\$(Platform)\$(Configuration)\$(TargetFramework)\DevHome.SetupFlow.ElevatedComponent.winmd" />
-  </ItemGroup>
-  <!-- For some reason when building in GitHub CI pipeline the above path doesn't exist when this project is run. And the below path doesn't exist when building in VS -->
-  <ItemGroup Condition="'$(BuildingInsideVisualStudio)' != 'True'">
-    <CsWinRTInputs Include="..\DevHome.SetupFlow.ElevatedComponent\bin\$(Platform)\$(Configuration)\$(TargetFramework)\win-$(Platform)\DevHome.SetupFlow.ElevatedComponent.winmd" />
   </ItemGroup>
 
   <ItemGroup>

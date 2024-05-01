@@ -25,7 +25,7 @@ internal sealed class ProgressResponse : ResponseBase
     private uint ProgressCounter { get; }
 
     public ProgressResponse(string requestId, IConfigurationSetChangeData progressData, uint progressCounter)
-        : base(requestId, ConfigureRequest.RequestTypeId)
+        : base(requestId, "Configure")
     {
         _progressData = new ConfigurationSetChangeData().Populate(progressData);
         ProgressCounter = progressCounter;

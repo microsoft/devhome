@@ -212,12 +212,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             IsLoading = true;
         }
 
-        // Start a new sync timer
-        _ = Task.Run(async () =>
-        {
-            await RunSyncTimmer();
-        });
-
         for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
         {
             if (ComputeSystemCards[i] is ComputeSystemViewModel computeSystemViewModel)

@@ -9,8 +9,9 @@ namespace HyperVExtension.DevSetupAgent;
 internal sealed class GetVersionResponse : ResponseBase
 {
     public GetVersionResponse(string requestId)
-        : base(requestId, GetVersionRequest.RequestTypeId)
+        : base(requestId)
     {
+        RequestType = "GetVersion";
         GenerateJsonData();
     }
 }

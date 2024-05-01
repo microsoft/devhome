@@ -64,12 +64,7 @@ public class ComSafeWidgetDefinition : IDisposable
         Id = widgetDefinitionId;
     }
 
-    /// <summary>
-    /// ComSafeWidgetDefinitions must be populated before use to guarantee their properties are valid.
-    /// Calling methods will populate the object, but referencing properties cannot.
-    /// </summary>
-    /// <returns>true if the ComSafeWidgetDefinition was successfully populated, false if not.</returns>
-    public async Task<bool> PopulateAsync()
+    public async Task<bool> Populate()
     {
         await LazilyLoadOopWidgetDefinitionAsync();
         return _hasValidProperties;
@@ -181,7 +176,7 @@ public class ComSafeWidgetDefinition : IDisposable
     /// Get a WidgetDefinition's ID from a WidgetDefinition object.
     /// </summary>
     /// <param name="widgetDefinition">WidgetDefinition</param>
-    /// <returns>The WidgetDefinition's Id, or in the case of failure string.Empty</returns>
+    /// <returns>The Widget's Id, or in the case of failure string.Empty</returns>
     public static async Task<string> GetIdFromUnsafeWidgetDefinitionAsync(WidgetDefinition widgetDefinition)
     {
         return await Task.Run(() =>

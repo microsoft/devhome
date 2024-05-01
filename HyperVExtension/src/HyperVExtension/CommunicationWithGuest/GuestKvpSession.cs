@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Nodes;
-using HyperVExtension.HostGuestCommunication;
-
 namespace HyperVExtension.CommunicationWithGuest;
 
 /// <summary>
@@ -11,11 +8,10 @@ namespace HyperVExtension.CommunicationWithGuest;
 /// </summary>
 internal sealed class GuestKvpSession : IDisposable
 {
-    private static uint _nextCommunicationIdCounter = 1;
     private readonly Guid _vmId;
     private readonly GuestKvpChannel _channel;
     private readonly ResponseFactory _responseFactory = new();
-    private HashSet<string> _processedMessages = new(StringComparer.OrdinalIgnoreCase);
+    private Dictionary<string, IResponseMessage> _processedMessages = new();
     private bool _disposed;
 
     public GuestKvpSession(Guid vmId)
@@ -24,47 +20,30 @@ internal sealed class GuestKvpSession : IDisposable
         _channel = new GuestKvpChannel(vmId);
     }
 
-    public uint SendRequest(IHostRequest request, CancellationToken stoppingToken)
+    public void SendRequest(IHostRequest request, CancellationToken stoppingToken)
     {
-        var communicationIdCounter = _nextCommunicationIdCounter++;
-        _channel.SendMessage(request.GetRequestMessage(), communicationIdCounter, stoppingToken);
-        return communicationIdCounter;
+        _channel.SendMessage(request.GetRequestMessage(), stoppingToken);
     }
 
-    public List<IGuestResponse> WaitForResponse(uint communicationIdCounter, string requestId, TimeSpan timeout, bool expectProgressResponse, CancellationToken stoppingToken)
+    public List<IGuestResponse> WaitForResponse(string responseId, TimeSpan timeout, bool expectProgressResponse, CancellationToken stoppingToken)
     {
-        var communicationId = $"{MessageHelper.DevSetupPrefix}{{{communicationIdCounter}}}";
         var result = new List<IGuestResponse>();
-        var responseMessages = _channel.WaitForResponseMessages(communicationId, timeout, expectProgressResponse, stoppingToken);
+        var responseMessages = _channel.WaitForResponseMessages(responseId, timeout, expectProgressResponse, stoppingToken);
 
         // There is no way for host to remove messages from guest kvp. So, we need to keep track of processed messages.
         // If we find that we received the same message as in previous call of this method, we will ignore it.
         // Host will send "AckRequest" to let guest know that it can remove the message from kvp.
-        var newProcessedMessages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var newProcessedMessages = new Dictionary<string, IResponseMessage>();
 
         foreach (var responseMessage in responseMessages)
         {
-            if (!_processedMessages.Contains(responseMessage.CommunicationId))
+            if (!_processedMessages.ContainsKey(responseMessage.ResponseId))
             {
-                var response = _responseFactory.CreateResponse(responseMessage);
-                if (requestId.Equals(response.RequestId, StringComparison.OrdinalIgnoreCase))
-                {
-                    newProcessedMessages.Add(responseMessage.CommunicationId);
-
-                    result.Add(response);
-                    _channel.SendMessage(new AckRequest(responseMessage.CommunicationId).GetRequestMessage(), _nextCommunicationIdCounter++, stoppingToken);
-
-                    // We've received response to request with communicationId, so we can remove kvp entries for
-                    // this communicationId as they've been processed on Hyper-V side.
-                    _channel.CleanUp(communicationId);
-                }
+                result.Add(_responseFactory.CreateResponse(responseMessage));
+                _channel.SendMessage(new AckRequest(responseMessage.ResponseId).GetRequestMessage(), stoppingToken);
             }
-            else
-            {
-                // We've already processed this message in previous call of this method, but it was not deleted yet
-                // on Hyper-V side, so keep it in processed messages list.
-                newProcessedMessages.Add(responseMessage.CommunicationId);
-            }
+
+            newProcessedMessages[responseMessage.ResponseId] = responseMessage;
         }
 
         _processedMessages = newProcessedMessages;
@@ -87,14 +66,6 @@ internal sealed class GuestKvpSession : IDisposable
             }
 
             _disposed = true;
-        }
-    }
-
-    internal void SetNextCommunicationIdCounter(uint communicationIdCounter)
-    {
-        if (communicationIdCounter > _nextCommunicationIdCounter)
-        {
-            _nextCommunicationIdCounter = communicationIdCounter;
         }
     }
 }

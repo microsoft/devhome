@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using HyperVExtension.HostGuestCommunication;
 
 namespace HyperVExtension.CommunicationWithGuest;
 
@@ -113,24 +111,5 @@ internal class ResponseBase : IGuestResponse
         {
             throw new ArgumentException($"{valueName} cannot be empty.", ex);
         }
-    }
-
-    protected T GetRequiredValue<T>(string nodeName)
-    {
-        // Calling JsonSerializer.Deserialize directly on JasonNode fails (why?), but deserializing
-        // from the original string works.
-        var node = (string?)JsonData[nodeName];
-        if (node == null)
-        {
-            throw new JsonException($"Missing {nodeName} in JSON data.");
-        }
-
-        var result = JsonSerializer.Deserialize<T>(node);
-        if (result == null)
-        {
-            throw new JsonException($"Failed to deserialize {nodeName} from JSON data.");
-        }
-
-        return result;
     }
 }
