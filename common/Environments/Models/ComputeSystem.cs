@@ -3,7 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+
+using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Helpers;
@@ -30,6 +33,48 @@ public class ComputeSystem
     public string? Id { get; private set; } = string.Empty;
 
     public string DisplayName { get; private set; } = string.Empty;
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool AllowSetForegroundWindow(int dwProcessId);
+
+    // We need to give DevHomeAzureExtension the ability to SetForeground on the processes it creates. In some cases
+    // these processes need to show UI, in some cases they call APIs that only succeed if they are called from a
+    // foreground process. The proper way to do this is to call CoAllowSetForegroundWindow on the COM interface
+    // that we are about to use, which should automatically do all of this for us.  Unfortunately the proxy classes
+    // that we use in this file do not come with the necessary support (implementing IForegroundTransfer) by
+    // default, so we have to call AllowSetForegroundWindow ourselves.
+    // NOTE: There is currently work being done to call AllowSetForegroundWindow automatically within
+    // the DevHome SDK so that this method will no longer be necessary.  Unfortunately it won't be ready
+    // in time for Build 2024, so we need to use this method. This method should be removed once the above work
+    // is done.
+    private static bool SetAllowForegroundOnDevhomeAzureExtension()
+    {
+        foreach (Process process in Process.GetProcesses())
+        {
+            try
+            {
+                if (process.ProcessName == "DevHomeAzureExtension")
+                {
+                    var allowResult = AllowSetForegroundWindow(process.Id);
+                    if (!allowResult)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+        }
+
+        return false;
+    }
 
     public ComputeSystemOperations SupportedOperations
     {
@@ -294,6 +339,12 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                var res = SetAllowForegroundOnDevhomeAzureExtension();
+                if (!res)
+                {
+                    throw new InvalidOperationException();
+                }
+
                 return await computeSystem2.PinToStartMenuAsync();
             }
 
@@ -312,6 +363,12 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                var res = SetAllowForegroundOnDevhomeAzureExtension();
+                if (!res)
+                {
+                    throw new InvalidOperationException();
+                }
+
                 return await computeSystem2.UnpinFromStartMenuAsync();
             }
 
@@ -330,6 +387,12 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                var res = SetAllowForegroundOnDevhomeAzureExtension();
+                if (!res)
+                {
+                    throw new InvalidOperationException();
+                }
+
                 return await computeSystem2.PinToTaskbarAsync();
             }
 
@@ -348,6 +411,12 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                var res = SetAllowForegroundOnDevhomeAzureExtension();
+                if (!res)
+                {
+                    throw new InvalidOperationException();
+                }
+
                 return await computeSystem2.UnpinFromTaskbarAsync();
             }
 
@@ -366,6 +435,12 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                var res = SetAllowForegroundOnDevhomeAzureExtension();
+                if (!res)
+                {
+                    throw new InvalidOperationException();
+                }
+
                 return await computeSystem2.GetIsPinnedToStartMenuAsync();
             }
 
@@ -384,6 +459,12 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                var res = SetAllowForegroundOnDevhomeAzureExtension();
+                if (!res)
+                {
+                    throw new InvalidOperationException();
+                }
+
                 return await computeSystem2.GetIsPinnedToTaskbarAsync();
             }
 
