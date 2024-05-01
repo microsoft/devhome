@@ -21,6 +21,7 @@ public class ConfigurationFileHelper
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileHelper));
 
     private const string PowerShellHandlerIdentifier = "pwsh";
+    private const string PowerShellHandlerIdentifierWithSecurityContext = "{73fea39f-6f4a-41c9-ba94-6fd14d633e40}";
 
     public class ApplicationResult
     {
@@ -43,30 +44,42 @@ public class ConfigurationFileHelper
 
     private WinGet.ConfigurationProcessor? _processor;
     private WinGet.ConfigurationSet? _configSet;
+    private PackageVersion _appInstallerVersion = new(0, 0, 0, 0);
 
     public ConfigurationFileHelper()
     {
     }
 
-    private static async Task InstallOrUpdateAppInstallerIfNeeded(IProgress<DevSetupEngineTypes.IConfigurationSetChangeData> progress)
+    private static PackageVersion GetAppInstallerVersion()
+    {
+        const string AppInstallerPackageFamilyName = "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe";
+
+        Windows.Management.Deployment.PackageManager packageManager = new();
+        var currentInstallerPackage = packageManager.FindPackagesForUser(string.Empty, AppInstallerPackageFamilyName).FirstOrDefault();
+        if (currentInstallerPackage == null)
+        {
+            return new PackageVersion(0, 0, 0, 0);
+        }
+
+        return currentInstallerPackage.Id.Version;
+    }
+
+    private async Task InstallOrUpdateAppInstallerIfNeeded(IProgress<DevSetupEngineTypes.IConfigurationSetChangeData> progress)
     {
         const string AppInstallerPackageName = "Microsoft.DesktopAppInstaller";
         const string AppInstallerPackageFamilyName = "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe";
         const string AppInstallerStoreId = "9NBLGGH4NNS1";
 
         var doInstall = false;
-        Windows.Management.Deployment.PackageManager packageManager = new();
-        var currentInstallerPackage = packageManager.FindPackagesForUser(string.Empty, AppInstallerPackageFamilyName).FirstOrDefault();
-        if (currentInstallerPackage == null)
+        _appInstallerVersion = GetAppInstallerVersion();
+
+        if (_appInstallerVersion == new PackageVersion(0, 0, 0, 0))
         {
             doInstall = true;
         }
-        else
+        else if (!IsAppInstallerUpdateNeeded(_appInstallerVersion))
         {
-            if (!IsAppInstallerUpdateNeeded(currentInstallerPackage))
-            {
-                return;
-            }
+            return;
         }
 
         AppInstallManager installManager = new();
@@ -144,6 +157,9 @@ public class ConfigurationFileHelper
                 throw new PackageOperationException(PackageOperationException.ErrorCode.DevSetupErrorMsStoreInstallFailed, $"Failed to install {AppInstallerPackageName} updates");
             }
 #endif
+
+            // Get the updated version of the App Installer
+            _appInstallerVersion = GetAppInstallerVersion();
         }
         finally
         {
@@ -161,7 +177,17 @@ public class ConfigurationFileHelper
         try
         {
             ConfigurationStaticFunctions config = new();
-            var factory = await config.CreateConfigurationSetProcessorFactoryAsync(PowerShellHandlerIdentifier).AsTask();
+            string powerShellHandlerIdentifier;
+            if (IsSecurityContextSupported(_appInstallerVersion))
+            {
+                powerShellHandlerIdentifier = PowerShellHandlerIdentifierWithSecurityContext;
+            }
+            else
+            {
+                powerShellHandlerIdentifier = PowerShellHandlerIdentifier;
+            }
+
+            var factory = await config.CreateConfigurationSetProcessorFactoryAsync(powerShellHandlerIdentifier).AsTask();
 
             // Create and configure the configuration processor.
             var processor = config.CreateConfigurationProcessor(factory);
@@ -211,7 +237,7 @@ public class ConfigurationFileHelper
             applySetOperation.Progress += progressWatcher.Watcher;
             var result = await applySetOperation;
 
-            _log.Information($"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
+            _log.Information($"Apply configuration finished. HResult: 0x{result.ResultCode?.HResult:X}");
 
             var unitResults = new List<DevSetupEngineTypes.IApplyConfigurationUnitResult>();
             foreach (var unitResult in result.UnitResults)
@@ -323,43 +349,16 @@ public class ConfigurationFileHelper
     /// <summary>
     /// Check if the App Installer needs to be updated.
     /// </summary>
-    /// <param name="currentInstallerPackage">Microsoft.DesktopAppInstaller package</param>
+    /// <param name="currentInstallerPackageVersion">Package version</param>
     /// <returns>true if current Microsoft.DesktopAppInstaller package version is less than 1.22.10661.0</returns>
-    private static bool IsAppInstallerUpdateNeeded(Package currentInstallerPackage)
+    private static bool IsAppInstallerUpdateNeeded(PackageVersion currentInstallerPackageVersion)
     {
-        var packageVersion = currentInstallerPackage.Id.Version;
-        const int minMajor = 1;
-        const int minMinor = 22;
-        const int minBuild = 10661;
+        return currentInstallerPackageVersion.LessThan(1, 22, 10661, 0);
+    }
 
-        if (packageVersion.Major > minMajor)
-        {
-            return false;
-        }
-        else if (packageVersion.Major < minMajor)
-        {
-            return true;
-        }
-
-        if (packageVersion.Minor > minMinor)
-        {
-            return false;
-        }
-        else if (packageVersion.Minor < minMinor)
-        {
-            return true;
-        }
-
-        if (packageVersion.Build > minBuild)
-        {
-            return false;
-        }
-        else if (packageVersion.Build < minBuild)
-        {
-            return true;
-        }
-
-        return false;
+    private static bool IsSecurityContextSupported(PackageVersion currentInstallerPackageVersion)
+    {
+        return !currentInstallerPackageVersion.LessThan(1, 23, 1174, 0);
     }
 
     private static ConfigurationResultTypes.ConfigurationSetChangeData GetConfigurationSetChangeData(string identifier, DevSetupEngineTypes.ConfigurationUnitState unitState, string description = "")
