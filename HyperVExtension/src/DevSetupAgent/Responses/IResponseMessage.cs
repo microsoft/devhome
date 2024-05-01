@@ -8,7 +8,7 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 public interface IResponseMessage
 {
-    string ResponseId { get; set; }
+    string CommunicationId { get; set; }
 
     string ResponseData { get; set; }
 }

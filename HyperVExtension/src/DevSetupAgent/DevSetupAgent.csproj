@@ -68,7 +68,7 @@
   <ItemGroup>
     <ReferenceCopyLocalPaths Include="$(ProjectDir)..\DevSetupEngineIdl\bin\$(Platform)\$(Configuration)\\Microsoft.Windows.DevHome.DevSetupEngine.winmd" />
   </ItemGroup>
-  
+
   <!--DevSetupAgent doesn't use Microsoft.WindowsPackageManager.Configuration.OutOfProc package directly.-->
   <!--DevSetupEngine uses it, but these dependencies are not copied to DevSetupAgent TargetDir.-->
   <!--To fix this, we need to copy these files to the TargetDir manually.-->

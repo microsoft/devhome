@@ -40,8 +40,8 @@
                             <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 115 5" Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
                             <ProgressBar Grid.Row="1" Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
                             <Grid Grid.Row="2">
-                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0" Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
-                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0" Text="{x:Bind Path=DevDriveUsedSizeText, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Text="{x:Bind Path=DevDriveFreeSizeText, Mode=OneWay}" />
                             </Grid>
                         </Grid>
                     </ctControls:SettingsCard>
@@ -61,8 +61,8 @@
                             <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 115 5" Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
                             <ProgressBar Grid.Row="1" Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
                             <Grid Grid.Row="2">
-                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0" Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
-                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0" Text="{x:Bind Path=DevDriveUsedSizeText, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Text="{x:Bind Path=DevDriveFreeSizeText, Mode=OneWay}" />
                             </Grid>
                         </Grid>
                         <ctControls:SettingsExpander.Items>
@@ -81,10 +81,9 @@
                 </StackPanel>
             </DataTemplate>
 
-
             <!--- Template for optimization suggestion cards on the dev insights page. -->
             <DataTemplate x:Key="HorizontalCardForDevDriveOptimizerInsightsPage" x:DataType="devViewModels:DevDriveOptimizerCardViewModel">
-                <ctControls:SettingsExpander IsExpanded="True" Header="{Binding CacheToBeMoved, Mode=OneWay}">
+                <ctControls:SettingsExpander IsExpanded="True" Header="{Binding CacheToBeMoved, Mode=OneWay}" Margin="0 0 0 5">
                     <Grid HorizontalAlignment="Right">
                         <FontIcon HorizontalAlignment="Left" Glyph="&#xE946;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
                         <TextBlock HorizontalAlignment="Left" Margin="15 5 5 5"
@@ -103,7 +102,7 @@
 
             <!--- Template for optimized cards on the dev insights page. -->
             <DataTemplate x:Key="HorizontalCardForDevDriveOptimizedInsightsPage" x:DataType="devViewModels:DevDriveOptimizedCardViewModel">
-                <ctControls:SettingsCard Header="{Binding CacheMoved, Mode=OneWay}" Description="{Binding Path=OptimizedDevDriveDescription, Mode=OneWay}">
+                <ctControls:SettingsCard Header="{Binding CacheMoved, Mode=OneWay}" Description="{Binding Path=OptimizedDevDriveDescription, Mode=OneWay}" Margin="0 0 0 5">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <FontIcon HorizontalAlignment="Left" Margin="0 0 5 0" Glyph="&#xE73E;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
                         <TextBlock Text="{Binding Path=DevDriveOptimized, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorSuccess}" />
@@ -132,9 +131,9 @@
     <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}">
         <StackPanel Spacing="1">
             <TextBlock
+                x:Uid="DevDriveVolumesHeader"
                 Margin="0 20 0 0"
                 Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
-                Text="Dev Drive Volumes"
                 IsTextSelectionEnabled="True"/>
             <!--- List of DevDrivesListViewModel objects. -->
             <ListView

@@ -59,9 +59,10 @@ public class DevSetupAgentIntegrationTest
     {
         var registryChannelSettings = TestHost.GetService<IRegistryChannelSettings>();
         var inputkey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.FromHostRegistryKeyPath);
-        var messageId = "DevSetup{10000000-1000-1000-1000-100000000000}";
-        var messageName = messageId + "~1~1";
-        inputkey.SetValue(messageName, $"{{\"RequestId\": \"{messageId}\", \"RequestType\": \"GetVersion\", \"Version\": 1, \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"}}");
+        var communicationId = "DevSetup{1}";
+        var requestId = "DevSetup{10000000-1000-1000-1000-100000000000}";
+        var messageName = communicationId + "~1~1";
+        inputkey.SetValue(messageName, $"{{\"RequestId\": \"{requestId}\", \"RequestType\": \"GetVersion\", \"Version\": 1, \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"}}");
 
         Thread.Sleep(3000);
 
@@ -69,7 +70,36 @@ public class DevSetupAgentIntegrationTest
         var responseMessage = (string?)outputKey.GetValue(messageName);
         Assert.IsNotNull(responseMessage);
         var json = JsonDocument.Parse(responseMessage).RootElement;
-        Assert.AreEqual(messageId, json.GetProperty("RequestId").GetString());
+        Assert.AreEqual(requestId, json.GetProperty("RequestId").GetString());
+        Assert.AreEqual(0, json.GetProperty("Status").GetInt32());
+
+        // Check that the timestamp is within 5 second of the current
+        var time = json.GetProperty("Timestamp").GetDateTime();
+        var now = DateTime.UtcNow;
+        Assert.IsTrue(now - time < TimeSpan.FromSeconds(5));
+
+        var version = json.GetProperty("Version").GetInt32();
+        Assert.AreEqual(1, version);
+    }
+
+    [TestMethod]
+    public void TestGetStateRequest()
+    {
+        var registryChannelSettings = TestHost.GetService<IRegistryChannelSettings>();
+        var inputkey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.FromHostRegistryKeyPath);
+        var communicationId = "DevSetup{1}";
+        var requestId = "DevSetup{10000000-1000-1000-1000-100000000000}";
+        var messageName = communicationId + "~1~1";
+        inputkey.SetValue(messageName, $"{{\"RequestId\": \"{requestId}\", \"RequestType\": \"GetState\", \"Version\": 1, \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"}}");
+
+        Thread.Sleep(3000);
+
+        var outputKey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.ToHostRegistryKeyPath);
+        var responseMessage = (string?)outputKey.GetValue(messageName);
+        Assert.IsNotNull(responseMessage);
+        var json = JsonDocument.Parse(responseMessage).RootElement;
+        Assert.AreEqual(requestId, json.GetProperty("RequestId").GetString());
+        Assert.AreEqual(0, json.GetProperty("Status").GetInt32());
 
         // Check that the timestamp is within 5 second of the current
         var time = json.GetProperty("Timestamp").GetDateTime();
@@ -79,7 +109,8 @@ public class DevSetupAgentIntegrationTest
         var version = json.GetProperty("Version").GetInt32();
         Assert.AreEqual(1, version);
 
-        // TODO: Check that the response message is deleted
+        var state = json.GetProperty("StateData").GetString();
+        Assert.AreEqual($"{{\"RequestsInQueue\":[]}}", state);
     }
 
     /// <summary>
@@ -92,17 +123,18 @@ public class DevSetupAgentIntegrationTest
     {
         var registryChannelSettings = TestHost.GetService<IRegistryChannelSettings>();
         var inputkey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.FromHostRegistryKeyPath);
-        var messageId = "DevSetup{10000000-1000-1000-1000-100000000000}";
-        var messageName = messageId + "~1~1";
-        inputkey.SetValue(messageName, $"{{\"RequestId\": \"{messageId}\", \"RequestType\": \"IsUserLoggedIn\", \"Version\": 1, \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"}}");
+        var communicationId = "DevSetup{1}";
+        var requestId = "DevSetup{10000000-1000-1000-1000-100000000000}";
+        var messageName = communicationId + "~1~1";
+        inputkey.SetValue(messageName, $"{{\"RequestId\": \"{requestId}\", \"RequestType\": \"IsUserLoggedIn\", \"Version\": 1, \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"}}");
 
-        Thread.Sleep(3000);
+        Thread.Sleep(5000);
 
         var outputKey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.ToHostRegistryKeyPath);
         var responseMessage = (string?)outputKey.GetValue(messageName);
         Assert.IsNotNull(responseMessage);
         var json = JsonDocument.Parse(responseMessage).RootElement;
-        Assert.AreEqual(messageId, json.GetProperty("RequestId").GetString());
+        Assert.AreEqual(requestId, json.GetProperty("RequestId").GetString());
 
         // Check that the timestamp is within 5 second of the current
         var time = json.GetProperty("Timestamp").GetDateTime();
@@ -118,8 +150,9 @@ public class DevSetupAgentIntegrationTest
     {
         var registryChannelSettings = TestHost.GetService<IRegistryChannelSettings>();
         var inputkey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.FromHostRegistryKeyPath);
+        var communicationId = "DevSetup{1}";
         var messageId = "DevSetup{10000000-1000-1000-1000-200000000000}";
-        var messageName = messageId + "~1~1";
+        var messageName = communicationId + "~1~1";
         inputkey.SetValue(messageName, $"{{\"RequestId\": \"{messageId}\", \"Version\": 1, \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"}}");
 
         Thread.Sleep(3000);
@@ -166,12 +199,13 @@ properties:
         Ensure: Present
   configurationVersion: 0.2.0";
 
-        var noNewLinesYaml = yaml.Replace(System.Environment.NewLine, "\\n");
+        var noNewLinesYaml = yaml.Replace(Environment.NewLine, "\\n");
 
         var registryChannelSettings = TestHost.GetService<IRegistryChannelSettings>();
         var inputkey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.FromHostRegistryKeyPath);
+        var communicationId = "DevSetup{1}";
         var messageId = "DevSetup{10000000-1000-1000-1000-100000000001}";
-        var messageName = messageId + "~1~1";
+        var messageName = communicationId + "~1~1";
         var requestData =
             $"{{\"RequestId\": \"{messageId}\"," +
             $" \"RequestType\": \"Configure\", \"Version\": 1, \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"," +

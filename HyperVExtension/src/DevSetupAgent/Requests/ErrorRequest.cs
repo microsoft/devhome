@@ -12,7 +12,7 @@ internal class ErrorRequest : IHostRequest
     public ErrorRequest(IRequestMessage requestMessage, Exception? ex = null)
     {
         Timestamp = DateTime.UtcNow;
-        RequestId = requestMessage.RequestId!;
+        RequestId = requestMessage.CommunicationId!;
         Error = ex;
     }
 
@@ -26,7 +26,7 @@ internal class ErrorRequest : IHostRequest
 
     public DateTime Timestamp { get; }
 
-    public virtual IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
+    public virtual IHostResponse Execute(IProgressHandler progressHandler, CancellationToken stoppingToken)
     {
         return new ErrorResponse(RequestId, Error);
     }
