@@ -7,6 +7,7 @@ using DevHome.Activation;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Settings.ViewModels;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
@@ -35,7 +36,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
     public enum ActivationQueryType
     {
         Search,
-        WingetIds,
+        WingetURIs,
     }
 
     public AppInstallActivationHandler(
@@ -68,16 +69,17 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
 
         if (parameters != null)
         {
+            // TODO should probably make these case insensitive
             var searchQuery = parameters.Get("search");
-            var wingetIdsQuery = parameters.Get("wingetIds");
+            var wingetURIs = parameters.Get("URIs");
 
             if (!string.IsNullOrEmpty(searchQuery))
             {
                 await AppActivationFlowAsync(searchQuery, ActivationQueryType.Search);
             }
-            else if (!string.IsNullOrEmpty(wingetIdsQuery))
+            else if (!string.IsNullOrEmpty(wingetURIs))
             {
-                await AppActivationFlowAsync(wingetIdsQuery, ActivationQueryType.WingetIds);
+                await AppActivationFlowAsync(wingetURIs, ActivationQueryType.WingetURIs);
             }
         }
     }
@@ -101,22 +103,10 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
             return;
         }
 
-        _log.Information("Starting add-apps-to-cart activation");
+        _log.Information($"Starting {AppSearchUri} activation");
         _navigationService.NavigateTo(typeof(SetupFlowViewModel).FullName!);
         _setupFlowViewModel.StartAppManagementFlow(queryType == ActivationQueryType.Search ? identifiers[0] : null);
         await HandleAppSelectionAsync(identifiers, queryType);
-    }
-
-    private async Task HandleAppSelectionAsync(string[] identifiers, ActivationQueryType queryType)
-    {
-        try
-        {
-            await SearchAndSelectAsync(identifiers);
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "Error executing the add-apps-to-cart activation flow");
-        }
     }
 
     private string[] ParseIdentifiers(string query, ActivationQueryType queryType)
@@ -133,7 +123,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
 
                 return Array.Empty<string>();
 
-            case ActivationQueryType.WingetIds:
+            case ActivationQueryType.WingetURIs:
                 return query.Split(Separator, StringSplitOptions.RemoveEmptyEntries)
                             .Select(id => id.Trim(' ', '"'))
                             .ToArray();
@@ -141,6 +131,52 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
             default:
                 _log.Warning("Unsupported activation query type: {QueryType}", queryType);
                 return Array.Empty<string>();
+        }
+    }
+
+    private async Task HandleAppSelectionAsync(string[] identifiers, ActivationQueryType queryType)
+    {
+        try
+        {
+            switch (queryType)
+            {
+                case ActivationQueryType.Search:
+                    await SearchAndSelectAsync(identifiers);
+                    return;
+
+                case ActivationQueryType.WingetURIs:
+                    await PackageSearchAsync(identifiers);
+                    return;
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Error executing the {AppSearchUri} activation flow");
+        }
+    }
+
+    private async Task PackageSearchAsync(string[] identifiers)
+    {
+        if (identifiers == null || identifiers.Length == 0)
+        {
+            _log.Warning("No valid identifiers provided in the query.");
+            return;
+        }
+
+        List<WinGetPackageUri> uris = [];
+
+        foreach (var identifier in identifiers)
+        {
+            // ensure we handle the case where the identifier is invalid.
+            uris.Add(new WinGetPackageUri(identifier));
+        }
+
+        var list = await _windowsPackageManager.GetPackagesAsync(uris);
+        foreach (var item in list)
+        {
+            var package = _packageProvider.CreateOrGet(item);
+            package.IsSelected = true;
+            _log.Information("Selected package with identifier {Identifier} for addition to cart.", item);
         }
     }
 
