@@ -11,7 +11,7 @@ namespace HyperVExtension.DevSetupAgent;
 internal sealed class AckResponse : ResponseBase
 {
     public AckResponse(string requestId)
-        : base(requestId, "Ack")
+        : base(requestId, AckRequest.RequestTypeId)
     {
         SendResponse = false;
     }

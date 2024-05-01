@@ -4,13 +4,14 @@
 namespace HyperVExtension.DevSetupAgent;
 
 /// <summary>
-/// Class used to handle request for service version (RequestType = GetVersion).
+/// Class used to handle request for service state (RequestType = GetState).
+/// Returns the number of requests in the queue.
 /// </summary>
-internal sealed class GetVersionRequest : RequestBase
+internal sealed class GetStateRequest : RequestBase
 {
-    public const string RequestTypeId = "GetVersion";
+    public const string RequestTypeId = "GetState";
 
-    public GetVersionRequest(IRequestContext requestContext)
+    public GetStateRequest(IRequestContext requestContext)
         : base(requestContext)
     {
     }
@@ -19,6 +20,6 @@ internal sealed class GetVersionRequest : RequestBase
 
     public override IHostResponse Execute(IProgressHandler progressHandler, CancellationToken stoppingToken)
     {
-        return new GetVersionResponse(RequestId);
+        return new GetStateResponse(RequestId, RequestContext.RequestsInQueue);
     }
 }

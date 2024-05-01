@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
+using HyperVExtension.HostGuestCommunication;
 
 namespace HyperVExtension.DevSetupAgent;
 
@@ -15,4 +16,6 @@ public interface IRequestContext
     IHostChannel HostChannel { get; set; }
 
     JsonNode? JsonData { get; set; }
+
+    List<RequestsInQueue> RequestsInQueue { get; set; }
 }
