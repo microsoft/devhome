@@ -120,7 +120,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
                 return SplitAndTrimIdentifiers(query);
 
             default:
-                _log.Warning("Unsupported activation query type: {QueryType}", queryType);
+                _log.Warning($"Unsupported activation query type: {queryType}");
                 return [];
         }
     }

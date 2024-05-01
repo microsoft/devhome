@@ -39,9 +39,6 @@ public class AppManagementTaskGroup : ISetupTaskGroup
 
     public void HandleSearchQuery(string query)
     {
-        if (!string.IsNullOrEmpty(query))
-        {
-            _appManagementViewModel.PerformSearch(query);
-        }
+        _appManagementViewModel.PerformSearch(query);
     }
 }
