@@ -68,7 +68,7 @@
             
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:ProcessData">
-                    <Grid ColumnSpacing="5">
+                    <Grid ColumnSpacing="5" AutomationProperties.Name="{x:Bind DisplayName}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="180" />
                             <ColumnDefinition Width="130" />
@@ -77,7 +77,7 @@
 
                         <Border Grid.Column="0" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 0">
                             <TextBlock
-                                Text="{x:Bind Name}"
+                                Text="{x:Bind DisplayName}"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Left"
                                 HorizontalTextAlignment="Left"
