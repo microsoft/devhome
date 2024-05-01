@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -10,6 +11,7 @@ using Antlr4.Runtime.Misc;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
@@ -42,7 +44,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     private readonly IComputeSystemManager _computeSystemManager;
 
     // Launch button operations
-    public ObservableCollection<OperationsViewModel> LaunchOperations { get; set; }
+    public ObservableCollection<OperationsViewModel> LaunchOperations { get; set; } = new();
 
     public ObservableCollection<CardProperty> Properties { get; set; } = new();
 
@@ -68,21 +70,17 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         AssociatedProviderId = ComputeSystem.AssociatedProviderId!;
         ComputeSystemId = ComputeSystem.Id!;
         _removalAction = removalAction;
-        ShouldShowLaunchOperation = true;
 
         if (!string.IsNullOrEmpty(ComputeSystem.SupplementalDisplayName))
         {
             AlternativeName = new string("(" + ComputeSystem.SupplementalDisplayName + ")");
         }
 
-        LaunchOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillLaunchButtonOperations(ComputeSystem));
-        DotOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillDotButtonOperations(ComputeSystem));
         HeaderImage = CardProperty.ConvertMsResourceToIcon(provider.Icon, packageFullName);
         ComputeSystem.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
-        RegisterForAllOperationMessages();
     }
 
     public async Task InitializeCardDataAsync()
@@ -90,14 +88,14 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         await InitializeStateAsync();
         await SetBodyImageAsync();
         await SetPropertiesAsync();
-        await InitializePinDataAsync();
+        await InitializeOperationDataAsync();
     }
 
-    private async Task InitializePinDataAsync()
+    private async Task InitializeOperationDataAsync()
     {
-        // We know ComputeSystem and DotOperations are initialized in the constructor so it's safe to use
-        var operations = new ObservableCollection<OperationsViewModel>(await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem!));
-        foreach (var operation in operations)
+        RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem!, _windowEx), DataExtractor.FillLaunchButtonOperations(ComputeSystem!));
+
+        foreach (var operation in await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem!))
         {
             DotOperations!.Add(operation);
         }
@@ -132,11 +130,15 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState newState)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
             if (sender.Id == ComputeSystem!.Id)
             {
-                UpdateOperationsPostCreation(State, newState);
+                // The supported operations for a compute system can change based on the current state of the compute system.
+                // So we need to rebuild the dot and launch operations that appear in the UI based on the current
+                // supported operations of the compute system. InitializeOperationDataAsync will take care of this for us, by using
+                // the DataExtractor helper.
+                await InitializeOperationDataAsync();
                 State = newState;
                 StateColor = ComputeSystemHelpers.GetColorBasedOnState(newState);
                 SetupOperationProgressBasedOnState();
@@ -268,8 +270,6 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                 "Environment_OperationInvoked_Event",
                 LogLevel.Measure,
                 new EnvironmentOperationUserEvent(completionStatus, data.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, data.AdditionalContext, data.ActivityId));
-
-            IsOperationInProgress = false;
         });
     }
 
@@ -278,18 +278,25 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     /// DotOperation and LaunchOperation lists. When there is an operation this ViewModel will receive the started and
     /// the completed messages.
     /// </summary>
-    private void RegisterForAllOperationMessages()
+    private void RegisterForAllOperationMessages(List<OperationsViewModel> dotOperations, List<OperationsViewModel> launchOperations)
     {
         _log.Information($"Registering ComputeSystemViewModel '{Name}' from provider '{ProviderDisplayName}' with WeakReferenceMessenger at {DateTime.Now}");
 
-        foreach (var dotOperation in DotOperations!)
+        // Unregister from all operation messages
+        WeakReferenceMessenger.Default.UnregisterAll(this);
+        LaunchOperations.Clear();
+        DotOperations!.Clear();
+
+        foreach (var dotOperation in dotOperations)
         {
+            DotOperations.Add(dotOperation);
             WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedMessage, OperationsViewModel>(this, dotOperation);
             WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedMessage, OperationsViewModel>(this, dotOperation);
         }
 
-        foreach (var launchOperation in LaunchOperations!)
+        foreach (var launchOperation in launchOperations)
         {
+            LaunchOperations.Add(launchOperation);
             WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedMessage, OperationsViewModel>(this, launchOperation);
             WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedMessage, OperationsViewModel>(this, launchOperation);
         }
@@ -323,7 +330,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             IsOperationInProgress = false;
         }
 
-        if ((State != ComputeSystemState.Creating) || (State != ComputeSystemState.Deleting))
+        if ((State != ComputeSystemState.Creating) && (State != ComputeSystemState.Deleting))
         {
             ShouldShowLaunchOperation = true;
         }
@@ -331,26 +338,6 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         if (State == ComputeSystemState.Deleted)
         {
             RemoveComputeSystem();
-        }
-    }
-
-    private void UpdateOperationsPostCreation(ComputeSystemState previousState, ComputeSystemState newState)
-    {
-        // supported operations may have changed after creation, so we'll update them
-        if ((previousState == ComputeSystemState.Creating) && (previousState != newState))
-        {
-            LaunchOperations.Clear();
-            DotOperations!.Clear();
-
-            foreach (var buttonOperation in DataExtractor.FillLaunchButtonOperations(ComputeSystem!))
-            {
-                LaunchOperations.Add(buttonOperation);
-            }
-
-            foreach (var dotOperation in DataExtractor.FillDotButtonOperations(ComputeSystem!))
-            {
-                LaunchOperations.Add(dotOperation);
-            }
         }
     }
 }

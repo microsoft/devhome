@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
@@ -279,7 +280,7 @@ public class DevDriveManager : IDevDriveManager
                 TelemetryFactory.Get<ITelemetry>().Log(
                                               "DevDrive_Insufficient_DiskSpace",
                                               LogLevel.Critical,
-                                              new EmptyEvent());
+                                              new DevDriveInsufficientDiskSpaceEvent());
                 validationSuccessful = false;
             }
         }

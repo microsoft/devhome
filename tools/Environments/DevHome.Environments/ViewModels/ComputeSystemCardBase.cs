@@ -24,7 +24,7 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
     public bool IsCreateComputeSystemOperation { get; protected set; }
 
     // Will hold the supported actions that the user can perform on in the UI. E.g Remove button
-    public ObservableCollection<OperationsViewModel>? DotOperations { get; protected set; }
+    public ObservableCollection<OperationsViewModel> DotOperations { get; protected set; } = new();
 
     [ObservableProperty]
     private ComputeSystemState _state;
