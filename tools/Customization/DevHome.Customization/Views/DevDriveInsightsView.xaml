@@ -37,11 +37,11 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 115 5" Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
+                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 115 5" Text="{x:Bind Path=DevDriveSizeText, Mode=OneWay}" />
                             <ProgressBar Grid.Row="1" Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
                             <Grid Grid.Row="2">
-                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0" Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
-                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0" Text="{x:Bind Path=DevDriveUsedSizeText, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Text="{x:Bind Path=DevDriveFreeSizeText, Mode=OneWay}" />
                             </Grid>
                         </Grid>
                     </ctControls:SettingsCard>
@@ -58,11 +58,11 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 115 5" Text="{Binding Path=DevDriveSizeText, Mode=OneWay}" />
+                            <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 115 5" Text="{x:Bind Path=DevDriveSizeText, Mode=OneWay}" />
                             <ProgressBar Grid.Row="1" Width="200" Value="{x:Bind DevDriveFillPercentage, Mode=OneWay}" HorizontalAlignment="Right" />
                             <Grid Grid.Row="2">
-                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0" Text="{Binding Path=DevDriveUsedSizeText, Mode=OneWay}" />
-                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Text="{Binding Path=DevDriveFreeSizeText, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Margin="0 0 120 0" Text="{x:Bind Path=DevDriveUsedSizeText, Mode=OneWay}" />
+                                <TextBlock Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" HorizontalAlignment="Right" Text="{x:Bind Path=DevDriveFreeSizeText, Mode=OneWay}" />
                             </Grid>
                         </Grid>
                         <ctControls:SettingsExpander.Items>
