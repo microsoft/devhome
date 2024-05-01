@@ -25,23 +25,24 @@
             HorizontalContentAlignment="Stretch"
             Margin="0"
             Padding="0"
-            ui:ListViewExtensions.AlternateColor="{StaticResource CardBackgroundFillColorDefaultBrush}">
+            ui:ListViewExtensions.AlternateColor="{StaticResource SubtleFillColorSecondaryBrush}">
             <ListView.Header>
                 <Grid ColumnSpacing="0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition MinHeight="35" />
                     </Grid.RowDefinitions>
                     
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="180" />
-                        <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="2*" />
                     </Grid.ColumnDefinitions>
                     
                     <Border Grid.Column="0" Style="{StaticResource BorderStyle}">
                         <TextBlock
                             x:Uid="ProcessPerformanceTableControl_Heading_Process"
-                            Padding="20 0 0 0"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Padding="25 0 0 0"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             HorizontalTextAlignment="Left" />
@@ -49,7 +50,8 @@
                     <Border Grid.Column="1" Style="{StaticResource BorderStyle}">
                         <TextBlock
                             x:Uid="ProcessPerformanceTableControl_Heading_ProcessType"
-                            Margin="40 0 0 0"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Margin="20 0 0 0"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             HorizontalTextAlignment="Left" />
@@ -57,10 +59,12 @@
                     <Border Grid.Column="2" Grid.ColumnSpan="2" Style="{StaticResource BorderStyle}">
                         <TextBlock
                             x:Uid="ProcessPerformanceTableControl_Heading_CpuAboveThreshold"
-                            Margin="40 0 0 0"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Margin="20 0 0 0"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             HorizontalTextAlignment="Left"
+                            TextWrapping="WrapWholeWords"
                             TextTrimming="CharacterEllipsis" />
                     </Border>
                 </Grid>
@@ -70,9 +74,9 @@
                 <DataTemplate x:DataType="local:ProcessData">
                     <Grid ColumnSpacing="5" AutomationProperties.Name="{x:Bind DisplayName}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180" />
-                            <ColumnDefinition Width="130" />
-                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="2*" />
                         </Grid.ColumnDefinitions>
 
                         <Border Grid.Column="0" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 0">

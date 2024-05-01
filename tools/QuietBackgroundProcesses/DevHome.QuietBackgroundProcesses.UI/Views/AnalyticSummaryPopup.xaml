@@ -12,26 +12,29 @@
     PrimaryButtonClick="SaveReportButtonClicked"
     Style="{StaticResource DefaultContentDialogStyle}">
 
-    <Grid Height="480" Width="600">
+    <!-- ContentDialog Width and Height are not properly hooked up and must be set this way -->
+    <ContentDialog.Resources>
+        <!-- MinWidth here might be useless -->
+        <x:Double x:Key="ContentDialogMinWidth">652</x:Double>
+        <x:Double x:Key="ContentDialogMaxWidth">700</x:Double>
+        <x:Double x:Key="ContentDialogMaxHeight">650</x:Double>
+        <Thickness x:Key="ContentDialogPadding">36</Thickness>
+    </ContentDialog.Resources>
+
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0">
-            <TextBlock
-                x:Uid="AnalyticSummary_Title"
-                Style="{StaticResource SubtitleTextBlockStyle}"
-                HorizontalAlignment="Left"
-                Margin="16,10,0,0" />
+        <StackPanel Grid.Row="0" Spacing="36">
             <TextBlock
                 x:Uid="AnalyticSummary_Description"
                 HorizontalAlignment="Left"
-                TextWrapping="Wrap"
-                Margin="16,10,100,0" />
+                TextWrapping="Wrap" />
 
             <!-- Filters & sorting -->
-            <Grid Margin="15 40 15 5">
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -44,7 +47,7 @@
                     Grid.Column="1"
                     x:Uid="AnalyticSummary_ComboBox_SortBy"
                     x:Name="SortComboBox"
-                    Margin="5 0 5 0"
+                    Margin="5 0"
                     SelectedValue=""
                     SelectedIndex="{x:Bind ViewModel.SortComboBoxIndex, Mode=TwoWay}">
                     <ComboBoxItem x:Uid="ComboBox_SortBy_Process" Tag="Process" />
@@ -62,7 +65,7 @@
                     Grid.Column="2"
                     x:Uid="AnalyticSummary_FilterProcesses_PlaceholderText"
                     x:Name="FilterTextBox"
-                    Margin="30 0 100 0">
+                    Margin="30 0 0 0">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="TextChanged">
                             <ic:InvokeCommandAction
@@ -74,7 +77,7 @@
             </Grid>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0 20 100 0">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0 20 0 0">
             <local:ProcessPerformanceTableControl x:Name="processListControl" ItemsSource="{x:Bind ViewModel.ProcessDatasAd}" />
         </ScrollViewer>
     </Grid>

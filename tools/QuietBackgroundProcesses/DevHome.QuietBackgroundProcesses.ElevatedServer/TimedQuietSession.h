@@ -78,6 +78,8 @@ struct UnelevatedServerReference
 //          teardown in unelevated server (assuming DevHome is closed), releasing the cached *strong* reference
 //          to the session (elevated) -> COM triggers teardown in elevated server.
 //
+#pragma warning(push)
+#pragma warning(disable : 4324) // Avoid WRL alignment warning
 struct TimedQuietSession
 {
     TimedQuietSession(std::chrono::seconds seconds)
@@ -158,3 +160,4 @@ private:
     wil::com_ptr<ABI::DevHome::QuietBackgroundProcesses::IPerformanceRecorderEngine> m_performanceRecorderEngine;
     std::mutex m_mutex;
 };
+#pragma warning(pop)
