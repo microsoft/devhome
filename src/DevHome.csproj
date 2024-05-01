@@ -83,6 +83,7 @@
   <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
+    <ProjectReference Include="..\extensions\WindowsSandboxExtension\WindowsSandboxExtension.csproj" />
     <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
     <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
@@ -94,7 +95,6 @@
     <ProjectReference Include="..\HyperVExtension\src\HyperVExtensionServer\HyperVExtensionServer.csproj" />
     <ProjectReference Include="..\tools\Environments\DevHome.Environments\DevHome.Environments.csproj" />
     <ProjectReference Include="..\tools\Customization\DevHome.Customization\DevHome.Customization.csproj" />
-    <ProjectReference Include="..\WindowsSandboxExtension\WindowsSandboxExtension.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using WindowsSandboxExtension.Helpers;
 
 namespace WindowsSandboxExtension;
 
@@ -13,18 +14,19 @@ namespace WindowsSandboxExtension;
 internal sealed class WindowsSandboxExtension : IExtension, IDisposable
 {
     private readonly IHost _host;
+    private readonly ILogger _logger;
     private bool _disposed;
 
     public WindowsSandboxExtension(IHost host)
     {
         _host = host;
+        _logger = Log.ForContext("SourceContext", nameof(WindowsSandboxExtension));
     }
 
     public ManualResetEvent ExtensionDisposedEvent { get; } = new(false);
 
     public object? GetProvider(ProviderType providerType)
     {
-        var log = Log.ForContext("SourceContext", nameof(WindowsSandboxExtension));
         object? provider = null;
 
         try
@@ -32,19 +34,37 @@ internal sealed class WindowsSandboxExtension : IExtension, IDisposable
             switch (providerType)
             {
                 case ProviderType.ComputeSystem:
-                    provider = _host.Services.GetService(typeof(IComputeSystemProvider));
+
+                    provider = GetComputeSystemProvider();
                     break;
                 default:
-                    log.Information($"Unsupported provider: {providerType}");
+                    _logger.Information($"Unsupported provider: {providerType}");
                     break;
             }
         }
         catch (Exception ex)
         {
-            log.Error(ex, $"Failed to get provider for provider type {providerType}");
+            _logger.Error(ex, $"Failed to get provider for provider type {providerType}");
         }
 
         return provider;
+    }
+
+    private object? GetComputeSystemProvider()
+    {
+        if (DependencyChecker.IsNewWindowsSandboxExtensionInstalled())
+        {
+            _logger.Information("New Windows Sandbox appx package is installed.");
+            return null;
+        }
+
+        if (!DependencyChecker.IsOptionalComponentEnabled())
+        {
+            _logger.Information("Windows Sandbox optional component is not enabled.");
+            return null;
+        }
+
+        return _host.Services.GetService(typeof(IComputeSystemProvider));
     }
 
     public void Dispose()

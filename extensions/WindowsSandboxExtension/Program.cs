@@ -36,13 +36,6 @@ public sealed class Program
 
         Log.Information($"Launched with args: {string.Join(' ', args.ToArray())}");
 
-        if (WindowsSandboxAppx.IsInstalled())
-        {
-            Log.Information("Windows Sandbox appx package is installed... exiting.");
-            Log.CloseAndFlush();
-            return;
-        }
-
         // Force the app to be single instanced.
         // Get or register the main instance.
         var mainInstance = AppInstance.FindOrRegisterForKey("mainInstance");
