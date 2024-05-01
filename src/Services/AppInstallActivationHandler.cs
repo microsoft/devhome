@@ -18,7 +18,7 @@ using Windows.Storage;
 namespace DevHome.Services;
 
 /// <summary>
-/// Class that handles the activation of the application when an add-apps-to-cart URI protcol is used.
+/// Class that handles the activation of the application when an add-apps-to-cart URI protocol is used.
 /// </summary>
 public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEventArgs>
 {
@@ -69,7 +69,6 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
 
         if (parameters != null)
         {
-            // TODO should probably make these case insensitive
             var searchQuery = parameters.Get("search");
             var wingetURIs = parameters.Get("URIs");
 
@@ -88,7 +87,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
     {
         if (_setupFlowOrchestrator.IsMachineConfigurationInProgress)
         {
-            _log.Warning("Cannot activate the add-apps-to-cart flow because the machine configuration is in progress");
+            _log.Warning($"Cannot activate the {AppSearchUri} flow because the machine configuration is in progress");
             await _mainWindow.ShowErrorMessageDialogAsync(
                     _setupFlowStringResource.GetLocalized(StringResourceKey.AppInstallActivationTitle),
                     _setupFlowStringResource.GetLocalized(StringResourceKey.URIActivationFailedBusy),
@@ -114,24 +113,23 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
         switch (queryType)
         {
             case ActivationQueryType.Search:
-                var terms = query.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
-                if (terms.Length > 0)
-                {
-                    var firstTerm = terms[0].Replace("\"", string.Empty).Trim();
-                    return string.IsNullOrEmpty(firstTerm) ? Array.Empty<string>() : new[] { firstTerm };
-                }
-
-                return Array.Empty<string>();
+                var terms = SplitAndTrimIdentifiers(query);
+                return terms.Length > 0 ? [terms[0]] : [];
 
             case ActivationQueryType.WingetURIs:
-                return query.Split(Separator, StringSplitOptions.RemoveEmptyEntries)
-                            .Select(id => id.Trim(' ', '"'))
-                            .ToArray();
+                return SplitAndTrimIdentifiers(query);
 
             default:
                 _log.Warning("Unsupported activation query type: {QueryType}", queryType);
-                return Array.Empty<string>();
+                return [];
         }
+    }
+
+    private string[] SplitAndTrimIdentifiers(string query)
+    {
+        return query.Split(Separator, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(id => id.Trim(' ', '"'))
+                    .ToArray();
     }
 
     private async Task HandleAppSelectionAsync(string[] identifiers, ActivationQueryType queryType)
@@ -141,7 +139,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
             switch (queryType)
             {
                 case ActivationQueryType.Search:
-                    await SearchAndSelectAsync(identifiers);
+                    await SearchAndSelectAsync(identifiers[0]);
                     return;
 
                 case ActivationQueryType.WingetURIs:
@@ -157,49 +155,41 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
 
     private async Task PackageSearchAsync(string[] identifiers)
     {
-        if (identifiers == null || identifiers.Length == 0)
-        {
-            _log.Warning("No valid identifiers provided in the query.");
-            return;
-        }
-
         List<WinGetPackageUri> uris = [];
 
         foreach (var identifier in identifiers)
         {
-            // ensure we handle the case where the identifier is invalid.
             uris.Add(new WinGetPackageUri(identifier));
         }
 
-        var list = await _windowsPackageManager.GetPackagesAsync(uris);
-        foreach (var item in list)
+        try
         {
-            var package = _packageProvider.CreateOrGet(item);
-            package.IsSelected = true;
-            _log.Information("Selected package with identifier {Identifier} for addition to cart.", item);
+            var list = await _windowsPackageManager.GetPackagesAsync(uris);
+            foreach (var item in list)
+            {
+                var package = _packageProvider.CreateOrGet(item);
+                package.IsSelected = true;
+                _log.Information($"Selected package: {item} for addition to cart.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Error occurred during package search for URIs: {uris}.");
         }
     }
 
-    private async Task SearchAndSelectAsync(string[] identifiers)
+    private async Task SearchAndSelectAsync(string identifier)
     {
-        if (identifiers == null || identifiers.Length == 0)
+        var searchResults = await _windowsPackageManager.SearchAsync(identifier, 1);
+        if (searchResults.Count == 0)
         {
-            _log.Warning("No valid identifiers provided in the query.");
-            return;
+            _log.Warning($"No results found for the identifier: {identifier}");
         }
-
-        foreach (var identifier in identifiers)
+        else
         {
-            var searchResults = await _windowsPackageManager.SearchAsync(identifier, 1);
-            if (searchResults.Count == 0)
-            {
-                _log.Warning("No results found for the identifier: {Identifier}", identifier);
-                continue;
-            }
-
             var package = _packageProvider.CreateOrGet(searchResults[0]);
             package.IsSelected = true;
-            _log.Information("Selected package with identifier {Identifier} for addition to cart.", identifier);
+            _log.Information($"Selected package: {package} for addition to cart.");
         }
     }
 }
