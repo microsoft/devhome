@@ -3,6 +3,7 @@
 
 using System.Text.Json;
 using HyperVExtension.Common;
+using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Models;
 using HyperVExtension.Models.VirtualMachineCreation;
@@ -24,6 +25,8 @@ public class HyperVProvider : IComputeSystemProvider
 
     private readonly IHyperVManager _hyperVManager;
 
+    private readonly WindowsIdentityWrapper _windowsIdentityWrapper;
+
     private readonly VmGalleryCreationOperationFactory _vmGalleryCreationOperationFactory;
 
     private readonly IVMGalleryService _vmGalleryService;
@@ -34,6 +37,7 @@ public class HyperVProvider : IComputeSystemProvider
     public HyperVProvider(
         IHyperVManager hyperVManager,
         IStringResource stringResource,
+        IWindowsIdentityService windowsIdentityService,
         VmGalleryCreationOperationFactory vmGalleryCreationOperationFactory,
         IVMGalleryService vmGalleryService)
     {
@@ -41,6 +45,7 @@ public class HyperVProvider : IComputeSystemProvider
         _stringResource = stringResource;
         _vmGalleryCreationOperationFactory = vmGalleryCreationOperationFactory;
         _vmGalleryService = vmGalleryService;
+        _windowsIdentityWrapper = windowsIdentityService.GetCurrentWindowsIdentity();
     }
 
     /// <summary> Gets or sets the default compute system properties. </summary>
@@ -56,8 +61,6 @@ public class HyperVProvider : IComputeSystemProvider
     public string Properties { get; private set; } = string.Empty;
 
     /// <summary> Gets the supported operations of the Hyper-V provider. </summary>
-    /// TODO: currently only CreateComputeSystem is supported in the SDK. For Hyper-V v1 creation
-    /// won't be supported.
     public ComputeSystemProviderOperations SupportedOperations => ComputeSystemProviderOperations.CreateComputeSystem;
 
     public Uri Icon => new(Constants.ExtensionIcon);
@@ -69,6 +72,14 @@ public class HyperVProvider : IComputeSystemProvider
         {
             try
             {
+                if (!_windowsIdentityWrapper.IsUserInGroup(HyperVStrings.HyperVAdminGroupWellKnownSid))
+                {
+                    // Dev Home contains code and error notifications to add the user to the admin group.
+                    // So we do not need to send this error back to Dev Home as it will result in duplication.
+                    _log.Information($"User {_windowsIdentityWrapper.UserName} not in Hyper-V admin group");
+                    return new ComputeSystemsResult(new List<IComputeSystem>());
+                }
+
                 var computeSystems = _hyperVManager.GetAllVirtualMachines();
                 _log.Information($"Successfully retrieved all virtual machines on: {DateTime.Now}");
                 return new ComputeSystemsResult(computeSystems);
@@ -83,6 +94,12 @@ public class HyperVProvider : IComputeSystemProvider
 
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForDeveloperId(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
     {
+        if (!_windowsIdentityWrapper.IsUserInGroup(HyperVStrings.HyperVAdminGroupWellKnownSid))
+        {
+            var hyperVAdminEx = new HyperVAdminGroupException(_stringResource.GetLocalized("UserNotInHyperVAdminGroup", _windowsIdentityWrapper.UserName));
+            return new ComputeSystemAdaptiveCardResult(hyperVAdminEx, hyperVAdminEx.Message, $"User {_windowsIdentityWrapper.UserName} not in Hyper-V admin group");
+        }
+
         var imageList = _vmGalleryService.GetGalleryImagesAsync().GetAwaiter().GetResult();
         return new ComputeSystemAdaptiveCardResult(new VMGalleryCreationAdaptiveCardSession(imageList, _stringResource));
     }

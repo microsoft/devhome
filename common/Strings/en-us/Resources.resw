@@ -206,32 +206,28 @@
     <comment>Title for the uptime property of a compute system. (The amount of time its been running)</comment>
   </data>
   <data name="HyperVAdminAddUser" xml:space="preserve">
-    <value>Add user to {0} administrators group</value>
-    <comment>Locked="{0}" Text for the button to add user to {0} administrators group</comment>
-  </data>
-  <data name="HyperVErrorTitle" xml:space="preserve">
-    <value>{0} {1}</value>
-    <comment>{Locked="{0}","{1}"} Title text for the UI showing errors for user not part of {1} administrators group</comment>
+    <value>Add user to {Hyper-V} administrators group</value>
+    <comment>Locked="{Hyper-V}" Text for the button to add user to Hyper-V administrators group</comment>
   </data>
   <data name="RestartButton" xml:space="preserve">
     <value>Restart now</value>
-    <comment>Locked="{0}" Text for button that restarts the system.</comment>
+    <comment>Text for button that restarts the system.</comment>
   </data>
-  <data name="RestartMessage" xml:space="preserve">
-    <value>You must restart the computer after adding the user to the {0} administrators group for changes to take effect.</value>
-    <comment>Locked="{0}" Text explaining that a restart is needed after a user is added to the {0} group.</comment>
+  <data name="HyperVAdminGroupRestartMessage" xml:space="preserve">
+    <value>You must restart the computer after adding the user to the {Hyper-V} administrators group for changes to take effect.</value>
+    <comment>Locked="{Hyper-V}" Text explaining that a restart is needed after a user is added to the Hyper-V administrators group.</comment>
   </data>
   <data name="UserAddHyperVAdminFailed" xml:space="preserve">
-    <value>Unable to add user to {0} administrators group. Please try manually.</value>
-    <comment>Locked="{0}" Text explaining that the user add operation to {0} administrators group failed.</comment>
+    <value>Unable to add user to the {Hyper-V} administrators group. Please try manually.</value>
+    <comment>Locked="{Hyper-V}" Text explaining that the operation to add the user to the Hyper-V administrators group failed.</comment>
   </data>
   <data name="UserNotInHyperAdminGroupButton" xml:space="preserve">
     <value>Launch computer management</value>
     <comment>Button text for the user to click, in order to launch computer management</comment>
   </data>
   <data name="UserNotInHyperAdminGroupMessage" xml:space="preserve">
-    <value>The current user is not a {0} administrators. {0} virtual machines will not load. Please add the user to the {0} administrators group and reboot.</value>
-    <comment>Locked="{0}" Text explaining that the user is not in the {0} administrators group and that we need to add them.</comment>
+    <value>The current user is not in the {Hyper-V} administrators group. {Hyper-V} virtual machines will not load. Please add the user to the {Hyper-V} administrators group and reboot.</value>
+    <comment>Locked="{Hyper-V}" Text explaining that the user is not in the Hyper-V administrators group and they need to be added before their Hyper-V virtual machines can be loaded in Dev Home</comment>
   </data>
   <data name="DevHomeActionDefaultText" xml:space="preserve">
     <value>Open</value>

@@ -337,4 +337,8 @@
     <value>Maximum attempts reached</value>
     <comment>Error description text shown in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
   </data>
+  <data name="UserNotInHyperVAdminGroup" xml:space="preserve">
+    <value>User {0} is not a member of the Hyper-V Administrators group. If you have already added the user to the group you may need to log off and back on again.</value>
+    <comment>Error text for when the user is not in the Hyper-V adminstrators group</comment>
+  </data>
 </root>

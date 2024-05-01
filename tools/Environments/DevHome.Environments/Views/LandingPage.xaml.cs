@@ -3,6 +3,7 @@
 
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.Behaviors;
 using DevHome.Common;
 using DevHome.Common.Extensions;
 using DevHome.Environments.ViewModels;

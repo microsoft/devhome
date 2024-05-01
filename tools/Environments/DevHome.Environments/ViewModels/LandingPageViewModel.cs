@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
 using CommunityToolkit.WinUI.Collections;
+using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
@@ -35,8 +36,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly EnvironmentsExtensionsService _environmentExtensionsService;
 
-    private readonly NotificationService _notificationService;
-
     private readonly IComputeSystemManager _computeSystemManager;
 
     private readonly INavigationService _navigationService;
@@ -44,6 +43,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private readonly StringResource _stringResource;
 
     private readonly object _lock = new();
+
+    private EnvironmentsNotificationHelper? _notificationsHelper;
 
     private bool _disposed;
 
@@ -83,12 +84,10 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         INavigationService navigationService,
         IComputeSystemManager manager,
         EnvironmentsExtensionsService extensionsService,
-        NotificationService notificationService,
         WindowEx windowEx)
     {
         _computeSystemManager = manager;
         _environmentExtensionsService = extensionsService;
-        _notificationService = notificationService;
         _windowEx = windowEx;
         _navigationService = navigationService;
 
@@ -103,10 +102,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     public void Initialize(StackedNotificationsBehavior notificationQueue)
     {
-        _notificationService.Initialize(notificationQueue);
-
-        // To Do: Need to give the users a way to disable this, if they don't want to use Hyper-V
-        _ = Task.Run(() => _notificationService.CheckIfUserIsAHyperVAdminAndShowNotification());
+        _notificationsHelper = new(notificationQueue);
     }
 
     [RelayCommand]
@@ -267,21 +263,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private async Task AddAllComputeSystemsFromAProvider(ComputeSystemsLoadedData data)
     {
-        var provider = data.ProviderDetails.ComputeSystemProvider;
-
-        // Show error notifications for failed provider/developer id combinations
-        foreach (var mapping in data.DevIdToComputeSystemMap.Where(kv =>
-            kv.Value.Result.Status == Microsoft.Windows.DevHome.SDK.ProviderOperationStatus.Failure))
-        {
-            var result = mapping.Value.Result;
-            await _notificationService.ShowNotificationAsync(provider.DisplayName, result.DisplayMessage, InfoBarSeverity.Error);
-
-            _log.Error($"Error occurred while adding Compute systems to environments page for provider: {provider.Id}. {result.DiagnosticText}, {result.ExtendedError}");
-            data.DevIdToComputeSystemMap.Remove(mapping.Key);
-        }
+        _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
 
         await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
+            var provider = data.ProviderDetails.ComputeSystemProvider;
             Providers.Add(provider.DisplayName);
             try
             {

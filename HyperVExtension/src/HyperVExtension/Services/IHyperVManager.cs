@@ -20,12 +20,6 @@ public enum StopVMKind
 /// <summary> Class that handles interacting directly with Hyper-V.</summary>
 public interface IHyperVManager
 {
-    /// <summary> Gets a boolean indicating whether the user is in the Hyper-V Administrator group.</summary>
-    public bool IsUserInHyperVAdminGroup();
-
-    /// <summary> Gets a boolean indicating whether the Hyper-V PowerShell module is available.</summary>
-    public bool IsHyperVModuleLoaded();
-
     /// <summary> Starts the virtual machine management service if it is not running.</summary>
     public void StartVirtualMachineManagementService();
 
