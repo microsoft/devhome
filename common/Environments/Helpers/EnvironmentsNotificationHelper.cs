@@ -87,7 +87,7 @@ public partial class EnvironmentsNotificationHelper
             return;
         }
 
-        var userInAdminGroup = _windowsIdentityService.IsUserHyperVAdmin() && false;
+        var userInAdminGroup = _windowsIdentityService.IsUserHyperVAdmin();
         var featureEnabled = ManagementInfrastructureHelpers.IsWindowsFeatureAvailable(CommonConstants.HyperVWindowsOptionalFeatureName) == FeatureAvailabilityKind.Enabled;
 
         if (!featureEnabled && !userInAdminGroup)
