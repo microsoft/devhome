@@ -19,18 +19,15 @@
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/LightTheme/Background.png</x:String>
-                    <Color x:Key="ButtonAccentBackground">#6659CA</Color>
-                    <Color x:Key="ButtonAccentForeground">#FFFFFF</Color>
                     <Color x:Key="LearnMoreForeground">#005FB8</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
-                    <Color x:Key="ButtonAccentBackground">#47E1DA</Color>
-                    <Color x:Key="ButtonAccentForeground">#000000</Color>
                     <Color x:Key="LearnMoreForeground">#60CDFF</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="HighContrast">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
+                    <Color x:Key="LearnMoreForeground">#60CDFF</Color>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
