@@ -4,9 +4,11 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Behaviors;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Environments.Scripts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
@@ -24,6 +26,8 @@ public partial class EnvironmentsNotificationHelper
 
     private readonly string _microsoftHyperVText = "Microsoft Hyper-V";
 
+    private static bool _shouldShowRebootButton;
+
     private readonly StringResource _stringResource;
 
     public StackedNotificationsBehavior StackedNotificationsBehavior { get; set; }
@@ -38,10 +42,11 @@ public partial class EnvironmentsNotificationHelper
     {
         var extensionId = computeSystemData.ProviderDetails.ExtensionWrapper.ExtensionClassId;
 
-        if (extensionId.Equals(CommonConstants.HyperVExtensionClassId, StringComparison.OrdinalIgnoreCase) &&
-            !_windowsIdentityService.IsUserHyperVAdmin())
+        // When the Hyper-V feature is not present it will never be queried for its compute systems.
+        // So it is safe to assume that when we enter this if statement the feature is available on the machine
+        if (extensionId.Equals(CommonConstants.HyperVExtensionClassId, StringComparison.OrdinalIgnoreCase))
         {
-            ShowAddUserToAdminGroupNotification();
+            ShowAddUserToAdminGroupAndEnableHyperVNotification();
         }
 
         // Show error notifications for failed provider/developer id combinations
@@ -61,32 +66,70 @@ public partial class EnvironmentsNotificationHelper
         }
     }
 
-    private void ShowAddUserToAdminGroupNotification()
+    private void ShowAddUserToAdminGroupAndEnableHyperVNotification()
     {
-        StackedNotificationsBehavior.ShowWithWindowExtension(
-            _microsoftHyperVText,
-            _stringResource.GetLocalized("UserNotInHyperAdminGroupMessage"),
-            InfoBarSeverity.Error,
-            AddUserToHyperVAdminGroupCommand,
-            _stringResource.GetLocalized("HyperVAdminAddUser"));
+        // If we've already added the user to the group, their local security access token won't be updated
+        // until the user logs off and back on again. If they choose not to reboot then we don't want to prompt
+        // them to be added again. We'll prompt them to reboot again.
+        if (_shouldShowRebootButton)
+        {
+            ShowRestartNotification();
+            return;
+        }
+
+        var userInAdminGroup = _windowsIdentityService.IsUserHyperVAdmin();
+        var featureEnabled = ManagementInfrastructureHelpers.IsWindowsFeatureAvailable(CommonConstants.HyperVWindowsOptionalFeatureName) == FeatureAvailabilityKind.Enabled;
+
+        if (!featureEnabled && !userInAdminGroup)
+        {
+            // Notification to enable Hyper-V and add user to Admin group
+            StackedNotificationsBehavior.ShowWithWindowExtension(
+                _microsoftHyperVText,
+                _stringResource.GetLocalized("HyperVAdminAddUserAndEnableHyperVMessage"),
+                InfoBarSeverity.Error,
+                AddUserToHyperVAdminGroupAndEnableHyperVCommand,
+                _stringResource.GetLocalized("HyperVAdminAddUserAndEnableHyperVButton"));
+        }
+        else if (!featureEnabled && userInAdminGroup)
+        {
+            // Notification to enable the Hyper-V feature when user is in the admin group
+            StackedNotificationsBehavior.ShowWithWindowExtension(
+                _microsoftHyperVText,
+                _stringResource.GetLocalized("HyperVFeatureNotEnabledMessage"),
+                InfoBarSeverity.Error,
+                AddUserToHyperVAdminGroupAndEnableHyperVCommand,
+                _stringResource.GetLocalized("HyperVEnableButton"));
+        }
+        else if (featureEnabled && !userInAdminGroup)
+        {
+            // Notification to add user to the Hyper-V admin group when the feature is enabled
+            StackedNotificationsBehavior.ShowWithWindowExtension(
+                _microsoftHyperVText,
+                _stringResource.GetLocalized("UserNotInHyperAdminGroupMessage"),
+                InfoBarSeverity.Error,
+                AddUserToHyperVAdminGroupAndEnableHyperVCommand,
+                _stringResource.GetLocalized("HyperVAdminAddUserButton"));
+        }
     }
 
-    public void ShowHyperVRestartNotification()
+    public void ShowErrorWithRebootAfterExecutionMessage(string errorMsg)
     {
         StackedNotificationsBehavior.ShowWithWindowExtension(
             _microsoftHyperVText,
-            _stringResource.GetLocalized("HyperVAdminGroupRestartMessage"),
+            errorMsg,
             InfoBarSeverity.Warning,
             RestartComputerCommand,
             _stringResource.GetLocalized("RestartButton"));
     }
 
-    private void ShowUnableToAddToHyperVAdminGroupNotification()
+    public void ShowRestartNotification()
     {
         StackedNotificationsBehavior.ShowWithWindowExtension(
             _microsoftHyperVText,
-            _stringResource.GetLocalized("UserAddHyperVAdminFailed"),
-            InfoBarSeverity.Warning);
+            _stringResource.GetLocalized("RestartAfterChangesMessage"),
+            InfoBarSeverity.Warning,
+            RestartComputerCommand,
+            _stringResource.GetLocalized("RestartButton"));
     }
 
     [RelayCommand]
@@ -110,7 +153,7 @@ public partial class EnvironmentsNotificationHelper
     }
 
     [RelayCommand]
-    private void AddUserToHyperVAdminGroup(Notification notification)
+    private void AddUserToHyperVAdminGroupAndEnableHyperV(Notification notification)
     {
         var user = _windowsIdentityService.GetCurrentUserName();
         if (user == null)
@@ -119,40 +162,66 @@ public partial class EnvironmentsNotificationHelper
             return;
         }
 
+        StackedNotificationsBehavior.RemoveWithWindowExtension(notification);
         var startInfo = new ProcessStartInfo();
-        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-        startInfo.FileName = $"{Environment.SystemDirectory} \\net.exe";
 
-        // Add the user to the Hyper-V Administrators group
-        startInfo.Arguments = $"localgroup \"Hyper-V Administrators\" {user} /add";
+        // startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+        startInfo.FileName = $"powershell.exe";
+
+        // Add the user to the Hyper-V Administrators group and enable the Hyper-V feature if it is not already enabled.
+        // Using a string instead of a file for the script so it can't be manipulated via the file system.
+        startInfo.Arguments = $"-ExecutionPolicy Bypass -Command \"{HyperVSetupScript.SetupFunction}\"";
         startInfo.UseShellExecute = true;
         startInfo.Verb = "runas";
 
         var process = new Process();
         process.StartInfo = startInfo;
-
-        // Since a UAC prompt will be shown, we need to wait for the process to exit
-        // This can also be cancelled by the user which will result in an exception
-        try
+        Task.Run(() =>
         {
-            process.Start();
-            process.WaitForExit();
-
-            StackedNotificationsBehavior.RemoveWithWindowExtension(notification);
-
-            if (process.ExitCode == 0)
+            // Since a UAC prompt will be shown, we need to wait for the process to exit
+            // This can also be cancelled by the user which will result in an exception
+            try
             {
-                ShowHyperVRestartNotification();
+                process.Start();
+                process.WaitForExit();
+
+                StackedNotificationsBehavior.ClearWithWindowExtension();
+                _log.Information($"Script exited with code: '{process.ExitCode}'");
+                switch (process.ExitCode)
+                {
+                    case 0:
+                        // The script successfully added the user to the Hyper-V Admin Group and enabled the Hyper-V Feature.
+                        _shouldShowRebootButton = true;
+                        ShowRestartNotification();
+                        return;
+                    case 1:
+                        // Hyper-V Feature is already enabled and the script successfully added the user to the Hyper-V Admin group.
+                        _shouldShowRebootButton = true;
+                        ShowRestartNotification();
+                        return;
+                    case 2:
+                        // Hyper-V Feature is already enabled and the script failed to add the user to the Hyper-V Admin group.
+                        ShowErrorWithRebootAfterExecutionMessage(_stringResource.GetLocalized("UserNotAddedToHyperVAdminGroupMessage"));
+                        return;
+                    case 3:
+                        // The user is already in the Hyper-V Admin group and the script successfully enabled the Hyper-Feature.
+                        _shouldShowRebootButton = true;
+                        ShowRestartNotification();
+                        return;
+                    case 4:
+                        // The user is already in the Hyper-V Admin group and the script failed to enable the Hyper-Feature.
+                        ShowErrorWithRebootAfterExecutionMessage(_stringResource.GetLocalized("UnableToEnableHyperVFeatureMessage"));
+                        return;
+                    case 5:
+                        return;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ShowUnableToAddToHyperVAdminGroupNotification();
+                _log.Error(ex, "Script failed, we may not have been able to add user to Hyper-V admin group or enable Hyper-V");
             }
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "Unable to add the user to the Hyper-V Administrators group");
-            ShowUnableToAddToHyperVAdminGroupNotification();
-        }
+
+            ShowErrorWithRebootAfterExecutionMessage(_stringResource.GetLocalized("UnableToAddUserToHyperVAdminAndEnableHyperVMessage"));
+        });
     }
 }
