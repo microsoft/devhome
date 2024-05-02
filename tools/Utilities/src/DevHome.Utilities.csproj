@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <PropertyGroup>
+    <RootNamespace>DevHome.Utilities</RootNamespace>
+    <Platforms>x86;x64;arm64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <UseWinUI>true</UseWinUI>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Views\UtilitiesMainPageView.xaml" />
+    <None Remove="Views\UtilityView.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+    <ProjectReference Include="..\..\..\settings\DevHome.Settings\DevHome.Settings.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DevHome.Utilities\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\UtilityView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\UtilitiesMainPageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+</Project>

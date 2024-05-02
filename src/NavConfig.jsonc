@@ -32,6 +32,13 @@
             "viewFullName": "DevHome.Customization.Views.MainPage",
             "viewModelFullName": "DevHome.Customization.ViewModels.MainPageViewModel",
             "icon": "e9f5"
+          },
+          {
+            "identity": "DevHome.Utilities",
+            "assembly": "DevHome.Utilities",
+            "viewFullName": "DevHome.Utilities.Views.UtilitiesMainPageView",
+            "viewModelFullName": "DevHome.Utilities.ViewModels.UtilitiesMainPageViewModel",
+            "icon": "ED35"
           }
         ]
       }
