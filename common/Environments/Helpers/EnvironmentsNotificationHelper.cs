@@ -77,7 +77,7 @@ public partial class EnvironmentsNotificationHelper
             return;
         }
 
-        var userInAdminGroup = _windowsIdentityService.IsUserHyperVAdmin();
+        var userInAdminGroup = _windowsIdentityService.IsUserHyperVAdmin() && false;
         var featureEnabled = ManagementInfrastructureHelpers.IsWindowsFeatureAvailable(CommonConstants.HyperVWindowsOptionalFeatureName) == FeatureAvailabilityKind.Enabled;
 
         if (!featureEnabled && !userInAdminGroup)
@@ -112,7 +112,7 @@ public partial class EnvironmentsNotificationHelper
         }
     }
 
-    public void ShowErrorWithRebootAfterExecutionMessage(string errorMsg)
+    private void ShowErrorWithRebootAfterExecutionMessage(string errorMsg)
     {
         StackedNotificationsBehavior.ShowWithWindowExtension(
             _microsoftHyperVText,
@@ -122,7 +122,7 @@ public partial class EnvironmentsNotificationHelper
             _stringResource.GetLocalized("RestartButton"));
     }
 
-    public void ShowRestartNotification()
+    private void ShowRestartNotification()
     {
         StackedNotificationsBehavior.ShowWithWindowExtension(
             _microsoftHyperVText,

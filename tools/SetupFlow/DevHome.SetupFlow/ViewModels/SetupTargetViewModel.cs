@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
 using CommunityToolkit.WinUI.Collections;
+using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
@@ -37,6 +38,8 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     private readonly ObservableCollection<ComputeSystemsListViewModel> _computeSystemViewModelList = new();
 
     private readonly ComputeSystemViewModelFactory _computeSystemViewModelFactory;
+
+    private EnvironmentsNotificationHelper _notificationsHelper;
 
     [ObservableProperty]
     private bool _shouldShowCollectionView;
@@ -355,6 +358,8 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
     public async Task UpdateListViewModelList(ComputeSystemsLoadedData data)
     {
+        _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
+
         await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
             var curListViewModel = new ComputeSystemsListViewModel(data);
@@ -413,5 +418,10 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         {
             _log.Error(ex, $"Unable to perform sort operation");
         }
+    }
+
+    public void Initialize(StackedNotificationsBehavior notificationQueue)
+    {
+        _notificationsHelper = new(notificationQueue);
     }
 }

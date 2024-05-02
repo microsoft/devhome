@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,8 +10,8 @@ using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
+using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
@@ -52,7 +51,11 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         ProvidersViewModels = new();
         foreach (var providerDetail in providerDetails)
         {
-            ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
+            // Only list providers that support creation
+            if (providerDetail.ComputeSystemProvider.SupportedOperations.HasFlag(ComputeSystemProviderOperations.CreateComputeSystem))
+            {
+                ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
+            }
         }
 
         AreProvidersLoaded = true;
