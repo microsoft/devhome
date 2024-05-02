@@ -223,27 +223,27 @@
   </data>
   <data name="RestartAfterChangesMessage" xml:space="preserve">
     <value>Changes completed successfully. Please restart your machine for the changes to take effect</value>
-    <comment>Text explaining that a restart is needed after setting up the computer</comment>
+    <comment>Text explaining that a restart is needed after enabling the Hyper-V feature or adding the user to the Hyper-V Admin group</comment>
   </data>
   <data name="HyperVAdminAddUserAndEnableHyperVMessage" xml:space="preserve">
     <value>The current user is not in the Hyper-V administrators group and the Hyper-V feature is not enabled. Hyper-V virtual machines will not load. To resolve both issues please click the set up Hyper-V in Dev Home button and reboot</value>
-    <comment>Locked="{Hyper-V}" Text explaining that the user is not in the Hyper-V administrators group and they need to be added before their Hyper-V virtual machines can be loaded in Dev Home</comment>
+    <comment>Locked="{Hyper-V}" Text explaining that the user is not in the Hyper-V administrators group and the Hyper-V feature is not enabled</comment>
   </data>
   <data name="UserNotInHyperAdminGroupMessage" xml:space="preserve">
-    <value>The current user is not in the Hyper-V administrators group. Hyper-V virtual machines will not load. To resolve the issue click the add user to group button</value>
-    <comment>Locked="{Hyper-V}" Text explaining that the user is not in the Hyper-V administrators group and they need to be added before their Hyper-V virtual machines can be loaded in Dev Home</comment>
+    <value>The current user is not in the Hyper-V administrators group. Hyper-V virtual machines will not load. To resolve the issue manually, click the add user to group button</value>
+    <comment>Locked="{Hyper-V}" Text explaining that the user is not in the Hyper-V administrators group</comment>
   </data>
   <data name="HyperVFeatureNotEnabledMessage" xml:space="preserve">
-    <value>The Hyper-V feature is not enabled. Hyper-V virtual machines will not load. To resolve the issue click the enable Hyper-V button</value>
+    <value>The Hyper-V feature is not enabled. Hyper-V virtual machines will not load. To resolve the issue manually, click the enable Hyper-V button</value>
     <comment>Locked="{Hyper-V}" Text explaining that the Hyper-V feature is not enabled</comment>
   </data>
   <data name="UnableToEnableHyperVFeatureMessage" xml:space="preserve">
-    <value>Unable to enable the Hyper-V feature. Hyper-V virtual machines will not load. To resolve the issue enable Hyper-V manually and reboot</value>
+    <value>Unable to enable the Hyper-V feature. Hyper-V virtual machines will not load. To resolve the issue manually, enable Hyper-V manually and reboot</value>
     <comment>Locked="{Hyper-V}" Text explaining that we were not able to enable the Hyper-V feature.</comment>
   </data>
   <data name="UnableToAddUserToHyperVAdminAndEnableHyperVMessage" xml:space="preserve">
-    <value>Unabled to fully complete the operation. Hyper-V virtual machines may not load. To resolve the issue manually, add the user to the Hyper-V administrators group, enable Hyper-V and reboot</value>
-    <comment>Locked="{Hyper-V}" Text explaining that we couldn't fully complete an operation that would have added the user to the Hyper-V Administrators group and enable Hyper-V</comment>
+    <value>Unabled to add the user to the Hyper-V administrators group or enable Hyper-V. Hyper-V virtual machines may not load. To resolve the issue manually, add the user to the Hyper-V administrators group, enable Hyper-V and reboot</value>
+    <comment>Locked="{Hyper-V}" Text explaining that we couldn't fully complete the operation that would have added the user to the Hyper-V Administrators group and enable Hyper-V</comment>
   </data>
   <data name="UserNotAddedToHyperVAdminGroupMessage" xml:space="preserve">
     <value>Failed to add the user to the Hyper-V administrators group. Hyper-V virtual machines will not load. To resolve the issue add the user to the Hyper-V administrators group and reboot</value>
