@@ -72,7 +72,7 @@ jobs:
     - name: Compress_DevSetupAgent_x86
       if: ${{ matrix.platform != 'arm64' }}
       shell: pwsh
-      run: Compress-Archive -Force -Path HyperVExtension\src\DevSetupAgent\bin\x86\${{ matrix.configuration }}\net8.0-windows10.0.22621.0\win-x86\* -DestinationPath "extensions\HyperVExtension\src\DevSetupAgent\bin\x86\${{ matrix.configuration }}\DevSetupAgent_x86.zip"
+      run: Compress-Archive -Force -Path extensions\HyperVExtension\src\DevSetupAgent\bin\x86\${{ matrix.configuration }}\net8.0-windows10.0.22621.0\win-x86\* -DestinationPath "extensions\HyperVExtension\src\DevSetupAgent\bin\x86\${{ matrix.configuration }}\DevSetupAgent_x86.zip"
 
     - name: Build_DevSetupAgent_arm64
       if: ${{ matrix.platform == 'arm64' }}
