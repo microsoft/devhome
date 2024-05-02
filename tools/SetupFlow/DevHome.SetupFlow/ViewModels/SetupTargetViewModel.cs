@@ -271,6 +271,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         // Disable the sync and next buttons while we're getting the compute systems.
         ComputeSystemLoadingCompleted = false;
         UpdateNextButtonState();
+        _notificationsHelper?.ClearNotifications();
 
         // load the compute systems so we can show them in the UI.
         await Task.Run(LoadAllComputeSystemsInTheUIAsync);

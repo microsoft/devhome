@@ -223,6 +223,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             }
         }
 
+        _notificationsHelper?.ClearNotifications();
         ShowLoadingShimmer = true;
         await _environmentExtensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
         ShowLoadingShimmer = false;

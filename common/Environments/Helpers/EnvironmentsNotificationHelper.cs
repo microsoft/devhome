@@ -30,11 +30,11 @@ public partial class EnvironmentsNotificationHelper
 
     private readonly StringResource _stringResource;
 
-    public StackedNotificationsBehavior StackedNotificationsBehavior { get; set; }
+    private readonly StackedNotificationsBehavior _stackedNotificationsBehavior;
 
     public EnvironmentsNotificationHelper(StackedNotificationsBehavior notificationsQueue)
     {
-        StackedNotificationsBehavior = notificationsQueue;
+        _stackedNotificationsBehavior = notificationsQueue;
         _stringResource = new StringResource("DevHome.Common.pri", "DevHome.Common/Resources");
     }
 
@@ -56,7 +56,7 @@ public partial class EnvironmentsNotificationHelper
             kv.Value.Result.Status == ProviderOperationStatus.Failure))
         {
             var result = mapping.Value.Result;
-            StackedNotificationsBehavior.ShowWithWindowExtension(provider.DisplayName, result.DisplayMessage, InfoBarSeverity.Error);
+            _stackedNotificationsBehavior.ShowWithWindowExtension(provider.DisplayName, result.DisplayMessage, InfoBarSeverity.Error);
 
             _log.Error($"Error after retrieving Compute systems for provider: " +
                 $"Provider Id: {provider.Id} \n" +
@@ -64,6 +64,11 @@ public partial class EnvironmentsNotificationHelper
                 $"DiagnosticText: {result.DiagnosticText} \n" +
                 $"ExtendedError: {result.ExtendedError}");
         }
+    }
+
+    public void ClearNotifications()
+    {
+        _stackedNotificationsBehavior.ClearWithWindowExtension();
     }
 
     private void ShowAddUserToAdminGroupAndEnableHyperVNotification()
@@ -83,7 +88,7 @@ public partial class EnvironmentsNotificationHelper
         if (!featureEnabled && !userInAdminGroup)
         {
             // Notification to enable Hyper-V and add user to Admin group
-            StackedNotificationsBehavior.ShowWithWindowExtension(
+            _stackedNotificationsBehavior.ShowWithWindowExtension(
                 _microsoftHyperVText,
                 _stringResource.GetLocalized("HyperVAdminAddUserAndEnableHyperVMessage"),
                 InfoBarSeverity.Error,
@@ -93,7 +98,7 @@ public partial class EnvironmentsNotificationHelper
         else if (!featureEnabled && userInAdminGroup)
         {
             // Notification to enable the Hyper-V feature when user is in the admin group
-            StackedNotificationsBehavior.ShowWithWindowExtension(
+            _stackedNotificationsBehavior.ShowWithWindowExtension(
                 _microsoftHyperVText,
                 _stringResource.GetLocalized("HyperVFeatureNotEnabledMessage"),
                 InfoBarSeverity.Error,
@@ -103,7 +108,7 @@ public partial class EnvironmentsNotificationHelper
         else if (featureEnabled && !userInAdminGroup)
         {
             // Notification to add user to the Hyper-V admin group when the feature is enabled
-            StackedNotificationsBehavior.ShowWithWindowExtension(
+            _stackedNotificationsBehavior.ShowWithWindowExtension(
                 _microsoftHyperVText,
                 _stringResource.GetLocalized("UserNotInHyperAdminGroupMessage"),
                 InfoBarSeverity.Error,
@@ -114,17 +119,15 @@ public partial class EnvironmentsNotificationHelper
 
     private void ShowErrorWithRebootAfterExecutionMessage(string errorMsg)
     {
-        StackedNotificationsBehavior.ShowWithWindowExtension(
+        _stackedNotificationsBehavior.ShowWithWindowExtension(
             _microsoftHyperVText,
             errorMsg,
-            InfoBarSeverity.Warning,
-            RestartComputerCommand,
-            _stringResource.GetLocalized("RestartButton"));
+            InfoBarSeverity.Error);
     }
 
     private void ShowRestartNotification()
     {
-        StackedNotificationsBehavior.ShowWithWindowExtension(
+        _stackedNotificationsBehavior.ShowWithWindowExtension(
             _microsoftHyperVText,
             _stringResource.GetLocalized("RestartAfterChangesMessage"),
             InfoBarSeverity.Warning,
@@ -162,10 +165,9 @@ public partial class EnvironmentsNotificationHelper
             return;
         }
 
-        StackedNotificationsBehavior.RemoveWithWindowExtension(notification);
+        _stackedNotificationsBehavior.RemoveWithWindowExtension(notification);
         var startInfo = new ProcessStartInfo();
-
-        // startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
         startInfo.FileName = $"powershell.exe";
 
         // Add the user to the Hyper-V Administrators group and enable the Hyper-V feature if it is not already enabled.
@@ -185,7 +187,7 @@ public partial class EnvironmentsNotificationHelper
                 process.Start();
                 process.WaitForExit();
 
-                StackedNotificationsBehavior.ClearWithWindowExtension();
+                _stackedNotificationsBehavior.ClearWithWindowExtension();
                 _log.Information($"Script exited with code: '{process.ExitCode}'");
                 switch (process.ExitCode)
                 {
@@ -194,25 +196,25 @@ public partial class EnvironmentsNotificationHelper
                         _shouldShowRebootButton = true;
                         ShowRestartNotification();
                         return;
-                    case 1:
+                    case 2:
                         // Hyper-V Feature is already enabled and the script successfully added the user to the Hyper-V Admin group.
                         _shouldShowRebootButton = true;
                         ShowRestartNotification();
                         return;
-                    case 2:
+                    case 3:
                         // Hyper-V Feature is already enabled and the script failed to add the user to the Hyper-V Admin group.
                         ShowErrorWithRebootAfterExecutionMessage(_stringResource.GetLocalized("UserNotAddedToHyperVAdminGroupMessage"));
                         return;
-                    case 3:
+                    case 4:
                         // The user is already in the Hyper-V Admin group and the script successfully enabled the Hyper-Feature.
                         _shouldShowRebootButton = true;
                         ShowRestartNotification();
                         return;
-                    case 4:
+                    case 5:
                         // The user is already in the Hyper-V Admin group and the script failed to enable the Hyper-Feature.
                         ShowErrorWithRebootAfterExecutionMessage(_stringResource.GetLocalized("UnableToEnableHyperVFeatureMessage"));
                         return;
-                    case 5:
+                    case 6:
                         return;
                 }
             }

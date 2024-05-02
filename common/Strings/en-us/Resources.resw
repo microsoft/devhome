@@ -242,7 +242,7 @@
     <comment>Locked="{Hyper-V}" Text explaining that we were not able to enable the Hyper-V feature.</comment>
   </data>
   <data name="UnableToAddUserToHyperVAdminAndEnableHyperVMessage" xml:space="preserve">
-    <value>Unabled to add the user to the Hyper-V administrators group or enable Hyper-V. Hyper-V virtual machines may not load. To resolve the issue manually, add the user to the Hyper-V administrators group, enable Hyper-V and reboot</value>
+    <value>Unable to add the user to the Hyper-V administrators group or enable Hyper-V. Hyper-V virtual machines may not load. To resolve the issue manually, add the user to the Hyper-V administrators group, enable Hyper-V and reboot</value>
     <comment>Locked="{Hyper-V}" Text explaining that we couldn't fully complete the operation that would have added the user to the Hyper-V Administrators group and enable Hyper-V</comment>
   </data>
   <data name="UserNotAddedToHyperVAdminGroupMessage" xml:space="preserve">
