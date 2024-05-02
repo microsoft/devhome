@@ -38,9 +38,9 @@ public partial class EnvironmentsNotificationHelper
         _stringResource = new StringResource("DevHome.Common.pri", "DevHome.Common/Resources");
     }
 
-    public void DisplayComputeSystemEnumerationErrors(ComputeSystemsLoadedData computeSystemData)
+    public void DisplayComputeSystemProviderErrors(ComputeSystemProviderDetails providerDetails)
     {
-        var extensionId = computeSystemData.ProviderDetails.ExtensionWrapper.ExtensionClassId;
+        var extensionId = providerDetails.ExtensionWrapper.ExtensionClassId;
 
         // When the Hyper-V feature is not present it will never be queried for its compute systems.
         // So it is safe to assume that when we enter this if statement the feature is available on the machine
@@ -48,6 +48,11 @@ public partial class EnvironmentsNotificationHelper
         {
             ShowAddUserToAdminGroupAndEnableHyperVNotification();
         }
+    }
+
+    public void DisplayComputeSystemEnumerationErrors(ComputeSystemsLoadedData computeSystemData)
+    {
+        DisplayComputeSystemProviderErrors(computeSystemData.ProviderDetails);
 
         // Show error notifications for failed provider/developer id combinations
         var provider = computeSystemData.ProviderDetails.ComputeSystemProvider;
