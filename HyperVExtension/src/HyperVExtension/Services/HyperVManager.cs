@@ -111,6 +111,13 @@ public class HyperVManager : IHyperVManager, IDisposable
     /// <inheritdoc cref="IHyperVManager.StartVirtualMachineManagementService"/>
     public void StartVirtualMachineManagementService()
     {
+        if (!IsHyperVModuleLoaded())
+        {
+            // we won't throw an exception here. If there is a cmdlet failure due to the module not being loaded, we'll let the
+            // PowerShell cmdlet throw the exception.
+            _log.Error("The Hyper-V PowerShell Module is not Loaded");
+        }
+
         try
         {
             var serviceController = _host.GetService<IWindowsServiceController>();
