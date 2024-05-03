@@ -201,7 +201,10 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
         return Task.FromResult(result).AsAsyncOperation();
     }
 
-    public IApplyConfigurationOperation CreateApplyConfigurationOperation(string configuration) => throw new NotImplementedException();
+    public IApplyConfigurationOperation? CreateApplyConfigurationOperation(string configuration)
+    {
+        return null;
+    }
 
     public IAsyncOperation<ComputeSystemOperationResult> CreateSnapshotAsync(string options) => NotImplemntedComputeSystemOperation();
 

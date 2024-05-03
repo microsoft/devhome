@@ -37,7 +37,10 @@ internal sealed class WindowsSandboxProvider : IComputeSystemProvider
             "Developer Id Adaptive Card session is not implmented for Windows Sandbox.");
     }
 
-    public ICreateComputeSystemOperation CreateCreateComputeSystemOperation(IDeveloperId developerId, string inputJson) => throw new NotImplementedException();
+    public ICreateComputeSystemOperation? CreateCreateComputeSystemOperation(IDeveloperId developerId, string inputJson)
+    {
+        return null;
+    }
 
     public IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId)
     {
