@@ -21,6 +21,7 @@ namespace WindowsSandboxExtension.Providers;
 
 public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
 {
+    private readonly Guid _id = Guid.NewGuid();
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WindowsSandboxProvider));
     private readonly object _windowsSandboxStartLock = new();
 
@@ -42,7 +43,7 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
 
     public string DisplayName => Resources.GetResource("WindowsSandboxDisplayName", _log);
 
-    public string Id => string.Empty;
+    public string Id => _id.ToString();
 
     public string SupplementalDisplayName => string.Empty;
 
