@@ -73,7 +73,7 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
         {
             var properties = new List<ComputeSystemProperty>
             {
-                ComputeSystemProperty.Create(ComputeSystemPropertyKind.CpuCount, 4),
+                ComputeSystemProperty.Create(ComputeSystemPropertyKind.CpuCount, Environment.ProcessorCount),
                 ComputeSystemProperty.Create(ComputeSystemPropertyKind.AssignedMemorySizeInBytes, 4294967296),
                 ComputeSystemProperty.Create(ComputeSystemPropertyKind.StorageSizeInBytes, 85899345920),
                 ComputeSystemProperty.Create(ComputeSystemPropertyKind.UptimeIn100ns, 100),
