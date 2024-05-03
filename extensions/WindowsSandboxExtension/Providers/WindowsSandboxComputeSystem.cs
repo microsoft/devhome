@@ -42,7 +42,7 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
 
     public string DisplayName => Resources.GetResource("WindowsSandboxDisplayName", _log);
 
-    public string Id => Guid.NewGuid().ToString();
+    public string Id => string.Empty;
 
     public string SupplementalDisplayName => string.Empty;
 
