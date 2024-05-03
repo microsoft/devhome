@@ -49,6 +49,13 @@ public class DevHomeTestBase
         Application.Stop();
     }
 
+    public void RestartDevHome()
+    {
+        Application.Stop();
+
+        Application.Start();
+    }
+
     /// <summary>
     /// Gets the absolute path for a test asset file
     /// </summary>
