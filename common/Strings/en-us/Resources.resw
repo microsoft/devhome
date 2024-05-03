@@ -230,11 +230,11 @@
     <comment>Locked="{Hyper-V}" Text explaining that the user is not in the Hyper-V administrators group and the Hyper-V feature is not enabled</comment>
   </data>
   <data name="UserNotInHyperAdminGroupMessage" xml:space="preserve">
-    <value>The current user is not in the Hyper-V administrators group. Hyper-V virtual machines will not load. To resolve the issue manually, click the add user to group button</value>
+    <value>The current user is not in the Hyper-V administrators group. Hyper-V virtual machines will not load. To resolve the issue, click the add user to group button</value>
     <comment>Locked="{Hyper-V}" Text explaining that the user is not in the Hyper-V administrators group</comment>
   </data>
   <data name="HyperVFeatureNotEnabledMessage" xml:space="preserve">
-    <value>The Hyper-V feature is not enabled. Hyper-V virtual machines will not load. To resolve the issue manually, click the enable Hyper-V button</value>
+    <value>The Hyper-V feature is not enabled. Hyper-V virtual machines will not load. To resolve the issue, click the enable Hyper-V button</value>
     <comment>Locked="{Hyper-V}" Text explaining that the Hyper-V feature is not enabled</comment>
   </data>
   <data name="UnableToEnableHyperVFeatureMessage" xml:space="preserve">

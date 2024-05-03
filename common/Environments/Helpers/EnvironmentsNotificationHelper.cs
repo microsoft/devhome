@@ -22,7 +22,7 @@ public partial class EnvironmentsNotificationHelper
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(EnvironmentsNotificationHelper));
 
-    private readonly WindowsIdentityService _windowsIdentityService = new();
+    private readonly WindowsIdentityHelper _windowsIdentityHelper = new();
 
     private readonly string _microsoftHyperVText = "Microsoft Hyper-V";
 
@@ -87,8 +87,8 @@ public partial class EnvironmentsNotificationHelper
             return;
         }
 
-        var userInAdminGroup = _windowsIdentityService.IsUserHyperVAdmin();
-        var featureEnabled = ManagementInfrastructureHelpers.IsWindowsFeatureAvailable(CommonConstants.HyperVWindowsOptionalFeatureName) == FeatureAvailabilityKind.Enabled;
+        var userInAdminGroup = _windowsIdentityHelper.IsUserHyperVAdmin();
+        var featureEnabled = ManagementInfrastructureHelper.IsWindowsFeatureAvailable(CommonConstants.HyperVWindowsOptionalFeatureName) == FeatureAvailabilityKind.Enabled;
 
         if (!featureEnabled && !userInAdminGroup)
         {
@@ -163,7 +163,7 @@ public partial class EnvironmentsNotificationHelper
     [RelayCommand]
     private void AddUserToHyperVAdminGroupAndEnableHyperV(Notification notification)
     {
-        var user = _windowsIdentityService.GetCurrentUserName();
+        var user = _windowsIdentityHelper.GetCurrentUserName();
         if (user == null)
         {
             _log.Error("Unable to get the current user name");
@@ -172,6 +172,7 @@ public partial class EnvironmentsNotificationHelper
 
         _stackedNotificationsBehavior.RemoveWithWindowExtension(notification);
         var startInfo = new ProcessStartInfo();
+
         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
         startInfo.FileName = $"powershell.exe";
 

@@ -89,8 +89,7 @@ public class HyperVVirtualMachine : IComputeSystem
 
     public bool IsDeleted => _psObjectHelper.MemberNameToValue<bool>(HyperVStrings.IsDeleted);
 
-    // Temporary will need to add more error strings for different operations.
-    public string OperationErrorUnknownString => _stringResource.GetLocalized(_errorResourceKey);
+    public string OperationErrorUnknownString => _stringResource.GetLocalized(_errorResourceKey, Logging.LogFolderRoot);
 
     // TODO: make getting this list dynamic so we can remove operations based on OS version.
     public ComputeSystemOperations SupportedOperations => ComputeSystemOperations.Start |

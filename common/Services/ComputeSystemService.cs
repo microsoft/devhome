@@ -64,7 +64,7 @@ public class ComputeSystemService : IComputeSystemService
                 // If we're looking at the Hyper-V extension and the feature isn't present on the users machine, disable the extension.
                 // This can happen if the user is not on a SKU that supports Hyper-V.
                 if (extension.ExtensionClassId.Equals(CommonConstants.HyperVExtensionClassId, StringComparison.OrdinalIgnoreCase) &&
-                    ManagementInfrastructureHelpers.IsWindowsFeatureAvailable(CommonConstants.HyperVWindowsOptionalFeatureName) == FeatureAvailabilityKind.NotPresent)
+                    ManagementInfrastructureHelper.IsWindowsFeatureAvailable(CommonConstants.HyperVWindowsOptionalFeatureName) == FeatureAvailabilityKind.Absent)
                 {
                     _log.Information("User machine does not have the Hyper-V feature present. Disabling the Hyper-V extension");
                     _extensionService.DisableExtension(extension.ExtensionUniqueId);

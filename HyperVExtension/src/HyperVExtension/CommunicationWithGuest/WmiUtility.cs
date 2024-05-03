@@ -1,14 +1,28 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Globalization;
 using System.Management;
+using Microsoft.Management.Infrastructure;
 using Serilog;
 using Windows.Win32.Foundation;
 
 namespace HyperVExtension.CommunicationWithGuest;
 
+// States based on InstallState value in Win32_OptionalFeature
+// See: https://learn.microsoft.com/windows/win32/cimwin32prov/win32-optionalfeature
+public enum FeatureAvailabilityKind
+{
+    Enabled,
+    Disabled,
+    Absent,
+    Unknown,
+}
+
 internal sealed class WmiUtility
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WmiUtility));
+
     public enum ReturnCode : uint
     {
         Completed = 0,
@@ -123,5 +137,48 @@ internal sealed class WmiUtility
         }
 
         return jobCompleted;
+    }
+
+    public static FeatureAvailabilityKind GetHyperVFeatureAvailability()
+    {
+        try
+        {
+            var searcher = new ManagementObjectSearcher($"SELECT * FROM Win32_OptionalFeature WHERE Name = 'Microsoft-Hyper-V'");
+            var collection = searcher.Get();
+
+            foreach (var instance in collection)
+            {
+                if (instance?.GetPropertyValue("InstallState") is uint enablementState)
+                {
+                    var featureAvailability = GetAvailabilityKindFromState(enablementState);
+
+                    _log.Information($"Found Hyper-V feature with enablement state: '{featureAvailability}'");
+                    return featureAvailability;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // We'll handle cases where there are exceptions as if the feature does not exist.
+            _log.Error(ex, $"Error attempting to get the Hyper-V feature state");
+        }
+
+        _log.Information($"Unable to find Hyper-V feature");
+        return FeatureAvailabilityKind.Unknown;
+    }
+
+    private static FeatureAvailabilityKind GetAvailabilityKindFromState(uint state)
+    {
+        switch (state)
+        {
+            case 1:
+                return FeatureAvailabilityKind.Enabled;
+            case 2:
+                return FeatureAvailabilityKind.Disabled;
+            case 3:
+                return FeatureAvailabilityKind.Absent;
+            default:
+                return FeatureAvailabilityKind.Unknown;
+        }
     }
 }

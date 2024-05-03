@@ -3,6 +3,7 @@
 
 using System.Text.Json;
 using HyperVExtension.Common;
+using HyperVExtension.CommunicationWithGuest;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Models;
@@ -19,7 +20,9 @@ public class HyperVProvider : IComputeSystemProvider
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(HyperVProvider));
 
-    private readonly string errorResourceKey = "ErrorPerformingOperation";
+    private readonly string _errorResourceKey = "ErrorPerformingOperation";
+
+    private readonly string _hyperVPreReqErrorText;
 
     private readonly IStringResource _stringResource;
 
@@ -31,8 +34,7 @@ public class HyperVProvider : IComputeSystemProvider
 
     private readonly IVMGalleryService _vmGalleryService;
 
-    // Temporary will need to add more error strings for different operations.
-    public string OperationErrorString => _stringResource.GetLocalized(errorResourceKey);
+    public string OperationErrorString => _stringResource.GetLocalized(_errorResourceKey, Logging.LogFolderRoot);
 
     public HyperVProvider(
         IHyperVManager hyperVManager,
@@ -46,6 +48,7 @@ public class HyperVProvider : IComputeSystemProvider
         _vmGalleryCreationOperationFactory = vmGalleryCreationOperationFactory;
         _vmGalleryService = vmGalleryService;
         _windowsIdentityWrapper = windowsIdentityService.GetCurrentWindowsIdentity();
+        _hyperVPreReqErrorText = SetupHyperVPreReqErrorText();
     }
 
     /// <summary> Gets or sets the default compute system properties. </summary>
@@ -72,17 +75,20 @@ public class HyperVProvider : IComputeSystemProvider
         {
             try
             {
-                if (!_windowsIdentityWrapper.IsUserInGroup(HyperVStrings.HyperVAdminGroupWellKnownSid))
+                if (!string.IsNullOrEmpty(_hyperVPreReqErrorText))
                 {
-                    // Dev Home contains code and error notifications to add the user to the admin group.
+                    // Dev Home contains code and error notifications to add the user to the admin group and enable Hyper-V.
                     // So we do not need to send this error back to Dev Home as it will result in duplication.
-                    _log.Information($"User {_windowsIdentityWrapper.UserName} not in Hyper-V admin group");
                     return new ComputeSystemsResult(new List<IComputeSystem>());
                 }
 
                 var computeSystems = _hyperVManager.GetAllVirtualMachines();
                 _log.Information($"Successfully retrieved all virtual machines on: {DateTime.Now}");
                 return new ComputeSystemsResult(computeSystems);
+            }
+            catch (VirtualMachineManagementServiceException serviceException)
+            {
+                return new ComputeSystemsResult(serviceException, _stringResource.GetLocalized("HyperVVirtualMachineManagementServiceError"), serviceException.Message);
             }
             catch (Exception ex)
             {
@@ -94,10 +100,26 @@ public class HyperVProvider : IComputeSystemProvider
 
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForDeveloperId(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
     {
-        if (!_windowsIdentityWrapper.IsUserInGroup(HyperVStrings.HyperVAdminGroupWellKnownSid))
+        if (!string.IsNullOrEmpty(_hyperVPreReqErrorText))
         {
-            var hyperVAdminEx = new HyperVAdminGroupException(_stringResource.GetLocalized("UserNotInHyperVAdminGroup", _windowsIdentityWrapper.UserName));
-            return new ComputeSystemAdaptiveCardResult(hyperVAdminEx, hyperVAdminEx.Message, $"User {_windowsIdentityWrapper.UserName} not in Hyper-V admin group");
+            var hyperVPreReqEx = new HyperVPrerequisiteFailedException(_hyperVPreReqErrorText);
+            return new ComputeSystemAdaptiveCardResult(hyperVPreReqEx, _hyperVPreReqErrorText, _hyperVPreReqErrorText);
+        }
+
+        // Before getting the VM gallery json check that the virtual machine management service is started
+        try
+        {
+            _hyperVManager.StartVirtualMachineManagementService();
+        }
+        catch (VirtualMachineManagementServiceException serviceException)
+        {
+            _log.Error($"Failed to get adaptive card session for session kind: {sessionKind} due to virtual machine service exception");
+            return new ComputeSystemAdaptiveCardResult(serviceException, _stringResource.GetLocalized("HyperVVirtualMachineManagementServiceError"), serviceException.Message);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to get adaptive card session for session kind: {sessionKind}");
+            return new ComputeSystemAdaptiveCardResult(ex, OperationErrorString, ex.Message);
         }
 
         var imageList = _vmGalleryService.GetGalleryImagesAsync().GetAwaiter().GetResult();
@@ -128,5 +150,33 @@ public class HyperVProvider : IComputeSystemProvider
             // COM call, so we'll lose the error information. We'll log the error and return null.
             return null;
         }
+    }
+
+    private string SetupHyperVPreReqErrorText()
+    {
+        var availabilityKind = WmiUtility.GetHyperVFeatureAvailability();
+        if (availabilityKind == FeatureAvailabilityKind.Disabled)
+        {
+            _log.Information($"Hyper-V Feature is disabled");
+            return _stringResource.GetLocalized("HyperVFeatureDisabled");
+        }
+        else if (availabilityKind == FeatureAvailabilityKind.Absent)
+        {
+            _log.Information($"Hyper-V Feature is not present on this SKU of Windows");
+            return _stringResource.GetLocalized("HyperVFeatureNotPresent");
+        }
+        else if (availabilityKind == FeatureAvailabilityKind.Unknown)
+        {
+            _log.Information($"Hyper-V Feature state is unknown");
+            return _stringResource.GetLocalized("HyperVFeatureUnknown");
+        }
+
+        if (!_windowsIdentityWrapper.IsUserInGroup(HyperVStrings.HyperVAdminGroupWellKnownSid))
+        {
+            _log.Information($"User {_windowsIdentityWrapper.UserName} not in Hyper-V admin group");
+            return _stringResource.GetLocalized("UserNotInHyperVAdminGroup", _windowsIdentityWrapper.UserName);
+        }
+
+        return string.Empty;
     }
 }
