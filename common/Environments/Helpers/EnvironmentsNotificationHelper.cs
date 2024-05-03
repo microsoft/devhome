@@ -18,6 +18,11 @@ using Serilog;
 
 namespace DevHome.Common.Environments.Helpers;
 
+/// <summary>
+/// Helper class for the pages in Dev Home that display environments. These pages can use this helper to display
+/// the Community toolkits <see cref="StackedNotificationsBehavior"/> which allows info bars to be shown in a queue
+/// like manner.
+/// </summary>
 public partial class EnvironmentsNotificationHelper
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(EnvironmentsNotificationHelper));
@@ -26,7 +31,7 @@ public partial class EnvironmentsNotificationHelper
 
     private readonly string _microsoftHyperVText = "Microsoft Hyper-V";
 
-    private static bool _shouldShowRebootButton;
+    private static bool _shouldShowHyperVRebootButton;
 
     private readonly StringResource _stringResource;
 
@@ -79,9 +84,10 @@ public partial class EnvironmentsNotificationHelper
     private void ShowAddUserToAdminGroupAndEnableHyperVNotification()
     {
         // If we've already added the user to the group, their local security access token won't be updated
-        // until the user logs off and back on again. If they choose not to reboot then we don't want to prompt
-        // them to be added again. We'll prompt them to reboot again.
-        if (_shouldShowRebootButton)
+        // until the user logs off and back on again. With enabling Hyper-V, the feature won't be active until
+        // the user reboots. If they choose not to reboot then we don't want to prompt
+        // them to be enable it or added again so we'll prompt them to reboot again.
+        if (_shouldShowHyperVRebootButton)
         {
             ShowRestartNotification();
             return;
@@ -195,16 +201,18 @@ public partial class EnvironmentsNotificationHelper
 
                 _stackedNotificationsBehavior.ClearWithWindowExtension();
                 _log.Information($"Script exited with code: '{process.ExitCode}'");
+
+                // ExitCodes come directly from within the script in HyperVSetupScript.SetupFunction.
                 switch (process.ExitCode)
                 {
                     case 0:
                         // The script successfully added the user to the Hyper-V Admin Group and enabled the Hyper-V Feature.
-                        _shouldShowRebootButton = true;
+                        _shouldShowHyperVRebootButton = true;
                         ShowRestartNotification();
                         return;
                     case 2:
                         // Hyper-V Feature is already enabled and the script successfully added the user to the Hyper-V Admin group.
-                        _shouldShowRebootButton = true;
+                        _shouldShowHyperVRebootButton = true;
                         ShowRestartNotification();
                         return;
                     case 3:
@@ -213,7 +221,7 @@ public partial class EnvironmentsNotificationHelper
                         return;
                     case 4:
                         // The user is already in the Hyper-V Admin group and the script successfully enabled the Hyper-Feature.
-                        _shouldShowRebootButton = true;
+                        _shouldShowHyperVRebootButton = true;
                         ShowRestartNotification();
                         return;
                     case 5:
@@ -221,6 +229,7 @@ public partial class EnvironmentsNotificationHelper
                         ShowErrorWithRebootAfterExecutionMessage(_stringResource.GetLocalized("UnableToEnableHyperVFeatureMessage"));
                         return;
                     case 6:
+                        // Display nothing as there is no work to be done
                         return;
                 }
             }
