@@ -10,16 +10,31 @@ using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 using WindowsSandboxExtension.Helpers;
 using WindowsSandboxExtension.Telemetry;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-#nullable disable
+using Timer = System.Timers.Timer;
+
 namespace WindowsSandboxExtension.Providers;
 
-public class WindowsSandboxComputeSystem : IComputeSystem
+public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WindowsSandboxProvider));
+    private Process? _windowsSandboxProcess;
+    private ComputeSystemState _state = ComputeSystemState.Stopped;
+
+    private ComputeSystemState State
+    {
+        get => _state;
+
+        set
+        {
+            _state = value;
+            StateChanged?.Invoke(this, value);
+        }
+    }
 
     public string AssociatedProviderId => Constants.ProviderId;
 
@@ -29,13 +44,11 @@ public class WindowsSandboxComputeSystem : IComputeSystem
 
     public string SupplementalDisplayName => string.Empty;
 
-    public ComputeSystemOperations SupportedOperations => ComputeSystemOperations.None;
+    public ComputeSystemOperations SupportedOperations => ComputeSystemOperations.Terminate;
 
-    public IDeveloperId AssociatedDeveloperId { get; set; }
+    public IDeveloperId? AssociatedDeveloperId => null;
 
-#pragma warning disable CS0067
-    public event TypedEventHandler<IComputeSystem, ComputeSystemState> StateChanged;
-#pragma warning restore CS0067
+    public event TypedEventHandler<IComputeSystem, ComputeSystemState>? StateChanged;
 
     public IAsyncOperation<ComputeSystemThumbnailResult> GetComputeSystemThumbnailAsync(string options)
     {
@@ -72,7 +85,7 @@ public class WindowsSandboxComputeSystem : IComputeSystem
     {
         return Task.Run(() =>
         {
-            return new ComputeSystemStateResult(ComputeSystemState.Unknown);
+            return new ComputeSystemStateResult(State);
         }).AsAsyncOperation();
     }
 
@@ -82,10 +95,24 @@ public class WindowsSandboxComputeSystem : IComputeSystem
         {
             try
             {
-                var systemRoot = Environment.GetEnvironmentVariable("SYSTEMROOT");
-                Process.Start(Path.Join(systemRoot, "System32\\WindowsSandbox.exe"));
+                // Windows Sandbox is not running.
+                if (_windowsSandboxProcess == null || _windowsSandboxProcess.HasExited)
+                {
+                    var system32Path = Environment.GetFolderPath(Environment.SpecialFolder.System);
+                    var windowsSandboxExePath = Path.Combine(system32Path, Constants.WindowsSandboxExe);
 
-                TraceLogging.StartingWindowsSandbox();
+                    _windowsSandboxProcess = Process.Start(windowsSandboxExePath);
+                    _windowsSandboxProcess.EnableRaisingEvents = true;
+                    _windowsSandboxProcess.Exited += WindowsSandboxProcessExited;
+
+                    State = ComputeSystemState.Running;
+                    TraceLogging.StartingWindowsSandbox();
+
+                    PInvoke.SetForegroundWindow((HWND)_windowsSandboxProcess.MainWindowHandle);
+                }
+
+                BringWindowsSandboxClientToForeground();
+
                 return new ComputeSystemOperationResult();
             }
             catch (Exception ex)
@@ -94,6 +121,40 @@ public class WindowsSandboxComputeSystem : IComputeSystem
                 TraceLogging.ExceptionThrown(ex);
                 return new ComputeSystemOperationResult(ex, Resources.GetResource("WindowsSandboxFailedToStart", _log), "Failed to start Windows Sandbox");
             }
+        }).AsAsyncOperation();
+    }
+
+    private void WindowsSandboxProcessExited(object? sender, EventArgs e)
+    {
+        State = ComputeSystemState.Stopped;
+        _windowsSandboxProcess?.Dispose();
+        _windowsSandboxProcess = null;
+    }
+
+    private void BringWindowsSandboxClientToForeground()
+    {
+        var processes = Process.GetProcessesByName("WindowsSandboxClient");
+
+        if (processes.Length == 0)
+        {
+            return;
+        }
+
+        var windowsSandboxClientProcess = processes.First();
+        PInvoke.SetForegroundWindow((HWND)windowsSandboxClientProcess.MainWindowHandle);
+    }
+
+    public IAsyncOperation<ComputeSystemOperationResult> TerminateAsync(string options)
+    {
+        return Task.Run(() =>
+        {
+            if (_windowsSandboxProcess != null)
+            {
+                _windowsSandboxProcess.Close();
+                _windowsSandboxProcess.Dispose();
+            }
+
+            return new ComputeSystemOperationResult();
         }).AsAsyncOperation();
     }
 
@@ -121,5 +182,9 @@ public class WindowsSandboxComputeSystem : IComputeSystem
 
     public IAsyncOperation<ComputeSystemOperationResult> StartAsync(string options) => throw new NotImplementedException();
 
-    public IAsyncOperation<ComputeSystemOperationResult> TerminateAsync(string options) => throw new NotImplementedException();
+    public void Dispose()
+    {
+        _windowsSandboxProcess?.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }
