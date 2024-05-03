@@ -247,10 +247,10 @@
     <value>Connect your account</value>
   </data>
   <data name="Settings_About_Card.Header" xml:space="preserve">
-    <value>Dev Home specifications</value>
+    <value>About Dev Home</value>
   </data>
   <data name="Settings_About_Card.Description" xml:space="preserve">
-    <value>© 2023 Microsoft. All rights reserved.</value>
+    <value>© Microsoft. All rights reserved.</value>
   </data>
   <data name="Settings_About_RelatedLinks.Text" xml:space="preserve">
     <value>Related links</value>
