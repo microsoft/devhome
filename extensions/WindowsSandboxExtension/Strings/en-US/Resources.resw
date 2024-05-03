@@ -117,11 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="FailedToTerminateWindowsSandbox" xml:space="preserve">
+    <value>Failed to terminate Windows Sandbox</value>
+  </data>
+  <data name="NotImplemented" xml:space="preserve">
+    <value>This operation is not yet implemented for Windows Sandbox</value>
+  </data>
   <data name="WindowsSandboxDisplayName" xml:space="preserve">
     <value>Windows Sandbox Environment</value>
     <comment>The diplay name used for the default Windows Sandbox compute system.</comment>
   </data>
   <data name="WindowsSandboxFailedToStart" xml:space="preserve">
-    <value>Failed to launch WindowsSandbox.exe</value>
+    <value>Failed to start Windows Sandbox</value>
   </data>
 </root>

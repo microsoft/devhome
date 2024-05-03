@@ -103,6 +103,8 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
                     // Windows Sandbox is not running.
                     if (_windowsSandboxExeProcess == null || _windowsSandboxExeProcess.HasExited)
                     {
+                        State = ComputeSystemState.Starting;
+
                         var system32Path = Environment.GetFolderPath(Environment.SpecialFolder.System);
                         var windowsSandboxExePath = Path.Combine(system32Path, Constants.WindowsSandboxExe);
 
@@ -110,8 +112,6 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
                         _windowsSandboxExeProcess.StartInfo.FileName = windowsSandboxExePath;
                         _windowsSandboxExeProcess.EnableRaisingEvents = true;
                         _windowsSandboxExeProcess.Exited += WindowsSandboxProcessExited;
-
-                        Thread.Sleep((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
 
                         State = ComputeSystemState.Running;
                         TraceLogging.StartingWindowsSandbox();
@@ -128,9 +128,15 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
             }
             catch (Exception ex)
             {
+                State = ComputeSystemState.Unknown;
+
                 _log.Error(ex, "Failed to start Windows Sandbox");
                 TraceLogging.ExceptionThrown(ex);
-                return new ComputeSystemOperationResult(ex, Resources.GetResource("WindowsSandboxFailedToStart", _log), "Failed to start Windows Sandbox");
+
+                return new ComputeSystemOperationResult(
+                    ex,
+                    Resources.GetResource("WindowsSandboxFailedToStart", _log),
+                    "Failed to start Windows Sandbox");
             }
         }).AsAsyncOperation();
     }
@@ -159,42 +165,65 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
     {
         return Task.Run(() =>
         {
-            lock (_windowsSandboxStartLock)
+            try
             {
-                if (_windowsSandboxExeProcess != null)
+                lock (_windowsSandboxStartLock)
                 {
-                    _windowsSandboxExeProcess.CloseMainWindow();
-                    WindowsSandboxClientProcess()?.CloseMainWindow();
-                }
+                    if (_windowsSandboxExeProcess != null)
+                    {
+                        _windowsSandboxExeProcess.CloseMainWindow();
+                        WindowsSandboxClientProcess()?.CloseMainWindow();
+                    }
 
-                return new ComputeSystemOperationResult();
+                    return new ComputeSystemOperationResult();
+                }
+            }
+            catch (Exception ex)
+            {
+                State = ComputeSystemState.Unknown;
+
+                _log.Error(ex, "Failed to terminate Windows Sandbox");
+                TraceLogging.ExceptionThrown(ex);
+
+                return new ComputeSystemOperationResult(
+                    ex,
+                    Resources.GetResource("FailedToTerminateWindowsSandbox", _log),
+                    "Failed to terminate Windows Sandbox");
             }
         }).AsAsyncOperation();
     }
 
+    private IAsyncOperation<ComputeSystemOperationResult> NotImplemntedComputeSystemOperation()
+    {
+        NotImplementedException ex = new("This operation is not implemented.");
+        ComputeSystemOperationResult result = new(ex, Resources.GetResource("NotImplemented", _log), ex.Message);
+
+        return Task.FromResult(result).AsAsyncOperation();
+    }
+
     public IApplyConfigurationOperation CreateApplyConfigurationOperation(string configuration) => throw new NotImplementedException();
 
-    public IAsyncOperation<ComputeSystemOperationResult> CreateSnapshotAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> CreateSnapshotAsync(string options) => NotImplemntedComputeSystemOperation();
 
-    public IAsyncOperation<ComputeSystemOperationResult> DeleteAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> DeleteAsync(string options) => NotImplemntedComputeSystemOperation();
 
-    public IAsyncOperation<ComputeSystemOperationResult> DeleteSnapshotAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> DeleteSnapshotAsync(string options) => NotImplemntedComputeSystemOperation();
 
-    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string inputJson) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string inputJson) => NotImplemntedComputeSystemOperation();
 
-    public IAsyncOperation<ComputeSystemOperationResult> PauseAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> PauseAsync(string options) => NotImplemntedComputeSystemOperation();
 
-    public IAsyncOperation<ComputeSystemOperationResult> RestartAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> RestartAsync(string options) => NotImplemntedComputeSystemOperation();
 
-    public IAsyncOperation<ComputeSystemOperationResult> ResumeAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> ResumeAsync(string options) => NotImplemntedComputeSystemOperation();
 
-    public IAsyncOperation<ComputeSystemOperationResult> RevertSnapshotAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> RevertSnapshotAsync(string options) => NotImplemntedComputeSystemOperation();
 
-    public IAsyncOperation<ComputeSystemOperationResult> SaveAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> SaveAsync(string options) => NotImplemntedComputeSystemOperation();
 
-    public IAsyncOperation<ComputeSystemOperationResult> ShutDownAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> ShutDownAsync(string options) => NotImplemntedComputeSystemOperation();
 
-    public IAsyncOperation<ComputeSystemOperationResult> StartAsync(string options) => throw new NotImplementedException();
+    public IAsyncOperation<ComputeSystemOperationResult> StartAsync(string options) => NotImplemntedComputeSystemOperation();
 
     public void Dispose()
     {

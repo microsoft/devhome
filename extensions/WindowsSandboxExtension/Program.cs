@@ -28,7 +28,7 @@ public sealed class Program
         // Set up Logging
         Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Helpers.Logging.LogFolderRoot, "WindowsSandbox"));
         var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings_wsb.json")
+            .AddJsonFile("appsettings_WindowsSandbox.json")
             .Build();
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
