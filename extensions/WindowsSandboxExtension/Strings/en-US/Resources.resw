@@ -119,15 +119,17 @@
   </resheader>
   <data name="FailedToTerminateWindowsSandbox" xml:space="preserve">
     <value>Failed to terminate Windows Sandbox</value>
+	<comment>{Locked="Windows Sandbox"} Failed to terminate display message.</comment>
   </data>
   <data name="NotImplemented" xml:space="preserve">
     <value>This operation is not yet implemented for Windows Sandbox</value>
   </data>
   <data name="WindowsSandboxDisplayName" xml:space="preserve">
     <value>Windows Sandbox Environment</value>
-    <comment>The diplay name used for the default Windows Sandbox compute system.</comment>
+    <comment>{Locked="Windows Sandbox"} The diplay name used for the default Windows Sandbox compute system.</comment>
   </data>
   <data name="WindowsSandboxFailedToStart" xml:space="preserve">
     <value>Failed to start Windows Sandbox</value>
+	<comment>{Locked="Windows Sandbox"} Failed to start display message.</comment>
   </data>
 </root>

@@ -312,8 +312,10 @@
   </data>
   <data name="AppDescriptionSandboxExt" xml:space="preserve">
     <value>Windows Sandbox Extension</value>
+	<comment>{Locked="Windows Sandbox"} Extension name</comment>
   </data>
   <data name="AppDisplayNameWindowsSandboxExt" xml:space="preserve">
     <value>Windows Sandbox Extension</value>
+	<comment>{Locked="Windows Sandbox"} Extension description</comment>
   </data>
 </root>
