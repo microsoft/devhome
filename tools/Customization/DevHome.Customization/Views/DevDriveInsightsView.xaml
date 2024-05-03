@@ -92,10 +92,9 @@
                                 IsTextSelectionEnabled="True"/>
                     </Grid>
                     <ctControls:SettingsExpander.Items>
-                        <ctControls:SettingsCard Description="{Binding Path=OptimizerDevDriveDescription, Mode=OneWay}">
+                        <ctControls:SettingsCard Padding="60 10 20 15" Description="{Binding Path=OptimizerDevDriveDescription, Mode=OneWay}">
                             <Button x:Name="OptimizerDialogLauncher" Content="{x:Bind MakeTheChangeText, Mode=OneWay}" Command="{Binding OptimizeDevDriveCommand}" CommandParameter="{Binding ElementName=OptimizerDialogLauncher}"/>
                         </ctControls:SettingsCard>
-                        <ctControls:SettingsCard Header="{Binding Path=CacheToBeMoved, Mode=OneWay}" Foreground="{ThemeResource HyperlinkButtonForeground}"/>
                     </ctControls:SettingsExpander.Items>
                 </ctControls:SettingsExpander>
             </DataTemplate>
@@ -152,12 +151,12 @@
                 Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
                 Text="Package Caches"
                 IsTextSelectionEnabled="True"/>
-            <TextBlock
-                Margin="0 10 0 0"
-                Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
-                x:Uid ="PackageCachesDescription"
-                IsTextSelectionEnabled="True"
-                TextWrapping="WrapWholeWords"/>
+            <TextBlock Margin="0 10 0 0" Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}" TextWrapping="WrapWholeWords">
+                <Run x:Uid="PackageCachesDescription"/>
+                <Hyperlink NavigateUri="https://go.microsoft.com/fwlink/?linkid=2268089">
+                    <Run x:Uid="PackageCachesLearnMoreLink" />
+                </Hyperlink>
+            </TextBlock>
             <!--- List of DevDriveOptimizersListViewModel objects. -->
             <ListView
                 x:Name="DevDriveOptimizersList"
