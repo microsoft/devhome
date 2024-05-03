@@ -40,8 +40,8 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
         {
             if (_showStartupWarning != value)
             {
-                NotifyPropertyChanged(value);
                 _showStartupWarning = value;
+                NotifyPropertyChanged(value);
             }
         }
     }
@@ -58,8 +58,8 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
         {
             if (_additionalLinesPosition != value)
             {
-                NotifyPropertyChanged(value);
                 _additionalLinesPosition = value;
+                NotifyPropertyChanged(value);
             }
         }
     }
@@ -76,8 +76,8 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
         {
             if (_loopbackDuplicates != value)
             {
-                NotifyPropertyChanged(value);
                 _loopbackDuplicates = value;
+                NotifyPropertyChanged(value);
             }
         }
     }
@@ -94,8 +94,8 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
         {
             if (_encoding != value)
             {
-                NotifyPropertyChanged(value);
                 _encoding = value;
+                NotifyPropertyChanged(value);
             }
         }
     }

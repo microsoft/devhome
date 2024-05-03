@@ -119,14 +119,14 @@
   </resheader>
   <data name="Hosts_Toggle_LoopbackDuplicates.Description" xml:space="preserve">
     <value>127.0.0.1, ::1, ...</value>
-    <comment>"127.0.0.1 and ::1" are well known loopback addresses, do not loc</comment>
+    <comment>;{Locked}</comment>
   </data>
   <data name="Hosts_Toggle_LoopbackDuplicates.Header" xml:space="preserve">
     <value>Consider loopback addresses as duplicates</value>
   </data>
   <data name="Hosts_Encoding.Description" xml:space="preserve">
     <value>Choose the encoding of the hosts file</value>
-    <comment>"Hosts" refers to the system hosts file, do not loc</comment>
+    <comment>;{Locked="hosts"}</comment>
   </data>
   <data name="Hosts_Encoding.Header" xml:space="preserve">
     <value>Encoding</value>

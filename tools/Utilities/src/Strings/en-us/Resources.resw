@@ -125,11 +125,11 @@
   </data>
   <data name="HostsFileEditorUtilityDesc" xml:space="preserve">
     <value>Quick and simple utility for managing hosts file.</value>
-    <comment>"Hosts" refers to the system hosts file, do not loc</comment>
+    <comment>;Locked={"hosts"}</comment>
   </data>
   <data name="HostsFileEditorUtilityTitle" xml:space="preserve">
     <value>Hosts File Editor</value>
-    <comment>"Hosts" refers to the system hosts file, do not loc</comment>
+    <comment>;Locked={"Hosts"}</comment>
   </data>
   <data name="NavigationPane.Content" xml:space="preserve">
     <value>Utilities</value>

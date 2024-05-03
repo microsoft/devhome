@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using DevHome.Common.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -14,7 +15,7 @@ namespace DevHome.RegistryPreview;
 
 public sealed partial class RegistryPreviewMainWindow : WindowEx
 {
-    private const string APPNAME = "RegistryPreview";
+    private string AppName { get; set; }
 
     private string UtilityTitle { get; set; }
 
@@ -34,10 +35,13 @@ public sealed partial class RegistryPreviewMainWindow : WindowEx
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
 
-        Title = APPNAME;
+        var stringResource = new StringResource(Path.Combine(AppContext.BaseDirectory, "..\\DevHome\\DevHome.RegistryPreview.pri"), "Resources");
+        AppName = stringResource.GetLocalized("RegistryPreviewAppDisplayName");
+
+        Title = AppName;
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/RegistryPreview/RegistryPreview.ico"));
 
-        RegistryPreviewMainPageNugetMainPage = new RegistryPreviewMainPage(this, this.UpdateWindowTitle, RegistryPreviewApp.ActivatedFileName);
+        RegistryPreviewMainPageNugetMainPage = new RegistryPreviewMainPage(this, this.UpdateWindowTitle, string.Empty);
 
         TelemetryFactory.Get<ITelemetry>().Log("RegistryPreviewApp_RegistryPreviewMainWindow_Initialized", LogLevel.Measure, new EmptyEvent(), this.activityId);
         _log.Information("RegistryPreviewApp RegistryPreviewMainWindow Intialized");
@@ -61,21 +65,22 @@ public sealed partial class RegistryPreviewMainWindow : WindowEx
     {
         if (string.IsNullOrEmpty(filenameTitle))
         {
-            UtilityTitle = APPNAME;
+            UtilityTitle = AppName;
         }
         else
         {
             var file = filenameTitle.Split('\\');
             if (file.Length > 0)
             {
-                UtilityTitle = file[file.Length - 1] + " - " + APPNAME;
+                UtilityTitle = file[file.Length - 1] + " - " + AppName;
             }
             else
             {
-                UtilityTitle = filenameTitle + " - " + APPNAME;
+                UtilityTitle = filenameTitle + " - " + AppName;
             }
         }
 
         Title = UtilityTitle;
+        AppTitleBar.Title = UtilityTitle;
     }
 }
