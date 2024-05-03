@@ -79,7 +79,10 @@ extends:
         - task: PublishSymbols@2
           displayName: Publish Symbols
           inputs:
-            SearchPattern: '**/bin/**/*.pdb'
+            SearchPattern: |
+              **/bin/**/*.pdb
+              **/bin/**/*.exe
+              **/bin/**/*.dll
             IndexSources: false
             SymbolServerType: TeamServices
             SymbolsProduct: DevHomeSDK
@@ -313,6 +316,10 @@ extends:
               inputs:
                 SearchPattern: >-
                   $(Build.SourcesDirectory)\**\bin\**\*.pdb
+
+                  $(Build.SourcesDirectory)\**\bin\**\*.exe
+
+                  $(Build.SourcesDirectory)\**\bin\**\*.dll
 
                   $(Build.SourcesDirectory)\**\obj\**\*.r2r.ni.pdb
                 IndexSources: true
