@@ -21,7 +21,7 @@ internal sealed class DependencyChecker
 
     public static bool IsOptionalComponentEnabled()
     {
-        var searcher = new ManagementObjectSearcher($"SELECT * FROM Win32_OptionalFeature WHERE Name = '{OptionalComponentName}'");
+        var searcher = new ManagementObjectSearcher($"SELECT InstallState FROM Win32_OptionalFeature WHERE Name = '{OptionalComponentName}'");
         var collection = searcher.Get();
 
         foreach (ManagementObject instance in collection)

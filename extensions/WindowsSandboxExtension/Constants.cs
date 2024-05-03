@@ -22,7 +22,7 @@ internal sealed class Constants
     // location of the icon from the extension package.Once it gets this location, it will load the icon from the path and display it in the UI.
     // Icons should be located in an extension resource.pri file which is generated at build time.
     // See the MakePri.exe documentation for how you can view what is in the resource.pri file, so you can find the location of your icon.
-    // https://learn.microsoft.com/en-us/windows/uwp/app-resources/makepri-exe-command-options. (use MakePri.exe in a VS Developer Command Prompt or
+    // https://learn.microsoft.com/windows/uwp/app-resources/makepri-exe-command-options. (use MakePri.exe in a VS Developer Command Prompt or
     // Powershell window)
 #if CANARY_BUILD
     public const string ExtensionIcon = "ms-resource://Microsoft.Windows.DevHome.Canary/Files/Assets/windows-sandbox-icon.png";
