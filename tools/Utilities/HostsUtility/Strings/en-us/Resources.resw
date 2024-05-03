@@ -155,4 +155,7 @@
   <data name="HostsFileEditorAppDisplayName" xml:space="preserve">
     <value>Hosts File Editor</value>
   </data>
+  <data name="Hosts_Settings_Title.Text" xml:space="preserve">
+    <value>Hosts File Editor Settings</value>
+  </data>
 </root>

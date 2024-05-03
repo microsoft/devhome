@@ -67,7 +67,6 @@ public sealed partial class EnvironmentVariablesMainWindow : WindowEx
         AppTitleBar.IsActive = args.WindowActivationState != WindowActivationState.Deactivated;
     }
 
-    private static readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
     private static NativeMethods.WinProc newWndProc;
     private static IntPtr oldWndProc = IntPtr.Zero;
 
@@ -87,6 +86,8 @@ public sealed partial class EnvironmentVariablesMainWindow : WindowEx
                     var lParamStr = Marshal.PtrToStringUTF8(lParam);
                     if (lParamStr == "Environment")
                     {
+                        // When the environment variables are updated by this app, this app sends WM_SETTINGSCHANGED message
+                        // with wParam = 0x12345. If that's the case, ignore the message.
                         if (wParam != (IntPtr)0x12345)
                         {
                             var viewModel = EnvironmentVariablesApp.GetService<MainViewModel>();

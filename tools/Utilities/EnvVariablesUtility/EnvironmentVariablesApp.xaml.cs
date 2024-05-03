@@ -28,7 +28,7 @@ public partial class EnvironmentVariablesApp : Application
     {
         if ((EnvironmentVariablesApp.Current as EnvironmentVariablesApp)!.Host.Services.GetService(typeof(T)) is not T service)
         {
-            throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
+            throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within EnvironmentVariablesApp.xaml.cs.");
         }
 
         return service;

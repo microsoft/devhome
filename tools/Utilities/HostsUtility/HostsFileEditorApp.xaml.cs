@@ -38,7 +38,7 @@ public partial class HostsFileEditorApp : Application
     {
         if ((HostsFileEditorApp.Current as HostsFileEditorApp)!.Host.Services.GetService(typeof(T)) is not T service)
         {
-            throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
+            throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within HostsFileEditorApp.xaml.cs.");
         }
 
         return service;

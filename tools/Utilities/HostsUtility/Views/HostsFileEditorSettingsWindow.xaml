@@ -32,9 +32,9 @@
             Padding="60,0"
             Grid.Row="1">
             <TextBlock
+                x:Uid="Hosts_Settings_Title"
                 Padding="6,8"
                 Style="{ThemeResource SubtitleTextBlockStyle}"
-                Text="Hosts Utility Settings"
                 MaxWidth="{ThemeResource MaxPageContentWidth}"
                 Margin="{ThemeResource ContentPageMargin}"/>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >

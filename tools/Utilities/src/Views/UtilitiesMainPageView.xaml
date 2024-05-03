@@ -30,7 +30,7 @@
                     <UniformGridLayout 
                         x:Name="CardGrid"
                         Orientation="Horizontal" 
-                        MinItemWidth="200"
+                        MinItemWidth="150"
                         MinItemHeight="300"
                         MinRowSpacing="12" 
                         MinColumnSpacing="12"
@@ -38,7 +38,6 @@
                         MaximumRowsOrColumns="3"
                         ItemsJustification="Center" />
                 </ItemsRepeater.Layout>
-
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:UtilityViewModel">
                         <local:UtilityView ViewModel="{x:Bind}" />
