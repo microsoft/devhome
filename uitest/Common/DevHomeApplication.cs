@@ -36,6 +36,8 @@ public sealed class DevHomeApplication
 
     private WindowsElement IntroducingDevHomeNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("WhatsNew");
 
+    private WindowsElement SettingsNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("SettingsItem");
+
     private DevHomeApplication()
     {
     }
@@ -81,6 +83,13 @@ public sealed class DevHomeApplication
     {
         Trace.WriteLine("Navigating to Introducing Dev Home");
         IntroducingDevHomeNavigationItem.Click();
+        return new(_devHomeSession.Driver);
+    }
+
+    public SettingsPage NavigateToSettingsPage()
+    {
+        Trace.WriteLine("Navigating to Settings");
+        SettingsNavigationItem.Click();
         return new(_devHomeSession.Driver);
     }
 

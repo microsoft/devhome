@@ -6,9 +6,6 @@ using OpenQA.Selenium.Appium.Windows;
 
 namespace DevHome.UITest.Pages;
 
-/// <summary>
-/// Page model class for the machine configuration page
-/// </summary>
 public class ExtensionsPage : ApplicationPage
 {
     public WindowsElement GetUpdatesButton => Driver.FindElementByAccessibilityId("GetUpdatesButton");
