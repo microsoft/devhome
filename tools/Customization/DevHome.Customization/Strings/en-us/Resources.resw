@@ -242,7 +242,7 @@
     <comment>Optimizer dev drive description when environment variable is not set</comment>
   </data>
   <data name="PackageCachesDescription.Text" xml:space="preserve">
-    <value>A package cache is the global folder location used by an application to store files for installed software. These source files are needed when you want to update, uninstall, or repair the installed software. Visual Studio is one such application that stores a large portion of its data in the Package Cache. </value>
+    <value>A package cache is the global folder location used by an application to store files for installed software. These source files are needed when you want to update, uninstall, or repair the installed software. </value>
     <comment>Package caches description</comment>
   </data>
   <data name="PackageCachesLearnMoreLink.Text" xml:space="preserve">
