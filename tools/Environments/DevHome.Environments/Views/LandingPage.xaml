@@ -303,14 +303,14 @@
             </StackPanel>
         </ScrollViewer>
         <Grid Grid.Row="3" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-            <muxc:InfoBar MaxWidth="480"
-              Margin="24"
-              HorizontalAlignment="Right"
-              VerticalAlignment="Bottom">
+            <InfoBar MaxWidth="480"
+                Margin="24"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
                 <i:Interaction.Behaviors>
                     <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
                 </i:Interaction.Behaviors>
-            </muxc:InfoBar>
+            </InfoBar>
         </Grid>
     </Grid>
 </pg:ToolPage>

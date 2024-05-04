@@ -32,7 +32,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     private readonly IExtensionService _extensionService;
     private readonly WindowEx _windowEx;
 
-    // All internal Dev Home extensions that should allow users to be enable/disable them, should add
+    // All internal Dev Home extensions that should allow users to enable/disable them, should add
     // their class Ids to this set.
     private readonly HashSet<string> _internalClassIdsToBeShownInExtensionsPage = new()
     {

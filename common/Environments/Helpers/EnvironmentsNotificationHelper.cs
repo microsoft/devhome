@@ -29,7 +29,7 @@ public partial class EnvironmentsNotificationHelper
 
     private readonly WindowsIdentityHelper _windowsIdentityHelper = new();
 
-    private readonly string _microsoftHyperVText = "Microsoft Hyper-V";
+    private const string MicrosoftHyperVText = "Microsoft Hyper-V";
 
     private static bool _shouldShowHyperVRebootButton;
 
@@ -100,7 +100,7 @@ public partial class EnvironmentsNotificationHelper
         {
             // Notification to enable Hyper-V and add user to Admin group
             _stackedNotificationsBehavior.ShowWithWindowExtension(
-                _microsoftHyperVText,
+                MicrosoftHyperVText,
                 _stringResource.GetLocalized("HyperVAdminAddUserAndEnableHyperVMessage"),
                 InfoBarSeverity.Error,
                 AddUserToHyperVAdminGroupAndEnableHyperVCommand,
@@ -110,7 +110,7 @@ public partial class EnvironmentsNotificationHelper
         {
             // Notification to enable the Hyper-V feature when user is in the admin group
             _stackedNotificationsBehavior.ShowWithWindowExtension(
-                _microsoftHyperVText,
+                MicrosoftHyperVText,
                 _stringResource.GetLocalized("HyperVFeatureNotEnabledMessage"),
                 InfoBarSeverity.Error,
                 AddUserToHyperVAdminGroupAndEnableHyperVCommand,
@@ -120,7 +120,7 @@ public partial class EnvironmentsNotificationHelper
         {
             // Notification to add user to the Hyper-V admin group when the feature is enabled
             _stackedNotificationsBehavior.ShowWithWindowExtension(
-                _microsoftHyperVText,
+                MicrosoftHyperVText,
                 _stringResource.GetLocalized("UserNotInHyperAdminGroupMessage"),
                 InfoBarSeverity.Error,
                 AddUserToHyperVAdminGroupAndEnableHyperVCommand,
@@ -131,7 +131,7 @@ public partial class EnvironmentsNotificationHelper
     private void ShowErrorWithRebootAfterExecutionMessage(string errorMsg)
     {
         _stackedNotificationsBehavior.ShowWithWindowExtension(
-            _microsoftHyperVText,
+            MicrosoftHyperVText,
             errorMsg,
             InfoBarSeverity.Error);
     }
@@ -139,7 +139,7 @@ public partial class EnvironmentsNotificationHelper
     private void ShowRestartNotification()
     {
         _stackedNotificationsBehavior.ShowWithWindowExtension(
-            _microsoftHyperVText,
+            MicrosoftHyperVText,
             _stringResource.GetLocalized("RestartAfterChangesMessage"),
             InfoBarSeverity.Warning,
             RestartComputerCommand,

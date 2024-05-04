@@ -207,7 +207,7 @@
   </data>
   <data name="HyperVAdminAddUserButton" xml:space="preserve">
     <value>Add user to group</value>
-    <comment>Locked="{Hyper-V}" Text for the button to add user to the Hyper-V administrators group</comment>
+    <comment>Text for the button to add user to the Hyper-V administrators group</comment>
   </data>
   <data name="HyperVAdminAddUserAndEnableHyperVButton" xml:space="preserve">
     <value>Set up Hyper-V in Dev Home</value>

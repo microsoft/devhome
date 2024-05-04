@@ -11,7 +11,7 @@ namespace HyperVExtension.CommunicationWithGuest;
 
 // States based on InstallState value in Win32_OptionalFeature
 // See: https://learn.microsoft.com/windows/win32/cimwin32prov/win32-optionalfeature
-public enum FeatureAvailabilityKind
+public enum FeatureAvailabilityKind : uint
 {
     Enabled,
     Disabled,
@@ -143,7 +143,7 @@ internal sealed class WmiUtility
     {
         try
         {
-            var searcher = new ManagementObjectSearcher($"SELECT * FROM Win32_OptionalFeature WHERE Name = 'Microsoft-Hyper-V'");
+            var searcher = new ManagementObjectSearcher($"SELECT InstallState FROM Win32_OptionalFeature WHERE Name = 'Microsoft-Hyper-V'");
             var collection = searcher.Get();
 
             foreach (var instance in collection)
@@ -168,7 +168,7 @@ internal sealed class WmiUtility
     }
 
     private static FeatureAvailabilityKind GetAvailabilityKindFromState(uint state)
-    {
+    { 
         switch (state)
         {
             case 1:

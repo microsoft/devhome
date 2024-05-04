@@ -17,7 +17,13 @@ namespace DevHome.Common.Extensions;
 
 public static class StackedNotificationsBehaviorExtensions
 {
-    public static void ShowWithWindowExtension(this StackedNotificationsBehavior behavior, string title, string message, InfoBarSeverity severity, IRelayCommand? command = null, string? buttonContent = null)
+    public static void ShowWithWindowExtension(
+        this StackedNotificationsBehavior behavior,
+        string title,
+        string message,
+        InfoBarSeverity severity,
+        IRelayCommand? command = null,
+        string? buttonContent = null)
     {
         var dispatcherQueue = Application.Current.GetService<WindowEx>().DispatcherQueue;
 

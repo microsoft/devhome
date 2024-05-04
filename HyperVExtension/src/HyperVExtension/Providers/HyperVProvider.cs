@@ -154,26 +154,22 @@ public class HyperVProvider : IComputeSystemProvider
 
     private string SetupHyperVPreReqErrorText()
     {
-        var availabilityKind = WmiUtility.GetHyperVFeatureAvailability();
-        if (availabilityKind == FeatureAvailabilityKind.Disabled)
+        switch (WmiUtility.GetHyperVFeatureAvailability())
         {
-            _log.Information($"Hyper-V Feature is disabled");
-            return _stringResource.GetLocalized("HyperVFeatureDisabled");
-        }
-        else if (availabilityKind == FeatureAvailabilityKind.Absent)
-        {
-            _log.Information($"Hyper-V Feature is not present on this SKU of Windows");
-            return _stringResource.GetLocalized("HyperVFeatureNotPresent");
-        }
-        else if (availabilityKind == FeatureAvailabilityKind.Unknown)
-        {
-            _log.Information($"Hyper-V Feature state is unknown");
-            return _stringResource.GetLocalized("HyperVFeatureUnknown");
+            case FeatureAvailabilityKind.Disabled:
+                _log.Information($"Hyper-V Feature is disabled");
+                return _stringResource.GetLocalized("HyperVFeatureDisabled");
+            case FeatureAvailabilityKind.Absent:
+                _log.Information($"Hyper-V Feature is not present on this SKU of Windows");
+                return _stringResource.GetLocalized("HyperVFeatureNotPresent");
+            case FeatureAvailabilityKind.Unknown:
+                _log.Information($"Hyper-V Feature state is unknown");
+                return _stringResource.GetLocalized("HyperVFeatureUnknown");
         }
 
         if (!_windowsIdentityWrapper.IsUserInGroup(HyperVStrings.HyperVAdminGroupWellKnownSid))
         {
-            _log.Information($"User {_windowsIdentityWrapper.UserName} not in Hyper-V admin group");
+            _log.Information($"User not in Hyper-V admin group");
             return _stringResource.GetLocalized("UserNotInHyperVAdminGroup", _windowsIdentityWrapper.UserName);
         }
 

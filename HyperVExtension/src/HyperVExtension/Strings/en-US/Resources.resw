@@ -154,7 +154,7 @@
     <comment>Error text for when we fail to create the file that the disk image will be downloaded into</comment>
   </data>
   <data name="ErrorPerformingOperation" xml:space="preserve">
-    <value>Unable to perform the requested operation. Check the Dev Home Hyper-V extension's log file: {0} for more information.</value>
+    <value>Unable to perform the requested operation. Check the Dev Home Hyper-V Extension's log file: {0} for more information.</value>
     <comment>Error text for when the hyper-v extension is unable to perform an operation the user requests</comment>
   </data>
   <data name="VmCredentialRequest.AttemptCountText" xml:space="preserve">
