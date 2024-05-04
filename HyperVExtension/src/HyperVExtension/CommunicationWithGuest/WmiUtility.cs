@@ -168,7 +168,7 @@ internal sealed class WmiUtility
     }
 
     private static FeatureAvailabilityKind GetAvailabilityKindFromState(uint state)
-    { 
+    {
         switch (state)
         {
             case 1:

@@ -346,15 +346,15 @@
     <comment>Locked="{Hyper-V}" Error text to show the user that the Hyper-V feature is not available on the current SKU of Windows</comment>
   </data>
   <data name="HyperVFeatureDisabled" xml:space="preserve">
-    <value>The Hyper-V Feature is disabled. Please enable Hyper-V and reboot</value>
+    <value>The Hyper-V Feature is disabled. Please enable Hyper-V and reboot.</value>
     <comment>Locked="{Hyper-V}" Error text to show the user that the Hyper-V feature is disabled</comment>
   </data>
   <data name="HyperVFeatureUnknown" xml:space="preserve">
-    <value>The Hyper-V Feature is in an unknown state. Unable to perform any Hyper-V functionality</value>
+    <value>The Hyper-V Feature is in an unknown state. Unable to perform any Hyper-V functionality.</value>
     <comment>Locked="{Hyper-V}" Error text to show the user that the state of the Hyper-V feature is unknown</comment>
   </data>
   <data name="HyperVVirtualMachineManagementServiceError" xml:space="preserve">
-    <value>Unable to start the virtual machine management service. The Hyper-V feature may have been recently enabled but a reboot has not been initiated. Please check that the service exists in the Windows Services app if a reboot has already been done</value>
-    <comment>Locked="{Hyper-V}" Error text to show the user that virtual machine management service can't be started by the extension</comment>
+    <value>Unable to start the virtual machine management service. The Hyper-V feature may have been recently enabled but a reboot has not been initiated. Please check that the service exists in the Windows Services snap-in if a reboot has already been done.</value>
+    <comment>{Locked="{Hyper-V}", "{Windows}"} Error text to show the user that virtual machine management service can't be started by the extension</comment>
   </data>
 </root>
