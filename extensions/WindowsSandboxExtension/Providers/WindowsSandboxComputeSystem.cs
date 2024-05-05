@@ -21,6 +21,10 @@ namespace WindowsSandboxExtension.Providers;
 
 public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
 {
+    private const long ByteSizeGB = 1024 * 1024 * 1024;
+    private const long DefaultMemorySizeInBytes = 4 * ByteSizeGB;
+    private const long DefaultStorageSizeInBytes = 80 * ByteSizeGB;
+
     private readonly Guid _id = Guid.NewGuid();
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WindowsSandboxProvider));
     private readonly object _windowsSandboxStartLock = new();
@@ -75,9 +79,8 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
             var properties = new List<ComputeSystemProperty>
             {
                 ComputeSystemProperty.Create(ComputeSystemPropertyKind.CpuCount, Environment.ProcessorCount),
-                ComputeSystemProperty.Create(ComputeSystemPropertyKind.AssignedMemorySizeInBytes, 4294967296),
-                ComputeSystemProperty.Create(ComputeSystemPropertyKind.StorageSizeInBytes, 85899345920),
-                ComputeSystemProperty.Create(ComputeSystemPropertyKind.UptimeIn100ns, 100),
+                ComputeSystemProperty.Create(ComputeSystemPropertyKind.AssignedMemorySizeInBytes, DefaultMemorySizeInBytes),
+                ComputeSystemProperty.Create(ComputeSystemPropertyKind.StorageSizeInBytes, DefaultStorageSizeInBytes),
             };
 
             return properties.AsEnumerable();
