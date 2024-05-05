@@ -286,7 +286,11 @@ public class InstallPackageTask : ISetupTask
 
     private void ReportAppSelectedForInstallEvent()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_AppSelected", LogLevel.Critical, new AppInstallUserEvent(_package.Id, _package.CatalogId), _activityId);
+        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_Install", LogLevel.Critical, new AppInstallUserEvent(_package.Id, _package.CatalogId), _activityId);
+        if (_installVersion != _package.DefaultInstallVersion)
+        {
+            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_VersionSpecified", LogLevel.Critical, new AppInstallUserEvent(_package.Id, _package.CatalogId), _activityId);
+        }
     }
 
     private void ReportAppInstallSucceededEvent()
