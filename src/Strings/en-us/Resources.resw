@@ -310,7 +310,7 @@
     <value>Hyper-V Extension</value>
     <comment>{Locked="Hyper-V"} Extension Display Name</comment>
   </data>
-  <data name="AppDescriptionSandboxExt" xml:space="preserve">
+  <data name="AppDescriptionWindowsSandboxExt" xml:space="preserve">
     <value>Windows Sandbox Extension</value>
 	<comment>{Locked="Windows Sandbox"} Extension name</comment>
   </data>
