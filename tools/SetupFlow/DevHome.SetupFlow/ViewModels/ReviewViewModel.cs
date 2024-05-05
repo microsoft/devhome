@@ -15,6 +15,8 @@ using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.Telemetry;
+using Microsoft.Diagnostics.Telemetry.Internal;
 using Serilog;
 using WinUIEx;
 
@@ -162,6 +164,9 @@ public partial class ReviewViewModel : SetupPageViewModelBase
                 await Orchestrator.InitializeElevatedServerAsync();
             }
 
+            // TODO: Arg: Orchestrator.IsSettingUpATargetMachine
+            TelemetryFactory.Get<ITelemetry>().Log("Review_Setup", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance));
+
             await Orchestrator.GoToNextPage();
         }
         catch (Exception e)
@@ -186,11 +191,27 @@ public partial class ReviewViewModel : SetupPageViewModelBase
             {
                 var configFile = _configFileBuilder.BuildConfigFileStringFromTaskGroups(Orchestrator.TaskGroups, ConfigurationFileKind.Normal);
                 await File.WriteAllTextAsync(fileName, configFile);
+                ReportGenerateConfiguration();
             }
         }
         catch (Exception e)
         {
             _log.Error(e, $"Failed to download configuration file.");
         }
+    }
+
+    private void ReportGenerateConfiguration()
+    {
+        // TODO: Arg: flowPages
+        var flowPages = Orchestrator.FlowPages.Select(p => p.GetType().Name);
+        TelemetryFactory.Get<ITelemetry>().Log("Review_GenerateConfiguration", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance));
+
+        var installTasks = Orchestrator.TaskGroups.OfType<AppManagementTaskGroup>()
+            .SelectMany(x => x.DSCTasks.OfType<InstallPackageTask>());
+
+        // TODO: Arg: installedPackagesCount, nonInstalledPackages
+        var installedPackagesCount = installTasks.Count(task => task.IsInstalled);
+        var nonInstalledPackages = installTasks.Count() - installedPackagesCount;
+        TelemetryFactory.Get<ITelemetry>().Log("Review_GenerateConfigurationForInstallPackages", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance));
     }
 }

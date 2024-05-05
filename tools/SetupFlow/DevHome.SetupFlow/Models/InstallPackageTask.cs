@@ -65,6 +65,8 @@ public class InstallPackageTask : ISetupTask
 
     public string PackageName => _package.Name;
 
+    public bool IsInstalled => _package.IsInstalled;
+
 #pragma warning disable 67
     public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
 #pragma warning restore 67
