@@ -20,7 +20,7 @@
         <ResourceDictionary Source="ms-appx:///DevHome.Common/Environments/Templates/EnvironmentsTemplates.xaml" />
     </pg:ToolPage.Resources>
 
-    <Grid>
+    <Grid x:Name="EnvironmentLandingPage">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />

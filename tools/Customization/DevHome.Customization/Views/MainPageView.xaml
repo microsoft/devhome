@@ -14,7 +14,7 @@
 
     <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
         <!--  Primary settings group (untitled)  -->
-        <StackPanel>
+        <StackPanel x:Name="CustomizationMainPage">
             <!-- File Explorer Settings -->
             <controls:SettingsCard
                 x:Uid="FileExplorerCard"

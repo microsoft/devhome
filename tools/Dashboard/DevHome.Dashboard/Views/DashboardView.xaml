@@ -18,6 +18,7 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
+    Loaded="OnLoaded"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -45,7 +46,7 @@
         </ic:EventTriggerBehavior>
     </i:Interaction.Behaviors>
 
-    <Grid>
+    <Grid x:Name="DashboardLandingPage">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />

@@ -8,6 +8,7 @@
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
+    Loaded="OnLoaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />

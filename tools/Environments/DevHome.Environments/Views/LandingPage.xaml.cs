@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
@@ -8,6 +9,7 @@ using DevHome.Common.Extensions;
 using DevHome.Environments.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 
 namespace DevHome.Environments.Views;
 
@@ -52,8 +54,15 @@ public sealed partial class LandingPage : ToolPage
     }
 #endif
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         _ = ViewModel.LoadModelAsync(false);
+
+        // Focus on the first focusable element inside the shell content
+        var element = FocusManager.FindFirstFocusableElement(EnvironmentLandingPage);
+        if (element != null)
+        {
+            await FocusManager.TryFocusAsync(element, FocusState.Programmatic).AsTask();
+        }
     }
 }

@@ -24,6 +24,7 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
@@ -848,6 +849,16 @@ public partial class DashboardView : ToolPage, IDisposable
             }
 
             _disposedValue = true;
+        }
+    }
+
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // Focus on the first focusable element inside the shell content
+        var element = FocusManager.FindFirstFocusableElement(DashboardLandingPage);
+        if (element != null)
+        {
+            await FocusManager.TryFocusAsync(element, FocusState.Programmatic).AsTask();
         }
     }
 

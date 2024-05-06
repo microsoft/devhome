@@ -8,7 +8,8 @@
     xmlns:EnvironmentViewModels="using:DevHome.SetupFlow.ViewModels.Environments"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:converters="using:CommunityToolkit.WinUI.Converters">
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    Loaded="OnLoaded">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -48,7 +49,8 @@
         <ScrollViewer 
             MaxWidth="{ThemeResource MaxPageContentWidth}"
             Margin="{ThemeResource ContentPageMargin}"
-            Grid.Row="1">
+            Grid.Row="1"
+            x:Name="SelectEnvironmentsLandingPage">
             <StackPanel Spacing="10">
                 <!--- Show the Select environment subtitle on the page. -->
                 <TextBlock
