@@ -72,9 +72,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
-    [ObservableProperty]
-    private bool _shouldShowCreateEnvironmentButton;
-
     public ObservableCollection<string> Providers { get; set; }
 
     private CancellationTokenSource _cancellationTokenSource = new();
@@ -197,8 +194,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             {
                 return;
             }
-
-            ShouldShowCreateEnvironmentButton = _environmentExtensionsService.IsEnvironmentCreationEnabled;
 
             // If the page has already loaded once, then we don't need to re-load the compute systems as that can take a while.
             // The user can click the sync button to refresh the compute systems. However, there may be new operations that have started

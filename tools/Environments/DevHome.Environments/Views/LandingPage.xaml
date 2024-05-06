@@ -200,7 +200,6 @@
                 Grid.Column="3" 
                 Style="{ThemeResource AccentButtonStyle}" 
                 HorizontalAlignment="Right"
-                Visibility="{x:Bind ViewModel.ShouldShowCreateEnvironmentButton, Mode=OneWay}"
                 Command="{x:Bind ViewModel.CreateEnvironmentButtonCommand}" >
                 <Grid>
                     <Grid.ColumnDefinitions>
