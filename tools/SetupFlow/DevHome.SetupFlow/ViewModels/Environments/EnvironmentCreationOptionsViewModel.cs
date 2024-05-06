@@ -189,7 +189,12 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
 
                 // Initialize the adaptive card session with the extension adaptive card template and data with an initial
                 // call to IExtensionAdaptiveCard.Update.
-                _extensionAdaptiveCardSession.Initialize(_extensionAdaptiveCard);
+                var result = _extensionAdaptiveCardSession.Initialize(_extensionAdaptiveCard);
+                if (result.Status == ProviderOperationStatus.Failure)
+                {
+                    _log.Error(result.ExtendedError, $"Extension failed to generate adaptive card. DisplayMsg: {result.DisplayMessage}, DiagnosticMsg: {result.DiagnosticText}");
+                    SessionErrorMessage = result.DisplayMessage;
+                }
             }
             catch (Exception ex)
             {

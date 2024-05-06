@@ -6,6 +6,7 @@ using System.Security;
 using System.Text;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Services;
+using Windows.ApplicationModel;
 
 namespace HyperVExtension.Helpers;
 
@@ -128,7 +129,7 @@ public class DevSetupAgentDeploymentHelper
 
     private static string LoadScript()
     {
-        var path = Path.Combine(AppContext.BaseDirectory, "HyperVExtension", "Scripts", "DevSetupAgent.ps1");
+        var path = Path.Combine(Package.Current.EffectivePath, "HyperVExtension", "Scripts", "DevSetupAgent.ps1");
         return File.ReadAllText(path, Encoding.Default) ?? throw new FileNotFoundException(path);
     }
 }
