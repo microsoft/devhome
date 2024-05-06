@@ -92,18 +92,48 @@ public class HyperVVirtualMachine : IComputeSystem
     // Temporary will need to add more error strings for different operations.
     public string OperationErrorUnknownString => _stringResource.GetLocalized(_errorResourceKey);
 
-    // TODO: make getting this list dynamic so we can remove operations based on OS version.
-    public ComputeSystemOperations SupportedOperations => ComputeSystemOperations.Start |
-                ComputeSystemOperations.ShutDown |
-                ComputeSystemOperations.Terminate |
-                ComputeSystemOperations.Delete |
-                ComputeSystemOperations.Save |
-                ComputeSystemOperations.Pause |
-                ComputeSystemOperations.Resume |
-                ComputeSystemOperations.CreateSnapshot |
-                ComputeSystemOperations.DeleteSnapshot |
-                ComputeSystemOperations.Restart |
-                ComputeSystemOperations.ApplyConfiguration;
+    public ComputeSystemOperations SupportedOperations
+    {
+        get
+        {
+            var revertOperation = Guid.Empty.Equals(ParentCheckpointId) ? ComputeSystemOperations.None : ComputeSystemOperations.RevertSnapshot;
+
+            switch (GetState())
+            {
+                case ComputeSystemState.Running:
+                    return ComputeSystemOperations.ShutDown |
+                        ComputeSystemOperations.Terminate |
+                        ComputeSystemOperations.Save |
+                        ComputeSystemOperations.Pause |
+                        ComputeSystemOperations.CreateSnapshot |
+                        ComputeSystemOperations.Restart |
+                        ComputeSystemOperations.ApplyConfiguration |
+                        revertOperation;
+                case ComputeSystemState.Stopped:
+                    return ComputeSystemOperations.Start |
+                        ComputeSystemOperations.CreateSnapshot |
+                        ComputeSystemOperations.Delete |
+                        ComputeSystemOperations.ApplyConfiguration;
+                case ComputeSystemState.Saved:
+                    return ComputeSystemOperations.Start |
+                        ComputeSystemOperations.CreateSnapshot |
+                        ComputeSystemOperations.Delete |
+                        ComputeSystemOperations.ApplyConfiguration |
+                        revertOperation;
+                case ComputeSystemState.Paused:
+                    return ComputeSystemOperations.Terminate |
+                        ComputeSystemOperations.Save |
+                        ComputeSystemOperations.Resume |
+                        ComputeSystemOperations.CreateSnapshot |
+                        ComputeSystemOperations.ApplyConfiguration |
+                        revertOperation;
+            }
+
+            // Before applying the configuration we start the VM. So we will allow the ApplyConfiguration to be the base supported operation
+            // for the VM.
+            return ComputeSystemOperations.ApplyConfiguration;
+        }
+    }
 
     public string SupplementalDisplayName { get; set; } = string.Empty;
 
@@ -147,20 +177,28 @@ public class HyperVVirtualMachine : IComputeSystem
         return returnList;
     }
 
+    private ComputeSystemState GetState()
+    {
+        return State switch
+        {
+            HyperVStrings.RunningState => ComputeSystemState.Running,
+            HyperVStrings.VMOffState => ComputeSystemState.Stopped,
+            HyperVStrings.PausedState => ComputeSystemState.Paused,
+            HyperVStrings.SavedState => ComputeSystemState.Saved,
+            HyperVStrings.SavingState => ComputeSystemState.Saving,
+            HyperVStrings.PausingState => ComputeSystemState.Pausing,
+            HyperVStrings.StartingState => ComputeSystemState.Starting,
+            HyperVStrings.ResumingState => ComputeSystemState.Starting,
+            HyperVStrings.StoppingState => ComputeSystemState.Stopping,
+            _ => ComputeSystemState.Unknown,
+        };
+    }
+
     public IAsyncOperation<ComputeSystemStateResult> GetStateAsync()
     {
         return Task.Run(() =>
         {
-            var currentState = State switch
-            {
-                HyperVStrings.RunningState => ComputeSystemState.Running,
-                HyperVStrings.VMOffState => ComputeSystemState.Stopped,
-                HyperVStrings.PausedState => ComputeSystemState.Paused,
-                HyperVStrings.SavedState => ComputeSystemState.Saved,
-                _ => ComputeSystemState.Unknown,
-            };
-
-            return new ComputeSystemStateResult(currentState);
+            return new ComputeSystemStateResult(GetState());
         }).AsAsyncOperation();
     }
 
@@ -176,12 +214,6 @@ public class HyperVVirtualMachine : IComputeSystem
     {
         try
         {
-            if (State == HyperVStrings.RunningState)
-            {
-                // VM is already running.
-                return new ComputeSystemOperationResult();
-            }
-
             StateChanged(this, ComputeSystemState.Starting);
             if (_hyperVManager.StartVirtualMachine(VmId))
             {
@@ -194,7 +226,7 @@ public class HyperVVirtualMachine : IComputeSystem
         }
         catch (Exception ex)
         {
-            StateChanged(this, ComputeSystemState.Unknown);
+            StateChanged(this, GetState());
             _log.Error(ex, OperationErrorString(ComputeSystemOperations.Start));
             return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
         }
@@ -206,12 +238,6 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             try
             {
-                if (State == HyperVStrings.VMOffState)
-                {
-                    // VM is already off.
-                    return new ComputeSystemOperationResult();
-                }
-
                 StateChanged(this, ComputeSystemState.Stopping);
                 if (_hyperVManager.StopVirtualMachine(VmId, StopVMKind.Default))
                 {
@@ -224,7 +250,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                StateChanged(this, ComputeSystemState.Unknown);
+                StateChanged(this, GetState());
                 _log.Error(OperationErrorString(ComputeSystemOperations.ShutDown));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
@@ -237,12 +263,6 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             try
             {
-                if (State == HyperVStrings.VMOffState)
-                {
-                    // VM is already off.
-                    return new ComputeSystemOperationResult();
-                }
-
                 StateChanged(this, ComputeSystemState.Stopping);
                 if (_hyperVManager.StopVirtualMachine(VmId, StopVMKind.TurnOff))
                 {
@@ -255,7 +275,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                StateChanged(this, ComputeSystemState.Unknown);
+                StateChanged(this, GetState());
                 _log.Error(ex, OperationErrorString(ComputeSystemOperations.Terminate));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
@@ -280,7 +300,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                StateChanged(this, ComputeSystemState.Unknown);
+                StateChanged(this, GetState());
                 _log.Error(ex, OperationErrorString(ComputeSystemOperations.Delete));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
@@ -293,12 +313,6 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             try
             {
-                if (State == HyperVStrings.SavedState)
-                {
-                    // VM is already saved.
-                    return new ComputeSystemOperationResult();
-                }
-
                 StateChanged(this, ComputeSystemState.Saving);
                 if (_hyperVManager.StopVirtualMachine(VmId, StopVMKind.Save))
                 {
@@ -311,7 +325,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                StateChanged(this, ComputeSystemState.Unknown);
+                StateChanged(this, GetState());
                 _log.Error(ex, OperationErrorString(ComputeSystemOperations.Save));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
@@ -324,12 +338,6 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             try
             {
-                if (State == HyperVStrings.PausedState)
-                {
-                    // VM is already paused.
-                    return new ComputeSystemOperationResult();
-                }
-
                 StateChanged(this, ComputeSystemState.Pausing);
                 if (_hyperVManager.PauseVirtualMachine(VmId))
                 {
@@ -342,7 +350,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                StateChanged(this, ComputeSystemState.Unknown);
+                StateChanged(this, GetState());
                 _log.Error(ex, OperationErrorString(ComputeSystemOperations.Pause));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
@@ -355,12 +363,6 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             try
             {
-                if (State == HyperVStrings.RunningState)
-                {
-                    // VM is already running.
-                    return new ComputeSystemOperationResult();
-                }
-
                 StateChanged(this, ComputeSystemState.Starting);
                 if (_hyperVManager.ResumeVirtualMachine(VmId))
                 {
@@ -373,7 +375,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                StateChanged(this, ComputeSystemState.Unknown);
+                StateChanged(this, GetState());
                 _log.Error(ex, OperationErrorString(ComputeSystemOperations.Resume));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
@@ -386,6 +388,8 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             try
             {
+                // we don't currently have a state for creating a checkpoint so we'll say we're in the saving state
+                StateChanged(this, ComputeSystemState.Saving);
                 if (_hyperVManager.CreateCheckpoint(VmId))
                 {
                     _log.Information(OperationSuccessString(ComputeSystemOperations.CreateSnapshot));
@@ -408,9 +412,13 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             try
             {
+                // we don't currently have a state for reverting a checkpoint so we'll say we're in the saving state
+                StateChanged(this, ComputeSystemState.Saving);
+
                 // Reverting checkpoints means applying the previous checkpoint onto the VM.
                 if (_hyperVManager.ApplyCheckpoint(VmId, ParentCheckpointId))
                 {
+                    StateChanged(this, ComputeSystemState.Running);
                     _log.Information(OperationSuccessString(ComputeSystemOperations.RevertSnapshot));
                     return new ComputeSystemOperationResult();
                 }
@@ -419,6 +427,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
+                StateChanged(this, GetState());
                 _log.Error(ex, OperationErrorString(ComputeSystemOperations.RevertSnapshot));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
@@ -431,9 +440,13 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             try
             {
+                // we don't currently have a state for deleting a checkpoint so we'll say we're in the saving state
+                StateChanged(this, ComputeSystemState.Saving);
+
                 // For v1 we only support deleting the previous checkpoint.
                 if (_hyperVManager.RemoveCheckpoint(VmId, ParentCheckpointId))
                 {
+                    StateChanged(this, ComputeSystemState.Running);
                     _log.Information(OperationSuccessString(ComputeSystemOperations.DeleteSnapshot));
                     return new ComputeSystemOperationResult();
                 }
@@ -442,6 +455,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
+                StateChanged(this, GetState());
                 _log.Error(ex, OperationErrorString(ComputeSystemOperations.DeleteSnapshot));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
@@ -494,11 +508,6 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             try
             {
-                if (State != HyperVStrings.RunningState)
-                {
-                    throw new ComputeSystemOperationException(ComputeSystemOperations.Restart);
-                }
-
                 StateChanged(this, ComputeSystemState.Restarting);
                 if (_hyperVManager.RestartVirtualMachine(VmId))
                 {
@@ -511,7 +520,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                StateChanged(this, ComputeSystemState.Unknown);
+                StateChanged(this, GetState());
                 _log.Error(ex, OperationErrorString(ComputeSystemOperations.Restart));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }
