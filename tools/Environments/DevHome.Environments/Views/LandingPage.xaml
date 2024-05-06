@@ -11,7 +11,6 @@
     xmlns:selectors="using:DevHome.Environments.Selectors"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
