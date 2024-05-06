@@ -24,7 +24,7 @@ public class ReviewGenerateConfigurationForInstallEvent : EventBase
     /// </summary>
     public int NotInstalledCount { get; }
 
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public ReviewGenerateConfigurationForInstallEvent(int installedCount, int notInstalledCount)
     {

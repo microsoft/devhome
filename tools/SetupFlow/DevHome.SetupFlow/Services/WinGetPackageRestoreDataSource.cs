@@ -51,7 +51,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         if (restoreDeviceInfoResult.Status == RestoreDeviceInfoStatus.Ok)
         {
             _restoreDeviceInfo = restoreDeviceInfoResult.RestoreDeviceInfo;
-            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_RestoreApps_Found", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServiceUsage));
+            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_RestoreApps_Found", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance));
         }
         else
         {
@@ -105,7 +105,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
 
         if (result.Count > 0)
         {
-            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_RestoreApps_Loaded", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServiceUsage));
+            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_RestoreApps_Loaded", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance));
         }
 
         return result;
