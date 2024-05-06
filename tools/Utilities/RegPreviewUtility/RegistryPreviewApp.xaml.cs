@@ -33,7 +33,7 @@ public partial class RegistryPreviewApp : Application
         window = new RegistryPreviewMainWindow(ActivityId);
         window.Activate();
 
-        TelemetryFactory.Get<ITelemetry>().Log("RegistryPreviewApp_RegistryPreviewApp_Launched", LogLevel.Measure, new RegistryPreviewAppLaunchEvent(), ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("RegistryPreviewApp_RegistryPreviewApp_Launched", LogLevel.Critical, new RegistryPreviewAppLaunchEvent(), ActivityId);
         _log.Information("RegistryPreviewApp Launched");
     }
 
