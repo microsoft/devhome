@@ -8,12 +8,10 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
-                <!-- Other merged dictionaries here -->
                 <ResourceDictionary Source="/Styles/WindowTitleBar_ThemeResources.xaml" />
                 <ResourceDictionary Source="/Styles/LayoutSizes.xaml" />
                 <ResourceDictionary Source="/Styles/Thickness.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <!-- Other app resources here -->
         </ResourceDictionary>
     </Application.Resources>
 </Application>

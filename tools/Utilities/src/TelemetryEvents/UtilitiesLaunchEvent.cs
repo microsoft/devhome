@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics.Tracing;
-using DevHome.Common.Helpers;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
@@ -11,7 +10,7 @@ using Microsoft.Diagnostics.Telemetry.Internal;
 namespace DevHome.Utilities.TelemetryEvents;
 
 [EventData]
-public class UtilitiesUserEvent : EventBase
+public class UtilitiesLaunchEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
@@ -25,7 +24,7 @@ public class UtilitiesUserEvent : EventBase
         get;
     }
 
-    public UtilitiesUserEvent(string utilityName, bool launchedAsAdmin)
+    public UtilitiesLaunchEvent(string utilityName, bool launchedAsAdmin)
     {
         UtilityName = utilityName;
         LaunchedAsAdmin = launchedAsAdmin;

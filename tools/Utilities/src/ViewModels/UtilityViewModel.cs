@@ -75,6 +75,6 @@ public class UtilityViewModel : INotifyPropertyChanged
             throw new InvalidOperationException("Failed to start process");
         }
 
-        TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("Utilities_UtilitiesUserEvent", LogLevel.Measure, new UtilitiesUserEvent(Title, runAsAdmin), null);
+        TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(Title, runAsAdmin), null);
     }
 }

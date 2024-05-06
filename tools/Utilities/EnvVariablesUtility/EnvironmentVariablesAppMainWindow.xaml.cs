@@ -4,12 +4,12 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using DevHome.EnvironmentVariables.TelemetryEvents;
 using DevHome.EnvironmentVariables.Win32;
 using DevHome.Telemetry;
 using EnvironmentVariablesUILib;
 using EnvironmentVariablesUILib.Helpers;
 using EnvironmentVariablesUILib.ViewModels;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
@@ -49,7 +49,7 @@ public sealed partial class EnvironmentVariablesMainWindow : WindowEx
 
         EnvVariablesUtilityMainPage = EnvironmentVariablesApp.GetService<EnvironmentVariablesMainPage>();
 
-        TelemetryFactory.Get<ITelemetry>().Log("EnvironmentVariablesApp_EnvironmentVariablesMainWindow_Initialized", LogLevel.Measure, new EmptyEvent(), this.activityId);
+        TelemetryFactory.Get<ITelemetry>().Log("EnvironmentVariablesApp_EnvironmentVariablesMainWindow_Initialized", LogLevel.Measure, new EnvironmentVariablesTraceEvent(), this.activityId);
         _log.Information("EnvironmentVariablesApp MainWindow Intialized");
     }
 
@@ -58,7 +58,7 @@ public sealed partial class EnvironmentVariablesMainWindow : WindowEx
         MainGrid.Children.Add(EnvVariablesUtilityMainPage);
         Grid.SetRow(EnvVariablesUtilityMainPage, 1);
 
-        TelemetryFactory.Get<ITelemetry>().Log("EnvironmentVariablesApp_EnvironmentVariablesMainWindow_GridLoaded", LogLevel.Measure, new EmptyEvent(), this.activityId);
+        TelemetryFactory.Get<ITelemetry>().Log("EnvironmentVariablesApp_EnvironmentVariablesMainWindow_GridLoaded", LogLevel.Measure, new EnvironmentVariablesTraceEvent(), this.activityId);
         _log.Information("EnvironmentVariablesApp MainWindow Grid loaded");
     }
 

@@ -7,6 +7,7 @@ using System.Threading;
 using DevHome.Common.Contracts;
 using DevHome.Common.Services;
 using DevHome.HostsFileEditor.Helpers;
+using DevHome.HostsFileEditor.TelemetryEvents;
 using DevHome.HostsFileEditor.ViewModels;
 using DevHome.HostsFileEditor.Views;
 using DevHome.Telemetry;
@@ -47,7 +48,7 @@ public partial class HostsFileEditorApp : Application
     public HostsFileEditorApp()
     {
         ActivityId = Guid.NewGuid();
-        TelemetryFactory.Get<ITelemetry>().Log("HostsFileEditorApp_HostsFileEditorApp", LogLevel.Measure, new EmptyEvent(), ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("HostsFileEditorApp_HostsFileEditorApp", LogLevel.Measure, new HostsFileEditorTraceEvent(), ActivityId);
 
         DevHome.Common.Logging.SetupLogging("appsettings_hostsfileeditor.json", "HostsUtility");
         _log.Information("HostsFileEditorApp");
@@ -101,8 +102,7 @@ public partial class HostsFileEditorApp : Application
         cleanupBackupThread.IsBackground = true;
         cleanupBackupThread.Start();
 
-        TelemetryFactory.Get<ITelemetry>().Log("HostsFileEditorApp_HostsFileEditorApp_Initialized", LogLevel.Measure, new EmptyEvent(), ActivityId);
-
+        TelemetryFactory.Get<ITelemetry>().Log("HostsFileEditorApp_HostsFileEditorApp_Initialized", LogLevel.Measure, new HostsFileEditorTraceEvent(), ActivityId);
         _log.Information("HostsFileEditorApp Initialized");
     }
 
@@ -111,8 +111,8 @@ public partial class HostsFileEditorApp : Application
         mainWindow = new HostsFileEditorMainWindow(ActivityId);
         mainWindow.Activate();
 
+        TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("HostsFileEditorApp_HostsFileEditorApp_Launched", LogLevel.Critical, new HostsFileEditorAppLaunchEvent(), null);
         _log.Information("HostsFileEditorApp Launched");
-        TelemetryFactory.Get<ITelemetry>().Log("HostsFileEditorApp_HostsFileEditorApp_Launched", LogLevel.Measure, new EmptyEvent(), ActivityId);
     }
 
     private Window mainWindow;

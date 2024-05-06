@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using DevHome.Common.Services;
+using DevHome.RegistryPreview.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -43,7 +44,7 @@ public sealed partial class RegistryPreviewMainWindow : WindowEx
 
         RegistryPreviewMainPageNugetMainPage = new RegistryPreviewMainPage(this, this.UpdateWindowTitle, string.Empty);
 
-        TelemetryFactory.Get<ITelemetry>().Log("RegistryPreviewApp_RegistryPreviewMainWindow_Initialized", LogLevel.Measure, new EmptyEvent(), this.activityId);
+        TelemetryFactory.Get<ITelemetry>().Log("RegistryPreviewApp_RegistryPreviewMainWindow_Initialized", LogLevel.Measure, new RegistryPreviewTraceEvent(), this.activityId);
         _log.Information("RegistryPreviewApp RegistryPreviewMainWindow Intialized");
     }
 
@@ -52,7 +53,7 @@ public sealed partial class RegistryPreviewMainWindow : WindowEx
         MainGrid.Children.Add(RegistryPreviewMainPageNugetMainPage);
         Grid.SetRow(RegistryPreviewMainPageNugetMainPage, 1);
 
-        TelemetryFactory.Get<ITelemetry>().Log("RegistryPreviewApp_RegistryPreviewMainWindow_GridLoaded", LogLevel.Measure, new EmptyEvent(), activityId);
+        TelemetryFactory.Get<ITelemetry>().Log("RegistryPreviewApp_RegistryPreviewMainWindow_GridLoaded", LogLevel.Measure, new RegistryPreviewTraceEvent(), activityId);
         _log.Information("RegistryPreviewApp RegistryPreviewMainWindow Grid loaded");
     }
 

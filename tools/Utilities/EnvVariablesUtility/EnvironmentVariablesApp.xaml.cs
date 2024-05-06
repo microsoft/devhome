@@ -4,6 +4,7 @@
 using System;
 using System.IO.Abstractions;
 using DevHome.EnvironmentVariables.Helpers;
+using DevHome.EnvironmentVariables.TelemetryEvents;
 using DevHome.Telemetry;
 using EnvironmentVariablesUILib;
 using EnvironmentVariablesUILib.Helpers;
@@ -39,7 +40,7 @@ public partial class EnvironmentVariablesApp : Application
         DevHome.Common.Logging.SetupLogging("appsettings_environmentvariables.json", "EnvironmentVariables");
 
         ActivityId = Guid.NewGuid();
-        TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("EnvironmentVariablesApp_EnvironmentVariablesApp", LogLevel.Measure, new EmptyEvent(), ActivityId);
+        TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("EnvironmentVariablesApp_EnvironmentVariablesApp", LogLevel.Measure, new EnvironmentVariablesTraceEvent(), ActivityId);
 
         this.InitializeComponent();
 
@@ -55,7 +56,7 @@ public partial class EnvironmentVariablesApp : Application
             services.AddSingleton<EnvironmentVariablesMainPage>();
         }).Build();
 
-        TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("EnvironmentVariablesApp_EnvironmentVariablesApp_Initialized", LogLevel.Measure, new EmptyEvent(), ActivityId);
+        TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("EnvironmentVariablesApp_EnvironmentVariablesApp_Initialized", LogLevel.Measure, new EnvironmentVariablesTraceEvent(), ActivityId);
         _log.Information("EnvironmentVariablesApp Initialized");
     }
 
@@ -64,7 +65,7 @@ public partial class EnvironmentVariablesApp : Application
         window = new EnvironmentVariablesMainWindow(ActivityId);
         window.Activate();
 
-        TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("EnvironmentVariablesApp_EnvironmentVariablesApp_Launched", LogLevel.Measure, new EmptyEvent(), ActivityId);
+        TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("EnvironmentVariablesApp_EnvironmentVariablesApp_Launched", LogLevel.Critical, new EnvironmentVariablesAppLaunchEvent(), ActivityId);
         _log.Information("EnvironmentVariablesApp Launched");
     }
 

@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using DevHome.HostsFileEditor.Helpers;
+using DevHome.HostsFileEditor.TelemetryEvents;
 using DevHome.Telemetry;
 using HostsUILib.Helpers;
 using HostsUILib.Views;
@@ -42,7 +43,7 @@ public sealed partial class HostsFileEditorMainWindow : WindowEx
 
         HostsNugetMainPage = HostsFileEditorApp.GetService<HostsMainPage>();
 
-        TelemetryFactory.Get<ITelemetry>().Log("HostsFileEditorApp_HostsFileEditorMainWindow_Initialized", LogLevel.Measure, new EmptyEvent(), this.activityId);
+        TelemetryFactory.Get<ITelemetry>().Log("HostsFileEditorApp_HostsFileEditorMainWindow_Initialized", LogLevel.Measure, new HostsFileEditorTraceEvent(), this.activityId);
         _log.Information("HostsFileEditorApp HostsFileEditorMainWindow Intialized");
     }
 
@@ -50,7 +51,8 @@ public sealed partial class HostsFileEditorMainWindow : WindowEx
     {
         MainGrid.Children.Add(HostsNugetMainPage);
         Grid.SetRow(HostsNugetMainPage, 1);
-        TelemetryFactory.Get<ITelemetry>().Log("HostsFileEditorApp_HostsFileEditorMainWindow_GridLoaded", LogLevel.Measure, new EmptyEvent(), activityId);
+
+        TelemetryFactory.Get<ITelemetry>().Log("HostsFileEditorApp_HostsFileEditorMainWindow_GridLoaded", LogLevel.Measure, new HostsFileEditorTraceEvent(), activityId);
         _log.Information("HostsFileEditorApp HostsFileEditorMainWindow Grid loaded");
     }
 
