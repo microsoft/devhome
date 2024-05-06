@@ -10,14 +10,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.Telemetry;
-using Microsoft.Diagnostics.Telemetry.Internal;
 using Serilog;
 using WinUIEx;
 
@@ -165,7 +163,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
                 await Orchestrator.InitializeElevatedServerAsync();
             }
 
-            TelemetryFactory.Get<ITelemetry>().Log("Review_SetUp", LogLevel.Critical, new ReviewSetUpCommandEvent(Orchestrator.IsSettingUpATargetMachine));
+            var flowPages = Orchestrator.FlowPages.Select(p => p.GetType().Name).ToList();
+            TelemetryFactory.Get<ITelemetry>().Log("Review_SetUp", LogLevel.Critical, new ReviewSetUpCommandEvent(Orchestrator.IsSettingUpATargetMachine, flowPages));
             await Orchestrator.GoToNextPage();
         }
         catch (Exception e)

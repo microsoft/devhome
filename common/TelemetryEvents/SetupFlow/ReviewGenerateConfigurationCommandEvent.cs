@@ -13,13 +13,13 @@ namespace DevHome.Common.TelemetryEvents.SetupFlow;
 [EventData]
 public class ReviewGenerateConfigurationCommandEvent : EventBase
 {
-    public List<string> Flow { get; } = [];
+    public string Flow { get; }
 
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
     public ReviewGenerateConfigurationCommandEvent(List<string> flow)
     {
-        Flow = flow;
+        Flow = string.Join(',', flow);
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
