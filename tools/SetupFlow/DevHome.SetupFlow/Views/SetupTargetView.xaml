@@ -15,7 +15,7 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
-    Loaded="Onloaded"
+    Loaded="OnLoaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>

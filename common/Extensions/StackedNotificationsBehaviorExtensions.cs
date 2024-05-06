@@ -44,7 +44,7 @@ public static class StackedNotificationsBehaviorExtensions
                     Command = command,
                 };
 
-                // Make the command parameter the notification so RelayCommands can reference the notification incase they need
+                // Make the command parameter the notification so RelayCommands can reference the notification in case they need
                 // to close it within the command.
                 notificationToShow.ActionButton.CommandParameter = notificationToShow;
             }

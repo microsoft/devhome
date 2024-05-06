@@ -10,7 +10,7 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
-    Loaded="Onloaded">
+    Loaded="OnLoaded">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
