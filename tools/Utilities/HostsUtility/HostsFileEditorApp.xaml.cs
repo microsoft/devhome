@@ -81,7 +81,7 @@ public partial class HostsFileEditorApp : Application
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
         }).Build();
 
-        var cleanupBackupThread = new Thread(() =>
+        ThreadPool.QueueUserWorkItem(_ =>
         {
             // Delete old backups only if running elevated
             if (!GetService<IElevationHelper>().IsElevated)
@@ -98,9 +98,6 @@ public partial class HostsFileEditorApp : Application
                 _log.Error("Failed to delete backup", ex);
             }
         });
-
-        cleanupBackupThread.IsBackground = true;
-        cleanupBackupThread.Start();
 
         TelemetryFactory.Get<ITelemetry>().Log("HostsFileEditorApp_HostsFileEditorApp_Initialized", LogLevel.Measure, new HostsFileEditorTraceEvent(), ActivityId);
         _log.Information("HostsFileEditorApp Initialized");
