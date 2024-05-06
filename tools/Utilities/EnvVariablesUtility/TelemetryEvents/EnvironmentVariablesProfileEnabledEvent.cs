@@ -12,7 +12,7 @@ namespace DevHome.EnvironmentVariables.TelemetryEvents;
 [EventData]
 public class EnvironmentVariablesProfileEnabledEvent : EventBase
 {
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public bool IsEnabled
     {

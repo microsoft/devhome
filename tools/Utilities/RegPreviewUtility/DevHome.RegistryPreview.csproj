@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
-    <PackageReference Include="PowerToys.RegistryPreviewUILib" Version="0.80.2" />
+    <PackageReference Include="PowerToys.RegistryPreviewUILib" Version="0.80.3" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 

@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="PowerToys.EnvironmentVariablesUILib" Version="0.80.2" />
+    <PackageReference Include="PowerToys.EnvironmentVariablesUILib" Version="0.80.3" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
   <ItemGroup>
