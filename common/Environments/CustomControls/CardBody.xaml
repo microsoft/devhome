@@ -61,7 +61,7 @@
                     ColumnSpacing="{StaticResource ContainerElementSpacing}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <!-- Colored dot that indicates the visual state of the compute system. -->
                     <Ellipse
@@ -74,6 +74,7 @@
                         Visibility="{x:Bind ComputeSystemOperationStatus, Mode=OneWay, Converter={StaticResource EmptyStringToCollapsedConverter}}"
                         Text="{x:Bind CardState, Converter={StaticResource CardStateToLocalizedTextConverter}, Mode=OneWay}"
                         Style="{StaticResource CardBodyStateTextBlockStyle}"
+                        TextWrapping="Wrap"
                         IsTextSelectionEnabled="True"/>
                     <TextBlock
                         Grid.Column="1"
