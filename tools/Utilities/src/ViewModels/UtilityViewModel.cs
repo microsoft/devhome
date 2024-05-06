@@ -6,11 +6,16 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Telemetry;
+using DevHome.Utilities.TelemetryEvents;
+using Serilog;
 
 namespace DevHome.Utilities.ViewModels;
 
 public class UtilityViewModel : INotifyPropertyChanged
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(UtilityViewModel));
+
     private readonly string exeName;
 
     public string Title { get; set; }
@@ -37,6 +42,7 @@ public class UtilityViewModel : INotifyPropertyChanged
         this.exeName = exeName;
         LaunchCommand = new RelayCommand(Launch);
         LaunchAsAdminCommand = new RelayCommand(LaunchAsAdmin);
+        _log.Information("UtilityViewModel created for Title: {Title}, exe: {ExeName}", Title, exeName);
     }
 
     private void Launch()
@@ -51,6 +57,8 @@ public class UtilityViewModel : INotifyPropertyChanged
 
     private void LaunchInternal(bool runAsAdmin)
     {
+        _log.Information("Launching {ExeName}, as admin: {RunAsAdmin}", exeName, runAsAdmin);
+
         // We need to start the process with ShellExecute to run elevated
         var processStartInfo = new ProcessStartInfo
         {
@@ -63,7 +71,10 @@ public class UtilityViewModel : INotifyPropertyChanged
         var process = Process.Start(processStartInfo);
         if (process is null)
         {
-            throw new InvalidOperationException("Failed to start background process");
+            _log.Error("Failed to start process {ExeName}", exeName);
+            throw new InvalidOperationException("Failed to start process");
         }
+
+        TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("Utilities_UtilitiesUserEvent", LogLevel.Measure, new UtilitiesUserEvent(Title, runAsAdmin), null);
     }
 }

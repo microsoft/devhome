@@ -119,7 +119,7 @@
   </resheader>
   <data name="Hosts_Toggle_LoopbackDuplicates.Description" xml:space="preserve">
     <value>127.0.0.1, ::1, ...</value>
-    <comment>;{Locked}</comment>
+    <comment>;{Locked="127.0.0.1, ::1"}</comment>
   </data>
   <data name="Hosts_Toggle_LoopbackDuplicates.Header" xml:space="preserve">
     <value>Consider loopback addresses as duplicates</value>
@@ -151,11 +151,14 @@
   </data>
   <data name="HostsFileEditorAppDescription" xml:space="preserve">
     <value>Hosts File Editor</value>
+    <comment>;{Locked="Hosts"}</comment>
   </data>
   <data name="HostsFileEditorAppDisplayName" xml:space="preserve">
     <value>Hosts File Editor</value>
+    <comment>;{Locked="Hosts"}</comment>
   </data>
   <data name="Hosts_Settings_Title.Text" xml:space="preserve">
     <value>Hosts File Editor Settings</value>
+    <comment>;{Locked="Hosts"}</comment>
   </data>
 </root>
