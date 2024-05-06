@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
@@ -164,9 +165,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
                 await Orchestrator.InitializeElevatedServerAsync();
             }
 
-            // TODO: Arg: Orchestrator.IsSettingUpATargetMachine
-            TelemetryFactory.Get<ITelemetry>().Log("Review_Setup", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance));
-
+            TelemetryFactory.Get<ITelemetry>().Log("Review_SetUp", LogLevel.Critical, new ReviewSetUpCommandEvent(Orchestrator.IsSettingUpATargetMachine));
             await Orchestrator.GoToNextPage();
         }
         catch (Exception e)
@@ -202,16 +201,14 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     private void ReportGenerateConfiguration()
     {
-        // TODO: Arg: flowPages
-        var flowPages = Orchestrator.FlowPages.Select(p => p.GetType().Name);
-        TelemetryFactory.Get<ITelemetry>().Log("Review_GenerateConfiguration", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance));
+        var flowPages = Orchestrator.FlowPages.Select(p => p.GetType().Name).ToList();
+        TelemetryFactory.Get<ITelemetry>().Log("Review_GenerateConfiguration", LogLevel.Critical, new ReviewGenerateConfigurationCommandEvent(flowPages));
 
         var installTasks = Orchestrator.TaskGroups.OfType<AppManagementTaskGroup>()
             .SelectMany(x => x.DSCTasks.OfType<InstallPackageTask>());
 
-        // TODO: Arg: installedPackagesCount, nonInstalledPackages
         var installedPackagesCount = installTasks.Count(task => task.IsInstalled);
-        var nonInstalledPackages = installTasks.Count() - installedPackagesCount;
-        TelemetryFactory.Get<ITelemetry>().Log("Review_GenerateConfigurationForInstallPackages", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance));
+        var nonInstalledPackagesCount = installTasks.Count() - installedPackagesCount;
+        TelemetryFactory.Get<ITelemetry>().Log("Review_GenerateConfigurationForInstallPackages", LogLevel.Critical, new ReviewGenerateConfigurationForInstallEvent(installedPackagesCount, nonInstalledPackagesCount));
     }
 }

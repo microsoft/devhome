@@ -120,9 +120,9 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand]
-    private void OnViewSelectionChanged(string newViewName)
+    private void OnViewSelectionChanged(string newViewMode)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_ViewSelectionChanged", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance), Orchestrator.ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_ViewSelectionChanged", LogLevel.Critical, new ConfigureModeCommandEvent(newViewMode), Orchestrator.ActivityId);
     }
 
     /// <summary>

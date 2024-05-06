@@ -51,7 +51,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         if (restoreDeviceInfoResult.Status == RestoreDeviceInfoStatus.Ok)
         {
             _restoreDeviceInfo = restoreDeviceInfoResult.RestoreDeviceInfo;
-            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_RestoreApps_Initialized", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServiceUsage));
+            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_RestoreApps_Found", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServiceUsage));
         }
         else
         {
