@@ -21,7 +21,6 @@
     <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.22621.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
     <WindowsAppContainer>false</WindowsAppContainer>
-    <MdmergeMergedDir>AnyCPU\$(Configuration)\Merged\</MdmergeMergedDir>
     <OutDir>$(CppOutDir)</OutDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -145,6 +144,7 @@
     <Midl Include="DevHome.QuietBackgroundProcesses.idl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Common.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>
@@ -162,7 +162,7 @@
       <MdmergeInputs Include="@(_MdmergeInputs-&gt;'%(WinMDPath)'-&gt;Distinct())" />
     </ItemGroup>
     <PropertyGroup>
-      <MdmergeMergedDir>AnyCPU\$(Configuration)\Merged\</MdmergeMergedDir>
+      <MdmergeMergedDir>$(Platform)\$(Configuration)\Merged\</MdmergeMergedDir>
       <MdmergeMergeDepth>-n:2</MdmergeMergeDepth>
       <MdmergeParameters>-v</MdmergeParameters>
       <MdmergeParameters>$(MdmergeParameters) -metadata_dir "$(WindowsSDK_MetadataFoundationPath)"</MdmergeParameters>

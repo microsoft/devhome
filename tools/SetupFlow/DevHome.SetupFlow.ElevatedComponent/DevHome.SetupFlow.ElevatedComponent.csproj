@@ -31,13 +31,6 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <!--
-    The ExcludeAssets=runtime is needed to prevent build errors from System.Management.dll being produced in 2 different locations.
-    DevHome.SetupFlow.Common.csproj, uses System.Management instead, to prevent the reference from escaping into here
-    and producing a separate dll that will break the build, this package reference overwrites the one inherited from the comInterop the project.
-    The ComInterop project was used since this The ElevatedComponent already depends on it. But a better solution is needed once we figure out
-    why 2 separate dlls get produced.
-    -->
   </ItemGroup>
 
   <ItemGroup>

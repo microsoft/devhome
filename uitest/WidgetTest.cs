@@ -47,7 +47,7 @@ public class WidgetTest : DevHomeTestBase
             ["CPU"] = dialog => dialog.AddCPUUsageWidget(),
             ["Network"] = dialog => dialog.AddNetworkUsageWidget(),
             ["Memory"] = dialog => dialog.AddMemoryWidget(),
-            ["SSH keychain"] = dialog => dialog.AddSSHWidget(GetTestAssetPath(@"Widgets\EmptySSHConfig")),
+            ["SSH keychain"] = dialog => dialog.AddSSHWidget(),
         };
         var dashboard = Application.NavigateToDashboardPage();
         dashboard.RemoveAllWidgets();

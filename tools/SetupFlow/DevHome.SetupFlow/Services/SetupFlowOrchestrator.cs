@@ -81,6 +81,8 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
     public bool IsSettingUpLocalMachine => CurrentSetupFlowKind == SetupFlowKind.LocalMachine;
 
+    public bool IsInCreateEnvironmentFlow => CurrentSetupFlowKind == SetupFlowKind.CreateEnvironment;
+
     /// <summary>
     /// Occurs right before a page changes
     /// </summary>
@@ -193,12 +195,16 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
     partial void OnCurrentPageViewModelChanging(SetupPageViewModelBase value) => PageChanging?.Invoke(null, EventArgs.Empty);
 
+    public bool IsNavigatingForward { get; private set; }
+
+    public bool IsNavigatingBackward { get; private set; }
+
     [RelayCommand(CanExecute = nameof(CanGoToPreviousPage))]
     public async Task GoToPreviousPage()
     {
         // If an adaptive card is being shown in the setup flow, we need to invoke the action
         // of the previous button in the action set to move the flow to the previous page in the adaptive card.
-        if (DevHomeActionSetRenderer?.ActionButtonInvoker != null)
+        if (DevHomeActionSetRenderer?.ActionButtonInvoker != null && !CurrentPageViewModel.IsInitialAdaptiveCardPage)
         {
             DevHomeActionSetRenderer.InitiateAction(_adaptiveCardPreviousButtonId);
         }
@@ -257,7 +263,7 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
     private async Task SetCurrentPageIndex(int index)
     {
-        var movingForward = index > _currentPageIndex;
+        IsNavigatingForward = index > _currentPageIndex;
 
         SetupPageViewModelBase previousPage = CurrentPageViewModel;
 
@@ -271,12 +277,17 @@ public partial class SetupFlowOrchestrator : ObservableObject
         ShouldShowDoneButton = _currentPageIndex == FlowPages.Count - 1;
 
         // Do post-navigation tasks only when moving forwards, not when going back to a previous page.
-        if (movingForward)
+        if (IsNavigatingForward)
         {
             await previousPage?.OnNavigateFromAsync();
         }
 
+        IsNavigatingBackward = !IsNavigatingForward;
         await CurrentPageViewModel?.OnNavigateToAsync();
+
+        // Reset navigation now that the navigation tasks are done.
+        IsNavigatingForward = false;
+        IsNavigatingBackward = false;
     }
 
     /// <summary>

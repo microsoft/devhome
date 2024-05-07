@@ -19,18 +19,15 @@
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/LightTheme/Background.png</x:String>
-                    <Color x:Key="ButtonAccentBackground">#6659CA</Color>
-                    <Color x:Key="ButtonAccentForeground">#FFFFFF</Color>
                     <Color x:Key="LearnMoreForeground">#005FB8</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
-                    <Color x:Key="ButtonAccentBackground">#47E1DA</Color>
-                    <Color x:Key="ButtonAccentForeground">#000000</Color>
                     <Color x:Key="LearnMoreForeground">#60CDFF</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="HighContrast">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
+                    <Color x:Key="LearnMoreForeground">#60CDFF</Color>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
@@ -274,7 +271,7 @@
                                             Style="{ThemeResource BodyTextStyle}"
                                             Text="{x:Bind Title}" />
 
-                                        <controls:WrapPanel Orientation="Vertical" Margin="0 16 0 20">
+                                        <StackPanel Margin="0 16 0 20">
                                             <TextBlock
                                                 Margin="0 0 0 5"
                                                 TextWrapping="Wrap"
@@ -290,7 +287,7 @@
                                                 Padding="0"
                                                 Margin="0"
                                                 Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
-                                        </controls:WrapPanel>
+                                        </StackPanel>
                                     </StackPanel>
                                 </ScrollViewer>
 

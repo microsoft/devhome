@@ -193,7 +193,7 @@
     <DataTemplate x:Key="HorizontalCardRootForSetupTargetFlowShimmerTemplate">
         <Grid
             Style="{StaticResource HorizontalCardRootForSetupTargetFlow}"
-            Margin="5 0 0 0">
+            Margin="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />

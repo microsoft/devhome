@@ -39,70 +39,7 @@
   },
   "experimentalFeatures": [
     {
-      "identity": "EnvironmentsManagementPage",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ]
-    },
-    {
-      "identity": "EnvironmentsSetupTargetFlow",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ]
-    },
-    {
       "identity": "QuietBackgroundProcessesExperiment",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": false,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": false
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": false
-        }
-      ]
-    },
-    {
-      "identity": "EnvironmentsCreationFlow",
       "enabledByDefault": false,
       "buildTypeOverrides": [
         {

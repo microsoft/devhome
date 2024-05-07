@@ -50,6 +50,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private string _reviewPageDescription;
 
+    public bool ShouldShowGenerateConfigurationFile => !Orchestrator.IsInCreateEnvironmentFlow;
+
     public bool HasApplicationsToInstall => Orchestrator.GetTaskGroup<AppManagementTaskGroup>()?.SetupTasks.Any() == true;
 
     public bool RequiresTermsAgreement => HasApplicationsToInstall;

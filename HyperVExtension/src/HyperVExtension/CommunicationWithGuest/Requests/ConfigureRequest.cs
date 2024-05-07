@@ -8,10 +8,12 @@ namespace HyperVExtension.CommunicationWithGuest;
 /// </summary>
 internal sealed class ConfigureRequest : RequestBase
 {
+    public const string RequestTypeId = "Configure";
+
     private readonly string _configureYaml;
 
     public ConfigureRequest(string configureYaml)
-        : base("Configure")
+        : base(RequestTypeId)
     {
         _configureYaml = configureYaml;
         GenerateJsonData();

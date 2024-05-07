@@ -10,6 +10,7 @@
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="CollapsedWhenTrueBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
         <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectVisibleWhenEmptyConverter" NotEmptyValue="Collapsed" EmptyValue="Visible"/>
     </UserControl.Resources>
 
     <!--- Show the Choose environment header on the page. -->
@@ -30,8 +31,9 @@
         </setupControls:SetupShell>
         <ScrollViewer 
             MaxWidth="{ThemeResource MaxPageContentWidth}"
+            Margin="{ThemeResource ContentPageMargin}"
             Grid.Row="1">
-            <Grid >
+            <Grid>
                 <Grid
                     HorizontalAlignment="Stretch"
                     Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
@@ -39,23 +41,34 @@
                         IsOpen="True"
                         x:Uid="ErrorRetrievingAdaptiveCardSession"
                         Severity="Error"
-                        Message="{x:Bind ViewModel.SessionErrorMessage}" >
+                        Message="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay}" >
                     </InfoBar>
                 </Grid>
 
-                <!--- Show the adaptive card on the page if its loaded -->
-                <Grid 
+                <!--- Show the adaptive card on the page if its loaded. -15 Padding added as the adaptive card adds an extra 40px of padding on all sides -->
+                <Grid
                     Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay}"
-                    x:Name="AdaptiveCardGrid" />
+                    x:Name="AdaptiveCardGrid" 
+                    Padding="-15"/>
 
                 <Grid
                     HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    ColumnSpacing="10"
                     Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
                     <ProgressRing
+                        Grid.Column="0"
+                        Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectVisibleWhenEmptyConverter}}"
                         IsActive="True"
-                        Width="25"
-                        Height="25"
-                        Margin="0,150,0,20"/>
+                        Width="20"
+                        Height="20"/>
+                    <TextBlock 
+                        Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectVisibleWhenEmptyConverter}}"
+                        Grid.Column="1" Text="{x:Bind ViewModel.AdaptiveCardLoadingMessage, Mode=OneWay}" />
                 </Grid>
             </Grid>
         </ScrollViewer>

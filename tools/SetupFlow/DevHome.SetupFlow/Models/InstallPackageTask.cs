@@ -45,6 +45,11 @@ public class InstallPackageTask : ISetupTask
     // installation in the WinGet COM API, but we do get it after installation.
     public bool RequiresReboot { get; set; }
 
+    /// <summary>
+    /// Gets target device name. Inherited via ISetupTask but unused.
+    /// </summary>
+    public string TargetName => string.Empty;
+
     // May potentially be moved to a central list in the future.
     public bool WasInstallSuccessful
     {
@@ -118,6 +123,7 @@ public class InstallPackageTask : ISetupTask
             PackageId = _package.Id,
             CatalogName = _package.CatalogName,
             Version = _installVersion,
+            IsElevationRequired = _package.IsElevationRequired,
         };
     }
 

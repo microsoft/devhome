@@ -59,9 +59,11 @@ Try {
     foreach ($config in $Configuration.Split(",")) {
       $msbuildArgs = @(
         ("$PSScriptRoot\DevHomeSDK.sln"),
+        ("/m"),
         ("/p:Platform="+$platform),
         ("/p:Configuration="+$config),
-        ("/binaryLogger:DevHome.SDK.$platform.$config.binlog")
+        ("/binaryLogger:DevHome.SDK.$platform.$config.binlog"),
+        ("/p:VersionNumber="+$VersionOfSDK)
       )
 
       & $msbuildPath $msbuildArgs

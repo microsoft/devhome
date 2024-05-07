@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Helpers;
@@ -11,6 +13,7 @@ using DevHome.Common.Helpers;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation;
+using Windows.Win32;
 
 namespace DevHome.Common.Environments.Models;
 
@@ -31,20 +34,72 @@ public class ComputeSystem
 
     public string DisplayName { get; private set; } = string.Empty;
 
-    public ComputeSystemOperations SupportedOperations { get; private set; }
+    // We need to give DevHomeAzureExtension the ability to SetForeground on the processes it creates. In some cases
+    // these processes need to show UI, in some cases they call APIs that only succeed if they are called from a
+    // foreground process. The proper way to do this is to call CoAllowSetForegroundWindow on the COM interface
+    // that we are about to use, which should automatically do all of this for us.  Unfortunately the proxy classes
+    // that we use in this file do not come with the necessary support (implementing IForegroundTransfer) by
+    // default, so we have to call AllowSetForegroundWindow ourselves.
+    // NOTE: This will only set the first process it finds named DevHomeAzureExtension. This workaround does
+    // not support multiple DevHomeAzureExtension (Preview, Canary, etc.) processes running at the same time
+    // NOTE: This is a temporary workaround.  A proper fix is being tracked via this
+    // P0 bug: https://github.com/microsoft/devhome/issues/2797
+    private bool SetAllowForegroundOnDevHomeAzureExtension()
+    {
+        foreach (Process process in Process.GetProcesses())
+        {
+            try
+            {
+                if (process.ProcessName == "DevHomeAzureExtension")
+                {
+                    var allowResult = PInvoke.AllowSetForegroundWindow((uint)process.Id);
+                    if (!allowResult)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"Unable to allow azure extension to set the foreground window for PID {process.Id}: {ex.Message}");
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    public ComputeSystemOperations SupportedOperations
+    {
+        get
+        {
+            try
+            {
+                return _computeSystem.SupportedOperations;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"Failed to get supported operations for {DisplayName}");
+                return ComputeSystemOperations.None;
+            }
+        }
+    }
 
     public string SupplementalDisplayName { get; private set; } = string.Empty;
 
     public IDeveloperId AssociatedDeveloperId { get; private set; }
 
-    public string? AssociatedProviderId { get; private set; } = string.Empty;
+    public string AssociatedProviderId { get; private set; } = string.Empty;
 
     public ComputeSystem(IComputeSystem computeSystem)
     {
         _computeSystem = computeSystem;
         Id = new string(computeSystem.Id);
         DisplayName = new string(computeSystem.DisplayName);
-        SupportedOperations = computeSystem.SupportedOperations;
         SupplementalDisplayName = new string(computeSystem.SupplementalDisplayName);
         AssociatedDeveloperId = computeSystem.AssociatedDeveloperId;
         AssociatedProviderId = new string(computeSystem.AssociatedProviderId);
@@ -275,7 +330,145 @@ public class ComputeSystem
         }
     }
 
-    public IApplyConfigurationOperation ApplyConfiguration(string configuration)
+    public async Task<ComputeSystemOperationResult> PinToStartMenuAsync(string options)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                if (!SetAllowForegroundOnDevHomeAzureExtension())
+                {
+                    throw new InvalidOperationException();
+                }
+
+                return await computeSystem2.PinToStartMenuAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"PinToStartMenuAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemOperationResult> UnpinFromStartMenuAsync(string options)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                if (!SetAllowForegroundOnDevHomeAzureExtension())
+                {
+                    throw new InvalidOperationException();
+                }
+
+                return await computeSystem2.UnpinFromStartMenuAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"UnpinFromStartMenuAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemOperationResult> PinToTaskbarAsync(string options)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                if (!SetAllowForegroundOnDevHomeAzureExtension())
+                {
+                    throw new InvalidOperationException();
+                }
+
+                return await computeSystem2.PinToTaskbarAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"PinToTaskbarAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemOperationResult> UnpinFromTaskbarAsync(string options)
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                if (!SetAllowForegroundOnDevHomeAzureExtension())
+                {
+                    throw new InvalidOperationException();
+                }
+
+                return await computeSystem2.UnpinFromTaskbarAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"UnpinFromTaskbarAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemPinnedResult> GetIsPinnedToStartMenuAsync()
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                if (!SetAllowForegroundOnDevHomeAzureExtension())
+                {
+                    throw new InvalidOperationException();
+                }
+
+                return await computeSystem2.GetIsPinnedToStartMenuAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"GetIsPinnedToStartMenuAsync for: {this} failed due to exception");
+            return new ComputeSystemPinnedResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public async Task<ComputeSystemPinnedResult> GetIsPinnedToTaskbarAsync()
+    {
+        try
+        {
+            if (_computeSystem is IComputeSystem2 computeSystem2)
+            {
+                if (!SetAllowForegroundOnDevHomeAzureExtension())
+                {
+                    throw new InvalidOperationException();
+                }
+
+                return await computeSystem2.GetIsPinnedToTaskbarAsync();
+            }
+
+            throw new InvalidOperationException();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"GetIsPinnedToTaskbarAsync for: {this} failed due to exception");
+            return new ComputeSystemPinnedResult(ex, errorString, ex.Message);
+        }
+    }
+
+    public IApplyConfigurationOperation CreateApplyConfigurationOperation(string configuration)
     {
         try
         {
@@ -283,7 +476,7 @@ public class ComputeSystem
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"ApplyConfiguration for: {this} failed due to exception");
+            _log.Error(ex, $"CreateApplyConfigurationOperation for: {this} failed due to exception");
             throw;
         }
     }

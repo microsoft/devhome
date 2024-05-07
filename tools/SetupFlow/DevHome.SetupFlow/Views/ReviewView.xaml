@@ -73,7 +73,7 @@
                             <TextBlock VerticalAlignment="Center"
                                        Style="{StaticResource BodyStrongTextBlockStyle}" 
                                        Text="{x:Bind ViewModel.ReviewPageExpanderDescription, Mode=OneWay}" />
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" Visibility="{x:Bind ViewModel.ShouldShowGenerateConfigurationFile}">
                                 <Button Command="{x:Bind ViewModel.DownloadConfigurationCommand}"
                                         x:Uid="Review_GenerateConfigurationFileButton"/>
                                 <!-- Info icon -->

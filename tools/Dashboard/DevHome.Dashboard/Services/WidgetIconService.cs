@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using DevHome.Dashboard.ComSafeWidgetObjects;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -37,7 +38,7 @@ public class WidgetIconService : IWidgetIconService
         _widgetDarkIconCache.TryRemove(definitionId, out _);
     }
 
-    public async Task<BitmapImage> GetIconFromCacheAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
+    public async Task<BitmapImage> GetIconFromCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme theme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
         BitmapImage bitmapImage;
@@ -60,19 +61,19 @@ public class WidgetIconService : IWidgetIconService
         // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
         if (theme == ElementTheme.Dark)
         {
-            bitmapImage = await WidgetIconToBitmapImageAsync(widgetDefinition.GetThemeResource(WidgetTheme.Dark).Icon);
+            bitmapImage = await WidgetIconToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Dark)).Icon);
             _widgetDarkIconCache.TryAdd(widgetDefinitionId, bitmapImage);
         }
         else
         {
-            bitmapImage = await WidgetIconToBitmapImageAsync(widgetDefinition.GetThemeResource(WidgetTheme.Light).Icon);
+            bitmapImage = await WidgetIconToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Light)).Icon);
             _widgetLightIconCache.TryAdd(widgetDefinitionId, bitmapImage);
         }
 
         return bitmapImage;
     }
 
-    public async Task<Brush> GetBrushForWidgetIconAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
+    public async Task<Brush> GetBrushForWidgetIconAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme theme)
     {
         var image = await GetIconFromCacheAsync(widgetDefinition, theme);
 

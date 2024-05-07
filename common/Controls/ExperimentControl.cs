@@ -17,6 +17,7 @@ public sealed partial class ExperimentControl : ContentControl
     {
         // Hide the control from the tab order.
         IsTabStop = false;
+        Content = DefaultContent;
     }
 
     /// <summary>
@@ -70,6 +71,7 @@ public sealed partial class ExperimentControl : ContentControl
 
         var experimentationService = Application.Current.GetService<IExperimentationService>();
         var isExperimentEnabled = experimentationService.IsExperimentEnabled(ExperimentKey);
+        isExperimentEnabled |= true;
         return isExperimentEnabled ? ExperimentContent : DefaultContent;
     }
 

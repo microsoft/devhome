@@ -47,14 +47,14 @@ internal class ResponseBase : IHostResponse
 
     public virtual DateTime Timestamp { get; set; }
 
-    public virtual IResponseMessage GetResponseMessage()
+    public virtual string GetResponseData()
     {
         if (JsonData == null)
         {
             GenerateJsonData();
         }
 
-        return new ResponseMessage(ResponseId, JsonData!.ToJsonString());
+        return JsonData!.ToJsonString();
     }
 
     public virtual bool SendResponse { get; set; }

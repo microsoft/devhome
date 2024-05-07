@@ -11,6 +11,7 @@ using HyperVExtension.Helpers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using Windows.ApplicationModel;
 using Windows.Foundation;
 
 namespace HyperVExtension.Models;
@@ -58,7 +59,9 @@ public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSess
         bool showOkButton;
         string cancelText;
         string loginRequiredText;
+        var loginRequiredText2 = string.Empty;
         string loginRequiredDescriptionText;
+        var loginRequiredDescriptionText2 = string.Empty;
         string icon;
         if (_attemptNumber > MaxAttempts)
         {
@@ -67,7 +70,9 @@ public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSess
             attemptNumberInText = MaxAttempts;
             showOkButton = false;
             loginRequiredText = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredTextAfterLastAttempt");
+            loginRequiredText2 = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredTextAfterLastAttempt2");
             loginRequiredDescriptionText = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredDescriptionTextAfterLastAttempt");
+            loginRequiredDescriptionText2 = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredDescriptionTextAfterLastAttempt2");
             cancelText = _stringResource.GetLocalized("WaitForLoginRequest/DismissText");
             icon = ConvertIconToDataString("DarkError.png");
         }
@@ -92,7 +97,9 @@ public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSess
             { "title", title },
             { "description", description },
             { "loginRequiredText", loginRequiredText },
+            { "loginRequiredText2", loginRequiredText2 },
             { "loginRequiredDescriptionText", loginRequiredDescriptionText },
+            { "loginRequiredDescriptionText2", loginRequiredDescriptionText2 },
             { "okText", okText },
             { "cancelText", cancelText },
             { "attempt", _attemptNumber },
@@ -185,14 +192,14 @@ public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSess
             return _template;
         }
 
-        var path = Path.Combine(AppContext.BaseDirectory, @"HyperVExtension\Templates\", "WaitForLoginAdaptiveCardTemplate.json");
+        var path = Path.Combine(Package.Current.EffectivePath, @"HyperVExtension\Templates\", "WaitForLoginAdaptiveCardTemplate.json");
         _template = File.ReadAllText(path, Encoding.Default) ?? throw new FileNotFoundException(path);
         return _template;
     }
 
     private static string ConvertIconToDataString(string fileName)
     {
-        var path = Path.Combine(AppContext.BaseDirectory, @"HyperVExtension\Templates\", fileName);
+        var path = Path.Combine(Package.Current.EffectivePath, @"HyperVExtension\Templates\", fileName);
         var imageData = Convert.ToBase64String(File.ReadAllBytes(path.ToString()));
         return imageData;
     }

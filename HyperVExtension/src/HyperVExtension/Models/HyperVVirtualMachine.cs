@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Management.Automation;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -11,6 +12,7 @@ using HyperVExtension.Common.Extensions;
 using HyperVExtension.CommunicationWithGuest;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
+using HyperVExtension.HostGuestCommunication;
 using HyperVExtension.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
@@ -18,6 +20,7 @@ using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.Win32;
 using Windows.Win32.Foundation;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
@@ -451,7 +454,29 @@ public class HyperVVirtualMachine : IComputeSystem
         {
             try
             {
-                _hyperVManager.ConnectToVirtualMachine(VmId);
+                _log.Information($"Starting vmconnect launch attempt on {DateTime.Now}: VM details: {this}");
+                ProcessStartInfo processStartInfo = new ProcessStartInfo("vmconnect.exe");
+                processStartInfo.UseShellExecute = true;
+
+                // The -G flag allows us to use the Id of the VM to tell vmconnect.exe which VM to launch into.
+                processStartInfo.Arguments = $"localhost -G {Id}";
+
+                using (Process vmConnectProcess = new Process())
+                {
+                    vmConnectProcess.StartInfo = processStartInfo;
+
+                    // We start the process and will return success if it does not throw an exception.
+                    // If vmconnect has an error, it will be displayed to the user in a message dialog
+                    // outside of our control.
+                    vmConnectProcess.Start();
+
+                    // Note: Just because the vmconnect.exe launches in the foreground does not mean it will launch
+                    // in front of the Dev Home window. Since the vmconnect.exe is a separate process being launched
+                    // outside of Dev Home, it will not be parented to the Dev Home window. The shell will launch it
+                    // in its last known location.
+                    PInvoke.SetForegroundWindow((HWND)vmConnectProcess.MainWindowHandle);
+                }
+
                 _log.Information($"Successful vmconnect launch attempt on {DateTime.Now}: VM details: {this}");
                 return new ComputeSystemOperationResult();
             }
@@ -556,8 +581,7 @@ public class HyperVVirtualMachine : IComputeSystem
 
         try
         {
-            // TODO: Check if VM is already running. Set progress to Starting VM if needed.
-            // Hyper-V KVP service can set succeed even if VM is not running and VM will receive
+            // Start VM first. Hyper-V KVP service can set succeed even if VM is not running and VM will receive
             // registry key changes next time it starts.
             var startResult = Start(string.Empty);
             if (startResult.Result.Status == ProviderOperationStatus.Failure)
@@ -565,18 +589,39 @@ public class HyperVVirtualMachine : IComputeSystem
                 return operation.CompleteOperation(new HostGuestCommunication.ApplyConfigurationResult(startResult.Result.ExtendedError.HResult, startResult.Result.DisplayMessage));
             }
 
-            var guestSession = new GuestKvpSession(Guid.Parse(Id));
+            using var guestSession = new GuestKvpSession(Guid.Parse(Id));
 
             // Query VM by sending a request to DevSetupAgent.
-            var getVersionRequest = new GetVersionRequest();
-            guestSession.SendRequest(getVersionRequest, CancellationToken.None);
-            var getVersionResponses = guestSession.WaitForResponse(getVersionRequest.RequestId, TimeSpan.FromSeconds(15), true, CancellationToken.None);
-            if (getVersionResponses.Count > 0)
+            var getStateRequest = new GetStateRequest();
+            var communicationId = guestSession.SendRequest(getStateRequest, CancellationToken.None);
+            var getStateResponses = guestSession.WaitForResponse(communicationId, getStateRequest.RequestId, TimeSpan.FromSeconds(15), false, CancellationToken.None);
+            if (getStateResponses.Count > 0)
             {
-                var response = getVersionResponses[0];
-                if (response is GetVersionResponse getVersionResponse)
+                var response = getStateResponses[0];
+                if (response is GetStateResponse getStateResponse)
                 {
-                    // TODO: Check if VM can accept new Configure requests. Or if we need to update DevSetupAgent to a new version.
+                    // Check if VM can accept new Configure requests. We don't support reporting progress for requests
+                    // that were started somehow outside of this operation yet. So for now, abort this operation.
+                    // This could only happen if Dev Home was restarted while a configuration task was running.
+                    if (getStateResponse.StateData.RequestsInQueue.Count > 0)
+                    {
+                        // Set CommunicationId counter to the value higher than the highest CommunicationId in the queue
+                        // to avoid conflicts with previous requests.
+                        uint communicationIdCounter = 1; // We've already sent at least one message.
+                        foreach (var request in getStateResponse.StateData.RequestsInQueue)
+                        {
+                            var currentCounter = MessageHelper.GetCounterFromCommunicationId(request.CommunicationId);
+                            if (currentCounter > communicationIdCounter)
+                            {
+                                communicationIdCounter = currentCounter;
+                            }
+                        }
+
+                        guestSession.SetNextCommunicationIdCounter(communicationIdCounter);
+
+                        _log.Error($"VM is busy with another configuration task. VM details: {this}");
+                        return operation.CompleteOperation(new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_ABORT, "VM is busy with another configuration task"));
+                    }
                 }
                 else
                 {
@@ -618,8 +663,8 @@ public class HyperVVirtualMachine : IComputeSystem
             for (var i = 0; i < MaxRetryAttempts; i++)
             {
                 var userLoggedInRequest = new IsUserLoggedInRequest();
-                guestSession.SendRequest(userLoggedInRequest, CancellationToken.None);
-                var userLoggedInResponses = guestSession.WaitForResponse(userLoggedInRequest.RequestId, TimeSpan.FromSeconds(15), true, CancellationToken.None);
+                communicationId = guestSession.SendRequest(userLoggedInRequest, CancellationToken.None);
+                var userLoggedInResponses = guestSession.WaitForResponse(communicationId, userLoggedInRequest.RequestId, TimeSpan.FromSeconds(15), false, CancellationToken.None);
                 if (userLoggedInResponses.Count > 0)
                 {
                     var response = userLoggedInResponses[0];
@@ -660,7 +705,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
 
             var configureRequest = new ConfigureRequest(operation.Configuration);
-            guestSession.SendRequest(configureRequest, CancellationToken.None);
+            communicationId = guestSession.SendRequest(configureRequest, CancellationToken.None);
 
             // Wait for response. 5 hours is an arbitrary period of time that should be big enough
             // for most scenarios.
@@ -674,7 +719,7 @@ public class HyperVVirtualMachine : IComputeSystem
             var startTime = DateTime.Now;
             while ((DateTime.Now - startTime) < waitTime)
             {
-                var responses = guestSession.WaitForResponse(configureRequest.RequestId, TimeSpan.FromSeconds(30), true, CancellationToken.None);
+                var responses = guestSession.WaitForResponse(communicationId, configureRequest.RequestId, TimeSpan.FromSeconds(30), true, CancellationToken.None);
 
                 foreach (var response in responses)
                 {
@@ -691,7 +736,7 @@ public class HyperVVirtualMachine : IComputeSystem
                         LogApplyConfigurationProgress(configureProgressResponse.ProgressData);
 
                         // Create SDK's result. Set Completed status and event.
-                        operation.SetProgress(ConfigurationSetState.InProgress, configureProgressResponse.ProgressData, null);
+                        operation.SetProgress(SDK.ConfigurationSetState.InProgress, configureProgressResponse.ProgressData, null);
                     }
                     else
                     {
@@ -731,7 +776,7 @@ public class HyperVVirtualMachine : IComputeSystem
         var powerShell = _host.GetService<IPowerShellService>();
         var credentialsAdaptiveCardSession = new VmCredentialAdaptiveCardSession(_host, operation, attemptNumber);
 
-        operation.SetProgress(ConfigurationSetState.WaitingForAdminUserLogon, null, credentialsAdaptiveCardSession);
+        operation.SetProgress(SDK.ConfigurationSetState.WaitingForAdminUserLogon, null, credentialsAdaptiveCardSession);
 
         (var userName, var password) = credentialsAdaptiveCardSession.WaitForCredentials();
 
@@ -752,7 +797,7 @@ public class HyperVVirtualMachine : IComputeSystem
         // Ask user to login to the VM and wait for confirmation.
         var waitForLoginAdaptiveCardSession = new WaitForLoginAdaptiveCardSession(_host, operation, attemptNumber);
 
-        operation.SetProgress(ConfigurationSetState.WaitingForUserLogon, null, waitForLoginAdaptiveCardSession);
+        operation.SetProgress(SDK.ConfigurationSetState.WaitingForUserLogon, null, waitForLoginAdaptiveCardSession);
 
         return waitForLoginAdaptiveCardSession.WaitForUserResponse();
     }
@@ -798,11 +843,21 @@ public class HyperVVirtualMachine : IComputeSystem
 
     private string OperationErrorString(ComputeSystemOperations operation)
     {
+        if (operation == ComputeSystemOperations.Delete)
+        {
+            return $"Failed to complete {operation} operation on {DateTime.Now}: for VM {DisplayName}";
+        }
+
         return $"Failed to complete {operation} operation on {DateTime.Now}: VM details: {this}";
     }
 
     private string OperationSuccessString(ComputeSystemOperations operation)
     {
+        if (operation == ComputeSystemOperations.Delete)
+        {
+            return $"Successfully completed {operation} operation on {DateTime.Now}: for VM {DisplayName}";
+        }
+
         return $"Successfully completed {operation} operation on {DateTime.Now}: VM details: {this}";
     }
 }

@@ -117,6 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BrowseButton.Content" xml:space="preserve">
+    <value>Browse</value>
+    <comment>Browse to choose directory</comment>
+  </data>
+  <data name="ChooseDirectory.PlaceholderText" xml:space="preserve">
+    <value>Choose a directory</value>
+    <comment>Choose directory</comment>
+</data>
   <data name="ChooseDirectoryPromptText" xml:space="preserve">
     <value>Choose directory on Dev Drive...</value>
     <comment>Choose directory on dev drive</comment>
@@ -126,16 +134,24 @@
     <comment>Dev drive size free</comment>
   </data>
   <data name="DevDriveInsightsCard.Description" xml:space="preserve">
-    <value>All things, Dev Drives, optimizations, etc.</value>
+    <value>All things Dev Drive, optimizations, etc.</value>
     <comment>The description for the Dev Drive Insights settings card</comment>
   </data>
   <data name="DevDriveInsightsCard.Header" xml:space="preserve">
-    <value>Dev Drive Insights</value>
+    <value>Dev Drive insights</value>
     <comment>The header for the Dev Drive Insights settings card</comment>
   </data>
   <data name="DevDriveInsights_Header" xml:space="preserve">
-    <value>Dev Drive Insights</value>
+    <value>Dev Drive insights</value>
     <comment>Header for Dev Drive insights page in the breadcrumb bar</comment>
+  </data>
+  <data name="DevDriveOptimizationSuggestion" xml:space="preserve">
+    <value>Suggestion</value>
+    <comment>Dev drive optimization suggestion</comment>
+  </data>
+  <data name="DevDriveOptimized" xml:space="preserve">
+    <value>Optimized</value>
+    <comment>Dev drive optimized indicator</comment>
   </data>
   <data name="DevDriveSizeText" xml:space="preserve">
     <value>Size - {0} {1}</value>
@@ -144,6 +160,18 @@
   <data name="DevDriveUsedSizeText" xml:space="preserve">
     <value>{0} {1} used</value>
     <comment>Dev drive size used</comment>
+  </data>
+  <data name="DevDriveVolumesHeader.Text" xml:space="preserve">
+    <value>Dev Drive volumes</value>
+    <comment>Header for Dev Drive volumes list in Dev Drive insights page</comment>
+  </data>
+  <data name="DevDriveTrusted.Text" xml:space="preserve">
+    <value>Trusted</value>
+    <comment>Dev drive is trusted</comment>
+  </data>
+  <data name="DevDriveUntrusted.Text" xml:space="preserve">
+    <value>Untrusted</value>
+    <comment>Dev drive is not trusted</comment>
   </data>
   <data name="FileExplorerCard.Description" xml:space="preserve">
     <value>Adjust these settings for a more developer-friendly experience using File Explorer</value>
@@ -169,6 +197,10 @@
     <value>End Task</value>
     <comment>The header for the end task on task bar settings card</comment>
   </data>
+  <data name="MainPage_Header" xml:space="preserve">
+    <value>Windows customization</value>
+    <comment>Header for main Windows customization page in the breadcrumb bar</comment>
+  </data>
   <data name="MakeChangesText" xml:space="preserve">
     <value>Make changes</value>
     <comment>Make changes button on dialog</comment>
@@ -176,6 +208,10 @@
   <data name="MakeTheChangeText" xml:space="preserve">
     <value>Make the change</value>
     <comment>Make the change button on optimizer card</comment>
+  </data>
+  <data name="MakeTrusted.Text" xml:space="preserve">
+    <value>Trust</value>
+    <comment>Make dev drive trusted</comment>
   </data>
   <data name="MoreWindowsSettingsSectionDescription.Text" xml:space="preserve">
     <value>Additional settings below can be configured in the system settings app</value>
@@ -201,6 +237,18 @@
     <value>Global environment variable {0} is set to {1}, which is not located on Dev Drive. Move contents of this folder to a directory on Dev Drive such as {2} and set {3} to that chosen directory on Dev Drive</value>
     <comment>Optimizer dev drive description</comment>
   </data>
+  <data name="OptimizerDevDriveDescriptionWithEnvVarNotSet" xml:space="preserve">
+    <value>Move contents of {0} to a directory on Dev Drive such as {1} and set {2} to that chosen directory on Dev Drive</value>
+    <comment>Optimizer dev drive description when environment variable is not set</comment>
+  </data>
+  <data name="PackageCachesDescription.Text" xml:space="preserve">
+    <value>A package cache is the global folder location used by an application to store files for installed software. These source files are needed when you want to update, uninstall, or repair the installed software. </value>
+    <comment>Package caches description</comment>
+  </data>
+  <data name="PackageCachesLearnMoreLink.Text" xml:space="preserve">
+    <value>Learn more</value>
+    <comment>Package caches hyperlink text</comment>
+  </data>
   <data name="SettingsAutoSuggestBox.PlaceholderText" xml:space="preserve">
     <value>Search</value>
     <comment>The placholder text for the settings auto suggest box</comment>
@@ -225,17 +273,17 @@
     <value>Show hidden and system files</value>
     <comment>The header for the show hidden and system files setting.</comment>
   </data>
-  <data name="DevDriveOptimizationSuggestion" xml:space="preserve">
-    <value>Suggestion</value>
-    <comment>Dev drive optimization suggestion</comment>
+  <data name="UntrustedDevDrive.Description" xml:space="preserve">
+    <value>Microsoft Defender performance mode is only available for trusted Dev Drive volumes </value>
+    <comment>The meaning of untrusted dev drives.</comment>
   </data>
-  <data name="DevDriveOptimized" xml:space="preserve">
-    <value>Optimized</value>
-    <comment>Dev drive optimized indicator</comment>
+  <data name="UntrustedDevDrive.Header" xml:space="preserve">
+    <value>Untrusted Dev Drive</value>
+    <comment>Untrusted Dev Drive</comment>
   </data>
-  <data name="MainPage_Header" xml:space="preserve">
-    <value>Windows customization</value>
-    <comment>Header for main Windows customization page in the breadcrumb bar</comment>
+  <data name="UntrustedDevDriveLearnMoreText" xml:space="preserve">
+    <value>Learn more</value>
+    <comment>Learn more link for untrusted dev drives.</comment>
   </data>
   <data name="WindowsDeveloperCard.ActionIconToolTip" xml:space="preserve">
     <value>Open the Windows Settings app</value>
@@ -248,57 +296,5 @@
   <data name="WindowsDeveloperCard.Header" xml:space="preserve">
     <value>Windows developer settings</value>
     <comment>The header for the Windows developer settings card</comment>
-  </data>
-
-  <!-- Quiet Background Processes -->
-  <data name="QuietBackgroundProcesses_QuietButton_Start" xml:space="preserve">
-    <value>Start session</value>
-    <comment>Button that starts a quiet background session</comment>
-  </data>
-  <data name="QuietBackgroundProcesses_QuietButton_Stop" xml:space="preserve">
-    <value>Stop session</value>
-    <comment>Button that stops a quiet background session</comment>
-  </data>
-  <data name="QuietBackgroundProcesses.Description" xml:space="preserve">
-    <value>Silence and track background processes that may hinder device performance</value>
-    <comment>Description of the Quiet Background Processes feature</comment>
-  </data>
-  <data name="QuietBackgroundProcesses.Header" xml:space="preserve">
-    <value>Quiet background processes</value>
-    <comment>Inline title of the Quiet Background Processes feature</comment>
-  </data>
-  <data name="QuietBackgroundProcessesExplanation.Description" xml:space="preserve">
-    <value>This feature can be activated for 2 hours.</value>
-    <comment>A description of the Quiet Background Processes time window</comment>
-  </data>
-  <data name="QuietBackgroundProcessesExplanation_LinkToDocs.Text" xml:space="preserve">
-    <value>Link to docs</value>
-    <comment>Link that launches documentation</comment>
-  </data>
-  <data name="QuietBackgroundProcessesExplanation_ProvideFeedback.Text" xml:space="preserve">
-    <value>Provide feedback</value>
-    <comment>Link that launches feedback</comment>
-  </data>
-  <data name="QuietBackgroundProcessesExplanation_RelatedLinks.Text" xml:space="preserve">
-    <value>Related links</value>
-    <comment>Label for the doc links</comment>
-  </data>
-
-  <!-- Quiet Background Processes Status Messages -->
-  <data name="QuietBackgroundProcesses_Status_FeatureNotSupported" xml:space="preserve">
-    <value>Feature not supported on this version of Windows</value>
-    <comment>Indicates that this OS isn't new enough to support the feature</comment>
-  </data>
-  <data name="QuietBackgroundProcesses_Status_SessionError" xml:space="preserve">
-    <value>Session Error</value>
-    <comment>Something went wrong when running the session</comment>
-  </data>
-  <data name="QuietBackgroundProcesses_Status_SessionEnded" xml:space="preserve">
-    <value>Session ended</value>
-    <comment>The quiet session was cancelled or the time expired</comment>
-  </data>
-  <data name="QuietBackgroundProcesses_Status_UnableToCancelSession" xml:space="preserve">
-    <value>Unable to cancel session</value>
-    <comment>Something went wrong when cancelling the session</comment>
   </data>
 </root>

@@ -6,3 +6,4 @@ S_OK
 MAX_PATH
 SFBS_FLAGS
 StrFormatByteSizeEx
+SetForegroundWindow

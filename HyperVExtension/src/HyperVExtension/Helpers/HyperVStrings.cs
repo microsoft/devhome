@@ -96,7 +96,4 @@ public static class HyperVStrings
     public const string RunningState = "Running";
     public const string PausedState = "Paused";
     public const string SavedState = "Saved";
-
-    // Hyper-V scripts
-    public const string VmConnectScript = "vmconnect.exe localhost -G";
 }
