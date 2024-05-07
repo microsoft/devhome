@@ -1,10 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Serilog;
 
 namespace DevHome.Common.Controls;
 
@@ -13,6 +15,8 @@ namespace DevHome.Common.Controls;
 /// </summary>
 public sealed partial class ExperimentControl : ContentControl
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExperimentControl));
+
     public ExperimentControl()
     {
         // Hide the control from the tab order.
@@ -69,10 +73,17 @@ public sealed partial class ExperimentControl : ContentControl
             return DefaultContent;
         }
 
-        var experimentationService = Application.Current.GetService<IExperimentationService>();
-        var isExperimentEnabled = experimentationService.IsExperimentEnabled(ExperimentKey);
-        isExperimentEnabled |= true;
-        return isExperimentEnabled ? ExperimentContent : DefaultContent;
+        try
+        {
+            var experimentationService = Application.Current.GetService<IExperimentationService>();
+            var isExperimentEnabled = experimentationService.IsExperimentEnabled(ExperimentKey);
+            return isExperimentEnabled ? ExperimentContent : DefaultContent;
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to resolve experiment '{ExperimentKey}'");
+            return DefaultContent;
+        }
     }
 
     // List of dependency properties.
