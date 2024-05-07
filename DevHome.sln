@@ -144,6 +144,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.RegistryPreview", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.EnvironmentVariables", "tools\Utilities\EnvVariablesUtility\DevHome.EnvironmentVariables.csproj", "{5F9749BC-F34E-4F45-933F-61E0F3ED521F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevHome.Telemetry.Native", "telemetry\DevHome.Telemetry.Native\DevHome.Telemetry.Native.vcxproj", "{8EB52F7D-D216-49FF-BF16-DE06E4695950}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -706,6 +708,18 @@ Global
 		{5F9749BC-F34E-4F45-933F-61E0F3ED521F}.Release|x64.Build.0 = Release|x64
 		{5F9749BC-F34E-4F45-933F-61E0F3ED521F}.Release|x86.ActiveCfg = Release|x86
 		{5F9749BC-F34E-4F45-933F-61E0F3ED521F}.Release|x86.Build.0 = Release|x86
+		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Debug|arm64.ActiveCfg = Debug|x64
+		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Debug|arm64.Build.0 = Debug|x64
+		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Debug|x64.ActiveCfg = Debug|x64
+		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Debug|x64.Build.0 = Debug|x64
+		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Debug|x86.ActiveCfg = Debug|Win32
+		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Debug|x86.Build.0 = Debug|Win32
+		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Release|arm64.ActiveCfg = Release|x64
+		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Release|arm64.Build.0 = Release|x64
+		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Release|x64.ActiveCfg = Release|x64
+		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Release|x64.Build.0 = Release|x64
+		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Release|x86.ActiveCfg = Release|Win32
+		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

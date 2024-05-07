@@ -32,10 +32,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(MainPageViewModel));
 
-    private const string EnvironmentsSetupFlowFeatureName = "EnvironmentsSetupTargetFlow";
-
-    private const string EnvironmentsCreationFlowFeatureName = "EnvironmentsCreationFlow";
-
     private readonly IHost _host;
     private readonly IWindowsPackageManager _wpm;
     private readonly IDesiredStateConfiguration _dsc;
@@ -58,10 +54,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     public string MainPageEnvironmentSetupGroupName => StringResource.GetLocalized(StringResourceKey.MainPageEnvironmentSetupGroup);
 
     public string MainPageQuickStepsGroupName => StringResource.GetLocalized(StringResourceKey.MainPageQuickConfigurationGroup);
-
-    public bool ShouldShowSetupTargetItem => _experimentationService.IsFeatureEnabled(EnvironmentsSetupFlowFeatureName);
-
-    public bool ShouldShowCreateEnvironmentItem => _experimentationService.IsFeatureEnabled(EnvironmentsCreationFlowFeatureName);
 
     /// <summary>
     /// Event raised when the user elects to start the setup flow.

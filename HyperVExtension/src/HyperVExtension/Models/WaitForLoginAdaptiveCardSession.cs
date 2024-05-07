@@ -11,6 +11,7 @@ using HyperVExtension.Helpers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using Windows.ApplicationModel;
 using Windows.Foundation;
 
 namespace HyperVExtension.Models;
@@ -191,14 +192,14 @@ public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSess
             return _template;
         }
 
-        var path = Path.Combine(AppContext.BaseDirectory, @"HyperVExtension\Templates\", "WaitForLoginAdaptiveCardTemplate.json");
+        var path = Path.Combine(Package.Current.EffectivePath, @"HyperVExtension\Templates\", "WaitForLoginAdaptiveCardTemplate.json");
         _template = File.ReadAllText(path, Encoding.Default) ?? throw new FileNotFoundException(path);
         return _template;
     }
 
     private static string ConvertIconToDataString(string fileName)
     {
-        var path = Path.Combine(AppContext.BaseDirectory, @"HyperVExtension\Templates\", fileName);
+        var path = Path.Combine(Package.Current.EffectivePath, @"HyperVExtension\Templates\", fileName);
         var imageData = Convert.ToBase64String(File.ReadAllBytes(path.ToString()));
         return imageData;
     }
