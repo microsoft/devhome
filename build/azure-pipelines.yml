@@ -76,16 +76,18 @@ extends:
             filePath: 'Build.ps1'
             arguments: -Configuration "Release" -VersionOfSDK $(VersionOfSDK) -BuildStep "sdk" -IsAzurePipelineBuild
 
-        - task: PublishSymbols@2
-          displayName: Publish Symbols
-          inputs:
-            SearchPattern: |
+        - template: ./build/templates/publish-symbolrequestprod-api.yml@self
+          parameters:
+            includePublicSymbolServer: false
+            subscription: $(symbolsubscription)
+            symbolProject: 'DevHome'
+            indexSources: false
+            symbolsArtifactName: 'DevHomeSDK'
+            symbolsVersion: '$(Build.BuildNumber)'
+            searchPattern: |
               **/bin/**/*.pdb
               **/bin/**/*.exe
               **/bin/**/*.dll
-            IndexSources: false
-            SymbolServerType: TeamServices
-            SymbolsProduct: DevHomeSDK
 
         templateContext:
           outputs:
@@ -222,6 +224,23 @@ extends:
                   Move-Item -Path $(Build.SourcesDirectory)\DevHome.${{ platform }}.${{ configuration }}.binlog -Destination $(Build.SourcesDirectory)\src\bin -Force
                 pwsh: true
 
+            - template: ./build/templates/publish-symbolrequestprod-api.yml@self
+              parameters:
+                includePublicSymbolServer: true
+                symbolProject: 'DevHome'
+                subscription: $(SymbolSubscription)
+                indexSources: true
+                symbolsArtifactName: 'DevHome_${{ platform }}_${{ configuration }}'
+                symbolsVersion: $(Build.BuildNumber)
+                searchPattern: >-
+                  $(Build.SourcesDirectory)\**\bin\**\*.pdb
+
+                  $(Build.SourcesDirectory)\**\bin\**\*.exe
+
+                  $(Build.SourcesDirectory)\**\bin\**\*.dll
+
+                  $(Build.SourcesDirectory)\**\obj\**\*.r2r.ni.pdb
+
             - task: EsrpCodeSigning@2
               inputs:
                 ConnectedServiceName: 'Xlang Code Signing'
@@ -310,21 +329,6 @@ extends:
                 testRunTitle: '$(Agent.JobName)'
                 buildPlatform: '${{ platform }}'
                 buildConfiguration: '${{ configuration }}'
-
-            - task: PublishSymbols@2
-              displayName: Publish Symbols
-              inputs:
-                SearchPattern: >-
-                  $(Build.SourcesDirectory)\**\bin\**\*.pdb
-
-                  $(Build.SourcesDirectory)\**\bin\**\*.exe
-
-                  $(Build.SourcesDirectory)\**\bin\**\*.dll
-
-                  $(Build.SourcesDirectory)\**\obj\**\*.r2r.ni.pdb
-                IndexSources: true
-                SymbolServerType: TeamServices
-                SymbolsProduct: DevHome
 
             templateContext:
               outputs:
