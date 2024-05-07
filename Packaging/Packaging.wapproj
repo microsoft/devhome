@@ -69,31 +69,26 @@
       <SubType>Designer</SubType>
     </AppxManifest>
   </ItemGroup>
-
-    <!-- To build with the correct logo assets, only include the ones for the current build ring.
+  <!-- To build with the correct logo assets, only include the ones for the current build ring.
        Place them in a common location, so references to them don't need to adjust for build ring. -->
   <ItemGroup>
-    <Content Include ="..\src\Assets\*" />
+    <Content Include="..\src\Assets\*" />
     <Content Remove="..\src\Assets\Preview\*" />
     <Content Remove="..\src\Assets\Canary\*" />
     <Content Remove="..\src\Assets\Dev\*" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(BuildRing)' == 'Dev'">
     <Content Include="..\src\Assets\Dev\**" Link="Assets\Logos\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
     <Content Include="..\src\Assets\Dev\DevHome_Dev.ico" Link="Assets\DevHome.ico" CopyToOutputDirectory="Always" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(BuildRing)' == 'Canary'">
     <Content Include="..\src\Assets\Canary\**" Link="Assets\Logos\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
     <Content Include="..\src\Assets\Canary\DevHome_Canary.ico" Link="Assets\DevHome.ico" CopyToOutputDirectory="Always" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(BuildRing)' == 'Stable'">
     <Content Include="..\src\Assets\Preview\**" Link="Assets\Logos\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
     <Content Include="..\src\Assets\Preview\DevHome_Preview.ico" Link="Assets\DevHome.ico" CopyToOutputDirectory="Always" />
   </ItemGroup>
-
   <ItemGroup>
     <None Remove="..\src\Assets\WhatsNewPage\DarkTheme\Extensions.png" />
     <None Remove="..\src\Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
@@ -104,7 +99,6 @@
   <ItemGroup>
     <PRIResource Include="..\src\Strings\en-us\Resources.resw" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="Packaging_TemporaryKey.pfx" />
   </ItemGroup>
@@ -114,5 +108,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\DevHome.csproj" />
+    <ProjectReference Include="..\tools\Utilities\HostsUtility\DevHome.HostsFileEditor.csproj" />
+    <ProjectReference Include="..\tools\Utilities\RegPreviewUtility\DevHome.RegistryPreview.csproj" />
+    <ProjectReference Include="..\tools\Utilities\EnvVariablesUtility\DevHome.EnvironmentVariables.csproj" />
   </ItemGroup>
 </Project>

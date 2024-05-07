@@ -70,6 +70,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="WinUIEx" Version="1.8.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -86,6 +94,10 @@
     <ProjectReference Include="..\HyperVExtension\src\HyperVExtensionServer\HyperVExtensionServer.csproj" />
     <ProjectReference Include="..\tools\Environments\DevHome.Environments\DevHome.Environments.csproj" />
     <ProjectReference Include="..\tools\Customization\DevHome.Customization\DevHome.Customization.csproj" />
+    <ProjectReference Include="..\tools\Utilities\EnvVariablesUtility\DevHome.EnvironmentVariables.csproj" />
+    <ProjectReference Include="..\tools\Utilities\HostsUtility\DevHome.HostsFileEditor.csproj" />
+    <ProjectReference Include="..\tools\Utilities\RegPreviewUtility\DevHome.RegistryPreview.csproj" />
+    <ProjectReference Include="..\tools\Utilities\src\DevHome.Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
