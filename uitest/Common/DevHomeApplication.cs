@@ -38,6 +38,8 @@ public sealed class DevHomeApplication
 
     private WindowsElement SettingsNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("SettingsItem");
 
+    private WindowsElement ExtensionsNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("Extensions");
+
     private DevHomeApplication()
     {
     }
@@ -90,6 +92,13 @@ public sealed class DevHomeApplication
     {
         Trace.WriteLine("Navigating to Settings");
         SettingsNavigationItem.Click();
+        return new(_devHomeSession.Driver);
+    }
+
+    public ExtensionsPage NavigateToExtensionsPage()
+    {
+        Trace.WriteLine("Navigating to Extensions");
+        ExtensionsNavigationItem.Click();
         return new(_devHomeSession.Driver);
     }
 

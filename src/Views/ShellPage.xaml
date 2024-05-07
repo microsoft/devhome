@@ -68,7 +68,7 @@
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE789;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="ms-resource:///DevHome.ExtensionLibrary/Resources/NavigationPane"
+                <NavigationViewItem x:Uid="ms-resource:///DevHome.ExtensionLibrary/Resources/NavigationPane" AutomationProperties.AutomationId="Extensions"
                                     helpers:NavigationHelper.NavigateTo="DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xEA86;"/>
