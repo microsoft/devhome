@@ -182,7 +182,7 @@ Try {
 
         & $msbuildPath $msbuildArgs
         if (-not($IsAzurePipelineBuild) -And $isAdmin) {
-          Invoke-SignPackage "$appxPackageDir\DevHome\DevHome-$platform.msix"
+          Invoke-SignPackage "$appxPackageDir\DevHome-$platform.msix"
         }
       }
     }
