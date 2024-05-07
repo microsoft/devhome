@@ -286,8 +286,8 @@
         </uap:Extension>
       </Extensions>
     </Application>
-    <Application Id="DevHome.HostsFileEditor" Executable="DevHome.HostsFileEditor\DevHome.HostsFileEditor.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="ms-resource:HostsFileEditorAppDisplayName" Description="ms-resource:HostsFileEditorAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\HostsFileEditor\Square150x150Logo.png" Square44x44Logo="Assets\HostsFileEditor\Square44x44Logo.png" AppListEntry="none">
+    <Application Id="DevHome.HostsFileEditor" Executable="DevHome.HostsFileEditor.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:HostsFileEditorAppDisplayName" Description="ms-resource:HostsFileEditorAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\HostsFileEditor\Square150x150Logo.png" Square44x44Logo="Assets\HostsFileEditor\Square44x44Logo.png">
         <uap:DefaultTile Wide310x150Logo="Assets\HostsFileEditor\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Assets\HostsFileEditor\SplashScreen.png" />
       </uap:VisualElements>
@@ -299,8 +299,8 @@
         </uap3:Extension>
       </Extensions>
     </Application>
-    <Application Id="DevHome.RegistryPreview" Executable="DevHome.RegistryPreview\DevHome.RegistryPreview.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="ms-resource:RegistryPreviewAppDisplayName" Description="ms-resource:RegistryPreviewAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\RegistryPreview\Square150x150Logo.png" Square44x44Logo="Assets\RegistryPreview\Square44x44Logo.png" AppListEntry="none">
+    <Application Id="DevHome.RegistryPreview" Executable="DevHome.RegistryPreview.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:RegistryPreviewAppDisplayName" Description="ms-resource:RegistryPreviewAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\RegistryPreview\Square150x150Logo.png" Square44x44Logo="Assets\RegistryPreview\Square44x44Logo.png">
         <uap:DefaultTile Wide310x150Logo="Assets\RegistryPreview\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Assets\RegistryPreview\SplashScreen.png" />
       </uap:VisualElements>
@@ -312,8 +312,8 @@
         </uap3:Extension>
       </Extensions>
     </Application>
-    <Application Id="DevHome.EnvironmentVariables" Executable="DevHome.EnvironmentVariables\DevHome.EnvironmentVariables.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="ms-resource:EnvironmentVariablesAppDisplayName" Description="ms-resource:EnvironmentVariablesAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\EnvironmentVariables\Square150x150Logo.png" Square44x44Logo="Assets\EnvironmentVariables\Square44x44Logo.png" AppListEntry="none">
+    <Application Id="DevHome.EnvironmentVariables" Executable="DevHome.EnvironmentVariables.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:EnvironmentVariablesAppDisplayName" Description="ms-resource:EnvironmentVariablesAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\EnvironmentVariables\Square150x150Logo.png" Square44x44Logo="Assets\EnvironmentVariables\Square44x44Logo.png">
         <uap:DefaultTile Wide310x150Logo="Assets\EnvironmentVariables\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Assets\EnvironmentVariables\SplashScreen.png" />
       </uap:VisualElements>
