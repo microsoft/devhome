@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using DevHome.Common.Services;
 using DevHome.HostsFileEditor.Helpers;
 using DevHome.HostsFileEditor.TelemetryEvents;
 using DevHome.Telemetry;
@@ -34,8 +35,8 @@ public sealed partial class HostsFileEditorMainWindow : WindowEx
 
         ExtendsContentIntoTitleBar = true;
 
-        var loader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("PowerToys.HostsUILib.pri", "PowerToys.HostsUILib/Resources");
-        var title = HostsFileEditorApp.GetService<IElevationHelper>().IsElevated ? loader.GetString("WindowAdminTitle") : loader.GetString("WindowTitle");
+        var stringResource = new StringResource("PowerToys.HostsUILib.pri", "PowerToys.HostsUILib/Resources");
+        var title = HostsFileEditorApp.GetService<IElevationHelper>().IsElevated ? stringResource.GetLocalized("WindowAdminTitle") : stringResource.GetLocalized("WindowTitle");
         UtilityTitle = title;
 
         Title = UtilityTitle;

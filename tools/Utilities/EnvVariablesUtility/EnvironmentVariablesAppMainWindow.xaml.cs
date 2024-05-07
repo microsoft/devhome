@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using DevHome.Common.Services;
 using DevHome.EnvironmentVariables.TelemetryEvents;
 using DevHome.EnvironmentVariables.Win32;
 using DevHome.Telemetry;
@@ -37,8 +38,8 @@ public sealed partial class EnvironmentVariablesMainWindow : WindowEx
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
 
-        var loader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("PowerToys.EnvironmentVariablesUILib.pri", "PowerToys.EnvironmentVariablesUILib/Resources");
-        var title = EnvironmentVariablesApp.GetService<IElevationHelper>().IsElevated ? loader.GetString("WindowAdminTitle") : loader.GetString("WindowTitle");
+        var stringResource = new StringResource("PowerToys.EnvironmentVariablesUILib.pri", "PowerToys.EnvironmentVariablesUILib/Resources");
+        var title = EnvironmentVariablesApp.GetService<IElevationHelper>().IsElevated ? stringResource.GetLocalized("WindowAdminTitle") : stringResource.GetLocalized("WindowTitle");
         UtilityTitle = title;
 
         Title = UtilityTitle;
