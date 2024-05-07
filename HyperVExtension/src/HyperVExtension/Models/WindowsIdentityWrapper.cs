@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Security.Principal;
+using HyperVExtension.Helpers;
 
 namespace HyperVExtension.Models;
 
@@ -14,4 +15,11 @@ public class WindowsIdentityWrapper
 
     // Get the sid's of the current user.
     public virtual IdentityReferenceCollection Groups => _windowsIdentity.Groups!;
+
+    public virtual string UserName => _windowsIdentity.Name;
+
+    public virtual bool IsUserInGroup(string groupSid)
+    {
+        return Groups.Any(sid => sid.Value.Equals(groupSid, StringComparison.OrdinalIgnoreCase));
+    }
 }
