@@ -205,14 +205,14 @@ public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSess
             return _template;
         }
 
-        var path = Path.Combine(Package.Current.EffectivePath, @"extensions\HyperVExtension\Templates\", "VmCredentialAdaptiveCardTemplate.json");
+        var path = Path.Combine(Package.Current.EffectivePath, Constants.HyperVTemplatesSubPath, "VmCredentialAdaptiveCardTemplate.json");
         _template = File.ReadAllText(path, Encoding.Default) ?? throw new FileNotFoundException(path);
         return _template;
     }
 
     private static string ConvertIconToDataString(string fileName)
     {
-        var path = Path.Combine(Package.Current.EffectivePath, @"extensions\HyperVExtension\Templates\", fileName);
+        var path = Path.Combine(Package.Current.EffectivePath, Constants.HyperVTemplatesSubPath, fileName);
         var imageData = Convert.ToBase64String(File.ReadAllBytes(path.ToString()));
         return imageData;
     }
