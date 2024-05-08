@@ -24,6 +24,7 @@ using DevHome.Environments.Models;
 using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using Windows.Foundation;
 using WinUIEx;
 using WinUIEx.Messaging;
 
@@ -42,6 +43,10 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     private readonly WindowEx _windowEx;
 
     private readonly IComputeSystemManager _computeSystemManager;
+
+    private readonly object _lock = new();
+
+    public event TypedEventHandler<ComputeSystemViewModel, string>? ComputeSystemErrorFound;
 
     // Launch button operations
     public ObservableCollection<OperationsViewModel> LaunchOperations { get; set; } = new();
@@ -87,7 +92,6 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     {
         await InitializeStateAsync();
         await SetBodyImageAsync();
-        await SetPropertiesAsync();
         await InitializeOperationDataAsync();
     }
 
@@ -99,6 +103,8 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         {
             DotOperations!.Add(operation);
         }
+
+        await SetPropertiesAsync();
     }
 
     private async Task InitializeStateAsync()
@@ -122,9 +128,19 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
     private async Task SetPropertiesAsync()
     {
-        foreach (var property in await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(ComputeSystem!, PackageFullName))
+        if (State == ComputeSystemState.Deleting || State == ComputeSystemState.Deleted)
         {
-            Properties.Add(property);
+            return;
+        }
+
+        var properties = await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(ComputeSystem!, PackageFullName);
+        lock (_lock)
+        {
+            Properties.Clear();
+            foreach (var property in properties)
+            {
+                Properties.Add(property);
+            }
         }
     }
 
@@ -134,14 +150,15 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         {
             if (sender.Id == ComputeSystem!.Id)
             {
+                State = newState;
+                StateColor = ComputeSystemHelpers.GetColorBasedOnState(newState);
+                SetupOperationProgressBasedOnState();
+
                 // The supported operations for a compute system can change based on the current state of the compute system.
                 // So we need to rebuild the dot and launch operations that appear in the UI based on the current
                 // supported operations of the compute system. InitializeOperationDataAsync will take care of this for us, by using
                 // the DataExtractor helper.
                 await InitializeOperationDataAsync();
-                State = newState;
-                StateColor = ComputeSystemHelpers.GetColorBasedOnState(newState);
-                SetupOperationProgressBasedOnState();
             }
         });
     }
@@ -177,17 +194,12 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             var operationResult = await ComputeSystem!.ConnectAsync(string.Empty);
 
             var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
-            var completionMessage = _stringResource.GetLocalized("LaunchingEnvironmentSuccessText");
             var operationFailed = (operationResult == null) || (operationResult.Result.Status == ProviderOperationStatus.Failure);
 
             if (operationFailed)
             {
                 completionStatus = EnvironmentsTelemetryStatus.Failed;
                 LogFailure(operationResult);
-
-                var messageWhenNull = _stringResource.GetLocalized("LaunchingEnvironmentFailedUnKnownReasonText");
-                completionMessage =
-                    (operationResult != null) ? _stringResource.GetLocalized("LaunchingEnvironmentFailedText", operationResult.Result.DisplayMessage) : messageWhenNull;
             }
 
             TelemetryFactory.Get<ITelemetry>().Log(
@@ -197,9 +209,8 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
             _windowEx.DispatcherQueue.TryEnqueue(() =>
             {
-                UiMessageToDisplay = completionMessage;
                 IsOperationInProgress = false;
-                UiMessageToDisplay = operationFailed ? UiMessageToDisplay : string.Empty;
+                UiMessageToDisplay = string.Empty;
             });
         });
     }
@@ -214,16 +225,22 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         });
     }
 
-    private void LogFailure(ComputeSystemOperationResult? computeSystemOperationResult)
+    private void LogFailure(ComputeSystemOperationResult? operationResult)
     {
-        if (computeSystemOperationResult == null)
+        var messageWhenNull = _stringResource.GetLocalized("EnvironmentOperationFailedUnKnownReasonText");
+        var errorMessage = (operationResult != null) ? operationResult.Result.DisplayMessage : messageWhenNull;
+
+        if (operationResult == null)
         {
             _log.Error($"Launch operation failed for {ComputeSystem}. The ComputeSystemOperationResult was null");
         }
         else
         {
-            _log.Error(computeSystemOperationResult.Result.ExtendedError, $"Launch operation failed for {ComputeSystem} error: {computeSystemOperationResult.Result.DiagnosticText}");
+            _log.Error(operationResult.Result.ExtendedError, $"Launch operation failed for {ComputeSystem} error: {operationResult.Result.DiagnosticText}");
         }
+
+        // Show the error notification to tell the user the operation failed
+        ComputeSystemErrorFound?.Invoke(this, errorMessage);
     }
 
     /// <summary>
@@ -237,6 +254,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         {
             var data = message.Value;
             IsOperationInProgress = true;
+            ShouldShowLaunchOperation = false;
 
             _log.Information($"operation '{data.ComputeSystemOperation}' starting for Compute System: {Name} at {DateTime.Now}");
             TelemetryFactory.Get<ITelemetry>().Log(
@@ -323,15 +341,12 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     {
         if (IsComputeSystemStateTransitioning(State))
         {
+            ShouldShowLaunchOperation = false;
             IsOperationInProgress = true;
         }
         else
         {
             IsOperationInProgress = false;
-        }
-
-        if ((State != ComputeSystemState.Creating) && (State != ComputeSystemState.Deleting))
-        {
             ShouldShowLaunchOperation = true;
         }
 

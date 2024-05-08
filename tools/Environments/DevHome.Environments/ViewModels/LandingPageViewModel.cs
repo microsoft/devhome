@@ -18,7 +18,9 @@ using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using Windows.Foundation;
 using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
@@ -214,6 +216,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             if (ComputeSystemCards[i] is ComputeSystemViewModel computeSystemViewModel)
             {
                 computeSystemViewModel.RemoveStateChangedHandler();
+                computeSystemViewModel.ComputeSystemErrorFound -= OnComputeSystemOperationError;
                 ComputeSystemCards.RemoveAt(i);
             }
         }
@@ -288,6 +291,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                         packageFullName,
                         _windowEx);
                     await computeSystemViewModel.InitializeCardDataAsync();
+                    computeSystemViewModel.ComputeSystemErrorFound += OnComputeSystemOperationError;
                     ComputeSystemCards.Add(computeSystemViewModel);
                 }
             }
@@ -406,6 +410,14 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 }
             }
         });
+    }
+
+    private void OnComputeSystemOperationError(ComputeSystemViewModel computeSystemViewModel, string errorText)
+    {
+        _notificationsHelper?.DisplayComputeSystemOperationError(
+            computeSystemViewModel.ProviderDisplayName,
+            computeSystemViewModel.ComputeSystem!.DisplayName,
+            errorText);
     }
 
     protected virtual void Dispose(bool disposing)

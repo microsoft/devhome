@@ -274,18 +274,14 @@
     <value>Environment launched successfully</value>
     <comment>Text to tell the user Dev Home succeeded in launching their environment</comment>
   </data>
-  <data name="LaunchingEnvironmentFailedText" xml:space="preserve">
-    <value>Environment failed to launch due to error {0}</value>
-    <comment>Text to tell the user Dev Home failed to launch their environment. {0} is the error message sent by the extension</comment>
-  </data>
-  <data name="LaunchingEnvironmentFailedUnKnownReasonText" xml:space="preserve">
-    <value>The extension failed to launch the environment for an unknown reason. Check the extensions logs for more information</value>
-    <comment>Text to tell the user Dev Home failed to launch their environment. {0} is the error message sent by the extension</comment>
-  </data>
   <data name="UnpinFromStartButtonContextMenuItem" xml:space="preserve">
     <value>Unpin From Start Menu</value>
   </data>
   <data name="UnpinFromTaskbarButtonContextMenuItem" xml:space="preserve">
     <value>Unpin From Taskbar</value>
+  </data>
+  <data name="EnvironmentOperationFailedUnKnownReasonText" xml:space="preserve">
+    <value>The extension failed to perform the requested operation for an unknown reason. Check the extensions logs for more information</value>
+    <comment>Text to tell the user Dev Home the extension failed to perform the operation send by the extension</comment>
   </data>
 </root>
