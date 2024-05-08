@@ -92,6 +92,7 @@
                         ItemsSource="{Binding AvailableVersions}" />
                     <Button
                         AutomationProperties.Name="{Binding ButtonAutomationName}"
+                        AutomationProperties.AutomationId="{Binding ButtonAutomationId}"
                         Padding="5"
                         Command="{Binding ToggleSelectionCommand,Mode=OneWay}">
                         <FontIcon

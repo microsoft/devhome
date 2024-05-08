@@ -179,6 +179,7 @@
                             </ctControls:SettingsCard.ActionIcon>
                             <Button
                                 AutomationProperties.Name="{x:Bind ButtonAutomationName, Mode=OneWay}"
+                                AutomationProperties.AutomationId="{x:Bind ButtonAutomationId}"
                                 Command="{x:Bind ToggleSelectionCommand, Mode=OneWay}"
                                 FontSize="{ThemeResource CaptionTextBlockFontSize}"
                                 Style="{ThemeResource AlternateCloseButtonStyle}">

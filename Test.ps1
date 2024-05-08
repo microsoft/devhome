@@ -98,7 +98,7 @@ try {
                     Remove-AppPackage -Package $DevHomePackage.PackageFullName
                 }
                 Write-Host "Installing Dev Home"
-                Add-AppPackage (Join-Path "AppxPackages" "$configuration\DevHome-$platform.msix")
+                Add-AppPackage (Join-Path "AppxPackages" "$configuration\DevHome\DevHome-$platform.msix")
 
                 if ($true) {
                     # Start/stop the app once so that WinAppDriver doesn't time out during first time setup
