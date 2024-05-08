@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading.Tasks;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -22,13 +23,23 @@ public sealed partial class SelectEnvironmentProviderView : UserControl
     // with the shimmer.  By default, the focus is on the hamburger icon.  Change it.
     private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-		ViewModel.Initialize(NotificationQueue);
-		
-        // Focus on the first focusable element inside the shell content
-        var element = FocusManager.FindFirstFocusableElement(SelectEnvironmentsLandingPage);
-        if (element != null)
+        ViewModel.Initialize(NotificationQueue);
+
+        var numberOfSleeps = 0;
+        var maxNumberOfSleeps = 10;
+        while (!ViewModel.AreProvidersLoaded && numberOfSleeps++ < maxNumberOfSleeps)
         {
-            await FocusManager.TryFocusAsync(element, FocusState.Programmatic).AsTask();
+            await Task.Delay(1000);
+        }
+
+        if (ViewModel.AreProvidersLoaded)
+        {
+            // Focus on the first focusable element inside the shell content
+            var element = FocusManager.FindFirstFocusableElement(SelectEnvironmentsLandingPage);
+            if (element != null)
+            {
+                await FocusManager.TryFocusAsync(element, FocusState.Programmatic).AsTask();
+            }
         }
     }
 }
