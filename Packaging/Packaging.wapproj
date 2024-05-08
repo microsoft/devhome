@@ -97,6 +97,10 @@
     <None Remove="..\src\Styles\WindowTitleBar_ThemeResources.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Workaround WAP Project not deploying dependent project's *.deps.json into the final location -->
+    <ContentWithTargetPath Include="..\src\bin\$(Platform)\$(Configuration)\**\win-$(Platform)\*.deps.json" TargetPath="DevHome\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
     <PRIResource Include="..\src\Strings\en-us\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
