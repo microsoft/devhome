@@ -29,7 +29,7 @@
   <PropertyGroup>
     <!--Specify namespaces to create a C# projection for-->
     <CsWinRTIncludes>Microsoft.Windows.DevHome.DevSetupEngine</CsWinRTIncludes>
-    <CsWinRTGeneratedFilesDir>$(SolutionDir)HyperVExtension\src\$(MSBuildProjectName)\bin\$(Platform)\$(Configuration)\</CsWinRTGeneratedFilesDir>
+    <CsWinRTGeneratedFilesDir>$(SolutionDir)extensions\HyperVExtension\src\$(MSBuildProjectName)\bin\$(Platform)\$(Configuration)\</CsWinRTGeneratedFilesDir>
   </PropertyGroup>
 
 </Project>

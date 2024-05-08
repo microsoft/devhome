@@ -29,9 +29,9 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
 {
     private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(VMGalleryCreationAdaptiveCardSession));
 
-    private readonly string _pathToInitialCreationFormTemplate = Path.Combine(Package.Current.EffectivePath, @"HyperVExtension\Templates\", "InitialVMGalleryCreationForm.json");
+    private readonly string _pathToInitialCreationFormTemplate = Path.Combine(Package.Current.EffectivePath, Constants.HyperVTemplatesSubPath, "InitialVMGalleryCreationForm.json");
 
-    private readonly string _pathToReviewFormTemplate = Path.Combine(Package.Current.EffectivePath, @"HyperVExtension\Templates\", "ReviewFormForVMGallery.json");
+    private readonly string _pathToReviewFormTemplate = Path.Combine(Package.Current.EffectivePath, Constants.HyperVTemplatesSubPath, "ReviewFormForVMGallery.json");
 
     private readonly string _adaptiveCardNextButtonId = "DevHomeMachineConfigurationNextButton";
 

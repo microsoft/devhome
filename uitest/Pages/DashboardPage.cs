@@ -6,6 +6,7 @@ using DevHome.UITest.Dialogs;
 using DevHome.UITest.Extensions;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Windows;
+using OpenQA.Selenium.Interactions;
 
 namespace DevHome.UITest.Pages;
 
@@ -14,7 +15,7 @@ namespace DevHome.UITest.Pages;
 /// </summary>
 public class DashboardPage : ApplicationPage
 {
-    private WindowsElement AddWidgetButton => Driver.FindElementByAccessibilityId("AddWidgetButton");
+    public WindowsElement AddWidgetButton => Driver.FindElementByAccessibilityId("AddWidgetButton");
 
     private IReadOnlyCollection<WindowsElement> WidgetItems => Driver.FindElementsByAccessibilityId("WidgetItem");
 
@@ -71,6 +72,12 @@ public class DashboardPage : ApplicationPage
         /// should be located from the application window</remarks>
         private WindowsElement RemoveButton => _driver.FindElementByAccessibilityId("RemoveWidgetButton");
 
+        private WindowsElement SmallButton => _driver.FindElementByAccessibilityId("SmallWidgetButton");
+
+        private WindowsElement MediumButton => _driver.FindElementByAccessibilityId("MediumWidgetButton");
+
+        private WindowsElement LargeButton => _driver.FindElementByAccessibilityId("LargeWidgetButton");
+
         public string TitleText => _element.FindElementByAccessibilityId("WidgetTitle").Text;
 
         public WidgetControl(WindowsDriver<WindowsElement> driver, WindowsElement element)
@@ -93,6 +100,61 @@ public class DashboardPage : ApplicationPage
                     return RemoveButton;
                 })
                 .Click();
+        }
+
+        public void MakeSmall()
+        {
+            Trace.WriteLine($"Changing size to small for widget '{TitleText}'");
+            _driver
+                .RetryUntil(_ =>
+                {
+                    MoreOptionsButton.Click();
+                    return SmallButton;
+                })
+                .Click();
+        }
+
+        public void MakeMedium()
+        {
+            Trace.WriteLine($"Changing size to small for widget '{TitleText}'");
+            _driver
+                .RetryUntil(_ =>
+                {
+                    MoreOptionsButton.Click();
+                    return MediumButton;
+                })
+                .Click();
+        }
+
+        public void MakeLarge()
+        {
+            Trace.WriteLine($"Changing size to small for widget '{TitleText}'");
+            _driver
+                .RetryUntil(_ =>
+                {
+                    MoreOptionsButton.Click();
+                    return LargeButton;
+                })
+                .Click();
+        }
+
+        public string GetWidgetSize()
+        {
+            return _element.Size.Height switch
+            {
+                292 => "Small",
+                608 => "Medium",
+                924 => "Large",
+                _ => "Unknown",
+            };
+        }
+
+        public void DragRight()
+        {
+            Trace.WriteLine($"Dragging widget '{TitleText}' to the right one spot");
+            var action = new Actions(_driver);
+            action.MoveToElement(_element).ClickAndHold().MoveByOffset(1, 0).MoveByOffset(_element.Size.Width, 0).Build().Perform();
+            action.Release().Build().Perform(); // For some reason, mouse release needs to happen on its own line.
         }
     }
 }

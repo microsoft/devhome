@@ -41,7 +41,7 @@
                     <ctControls:SettingsCard.HeaderIcon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8fa;"/>
                     </ctControls:SettingsCard.HeaderIcon>
-                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right" Click="AddAccountButton_Click">
+                    <Button x:Uid="Settings_Accounts_AddAccountButton" AutomationProperties.AutomationId="AddAccountsButton" HorizontalAlignment="Right" Click="AddAccountButton_Click">
                         <Button.Resources>
                             <Flyout x:Name="AccountsProvidersFlyout" Placement="Bottom">
                                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}"

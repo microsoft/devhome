@@ -79,7 +79,7 @@ Try {
   & $nugetPath restore
 
   $msbuildArgs = @(
-      ("HyperVExtension\DevSetupAgent.sln"),
+      ("extensions\HyperVExtension\DevSetupAgent.sln"),
       ("/m"),
       ("/p:Platform="+$platform),
       ("/p:Configuration="+$configuration),
@@ -94,8 +94,8 @@ Try {
   & $msbuildPath $msbuildArgs
 
 # SDK version and .NEt version needs to stay in sync with ToolingVersion.props, DevSetupEngineIdl.vcxproj, and DevHome-CL.yaml
-  $binariesOutputPath = (Join-Path $env:Build_RootDirectory "HyperVExtension\src\DevSetupAgent\bin\$Platform\$Configuration\net8.0-windows10.0.22621.0\win-$Platform\*")
-  $zipOutputPath = (Join-Path $env:Build_RootDirectory "HyperVExtension\src\DevSetupAgent\bin\$Platform\$Configuration\DevSetupAgent_$Platform.zip")
+  $binariesOutputPath = (Join-Path $env:Build_RootDirectory "extensions\HyperVExtension\src\DevSetupAgent\bin\$Platform\$Configuration\net8.0-windows10.0.22621.0\win-$Platform\*")
+  $zipOutputPath = (Join-Path $env:Build_RootDirectory "extensions\HyperVExtension\src\DevSetupAgent\bin\$Platform\$Configuration\DevSetupAgent_$Platform.zip")
 
   Compress-Archive -Force -Path $binariesOutputPath $zipOutputPath
 } Catch {
