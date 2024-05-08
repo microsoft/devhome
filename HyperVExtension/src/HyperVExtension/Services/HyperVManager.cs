@@ -3,6 +3,7 @@
 
 using System.ServiceProcess;
 using System.Xml.Linq;
+using HyperVExtension.Common;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
@@ -46,7 +47,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
     private bool _disposed;
 
-    public HyperVManager(IHost host, IPowerShellService powerShellService, HyperVVirtualMachineFactory hyperVVirtualMachineFactory)
+    public HyperVManager(IHost host, IPowerShellService powerShellService, IStringResource stringResource, HyperVVirtualMachineFactory hyperVVirtualMachineFactory)
     {
         _powerShellService = powerShellService;
         _host = host;
@@ -110,11 +111,6 @@ public class HyperVManager : IHyperVManager, IDisposable
     /// <inheritdoc cref="IHyperVManager.StartVirtualMachineManagementService"/>
     public void StartVirtualMachineManagementService()
     {
-        if (!IsUserInHyperVAdminGroup())
-        {
-            throw new HyperVAdminGroupException("The current logged on user is not in the Hyper-V administrator group");
-        }
-
         if (!IsHyperVModuleLoaded())
         {
             // we won't throw an exception here. If there is a cmdlet failure due to the module not being loaded, we'll let the
@@ -122,41 +118,50 @@ public class HyperVManager : IHyperVManager, IDisposable
             _log.Error("The Hyper-V PowerShell Module is not Loaded");
         }
 
-        var serviceController = _host.GetService<IWindowsServiceController>();
-        serviceController.ServiceName = HyperVStrings.VMManagementService;
-
-        switch (serviceController.Status)
+        try
         {
-            case ServiceControllerStatus.Running:
-                // The service is already running
-                return;
-            case ServiceControllerStatus.StartPending:
-                // The service is starting, so we'll wait to confirm it started.
-                break;
+            var serviceController = _host.GetService<IWindowsServiceController>();
+            serviceController.ServiceName = HyperVStrings.VMManagementService;
 
-            // If the service is stopping, we'll wait till its fully stopped.
-            case ServiceControllerStatus.StopPending:
-                serviceController.WaitForStatusChange(ServiceControllerStatus.Stopped, _serviceTimeoutInSeconds);
-                goto case ServiceControllerStatus.Stopped;
+            switch (serviceController.Status)
+            {
+                case ServiceControllerStatus.Running:
+                    // The service is already running
+                    return;
+                case ServiceControllerStatus.StartPending:
+                    // The service is starting, so we'll wait to confirm it started.
+                    break;
 
-            case ServiceControllerStatus.Stopped:
-                // Service is stopped try to start it.
-                serviceController.StartService();
-                break;
+                // If the service is stopping, we'll wait till its fully stopped.
+                case ServiceControllerStatus.StopPending:
+                    serviceController.WaitForStatusChange(ServiceControllerStatus.Stopped, _serviceTimeoutInSeconds);
+                    goto case ServiceControllerStatus.Stopped;
 
-            // If the service is pausing, we'll wait till its fully paused.
-            case ServiceControllerStatus.PausePending:
-                serviceController.WaitForStatusChange(ServiceControllerStatus.Paused, _serviceTimeoutInSeconds);
-                goto case ServiceControllerStatus.Paused;
+                case ServiceControllerStatus.Stopped:
+                    // Service is stopped try to start it.
+                    serviceController.StartService();
+                    break;
 
-            case ServiceControllerStatus.Paused:
-                // If the service is paused, try to resume it.
-                serviceController.ContinueService();
-                break;
+                // If the service is pausing, we'll wait till its fully paused.
+                case ServiceControllerStatus.PausePending:
+                    serviceController.WaitForStatusChange(ServiceControllerStatus.Paused, _serviceTimeoutInSeconds);
+                    goto case ServiceControllerStatus.Paused;
+
+                case ServiceControllerStatus.Paused:
+                    // If the service is paused, try to resume it.
+                    serviceController.ContinueService();
+                    break;
+            }
+
+            // wait for service to start.
+            serviceController.WaitForStatusChange(ServiceControllerStatus.Running, _serviceTimeoutInSeconds);
         }
-
-        // wait for service to start.
-        serviceController.WaitForStatusChange(ServiceControllerStatus.Running, _serviceTimeoutInSeconds);
+        catch (Exception ex)
+        {
+            var errorStr = "Unable to start Virtual Machine Management Service";
+            _log.Error(ex, errorStr);
+            throw new VirtualMachineManagementServiceException(errorStr, ex);
+        }
     }
 
     /// <inheritdoc cref="IHyperVManager.GetAllVirtualMachines"/>
@@ -673,14 +678,6 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         var helper = new PsObjectHelper(vmObject);
         return helper.MemberNameToValue<ulong>(HyperVStrings.Size);
-    }
-
-    /// <inheritdoc cref="IHyperVManager.IsUserInHyperVAdminGroup"/>
-    public bool IsUserInHyperVAdminGroup()
-    {
-        var currentUser = _host.GetService<IWindowsIdentityService>().GetCurrentWindowsIdentity();
-        var wasHyperVSidFound = currentUser?.Groups?.Any(sid => sid.Value == HyperVStrings.HyperVAdminGroupWellKnownSid);
-        return wasHyperVSidFound ?? false;
     }
 
     /// <inheritdoc cref="IHyperVManager.GetVirtualMachineHost"/>

@@ -10,6 +10,8 @@ namespace HyperVExtension.UnitTest.Mocks;
 
 public class WindowsIdentityServiceMock : IWindowsIdentityService
 {
+    private const string MockedUserName = "MockedUser";
+
     public Mock<WindowsIdentityWrapper> WindowsIdentityWrapperMock { get; set; } = new();
 
     public IdentityReferenceCollection WindowsIdentityGroups { get; set; } = new();
@@ -18,7 +20,8 @@ public class WindowsIdentityServiceMock : IWindowsIdentityService
 
     public WindowsIdentityServiceMock()
     {
-        WindowsIdentityWrapperMock.Setup(x => x.Groups).Returns(WindowsIdentityGroups);
+        WindowsIdentityWrapperMock.Setup(wrapper => wrapper.Groups).Returns(WindowsIdentityGroups);
+        WindowsIdentityWrapperMock.Setup(wrapper => wrapper.UserName).Returns(MockedUserName);
     }
 
     public WindowsIdentityWrapper GetCurrentWindowsIdentity()
