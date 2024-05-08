@@ -7,6 +7,7 @@ using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
 using Microsoft.Diagnostics.Telemetry;
+using Microsoft.Diagnostics.Telemetry.Internal;
 
 namespace DevHome.Telemetry;
 
@@ -186,7 +187,7 @@ internal sealed class Telemetry : ITelemetry
     /// <param name="relatedActivityId">GUID to correlate activities.</param>
     public void LogCritical(string eventName, bool isError = false, Guid? relatedActivityId = null)
     {
-        this.LogInternal(eventName, LogLevel.Critical, new EmptyEvent(), relatedActivityId, isError);
+        this.LogInternal(eventName, LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServiceUsage), relatedActivityId, isError);
     }
 
     /// <summary>
