@@ -22,6 +22,8 @@ public sealed partial class SelectEnvironmentProviderView : UserControl
     // with the shimmer.  By default, the focus is on the hamburger icon.  Change it.
     private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+		ViewModel.Initialize(NotificationQueue);
+		
         // Focus on the first focusable element inside the shell content
         var element = FocusManager.FindFirstFocusableElement(SelectEnvironmentsLandingPage);
         if (element != null)

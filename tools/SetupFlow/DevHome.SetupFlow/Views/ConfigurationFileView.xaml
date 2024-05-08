@@ -94,9 +94,14 @@
                 IsClosable="False"
                 Severity="Warning"/>
 
-            <ctControls:Segmented Grid.Row="1" SelectedIndex="0">
+            <ctControls:Segmented Grid.Row="1" SelectedIndex="0" x:Name="SegmentedModeView">
                 <ctControls:SegmentedItem x:Name="SummaryView" x:Uid="ConfigurationFile_SummaryView" AutomationProperties.PositionInSet="1" AutomationProperties.SizeOfSet="2" />
                 <ctControls:SegmentedItem x:Name="CodeView" x:Uid="ConfigurationFile_CodeView" AutomationProperties.PositionInSet="2" AutomationProperties.SizeOfSet="2" />
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="SelectionChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.ViewSelectionChangedCommand}" CommandParameter="{Binding ElementName=SegmentedModeView, Path=SelectedValue.Name}" />
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
             </ctControls:Segmented>
 
             <!-- Summary mode -->
