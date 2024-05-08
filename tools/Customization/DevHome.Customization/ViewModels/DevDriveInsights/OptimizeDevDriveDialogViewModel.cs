@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -12,13 +11,9 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Telemetry;
-using Microsoft.UI.Xaml.Controls;
 using Serilog;
-using Windows.Media.Protection;
 using Windows.Storage.Pickers;
 using WinUIEx;
-using YamlDotNet.Core.Tokens;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace DevHome.Customization.ViewModels.DevDriveInsights;
 
