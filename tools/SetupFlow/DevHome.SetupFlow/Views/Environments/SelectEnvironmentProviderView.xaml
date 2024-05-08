@@ -33,7 +33,7 @@
     </UserControl.Resources>
 
     <!--- Show the Select environment header on the page. -->
-    <Grid>
+    <Grid x:Name="SelectEnvironmentsLandingPage">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition />
@@ -49,8 +49,7 @@
         <ScrollViewer 
             MaxWidth="{ThemeResource MaxPageContentWidth}"
             Margin="{ThemeResource ContentPageMargin}"
-            Grid.Row="1"
-            x:Name="SelectEnvironmentsLandingPage">
+            Grid.Row="1">
             <StackPanel Spacing="10">
                 <!--- Show the Select environment subtitle on the page. -->
                 <TextBlock
