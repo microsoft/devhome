@@ -28,7 +28,7 @@ public class PreferencesPage : ApplicationPage
         Trace.WriteLine("Setting Default Mode");
         ThemeButton.Click();
         DefaultThemeButton.Click();
-        Driver.Wait(1);
+        Driver.Wait(3);
     }
 
     public void LightMode()
@@ -36,7 +36,7 @@ public class PreferencesPage : ApplicationPage
         Trace.WriteLine("Setting Light Mode");
         ThemeButton.Click();
         LightThemeButton.Click();
-        Driver.Wait(1);
+        Driver.Wait(3);
     }
 
     public void DarkMode()
@@ -44,6 +44,6 @@ public class PreferencesPage : ApplicationPage
         Trace.WriteLine("Setting Dark Mode");
         ThemeButton.Click();
         DarkThemeButton.Click();
-        Driver.Wait(1);
+        Driver.Wait(3);
     }
 }
