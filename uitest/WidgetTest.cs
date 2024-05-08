@@ -61,7 +61,7 @@ public class WidgetTest : DevHomeTestBase
     }
 
     [DataTestMethod]
-    public void PersistOnRebootTest()
+    public void PersistOnDevHomeRestartTest()
     {
         // Arrange
         var dashboard = Application.NavigateToDashboardPage();
@@ -77,7 +77,7 @@ public class WidgetTest : DevHomeTestBase
     }
 
     [DataTestMethod]
-    public void PersistCustomizationOnRebootTest()
+    public void PersistCustomizationOnDevHomeRestartTest()
     {
         // Arrange
         var dashboard = Application.NavigateToDashboardPage();
