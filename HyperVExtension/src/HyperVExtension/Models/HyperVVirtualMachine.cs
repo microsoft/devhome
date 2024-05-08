@@ -12,6 +12,7 @@ using HyperVExtension.Common.Extensions;
 using HyperVExtension.CommunicationWithGuest;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
+using HyperVExtension.HostGuestCommunication;
 using HyperVExtension.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
@@ -88,8 +89,7 @@ public class HyperVVirtualMachine : IComputeSystem
 
     public bool IsDeleted => _psObjectHelper.MemberNameToValue<bool>(HyperVStrings.IsDeleted);
 
-    // Temporary will need to add more error strings for different operations.
-    public string OperationErrorUnknownString => _stringResource.GetLocalized(_errorResourceKey);
+    public string OperationErrorUnknownString => _stringResource.GetLocalized(_errorResourceKey, Logging.LogFolderRoot);
 
     // TODO: make getting this list dynamic so we can remove operations based on OS version.
     public ComputeSystemOperations SupportedOperations => ComputeSystemOperations.Start |
@@ -580,8 +580,7 @@ public class HyperVVirtualMachine : IComputeSystem
 
         try
         {
-            // TODO: Check if VM is already running. Set progress to Starting VM if needed.
-            // Hyper-V KVP service can set succeed even if VM is not running and VM will receive
+            // Start VM first. Hyper-V KVP service can set succeed even if VM is not running and VM will receive
             // registry key changes next time it starts.
             var startResult = Start(string.Empty);
             if (startResult.Result.Status == ProviderOperationStatus.Failure)
@@ -589,18 +588,39 @@ public class HyperVVirtualMachine : IComputeSystem
                 return operation.CompleteOperation(new HostGuestCommunication.ApplyConfigurationResult(startResult.Result.ExtendedError.HResult, startResult.Result.DisplayMessage));
             }
 
-            var guestSession = new GuestKvpSession(Guid.Parse(Id));
+            using var guestSession = new GuestKvpSession(Guid.Parse(Id));
 
             // Query VM by sending a request to DevSetupAgent.
-            var getVersionRequest = new GetVersionRequest();
-            guestSession.SendRequest(getVersionRequest, CancellationToken.None);
-            var getVersionResponses = guestSession.WaitForResponse(getVersionRequest.RequestId, TimeSpan.FromSeconds(15), true, CancellationToken.None);
-            if (getVersionResponses.Count > 0)
+            var getStateRequest = new GetStateRequest();
+            var communicationId = guestSession.SendRequest(getStateRequest, CancellationToken.None);
+            var getStateResponses = guestSession.WaitForResponse(communicationId, getStateRequest.RequestId, TimeSpan.FromSeconds(15), false, CancellationToken.None);
+            if (getStateResponses.Count > 0)
             {
-                var response = getVersionResponses[0];
-                if (response is GetVersionResponse getVersionResponse)
+                var response = getStateResponses[0];
+                if (response is GetStateResponse getStateResponse)
                 {
-                    // TODO: Check if VM can accept new Configure requests. Or if we need to update DevSetupAgent to a new version.
+                    // Check if VM can accept new Configure requests. We don't support reporting progress for requests
+                    // that were started somehow outside of this operation yet. So for now, abort this operation.
+                    // This could only happen if Dev Home was restarted while a configuration task was running.
+                    if (getStateResponse.StateData.RequestsInQueue.Count > 0)
+                    {
+                        // Set CommunicationId counter to the value higher than the highest CommunicationId in the queue
+                        // to avoid conflicts with previous requests.
+                        uint communicationIdCounter = 1; // We've already sent at least one message.
+                        foreach (var request in getStateResponse.StateData.RequestsInQueue)
+                        {
+                            var currentCounter = MessageHelper.GetCounterFromCommunicationId(request.CommunicationId);
+                            if (currentCounter > communicationIdCounter)
+                            {
+                                communicationIdCounter = currentCounter;
+                            }
+                        }
+
+                        guestSession.SetNextCommunicationIdCounter(communicationIdCounter);
+
+                        _log.Error($"VM is busy with another configuration task. VM details: {this}");
+                        return operation.CompleteOperation(new HostGuestCommunication.ApplyConfigurationResult(HRESULT.E_ABORT, "VM is busy with another configuration task"));
+                    }
                 }
                 else
                 {
@@ -642,8 +662,8 @@ public class HyperVVirtualMachine : IComputeSystem
             for (var i = 0; i < MaxRetryAttempts; i++)
             {
                 var userLoggedInRequest = new IsUserLoggedInRequest();
-                guestSession.SendRequest(userLoggedInRequest, CancellationToken.None);
-                var userLoggedInResponses = guestSession.WaitForResponse(userLoggedInRequest.RequestId, TimeSpan.FromSeconds(15), true, CancellationToken.None);
+                communicationId = guestSession.SendRequest(userLoggedInRequest, CancellationToken.None);
+                var userLoggedInResponses = guestSession.WaitForResponse(communicationId, userLoggedInRequest.RequestId, TimeSpan.FromSeconds(15), false, CancellationToken.None);
                 if (userLoggedInResponses.Count > 0)
                 {
                     var response = userLoggedInResponses[0];
@@ -684,7 +704,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
 
             var configureRequest = new ConfigureRequest(operation.Configuration);
-            guestSession.SendRequest(configureRequest, CancellationToken.None);
+            communicationId = guestSession.SendRequest(configureRequest, CancellationToken.None);
 
             // Wait for response. 5 hours is an arbitrary period of time that should be big enough
             // for most scenarios.
@@ -698,7 +718,7 @@ public class HyperVVirtualMachine : IComputeSystem
             var startTime = DateTime.Now;
             while ((DateTime.Now - startTime) < waitTime)
             {
-                var responses = guestSession.WaitForResponse(configureRequest.RequestId, TimeSpan.FromSeconds(30), true, CancellationToken.None);
+                var responses = guestSession.WaitForResponse(communicationId, configureRequest.RequestId, TimeSpan.FromSeconds(30), true, CancellationToken.None);
 
                 foreach (var response in responses)
                 {
@@ -715,7 +735,7 @@ public class HyperVVirtualMachine : IComputeSystem
                         LogApplyConfigurationProgress(configureProgressResponse.ProgressData);
 
                         // Create SDK's result. Set Completed status and event.
-                        operation.SetProgress(ConfigurationSetState.InProgress, configureProgressResponse.ProgressData, null);
+                        operation.SetProgress(SDK.ConfigurationSetState.InProgress, configureProgressResponse.ProgressData, null);
                     }
                     else
                     {
@@ -755,7 +775,7 @@ public class HyperVVirtualMachine : IComputeSystem
         var powerShell = _host.GetService<IPowerShellService>();
         var credentialsAdaptiveCardSession = new VmCredentialAdaptiveCardSession(_host, operation, attemptNumber);
 
-        operation.SetProgress(ConfigurationSetState.WaitingForAdminUserLogon, null, credentialsAdaptiveCardSession);
+        operation.SetProgress(SDK.ConfigurationSetState.WaitingForAdminUserLogon, null, credentialsAdaptiveCardSession);
 
         (var userName, var password) = credentialsAdaptiveCardSession.WaitForCredentials();
 
@@ -776,7 +796,7 @@ public class HyperVVirtualMachine : IComputeSystem
         // Ask user to login to the VM and wait for confirmation.
         var waitForLoginAdaptiveCardSession = new WaitForLoginAdaptiveCardSession(_host, operation, attemptNumber);
 
-        operation.SetProgress(ConfigurationSetState.WaitingForUserLogon, null, waitForLoginAdaptiveCardSession);
+        operation.SetProgress(SDK.ConfigurationSetState.WaitingForUserLogon, null, waitForLoginAdaptiveCardSession);
 
         return waitForLoginAdaptiveCardSession.WaitForUserResponse();
     }

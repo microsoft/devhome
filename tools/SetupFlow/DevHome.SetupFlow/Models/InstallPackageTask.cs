@@ -123,6 +123,7 @@ public class InstallPackageTask : ISetupTask
             PackageId = _package.Id,
             CatalogName = _package.CatalogName,
             Version = _installVersion,
+            IsElevationRequired = _package.IsElevationRequired,
         };
     }
 

@@ -205,33 +205,49 @@
     <value>Uptime:</value>
     <comment>Title for the uptime property of a compute system. (The amount of time its been running)</comment>
   </data>
-  <data name="HyperVAdminAddUser" xml:space="preserve">
-    <value>Add user to {0} administrators group</value>
-    <comment>Locked="{0}" Text for the button to add user to {0} administrators group</comment>
+  <data name="HyperVAdminAddUserButton" xml:space="preserve">
+    <value>Add user to group</value>
+    <comment>Text for the button to add user to the Hyper-V administrators group</comment>
   </data>
-  <data name="HyperVErrorTitle" xml:space="preserve">
-    <value>{0} {1}</value>
-    <comment>{Locked="{0}","{1}"} Title text for the UI showing errors for user not part of {1} administrators group</comment>
+  <data name="HyperVAdminAddUserAndEnableHyperVButton" xml:space="preserve">
+    <value>Set up Hyper-V in Dev Home</value>
+    <comment>Locked="{Hyper-V}" Text for the button to add user to Hyper-V administrators group and enable the Hyper-V feature</comment>
+  </data>
+  <data name="HyperVEnableButton" xml:space="preserve">
+    <value>Enable Hyper-V</value>
+    <comment>Locked="{Hyper-V}" Text for the button to enable the Hyper-V feature</comment>
   </data>
   <data name="RestartButton" xml:space="preserve">
     <value>Restart now</value>
-    <comment>Locked="{0}" Text for button that restarts the system.</comment>
+    <comment>Text for button that restarts the system.</comment>
   </data>
-  <data name="RestartMessage" xml:space="preserve">
-    <value>You must restart the computer after adding the user to the {0} administrators group for changes to take effect.</value>
-    <comment>Locked="{0}" Text explaining that a restart is needed after a user is added to the {0} group.</comment>
+  <data name="RestartAfterChangesMessage" xml:space="preserve">
+    <value>Changes completed successfully. Please restart your machine for the changes to take effect</value>
+    <comment>Text explaining that a restart is needed after enabling the Hyper-V feature or adding the user to the Hyper-V Admin group</comment>
   </data>
-  <data name="UserAddHyperVAdminFailed" xml:space="preserve">
-    <value>Unable to add user to {0} administrators group. Please try manually.</value>
-    <comment>Locked="{0}" Text explaining that the user add operation to {0} administrators group failed.</comment>
-  </data>
-  <data name="UserNotInHyperAdminGroupButton" xml:space="preserve">
-    <value>Launch computer management</value>
-    <comment>Button text for the user to click, in order to launch computer management</comment>
+  <data name="HyperVAdminAddUserAndEnableHyperVMessage" xml:space="preserve">
+    <value>The current user is not in the Hyper-V administrators group and the Hyper-V feature is not enabled. Hyper-V virtual machines will not load. To resolve both issues please click the set up Hyper-V in Dev Home button and reboot</value>
+    <comment>Locked="{Hyper-V}" Text explaining that the user is not in the Hyper-V administrators group and the Hyper-V feature is not enabled</comment>
   </data>
   <data name="UserNotInHyperAdminGroupMessage" xml:space="preserve">
-    <value>The current user is not a {0} administrators. {0} virtual machines will not load. Please add the user to the {0} administrators group and reboot.</value>
-    <comment>Locked="{0}" Text explaining that the user is not in the {0} administrators group and that we need to add them.</comment>
+    <value>The current user is not in the Hyper-V administrators group. Hyper-V virtual machines will not load. To resolve the issue, click the add user to group button</value>
+    <comment>Locked="{Hyper-V}" Text explaining that the user is not in the Hyper-V administrators group</comment>
+  </data>
+  <data name="HyperVFeatureNotEnabledMessage" xml:space="preserve">
+    <value>The Hyper-V feature is not enabled. Hyper-V virtual machines will not load. To resolve the issue, click the enable Hyper-V button</value>
+    <comment>Locked="{Hyper-V}" Text explaining that the Hyper-V feature is not enabled</comment>
+  </data>
+  <data name="UnableToEnableHyperVFeatureMessage" xml:space="preserve">
+    <value>Unable to enable the Hyper-V feature. Hyper-V virtual machines will not load. To resolve the issue manually, enable Hyper-V manually and reboot</value>
+    <comment>Locked="{Hyper-V}" Text explaining that we were not able to enable the Hyper-V feature.</comment>
+  </data>
+  <data name="UnableToAddUserToHyperVAdminAndEnableHyperVMessage" xml:space="preserve">
+    <value>Unable to add the user to the Hyper-V administrators group or enable Hyper-V. Hyper-V virtual machines may not load. To resolve the issue manually, add the user to the Hyper-V administrators group, enable Hyper-V and reboot</value>
+    <comment>Locked="{Hyper-V}" Text explaining that we couldn't fully complete the operation that would have added the user to the Hyper-V Administrators group and enable Hyper-V</comment>
+  </data>
+  <data name="UserNotAddedToHyperVAdminGroupMessage" xml:space="preserve">
+    <value>Failed to add the user to the Hyper-V administrators group. Hyper-V virtual machines will not load. To resolve the issue add the user to the Hyper-V administrators group and reboot</value>
+    <comment>Locked="{Hyper-V}" Text explaining that we couldn't add the user to the Hyper-V Administrators group.</comment>
   </data>
   <data name="DevHomeActionDefaultText" xml:space="preserve">
     <value>Open</value>

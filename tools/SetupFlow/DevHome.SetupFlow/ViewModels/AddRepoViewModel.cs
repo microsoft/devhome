@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -320,12 +319,26 @@ public partial class AddRepoViewModel : ObservableObject
         if (pageToGoTo == SegmentedItemTag.Account)
         {
             await ChangeToAccountPageAsync();
+
+            IsLoggingIn = false;
+            IsCancelling = true;
+            ShouldShowLoginUi = false;
+            ShouldShowXButtonInLoginUi = false;
+            ShouldShowNoRepoMessage = false;
+
             return;
         }
 
         if (pageToGoTo == SegmentedItemTag.URL)
         {
             ChangeToUrlPage();
+
+            IsLoggingIn = false;
+            IsCancelling = true;
+            ShouldShowLoginUi = false;
+            ShouldShowXButtonInLoginUi = false;
+            ShouldShowNoRepoMessage = false;
+
             return;
         }
 
@@ -475,6 +488,12 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowChangeSearchTermsHyperlinkButton;
 
+    [ObservableProperty]
+    private bool _shouldShowNoRepoMessage;
+
+    [ObservableProperty]
+    private string _noRepositoriesMessage;
+
     /// <summary>
     /// Switches the repos shown to the account selected.
     /// </summary>
@@ -563,7 +582,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         // Store the logged in accounts to help figure out what account the user logged into.
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
-        await LogUserIn(_selectedRepoProvider, LoginUiContent, true);
+        await LogUserIn(_selectedRepoProvider);
         var loggedInAccountsWithNewAccount = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
 
         ShowRepoPage = true;
@@ -694,6 +713,7 @@ public partial class AddRepoViewModel : ObservableObject
         UrlParsingError = string.Empty;
         ShouldShowUrlError = false;
         ShowErrorTextBox = false;
+        ShouldShowNoRepoMessage = false;
         _accountIndex = -1;
     }
 
@@ -815,15 +835,26 @@ public partial class AddRepoViewModel : ObservableObject
 
     public async Task ChangeToRepoPageAsync()
     {
-        await GetAccountsAsync(_selectedRepoProvider, LoginUiContent);
-        if (Accounts.Any())
+        var loggedInAccounts = await GetAccountsAsync(_selectedRepoProvider, LoginUiContent);
+
+        // At least with the GitHub extension, LoginId is the account name and does not include
+        // @github.com.  I could try parsing the host of the URL and append that to the login id.
+        // But, if other extensions included the @something.com to the LoginId, the solution mentioned above
+        // would produce [username]@[something.com]@[something.com].  Not good.
+        // To avoid this, just store the login id.
+        Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId));
+        AccountsToShow = ConstructFlyout();
+
+        if (!loggedInAccounts.Any())
         {
-            FolderPickerViewModel.ShowFolderPicker();
-            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-            SelectedAccount = Accounts.First();
-            ShouldEnablePrimaryButton = false;
-            MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
+            return;
         }
+
+        FolderPickerViewModel.ShowFolderPicker();
+        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+        SelectedAccount = Accounts.First();
+        ShouldEnablePrimaryButton = false;
+        MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
 
         _log.Information("Changing to Repo page");
         ShowUrlPage = false;
@@ -944,38 +975,32 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
-    private async Task LogUserIn(string repositoryProviderName, Frame loginFrame, bool shouldShowXCancelButton = false)
+    private async Task LogUserIn(string repositoryProviderName)
     {
         IsLoggingIn = true;
         ShouldShowLoginUi = true;
+        IsCancelling = false;
 
-        // AddRepoDialog can handle the close button click.  Don't show the x button.
-        ShouldShowXButtonInLoginUi = shouldShowXCancelButton;
-        await InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), loginFrame);
-
-        // Wait 30 seconds for user to log in.
-        var maxIterationsToWait = 30;
-        var currentIteration = 0;
-        var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
-        while ((IsLoggingIn && !IsCancelling) && currentIteration++ <= maxIterationsToWait)
-        {
-            await Task.Delay(waitDelay);
-        }
+        _addRepoDialog.CloseButtonText = _host.GetService<ISetupFlowStringResource>().GetLocalized(StringResourceKey.UrlCancelButtonText);
+        await InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), LoginUiContent);
 
         ShouldShowLoginUi = false;
+        IsLoggingIn = false;
+        IsCancelling = true;
     }
 
     /// <summary>
-    /// Gets all the accounts for a provider and updates the UI.
+    /// Gets all the accounts for a provider and will prompt the user to login if not accounts
+    /// are logged in to the provider.
     /// </summary>
     /// <param name="repositoryProviderName">The provider the user wants to use.</param>
-    public async Task GetAccountsAsync(string repositoryProviderName, Frame loginFrame)
+    public async Task<IEnumerable<IDeveloperId>> GetAccountsAsync(string repositoryProviderName, Frame loginFrame)
     {
         await Task.Run(() => _providers.StartIfNotRunning(repositoryProviderName));
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
-            await LogUserIn(repositoryProviderName, loginFrame);
+            await LogUserIn(repositoryProviderName);
             loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false), _activityId);
         }
@@ -984,13 +1009,7 @@ public partial class AddRepoViewModel : ObservableObject
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: true), _activityId);
         }
 
-        // At least with the GitHub extension, LoginId is the account name and does not include
-        // @github.com.  I could try parsing the host of the URL and append that to the login id.
-        // But, if other extensions included the @something.com to the LoginId, the solution mentioned above
-        // would produce [username]@[something.com]@[something.com].  Not good.
-        // To avoid this, just store the login id.
-        Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId));
-        AccountsToShow = ConstructFlyout();
+        return loggedInAccounts;
     }
 
     /// <summary>
@@ -1093,16 +1112,15 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Adds a repository from the URL page. Steps to determine what repoProvider to use.
-    /// 1. All providers are asked "Can you parse this into a URL you understand."  If yes, that provider to clone the repo.
-    /// 2. If no providers can parse the URL a fall back "GitProvider" is used that uses libgit2sharp to clone the repo.
+    /// Adds a repository from the URL page.
     /// ShouldShowUrlError is set here.
     /// </summary>
     /// <remarks>
     /// If ShouldShowUrlError == Visible the repo is not added to the list of repos to clone.
     /// </remarks>
+    /// <param name="url">The url of the repo to clone.</param>
     /// <param name="cloneLocation">The location to clone the repo to</param>
-    public void AddRepositoryViaUri(string url, string cloneLocation)
+    public async Task AddRepositoryViaUri(string url, string cloneLocation)
     {
         ShouldEnablePrimaryButton = false;
         Uri uri = null;
@@ -1117,44 +1135,71 @@ public partial class AddRepoViewModel : ObservableObject
         // Causing GetCloningInformationFromURL to fall back to git.
         var provider = _providers?.CanAnyProviderSupportThisUri(uri);
 
-        var cloningInformation = GetCloningInformationFromUrl(provider, cloneLocation, uri, LoginUiContent);
-        if (cloningInformation == null)
+        // This code is duplicated once.  If cloningInformation is null the user is asked to log in.
+        // DevHome then makes another attempt to get the repo information from the URL.
+        var cloningInformation = MakeCloningInformationFromUrl(provider, cloneLocation, uri);
+        if (cloningInformation != null)
         {
-            // Error information is already set.
-            // Error string is visible
+            ShouldShowUrlError = false;
+
+            // User could paste in a url of an already added repo.  Check for that here.
+            if (_previouslySelectedRepos.Any(x => x.RepositoryToClone.OwningAccountName.Equals(cloningInformation.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase)
+                && x.RepositoryToClone.DisplayName.Equals(cloningInformation.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase)))
+            {
+                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
+                ShouldShowUrlError = true;
+                _log.Information("Repository has already been added.");
+                TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RepoAlreadyAdded_Event", false, _activityId);
+                return;
+            }
+
+            _log.Information($"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
+
+            EverythingToClone.Add(cloningInformation);
+            ShouldEnablePrimaryButton = true;
+
             return;
         }
 
-        ShouldShowUrlError = false;
+        // 2 reasons why the code is here.
+        // 1. The Url has a typo but is a valid URL.
+        // 2. The repo is not public and no logged iin accounts have access to the repo.
+        // Ask the user to log in and try again.
+        await LogUserIn(provider.ExtensionDisplayName);
 
-        // User could paste in a url of an already added repo.  Check for that here.
-        if (_previouslySelectedRepos.Any(x => x.RepositoryToClone.OwningAccountName.Equals(cloningInformation.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase)
-            && x.RepositoryToClone.DisplayName.Equals(cloningInformation.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase)))
+        cloningInformation = MakeCloningInformationFromUrl(provider, cloneLocation, uri);
+        if (cloningInformation != null)
         {
-            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
-            ShouldShowUrlError = true;
-            _log.Information("Repository has already been added.");
-            TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RepoAlreadyAdded_Event", false, _activityId);
+            ShouldShowUrlError = false;
+
+            // User could paste in a url of an already added repo.  Check for that here.
+            if (_previouslySelectedRepos.Any(x => x.RepositoryToClone.OwningAccountName.Equals(cloningInformation.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase)
+                && x.RepositoryToClone.DisplayName.Equals(cloningInformation.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase)))
+            {
+                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
+                ShouldShowUrlError = true;
+                _log.Information("Repository has already been added.");
+                TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RepoAlreadyAdded_Event", false, _activityId);
+                return;
+            }
+
+            _log.Information($"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
+
+            EverythingToClone.Add(cloningInformation);
+            ShouldEnablePrimaryButton = true;
+
             return;
         }
-
-        _log.Information($"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
-
-        EverythingToClone.Add(cloningInformation);
-        ShouldEnablePrimaryButton = true;
-        ShouldShowUrlError = false;
     }
 
     /// <summary>
-    /// Tries to assign a provider to a validated uri.
+    /// Uses the passed in provider to make a CloningInformation Object.
     /// </summary>
-    /// <param name="provider">The provider to test with.</param>
+    /// <param name="provider">The provider that can handle the Url.  This can be null.</param>
     /// <param name="cloneLocation">The location the user wants to clone the repo.</param>
     /// <param name="uri">The uri to the repo (Should be a valid uri)</param>
-    /// <param name="loginFrame">The frame to show OAUTH login if the user needs to log in.</param>
-    /// <returns>non-null cloning information if a provider is selected for cloning.  Null for all other cases.</returns>
-    /// <remarks>If the repo is either private, or does not exist, this will ask the user to log in.</remarks>
-    private CloningInformation GetCloningInformationFromUrl(RepositoryProvider provider, string cloneLocation, Uri uri, Frame loginFrame)
+    /// <returns>non-null CloningInformation if any logged in account in the specified provider can clone the URL.</returns>
+    private CloningInformation MakeCloningInformationFromUrl(RepositoryProvider provider, string cloneLocation, Uri uri)
     {
         if (provider == null)
         {
@@ -1197,33 +1242,8 @@ public partial class AddRepoViewModel : ObservableObject
                     return cloningInformation;
                 }
             }
-
-            // In the case that no logged in accounts can access it, return null
-            // until DevHome can handle multiple accounts.
-            // Should have a better error string.
-            // TODO: Figure out a better error message?
-            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
-            ShouldShowUrlError = true;
-
-            _dispatcherQueue.TryEnqueue(async () =>
-            {
-                await InitiateAddAccountUserExperienceAsync(provider, loginFrame);
-            });
-            return null;
         }
 
-        // At this point one of three things are true
-        // 1. The repo is private and no accounts are logged in.
-        // 2. The repo does not exist (Might have been a typo in the name)
-        // Because DevHome cannot tell if a repo is private, or does not exist, prompt the user to log in.
-        // Only ask if DevHome hasn't asked already.
-        UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
-        ShouldShowUrlError = true;
-        IsLoggingIn = true;
-        _dispatcherQueue.TryEnqueue(async () =>
-        {
-            await InitiateAddAccountUserExperienceAsync(provider, loginFrame);
-        });
         return null;
     }
 
@@ -1263,6 +1283,15 @@ public partial class AddRepoViewModel : ObservableObject
         {
             var loginUi = await _providers.GetLoginUiAsync(provider.ExtensionDisplayName);
             loginFrame.Content = loginUi;
+
+            // Wait 30 seconds for user to log in.
+            var maxIterationsToWait = 30;
+            var currentIteration = 0;
+            var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
+            while ((IsLoggingIn && !IsCancelling) && currentIteration++ <= maxIterationsToWait)
+            {
+                await Task.Delay(waitDelay);
+            }
         }
         else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
         {
@@ -1270,7 +1299,8 @@ public partial class AddRepoViewModel : ObservableObject
             var windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
             try
             {
-                var developerIdResult = provider.ShowLogonBehavior(windowPtr).AsTask().Result;
+                var developerIdResult = await provider.ShowLogonBehavior(windowPtr);
+
                 if (developerIdResult.Result.Status == ProviderOperationStatus.Failure)
                 {
                     _log.Error($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
@@ -1380,6 +1410,16 @@ public partial class AddRepoViewModel : ObservableObject
             SelectionOptionsPlaceholderText = repoSearchInformation.SelectionOptionsPlaceHolderText;
 
             IsFetchingRepos = false;
+
+            if (!_repositoriesForAccount.Any())
+            {
+                NoRepositoriesMessage = _stringResource.GetLocalized(StringResourceKey.RepoToolNoRepositoriesMessage, _providers.DisplayName(_selectedRepoProvider));
+                ShowRepoPage = false;
+                ShouldShowNoRepoMessage = true;
+                ShouldShowGranularSearch = false;
+                FolderPickerViewModel.ShouldShowFolderPicker = false;
+                EditDevDriveViewModel.ShowDevDriveInformation = false;
+            }
         });
     }
 

@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
 using CommunityToolkit.WinUI.Collections;
+using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
@@ -35,8 +36,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly EnvironmentsExtensionsService _environmentExtensionsService;
 
-    private readonly NotificationService _notificationService;
-
     private readonly IComputeSystemManager _computeSystemManager;
 
     private readonly INavigationService _navigationService;
@@ -44,6 +43,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private readonly StringResource _stringResource;
 
     private readonly object _lock = new();
+
+    private EnvironmentsNotificationHelper? _notificationsHelper;
 
     private bool _disposed;
 
@@ -72,9 +73,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
-    [ObservableProperty]
-    private bool _shouldShowCreateEnvironmentButton;
-
     public ObservableCollection<string> Providers { get; set; }
 
     private CancellationTokenSource _cancellationTokenSource = new();
@@ -83,12 +81,10 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         INavigationService navigationService,
         IComputeSystemManager manager,
         EnvironmentsExtensionsService extensionsService,
-        NotificationService notificationService,
         WindowEx windowEx)
     {
         _computeSystemManager = manager;
         _environmentExtensionsService = extensionsService;
-        _notificationService = notificationService;
         _windowEx = windowEx;
         _navigationService = navigationService;
 
@@ -103,10 +99,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     public void Initialize(StackedNotificationsBehavior notificationQueue)
     {
-        _notificationService.Initialize(notificationQueue);
-
-        // To Do: Need to give the users a way to disable this, if they don't want to use Hyper-V
-        _ = Task.Run(() => _notificationService.CheckIfUserIsAHyperVAdminAndShowNotification());
+        _notificationsHelper = new(notificationQueue);
     }
 
     [RelayCommand]
@@ -198,8 +191,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 return;
             }
 
-            ShouldShowCreateEnvironmentButton = _environmentExtensionsService.IsEnvironmentCreationEnabled;
-
             // If the page has already loaded once, then we don't need to re-load the compute systems as that can take a while.
             // The user can click the sync button to refresh the compute systems. However, there may be new operations that have started
             // since the last time the page was loaded. So we need to add those to the view model quickly.
@@ -212,6 +203,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             IsLoading = true;
         }
 
+        // Start a new sync timer
+        _ = Task.Run(async () =>
+        {
+            await RunSyncTimmer();
+        });
+
         for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
         {
             if (ComputeSystemCards[i] is ComputeSystemViewModel computeSystemViewModel)
@@ -221,6 +218,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             }
         }
 
+        _notificationsHelper?.ClearNotifications();
         ShowLoadingShimmer = true;
         await _environmentExtensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
         ShowLoadingShimmer = false;
@@ -261,21 +259,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private async Task AddAllComputeSystemsFromAProvider(ComputeSystemsLoadedData data)
     {
-        var provider = data.ProviderDetails.ComputeSystemProvider;
-
-        // Show error notifications for failed provider/developer id combinations
-        foreach (var mapping in data.DevIdToComputeSystemMap.Where(kv =>
-            kv.Value.Result.Status == Microsoft.Windows.DevHome.SDK.ProviderOperationStatus.Failure))
-        {
-            var result = mapping.Value.Result;
-            await _notificationService.ShowNotificationAsync(provider.DisplayName, result.DisplayMessage, InfoBarSeverity.Error);
-
-            _log.Error($"Error occurred while adding Compute systems to environments page for provider: {provider.Id}. {result.DiagnosticText}, {result.ExtendedError}");
-            data.DevIdToComputeSystemMap.Remove(mapping.Key);
-        }
+        _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
 
         await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
+            var provider = data.ProviderDetails.ComputeSystemProvider;
             Providers.Add(provider.DisplayName);
             try
             {

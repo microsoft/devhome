@@ -92,7 +92,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
             var id = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
             if (!string.IsNullOrEmpty(id))
             {
-                comSafeCurrentlyPinnedWidgets.Add(new ComSafeWidget(id));
+                var comSafeWidget = new ComSafeWidget(id);
+                if (await comSafeWidget.PopulateAsync())
+                {
+                    comSafeCurrentlyPinnedWidgets.Add(comSafeWidget);
+                }
             }
         }
 

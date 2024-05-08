@@ -14,6 +14,8 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
+    Loaded="OnLoaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -197,7 +199,8 @@
     <setupControls:SetupShell 
         x:Uid="SetupShell_SetupTarget"
         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
-        Foreground="{ThemeResource TextFillColorSecondary}" >
+        Foreground="{ThemeResource TextFillColorSecondary}" 
+        SetupShellNotificationVisibility="Visible">
         <Grid
             RowSpacing="40">
             <Grid.RowDefinitions>
@@ -374,5 +377,16 @@
                 </StackPanel>
             </StackPanel>
         </Grid>
+        <setupControls:SetupShell.SetupShellNotification>
+            <InfoBar
+                MaxWidth="480"
+                Margin="24"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+                <i:Interaction.Behaviors>
+                    <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
+                </i:Interaction.Behaviors>
+            </InfoBar>
+        </setupControls:SetupShell.SetupShellNotification>
     </setupControls:SetupShell>
 </UserControl>

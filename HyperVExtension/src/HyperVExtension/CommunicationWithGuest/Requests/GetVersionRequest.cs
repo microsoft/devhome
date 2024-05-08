@@ -4,12 +4,14 @@
 namespace HyperVExtension.CommunicationWithGuest;
 
 /// <summary>
-/// Class to generate response to GetVersion request.
+/// Class to generate GetVersion request.
 /// </summary>
 internal sealed class GetVersionRequest : RequestBase
 {
+    public const string RequestTypeId = "GetVersion";
+
     public GetVersionRequest()
-        : base("GetVersion")
+        : base(RequestTypeId)
     {
         GenerateJsonData();
     }

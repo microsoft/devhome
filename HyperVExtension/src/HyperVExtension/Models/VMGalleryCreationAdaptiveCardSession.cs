@@ -12,6 +12,7 @@ using HyperVExtension.Models.VirtualMachineCreation;
 using HyperVExtension.Models.VMGalleryJsonToClasses;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -26,11 +27,11 @@ public enum SessionState
 
 public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSession2
 {
-    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(HyperVVirtualMachine));
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(VMGalleryCreationAdaptiveCardSession));
 
-    private readonly string _pathToInitialCreationFormTemplate = Path.Combine(AppContext.BaseDirectory, @"HyperVExtension\Templates\", "InitialVMGalleryCreationForm.json");
+    private readonly string _pathToInitialCreationFormTemplate = Path.Combine(Package.Current.EffectivePath, @"HyperVExtension\Templates\", "InitialVMGalleryCreationForm.json");
 
-    private readonly string _pathToReviewFormTemplate = Path.Combine(AppContext.BaseDirectory, @"HyperVExtension\Templates\", "ReviewFormForVMGallery.json");
+    private readonly string _pathToReviewFormTemplate = Path.Combine(Package.Current.EffectivePath, @"HyperVExtension\Templates\", "ReviewFormForVMGallery.json");
 
     private readonly string _adaptiveCardNextButtonId = "DevHomeMachineConfigurationNextButton";
 

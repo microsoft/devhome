@@ -214,6 +214,58 @@
     <value>Manage environments:</value>
     <comment>Header text for the cards that in the UI that are not being created.</comment>
   </data>
+  <data name="DeleteEnviroment_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Text for the cancel button of the delete environment confirmation popup.</comment>
+  </data>
+  <data name="DeleteEnviroment_ConfirmButton" xml:space="preserve">
+    <value>Delete</value>
+    <comment>Text for the delete confirmation button of the delete environment confirmation popup.</comment>
+  </data>
+  <data name="DeleteEnviroment_Content" xml:space="preserve">
+    <value>Choosing to delete your environment will remove it permanently.</value>
+    <comment>Text for the content of the delete environment confirmation popup.</comment>
+  </data>
+  <data name="DeleteEnviroment_Title" xml:space="preserve">
+    <value>Do you want to delete your environment?</value>
+    <comment>Text for the title of the delete environment confirmation popup.</comment>
+  </data>
+  <data name="Operations_Checkpoint" xml:space="preserve">
+    <value>Checkpoint</value>
+    <comment>Text for the creating the checkpoint operation shown for the environment.</comment>
+  </data>
+  <data name="Operations_Delete" xml:space="preserve">
+    <value>Delete</value>
+    <comment>Text for the delete operation shown for the environment.</comment>
+  </data>
+  <data name="Operations_Pause" xml:space="preserve">
+    <value>Pause</value>
+    <comment>Text for the pause operation shown for the environment.</comment>
+  </data>
+  <data name="Operations_Restart" xml:space="preserve">
+    <value>Restart</value>
+    <comment>Text for the restart operation shown for the environment.</comment>
+  </data>
+  <data name="Operations_Resume" xml:space="preserve">
+    <value>Resume</value>
+    <comment>Text for the resume operation shown for the environment.</comment>
+  </data>
+  <data name="Operations_Revert" xml:space="preserve">
+    <value>Revert</value>
+    <comment>Text for the revert operation shown for the environment.</comment>
+  </data>
+  <data name="Operations_Start" xml:space="preserve">
+    <value>Start</value>
+    <comment>Text for the start operation shown for the environment.</comment>
+  </data>
+  <data name="Operations_Stop" xml:space="preserve">
+    <value>Stop</value>
+    <comment>Text for the stop operation shown for the environment.</comment>
+  </data>
+  <data name="Operations_Terminate" xml:space="preserve">
+    <value>Terminate</value>
+    <comment>Text for the terminate operation shown for the environment.</comment>
+  </data>
   <data name="LaunchingEnvironmentText" xml:space="preserve">
     <value>Launching Environment</value>
     <comment>Text to tell the user Dev Home is launching their environment</comment>

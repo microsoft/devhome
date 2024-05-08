@@ -62,6 +62,16 @@ namespace ABI::DevHome::QuietBackgroundProcesses
         }
         CATCH_RETURN()
 
+        STDMETHODIMP get_ServiceName(HSTRING* value) noexcept override
+        try
+        {
+            Microsoft::WRL::Wrappers::HString str;
+            str.Set(m_summary.serviceName);
+            *value = str.Detach();
+            return S_OK;
+        }
+        CATCH_RETURN()
+
         STDMETHODIMP get_PackageFullName(HSTRING* value) noexcept override
         try
         {

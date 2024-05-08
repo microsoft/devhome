@@ -58,9 +58,16 @@ internal sealed class ConfigureResponse : ResponseBase
     private readonly ApplyConfigurationResult _applyConfigurationResult;
 
     public ConfigureResponse(string requestId, IApplyConfigurationResult applyConfigurationResult)
-        : base(requestId, "Configure")
+        : base(requestId, ConfigureRequest.RequestTypeId)
     {
         _applyConfigurationResult = new ApplyConfigurationResult().Populate(applyConfigurationResult);
+        GenerateJsonData();
+    }
+
+    public ConfigureResponse(string requestId, int resultCode, string? resultDescription = null)
+        : base(requestId, ConfigureRequest.RequestTypeId)
+    {
+        _applyConfigurationResult = new ApplyConfigurationResult(resultCode, resultDescription);
         GenerateJsonData();
     }
 

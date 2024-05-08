@@ -12,5 +12,5 @@ public interface IHostChannel
 
     void SendMessageAsync(IResponseMessage responseMessage, CancellationToken stoppingToken);
 
-    void DeleteResponseMessageAsync(string responseId, CancellationToken stoppingToken);
+    void DeleteResponseMessageAsync(string communicationId, CancellationToken stoppingToken);
 }
