@@ -60,7 +60,7 @@
         VerticalScrollMode="Enabled" 
         VerticalScrollBarVisibility="Auto"
         Padding="0,0,10,0">
-        <StackPanel>
+        <StackPanel x:Name="ParentContainer">
             <Grid RowSpacing="5" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>

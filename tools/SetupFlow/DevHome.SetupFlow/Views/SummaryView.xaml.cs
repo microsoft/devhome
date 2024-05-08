@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.SetupFlow.Models.Environments;
@@ -8,6 +9,7 @@ using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.Windows;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 
 namespace DevHome.SetupFlow.Views;
 
@@ -65,7 +67,7 @@ public sealed partial class SummaryView : UserControl, IRecipient<NewAdaptiveCar
     /// Request the adaptive cad from the EnvironmentCreationOptionsViewModel object when we're in the environment
     /// creation flow.
     /// </summary>
-    private void ViewLoaded(object sender, RoutedEventArgs e)
+    private async void ViewLoaded(object sender, RoutedEventArgs e)
     {
         var message = WeakReferenceMessenger.Default.Send<CreationOptionsReviewPageDataRequestMessage>();
         if (!message.HasReceivedResponse)
@@ -74,6 +76,13 @@ public sealed partial class SummaryView : UserControl, IRecipient<NewAdaptiveCar
         }
 
         AddAdaptiveCardToUI(message.Response);
+
+        // Focus on the first focusable element inside the shell content
+        var element = FocusManager.FindFirstFocusableElement(ParentContainer);
+        if (element != null)
+        {
+            await FocusManager.TryFocusAsync(element, FocusState.Programmatic).AsTask();
+        }
     }
 
     private void AddAdaptiveCardToUI(RenderedAdaptiveCard renderedAdaptiveCard)
