@@ -38,11 +38,9 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
     [ObservableProperty]
     private bool _shouldShowLaunchOperation;
 
-    public BitmapImage? HeaderImage { get; protected set; } = new();
+    public BitmapImage? HeaderImage { get; protected set; }
 
-    public BitmapImage? BodyImage { get; protected set; } = new();
-
-    public ComputeSystem? ComputeSystem { get; protected set; }
+    public BitmapImage? BodyImage { get; protected set; }
 
     public string ProviderDisplayName { get; protected set; } = string.Empty;
 
