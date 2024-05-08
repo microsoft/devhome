@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Globalization;
-using System.Net;
-using System.Security;
 using System.Text;
 using System.Text.Json.Nodes;
 using HyperVExtension.Common;
@@ -18,24 +16,14 @@ using Windows.Foundation;
 
 namespace HyperVExtension.Models;
 
-public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSession2, IDisposable
+public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSession2, IDisposable
 {
     private const int MaxAttempts = 3;
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(VmCredentialAdaptiveCardSession));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WaitForLoginAdaptiveCardSession));
 
     private sealed class InputPayload
     {
         public string? Id
-        {
-            get; set;
-        }
-
-        public string? UserVal
-        {
-            get; set;
-        }
-
-        public string? PassVal
         {
             get; set;
         }
@@ -46,14 +34,13 @@ public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSess
     private readonly int _attemptNumber;
     private readonly ManualResetEvent _sessionStatusChangedEvent = new(false);
     private IExtensionAdaptiveCard? _extensionAdaptiveCard;
-    private string? _usernameString;
-    private SecureString? _passwordString;
     private string? _template;
+    private bool _isUserLoggedIn;
     private bool _disposed;
 
     public event TypedEventHandler<IExtensionAdaptiveCardSession2, ExtensionAdaptiveCardSessionStoppedEventArgs>? Stopped;
 
-    public VmCredentialAdaptiveCardSession(IHost host, ApplyConfigurationOperation operation, int attemptNumber)
+    public WaitForLoginAdaptiveCardSession(IHost host, ApplyConfigurationOperation operation, int attemptNumber)
     {
         _stringResource = host.GetService<IStringResource>();
         _operation = operation;
@@ -68,60 +55,62 @@ public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSess
     public ProviderOperationResult Initialize(IExtensionAdaptiveCard extensionUI)
     {
         _extensionAdaptiveCard = extensionUI;
-        var showInfobar = _attemptNumber > 1;
         int attemptNumberInText;
         bool showOkButton;
         string cancelText;
-        string invalidCredentialText;
-        string invalidCredentialDescription;
+        string loginRequiredText;
+        var loginRequiredText2 = string.Empty;
+        string loginRequiredDescriptionText;
+        var loginRequiredDescriptionText2 = string.Empty;
+        string icon;
         if (_attemptNumber > MaxAttempts)
         {
             // If we exceeded number of attempts we'll show an error message in info bar with a dismiss button which
             // will return result as if user clicked cancel.
             attemptNumberInText = MaxAttempts;
             showOkButton = false;
-            invalidCredentialText = _stringResource.GetLocalized("VmCredentialRequest/InvalidCredentialTextAfterLastAttempt");
-            invalidCredentialDescription = _stringResource.GetLocalized("VmCredentialRequest/InvalidCredentialDescriptionAfterLastAttempt");
-            cancelText = _stringResource.GetLocalized("VmCredentialRequest/DismissText");
+            loginRequiredText = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredTextAfterLastAttempt");
+            loginRequiredText2 = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredTextAfterLastAttempt2");
+            loginRequiredDescriptionText = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredDescriptionTextAfterLastAttempt");
+            loginRequiredDescriptionText2 = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredDescriptionTextAfterLastAttempt2");
+            cancelText = _stringResource.GetLocalized("WaitForLoginRequest/DismissText");
+            icon = ConvertIconToDataString("DarkError.png");
         }
         else
         {
             attemptNumberInText = _attemptNumber;
             showOkButton = true;
-            invalidCredentialText = _stringResource.GetLocalized("VmCredentialRequest/InvalidCredentialText");
-            invalidCredentialDescription = _stringResource.GetLocalized("VmCredentialRequest/InvalidCredentialDescription");
-            cancelText = _stringResource.GetLocalized("VmCredentialRequest/CancelText");
+            loginRequiredText = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredText");
+            loginRequiredDescriptionText = _stringResource.GetLocalized("WaitForLoginRequest/LoginRequiredDescriptionText");
+            cancelText = _stringResource.GetLocalized("WaitForLoginRequest/CancelText");
+            icon = ConvertIconToDataString("DarkCaution.png");
         }
 
-        var attemptCountText = _stringResource.GetLocalized("VmCredentialRequest/AttemptCountText", attemptNumberInText, MaxAttempts);
-        var title = _stringResource.GetLocalized("VmCredentialRequest/Title");
-        var description = _stringResource.GetLocalized("VmCredentialRequest/Description");
-        var userNameLabel = _stringResource.GetLocalized("VmCredentialRequest/UsernameLabel");
-        var passwordLabel = _stringResource.GetLocalized("VmCredentialRequest/PasswordLabel");
-        var userNameIsRequiredText = _stringResource.GetLocalized("VmCredentialRequest/UserNameIsRequiredText");
-        var okText = _stringResource.GetLocalized("VmCredentialRequest/OkText");
+        var attemptCountText = _stringResource.GetLocalized("WaitForLoginRequest/AttemptCountText", attemptNumberInText, MaxAttempts);
+        var title = _stringResource.GetLocalized("WaitForLoginRequest/Title");
+        var description = _stringResource.GetLocalized("WaitForLoginRequest/Description");
+        var okText = _stringResource.GetLocalized("WaitForLoginRequest/OkText");
 
         var dataJson = new JsonObject
         {
             { "attemptCountText", attemptCountText },
             { "title", title },
             { "description", description },
-            { "userNameLabel", userNameLabel },
-            { "passwordLabel", passwordLabel },
-            { "userNameIsRequiredText", userNameIsRequiredText },
-            { "invalidCredentialText", invalidCredentialText },
-            { "invalidCredentialDescription", invalidCredentialDescription },
+            { "loginRequiredText", loginRequiredText },
+            { "loginRequiredText2", loginRequiredText2 },
+            { "loginRequiredDescriptionText", loginRequiredDescriptionText },
+            { "loginRequiredDescriptionText2", loginRequiredDescriptionText2 },
             { "okText", okText },
             { "cancelText", cancelText },
-            { "showInfobar", showInfobar },
+            { "attempt", _attemptNumber },
             { "showOkButton", showOkButton },
-            { "icon", ConvertIconToDataString("DarkError.png") },
+            { "icon", icon },
         };
 
         var operationResult = _extensionAdaptiveCard.Update(
             LoadTemplate(),
             dataJson.ToJsonString(),
-            "VmCredential");
+            "WaitForVmUserLogin");
 
         return operationResult;
     }
@@ -138,15 +127,13 @@ public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSess
 
                 switch (_extensionAdaptiveCard?.State)
                 {
-                    case "VmCredential":
+                    case "WaitForVmUserLogin":
                         {
                             _log.Debug($"inputs: {inputs}");
                             var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action) ?? throw new InvalidOperationException("Invalid action");
                             if (actionPayload.IsOkAction())
                             {
-                                var inputPayload = Helpers.Json.ToObject<InputPayload>(inputs) ?? throw new InvalidOperationException("Invalid inputs");
-                                _usernameString = inputPayload.UserVal;
-                                _passwordString = new NetworkCredential(string.Empty, inputPayload.PassVal).SecurePassword;
+                                _isUserLoggedIn = true;
                             }
 
                             operationResult = new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null);
@@ -173,10 +160,10 @@ public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSess
         }).AsAsyncOperation();
     }
 
-    public (string? userName, SecureString? password) WaitForCredentials()
+    public bool WaitForUserResponse()
     {
-        WaitHandle.WaitAny([_sessionStatusChangedEvent, _operation.CancellationToken.WaitHandle]);
-        return (_usernameString, _passwordString);
+        WaitHandle.WaitAny(new[] { _sessionStatusChangedEvent, _operation.CancellationToken.WaitHandle });
+        return _isUserLoggedIn;
     }
 
     void IDisposable.Dispose()
@@ -205,14 +192,14 @@ public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSess
             return _template;
         }
 
-        var path = Path.Combine(Package.Current.EffectivePath, @"HyperVExtension\Templates\", "VmCredentialAdaptiveCardTemplate.json");
+        var path = Path.Combine(Package.Current.EffectivePath, @"extensions\HyperVExtension\Templates\", "WaitForLoginAdaptiveCardTemplate.json");
         _template = File.ReadAllText(path, Encoding.Default) ?? throw new FileNotFoundException(path);
         return _template;
     }
 
     private static string ConvertIconToDataString(string fileName)
     {
-        var path = Path.Combine(Package.Current.EffectivePath, @"HyperVExtension\Templates\", fileName);
+        var path = Path.Combine(AppContext.BaseDirectory, @"extensions\extensions\HyperVExtension\Templates\", fileName);
         var imageData = Convert.ToBase64String(File.ReadAllBytes(path.ToString()));
         return imageData;
     }
