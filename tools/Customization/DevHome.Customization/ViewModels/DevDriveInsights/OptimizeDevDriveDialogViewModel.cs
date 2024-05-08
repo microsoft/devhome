@@ -17,6 +17,7 @@ using Serilog;
 using Windows.Media.Protection;
 using Windows.Storage.Pickers;
 using WinUIEx;
+using YamlDotNet.Core.Tokens;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace DevHome.Customization.ViewModels.DevDriveInsights;
@@ -148,6 +149,48 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         }
     }
 
+    private void UpdatePathEnvironmentVariable(string value)
+    {
+        var pathEnvironmentVariable = "PATH";
+        var existingValue = Environment.GetEnvironmentVariable(pathEnvironmentVariable, EnvironmentVariableTarget.User);
+        if (existingValue != null)
+        {
+            // Split the existing value into parts
+            var parts = existingValue.Split(';');
+
+            // Check if the specific value exists
+            var valueExists = false;
+            for (var i = 0; i < parts.Length; i++)
+            {
+                if (parts[i].Trim().Equals(ExistingCacheLocation, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Replace the existing value
+                    parts[i] = value;
+                    valueExists = true;
+                    break;
+                }
+            }
+
+            if (!valueExists)
+            {
+                // Add the new value
+                Array.Resize(ref parts, parts.Length + 1);
+                parts[parts.Length - 1] = Path.Join(value, "bin");
+            }
+
+            // Join the modified parts back together
+            var modifiedValue = string.Join(";", parts);
+
+            // Set the modified value to the environment variable
+            Environment.SetEnvironmentVariable(pathEnvironmentVariable, modifiedValue, EnvironmentVariableTarget.User);
+        }
+        else
+        {
+            // The environment variable doesn't exist, add the new value
+            Environment.SetEnvironmentVariable(pathEnvironmentVariable, value, EnvironmentVariableTarget.User);
+        }
+    }
+
     private void SetEnvironmentVariable(string variableName, string value)
     {
         try
@@ -158,44 +201,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
             {
                 // Check if PATH environment variable contains existing cargo location.
                 // If so, update that to new location. Otherwise append the new location.
-                var pathEnvironmentVariable = "PATH";
-                var existingValue = Environment.GetEnvironmentVariable(pathEnvironmentVariable, EnvironmentVariableTarget.User);
-                if (existingValue != null)
-                {
-                    // Split the existing value into parts
-                    var parts = existingValue.Split(';');
-
-                    // Check if the specific value exists
-                    var valueExists = false;
-                    for (var i = 0; i < parts.Length; i++)
-                    {
-                        if (parts[i].Trim().Equals(this.ExistingCacheLocation, StringComparison.OrdinalIgnoreCase))
-                        {
-                            // Replace the existing value
-                            parts[i] = value;
-                            valueExists = true;
-                            break;
-                        }
-                    }
-
-                    if (!valueExists)
-                    {
-                        // Add the new value
-                        Array.Resize(ref parts, parts.Length + 1);
-                        parts[parts.Length - 1] = value;
-                    }
-
-                    // Join the modified parts back together
-                    var modifiedValue = string.Join(";", parts);
-
-                    // Set the modified value to the environment variable
-                    Environment.SetEnvironmentVariable(pathEnvironmentVariable, modifiedValue, EnvironmentVariableTarget.User);
-                }
-                else
-                {
-                    // The environment variable doesn't exist, add the new value
-                    Environment.SetEnvironmentVariable(pathEnvironmentVariable, value, EnvironmentVariableTarget.User);
-                }
+                UpdatePathEnvironmentVariable(value);
             }
         }
         catch (Exception ex)
