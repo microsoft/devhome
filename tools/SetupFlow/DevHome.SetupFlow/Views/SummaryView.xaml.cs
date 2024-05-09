@@ -67,7 +67,7 @@ public sealed partial class SummaryView : UserControl, IRecipient<NewAdaptiveCar
     /// Request the adaptive cad from the EnvironmentCreationOptionsViewModel object when we're in the environment
     /// creation flow.
     /// </summary>
-    private async void ViewLoaded(object sender, RoutedEventArgs e)
+    private void ViewLoaded(object sender, RoutedEventArgs e)
     {
         var message = WeakReferenceMessenger.Default.Send<CreationOptionsReviewPageDataRequestMessage>();
         if (!message.HasReceivedResponse)
@@ -76,13 +76,6 @@ public sealed partial class SummaryView : UserControl, IRecipient<NewAdaptiveCar
         }
 
         AddAdaptiveCardToUI(message.Response);
-
-        // Focus on the first focusable element inside the shell content
-        var element = FocusManager.FindFirstFocusableElement(ParentContainer);
-        if (element != null)
-        {
-            await FocusManager.TryFocusAsync(element, FocusState.Programmatic).AsTask();
-        }
     }
 
     private void AddAdaptiveCardToUI(RenderedAdaptiveCard renderedAdaptiveCard)

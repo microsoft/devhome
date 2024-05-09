@@ -80,6 +80,12 @@ public sealed partial class SetupShell : UserControl
         this.InitializeComponent();
     }
 
+    /// <summary>
+    /// Finds the next focusable element.  If this is not here, focus moves to the navigation menu.
+    /// </summary>
+    /// <remarks>
+    /// Please use a local Loaded event to handle page specific logic.
+    /// </remarks>
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         // Focus on the first focusable element inside the shell content
