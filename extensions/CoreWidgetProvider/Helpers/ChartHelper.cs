@@ -235,6 +235,15 @@ internal sealed class ChartHelper
         // For a chart with 30 points, starting X coordinate == 2 + (34 - 34) * 8 == 1 +  0 * 8 == 1 +   0 ==   2
         startX = 2 + ((MaxChartValues - chartValues.Count) * pxBetweenPoints);
         finalX = startX;
+
+        // Extend graph by one pixel to cover gap on the left when the chart is otherwise full.
+        if (startX == 2)
+        {
+            var invertedHeight = 100 - chartValues[0];
+            var finalY = (invertedHeight * (ChartHeight / 100.0)) - 1;
+            points.Append(CultureInfo.InvariantCulture, $"1,{finalY} ");
+        }
+
         foreach (var origY in chartValues)
         {
             // We receive the height as a number up from the X axis (bottom of the chart), but we have to invert it
