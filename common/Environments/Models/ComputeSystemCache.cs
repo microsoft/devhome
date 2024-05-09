@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
-using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Helpers;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -45,7 +44,7 @@ public class ComputeSystemCache
     private readonly Lazy<Task<ComputeSystemPinnedResult>> _pinnedToTaskbarResult;
 
     // This is used to store the parameter for the thumbnail request so that it can be used with lazy initialization.
-    // There is a race it it's used concurrently from different threads, however it's not expected to used this class
+    // There is a race if it's used concurrently from different threads, however it's not expected to use this class
     // to initialize properties concurrently and these parameters are not used at the moment.
     private string _thumbnailParameter = string.Empty;
     private string _propertiesParameter = string.Empty;
