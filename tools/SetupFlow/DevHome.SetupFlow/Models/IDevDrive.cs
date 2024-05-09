@@ -121,4 +121,12 @@ public interface IDevDrive
     }
 
     ByteUnit DriveUnitOfMeasure { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether gets if the dev drive is trusted or not.
+    /// </summary>
+    public bool IsDevDriveTrusted
+    {
+        get;
+    }
 }

@@ -104,10 +104,6 @@
   </data>
 
   <!-- Analytic Summary -->
-  <data name="AnalyticSummary_Title.Text" xml:space="preserve">
-    <value>Analytic Summary</value>
-    <comment>Title of the analytic summary page</comment>
-  </data>
   <data name="AnalyticSummary_Description.Text" xml:space="preserve">
     <value>Analysis of process CPU utilization while the session was in use. Calculated amount of time that the process used CPU above the designated threshold.</value>
     <comment>Desciption of the analytic summary page</comment>
@@ -115,6 +111,10 @@
   <data name="AnalyticSummary_SortBy_Label.Text" xml:space="preserve">
     <value>Sort by</value>
     <comment>Label for the combo box for sorting</comment>
+  </data>
+  <data name="AnalyticSummary_ComboBox_SortBy.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Sort-by combo box</value>
+    <comment>Accessible name for the "Sort by" dropdown combo box in the analytic summary</comment>
   </data>
   <data name="ComboBox_SortBy_Process.Content" xml:space="preserve">
     <value>Process</value>
@@ -132,6 +132,10 @@
     <value>Search for a process</value>
     <comment>Label for analytic summary save report button</comment>
   </data>
+  <data name="AnalyticSummaryContentDialog.Title" xml:space="preserve">
+    <value>Analytic Summary</value>
+    <comment>Title of the analytic summary page</comment>
+  </data>
   <data name="AnalyticSummaryContentDialog.PrimaryButtonText" xml:space="preserve">
     <value>Save report</value>
     <comment>Label for analytic summary save report button</comment>
@@ -141,7 +145,7 @@
     <comment>Label for analytic summary close button</comment>
   </data>
 
-  <!-- Simple table control -->
+  <!-- Process performance table control -->
   <data name="ProcessPerformanceTableControl_Heading_Process.Text" xml:space="preserve">
     <value>Process</value>
     <comment>Table heading for Process column</comment>
@@ -153,6 +157,10 @@
   <data name="ProcessPerformanceTableControl_Heading_CpuAboveThreshold.Text" xml:space="preserve">
     <value>CPU above threshold</value>
     <comment>Table heading for 'CPU time above threshold' column</comment>
+  </data>
+  <data name="ProcessPerformanceTableControl_Heading_CpuAboveThreshold.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The time that a process spent using the CPU at greater than 2% utilization.</value>
+    <comment>Sortby dropdown option</comment>
   </data>
   <data name="MinutesAbbreviation.Text" xml:space="preserve">
     <value>min</value>

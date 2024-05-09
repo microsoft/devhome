@@ -26,6 +26,7 @@
                             <HyperlinkButton x:Uid="SettingsPage_DocumentationLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
                             <HyperlinkButton x:Uid="SettingsPage_ReleaseNotesLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
                             <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
+                            <HyperlinkButton x:Uid="SettingsPage_OpenThirdPartyNoticeLink" Command="{x:Bind ViewModel.OpenThirdPartyNoticeCommand}" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
                         </StackPanel>
                     </ctControls:SettingsCard>
                     <ctControls:SettingsCard
