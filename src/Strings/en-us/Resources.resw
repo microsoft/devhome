@@ -310,4 +310,13 @@
     <value>Hyper-V Extension</value>
     <comment>{Locked="Hyper-V"} Extension Display Name</comment>
   </data>
+  <data name="WhatsNewPage_SetupCard.Button" xml:space="preserve">
+    <value>Set up machine</value>
+  </data>
+  <data name="WhatsNewPage_SetupCard.Description" xml:space="preserve">
+    <value>Use machine configuration to clone repositories, install applications, and run WinGet configuration files - either on your local machine or in an environment.</value>
+  </data>
+  <data name="WhatsNewPage_SetupCard.Title" xml:space="preserve">
+    <value>Get your machine set up</value>
+  </data>
 </root>
