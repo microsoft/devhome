@@ -9,9 +9,10 @@
     xmlns:viewmodels="using:DevHome.Settings.ViewModels"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
-    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
+    Loaded="OnLoaded">
 
-    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" x:Name="ParentContainer">
         <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.SettingsList, Mode=OneWay}">
                 <ItemsRepeater.ItemTemplate>
