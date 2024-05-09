@@ -11,7 +11,7 @@
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
     Loaded="Page_Loaded">
 
-    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" x:Name="ParentContainer">
         <StackPanel>
             <ctControls:SettingsCard x:Uid="Settings_Theme"
                                      MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">

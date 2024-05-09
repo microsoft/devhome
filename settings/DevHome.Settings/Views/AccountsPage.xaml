@@ -7,6 +7,7 @@
     xmlns:models="using:DevHome.Settings.Models"
     xmlns:viewmodels="using:DevHome.Settings.ViewModels"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
+    Loaded="OnLoaded"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
@@ -34,7 +35,7 @@
         </DataTemplate>
     </Page.Resources>
 
-    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" x:Name="ParentContainer">
         <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <StackPanel>
                 <ctControls:SettingsCard x:Uid="Settings_Accounts_AddAccount">

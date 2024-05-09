@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:commonviews="using:DevHome.Common.Views"
     mc:Ignorable="d"
+    Loaded="OnLoaded"
     Style="{StaticResource DefaultContentDialogStyle}">
 
     <!-- ContentDialog Width and Height are not properly hooked up and must be set this way -->
@@ -21,7 +22,7 @@
         <Thickness x:Key="ContentDialogPadding">0,0,0,0</Thickness>
     </ContentDialog.Resources>
 
-    <StackPanel>
+    <StackPanel x:Name="ParentContainer">
         <!-- Title and Close button -->
         <Grid>
             <TextBlock x:Uid="LoginUIDialogTitle" HorizontalAlignment="Left"

@@ -14,6 +14,7 @@ using DevHome.Telemetry;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using WinUIEx;
@@ -190,6 +191,16 @@ public sealed partial class AccountsPage : Page
             }
 
             accountProvider.RefreshLoggedInAccounts();
+        }
+    }
+
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // Focus on the first focusable element inside the shell content
+        var element = FocusManager.FindFirstFocusableElement(ParentContainer);
+        if (element != null)
+        {
+            await FocusManager.TryFocusAsync(element, FocusState.Programmatic).AsTask();
         }
     }
 }

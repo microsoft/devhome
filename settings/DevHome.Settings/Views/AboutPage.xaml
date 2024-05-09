@@ -5,10 +5,11 @@
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
+    Loaded="OnLoaded"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
-    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" x:Name="ParentContainer">
         <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <ctControls:SettingsExpander x:Uid="Settings_About_Card" IsExpanded="True">
                 <ctControls:SettingsExpander.HeaderIcon>

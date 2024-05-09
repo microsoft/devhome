@@ -14,6 +14,7 @@ using DevHome.Settings.ViewModels;
 using Microsoft.Management.Infrastructure;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Windows.System;
 using Windows.System.Profile;
 using Windows.Win32;
@@ -178,9 +179,16 @@ public sealed partial class FeedbackPage : Page
         wmiCPUInfo = await GetCPUAsync();
     }
 
-    private void Page_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private async void Page_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         Reload();
+
+        // Focus on the first focusable element inside the shell content
+        var element = FocusManager.FindFirstFocusableElement(ParentContainer);
+        if (element != null)
+        {
+            await FocusManager.TryFocusAsync(element, FocusState.Programmatic).AsTask();
+        }
     }
 
     private string GetWindowsVersion()

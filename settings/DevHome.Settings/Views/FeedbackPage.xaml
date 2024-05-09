@@ -11,7 +11,7 @@
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
     Loaded="Page_Loaded">
 
-    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" x:Name="ParentContainer">
         <Grid>
             <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <ContentDialog x:Name="reportBugDialog" x:Uid="Settings_Feedback_ReportBug_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">

@@ -8,6 +8,7 @@ using DevHome.Common.Extensions;
 using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Serilog;
 
 namespace DevHome.Settings.Views;
@@ -48,4 +49,14 @@ public sealed partial class AboutPage : Page
         }
     }
 #endif
+
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // Focus on the first focusable element inside the shell content
+        var element = FocusManager.FindFirstFocusableElement(ParentContainer);
+        if (element != null)
+        {
+            await FocusManager.TryFocusAsync(element, FocusState.Programmatic).AsTask();
+        }
+    }
 }
