@@ -1050,11 +1050,11 @@
   </data>
   <data name="SetUpAsAdmin.Content" xml:space="preserve">
     <value>Set up as admin</value>
-    <comment>Text shown on a split button for setting up configuration as admin</comment>
+    <comment>Text shown on a button for setting up configuration as admin</comment>
   </data>
-  <data name="SetUpAsNonAdmin.Text" xml:space="preserve">
+  <data name="SetUpAsNonAdmin.Content" xml:space="preserve">
     <value>Set up as non-admin</value>
-    <comment>Text shown on a split button for setting up configuration as non-admin</comment>
+    <comment>Text shown on a button for setting up configuration as non-admin</comment>
   </data>
   <data name="SummaryPageAppsDownloadedCount" xml:space="preserve">
     <value>Applications installed</value>

@@ -23,22 +23,10 @@
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
     <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
-        <ToggleSplitButton
-            x:Name="SetUpButton"
-            IsEnabled="{x:Bind ViewModel.ReadAndAgree, Mode=OneWay}"
-            IsEnabledChanged="SetUpButton_IsEnabledChanged"
-            IsCheckedChanged="SetUpButton_IsCheckedChanged"
-            Command="{x:Bind ViewModel.ConfigureAsAdminCommand, Mode=OneWay}"
-            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsAdmin">
-            <SplitButton.Flyout>
-                <MenuFlyout>
-                    <MenuFlyoutItem
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsNonAdmin"
-                        Command="{x:Bind ViewModel.ConfigureAsNonAdminCommand}">
-                    </MenuFlyoutItem>
-                </MenuFlyout>
-            </SplitButton.Flyout>
-        </ToggleSplitButton>
+        <StackPanel Orientation="Horizontal" Spacing="4">
+            <Button x:Uid="SetUpAsNonAdmin" Command="{x:Bind ViewModel.ConfigureAsNonAdminCommand}"/>
+            <Button x:Uid="SetUpAsAdmin" Command="{x:Bind ViewModel.ConfigureAsAdminCommand}"/>
+        </StackPanel>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
 
     <UserControl.Resources>
