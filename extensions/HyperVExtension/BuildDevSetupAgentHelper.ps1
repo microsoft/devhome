@@ -80,7 +80,6 @@ Try {
 
   $msbuildArgs = @(
       ("extensions\HyperVExtension\DevSetupAgent.sln"),
-      ("/m"),
       ("/p:Platform="+$platform),
       ("/p:Configuration="+$configuration),
       ("/restore"),
