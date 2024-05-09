@@ -56,7 +56,7 @@ struct ComputerInformation
     DWORD processorCount;
     std::wstring processor;
     std::wstring motherboard;
-    DWORDLONG ram;
+    DWORDLONG ramInMegabytes;
 };
 
 // Get computer information
@@ -97,7 +97,7 @@ ComputerInformation GetComputerInformation()
     memoryStatus.dwLength = sizeof(memoryStatus);
     if (GlobalMemoryStatusEx(&memoryStatus))
     {
-        computerInfo.ram = memoryStatus.ullTotalPhys / 1024 / 1024;
+        computerInfo.ramInMegabytes = memoryStatus.ullTotalPhys / 1024 / 1024;
     }
 
     return computerInfo;
@@ -112,14 +112,8 @@ void UploadPerformanceDataTelemetry(std::chrono::milliseconds samplingPeriod, co
         None,
         MaxPercent,
         Sigma4,
-        AveragePercent,
+        StandardDeviation,
         SearchIndexer,
-    };
-
-    struct UploadItem
-    {
-        UploadReason reason;
-        ProcessPerformanceSummary data;
     };
 
     constexpr auto c_quietSessionVersion = 1;
@@ -141,7 +135,7 @@ void UploadPerformanceDataTelemetry(std::chrono::milliseconds samplingPeriod, co
         computerInformation.processorCount,
         computerInformation.processor.c_str(),
         computerInformation.motherboard.c_str(),
-        computerInformation.ram);
+        computerInformation.ramInMegabytes);
 
     // Calculate the totalCpuTimeInMicroseconds items aggregated by item.category
     std::vector<uint64_t> numProcesses(5);
@@ -165,51 +159,57 @@ void UploadPerformanceDataTelemetry(std::chrono::milliseconds samplingPeriod, co
         totalCpuTimesByCategory[3],
         totalCpuTimesByCategory[4]);
 
-    // Choose process information to upload
-    std::vector<UploadItem> itemsToUpload;
-    for (const auto& item : data)
-    {
-        if (item.maxPercent >= 20.0)
-        {
-            // Add item to list to upload
-            itemsToUpload.emplace_back(UploadReason::MaxPercent, item);
-        }
-        else if (std::sqrt(std::sqrt(item.sigma4Cumulative / item.sampleCount)) >= 4.0)
-        {
-            // Add item to list to upload
-            itemsToUpload.emplace_back(UploadReason::Sigma4, item);
-        }
-        else if (item.percentCumulative / item.sampleCount >= 1.0)
-        {
-            // Add item to list to upload
-            itemsToUpload.emplace_back(UploadReason::AveragePercent, item);
-        }
-        else if (wil::compare_string_ordinal(item.name, L"SearchIndexer.exe", true) == 0)
-        {
-            // Add item to list to upload
-            itemsToUpload.emplace_back(UploadReason::SearchIndexer, item);
-        }
-    }
-
     // Get system32 path
     wchar_t system32Path[MAX_PATH];
     GetSystemDirectory(system32Path, ARRAYSIZE(system32Path));
 
-    // Upload process information
-    for (const auto& itemToUpload : itemsToUpload)
+    // Choose process information to upload
+    for (const auto& item : data)
     {
-        activity.ProcessInfo(
-            itemToUpload.reason,
-            wil::compare_string_ordinal(itemToUpload.data.path, system32Path, true) == 0,
-            itemToUpload.data.name,
-            itemToUpload.data.category,
-            itemToUpload.data.packageFullName,
+        // Calculate variance & standard deviation
+        auto variance = item.varianceCumulative / item.sampleCount;
+        auto standardDeviation = std::sqrt(variance);
 
-            itemToUpload.data.sampleCount,
-            itemToUpload.data.maxPercent,
-            std::sqrt(std::sqrt(itemToUpload.data.sigma4Cumulative / itemToUpload.data.sampleCount)),
-            itemToUpload.data.percentCumulative / itemToUpload.data.sampleCount,
-            itemToUpload.data.totalCpuTimeInMicroseconds);
+        // Calulate sigma4 variance & sigma4 deviation (it's like variance but to the power of 4 instead of 2).
+        //  Note: This helps identify processes that have a high variance in cpu usage, which otherwise might be difficult
+        //  to notice in a 2 hour time-window.
+        auto sigma4Variance = item.sigma4Cumulative / item.sampleCount;
+        auto sigma4Deviation = std::sqrt(std::sqrt(sigma4Variance));
+
+        UploadReason reason{};
+        if (item.maxPercent >= 20.0)
+        {
+            reason = UploadReason::MaxPercent;
+        }
+        else if (sigma4Deviation >= 4.0)
+        {
+            reason = UploadReason::Sigma4;
+        }
+        else if (standardDeviation >= 1.0)
+        {
+            reason = UploadReason::StandardDeviation;
+        }
+        else if (wil::compare_string_ordinal(item.name, L"SearchIndexer.exe", true) == 0)
+        {
+            reason = UploadReason::SearchIndexer;
+        }
+        else
+        {
+            continue;
+        }
+
+        activity.ProcessInfo(
+            reason,
+            wil::compare_string_ordinal(item.path, system32Path, true) == 0,
+            item.name,
+            item.category,
+            item.packageFullName,
+
+            item.sampleCount,
+            item.maxPercent,
+            standardDeviation,
+            sigma4Deviation,
+            item.totalCpuTimeInMicroseconds);
     }
 
     activity.Stop();

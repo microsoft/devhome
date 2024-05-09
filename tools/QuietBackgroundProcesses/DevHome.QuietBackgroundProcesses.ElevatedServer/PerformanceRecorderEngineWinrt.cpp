@@ -302,7 +302,6 @@ namespace ABI::DevHome::QuietBackgroundProcesses
                 // Upload the performance data telemetry
                 try
                 {
-                    bool manuallyStopped = result != nullptr;
                     UploadPerformanceDataTelemetry(samplingPeriod, data);
                 }
                 CATCH_LOG();

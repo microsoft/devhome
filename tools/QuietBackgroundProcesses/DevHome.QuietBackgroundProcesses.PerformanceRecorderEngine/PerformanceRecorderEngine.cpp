@@ -338,7 +338,10 @@ ProcessPerformanceInfo MakeProcessPerformanceInfo(DWORD processId)
 
     auto path = std::filesystem::path(processPathString.value_or(L""));
 
-    FILETIME createTime{}, exitTime{}, kernelTime{}, userTime{};
+    FILETIME createTime{};
+    FILETIME exitTime{};
+    FILETIME kernelTime{};
+    FILETIME userTime{};
     if (process)
     {
         THROW_IF_WIN32_BOOL_FALSE(GetProcessTimes(process.get(), &createTime, &exitTime, &kernelTime, &userTime));

@@ -84,8 +84,8 @@ public:
             PCWSTR, packageFullName,
             int, sampleCount,
             double, maxPercent,
-            double, sigma4,
-            double, percent,
+            double, standardDeviation,
+            double, sigma4Deviation,
             int, totalCpuTimeInMicroseconds);
     END_ACTIVITY_CLASS();
 };
