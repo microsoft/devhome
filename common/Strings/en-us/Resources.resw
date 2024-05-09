@@ -297,7 +297,7 @@
     <value>An unexpected error occured while attempting to create your new environment</value>
     <comment>Error text for when there was an unexpected error that we could not handle within Dev Home.</comment>
   </data>
-  <data name="GenericEnvironmentName" xml:space="preserve">
+  <data name="EnvironmentGenericName" xml:space="preserve">
     <value>New Environment</value>
     <comment>Generic name text for the card header for an environment that is being created in Dev Homes environment page</comment>
   </data>
