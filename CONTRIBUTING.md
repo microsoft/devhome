@@ -186,7 +186,7 @@ Alternatively,
 ### Rules
 
 - **Follow the pattern of what you already see in the code.**
-- [Coding style](style.md).
+- [Coding style](./docs/style.md).
 - Try to package new ideas/components into libraries that have nicely defined interfaces.
 - Package new ideas into classes or refactor existing ideas into a class as you extend.
 - When adding new classes/methods/changing existing code: add new unit tests or update the existing tests.
