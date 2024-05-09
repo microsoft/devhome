@@ -19,9 +19,9 @@ body:
   attributes: 
     label: Maximum Supported Windows Version 
     placeholder: "10.0.23400.0" 
-    description: What is the maximum version of Windows that should support this feature? If there is no maximum, please enter "None". 
+    description: Did this feature stop working on a specific version of Windows? If so, what version? If you are unsure please put "Unknown".
   validations:
-    required: true
+    required: false
 
 - id: registrykeys
   type: textarea
