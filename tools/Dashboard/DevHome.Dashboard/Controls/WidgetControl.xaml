@@ -58,13 +58,12 @@
         <!-- Widget content -->
         <!-- Each widget has a 16px margin around it in which content cannot be placed.
              https://learn.microsoft.com/en-us/windows/apps/design/widgets/widgets-design-fundamentals
-             Adaptive cards render with 8px padding on each side and the widget has a 1px border,
-             so we add 7px more of padding on the left and right.-->
+             Adaptive cards render with 8px padding on each side so we add 7px more of padding on the left and right.-->
         <ScrollViewer Grid.Row="1" 
                       x:Name="WidgetScrollViewer"
                       Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollMode="Disabled"
-                      Padding="7,0" />
+                      Padding="8,0" />
     </Grid>
 </UserControl>
