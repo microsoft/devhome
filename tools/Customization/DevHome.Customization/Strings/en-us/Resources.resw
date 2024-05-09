@@ -130,7 +130,7 @@
     <comment>Choose directory on dev drive</comment>
   </data>
   <data name="ChosenDirectoryNotOnDevDriveErrorText" xml:space="preserve">
-    <value>Chosen folder is not in a Dev Drive location</value>
+    <value>Selected directory must be on a Dev Drive</value>
     <comment>Chosen directory not on dev drive</comment>
   </data>
   <data name="DevDriveFreeSizeText" xml:space="preserve">
