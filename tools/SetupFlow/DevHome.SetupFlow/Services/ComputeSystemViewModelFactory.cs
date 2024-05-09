@@ -19,7 +19,7 @@ public class ComputeSystemViewModelFactory
 {
     public async Task<ComputeSystemCardViewModel> CreateCardViewModelAsync(
         IComputeSystemManager manager,
-        ComputeSystem computeSystem,
+        ComputeSystemCache computeSystem,
         ComputeSystemProvider provider,
         string packageFullName,
         WindowEx windowEx)
@@ -32,7 +32,7 @@ public class ComputeSystemViewModelFactory
             cardViewModel.ComputeSystemImage = await ComputeSystemHelpers.GetBitmapImageAsync(computeSystem);
             cardViewModel.ComputeSystemProviderName = provider.DisplayName;
             cardViewModel.ComputeSystemProviderImage = CardProperty.ConvertMsResourceToIcon(provider.Icon, packageFullName);
-            cardViewModel.ComputeSystemProperties = await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(computeSystem, packageFullName);
+            cardViewModel.ComputeSystemProperties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(computeSystem, packageFullName);
         }
         catch (Exception ex)
         {
