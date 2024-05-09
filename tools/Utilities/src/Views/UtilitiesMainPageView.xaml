@@ -9,9 +9,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pg="using:DevHome.Common"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
+    Loaded="OnLoaded"
     mc:Ignorable="d">
 
-    <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto">
+    <ScrollViewer x:Name="ParentContainer" HorizontalScrollMode="Disabled" VerticalScrollMode="Auto">
         <Grid>
             <ItemsRepeater 
                 Name="UtilitiesContainer"

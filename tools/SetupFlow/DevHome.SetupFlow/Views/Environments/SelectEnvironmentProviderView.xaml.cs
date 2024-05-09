@@ -27,9 +27,17 @@ public sealed partial class SelectEnvironmentProviderView : UserControl
 
         var numberOfSleeps = 0;
         var maxNumberOfSleeps = 10;
-        while (!ViewModel.AreProvidersLoaded && numberOfSleeps++ < maxNumberOfSleeps)
+
+        // ViewModel can become null if the user cancels before loading is finished.
+        // Wait 10 seconds for the adaptive cards to load.
+        while (ViewModel != null && (!ViewModel.AreProvidersLoaded && numberOfSleeps++ < maxNumberOfSleeps))
         {
             await Task.Delay(1000);
+        }
+
+        if (ViewModel == null)
+        {
+            return;
         }
 
         if (ViewModel.AreProvidersLoaded)
