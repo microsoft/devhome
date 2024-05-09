@@ -1,19 +1,25 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Environments.Services;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
@@ -26,6 +32,12 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     public ComputeSystemProviderDetails SelectedProvider { get; private set; }
 
     private EnvironmentsNotificationHelper _notificationsHelper;
+
+    [ObservableProperty]
+    private string _callToActionText;
+
+    [ObservableProperty]
+    private string _callToActionHyperLinkButtonText;
 
     [ObservableProperty]
     private bool _areProvidersLoaded;
@@ -48,8 +60,11 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
 
     private async Task LoadProvidersAsync()
     {
+        CanGoToNextPage = false;
         AreProvidersLoaded = false;
         Orchestrator.NotifyNavigationCanExecuteChanged();
+        CallToActionText = null;
+        CallToActionHyperLinkButtonText = null;
 
         var providerDetails = await Task.Run(_computeSystemService.GetComputeSystemProvidersAsync);
         ProvidersViewModels = new();
@@ -64,11 +79,12 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         }
 
         AreProvidersLoaded = true;
+
+        (_, CallToActionText, CallToActionHyperLinkButtonText) = ComputeSystemHelpers.UpdateCallToActionText(ProvidersViewModels.Count, true);
     }
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        CanGoToNextPage = false;
         await LoadProvidersAsync();
     }
 
@@ -100,5 +116,15 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     public void Initialize(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = new(notificationQueue);
+    }
+
+    /// <summary>
+    /// Navigates the user to the extensions page library
+    /// process.
+    /// </summary>
+    [RelayCommand]
+    public void CallToActionButton()
+    {
+        Orchestrator.NavigateToOutsideFlow(KnownPageKeys.Extensions);
     }
 }

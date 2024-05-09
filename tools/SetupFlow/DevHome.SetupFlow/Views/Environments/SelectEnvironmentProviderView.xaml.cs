@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.SetupFlow.ViewModels.Environments;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.Views.Environments;

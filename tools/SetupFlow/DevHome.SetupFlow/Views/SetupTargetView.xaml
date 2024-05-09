@@ -59,7 +59,7 @@
                                     ComputeSystemImage="{x:Bind ComputeSystemImage, Mode=OneWay}"
                                     StateColor="{x:Bind StateColor, Mode=OneWay}"
                                     CardState="{x:Bind CardState, Mode=OneWay}"
-                                    ComputeSystemProperties="{x:Bind ComputeSystemPropertiesForCardUI, Mode=OneWay}"
+                                    ComputeSystemProperties="{x:Bind ComputeSystemProperties, Mode=OneWay}"
                                     IsTabStop="False">
                                 <devEnvCustomControls:CardBody.ComputeSystemPropertyTemplate>
                                     <!-- Properties template for compute system properties.-->
@@ -366,14 +366,31 @@
                 </StackPanel>
                 <!--- Show the info message when no ComputeSystemsListViewModel objects were found. -->
                 <StackPanel 
-                    Visibility="{x:Bind ViewModel.ComputeSystemLoadingCompleted, Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.CallToActionText, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
-                    Margin="0 100 0 0">
-                    <TextBlock
-                        x:Uid="SetupTargetNoEnvironmentsFound"
-                        Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                        FontSize="15"/>
+                    Margin="0 200 0 0">
+                    <TextBlock 
+                        Text="{x:Bind ViewModel.CallToActionText, Mode=OneWay}"
+                        HorizontalAlignment="Center" 
+                        TextWrapping="WrapWholeWords" 
+                        HorizontalTextAlignment="Center" />
+                    <HyperlinkButton 
+                        HorizontalAlignment="Center"
+                        Command="{x:Bind ViewModel.CallToActionButtonCommand}" >
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <FontIcon FontSize="10" Grid.Column="0"  Glyph="&#xE710;" Margin="0 3 0 0"/>
+                            <TextBlock
+                                Grid.Column="1"
+                                Margin="3 0 0 0"
+                                FontSize="14"
+                                Text="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"/>
+                        </Grid>
+                    </HyperlinkButton>
                 </StackPanel>
             </StackPanel>
         </Grid>

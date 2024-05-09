@@ -61,6 +61,15 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public bool HasPageLoadedForTheFirstTime { get; set; }
 
     [ObservableProperty]
+    private bool _shouldNavigateToExtensionsPage;
+
+    [ObservableProperty]
+    private string? _callToActionText;
+
+    [ObservableProperty]
+    private string? _callToActionHyperLinkButtonText;
+
+    [ObservableProperty]
     private bool _showLoadingShimmer = true;
 
     [ObservableProperty]
@@ -129,8 +138,14 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     /// process.
     /// </summary>
     [RelayCommand]
-    public void CreateEnvironmentButton()
+    public void CallToActionInvokeButton()
     {
+        if (ShouldNavigateToExtensionsPage)
+        {
+            _navigationService.NavigateTo(KnownPageKeys.Extensions);
+            return;
+        }
+
         _log.Information("User clicked on the create environment button. Navigating to Select environment page in Setup flow");
         _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow");
     }
@@ -222,9 +237,13 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
 
         _notificationsHelper?.ClearNotifications();
+        CallToActionText = null;
+        CallToActionHyperLinkButtonText = null;
+        ShouldNavigateToExtensionsPage = false;
         ShowLoadingShimmer = true;
         await _environmentExtensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
         ShowLoadingShimmer = false;
+        UpdateCallToActionText();
 
         lock (_lock)
         {
@@ -438,5 +457,19 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    private void UpdateCallToActionText()
+    {
+        // if there are cards in the UI don't update the text and keep their values as null.
+        if (ComputeSystemCards.Count > 0)
+        {
+            return;
+        }
+
+        var providerCountWithOutAllKeyword = Providers.Count - 1;
+
+        (ShouldNavigateToExtensionsPage, CallToActionText, CallToActionHyperLinkButtonText)
+            = ComputeSystemHelpers.UpdateCallToActionText(providerCountWithOutAllKeyword);
     }
 }

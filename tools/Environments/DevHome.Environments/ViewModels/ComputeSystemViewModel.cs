@@ -256,7 +256,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             IsOperationInProgress = true;
             ShouldShowLaunchOperation = false;
 
-            _log.Information($"operation '{data.ComputeSystemOperation}' starting for Compute System: {Name} at {DateTime.Now}");
+            _log.Information($"operation '{data.ComputeSystemOperation}' starting for Compute System: {Name}");
             TelemetryFactory.Get<ITelemetry>().Log(
                 "Environment_OperationInvoked_Event",
                 LogLevel.Measure,
@@ -274,7 +274,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             var data = message.Value;
-            _log.Information($"operation '{data.ComputeSystemOperation}' completed for Compute System: {Name} at {DateTime.Now}");
+            _log.Information($"operation '{data.ComputeSystemOperation}' completed for Compute System: {Name}");
 
             var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
 
@@ -298,10 +298,8 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     /// </summary>
     private void RegisterForAllOperationMessages(List<OperationsViewModel> dotOperations, List<OperationsViewModel> launchOperations)
     {
-        _log.Information($"Registering ComputeSystemViewModel '{Name}' from provider '{ProviderDisplayName}' with WeakReferenceMessenger at {DateTime.Now}");
+        _log.Information($"Registering ComputeSystemViewModel '{Name}' from provider '{ProviderDisplayName}' with WeakReferenceMessenger");
 
-        // Unregister from all operation messages
-        WeakReferenceMessenger.Default.UnregisterAll(this);
         LaunchOperations.Clear();
         DotOperations!.Clear();
 

@@ -244,7 +244,7 @@ public class HyperVVirtualMachine : IComputeSystem
                 StateChanged(this, ComputeSystemState.Stopping);
                 if (_hyperVManager.StopVirtualMachine(VmId, StopVMKind.Default))
                 {
-                    StateChanged(this, ComputeSystemState.Stopped);
+                    StateChanged(this, GetState());
                     _log.Information(OperationSuccessString(ComputeSystemOperations.ShutDown));
                     return new ComputeSystemOperationResult();
                 }
@@ -269,7 +269,7 @@ public class HyperVVirtualMachine : IComputeSystem
                 StateChanged(this, ComputeSystemState.Stopping);
                 if (_hyperVManager.StopVirtualMachine(VmId, StopVMKind.TurnOff))
                 {
-                    StateChanged(this, ComputeSystemState.Stopped);
+                    StateChanged(this, GetState());
                     _log.Information(OperationSuccessString(ComputeSystemOperations.Terminate));
                     return new ComputeSystemOperationResult();
                 }
@@ -319,7 +319,7 @@ public class HyperVVirtualMachine : IComputeSystem
                 StateChanged(this, ComputeSystemState.Saving);
                 if (_hyperVManager.StopVirtualMachine(VmId, StopVMKind.Save))
                 {
-                    StateChanged(this, ComputeSystemState.Saved);
+                    StateChanged(this, GetState());
                     _log.Information(OperationSuccessString(ComputeSystemOperations.Save));
                     return new ComputeSystemOperationResult();
                 }
@@ -344,7 +344,7 @@ public class HyperVVirtualMachine : IComputeSystem
                 StateChanged(this, ComputeSystemState.Pausing);
                 if (_hyperVManager.PauseVirtualMachine(VmId))
                 {
-                    StateChanged(this, ComputeSystemState.Paused);
+                    StateChanged(this, GetState());
                     _log.Information(OperationSuccessString(ComputeSystemOperations.Pause));
                     return new ComputeSystemOperationResult();
                 }
@@ -404,6 +404,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
+                StateChanged(this, GetState());
                 _log.Error(ex, OperationErrorString(ComputeSystemOperations.CreateSnapshot));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }

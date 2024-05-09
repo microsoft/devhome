@@ -54,8 +54,8 @@
             <Grid RowSpacing="10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <!--- Show the Select environment subtitle on the page. -->
@@ -93,9 +93,36 @@
                     <ProgressRing
                         IsActive="True"
                         Width="25"
-                        Height="25"
-                        Margin="0,150,0,0"/>
+                        Height="25"/>
                 </Grid>
+
+                <StackPanel 
+                    Grid.Row="2"
+                    Visibility="{x:Bind ViewModel.CallToActionText, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+                    <TextBlock 
+                        Text="{x:Bind ViewModel.CallToActionText, Mode=OneWay}"
+                        HorizontalAlignment="Center" 
+                        TextWrapping="WrapWholeWords" 
+                        HorizontalTextAlignment="Center" />
+                    <HyperlinkButton 
+                        Grid.Column="3" 
+                        HorizontalAlignment="Center" 
+                        Command="{x:Bind ViewModel.CallToActionButtonCommand}" >
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <FontIcon FontSize="10" Grid.Column="0"  Glyph="&#xE710;" Margin="0 3 0 0"/>
+                            <TextBlock
+                                Grid.Column="1"
+                                Margin="3 0 0 0"
+                                Text="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"/>
+                        </Grid>
+                    </HyperlinkButton>
+                </StackPanel>
 
                 <InfoBar
                     MaxWidth="480"

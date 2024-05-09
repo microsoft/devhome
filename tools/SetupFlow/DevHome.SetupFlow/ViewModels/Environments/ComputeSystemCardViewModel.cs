@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.WinUI;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
@@ -31,7 +32,9 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     private readonly IComputeSystemManager _computeSystemManager;
 
-    private const int _maxCardProperties = 6;
+    private readonly object _lock = new();
+
+    private readonly string _packageFullName;
 
     public ComputeSystem ComputeSystemWrapper { get; private set; }
 
@@ -59,24 +62,9 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     [ObservableProperty]
     private Lazy<string> _accessibilityName;
 
-    public List<CardProperty> ComputeSystemProperties { get; set; }
+    public ObservableCollection<CardProperty> ComputeSystemProperties { get; set; }
 
-    // only display first 6 properties
-    public ObservableCollection<CardProperty> ComputeSystemPropertiesForCardUI
-    {
-        get
-        {
-            var properties = new ObservableCollection<CardProperty>();
-            for (var i = 0; i < Math.Min(ComputeSystemProperties.Count, _maxCardProperties); i++)
-            {
-                properties.Add(ComputeSystemProperties[i]);
-            }
-
-            return properties;
-        }
-    }
-
-    public ComputeSystemCardViewModel(ComputeSystem computeSystem, IComputeSystemManager manager, WindowEx windowEx)
+    public ComputeSystemCardViewModel(ComputeSystem computeSystem, IComputeSystemManager manager, WindowEx windowEx, string packageFullName)
     {
         _windowEx = windowEx;
         _computeSystemManager = manager;
@@ -85,18 +73,33 @@ public partial class ComputeSystemCardViewModel : ObservableObject
         ComputeSystemWrapper.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;
         AccessibilityName = new Lazy<string>(BuildAutomationName);
+        _packageFullName = packageFullName;
     }
 
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
             if (sender.Id == ComputeSystemWrapper.Id)
             {
                 CardState = state;
                 StateColor = ComputeSystemHelpers.GetColorBasedOnState(state);
+                await Task.Run(UpdatePropertiesAsync);
             }
         });
+    }
+
+    private async Task UpdatePropertiesAsync()
+    {
+        var properties = await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(ComputeSystemWrapper, _packageFullName);
+        lock (_lock)
+        {
+            ComputeSystemProperties.Clear();
+            foreach (var property in properties)
+            {
+                ComputeSystemProperties.Add(property);
+            }
+        }
     }
 
     public async Task<ComputeSystemState> GetCardStateAsync()

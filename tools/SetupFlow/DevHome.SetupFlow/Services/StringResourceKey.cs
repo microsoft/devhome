@@ -271,6 +271,10 @@ public static class StringResourceKey
     public static readonly string SetupTargetConfigurationProgressUpdate = nameof(SetupTargetConfigurationProgressUpdate);
     public static readonly string SetupTargetConfigurationUnitProgressErrorWithMsg = nameof(SetupTargetConfigurationUnitProgressErrorWithMsg);
     public static readonly string SetupTargetConfigurationUnitUnknown = nameof(SetupTargetConfigurationUnitUnknown);
+    public static readonly string NoEnvironmentsButExtensionsInstalledButton = nameof(NoEnvironmentsButExtensionsInstalledButton);
+    public static readonly string NoEnvironmentsButExtensionsInstalledCallToAction = nameof(NoEnvironmentsButExtensionsInstalledCallToAction);
+    public static readonly string NoEnvironmentsAndExtensionsNotInstalledCallToAction = nameof(NoEnvironmentsAndExtensionsNotInstalledCallToAction);
+    public static readonly string NoEnvironmentsAndExtensionsNotInstalledButton = nameof(NoEnvironmentsAndExtensionsNotInstalledButton);
 
     // Create Environment flow
     public static readonly string SelectEnvironmentPageTitle = nameof(SelectEnvironmentPageTitle);

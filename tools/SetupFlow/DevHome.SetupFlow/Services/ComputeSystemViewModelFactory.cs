@@ -24,7 +24,7 @@ public class ComputeSystemViewModelFactory
         string packageFullName,
         WindowEx windowEx)
     {
-        var cardViewModel = new ComputeSystemCardViewModel(computeSystem, manager, windowEx);
+        var cardViewModel = new ComputeSystemCardViewModel(computeSystem, manager, windowEx, packageFullName);
 
         try
         {
@@ -32,7 +32,7 @@ public class ComputeSystemViewModelFactory
             cardViewModel.ComputeSystemImage = await ComputeSystemHelpers.GetBitmapImageAsync(computeSystem);
             cardViewModel.ComputeSystemProviderName = provider.DisplayName;
             cardViewModel.ComputeSystemProviderImage = CardProperty.ConvertMsResourceToIcon(provider.Icon, packageFullName);
-            cardViewModel.ComputeSystemProperties = await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(computeSystem, packageFullName);
+            cardViewModel.ComputeSystemProperties = new(await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(computeSystem, packageFullName));
         }
         catch (Exception ex)
         {

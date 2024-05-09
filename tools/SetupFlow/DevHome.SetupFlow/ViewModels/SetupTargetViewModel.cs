@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -40,6 +42,14 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     private readonly ComputeSystemViewModelFactory _computeSystemViewModelFactory;
 
     private EnvironmentsNotificationHelper _notificationsHelper;
+
+    private bool _shouldNavigateToExtensionPage;
+
+    [ObservableProperty]
+    private string _callToActionText;
+
+    [ObservableProperty]
+    private string _callToActionHyperLinkButtonText;
 
     [ObservableProperty]
     private bool _shouldShowCollectionView;
@@ -267,6 +277,9 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         // Remove any existing ComputeSystemsListViewModels from the list if they exist. E.g when sync button is
         // pressed.
         RemoveComputeSystemsListViewModels();
+        CallToActionText = null;
+        CallToActionHyperLinkButtonText = null;
+        _shouldNavigateToExtensionPage = false;
 
         // Disable the sync and next buttons while we're getting the compute systems.
         ComputeSystemLoadingCompleted = false;
@@ -282,6 +295,14 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         UpdateNextButtonState();
 
         ComputeSystemsCollectionView.Refresh();
+
+        // No compute systems found, show the call to action UI
+        if (_computeSystemViewModelList.Count == 0)
+        {
+            var providerCountWithOutAllKeyword = ComputeSystemProviderComboBoxNames.Count - 1;
+            (_shouldNavigateToExtensionPage, CallToActionText, CallToActionHyperLinkButtonText)
+                = ComputeSystemHelpers.UpdateCallToActionText(providerCountWithOutAllKeyword);
+        }
     }
 
     /// <summary>
@@ -424,5 +445,21 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     public void Initialize(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = new(notificationQueue);
+    }
+
+    /// <summary>
+    /// Navigates the user ot the create environment flow or extension library based on whether or not an extension
+    /// that supports environments is installed.
+    /// </summary>
+    [RelayCommand]
+    public void CallToActionButton()
+    {
+        if (_shouldNavigateToExtensionPage)
+        {
+            Orchestrator.NavigateToOutsideFlow(KnownPageKeys.Extensions);
+            return;
+        }
+
+        Orchestrator.NavigateToOutsideFlow(KnownPageKeys.SetupFlow, "startCreationFlow");
     }
 }
