@@ -254,10 +254,10 @@
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ComboBox>
-                <!--  Sync button -->
+                <!-- Sync button -->
                 <Button Command="{x:Bind ViewModel.SyncButtonCommand}" Margin="0 3 0 0">
                     <StackPanel Orientation="Horizontal" Padding="18 0" Spacing="8">
-                        <FontIcon FontSize ="16" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
+                        <FontIcon FontSize="16" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
                         <TextBlock x:Uid="SyncButtonTextBlock" />
                     </StackPanel>
                 </Button>
