@@ -10,15 +10,15 @@
                 Visibility="{x:Bind ViewModel.IsFeaturePresent, Mode=OneWay}">
         <ctControls:SettingsExpander x:Uid="QuietBackgroundProcesses" IsExpanded="False" Margin="{ThemeResource SettingsCardMargin}">
 
-            <!-- Description / error message slot -->
-            <ctControls:SettingsExpander.Description>
-                <TextBlock Text="{x:Bind ViewModel.SessionStateText, Mode=OneWay}" Foreground="{x:Bind ViewModel.SessionStateTextColor, Mode=TwoWay}" />
-            </ctControls:SettingsExpander.Description>
-
             <!-- Header icon -->
             <ctControls:SettingsExpander.HeaderIcon>
                 <FontIcon FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="&#xefff;"/>
             </ctControls:SettingsExpander.HeaderIcon>
+
+            <!-- Description / error message slot -->
+            <ctControls:SettingsExpander.Description>
+                <TextBlock Text="{x:Bind ViewModel.SessionStateText, Mode=OneWay}" Foreground="{x:Bind ViewModel.SessionStateTextColor, Mode=TwoWay}" />
+            </ctControls:SettingsExpander.Description>
 
             <!-- Quiet session setting area -->
             <StackPanel Orientation="Horizontal">
