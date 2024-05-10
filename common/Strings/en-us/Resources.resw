@@ -302,7 +302,7 @@
     <comment>Generic name text for the card header for an environment that is being created in Dev Homes environment page</comment>
   </data>
   <data name="NoEnvironmentsButExtensionsInstalledButton" xml:space="preserve">
-    <value>Create new environment</value>
+    <value>+ Create new environment</value>
     <comment>Text for a hyperlink button that will redirect user to the create environment page</comment>
   </data>
 	<data name="NoEnvironmentsButExtensionsInstalledCallToAction" xml:space="preserve">
@@ -314,7 +314,7 @@
     <comment>Text for when the environment page in Dev Home is empty and no extensions are installed that support environments</comment>
   </data>
   <data name="NoEnvironmentsAndExtensionsNotInstalledButton" xml:space="preserve">
-    <value>Go to extensions library</value>
+    <value>+ Go to extensions library</value>
     <comment>Text for when the environment page in Dev Home is empty and the user has no extensions installed that support environments</comment>
   </data>
 </root>

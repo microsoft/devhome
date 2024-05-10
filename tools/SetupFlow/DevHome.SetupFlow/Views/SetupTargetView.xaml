@@ -377,20 +377,8 @@
                         HorizontalTextAlignment="Center" />
                     <HyperlinkButton 
                         HorizontalAlignment="Center"
-                        Command="{x:Bind ViewModel.CallToActionButtonCommand}" >
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <FontIcon FontSize="10" Grid.Column="0"  Glyph="&#xE710;" Margin="0 3 0 0"/>
-                            <TextBlock
-                                Grid.Column="1"
-                                Margin="3 0 0 0"
-                                FontSize="14"
-                                Text="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"/>
-                        </Grid>
-                    </HyperlinkButton>
+                        Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.CallToActionButtonCommand}" />
                 </StackPanel>
             </StackPanel>
         </Grid>

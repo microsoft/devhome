@@ -325,19 +325,9 @@
                     <HyperlinkButton 
                         Grid.Column="3" 
                         HorizontalAlignment="Center"
-                        Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" >
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <FontIcon FontSize="10" Grid.Column="0"  Glyph="&#xE710;" Margin="0 3 0 0"/>
-                            <TextBlock
-                                Grid.Column="1"
-                                Margin="3 0 0 0"
-                                Text="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"/>
-                        </Grid>
-                    </HyperlinkButton>
+                        Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" />
+
                 </StackPanel>
             </Grid>
         </ScrollViewer>

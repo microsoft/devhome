@@ -33,6 +33,8 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
 
     private EnvironmentsNotificationHelper _notificationsHelper;
 
+    private bool _isFirstTimeLoading;
+
     [ObservableProperty]
     private string _callToActionText;
 
@@ -56,6 +58,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     {
         PageTitle = stringResource.GetLocalized(StringResourceKey.SelectEnvironmentPageTitle);
         _computeSystemService = computeSystemService;
+        _isFirstTimeLoading = true;
     }
 
     private async Task LoadProvidersAsync()
@@ -83,11 +86,6 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         (_, CallToActionText, CallToActionHyperLinkButtonText) = ComputeSystemHelpers.UpdateCallToActionText(ProvidersViewModels.Count, true);
     }
 
-    protected async override Task OnFirstNavigateToAsync()
-    {
-        await LoadProvidersAsync();
-    }
-
     [RelayCommand]
     private void ItemsViewSelectionChanged(ComputeSystemProviderViewModel sender)
     {
@@ -113,9 +111,16 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         }
     }
 
-    public void Initialize(StackedNotificationsBehavior notificationQueue)
+    public async Task InitializeAsync(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = new(notificationQueue);
+
+        if (_isFirstTimeLoading || !string.IsNullOrEmpty(CallToActionText))
+        {
+            _isFirstTimeLoading = false;
+            CanGoToNextPage = false;
+            await LoadProvidersAsync();
+        }
     }
 
     /// <summary>
