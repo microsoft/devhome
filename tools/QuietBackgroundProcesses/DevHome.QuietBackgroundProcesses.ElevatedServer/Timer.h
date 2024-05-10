@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "pch.h"
-
 #include <algorithm>
 #include <atomic>
 #include <chrono>
@@ -19,6 +17,8 @@
 #if _DEBUG || NDEBUG
 #define TRACK_SECONDS_LEFT
 #endif
+
+using namespace std::chrono_literals;
 
 class Timer
 {
@@ -58,24 +58,24 @@ public:
         m_cancelCondition.notify_one();
     }
 
-    int64_t TimeLeftInSeconds()
+    std::chrono::seconds TimeLeftInSeconds()
     {
         auto lock = std::scoped_lock(m_mutex);
         if (m_cancelled)
         {
-            return 0;
+            return 0s;
         }
 
         auto secondsLeft = CalculateSecondsLeft();
-        return std::max(secondsLeft, 0ll);
+        return std::max(secondsLeft, 0s);
     }
 
 private:
-    int64_t CalculateSecondsLeft()
+    std::chrono::seconds CalculateSecondsLeft()
     {
         auto now = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - m_startTime);
-        auto secondsLeft = m_duration.count() - elapsed.count();
+        auto secondsLeft = m_duration - elapsed;
 #ifdef TRACK_SECONDS_LEFT
         m_secondsLeft = secondsLeft;
 #endif
@@ -111,6 +111,6 @@ private:
     std::function<void()> m_callback;
 
 #ifdef TRACK_SECONDS_LEFT
-    int64_t m_secondsLeft = -1;
+    std::chrono::seconds m_secondsLeft = std::chrono::seconds::max();
 #endif
 };
