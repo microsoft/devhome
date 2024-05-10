@@ -107,6 +107,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     public void Receive(CreationProviderChangedMessage message)
     {
         _upcomingProviderDetails = message.Value;
+        ResetAdaptiveCardConfiguration();
     }
 
     private void OnEndSetupFlow(object sender, EventArgs e)
