@@ -207,7 +207,7 @@ void UploadPerformanceDataTelemetry(std::chrono::milliseconds samplingPeriod, co
 
             item.sampleCount,
             item.maxPercent,
-            standardDeviation,
+            item.samplesAboveThreshold,
             sigma4Deviation,
             item.totalCpuTimeInMicroseconds);
     }

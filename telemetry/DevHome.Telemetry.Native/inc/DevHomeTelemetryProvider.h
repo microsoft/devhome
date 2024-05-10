@@ -84,7 +84,7 @@ public:
             PCWSTR, packageFullName,
             int, sampleCount,
             double, maxPercent,
-            double, standardDeviation,
+            uint32_t, samplesAboveThreshold,
             double, sigma4Deviation,
             int, totalCpuTimeInMicroseconds);
     END_ACTIVITY_CLASS();
