@@ -279,19 +279,6 @@ public class ComputeSystem
         }
     }
 
-    public async Task<ComputeSystemOperationResult> ConnectAsync(string options)
-    {
-        try
-        {
-            return await _computeSystem.ConnectAsync(options);
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, $"ConnectAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
-        }
-    }
-
     // We need to give DevHomeAzureExtension the ability to SetForeground on the processes it creates. In some cases
     // these processes need to show UI, in some cases they call APIs that only succeed if they are called from a
     // foreground process. We call CoAllowSetForegroundWindow on the COM interface that we are about to use to allow
@@ -302,9 +289,23 @@ public class ComputeSystem
     [DllImport("ole32.dll", ExactSpelling = true, PreserveSig = false)]
     private static extern void CoAllowSetForegroundWindow(IntPtr pUnk, IntPtr lpvReserved);
 
-    private void CoAllowSetForegroundWindow(IComputeSystem2 computeSystem2)
+    private void CoAllowSetForegroundWindow(IComputeSystem computeSystem)
     {
-        CoAllowSetForegroundWindow(((IWinRTObject)computeSystem2).NativeObject.ThisPtr, 0);
+        CoAllowSetForegroundWindow(((IWinRTObject)computeSystem).NativeObject.ThisPtr, 0);
+    }
+
+    public async Task<ComputeSystemOperationResult> ConnectAsync(string options)
+    {
+        try
+        {
+            CoAllowSetForegroundWindow(_computeSystem);
+            return await _computeSystem.ConnectAsync(options);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"ConnectAsync for: {this} failed due to exception");
+            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+        }
     }
 
     public async Task<ComputeSystemOperationResult> PinToStartMenuAsync(string options)
