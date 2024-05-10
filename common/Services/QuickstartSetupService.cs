@@ -33,8 +33,9 @@ public class QuickstartSetupService(IAppInstallManagerService appInstallManagerS
 #if CANARY_BUILD || STABLE_BUILD
         var packages = _packageDeploymentService.FindPackagesForCurrentUser(AzureExtensionPackageFamilyName);
         return packages.Any();
-#endif
+#else
         return true;
+#endif
     }
 
     public async Task InstallDevHomeAzureExtensionAsync()
