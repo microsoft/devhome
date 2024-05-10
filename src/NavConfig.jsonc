@@ -81,7 +81,7 @@
           "visible": true
         },
         {
-          "buildType": "release",
+          "buildType": "stable",
           "enabledByDefault": false,
           "visible": true
         }

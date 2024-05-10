@@ -186,12 +186,12 @@
     <comment>Text for the sync button on the top right side</comment>
   </data>
   <data name="CreateEnvironmentButton.Text" xml:space="preserve">
-    <value>Create environment</value>
+    <value>+ Create environment</value>
     <comment>Text for button that will redirect the user to the Create Environment page in Dev Home</comment>
   </data>
-  <data name="Titlebar.Text" xml:space="preserve">
+  <data name="EnvironmentsHeader.Text" xml:space="preserve">
     <value>Environments</value>
-    <comment>Title text for the main landing page</comment>
+    <comment>Header text for the main landing page</comment>
   </data>
   <data name="SearchTextBox.PlaceholderText" xml:space="preserve">
     <value>Filter</value>
@@ -340,11 +340,11 @@
     <value>Unpin From Taskbar</value>
   </data>
   <data name="EnvironmentOperationFailedUnKnownReasonText" xml:space="preserve">
-    <value>The extension failed to perform the requested operation for an unknown reason. Check the extensions logs for more information</value>
+    <value>The extension failed to perform the requested operation for an unknown reason. Check the extensions logs for more information.</value>
     <comment>Text to tell the user Dev Home the extension failed to perform the operation send by the extension</comment>
   </data>
   <data name="GoToExtensionsLibrary.Text" xml:space="preserve">
-    <value>Go to extensions library</value>
+    <value>+ Go to extensions library</value>
     <comment>Text for when the environment page in Dev Home is empty and the user has no extensions installed that support environments</comment>
   </data>
 </root>
