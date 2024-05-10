@@ -209,6 +209,8 @@ public partial class App : Application, IApp
 
     private async void OnActivated(object? sender, AppActivationArguments args)
     {
+        ShowMainWindow();
+
         // Note: Keep the reference to 'args.Data' object, as 'args' may be
         // disposed before the async operation completes (RpcCallFailed: 0x800706be)
         var localArgsDataReference = args.Data;
