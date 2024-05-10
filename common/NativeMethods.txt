@@ -1,5 +1,4 @@
-﻿AllowSetForegroundWindow
-EnableWindow
+﻿EnableWindow
 CoCreateInstance
 FileOpenDialog
 FileSaveDialog
