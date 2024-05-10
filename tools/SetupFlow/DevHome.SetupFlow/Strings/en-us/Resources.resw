@@ -1979,4 +1979,28 @@
     <value>Select an extension provider before continuing.</value>
     <comment>Guidance text to instruct user to select a Quickstart provider before continuing</comment>
   </data>
+  <data name="QuickstartPlaygroundReferenceSample.Content" xml:space="preserve">
+    <value>Reference Sample</value>
+    <comment>Button for opening the folder of the reference sample project that was given to the model for the currently-selected extension</comment>
+  </data>
+  <data name="QuickstartPlaygroundReferenceSampleTooltip.Content" xml:space="preserve">
+    <value>Location of reference sample</value>
+    <comment>Tooltip for the button to the reference sample used for generating this project</comment>
+  </data>
+  <data name="QuickstartPlaygroundReferenceSamplePrefix.Text" xml:space="preserve">
+    <value>Generated based on example: </value>
+    <comment>Text explaining what reference sample was used for generating the project</comment>
+  </data>
+  <data name="QuickstartPlaygroundDislikeButton.AutomationProperties.Name" xml:space="preserve">
+    <value>Give thumbs-down feedback on the generated project</value>
+    <comment>Label for thumbs-down button for generated Quickstart projects</comment>
+  </data>
+  <data name="QuickstartPlaygroundLikeButton.AutomationProperties.Name" xml:space="preserve">
+    <value>Give thumbs-up feedback on the generated project</value>
+    <comment>Label for thumbs-up button for generated Quickstart projects</comment>
+  </data>
+  <data name="QuickstartPlaygroundOpenInEditor.AutomationProperties.Name" xml:space="preserve">
+    <value>Open in editor</value>
+    <comment>Label for the button to launch the project host from the selected Quickstart extension</comment>
+  </data>
 </root>
