@@ -14,10 +14,8 @@ using DevHome.Customization.Helpers;
 using DevHome.Customization.Models;
 using DevHome.Customization.ViewModels.DevDriveInsights;
 using DevHome.Customization.Views;
-using DevHome.SetupFlow.Models.Environments;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.Customization.ViewModels;
 
