@@ -19,7 +19,7 @@ public class ComputeSystemViewModelFactory
 {
     public async Task<ComputeSystemCardViewModel> CreateCardViewModelAsync(
         IComputeSystemManager manager,
-        ComputeSystem computeSystem,
+        ComputeSystemCache computeSystem,
         ComputeSystemProvider provider,
         string packageFullName,
         WindowEx windowEx)

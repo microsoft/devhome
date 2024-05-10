@@ -36,7 +36,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     private readonly string _packageFullName;
 
-    public ComputeSystem ComputeSystemWrapper { get; private set; }
+    public ComputeSystemCache ComputeSystem { get; private set; }
 
     public BitmapImage ComputeSystemImage { get; set; }
 
@@ -68,9 +68,9 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     {
         _windowEx = windowEx;
         _computeSystemManager = manager;
-        ComputeSystemTitle = computeSystem.DisplayName;
-        ComputeSystemWrapper = computeSystem;
-        ComputeSystemWrapper.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
+        ComputeSystemTitle = computeSystem.DisplayName.Value;
+        ComputeSystem = computeSystem;
+        ComputeSystem.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;
         AccessibilityName = new Lazy<string>(BuildAutomationName);
         _packageFullName = packageFullName;
@@ -80,7 +80,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     {
         _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
-            if (sender.Id == ComputeSystemWrapper.Id)
+            if (sender.Id == ComputeSystem.Id.Value)
             {
                 CardState = state;
                 StateColor = ComputeSystemHelpers.GetColorBasedOnState(state);
@@ -104,11 +104,11 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     public async Task<ComputeSystemState> GetCardStateAsync()
     {
-        var result = await ComputeSystemWrapper.GetStateAsync();
+        var result = await ComputeSystem.GetStateAsync();
 
         if (result.Result.Status == ProviderOperationStatus.Failure)
         {
-            _log.Error($"Failed to get state for compute system {ComputeSystemWrapper.DisplayName} from provider {ComputeSystemWrapper.AssociatedProviderId}. Error: {result.Result.DiagnosticText}");
+            _log.Error($"Failed to get state for compute system {ComputeSystem.DisplayName} from provider {ComputeSystem.AssociatedProviderId}. Error: {result.Result.DiagnosticText}");
         }
 
         StateColor = ComputeSystemHelpers.GetColorBasedOnState(result.State);
@@ -117,7 +117,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     public void RemoveComputeSystemStateChangedHandler()
     {
-        ComputeSystemWrapper.StateChanged -= _computeSystemManager.OnComputeSystemStateChanged;
+        ComputeSystem.StateChanged -= _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged -= OnComputeSystemStateChanged;
     }
 

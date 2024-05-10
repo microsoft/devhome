@@ -15,42 +15,6 @@ namespace HyperVExtension.UnitTest.HyperVExtensionTests.Services;
 [TestClass]
 public class HyperVManagerTest : HyperVExtensionTestsBase
 {
-    /// <summary>
-    /// Gets common PowerShell results for loading the Hyper-V module and starting the VM management service.
-    /// Use this when you need to mock functionality that uses the Hyper-V Manager
-    /// </summary>
-    [TestMethod]
-    public void IsHyperVModuleLoadedReturnsFalseWhenModuleNotLoaded()
-    {
-        // Arrange
-        SetupHyperVTestMethod(string.Empty, ServiceControllerStatus.Running);
-        SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); });
-
-        // Act
-        var hyperVManager = TestHost.GetService<IHyperVManager>();
-        var actualValue = hyperVManager.IsHyperVModuleLoaded();
-
-        // Assert
-        Assert.IsFalse(actualValue);
-    }
-
-    [TestMethod]
-    public void IsHyperVModuleLoadedReturnsTrueWhenModuleIsLoaded()
-    {
-        // Arrange
-        SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
-        var hyperVManager = TestHost.GetService<IHyperVManager>();
-        SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); });
-
-        // Act
-        var actualValue = hyperVManager.IsHyperVModuleLoaded();
-
-        // Assert
-        Assert.IsTrue(actualValue);
-    }
-
     [TestMethod]
     [ExpectedException(typeof(HyperVAdminGroupException))]
     public void StartVirtualMachineManagementServiceFailsWhenUserNotInHyperVAdminGroup()

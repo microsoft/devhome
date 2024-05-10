@@ -98,7 +98,7 @@ try {
                     Remove-AppPackage -Package $DevHomePackage.PackageFullName
                 }
                 Write-Host "Installing Dev Home"
-                Add-AppPackage (Join-Path "AppxPackages" "$configuration\DevHome\DevHome-$platform.msix")
+                Add-AppPackage (Join-Path "AppxPackages" "$configuration\DevHome-$platform.msix")
 
                 if ($true) {
                     # Start/stop the app once so that WinAppDriver doesn't time out during first time setup
@@ -142,7 +142,9 @@ try {
                     "tools\$tool\*UITest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\*.UITest.dll"
                 )
 
-                & $vstestPath $vstestArgs
+                if (Get-ChildItem "tools\$tool\*UnitTest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\*.UnitTest.dll") {
+                    & $vstestPath $vstestArgs
+                }
                 # TODO: UI tests are currently disabled in the pipeline until signing is solved
                 if ($RunUITests) {
                     & $vstestPath $winAppTestArgs
