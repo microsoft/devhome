@@ -272,6 +272,9 @@ public static class StringResourceKey
     public static readonly string SetupTargetConfigurationUnitProgressErrorWithMsg = nameof(SetupTargetConfigurationUnitProgressErrorWithMsg);
     public static readonly string SetupTargetConfigurationUnitUnknown = nameof(SetupTargetConfigurationUnitUnknown);
 
+    // Quickstart Playground
+    public static readonly string QuickstartPlaygroundLaunchButton = nameof(QuickstartPlaygroundLaunchButton);
+
     // Create Environment flow
     public static readonly string SelectEnvironmentPageTitle = nameof(SelectEnvironmentPageTitle);
     public static readonly string ConfigureEnvironmentPageTitle = nameof(ConfigureEnvironmentPageTitle);

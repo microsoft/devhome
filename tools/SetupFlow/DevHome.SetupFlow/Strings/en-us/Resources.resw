@@ -173,6 +173,10 @@
     <value>Close</value>
     <comment>Label for a close button</comment>
   </data>
+  <data name="CloseButton.Content" xml:space="preserve">
+    <value>Close</value>
+    <comment>Label for a close button</comment>
+  </data>
   <data name="ConfigurationFieldInvalid" xml:space="preserve">
     <value>The field '{0}' in the configuration file is invalid</value>
     <comment>{Locked="{0}"} An error in reading a configuration file. {0} is a placeholder replaced by the field name from the file.</comment>
@@ -541,6 +545,14 @@
     <value>Clone repositories, install applications, and generate a WinGet Configuration file to apply to an environment.</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
+  <data name="MainPage_QuickstartPlayground.Description" xml:space="preserve">
+    <value>[Experimental] Use natural language and AI to set up a new devcontainer-based programming environment</value>
+    <comment>Body text description for a card than when clicked takes the user to a flow for creating a devcontainer environment for their project idea</comment>
+  </data>
+  <data name="MainPage_QuickstartPlayground.Header" xml:space="preserve">
+    <value>Quickstart Playground</value>
+    <comment>Header for a card than when clicked takes the user to a flow for creating a devcontainer environment for their project idea</comment>
+  </data>
   <data name="NoAppsToInstall.Text" xml:space="preserve">
     <value>No apps to install</value>
     <comment>Text shown if no applications were selected to install</comment>
@@ -684,6 +696,10 @@
   <data name="SearchBox.PlaceholderText" xml:space="preserve">
     <value>Try "GitHub"</value>
     <comment>{Locked="GitHub"}Placeholder text displayed in a search box</comment>
+  </data>
+  <data name="SearchBox_Experiment.PlaceholderText" xml:space="preserve">
+    <value>Search for apps</value>
+    <comment>Placeholder text displayed in a search box</comment>
   </data>
   <data name="SelectAll.Content" xml:space="preserve">
     <value>Select all</value>
@@ -1866,5 +1882,101 @@
   <data name="SummaryPage_ViewLogs.Content" xml:space="preserve">
     <value>View log</value>
     <comment>Content for a button to view logs.</comment>
+  </data>
+  <data name="QuickStartProjectUnexpectedError" xml:space="preserve">
+    <value>An unexpected error occurred while attempting to perform the operation on the {0} provider. Please see the logs for more information.</value>
+    <comment>Locked={"{0}"} Text for when there was an error performing a quick start project operation. . {0} is the name of the quick start project provider.</comment>
+  </data>
+  <data name="QuickstartPlayground.Text" xml:space="preserve">
+    <value>Quickstart Playground</value>
+    <comment>Locked="{Quickstart Playground}" Title for the QuickstartPlayground page in the SetupFlow</comment>
+  </data>
+  <data name="QuickstartPlaygroundExtensionProvider.Text" xml:space="preserve">
+    <value>Extension Provider</value>
+    <comment>Label for the ComboBox with the list of available QuickstartProject extensions</comment>
+  </data>
+  <data name="QuickstartPlaygroundExtensionProgressOutput.Header" xml:space="preserve">
+    <value>Progress Output</value>
+    <comment>Header for the optional progress output section when generating a Quickstart project</comment>
+  </data>
+  <data name="QuickstartPlaygroundGenerateButton.Content" xml:space="preserve">
+    <value>Generate</value>
+    <comment>Label for the generate button on the QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundGenerateButtonTooltip.Content" xml:space="preserve">
+    <value>Generate project</value>
+    <comment>Tooltip for the generate button on the QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundLaunchDropDownButton.Content" xml:space="preserve">
+    <value>Open in Editor</value>
+    <comment>Drop down button to launch QuickstartPlayground project</comment>
+  </data>
+  <data name="QuickstartPlaygroundLaunchButton" xml:space="preserve">
+    <value>Open in {0}</value>
+    <comment>Locked={"{0}"} Button to launch QuickstartPlayground project using {0}</comment>
+  </data>
+  <data name="QuickstartPlaygroundSaveButton.Content" xml:space="preserve">
+    <value>Save</value>
+    <comment>Button to save QuickstartPlayground project in another folder</comment>
+  </data>
+  <data name="QuickstartPlaygroundPromptHeader.Text" xml:space="preserve">
+    <value>What kind of project would you like to create? Try a sample prompt or write one of your own.</value>
+    <comment>Label for prompt asking user what type of project to create</comment>
+  </data>
+  <data name="QuickstartPlaygroundGenerationOutputLabel.Text" xml:space="preserve">
+    <value>Generation Output:</value>
+    <comment>Label for section showing generated folder</comment>
+  </data>
+  <data name="QuickstartPlaygroundFeedbackLikeTooltip.Content" xml:space="preserve">
+    <value>Like</value>
+    <comment>Tooltip for like button on QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundFeedbackDislikeTooltip.Content" xml:space="preserve">
+    <value>Dislike</value>
+    <comment>Tooltip for dislike button on QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundFeedbackHeader.Text" xml:space="preserve">
+    <value>Provide additional feedback</value>
+    <comment>Header above feedback section on QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundSubmitFeedback.Content" xml:space="preserve">
+    <value>Submit feedback</value>
+    <comment>Submit feedback button on QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundFeedbackSubmitted.Text" xml:space="preserve">
+    <value>Your feedback has been submitted successfully!</value>
+    <comment>Label for when feedback has been submitted on QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundPositiveFeedbackPromptPlaceholder.PlaceholderText" xml:space="preserve">
+    <value>What did you like?</value>
+    <comment>Placeholder for like feedback prompt on QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundNegativeFeedbackPromptPlaceholder.PlaceholderText" xml:space="preserve">
+    <value>What did you dislike?</value>
+    <comment>Placeholder for dislike feedback prompt on QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundGenerationPromptPlaceholder" xml:space="preserve">
+    <value>Type a new generation command</value>
+    <comment>Placeholder for generation prompt on QuickstartPlayground page once user has selected a provider</comment>
+  </data>
+  <data name="QuickstartPlaygroundAIWarning.Text" xml:space="preserve">
+    <value>Quickstart Playground uses AI, check for mistakes.</value>
+    <comment>AI warning label on QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundAIWarningTerms.Content" xml:space="preserve">
+    <value>AI Terms</value>
+    <comment>AI terms hyperlink text on QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundAIWarningPrivacy.Content" xml:space="preserve">
+    <value>AI Privacy</value>
+    <comment>AI privacy hyperlink text on QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundNoProviderInstalled" xml:space="preserve">
+    <value>No Quickstart extension providers found. Please install one before continuing.</value>
+    <comment>Message to indicate to the user that Dev Home could not find any Quickstart providers on the system</comment>
+  </data>
+  <data name="QuickstartPlaygroundSelectProvider" xml:space="preserve">
+    <value>Select an extension provider before continuing.</value>
+    <comment>Guidance text to instruct user to select a Quickstart provider before continuing</comment>
   </data>
 </root>
