@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
+using Windows.ApplicationModel;
 
 namespace DevHome.Utilities.ViewModels;
 
@@ -15,25 +16,26 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
 
     public UtilitiesMainPageViewModel()
     {
+        var appExAliasAbsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"Microsoft\\WindowsApps\\{Package.Current.Id.FamilyName}");
         var stringResource = new StringResource("DevHome.Utilities.pri", "DevHome.Utilities/Resources");
 
         Utilities = new ObservableCollection<UtilityViewModel>
         {
-            new("DevHome.HostsFileEditorApp.exe")
+            new(Path.Combine(appExAliasAbsFolderPath, "DevHome.HostsFileEditorApp.exe"))
             {
                 Title = stringResource.GetLocalized("HostsFileEditorUtilityTitle"),
                 Description = stringResource.GetLocalized("HostsFileEditorUtilityDesc"),
                 NavigateUri = "https://aka.ms/PowerToysOverview_HostsFileEditor",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\HostsUILib", "Hosts.ico"),
             },
-            new("DevHome.RegistryPreviewApp.exe")
+            new(Path.Combine(appExAliasAbsFolderPath, "DevHome.RegistryPreviewApp.exe"))
             {
                 Title = stringResource.GetLocalized("RegistryPreviewUtilityTitle"),
                 Description = stringResource.GetLocalized("RegistryPreviewUtilityDesc"),
                 NavigateUri = "https://aka.ms/PowerToysOverview_RegistryPreview",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\RegistryPreview", "RegistryPreview.ico"),
             },
-            new("DevHome.EnvironmentVariablesApp.exe")
+            new(Path.Combine(appExAliasAbsFolderPath, "DevHome.EnvironmentVariablesApp.exe"))
             {
                 Title = stringResource.GetLocalized("EnvVariablesEditorUtilityTitle"),
                 Description = stringResource.GetLocalized("EnvVariablesEditorUtilityDesc"),
