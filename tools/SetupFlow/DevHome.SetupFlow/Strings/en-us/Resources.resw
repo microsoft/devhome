@@ -1501,7 +1501,7 @@
     <comment>The operating system version of the compute system.</comment>
   </data>
   <data name="SetupTargetReviewPageDefaultInfoBarMessage" xml:space="preserve">
-    <value>Proceeding with the next step may result in the target machine being rebooted and logging in may be required.</value>
+    <value>Proceeding with the next step may result in the target machine being rebooted and logging in may be required. App installers may show Windows UAC prompts that will require your attention.</value>
     <comment>Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
   </data>
   <data name="SetupTargetReviewPageDefaultInfoBarTitle" xml:space="preserve">
@@ -1509,7 +1509,7 @@
     <comment>Title for info bar that will warn users that proceeding with the setup may result in the restart and re-login of the targeted remote machine or virtual machine.</comment>
   </data>
   <data name="SetupTargetReviewPageHyperVInfoBarMessage" xml:space="preserve">
-    <value>The next step may require you to reboot and sign in again. The Dev Home's DevSetupAgent service will be installed for setup of a Hyper-V virtual machine</value>
+    <value>The next step may require you to reboot and sign in again. The Dev Home's DevSetupAgent service will be installed for setup of a Hyper-V virtual machine. App installers may show Windows UAC prompts that will require your attention.</value>
     <comment>{Locked="DevSetupAgent"} Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
   </data>
   <data name="SetupTargetUnknownStatus" xml:space="preserve">
