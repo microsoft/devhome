@@ -8,7 +8,7 @@ Please make sure to verify all these scenarios.
 ### In a fresh Win 10/ Win 11 VM verify (if not already done so in another scenario):
 1. Navigation to the "set up environments" flow in the Machine configuration page for the first time should show error info bar with button to add user to the Hyper-V admin group and enable Hyper-V.
     1. Clicking button in infobar shows UAC and clicking yes add user to the Hyper-V admin group and enables Hyper-V
-    1. A Warning info bar should appear requesting the user to reboot.
+    1. A warning info bar should appear on the bottom right of the page requesting the user to reboot.
     1. Clicking the sync button regardless of whether the user closes the warning info bar or not should regenerate the warning infobar requesting to reboot
     1. Clicking the reboot button reboots machine
     1. After logging in again no warning info bar is shown
@@ -17,8 +17,6 @@ Please make sure to verify all these scenarios.
     
 #### Make sure Hyper-V extension is enabled and verify the following
 1. Users can navigate to Machine configuration > Setup an environment and select only one environment.
-1. In the environments tool page, once creation is complete the UI should stop the progress bar and the environment card should be updated with the latest state of the environment. (For Hyper-V the state should be off)
-1. If not already done so, navigate to [Managing Environments](tools/Environments/DevHome.Environments/TestingScenarios/ManageEnvironments.md) to perform the managing environment steps.
 1. Users can sort environments by ascending and descending order by name
 1. Users can filter environments by providers. 
     1. Clicking a provider in the providers combo box only shows environments for that specific provider
@@ -52,7 +50,3 @@ not prompted with another adaptive card
 1. Confirm that within 2 minutes configuration progress is presented in the UI
 1. If there are no errors, the user should be redirected to the summary page where they can see a list of repositories cloned and apps installed
 1. Confirm the repositories were cloned to the correct place and apps now installed on the VM
-
-
-
-

@@ -7,7 +7,7 @@ Please make sure to verify all these scenarios.
 ### In a fresh Win 10/ Win 11 VM verify (if not already done so in another scenario):
 1. Navigation to the environments page for the first time should show error info bar with button to add user to the Hyper-V admin group and enable Hyper-V.
     1. Clicking button in infobar shows UAC and clicking yes add user to the Hyper-V admin group and enables Hyper-V
-        1. A Warning info bar should appear requesting the user to reboot.
+        1. A warning info bar should appear on the bottom right of the page requesting the user to reboot.
         1. Clicking the sync button regardless of whether the user closes the warning info bar or not should regenerate the warning infobar requesting to reboot
         1. Clicking the reboot button reboots machine
         1. After logging in again no warning info bar is shown
