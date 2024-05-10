@@ -458,7 +458,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
-    /// Navigates the user ot the create environment flow or extension library based on whether or not an extension
+    /// Navigates the user to the create environment flow or extension library based on whether or not an extension
     /// that supports environments is installed.
     /// </summary>
     [RelayCommand]
