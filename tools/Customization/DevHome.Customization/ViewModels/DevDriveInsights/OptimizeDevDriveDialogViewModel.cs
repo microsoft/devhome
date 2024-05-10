@@ -5,11 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Antlr4.Runtime.Misc;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
+using DevHome.Customization.Models;
+using DevHome.SetupFlow.Models.Environments;
 using DevHome.Telemetry;
 using Serilog;
 using Windows.Storage.Pickers;
@@ -257,6 +261,9 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
                     var existingCacheLocationVetted = RemovePrivacyInfo(ExistingCacheLocation);
                     Log.Debug($"Moved cache from {existingCacheLocationVetted} to {directoryPath}");
                     TelemetryFactory.Get<ITelemetry>().Log("DevDriveInsights_PackageCacheMovedSuccessfully_Event", LogLevel.Critical, new ExceptionEvent(0, existingCacheLocationVetted));
+
+                    // Send message to the DevDriveInsightsViewModel to let it refresh the Dev Drive insights UX
+                    WeakReferenceMessenger.Default.Send(new DevDriveOptimizedMessage(new DevDriveOptimizedData()));
                 }
             }
             else
