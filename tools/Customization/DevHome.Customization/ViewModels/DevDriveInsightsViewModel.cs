@@ -416,6 +416,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
     /// <summary>
     /// Implements the Receive method from the IRecipient<DevDriveOptimizedMessage> interface. When this message
     /// is received we reload the UX.
+    /// </summary>
     public void Receive(DevDriveOptimizedMessage message)
     {
         OnFirstNavigateTo();
@@ -424,6 +425,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
     /// <summary>
     /// Implements the Receive method from the IRecipient<DevDriveTrustedMessage> interface. When this message
     /// is received we reload the UX.
+    /// </summary>
     public void Receive(DevDriveTrustedMessage message)
     {
         OnFirstNavigateTo();
