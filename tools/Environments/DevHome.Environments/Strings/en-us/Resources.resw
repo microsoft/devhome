@@ -126,13 +126,13 @@
     <value>Sync</value>
     <comment>Text for the sync button on the top right side</comment>
   </data>
-  <data name="CreateEnvironmentButton.Text" xml:space="preserve">
-    <value>Create Environment</value>
+  <data name="CreateEnvironmentButton.Content" xml:space="preserve">
+    <value>+ Create environment</value>
     <comment>Text for button that will redirect the user to the Create Environment page in Dev Home</comment>
   </data>
-  <data name="Titlebar.Text" xml:space="preserve">
+  <data name="EnvironmentsHeader.Text" xml:space="preserve">
     <value>Environments</value>
-    <comment>Title text for the main landing page</comment>
+    <comment>Header text for the main landing page</comment>
   </data>
   <data name="SearchTextBox.PlaceholderText" xml:space="preserve">
     <value>Filter</value>

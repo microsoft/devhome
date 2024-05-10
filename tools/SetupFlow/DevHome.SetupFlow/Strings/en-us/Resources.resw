@@ -1821,7 +1821,7 @@
     <comment>Title for create environment review page</comment>
   </data>
   <data name="CreateEnvironmentButtonText" xml:space="preserve">
-    <value>Create Environment</value>
+    <value>Create environment</value>
   </data>
   <data name="EnvironmentCreationError" xml:space="preserve">
     <value>There was an error starting the creation operation</value>
