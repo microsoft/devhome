@@ -51,8 +51,6 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
     private readonly ILocalSettingsService _localSettingsService;
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-
     private readonly ObservableCollection<ExplorerItem> _dataSource = new();
 
     private IQuickStartProjectGenerationOperation _quickStartProjectGenerationOperation = null!;

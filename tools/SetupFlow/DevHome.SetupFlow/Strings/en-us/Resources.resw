@@ -1979,14 +1979,6 @@
     <value>Select an extension provider before continuing.</value>
     <comment>Guidance text to instruct user to select a Quickstart provider before continuing</comment>
   </data>
-  <data name="QuickstartPlaygroundReferenceSample.Content" xml:space="preserve">
-    <value>Reference Sample</value>
-    <comment>Button for opening the folder of the reference sample project that was given to the model for the currently-selected extension</comment>
-  </data>
-  <data name="QuickstartPlaygroundReferenceSampleTooltip.Content" xml:space="preserve">
-    <value>Location of reference sample</value>
-    <comment>Tooltip for the button to the reference sample used for generating this project</comment>
-  </data>
   <data name="QuickstartPlaygroundReferenceSamplePrefix.Text" xml:space="preserve">
     <value>Generated based on example: </value>
     <comment>Text explaining what reference sample was used for generating the project</comment>
