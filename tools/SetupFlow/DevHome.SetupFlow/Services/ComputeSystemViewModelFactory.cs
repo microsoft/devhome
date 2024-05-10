@@ -32,7 +32,7 @@ public class ComputeSystemViewModelFactory
             cardViewModel.ComputeSystemImage = await ComputeSystemHelpers.GetBitmapImageAsync(computeSystem);
             cardViewModel.ComputeSystemProviderName = provider.DisplayName;
             cardViewModel.ComputeSystemProviderImage = CardProperty.ConvertMsResourceToIcon(provider.Icon, packageFullName);
-            cardViewModel.ComputeSystemProperties = new(await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(computeSystem, packageFullName));
+            cardViewModel.ComputeSystemProperties = new(await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(computeSystem, packageFullName));
         }
         catch (Exception ex)
         {

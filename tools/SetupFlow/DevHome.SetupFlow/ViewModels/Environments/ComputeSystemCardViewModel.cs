@@ -64,7 +64,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     public ObservableCollection<CardProperty> ComputeSystemProperties { get; set; }
 
-    public ComputeSystemCardViewModel(ComputeSystem computeSystem, IComputeSystemManager manager, WindowEx windowEx, string packageFullName)
+    public ComputeSystemCardViewModel(ComputeSystemCache computeSystem, IComputeSystemManager manager, WindowEx windowEx, string packageFullName)
     {
         _windowEx = windowEx;
         _computeSystemManager = manager;
@@ -91,7 +91,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     private async Task UpdatePropertiesAsync()
     {
-        var properties = await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(ComputeSystemWrapper, _packageFullName);
+        var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem, _packageFullName);
         lock (_lock)
         {
             ComputeSystemProperties.Clear();

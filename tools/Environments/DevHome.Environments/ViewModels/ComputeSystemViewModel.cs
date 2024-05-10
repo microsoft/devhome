@@ -131,7 +131,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             DotOperations!.Add(operation);
         }
 
-        await SetPropertiesAsync();
+        SetPropertiesAsync();
     }
 
     private async Task InitializeStateAsync()
@@ -144,7 +144,6 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
         State = result.State;
         StateColor = ComputeSystemHelpers.GetColorBasedOnState(State);
-        SetupOperationProgressBasedOnState();
     }
 
     private async void SetPropertiesAsync()
@@ -154,7 +153,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             return;
         }
 
-        var properties = await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(ComputeSystem!, PackageFullName);
+        var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem!, PackageFullName);
         lock (_lock)
         {
             Properties.Clear();

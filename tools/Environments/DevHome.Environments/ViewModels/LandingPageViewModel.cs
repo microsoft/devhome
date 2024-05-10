@@ -471,7 +471,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     {
         _notificationsHelper?.DisplayComputeSystemOperationError(
             computeSystemViewModel.ProviderDisplayName,
-            computeSystemViewModel.ComputeSystem!.DisplayName,
+            computeSystemViewModel.ComputeSystem!.DisplayName.Value,
             errorText);
     }
 
