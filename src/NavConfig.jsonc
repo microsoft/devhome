@@ -78,12 +78,12 @@
         {
           "buildType": "canary",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
         },
         {
           "buildType": "release",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
         }
       ]
     }
