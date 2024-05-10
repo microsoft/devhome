@@ -23,7 +23,12 @@
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
     <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
-        <StackPanel Orientation="Horizontal" Spacing="4">
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                    <Setter Property="Margin" Value="6,0" />
+                </Style>
+            </StackPanel.Resources>
             <Button x:Uid="SetUpAsNonAdmin" Command="{x:Bind ViewModel.ConfigureAsNonAdminCommand}"/>
             <Button x:Uid="SetUpAsAdmin" Command="{x:Bind ViewModel.ConfigureAsAdminCommand}"/>
         </StackPanel>
