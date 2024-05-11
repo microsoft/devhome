@@ -34,6 +34,8 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     private readonly string _packageFullName;
 
+    private readonly object _lock = new();
+
     public ComputeSystemCache ComputeSystem { get; private set; }
 
     public BitmapImage ComputeSystemImage { get; set; }
@@ -97,7 +99,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     private async Task UpdatePropertiesAsync()
     {
         var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem, _packageFullName);
-        lock (ComputeSystemProperties)
+        lock (_lock)
         {
             ComputeSystemProperties.Clear();
             foreach (var property in properties)

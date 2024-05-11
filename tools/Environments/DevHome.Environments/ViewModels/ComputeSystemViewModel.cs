@@ -40,6 +40,8 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     private readonly IComputeSystemManager _computeSystemManager;
     private readonly ComputeSystemProvider _provider;
 
+    private readonly object _lock = new();
+
     public ComputeSystemCache ComputeSystem { get; protected set; }
 
     public event TypedEventHandler<ComputeSystemViewModel, string>? ComputeSystemErrorFound;
@@ -161,7 +163,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         }
 
         var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem!, PackageFullName);
-        lock (Properties)
+        lock (_lock)
         {
             Properties.Clear();
             foreach (var property in properties)
