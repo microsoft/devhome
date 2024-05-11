@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Threading.Tasks;
 using DevHome.SetupFlow.ViewModels.Environments;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.Views.Environments;
@@ -15,8 +17,8 @@ public sealed partial class SelectEnvironmentProviderView : UserControl
         this.InitializeComponent();
     }
 
-    private void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.Initialize(NotificationQueue);
+        await ViewModel.InitializeAsync(NotificationQueue);
     }
 }

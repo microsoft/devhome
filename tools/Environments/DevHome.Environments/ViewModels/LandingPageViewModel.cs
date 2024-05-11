@@ -21,6 +21,7 @@ using DevHome.Environments.Helpers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using Windows.Foundation;
 using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
@@ -59,6 +60,15 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public AdvancedCollectionView ComputeSystemCardsView { get; set; }
 
     public bool HasPageLoadedForTheFirstTime { get; set; }
+
+    [ObservableProperty]
+    private bool _shouldNavigateToExtensionsPage;
+
+    [ObservableProperty]
+    private string? _callToActionText;
+
+    [ObservableProperty]
+    private string? _callToActionHyperLinkButtonText;
 
     [ObservableProperty]
     private bool _showLoadingShimmer = true;
@@ -129,8 +139,14 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     /// process.
     /// </summary>
     [RelayCommand]
-    public void CreateEnvironmentButton()
+    public void CallToActionInvokeButton()
     {
+        if (ShouldNavigateToExtensionsPage)
+        {
+            _navigationService.NavigateTo(KnownPageKeys.Extensions);
+            return;
+        }
+
         _log.Information("User clicked on the create environment button. Navigating to Select environment page in Setup flow");
         _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow");
     }
@@ -218,15 +234,20 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 if (ComputeSystemCards[i] is ComputeSystemViewModel computeSystemViewModel)
                 {
                     computeSystemViewModel.RemoveStateChangedHandler();
+                    computeSystemViewModel.ComputeSystemErrorFound -= OnComputeSystemOperationError;
                     ComputeSystemCards.RemoveAt(i);
                 }
             }
         }
 
         _notificationsHelper?.ClearNotifications();
+        CallToActionText = null;
+        CallToActionHyperLinkButtonText = null;
+        ShouldNavigateToExtensionsPage = false;
         ShowLoadingShimmer = true;
         await _environmentExtensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
         ShowLoadingShimmer = false;
+        UpdateCallToActionText();
 
         lock (_lock)
         {
@@ -271,14 +292,13 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
         var provider = data.ProviderDetails.ComputeSystemProvider;
 
-        var computeSystemList = data.DevIdToComputeSystemMap.Values.SelectMany(x => x.ComputeSystems).ToList();
+        var computeSystemList = data.DevIdToComputeSystemMap.Values.SelectMany(x => x.ComputeSystems).ToList() ?? [];
 
         // In the future when we support switching between accounts in the environments page, we will need to handle this differently.
         // for now we'll show all the compute systems from a provider.
-        if ((computeSystemList == null) || (computeSystemList.Count == 0))
+        if (computeSystemList.Count == 0)
         {
             _log.Error($"No Compute systems found for provider: {provider.Id}");
-            return;
         }
 
         // Initialize the cards for the compute systems in parallel before adding them to the view model on UI thread
@@ -294,6 +314,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 packageFullName,
                 _windowEx);
 
+            computeSystemViewModel.ComputeSystemErrorFound += OnComputeSystemOperationError;
             computeSystemViewModels.Add(computeSystemViewModel);
         }
 
@@ -445,6 +466,14 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
     }
 
+    private void OnComputeSystemOperationError(ComputeSystemViewModel computeSystemViewModel, string errorText)
+    {
+        _notificationsHelper?.DisplayComputeSystemOperationError(
+            computeSystemViewModel.ProviderDisplayName,
+            computeSystemViewModel.ComputeSystem!.DisplayName.Value,
+            errorText);
+    }
+
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)
@@ -463,5 +492,21 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    private void UpdateCallToActionText()
+    {
+        // if there are cards in the UI don't update the text and keep their values as null.
+        if (ComputeSystemCards.Count > 0)
+        {
+            return;
+        }
+
+        var providerCountWithOutAllKeyword = Providers.Count - 1;
+
+        var callToActionData = ComputeSystemHelpers.UpdateCallToActionText(providerCountWithOutAllKeyword);
+        ShouldNavigateToExtensionsPage = callToActionData.NavigateToExtensionsLibrary;
+        CallToActionText = callToActionData.CallToActionText;
+        CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
     }
 }

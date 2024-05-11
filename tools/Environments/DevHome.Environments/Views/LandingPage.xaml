@@ -31,6 +31,7 @@
         <Grid.Resources>
 
             <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
+            <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
 
             <!-- Launch Button template -->
             <DataTemplate x:Key="LaunchButton" x:DataType="vm:ComputeSystemViewModel">
@@ -198,8 +199,20 @@
             <Button 
                 Grid.Column="3" 
                 HorizontalAlignment="Right"
-                x:Uid="CreateEnvironmentButton"
-                Command="{x:Bind ViewModel.CreateEnvironmentButtonCommand}" />
+                Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" >
+                <Grid>
+                    <TextBlock 
+                        Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
+                        Grid.Column="1" 
+                        x:Uid="CreateEnvironmentButton" 
+                        Margin="3 0 0 0"  />
+                    <TextBlock 
+                        Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay}"
+                        Grid.Column="1" 
+                        x:Uid="GoToExtensionsLibrary" 
+                        Margin="3 0 0 0"  />
+               </Grid>
+            </Button>
         </Grid>
 
         <!-- Filtering and sorting -->
@@ -278,26 +291,45 @@
         </Grid>
 
         <!-- Per VM/Compute System card -->
-        <ScrollViewer Grid.Row="3" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}"
-                      Style="{StaticResource EnvironmentScrollViewerStyle}">
-            <StackPanel>
-                <ListView
-                    MaxWidth="{ThemeResource MaxPageContentWidth}"
-                    ItemsSource="{x:Bind ViewModel.ComputeSystemCardsView}" SelectionMode="None"
-                    ItemTemplateSelector="{StaticResource CardItemTemplateSelector}"
-                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel></StackPanel>
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-                </ListView>
-                <StackPanel Visibility="{x:Bind ViewModel.ShowLoadingShimmer, Mode=OneWay}">
-                    <ContentControl
-                        HorizontalContentAlignment="Stretch"
-                        ContentTemplate="{StaticResource ComputeSystemLoadingTemplate}"/>
+        <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <Grid>
+                <StackPanel>
+                    <ListView
+                        MaxWidth="{ThemeResource MaxPageContentWidth}"
+                        ItemsSource="{x:Bind ViewModel.ComputeSystemCardsView}" SelectionMode="None"
+                        ItemTemplateSelector="{StaticResource CardItemTemplateSelector}"
+                        ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel></StackPanel>
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                    </ListView>
+                    <StackPanel
+                        Visibility="{x:Bind ViewModel.ShowLoadingShimmer, Mode=OneWay}">
+                        <ContentControl
+                            HorizontalContentAlignment="Stretch"
+                            ContentTemplate="{StaticResource ComputeSystemLoadingTemplate}"/>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
+                <StackPanel 
+                    Visibility="{x:Bind ViewModel.CallToActionText, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,250">
+                    <TextBlock 
+                        Text="{x:Bind ViewModel.CallToActionText, Mode=OneWay}"
+                        HorizontalAlignment="Center" 
+                        TextWrapping="WrapWholeWords" 
+                        HorizontalTextAlignment="Center" />
+                    <HyperlinkButton 
+                        Grid.Column="3" 
+                        HorizontalAlignment="Center"
+                        Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" />
+
+                </StackPanel>
+            </Grid>
         </ScrollViewer>
         <Grid Grid.Row="3" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <InfoBar MaxWidth="480"

@@ -39,7 +39,7 @@ public class ComputeSystemCache
 
     private readonly Lazy<Task<ComputeSystemStateResult>> _stateResult;
     private readonly Lazy<Task<ComputeSystemThumbnailResult>> _thumbnailResult;
-    private readonly Lazy<Task<IEnumerable<ComputeSystemPropertyCache>>> _properties;
+    private Lazy<Task<IEnumerable<ComputeSystemPropertyCache>>> _properties;
     private Lazy<Task<ComputeSystemPinnedResult>> _pinnedToStartResult;
     private Lazy<Task<ComputeSystemPinnedResult>> _pinnedToTaskbarResult;
 
@@ -220,6 +220,11 @@ public class ComputeSystemCache
     public void ResetPinnedToTaskbar()
     {
         _pinnedToTaskbarResult = new Lazy<Task<ComputeSystemPinnedResult>>(() => ComputeSystem.GetIsPinnedToTaskbarAsync());
+    }
+
+    public void ResetComputeSystemProperties()
+    {
+        _properties = new Lazy<Task<IEnumerable<ComputeSystemPropertyCache>>>(() => InitComputeSystemPropertiesAsync(_propertiesParameter));
     }
 
     public IApplyConfigurationOperation CreateApplyConfigurationOperation(string configuration)
