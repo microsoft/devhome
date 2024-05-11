@@ -144,19 +144,19 @@ internal sealed class WindowEventGenerator : WindowHooker<WindowEventGenerator>,
                         FireInteractiveUsageVisibilityEvent(true);
                     }
 
-                    return (LRESULT)0;
+                    break;
                 }
 
             case PInvoke.WM_SETFOCUS:
                 {
                     FireInteractiveUsageFocusEvent(true);
-                    return (LRESULT)0;
+                    break;
                 }
 
             case PInvoke.WM_KILLFOCUS:
                 {
                     FireInteractiveUsageFocusEvent(false);
-                    return (LRESULT)0;
+                    break;
                 }
         }
 
