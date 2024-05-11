@@ -127,6 +127,14 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         }
     }
 
+    private async Task RefreshOperationDataAsync()
+    {
+        ComputeSystem.ResetSupportedOperations();
+        ComputeSystem.ResetPinnedToStartMenu();
+        ComputeSystem.ResetPinnedToTaskbar();
+        await InitializeOperationDataAsync();
+    }
+
     private async Task InitializeStateAsync()
     {
         var result = await ComputeSystem.GetStateAsync();
@@ -157,7 +165,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                 // So we need to rebuild the dot and launch operations that appear in the UI based on the current
                 // supported operations of the compute system. InitializeOperationDataAsync will take care of this for us, by using
                 // the DataExtractor helper.
-                await InitializeOperationDataAsync();
+                await RefreshOperationDataAsync();
                 State = newState;
                 StateColor = ComputeSystemHelpers.GetColorBasedOnState(newState);
                 SetupOperationProgressBasedOnState();
