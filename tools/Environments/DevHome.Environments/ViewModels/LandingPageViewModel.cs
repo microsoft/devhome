@@ -292,14 +292,13 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
         var provider = data.ProviderDetails.ComputeSystemProvider;
 
-        var computeSystemList = data.DevIdToComputeSystemMap.Values.SelectMany(x => x.ComputeSystems).ToList();
+        var computeSystemList = data.DevIdToComputeSystemMap.Values.SelectMany(x => x.ComputeSystems).ToList() ?? [];
 
         // In the future when we support switching between accounts in the environments page, we will need to handle this differently.
         // for now we'll show all the compute systems from a provider.
-        if ((computeSystemList == null) || (computeSystemList.Count == 0))
+        if (computeSystemList.Count == 0)
         {
             _log.Error($"No Compute systems found for provider: {provider.Id}");
-            return;
         }
 
         // Initialize the cards for the compute systems in parallel before adding them to the view model on UI thread
@@ -505,7 +504,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         var providerCountWithOutAllKeyword = Providers.Count - 1;
 
-        (ShouldNavigateToExtensionsPage, CallToActionText, CallToActionHyperLinkButtonText)
-            = ComputeSystemHelpers.UpdateCallToActionText(providerCountWithOutAllKeyword);
+        var callToActionData = ComputeSystemHelpers.UpdateCallToActionText(providerCountWithOutAllKeyword);
+        ShouldNavigateToExtensionsPage = callToActionData.NavigateToExtensionsLibrary;
+        CallToActionText = callToActionData.CallToActionText;
+        CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
     }
 }

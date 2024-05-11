@@ -83,7 +83,9 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
 
         AreProvidersLoaded = true;
 
-        (_, CallToActionText, CallToActionHyperLinkButtonText) = ComputeSystemHelpers.UpdateCallToActionText(ProvidersViewModels.Count, true);
+        var callToActionData = ComputeSystemHelpers.UpdateCallToActionText(ProvidersViewModels.Count, true);
+        CallToActionText = callToActionData.CallToActionText;
+        CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
     }
 
     [RelayCommand]

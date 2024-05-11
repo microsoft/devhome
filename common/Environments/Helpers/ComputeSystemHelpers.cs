@@ -103,7 +103,7 @@ public static class ComputeSystemHelpers
         };
     }
 
-    public static (bool, string?, string?) UpdateCallToActionText(int providerCount, bool isCreationPage = false)
+    public static EnvironmentsCallToActionData UpdateCallToActionText(int providerCount, bool isCreationPage = false)
     {
         var navigateToExtensionsLibrary = false;
         string? callToActionText = null;
@@ -124,6 +124,6 @@ public static class ComputeSystemHelpers
             callToActionHyperLinkText = StringResourceHelper.GetResource("NoEnvironmentsButExtensionsInstalledButton");
         }
 
-        return (navigateToExtensionsLibrary, callToActionText, callToActionHyperLinkText);
+        return new(navigateToExtensionsLibrary, callToActionText, callToActionHyperLinkText);
     }
 }

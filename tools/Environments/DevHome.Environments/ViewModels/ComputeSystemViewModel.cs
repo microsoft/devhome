@@ -42,8 +42,6 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
     public ComputeSystemCache ComputeSystem { get; protected set; }
 
-    private readonly object _lock = new();
-
     public event TypedEventHandler<ComputeSystemViewModel, string>? ComputeSystemErrorFound;
 
     // Launch button operations
@@ -139,6 +137,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         ComputeSystem.ResetSupportedOperations();
         ComputeSystem.ResetPinnedToStartMenu();
         ComputeSystem.ResetPinnedToTaskbar();
+        ComputeSystem.ResetComputeSystemProperties();
         await InitializeOperationDataAsync();
     }
 
@@ -162,7 +161,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         }
 
         var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem!, PackageFullName);
-        lock (_lock)
+        lock (Properties)
         {
             Properties.Clear();
             foreach (var property in properties)

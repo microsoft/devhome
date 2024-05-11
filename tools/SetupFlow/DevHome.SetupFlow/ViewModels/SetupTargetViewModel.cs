@@ -300,8 +300,11 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         if (_computeSystemViewModelList.Count == 0)
         {
             var providerCountWithOutAllKeyword = ComputeSystemProviderComboBoxNames.Count - 1;
-            (_shouldNavigateToExtensionPage, CallToActionText, CallToActionHyperLinkButtonText)
-                = ComputeSystemHelpers.UpdateCallToActionText(providerCountWithOutAllKeyword);
+
+            var callToActionData = ComputeSystemHelpers.UpdateCallToActionText(providerCountWithOutAllKeyword);
+            _shouldNavigateToExtensionPage = callToActionData.NavigateToExtensionsLibrary;
+            CallToActionText = callToActionData.CallToActionText;
+            CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
         }
     }
 
@@ -317,8 +320,16 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             _computeSystemViewModelList[i].CardSelectionChanged -= OnListSelectionChanged;
             _computeSystemViewModelList[i].SelectedItem = null;
             _computeSystemViewModelList[i].RemoveCardViewModelEventHandlers();
-            ComputeSystemProviderComboBoxNames.Remove(_computeSystemViewModelList[i].DisplayName);
             _computeSystemViewModelList.RemoveAt(i);
+        }
+
+        var totalProviderNames = ComputeSystemProviderComboBoxNames.Count;
+        for (var i = totalProviderNames - 1; i >= 0; i--)
+        {
+            if (!ComputeSystemProviderComboBoxNames[i].Equals(_allKeyWordLocalized, StringComparison.OrdinalIgnoreCase))
+            {
+                ComputeSystemProviderComboBoxNames.RemoveAt(i);
+            }
         }
 
         // Reset the filter text and the selected provider name.
@@ -331,16 +342,21 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         ProviderComboBoxNamesCollectionView.Refresh();
     }
 
-    /// <summary>
-    /// Adds a ComputeSystemsListViewModel from the ComputeSystemManager.
-    /// </summary>
-    private void AddListViewModelToList(ComputeSystemsListViewModel listViewModel)
+    private void UpdateProviderNames(ComputeSystemsListViewModel listViewModel)
     {
         // Add provider name to combo box list.
         if (!ComputeSystemProviderComboBoxNames.Contains(listViewModel.DisplayName))
         {
             ComputeSystemProviderComboBoxNames.Add(listViewModel.DisplayName);
         }
+    }
+
+    /// <summary>
+    /// Adds a ComputeSystemsListViewModel from the ComputeSystemManager.
+    /// </summary>
+    private void AddListViewModelToList(ComputeSystemsListViewModel listViewModel)
+    {
+        UpdateProviderNames(listViewModel);
 
         // Subscribe to the listViewModel's SelectionChanged event.
         listViewModel.CardSelectionChanged += OnListSelectionChanged;
@@ -419,6 +435,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             if (curListViewModel.ComputeSystemCardCollection.Count == 0)
             {
                 _log.Information($"The {data.ProviderDetails.ComputeSystemProvider.DisplayName} was found but does not contain environments that support configuration");
+                UpdateProviderNames(curListViewModel);
                 return;
             }
 

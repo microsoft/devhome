@@ -32,8 +32,6 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     private readonly IComputeSystemManager _computeSystemManager;
 
-    private readonly object _lock = new();
-
     private readonly string _packageFullName;
 
     public ComputeSystemCache ComputeSystem { get; private set; }
@@ -84,15 +82,22 @@ public partial class ComputeSystemCardViewModel : ObservableObject
             {
                 CardState = state;
                 StateColor = ComputeSystemHelpers.GetColorBasedOnState(state);
-                await Task.Run(UpdatePropertiesAsync);
+                ComputeSystem.ResetComputeSystemProperties();
+                await RefreshOperationDataAsync();
             }
         });
+    }
+
+    private async Task RefreshOperationDataAsync()
+    {
+        ComputeSystem.ResetComputeSystemProperties();
+        await UpdatePropertiesAsync();
     }
 
     private async Task UpdatePropertiesAsync()
     {
         var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem, _packageFullName);
-        lock (_lock)
+        lock (ComputeSystemProperties)
         {
             ComputeSystemProperties.Clear();
             foreach (var property in properties)
