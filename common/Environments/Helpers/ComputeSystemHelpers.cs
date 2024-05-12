@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ namespace DevHome.Common.Environments.Helpers;
 
 public static class ComputeSystemHelpers
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemHelpers));
+
     public static async Task<byte[]?> GetBitmapImageArrayAsync(ComputeSystemCache computeSystem)
     {
         try
@@ -23,7 +26,7 @@ public static class ComputeSystemHelpers
 
             if ((result.Result.Status == ProviderOperationStatus.Failure) || (result.ThumbnailInBytes.Length <= 0))
             {
-                Log.Error($"Failed to get thumbnail for compute system {computeSystem}. Error: {result.Result.DiagnosticText}");
+                _log.Error($"Failed to get thumbnail for compute system {computeSystem}. Error: {result.Result.DiagnosticText}");
 
                 // No thumbnail available, return null so that the card will display the default image.
                 return null;
@@ -33,7 +36,7 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Error(ex, $"Failed to get thumbnail for compute system {computeSystem}.");
+            _log.Error(ex, $"Failed to get thumbnail for compute system {computeSystem}.");
             return null;
         }
     }
@@ -48,7 +51,7 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Failed to get thumbnail from a byte array.");
+            _log.Error(ex, "Failed to get thumbnail from a byte array.");
             return null;
         }
     }
@@ -74,7 +77,7 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Error(ex, $"Failed to get all ComputeSystemCardProperties.");
+            _log.Error(ex, $"Failed to get all ComputeSystemCardProperties.");
             return propertyList;
         }
     }
@@ -88,7 +91,7 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Error(ex, $"Failed to get all properties for compute system {computeSystem}.");
+            _log.Error(ex, $"Failed to get all properties for compute system {computeSystem}.");
             return new List<CardProperty>();
         }
     }
@@ -125,5 +128,20 @@ public static class ComputeSystemHelpers
         }
 
         return new(navigateToExtensionsLibrary, callToActionText, callToActionHyperLinkText);
+    }
+
+    public static void RemoveAllItems<T>(ObservableCollection<T> collection)
+    {
+        try
+        {
+            for (var i = collection.Count - 1; i >= 0; i--)
+            {
+                collection.RemoveAt(i);
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Unable to remove items from the collection");
+        }
     }
 }
