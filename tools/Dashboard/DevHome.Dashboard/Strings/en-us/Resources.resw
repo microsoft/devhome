@@ -118,8 +118,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddWidget.Content" xml:space="preserve">
-    <value>+ Add widget</value>
-    <comment>Label for "Add widget" button"</comment>
+    <value>Add widget</value>
+    <comment>Label for "Add widget" button</comment>
   </data>
   <data name="DashboardBanner.Title" xml:space="preserve">
     <value>Monitor your projects using widgets</value>

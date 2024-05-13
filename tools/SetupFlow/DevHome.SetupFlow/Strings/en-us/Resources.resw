@@ -762,7 +762,7 @@
     <comment>Description for the repo review page</comment>
   </data>
   <data name="MainPage_RepoReview_AddRepository.Content" xml:space="preserve">
-    <value>+ Add repository</value>
+    <value>Add repository</value>
     <comment>Add repository button text</comment>
   </data>
   <data name="ReposConfigPageTitle" xml:space="preserve">

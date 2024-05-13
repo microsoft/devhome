@@ -57,11 +57,12 @@
             <TextBlock x:Uid="DashboardPage_Title" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Left"/>
             <!-- Include small upper margin so focus rect is fully visible -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,2,0,22">
-                <Button x:Name="AddWidgetButton"
-                        x:Uid="AddWidget"
-                        HorizontalAlignment="Right"
-                        Command="{x:Bind AddWidgetClickCommand}"
-                        IsEnabled="{x:Bind ViewModel.HasWidgetService, Mode=OneWay}"/>
+                <commonviews:AddCreateButton
+                    x:Name="AddWidgetButton"
+                    x:Uid="AddWidget"
+                    HorizontalAlignment="Right"
+                    Command="{x:Bind AddWidgetClickCommand}"
+                    IsEnabled="{x:Bind ViewModel.HasWidgetService, Mode=OneWay}"/>
             </StackPanel>
         </Grid>
 

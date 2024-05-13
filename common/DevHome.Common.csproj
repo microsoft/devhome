@@ -14,6 +14,7 @@
     <None Remove="Environments\CustomControls\CardHeader.xaml" />
     <None Remove="Environments\Styles\HorizontalCardStyles.xaml" />
     <None Remove="Environments\Templates\EnvironmentsTemplates.xaml" />
+    <None Remove="Views\AddCreateButton.xaml" />
     <None Remove="Views\Banner.xaml" />
     <None Remove="Views\CloseButton.xaml" />
     <None Remove="Views\HyperlinkTextBlock.xaml" />
@@ -75,6 +76,9 @@
     </Page>
     <Page Update="Views\Banner.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\AddCreateButton.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\CloseButton.xaml">
       <Generator>MSBuild:Compile</Generator>

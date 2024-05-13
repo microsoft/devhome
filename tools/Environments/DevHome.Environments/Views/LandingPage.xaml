@@ -13,6 +13,7 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:views="using:DevHome.Common.Views"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="OnLoaded">
     <pg:ToolPage.Resources>
@@ -196,23 +197,18 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" x:Uid="EnvironmentsHeader" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Left" x:Name="EnvironmentsHeader"/>
-            <Button 
-                Grid.Column="3" 
+            <views:AddCreateButton
+                Grid.Column="3"
+                Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                 HorizontalAlignment="Right"
-                Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" >
-                <Grid>
-                    <TextBlock 
-                        Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
-                        Grid.Column="1" 
-                        x:Uid="CreateEnvironmentButton" 
-                        Margin="3 0 0 0"  />
-                    <TextBlock 
-                        Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay}"
-                        Grid.Column="1" 
-                        x:Uid="GoToExtensionsLibrary" 
-                        Margin="3 0 0 0"  />
-               </Grid>
-            </Button>
+                x:Uid="CreateEnvironmentButton"
+                Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" />
+            <Button
+                Grid.Column="3"
+                Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay}"
+                HorizontalAlignment="Right"
+                x:Uid="GoToExtensionsLibrary"
+                Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" />
         </Grid>
 
         <!-- Filtering and sorting -->
