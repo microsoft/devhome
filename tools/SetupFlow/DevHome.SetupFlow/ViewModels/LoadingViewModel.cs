@@ -223,31 +223,25 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             var messageToDisplay = _host.GetService<LoadingMessageViewModel>();
             messageToDisplay.MessageToShow = message;
-            messageToDisplay.ShouldShowStatusSymbolIcon = false;
-            messageToDisplay.ShouldShowProgressRing = false;
 
             if (severityKind == MessageSeverityKind.Warning)
             {
-                messageToDisplay.ShouldShowStatusSymbolIcon = true;
                 messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkCaution : LightCaution;
             }
             else if (severityKind == MessageSeverityKind.Error)
             {
-                messageToDisplay.ShouldShowStatusSymbolIcon = true;
                 messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkError : LightError;
             }
             else if (severityKind == MessageSeverityKind.Success)
             {
-                messageToDisplay.ShouldShowStatusSymbolIcon = true;
                 messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkSuccess : LightSuccess;
             }
             else if (severityKind == MessageSeverityKind.Info)
             {
-                messageToDisplay.ShouldShowStatusSymbolIcon = true;
                 messageToDisplay.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkInfo : LightInfo;
             }
 
-            Messages.Insert(Messages.Count - _numberOfExecutingTasks, messageToDisplay);
+            NonExecutingMessages.Add(messageToDisplay);
         });
     }
 
@@ -319,7 +313,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ShowRetryButton = Visibility.Collapsed;
         _failedTasks = new List<TaskInformation>();
         ActionCenterItems = new();
-        Messages = new();
+        ExecutingMessages = new();
+        NonExecutingMessages = new();
         _activityId = orchestrator.ActivityId;
         _summaryInformation = new ObservableCollection<ISummaryInformationViewModel>();
     }
@@ -429,26 +424,19 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             _failedTasks.Add(information);
         }
 
-        // When a task is done
-        // Following logic is to keep all "executing" messages at the bottom of the list.
-        // Remove the "executing" message from the list.
-        Messages.Remove(loadingMessage);
+        // Remove the executing message from the list.
+        ExecutingMessages.Remove(loadingMessage);
 
-        // Modify the message so it looks done.
-        loadingMessage.ShouldShowProgressRing = false;
+        // Insert the same message.  All messages in this list have their foreground set to
+        // secondary.
+        NonExecutingMessages.Add(loadingMessage);
 
-        // Insert the message right before any "executing" messages.
-        Messages.Insert(Messages.Count - _numberOfExecutingTasks, loadingMessage);
-
-        // Add the "Execution finished" message
+        // Add the execution finished message
         var newLoadingScreenMessage = _host.GetService<LoadingMessageViewModel>();
         newLoadingScreenMessage.MessageToShow = stringToReplace;
         newLoadingScreenMessage.StatusSymbolIcon = statusSymbolIcon;
-        newLoadingScreenMessage.ShouldShowProgressRing = false;
-        newLoadingScreenMessage.ShouldShowStatusSymbolIcon = true;
 
-        // Insert the message right before any "executing" messages.
-        Messages.Insert(Messages.Count - _numberOfExecutingTasks, newLoadingScreenMessage);
+        NonExecutingMessages.Add(newLoadingScreenMessage);
     }
 
     /// <summary>
@@ -547,12 +535,10 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // Start the task and wait for it to complete.
         try
         {
-            /*
             if (_randomNumber.Next(0, 10) < 3)
             {
                 throw new ArgumentOutOfRangeException(nameof(window));
             }
-            */
 
             window.DispatcherQueue.TryEnqueue(() =>
             {
@@ -596,12 +582,16 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             window.DispatcherQueue.TryEnqueue(() =>
             {
+                ExecutingMessages.Remove(loadingMessage);
+
+                NonExecutingMessages.Add(loadingMessage);
+
+                var newLoadingMessage = _host.GetService<LoadingMessageViewModel>();
                 loadingMessage.MessageToShow = $"Could not finish {taskInformation.MessageToShow} because {e.Message}";
                 loadingMessage.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkError : LightError;
-                loadingMessage.ShouldShowProgressRing = false;
-                loadingMessage.ShouldShowStatusSymbolIcon = true;
 
-                ChangeMessage(taskInformation, loadingMessage, TaskFinishedState.Failure);
+                NonExecutingMessages.Add(newLoadingMessage);
+
                 TasksCompleted++;
                 ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, TasksFailed);
             });

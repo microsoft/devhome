@@ -20,29 +20,10 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
                 <ResourceDictionary>
                     <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
-                    
-                    <!-- The TextBlock styles and the converter are duplicated below.  However, these resources needs to exist
-                    both here and in the data context.  If the resources from here are removed, errors happen.
-                    If you can figure out why and fix the issues, feel free to do so.-->
-                    <converters:BoolToObjectConverter x:Key="BoolToTextBrush" TrueValue="{ThemeResource PrimaryTextStyle}" FalseValue="{ThemeResource SecondaryTextStyle}"/>
                     <Style x:Key="DevHomeBorderStyle" TargetType="Border" >
                         <Setter Property="BorderBrush">
                             <Setter.Value>
                                 <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource TextFillColorTertiary}"/>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                    <Style x:Key="PrimaryTextStyle" TargetType="TextBlock">
-                        <Setter Property="Foreground">
-                            <Setter.Value>
-                                <SolidColorBrush Color="{ThemeResource TextFillColorPrimary}"/>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                    <Style x:Key="SecondaryTextStyle" TargetType="TextBlock">
-                        <Setter Property="Foreground">
-                            <Setter.Value>
-                                <SolidColorBrush Color="{ThemeResource TextFillColorSecondary}"/>
                             </Setter.Value>
                         </Setter>
                     </Style>
