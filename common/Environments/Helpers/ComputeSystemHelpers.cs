@@ -130,6 +130,17 @@ public static class ComputeSystemHelpers
         return new(navigateToExtensionsLibrary, callToActionText, callToActionHyperLinkText);
     }
 
+    /// <summary>
+    /// Safely remove all items from an observable collection.
+    /// </summary>
+    /// <remarks>
+    /// There can be random COM exceptions due to using the "Clear()" method in an observable collection. This method
+    /// is used so that we can safely clear the observable collection without throwing an exceptions. This is related
+    /// to this GitHub issue https://github.com/microsoft/microsoft-ui-xaml/issues/8684. To work around this,
+    /// this method is used to remove all items individually from the end of the collection to the beginning of the collection.
+    /// </remarks>
+    /// <typeparam name="T">Type of objects that the collection contains</typeparam>
+    /// <param name="collection">An observable collection that contains zero to N elements</param>
     public static void RemoveAllItems<T>(ObservableCollection<T> collection)
     {
         try
