@@ -46,9 +46,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private static readonly BitmapImage LightSuccess = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightSuccess.png"));
     private static readonly BitmapImage LightInfo = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightInfo.png"));
 
-#pragma warning disable SA1310 // Field names should not contain underscore
-    private const int MAX_RETRIES = 1;
-#pragma warning restore SA1310 // Field names should not contain underscore
+    private const int MaxRetries = 1;
 
     private int _retryCount;
 
@@ -79,7 +77,10 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private ObservableCollection<TaskInformation> _tasksToRun;
 
     [ObservableProperty]
-    private ObservableCollection<LoadingMessageViewModel> _messages;
+    private ObservableCollection<LoadingMessageViewModel> _executingMessages;
+
+    [ObservableProperty]
+    private ObservableCollection<LoadingMessageViewModel> _nonExecutingMessages;
 
     [ObservableProperty]
     private ObservableCollection<ISummaryInformationViewModel> _summaryInformation;
@@ -252,7 +253,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     public void UpdateActionCenterMessage(ActionCenterMessages message, ActionMessageRequestKind requestKind)
     {
-        // ALl referenced to WindowEx and Application.Current will be removed in the future,
+        // All references to WindowEx and Application.Current will be removed in the future,
         // in the loadingViewModel.
         Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
@@ -509,7 +510,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             _log.Information("All tasks succeeded.  Moving to next page");
             ExecutionFinished.Invoke(null, null);
         }
-        else if (_retryCount >= MAX_RETRIES)
+        else if (_retryCount >= MaxRetries)
         {
             _log.Information("Max number of retries reached; moving to next page");
             ShowOutOfRetriesBanner = true;
@@ -546,10 +547,12 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // Start the task and wait for it to complete.
         try
         {
+            /*
             if (_randomNumber.Next(0, 10) < 3)
             {
                 throw new ArgumentOutOfRangeException(nameof(window));
             }
+            */
 
             window.DispatcherQueue.TryEnqueue(() =>
             {
@@ -563,8 +566,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                     SetupTargetText = StringResource.GetLocalized(StringResourceKey.LoadingPageSetupTargetText, taskInformation.TaskToExecute.TargetName);
                 }
 
-                loadingMessage.ShouldShowProgressRing = true;
-                Messages.Add(loadingMessage);
+                ExecutingMessages.Add(loadingMessage);
 
                 // Keep increment inside TryEnqueue to enforce "locking"
                 _numberOfExecutingTasks++;
