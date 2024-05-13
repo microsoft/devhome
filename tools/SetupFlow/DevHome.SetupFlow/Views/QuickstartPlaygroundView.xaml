@@ -57,7 +57,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Vertical" Grid.Row="0">
-                        <Grid>
+                        <Grid Margin="0, 0, 0, 30">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="1*"/>
