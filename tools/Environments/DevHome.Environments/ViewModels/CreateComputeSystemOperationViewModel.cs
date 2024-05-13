@@ -68,7 +68,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
 
         var providerDetails = Operation.ProviderDetails;
         ProviderDisplayName = providerDetails.ComputeSystemProvider.DisplayName;
-        IsCreateComputeSystemOperation = true;
+        IsComputeSystemBeingCreated = true;
 
         // Hook up event handlers to the operation
         Operation.Completed += OnOperationCompleted;

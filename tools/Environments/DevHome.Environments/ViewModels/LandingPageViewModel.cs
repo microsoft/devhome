@@ -269,9 +269,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         {
             for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
             {
-                if (ComputeSystemCards[i].IsCreateComputeSystemOperation)
+                if (ComputeSystemCards[i] is CreateComputeSystemOperationViewModel operationViewModel)
                 {
-                    var operationViewModel = ComputeSystemCards[i] as CreateComputeSystemOperationViewModel;
                     operationViewModel!.RemoveEventHandlers();
                     ComputeSystemCards.RemoveAt(i);
                 }
@@ -281,9 +280,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             foreach (var operation in curOperations)
             {
                 // this is a new operation so we need to create a view model for it.
-                ComputeSystemCards.Add(new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, RemoveComputeSystemCard, AddNewlyCreatedComputeSystem, operation));
+                ComputeSystemCards.Insert(0, new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, RemoveComputeSystemCard, AddNewlyCreatedComputeSystem, operation));
                 _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
             }
+
+            ComputeSystemCardsView.Refresh();
         }
     }
 
@@ -409,6 +410,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public void SortHandler()
     {
         ComputeSystemCardsView.SortDescriptions.Clear();
+        ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsComputeSystemBeingCreated", SortDirection.Descending));
 
         switch (SelectedSortIndex)
         {
@@ -451,7 +453,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 {
                     lock (ComputeSystemCards)
                     {
-                        ComputeSystemCards.Add(computeSystemViewModel);
+                        ComputeSystemCards.Insert(0, computeSystemViewModel);
                     }
                 });
             }

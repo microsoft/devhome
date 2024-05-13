@@ -94,6 +94,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         HeaderImage = CardProperty.ConvertMsResourceToIcon(_provider.Icon, PackageFullName);
         SetupOperationProgressBasedOnState();
         SetPropertiesAsync();
+        IsComputeSystemBeingCreated = State == ComputeSystemState.Creating;
         await InitializeOperationDataAsync();
     }
 
