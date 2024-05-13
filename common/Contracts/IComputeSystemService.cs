@@ -10,4 +10,6 @@ namespace DevHome.Common.Contracts.Services;
 public interface IComputeSystemService
 {
     public Task<List<ComputeSystemProviderDetails>> GetComputeSystemProvidersAsync();
+
+    public Task PreFetchComputeSystemProvidersAsync();
 }

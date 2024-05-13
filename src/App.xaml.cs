@@ -204,7 +204,8 @@ public partial class App : Application, IApp
         await Task.WhenAll(
             GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data),
             GetService<IAccountsService>().InitializeAsync(),
-            GetService<IAppManagementInitializer>().InitializeAsync());
+            GetService<IAppManagementInitializer>().InitializeAsync(),
+            GetService<IComputeSystemService>().PreFetchComputeSystemProvidersAsync());
     }
 
     private async void OnActivated(object? sender, AppActivationArguments args)

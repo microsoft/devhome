@@ -102,4 +102,9 @@ public class ComputeSystemService : IComputeSystemService
 
         return computeSystemProvidersFromAllExtensions;
     }
+
+    public async Task PreFetchComputeSystemProvidersAsync()
+    {
+        await Task.Run(GetComputeSystemProvidersAsync);
+    }
 }

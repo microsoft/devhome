@@ -49,6 +49,10 @@ public class HyperVProvider : IComputeSystemProvider
         _vmGalleryService = vmGalleryService;
         _windowsIdentityWrapper = windowsIdentityService.GetCurrentWindowsIdentity();
         _hyperVPreReqErrorText = SetupHyperVPreReqErrorText();
+
+        // Pre-retrieve virtual machines during constuction. This will allow the Hyper-V module
+        // to be loaded into the session before the user gets to the environments page.
+        _hyperVManager.GetAllVirtualMachines();
     }
 
     /// <summary> Gets or sets the default compute system properties. </summary>
