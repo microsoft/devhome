@@ -68,11 +68,18 @@ public class UtilityViewModel : INotifyPropertyChanged
             Verb = runAsAdmin ? "runas" : "open",
         };
 
-        var process = Process.Start(processStartInfo);
-        if (process is null)
+        try
         {
-            _log.Error("Failed to start process {ExeName}", exeName);
-            throw new InvalidOperationException("Failed to start process");
+            var process = Process.Start(processStartInfo);
+            if (process is null)
+            {
+                _log.Error("Failed to start process {ExeName}", exeName);
+                throw new InvalidOperationException("Failed to start process");
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Failed to start process {ExeName}", exeName);
         }
 
         TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(Title, runAsAdmin), null);
