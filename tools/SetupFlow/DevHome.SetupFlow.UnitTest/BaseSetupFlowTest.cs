@@ -58,7 +58,7 @@ public class BaseSetupFlowTest
                 // Common services
                 services.AddSingleton<IThemeSelectorService>(ThemeSelectorService!.Object);
                 services.AddSingleton<ISetupFlowStringResource>(StringResource.Object);
-                services.AddSingleton<SetupFlowOrchestrator>(new SetupFlowOrchestrator());
+                services.AddSingleton<SetupFlowOrchestrator>(new SetupFlowOrchestrator(null));
                 services.AddSingleton<IExtensionService>(new ExtensionService());
 
                 // App-management view models

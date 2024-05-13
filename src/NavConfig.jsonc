@@ -65,6 +65,27 @@
           "visible": true
         }
       ]
+    },
+    {
+      "identity": "QuickstartPlayground",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": false,
+          "visible": true
+        },
+        {
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": true
+        }
+      ]
     }
   ]
 }

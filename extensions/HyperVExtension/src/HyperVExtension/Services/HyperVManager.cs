@@ -54,70 +54,9 @@ public class HyperVManager : IHyperVManager, IDisposable
         _hyperVVirtualMachineFactory = hyperVVirtualMachineFactory;
     }
 
-    /// <inheritdoc cref="IHyperVManager.IsHyperVModuleLoaded"/>
-    public bool IsHyperVModuleLoaded()
-    {
-        if (IsFirstTimeLoadingModule)
-        {
-            IsFirstTimeLoadingModule = false;
-            LoadHyperVModule();
-        }
-
-        // Build command line statement to get all the available modules.
-        // Work around for .Net 8 and PowerShell.SDK 7.4.* issue where the PowerShell session
-        // Can't find the module, even though it appears in a regular PowerShell terminal window.
-        // this will be removed once the issue is resolved.
-        var commandLineStatements = new StatementBuilder()
-            .AddScript("Get-Module -ListAvailable", true)
-            .Build();
-
-        var result = _powerShellService.Execute(commandLineStatements, PipeType.None);
-        var moduleFound = result.PsObjects?.Any(psObject =>
-        {
-            var helper = new PsObjectHelper(psObject);
-            return helper.MemberNameToValue<string>(HyperVStrings.Name) == HyperVStrings.HyperVModuleName;
-        }) ?? false;
-
-        if (!moduleFound)
-        {
-            _log.Warning($"PowerShell could not find the Hyper-V module in the list of modules loaded into the current session: {result.CommandOutputErrorMessage}");
-        }
-
-        return moduleFound;
-    }
-
-    private void LoadHyperVModule()
-    {
-        // Makes sure the Hyper-V module is loaded in the current PowerShell session.
-        // After moving to .Net 8 and using PowerShell.SDK 7.4.*, simply attempting to
-        // import the Hyper-V module from Dev Home does not work. We need to force the
-        // module by attempting to load it twice.
-        // A work around is to use the Get-Module twice in the PowerShell session
-        // to find the Hyper-V module. I'll need to investigate this further.
-        var commandLineStatements = new StatementBuilder()
-            .AddCommand(HyperVStrings.GetModule)
-            .AddParameter(HyperVStrings.ListAvailable, true)
-            .AddParameter(HyperVStrings.Name, HyperVStrings.HyperVModuleName)
-            .Build();
-
-        var result = _powerShellService.Execute(commandLineStatements, PipeType.None);
-
-        if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
-        {
-            _log.Warning($"PowerShell returned an error while attempting to get the Hyper-V module on the first try: {result.CommandOutputErrorMessage}");
-        }
-    }
-
     /// <inheritdoc cref="IHyperVManager.StartVirtualMachineManagementService"/>
     public void StartVirtualMachineManagementService()
     {
-        if (!IsHyperVModuleLoaded())
-        {
-            // we won't throw an exception here. If there is a cmdlet failure due to the module not being loaded, we'll let the
-            // PowerShell cmdlet throw the exception.
-            _log.Error("The Hyper-V PowerShell Module is not Loaded");
-        }
-
         try
         {
             var serviceController = _host.GetService<IWindowsServiceController>();
@@ -665,7 +604,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
         {
-            throw new HyperVManagerException($"Unable to get disk size due to PowerShell error: {result.CommandOutputErrorMessage}");
+            _log.Error($"Unable to get disk size due to PowerShell error: {result.CommandOutputErrorMessage}");
         }
 
         // object in the returned results should represent a virtual disk.

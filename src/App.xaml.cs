@@ -127,6 +127,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IScreenReaderService, ScreenReaderService>();
             services.AddSingleton<IComputeSystemService, ComputeSystemService>();
             services.AddSingleton<IComputeSystemManager, ComputeSystemManager>();
+            services.AddSingleton<IQuickstartSetupService, QuickstartSetupService>();
             services.AddTransient<AdaptiveCardRenderingService>();
 
             // Core Services

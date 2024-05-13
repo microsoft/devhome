@@ -84,6 +84,11 @@
                             <environmentViews:EnvironmentCreationOptionsView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.EnvironmentCreationOptionsTemplate>
+                    <selectors:SetupFlowViewSelector.QuickstartPlaygroundTemplate>
+                        <DataTemplate>
+                            <views:QuickstartPlaygroundView/>
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.QuickstartPlaygroundTemplate>
                 </selectors:SetupFlowViewSelector>
             </ContentControl.ContentTemplateSelector>
         </ContentControl>

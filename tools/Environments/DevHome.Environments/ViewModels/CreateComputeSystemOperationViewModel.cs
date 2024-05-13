@@ -81,7 +81,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
         State = ComputeSystemState.Creating;
         StateColor = CardStateColor.Caution;
 
-        // Setup the button to remove the the view model from the UI and the header Image
+        // Setup the button to remove the view model from the UI and the header Image
         DotOperations = new ObservableCollection<OperationsViewModel>() { new(_stringResource.GetLocalized("RemoveButtonTextForCreateComputeSystem"), _cancelationUniCodeForGlyph, RemoveViewModelFromUI) };
         HeaderImage = CardProperty.ConvertMsResourceToIcon(providerDetails.ComputeSystemProvider.Icon, providerDetails.ExtensionWrapper.PackageFullName);
 
@@ -153,19 +153,21 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
         });
     }
 
-    private void AddComputeSystemToUI(CreateComputeSystemResult result)
+    private async void AddComputeSystemToUI(CreateComputeSystemResult result)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(async () =>
-        {
-            var newComputeSystemViewModel = new ComputeSystemViewModel(
-                _computeSystemManager,
-                result.ComputeSystem,
-                Operation.ProviderDetails.ComputeSystemProvider,
-                _removalAction,
-                Operation.ProviderDetails.ExtensionWrapper.PackageFullName,
-                _windowEx);
+        var newComputeSystemViewModel = new ComputeSystemViewModel(
+            _computeSystemManager,
+            result.ComputeSystem,
+            Operation.ProviderDetails.ComputeSystemProvider,
+            _removalAction,
+            Operation.ProviderDetails.ExtensionWrapper.PackageFullName,
+            _windowEx);
 
-            await newComputeSystemViewModel.InitializeCardDataAsync();
+        await newComputeSystemViewModel.InitializeCardDataAsync();
+
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        {
+            newComputeSystemViewModel.InitializeUXData();
             _addComputeSystemAction(newComputeSystemViewModel);
         });
     }

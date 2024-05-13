@@ -17,6 +17,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:BoolToObjectConverter x:Key="BoolToOpacityConverter" TrueValue="1" FalseValue="0.4" />
             <x:Double x:Key="SettingsCardHeaderIconMaxSize">32</x:Double>
 
@@ -159,6 +160,24 @@
                                         <Run x:Uid="MainPage_ConfigurationFile_Description_Link" />
                                     </Hyperlink>
                                 </TextBlock>
+                            </ctControls:SettingsCard.Description>
+                        </ctControls:SettingsCard>
+                        
+                        <!-- Settings for Quickstart Playground-->
+                        <ctControls:SettingsCard x:Uid="MainPage_QuickstartPlayground"
+                                           AutomationProperties.AutomationId="QuickstartPlayground"
+                                           IsClickEnabled="True"
+                                           Command="{x:Bind ViewModel.StartQuickstartCommand}"
+                                           CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                                           ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                                           AutomationProperties.AccessibilityView="Control"
+                                           ActionIcon="{x:Null}" 
+                                           Visibility="{x:Bind ViewModel.EnableQuickstartPlayground, Mode=TwoWay, Converter={StaticResource BoolToVisibilityConverter}}" >
+                            <ctControls:SettingsCard.HeaderIcon>
+                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_QuickstartPlayground.png" />
+                            </ctControls:SettingsCard.HeaderIcon>
+                            <ctControls:SettingsCard.Description>
+                                <TextBlock x:Uid="MainPage_QuickstartPlayground_Description"/>
                             </ctControls:SettingsCard.Description>
                         </ctControls:SettingsCard>
                     </StackPanel>

@@ -161,6 +161,8 @@ public partial class AnalyticSummaryPopupViewModel : ObservableObject
 
     public void SaveReport(string filePath)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("QuietBackgroundProcesses_AnalyticSummary_Save", LogLevel.Info, new QuietBackgroundProcessesEvent());
+
         // Save the report to a .csv
         using (StreamWriter writer = new StreamWriter(filePath))
         {

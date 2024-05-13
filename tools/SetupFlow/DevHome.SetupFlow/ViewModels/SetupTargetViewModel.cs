@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -40,6 +42,14 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     private readonly ComputeSystemViewModelFactory _computeSystemViewModelFactory;
 
     private EnvironmentsNotificationHelper _notificationsHelper;
+
+    private bool _shouldNavigateToExtensionPage;
+
+    [ObservableProperty]
+    private string _callToActionText;
+
+    [ObservableProperty]
+    private string _callToActionHyperLinkButtonText;
 
     [ObservableProperty]
     private bool _shouldShowCollectionView;
@@ -209,7 +219,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     /// </summary>
     /// <param name="sender">The ComputeSystemsListViewModel object that contains the ComputeSystemCardViewModel the user selected.</param>
     /// <param name="computeSystem">The compute system wrapper associated with the ComputeSystemCardViewModel.</param>
-    public void OnListSelectionChanged(object sender, ComputeSystem computeSystem)
+    public void OnListSelectionChanged(object sender, ComputeSystemCache computeSystem)
     {
         if (sender is not ComputeSystemsListViewModel senderListViewModel)
         {
@@ -267,6 +277,9 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         // Remove any existing ComputeSystemsListViewModels from the list if they exist. E.g when sync button is
         // pressed.
         RemoveComputeSystemsListViewModels();
+        CallToActionText = null;
+        CallToActionHyperLinkButtonText = null;
+        _shouldNavigateToExtensionPage = false;
 
         // Disable the sync and next buttons while we're getting the compute systems.
         ComputeSystemLoadingCompleted = false;
@@ -282,6 +295,17 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         UpdateNextButtonState();
 
         ComputeSystemsCollectionView.Refresh();
+
+        // No compute systems found, show the call to action UI
+        if (_computeSystemViewModelList.Count == 0)
+        {
+            var providerCountWithOutAllKeyword = ComputeSystemProviderComboBoxNames.Count - 1;
+
+            var callToActionData = ComputeSystemHelpers.UpdateCallToActionText(providerCountWithOutAllKeyword);
+            _shouldNavigateToExtensionPage = callToActionData.NavigateToExtensionsLibrary;
+            CallToActionText = callToActionData.CallToActionText;
+            CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
+        }
     }
 
     /// <summary>
@@ -296,8 +320,16 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             _computeSystemViewModelList[i].CardSelectionChanged -= OnListSelectionChanged;
             _computeSystemViewModelList[i].SelectedItem = null;
             _computeSystemViewModelList[i].RemoveCardViewModelEventHandlers();
-            ComputeSystemProviderComboBoxNames.Remove(_computeSystemViewModelList[i].DisplayName);
             _computeSystemViewModelList.RemoveAt(i);
+        }
+
+        var totalProviderNames = ComputeSystemProviderComboBoxNames.Count;
+        for (var i = totalProviderNames - 1; i >= 0; i--)
+        {
+            if (!ComputeSystemProviderComboBoxNames[i].Equals(_allKeyWordLocalized, StringComparison.OrdinalIgnoreCase))
+            {
+                ComputeSystemProviderComboBoxNames.RemoveAt(i);
+            }
         }
 
         // Reset the filter text and the selected provider name.
@@ -310,16 +342,21 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         ProviderComboBoxNamesCollectionView.Refresh();
     }
 
-    /// <summary>
-    /// Adds a ComputeSystemsListViewModel from the ComputeSystemManager.
-    /// </summary>
-    private void AddListViewModelToList(ComputeSystemsListViewModel listViewModel)
+    private void UpdateProviderNames(ComputeSystemsListViewModel listViewModel)
     {
         // Add provider name to combo box list.
         if (!ComputeSystemProviderComboBoxNames.Contains(listViewModel.DisplayName))
         {
             ComputeSystemProviderComboBoxNames.Add(listViewModel.DisplayName);
         }
+    }
+
+    /// <summary>
+    /// Adds a ComputeSystemsListViewModel from the ComputeSystemManager.
+    /// </summary>
+    private void AddListViewModelToList(ComputeSystemsListViewModel listViewModel)
+    {
+        UpdateProviderNames(listViewModel);
 
         // Subscribe to the listViewModel's SelectionChanged event.
         listViewModel.CardSelectionChanged += OnListSelectionChanged;
@@ -361,14 +398,24 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     {
         _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
 
+        var curListViewModel = new ComputeSystemsListViewModel(data);
+
+        // Fetch data for all compute systems that support the ApplyConfiguration flag in parallel
+        // on thread pool to avoid calling expensive OOP operations on the UI thread.
+        await Parallel.ForEachAsync(curListViewModel.ComputeSystems, async (computeSystem, token) =>
+        {
+            if (computeSystem.SupportedOperations.Value.HasFlag(ComputeSystemOperations.ApplyConfiguration))
+            {
+                await computeSystem.FetchDataAsync();
+            }
+        });
+
         await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
-            var curListViewModel = new ComputeSystemsListViewModel(data);
-
-            foreach (var wrapper in curListViewModel.ComputeSystemWrappers)
+            foreach (var computeSystem in curListViewModel.ComputeSystems)
             {
                 // Remove any cards that don't support the ApplyConfiguration flag.
-                if (!wrapper.SupportedOperations.HasFlag(ComputeSystemOperations.ApplyConfiguration))
+                if (!computeSystem.SupportedOperations.Value.HasFlag(ComputeSystemOperations.ApplyConfiguration))
                 {
                     continue;
                 }
@@ -376,7 +423,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
                 var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
                 var card = await _computeSystemViewModelFactory.CreateCardViewModelAsync(
                     ComputeSystemManagerObj,
-                    wrapper,
+                    computeSystem,
                     curListViewModel.Provider,
                     packageFullName,
                     _windowEx);
@@ -388,6 +435,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             if (curListViewModel.ComputeSystemCardCollection.Count == 0)
             {
                 _log.Information($"The {data.ProviderDetails.ComputeSystemProvider.DisplayName} was found but does not contain environments that support configuration");
+                UpdateProviderNames(curListViewModel);
                 return;
             }
 
@@ -424,5 +472,21 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     public void Initialize(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = new(notificationQueue);
+    }
+
+    /// <summary>
+    /// Navigates the user to the create environment flow or extension library based on whether or not an extension
+    /// that supports environments is installed.
+    /// </summary>
+    [RelayCommand]
+    public void CallToActionButton()
+    {
+        if (_shouldNavigateToExtensionPage)
+        {
+            Orchestrator.NavigateToOutsideFlow(KnownPageKeys.Extensions);
+            return;
+        }
+
+        Orchestrator.NavigateToOutsideFlow(KnownPageKeys.SetupFlow, "startCreationFlow");
     }
 }

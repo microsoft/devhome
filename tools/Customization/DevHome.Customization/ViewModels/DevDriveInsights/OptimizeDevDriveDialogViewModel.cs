@@ -7,9 +7,11 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
+using DevHome.Customization.Models;
 using DevHome.Telemetry;
 using Serilog;
 using Windows.Storage.Pickers;
@@ -46,6 +48,15 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
     [ObservableProperty]
     private string _directoryPathTextBox;
 
+    [ObservableProperty]
+    private bool _isPrimaryButtonEnabled;
+
+    [ObservableProperty]
+    private string _errorMessage;
+
+    [ObservableProperty]
+    private bool _isNotDevDrive;
+
     public OptimizeDevDriveDialogViewModel(
         string existingCacheLocation,
         string environmentVariableToBeSet,
@@ -61,6 +72,9 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         ExistingCacheLocation = existingCacheLocation;
         EnvironmentVariableToBeSet = environmentVariableToBeSet;
         OptimizeDevDriveDialogDescription = stringResource.GetLocalized("OptimizeDevDriveDialogDescription/Text", ExistingCacheLocation, EnvironmentVariableToBeSet);
+        IsPrimaryButtonEnabled = false;
+        ErrorMessage = string.Empty;
+        IsNotDevDrive = false;
     }
 
     [RelayCommand]
@@ -86,6 +100,18 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         if (folder != null)
         {
             DirectoryPathTextBox = folder.Path;
+            if (ChosenDirectoryInDevDrive(DirectoryPathTextBox))
+            {
+                IsPrimaryButtonEnabled = true;
+                IsNotDevDrive = false;
+            }
+            else
+            {
+                IsPrimaryButtonEnabled = false;
+                IsNotDevDrive = true;
+                var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
+                ErrorMessage = stringResource.GetLocalized("ChosenDirectoryNotOnDevDriveErrorText");
+            }
         }
     }
 
@@ -225,8 +251,6 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
 
         if (!string.IsNullOrEmpty(directoryPath))
         {
-            // Handle the selected folder
-            // TODO: If chosen folder not a dev drive location, currently we no-op and log the error. Instead we should display the error.
             if (ChosenDirectoryInDevDrive(directoryPath))
             {
                 if (MoveDirectory(ExistingCacheLocation, directoryPath))
@@ -235,6 +259,9 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
                     var existingCacheLocationVetted = RemovePrivacyInfo(ExistingCacheLocation);
                     Log.Debug($"Moved cache from {existingCacheLocationVetted} to {directoryPath}");
                     TelemetryFactory.Get<ITelemetry>().Log("DevDriveInsights_PackageCacheMovedSuccessfully_Event", LogLevel.Critical, new ExceptionEvent(0, existingCacheLocationVetted));
+
+                    // Send message to the DevDriveInsightsViewModel to let it refresh the Dev Drive insights UX
+                    WeakReferenceMessenger.Default.Send(new DevDriveOptimizedMessage(new DevDriveOptimizedData()));
                 }
             }
             else

@@ -69,7 +69,7 @@ public class ConfigureTargetTask : ISetupTask
 
     public ActionCenterMessages ActionCenterMessages { get; set; } = new() { ExtensionAdaptiveCardPanel = new(), };
 
-    public string ComputeSystemName => _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup.DisplayName ?? string.Empty;
+    public string ComputeSystemName => _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup.DisplayName.Value ?? string.Empty;
 
     public SDK.IExtensionAdaptiveCardSession2 ExtensionAdaptiveCardSession { get; private set; }
 
@@ -382,7 +382,7 @@ public class ConfigureTargetTask : ISetupTask
                 TelemetryFactory.Get<ITelemetry>().Log(
                     "Environment_OperationInvoked_Event",
                     LogLevel.Measure,
-                    new EnvironmentOperationUserEvent(EnvironmentsTelemetryStatus.Started, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId, string.Empty, _setupFlowOrchestrator.ActivityId));
+                    new EnvironmentOperationUserEvent(EnvironmentsTelemetryStatus.Started, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId.Value, string.Empty, _setupFlowOrchestrator.ActivityId));
 
                 ApplyConfigurationAsyncOperation = applyConfigurationOperation.StartAsync();
                 var result = await ApplyConfigurationAsyncOperation.AsTask().WaitAsync(tokenSource.Token);
@@ -519,6 +519,6 @@ public class ConfigureTargetTask : ISetupTask
         TelemetryFactory.Get<ITelemetry>().Log(
             "Environment_OperationInvoked_Event",
             LogLevel.Measure,
-            new EnvironmentOperationUserEvent(status, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId, string.Empty, _setupFlowOrchestrator.ActivityId));
+            new EnvironmentOperationUserEvent(status, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId.Value, string.Empty, _setupFlowOrchestrator.ActivityId));
     }
 }

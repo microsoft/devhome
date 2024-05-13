@@ -1,7 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+<<<<<<< HEAD
 using System;
+=======
+>>>>>>> main
 using System.Threading.Tasks;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
@@ -23,7 +26,7 @@ public sealed partial class SelectEnvironmentProviderView : UserControl
     // with the shimmer.  By default, the focus is on the hamburger icon.  Change it.
     private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        ViewModel.Initialize(NotificationQueue);
+        await ViewModel.InitializeAsync(NotificationQueue);
 
         var numberOfSleeps = 0;
         var maxNumberOfSleeps = 10;

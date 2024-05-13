@@ -7,6 +7,14 @@
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Helpers\**" />
+    <Content Remove="Helpers\**" />
+    <EmbeddedResource Remove="Helpers\**" />
+    <None Remove="Helpers\**" />
+    <Page Remove="Helpers\**" />
+    <PRIResource Remove="Helpers\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Views\ExtensionLibraryView.xaml" />
@@ -32,7 +40,6 @@
 
   <ItemGroup>
     <Folder Include="Assets\" />
-    <Folder Include="Helpers\" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
