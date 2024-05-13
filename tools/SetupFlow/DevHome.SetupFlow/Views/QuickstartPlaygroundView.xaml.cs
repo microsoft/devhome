@@ -140,6 +140,10 @@ public sealed partial class QuickstartPlaygroundView : UserControl
             DispatcherQueue.TryEnqueue(() =>
             {
                 _adaptiveCardContentDialog?.Hide();
+                if (data.Result.Status == ProviderOperationStatus.Failure)
+                {
+                    ViewModel.ActiveQuickstartSelection = null;
+                }
             });
         }
     }
@@ -182,9 +186,11 @@ public sealed partial class QuickstartPlaygroundView : UserControl
 
     public async Task ShowExtensionInitializationUI()
     {
-        ArgumentNullException.ThrowIfNull(ViewModel.ActiveQuickstartSelection);
-        var adaptiveCardSessionResult = ViewModel.ActiveQuickstartSelection.CreateAdaptiveCardSessionForExtensionInitialization();
-        await ShowAdaptiveCardOnContentDialog(adaptiveCardSessionResult);
+        if (ViewModel.ActiveQuickstartSelection is not null)
+        {
+            var adaptiveCardSessionResult = ViewModel.ActiveQuickstartSelection.CreateAdaptiveCardSessionForExtensionInitialization();
+            await ShowAdaptiveCardOnContentDialog(adaptiveCardSessionResult);
+        }
     }
 
     public async Task ShowProgressAdaptiveCard()

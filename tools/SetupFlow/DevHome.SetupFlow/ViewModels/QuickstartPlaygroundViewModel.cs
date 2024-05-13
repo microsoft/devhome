@@ -523,6 +523,15 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
             _log.Information("Completed setup work for extension selection");
         }
+        else
+        {
+            _log.Information("Reset extension selection");
+
+            ShowExamplePrompts = false;
+            ShowPrivacyAndTermsLink = false;
+            IsLaunchButtonVisible = false;
+            ConfigureForProviderSelection();
+        }
     }
 }
 
