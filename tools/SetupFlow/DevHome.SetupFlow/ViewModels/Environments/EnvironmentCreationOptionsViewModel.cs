@@ -30,7 +30,7 @@ namespace DevHome.SetupFlow.ViewModels.Environments;
 /// </summary>
 public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBase, IRecipient<CreationProviderChangedMessage>
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SelectEnvironmentProviderViewModel));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(EnvironmentCreationOptionsViewModel));
 
     private readonly AdaptiveCardRenderingService _adaptiveCardRenderingService;
 
@@ -107,6 +107,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     public void Receive(CreationProviderChangedMessage message)
     {
         _upcomingProviderDetails = message.Value;
+        ResetAdaptiveCardConfiguration();
     }
 
     private void OnEndSetupFlow(object sender, EventArgs e)
@@ -137,6 +138,8 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
 
         await Task.CompletedTask;
 
+        CanGoToNextPage = false;
+        Orchestrator.NotifyNavigationCanExecuteChanged();
         var curSelectedProviderId = _curProviderDetails?.ComputeSystemProvider?.Id ?? string.Empty;
         var upcomingSelectedProviderId = _upcomingProviderDetails?.ComputeSystemProvider?.Id;
 
@@ -189,13 +192,25 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
 
                 // Initialize the adaptive card session with the extension adaptive card template and data with an initial
                 // call to IExtensionAdaptiveCard.Update.
-                _extensionAdaptiveCardSession.Initialize(_extensionAdaptiveCard);
+                var result = _extensionAdaptiveCardSession.Initialize(_extensionAdaptiveCard);
+                if (result.Status == ProviderOperationStatus.Failure)
+                {
+                    _log.Error(result.ExtendedError, $"Extension failed to generate adaptive card. DisplayMsg: {result.DisplayMessage}, DiagnosticMsg: {result.DiagnosticText}");
+                    SessionErrorMessage = result.DisplayMessage;
+                    CanGoToNextPage = false;
+                }
+                else
+                {
+                    CanGoToNextPage = true;
+                }
             }
             catch (Exception ex)
             {
                 _log.Error(ex, $"Failed to get creation options adaptive card from provider {_curProviderDetails.ComputeSystemProvider.Id}.");
                 SessionErrorMessage = ex.Message;
             }
+
+            Orchestrator.NotifyNavigationCanExecuteChanged();
         });
     }
 

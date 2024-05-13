@@ -17,6 +17,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:BoolToObjectConverter x:Key="BoolToOpacityConverter" TrueValue="1" FalseValue="0.4" />
             <x:Double x:Key="SettingsCardHeaderIconMaxSize">32</x:Double>
 
@@ -117,8 +118,7 @@
                         
                         <!--  settings card for setup target flow.  -->
                         <Grid 
-                            Background="Transparent"
-                            Visibility="{x:Bind ViewModel.ShouldShowSetupTargetItem}">
+                            Background="Transparent">
                             <ctControls:SettingsCard
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow_For_target"
                                 ActionIcon="{x:Null}"
@@ -130,7 +130,9 @@
                                 IsClickEnabled="True"
                                 IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}">
                                 <ctControls:SettingsCard.HeaderIcon>
-                                    <ImageIcon Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}" Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_EndToEnd.png" />
+                                    <ImageIcon 
+                                        Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}"
+                                        Source="ms-appx:///DevHome.SetupFlow/Assets/SetupVirtualEnvironment.png" />
                                 </ctControls:SettingsCard.HeaderIcon>
                             </ctControls:SettingsCard>
 
@@ -160,6 +162,24 @@
                                 </TextBlock>
                             </ctControls:SettingsCard.Description>
                         </ctControls:SettingsCard>
+                        
+                        <!-- Settings for Quickstart Playground-->
+                        <ctControls:SettingsCard x:Uid="MainPage_QuickstartPlayground"
+                                           AutomationProperties.AutomationId="QuickstartPlayground"
+                                           IsClickEnabled="True"
+                                           Command="{x:Bind ViewModel.StartQuickstartCommand}"
+                                           CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                                           ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                                           AutomationProperties.AccessibilityView="Control"
+                                           ActionIcon="{x:Null}" 
+                                           Visibility="{x:Bind ViewModel.EnableQuickstartPlayground, Mode=TwoWay, Converter={StaticResource BoolToVisibilityConverter}}" >
+                            <ctControls:SettingsCard.HeaderIcon>
+                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_QuickstartPlayground.png" />
+                            </ctControls:SettingsCard.HeaderIcon>
+                            <ctControls:SettingsCard.Description>
+                                <TextBlock x:Uid="MainPage_QuickstartPlayground_Description"/>
+                            </ctControls:SettingsCard.Description>
+                        </ctControls:SettingsCard>
                     </StackPanel>
 
                     <StackPanel Spacing="{StaticResource SettingsCardSpacing}" AutomationProperties.Name="{x:Bind ViewModel.MainPageQuickStepsGroupName}">
@@ -167,7 +187,6 @@
 
                         <!-- settings card for creating an environment -->
                         <ctControls:SettingsCard 
-                           Visibility="{x:Bind ViewModel.ShouldShowCreateEnvironmentItem}"
                            x:Uid="MainPageCreateEnvironment"
                            AutomationProperties.AutomationId="CreateEnvironment"
                            IsClickEnabled="True"

@@ -14,6 +14,8 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
+    Loaded="OnLoaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -57,7 +59,7 @@
                                     ComputeSystemImage="{x:Bind ComputeSystemImage, Mode=OneWay}"
                                     StateColor="{x:Bind StateColor, Mode=OneWay}"
                                     CardState="{x:Bind CardState, Mode=OneWay}"
-                                    ComputeSystemProperties="{x:Bind ComputeSystemPropertiesForCardUI, Mode=OneWay}"
+                                    ComputeSystemProperties="{x:Bind ComputeSystemProperties, Mode=OneWay}"
                                     IsTabStop="False">
                                 <devEnvCustomControls:CardBody.ComputeSystemPropertyTemplate>
                                     <!-- Properties template for compute system properties.-->
@@ -197,7 +199,8 @@
     <setupControls:SetupShell 
         x:Uid="SetupShell_SetupTarget"
         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
-        Foreground="{ThemeResource TextFillColorSecondary}" >
+        Foreground="{ThemeResource TextFillColorSecondary}" 
+        SetupShellNotificationVisibility="Visible">
         <Grid
             RowSpacing="40">
             <Grid.RowDefinitions>
@@ -363,16 +366,32 @@
                 </StackPanel>
                 <!--- Show the info message when no ComputeSystemsListViewModel objects were found. -->
                 <StackPanel 
-                    Visibility="{x:Bind ViewModel.ComputeSystemLoadingCompleted, Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.CallToActionText, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
-                    Margin="0 100 0 0">
-                    <TextBlock
-                        x:Uid="SetupTargetNoEnvironmentsFound"
-                        Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                        FontSize="15"/>
+                    Margin="0 200 0 0">
+                    <TextBlock 
+                        Text="{x:Bind ViewModel.CallToActionText, Mode=OneWay}"
+                        HorizontalAlignment="Center" 
+                        TextWrapping="WrapWholeWords" 
+                        HorizontalTextAlignment="Center" />
+                    <HyperlinkButton 
+                        HorizontalAlignment="Center"
+                        Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.CallToActionButtonCommand}" />
                 </StackPanel>
             </StackPanel>
         </Grid>
+        <setupControls:SetupShell.SetupShellNotification>
+            <InfoBar
+                MaxWidth="480"
+                Margin="24"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+                <i:Interaction.Behaviors>
+                    <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
+                </i:Interaction.Behaviors>
+            </InfoBar>
+        </setupControls:SetupShell.SetupShellNotification>
     </setupControls:SetupShell>
 </UserControl>

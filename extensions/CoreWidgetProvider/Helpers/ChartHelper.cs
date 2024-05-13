@@ -18,7 +18,7 @@ internal sealed class ChartHelper
     }
 
     public const int ChartHeight = 86;
-    public const int ChartWidth = 264;
+    public const int ChartWidth = 268;
 
     private const string LightGrayBoxStyle = "fill:none;stroke:lightgrey;stroke-width:1";
 
@@ -59,7 +59,7 @@ internal sealed class ChartHelper
     private const string Y2Attr = "y2";
     private const string IdAttr = "id";
 
-    private const int MaxChartValues = 30;
+    private const int MaxChartValues = 34;
 
     public static string CreateImageUrl(List<float> chartValues, ChartType type)
     {
@@ -225,17 +225,25 @@ internal sealed class ChartHelper
 
         // The X value where the graph starts must be adjusted so that the graph is right-aligned.
         // The max available width of the widget is 268. Since there is a 1 px border around the chart, the width of the chart's line must be <=266.
-        // To create a chart of exactly the right size, we'll have 30 points with 9 pixels in between:
-        // index 0            1                      2 - 262                          263
-        // 1 px left border + 1 px for first point + 29 segments * 9 px per segment + 1 px right border = 264 pixels total in width.
-        const int pxBetweenPoints = 9;
+        // To create a chart of exactly the right size, we'll have 34 points with 8 pixels in between:
+        // 1 px left border + 1 px for first point + 33 segments * 8 px per segment + 1 px right border = 267 pixels total in width.
+        const int pxBetweenPoints = 8;
 
         // When the chart doesn't have all points yet, move the chart over to the right by increasing the starting X coordinate.
         // For a chart with only 1 point, the svg will not render a polyline.
-        // For a chart with 2 points, starting X coordinate ==  1 + (30 -  2) * 9 == 1 + 28 * 9 == 1 + 252 == 253
-        // For a chart with 30 points, starting X coordinate == 1 + (30 - 30) * 9 == 1 +  0 * 9 == 1 +   0 ==   1
-        startX = 1 + ((MaxChartValues - chartValues.Count) * pxBetweenPoints);
+        // For a chart with 2 points, starting X coordinate ==  2 + (34 -  2) * 8 == 1 + 32 * 8 == 1 + 256 == 257
+        // For a chart with 30 points, starting X coordinate == 2 + (34 - 34) * 8 == 1 +  0 * 8 == 1 +   0 ==   2
+        startX = 2 + ((MaxChartValues - chartValues.Count) * pxBetweenPoints);
         finalX = startX;
+
+        // Extend graph by one pixel to cover gap on the left when the chart is otherwise full.
+        if (startX == 2)
+        {
+            var invertedHeight = 100 - chartValues[0];
+            var finalY = (invertedHeight * (ChartHeight / 100.0)) - 1;
+            points.Append(CultureInfo.InvariantCulture, $"1,{finalY} ");
+        }
+
         foreach (var origY in chartValues)
         {
             // We receive the height as a number up from the X axis (bottom of the chart), but we have to invert it

@@ -7,10 +7,17 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Behaviors;
 using DevHome.Common.Contracts.Services;
+using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Environments.Services;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
+using Microsoft.UI.Xaml;
+using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using WinUIEx;
 
@@ -23,6 +30,16 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     private readonly IComputeSystemService _computeSystemService;
 
     public ComputeSystemProviderDetails SelectedProvider { get; private set; }
+
+    private EnvironmentsNotificationHelper _notificationsHelper;
+
+    private bool _isFirstTimeLoading;
+
+    [ObservableProperty]
+    private string _callToActionText;
+
+    [ObservableProperty]
+    private string _callToActionHyperLinkButtonText;
 
     [ObservableProperty]
     private bool _areProvidersLoaded;
@@ -41,27 +58,34 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     {
         PageTitle = stringResource.GetLocalized(StringResourceKey.SelectEnvironmentPageTitle);
         _computeSystemService = computeSystemService;
+        _isFirstTimeLoading = true;
     }
 
     private async Task LoadProvidersAsync()
     {
+        CanGoToNextPage = false;
         AreProvidersLoaded = false;
         Orchestrator.NotifyNavigationCanExecuteChanged();
+        CallToActionText = null;
+        CallToActionHyperLinkButtonText = null;
 
         var providerDetails = await Task.Run(_computeSystemService.GetComputeSystemProvidersAsync);
         ProvidersViewModels = new();
         foreach (var providerDetail in providerDetails)
         {
-            ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
+            // Only list providers that support creation
+            if (providerDetail.ComputeSystemProvider.SupportedOperations.HasFlag(ComputeSystemProviderOperations.CreateComputeSystem))
+            {
+                _notificationsHelper?.DisplayComputeSystemProviderErrors(providerDetail);
+                ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
+            }
         }
 
         AreProvidersLoaded = true;
-    }
 
-    protected async override Task OnFirstNavigateToAsync()
-    {
-        CanGoToNextPage = false;
-        await LoadProvidersAsync();
+        var callToActionData = ComputeSystemHelpers.UpdateCallToActionText(ProvidersViewModels.Count, true);
+        CallToActionText = callToActionData.CallToActionText;
+        CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
     }
 
     [RelayCommand]
@@ -87,5 +111,27 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
             CanGoToNextPage = true;
             Orchestrator.NotifyNavigationCanExecuteChanged();
         }
+    }
+
+    public async Task InitializeAsync(StackedNotificationsBehavior notificationQueue)
+    {
+        _notificationsHelper = new(notificationQueue);
+
+        if (_isFirstTimeLoading || !string.IsNullOrEmpty(CallToActionText))
+        {
+            _isFirstTimeLoading = false;
+            CanGoToNextPage = false;
+            await LoadProvidersAsync();
+        }
+    }
+
+    /// <summary>
+    /// Navigates the user to the extensions page library
+    /// process.
+    /// </summary>
+    [RelayCommand]
+    public void CallToActionButton()
+    {
+        Orchestrator.NavigateToOutsideFlow(KnownPageKeys.Extensions);
     }
 }

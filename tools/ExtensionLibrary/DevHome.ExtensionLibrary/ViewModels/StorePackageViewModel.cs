@@ -23,12 +23,16 @@ public partial class StorePackageViewModel : ObservableObject
     [ObservableProperty]
     private string _packageFamilyName;
 
+    [ObservableProperty]
+    private string _automationInstallPfn;
+
     public StorePackageViewModel(string productId, string title, string publisher, string packageFamilyName)
     {
         _productId = productId;
         _title = title;
         _publisher = publisher;
         _packageFamilyName = packageFamilyName;
+        _automationInstallPfn = $"Install_{packageFamilyName}";
     }
 
     [RelayCommand]

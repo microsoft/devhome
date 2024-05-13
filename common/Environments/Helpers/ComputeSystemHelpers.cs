@@ -15,39 +15,57 @@ namespace DevHome.Common.Environments.Helpers;
 
 public static class ComputeSystemHelpers
 {
-    public static async Task<BitmapImage?> GetBitmapImageAsync(ComputeSystem computeSystemWrapper)
+    public static async Task<byte[]?> GetBitmapImageArrayAsync(ComputeSystemCache computeSystem)
     {
         try
         {
-            var result = await computeSystemWrapper.GetComputeSystemThumbnailAsync(string.Empty);
+            var result = await computeSystem.GetComputeSystemThumbnailAsync(string.Empty);
 
             if ((result.Result.Status == ProviderOperationStatus.Failure) || (result.ThumbnailInBytes.Length <= 0))
             {
-                Log.Error($"Failed to get thumbnail for compute system {computeSystemWrapper}. Error: {result.Result.DiagnosticText}");
+                Log.Error($"Failed to get thumbnail for compute system {computeSystem}. Error: {result.Result.DiagnosticText}");
 
                 // No thumbnail available, return null so that the card will display the default image.
                 return null;
             }
 
-            var bitmap = new BitmapImage();
-            bitmap.SetSource(result.ThumbnailInBytes.AsBuffer().AsStream().AsRandomAccessStream());
-            return bitmap;
+            return result.ThumbnailInBytes;
         }
         catch (Exception ex)
         {
-            Log.Error(ex, $"Failed to get thumbnail for compute system {computeSystemWrapper}.");
+            Log.Error(ex, $"Failed to get thumbnail for compute system {computeSystem}.");
             return null;
         }
     }
 
-    public static async Task<List<CardProperty>> GetComputeSystemPropertiesAsync(ComputeSystem computeSystemWrapper, string packageFullName)
+    public static BitmapImage? GetBitmapImageFromByteArray(byte[] array)
+    {
+        try
+        {
+            var bitmap = new BitmapImage();
+            bitmap.SetSource(array.AsBuffer().AsStream().AsRandomAccessStream());
+            return bitmap;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to get thumbnail from a byte array.");
+            return null;
+        }
+    }
+
+    public static async Task<BitmapImage?> GetBitmapImageAsync(ComputeSystemCache computeSystem)
+    {
+        var array = await GetBitmapImageArrayAsync(computeSystem);
+        return (array != null) ? GetBitmapImageFromByteArray(array) : null;
+    }
+
+    public static List<CardProperty> GetComputeSystemCardProperties(IEnumerable<ComputeSystemPropertyCache> properties, string packageFullName)
     {
         var propertyList = new List<CardProperty>();
 
         try
         {
-            var cuurentProperties = await computeSystemWrapper.GetComputeSystemPropertiesAsync(string.Empty);
-            foreach (var property in cuurentProperties)
+            foreach (var property in properties)
             {
                 propertyList.Add(new CardProperty(property, packageFullName));
             }
@@ -56,8 +74,22 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Error(ex, $"Failed to get all properties for compute system {computeSystemWrapper}.");
+            Log.Error(ex, $"Failed to get all ComputeSystemCardProperties.");
             return propertyList;
+        }
+    }
+
+    public static async Task<List<CardProperty>> GetComputeSystemCardPropertiesAsync(ComputeSystemCache computeSystem, string packageFullName)
+    {
+        try
+        {
+            var curentProperties = await computeSystem.GetComputeSystemPropertiesAsync(string.Empty);
+            return GetComputeSystemCardProperties(curentProperties, packageFullName);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, $"Failed to get all properties for compute system {computeSystem}.");
+            return new List<CardProperty>();
         }
     }
 
@@ -69,5 +101,29 @@ public static class ComputeSystemHelpers
             ComputeSystemState.Stopped => CardStateColor.Neutral,
             _ => CardStateColor.Caution,
         };
+    }
+
+    public static EnvironmentsCallToActionData UpdateCallToActionText(int providerCount, bool isCreationPage = false)
+    {
+        var navigateToExtensionsLibrary = false;
+        string? callToActionText = null;
+        string? callToActionHyperLinkText = null;
+
+        // When the provider count is zero we'll show UX to redirect the user to the extensions library and when it is
+        // greater than zero we'll show UX to redirect user to the create environment flow.
+        if (providerCount == 0)
+        {
+            navigateToExtensionsLibrary = true;
+            callToActionText = StringResourceHelper.GetResource("NoEnvironmentsAndExtensionsNotInstalledCallToAction");
+            callToActionHyperLinkText = StringResourceHelper.GetResource("NoEnvironmentsAndExtensionsNotInstalledButton");
+        }
+        else if (providerCount > 0 && !isCreationPage)
+        {
+            // Text to redirect user to Creation flow in Machine configuration
+            callToActionText = StringResourceHelper.GetResource("NoEnvironmentsButExtensionsInstalledCallToAction");
+            callToActionHyperLinkText = StringResourceHelper.GetResource("NoEnvironmentsButExtensionsInstalledButton");
+        }
+
+        return new(navigateToExtensionsLibrary, callToActionText, callToActionHyperLinkText);
     }
 }
