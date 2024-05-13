@@ -4,7 +4,6 @@
 extern alias Projection;
 
 using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +13,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.SetupFlow.Common;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -33,6 +31,8 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloneRepoTask : ObservableObject, ISetupTask
 {
+    private static readonly Random _random = new();
+
     private readonly IHost _host;
 
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CloneRepoTask));
@@ -253,6 +253,11 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                 _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, e.Message);
                 WasCloningSuccessful = false;
                 return TaskFinishedState.Failure;
+            }
+
+            if (_random.Next(0, 10) < 2)
+            {
+                throw new ArgumentNullException("Blah");
             }
 
             // Search for a configuration file.

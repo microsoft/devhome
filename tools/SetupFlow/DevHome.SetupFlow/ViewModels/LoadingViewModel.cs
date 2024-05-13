@@ -535,11 +535,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // Start the task and wait for it to complete.
         try
         {
-            if (_randomNumber.Next(0, 10) < 3)
-            {
-                throw new ArgumentOutOfRangeException(nameof(window));
-            }
-
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
@@ -557,6 +552,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 // Keep increment inside TryEnqueue to enforce "locking"
                 _numberOfExecutingTasks++;
             });
+
+            if (_randomNumber.Next(0, 10) < 2)
+            {
+                throw new ArgumentOutOfRangeException(nameof(window));
+            }
 
             TaskFinishedState taskFinishedState;
             if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedOperation != null)
@@ -582,18 +582,30 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             window.DispatcherQueue.TryEnqueue(() =>
             {
+                _numberOfExecutingTasks--;
                 ExecutingMessages.Remove(loadingMessage);
 
                 NonExecutingMessages.Add(loadingMessage);
 
                 var newLoadingMessage = _host.GetService<LoadingMessageViewModel>();
-                loadingMessage.MessageToShow = $"Could not finish {taskInformation.MessageToShow} because {e.Message}";
-                loadingMessage.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkError : LightError;
+                newLoadingMessage.MessageToShow = $"Could not finish {taskInformation.MessageToShow} because {e.Message}";
+                newLoadingMessage.StatusSymbolIcon = (_currentTheme == ElementTheme.Dark) ? DarkError : LightError;
 
                 NonExecutingMessages.Add(newLoadingMessage);
 
                 TasksCompleted++;
+                TasksFailed++;
+
+                SetExecutingTaskAndActionCenter();
+
                 ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, TasksFailed);
+
+                _log.Debug("Adding task to list for retry");
+                _failedTasks.Add(taskInformation);
+
+                var actionCenterErrorMessage = new ActionCenterMessages();
+                actionCenterErrorMessage.PrimaryMessage = e.Message;
+                ActionCenterItems.Insert(0, actionCenterErrorMessage);
             });
             _log.Error(e, $"Could not finish all tasks.");
         }

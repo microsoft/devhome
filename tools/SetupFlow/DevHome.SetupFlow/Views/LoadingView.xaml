@@ -121,7 +121,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <ListView x:Name="NonExecutingTasks"  Grid.Row="0" ItemsSource="{x:Bind ViewModel.NonExecutingMessages, Mode=OneWay}" SelectionMode="None">
+                <ListView x:Name="NonExecutingTasks"  Grid.Row="0" ItemsSource="{x:Bind ViewModel.NonExecutingMessages, Mode=OneWay}" SelectionMode="Single">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:LoadingMessageViewModel">
                             <Grid ColumnSpacing="5">
