@@ -106,10 +106,16 @@ public class DataExtractor
                 _stringResource.GetLocalized("Operations_ShutDown"), "\uE71A", computeSystem.ShutDownAsync, ComputeSystemOperations.ShutDown));
         }
 
+        if (supportedOperations.HasFlag(ComputeSystemOperations.Save))
+        {
+            operations.Add(new OperationsViewModel(
+                _stringResource.GetLocalized("Operations_Save"), "\uE74E", computeSystem.SaveAsync, ComputeSystemOperations.Save));
+        }
+
         if (supportedOperations.HasFlag(ComputeSystemOperations.CreateSnapshot))
         {
             operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_CreateSnapshot"), "\uE7C1", computeSystem.CreateSnapshotAsync, ComputeSystemOperations.CreateSnapshot));
+                _stringResource.GetLocalized("Operations_CreateCheckpoint"), "\uE7C1", computeSystem.CreateSnapshotAsync, ComputeSystemOperations.CreateSnapshot));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.RevertSnapshot))
@@ -134,12 +140,6 @@ public class DataExtractor
         {
             operations.Add(new OperationsViewModel(
                 _stringResource.GetLocalized("Operations_Terminate"), "\uEE95", computeSystem.TerminateAsync, ComputeSystemOperations.Terminate));
-        }
-
-        if (supportedOperations.HasFlag(ComputeSystemOperations.Save))
-        {
-            operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_Save"), "\uE74E", computeSystem.SaveAsync, ComputeSystemOperations.Save));
         }
 
         return operations;
