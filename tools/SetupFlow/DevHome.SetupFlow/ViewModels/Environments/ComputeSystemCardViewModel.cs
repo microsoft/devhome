@@ -80,7 +80,8 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     {
         _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
-            if (sender.Id == ComputeSystem.Id.Value)
+            if (sender.Id == ComputeSystem.Id.Value &&
+                sender.AssociatedProviderId.Equals(ComputeSystem.AssociatedProviderId.Value, StringComparison.OrdinalIgnoreCase))
             {
                 CardState = state;
                 StateColor = ComputeSystemHelpers.GetColorBasedOnState(state);
@@ -101,7 +102,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
         var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem, _packageFullName);
         lock (_lock)
         {
-            ComputeSystemProperties.Clear();
+            ComputeSystemHelpers.RemoveAllItems(ComputeSystemProperties);
             foreach (var property in properties)
             {
                 ComputeSystemProperties.Add(property);
