@@ -27,7 +27,6 @@ using Serilog;
 using Windows.Foundation;
 using WinUIEx;
 using WinUIEx.Messaging;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DevHome.Environments.ViewModels;
 
