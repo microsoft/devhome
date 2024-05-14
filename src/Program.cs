@@ -83,7 +83,7 @@ public static class Program
             }
             catch (Exception ex)
             {
-                _log.Error($"Error launching utility: {ex.Message}");
+                _log.Error(ex, $"Error launching utility: {ex.Message}");
             }
         }
     }
