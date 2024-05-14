@@ -13,6 +13,7 @@
     <Style x:Key="ErrorIconStyle" TargetType="Image">
         <Setter Property="Height" Value="16px" />
         <Setter Property="Width" Value="16px" />
+        <Setter Property="Margin" Value="2,2,2,2" />
         <Setter Property="Source" Value="{ThemeResource ErrorIcon}" />
     </Style>
 

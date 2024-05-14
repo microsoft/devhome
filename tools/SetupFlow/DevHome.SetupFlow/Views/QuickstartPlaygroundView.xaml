@@ -65,7 +65,7 @@
                             <TextBlock x:Uid="QuickstartPlaygroundPromptHeader"
                                        Grid.Column="0"
                                        VerticalAlignment="Center"
-                                       TextWrapping="Wrap"
+                                       TextWrapping="WrapWholeWords"
                                        Margin="10"/>
                             <ctcontrols:WrapPanel Grid.Column="1" 
                                         Orientation="Horizontal"
@@ -186,7 +186,7 @@
                                Margin="10"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Center"
-                               TextWrapping="Wrap"/>
+                               TextWrapping="WrapWholeWords"/>
                         <ProgressBar AutomationProperties.LabeledBy="{Binding ElementName=ProgressStatus}"
                                  Grid.Column="1"
                                  Margin="30"
@@ -225,8 +225,8 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center">
                     <Image Style="{StaticResource ErrorIconStyle}"/>
-                    <TextBlock x:Uid="QuickstartPlaygroundGenerationFailed" TextWrapping="Wrap" />
-                    <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" TextWrapping="Wrap" />
+                    <TextBlock x:Uid="QuickstartPlaygroundGenerationFailed" TextWrapping="WrapWholeWords" />
+                    <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" TextWrapping="WrapWholeWords" />
                 </StackPanel>
             </Grid>
 
@@ -377,7 +377,7 @@
                            FontFamily="{StaticResource CascadiaMonoFontFamily}"
                            Margin="20"
                            IsTextSelectionEnabled="True"
-                           TextWrapping="Wrap"
+                           TextWrapping="WrapWholeWords"
                            IsTabStop="True"
                            TabIndex="23">
                         </TextBlock>
