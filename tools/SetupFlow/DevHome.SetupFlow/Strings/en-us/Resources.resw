@@ -762,7 +762,7 @@
     <comment>Description for the repo review page</comment>
   </data>
   <data name="MainPage_RepoReview_AddRepository.Content" xml:space="preserve">
-    <value>+ Add repository</value>
+    <value>Add repository</value>
     <comment>Add repository button text</comment>
   </data>
   <data name="ReposConfigPageTitle" xml:space="preserve">
@@ -834,7 +834,7 @@
     <comment>Shown when no repos are selected when the user gets to the repo page</comment>
   </data>
   <data name="RepoReview_NoReposSelectedLink.Content" xml:space="preserve">
-    <value>+ Add repository</value>
+    <value>Add repository</value>
     <comment>The hyperlink to bring the user to the repo clone dialog.  Shows if the user hasn't selected any repos to clone.</comment>
   </data>
   <data name="EditClonePathDialog.Title" xml:space="preserve">
@@ -1501,7 +1501,7 @@
     <comment>The operating system version of the compute system.</comment>
   </data>
   <data name="SetupTargetReviewPageDefaultInfoBarMessage" xml:space="preserve">
-    <value>Proceeding with the next step may result in the target machine being rebooted and logging in may be required.</value>
+    <value>Proceeding with the set up may result in the environment being rebooted and log in may be required. App installation may show Windows UAC prompts in the environment that will require your attention.</value>
     <comment>Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
   </data>
   <data name="SetupTargetReviewPageDefaultInfoBarTitle" xml:space="preserve">
@@ -1509,7 +1509,7 @@
     <comment>Title for info bar that will warn users that proceeding with the setup may result in the restart and re-login of the targeted remote machine or virtual machine.</comment>
   </data>
   <data name="SetupTargetReviewPageHyperVInfoBarMessage" xml:space="preserve">
-    <value>The next step may require you to reboot and sign in again. The Dev Home's DevSetupAgent service will be installed for setup of a Hyper-V virtual machine</value>
+    <value>Proceeding with the set up may result in the environment being rebooted and log in may be required. Dev Home's DevSetupAgent service will be installed to configure a Hyper-V virtual machine. App installation may show Windows UAC prompts in the environment that will require your attention.</value>
     <comment>{Locked="DevSetupAgent"} Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
   </data>
   <data name="SetupTargetUnknownStatus" xml:space="preserve">
@@ -1821,7 +1821,7 @@
     <comment>Title for create environment review page</comment>
   </data>
   <data name="CreateEnvironmentButtonText" xml:space="preserve">
-    <value>Create Environment</value>
+    <value>Create environment</value>
   </data>
   <data name="EnvironmentCreationError" xml:space="preserve">
     <value>There was an error starting the creation operation</value>
@@ -1994,5 +1994,13 @@
   <data name="QuickstartPlaygroundOpenInEditor.AutomationProperties.Name" xml:space="preserve">
     <value>Open in editor</value>
     <comment>Label for the button to launch the project host from the selected Quickstart extension</comment>
+  </data>
+  <data name="QuickstartPlaygroundGenerationFailed.Text" xml:space="preserve">
+    <value>Something went wrong, we weren't able to generate the content for this prompt.</value>
+    <comment>Error message shown when we failed to generate the project.</comment>
+  </data>
+  <data name="QuickstartPlaygroundGenerationFailedDetails" xml:space="preserve">
+    <value>Error: {0}</value>
+    <comment>Locked={"{0}"} Error message with additional details in {0} shown when we failed to generate the project.</comment>
   </data>
 </root>

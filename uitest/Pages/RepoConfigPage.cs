@@ -9,7 +9,7 @@ public class RepoConfigPage : ApplicationPage
 {
     private WindowsElement AddRepoButton => Driver.FindElementByName("AddRepositoriesButton");
 
-    public WindowsElement AddRepoHyperLinkButton => Driver.FindElementByAccessibilityId("AddRepoHyperLinkButton");
+    public WindowsElement AddRepoHyperlinkButton => Driver.FindElementByAccessibilityId("AddRepoHyperlinkButton");
 
     public RepoConfigPage(WindowsDriver<WindowsElement> driver)
         : base(driver)

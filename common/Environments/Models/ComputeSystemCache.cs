@@ -39,9 +39,9 @@ public class ComputeSystemCache
 
     private readonly Lazy<Task<ComputeSystemStateResult>> _stateResult;
     private readonly Lazy<Task<ComputeSystemThumbnailResult>> _thumbnailResult;
-    private readonly Lazy<Task<IEnumerable<ComputeSystemPropertyCache>>> _properties;
-    private readonly Lazy<Task<ComputeSystemPinnedResult>> _pinnedToStartResult;
-    private readonly Lazy<Task<ComputeSystemPinnedResult>> _pinnedToTaskbarResult;
+    private Lazy<Task<IEnumerable<ComputeSystemPropertyCache>>> _properties;
+    private Lazy<Task<ComputeSystemPinnedResult>> _pinnedToStartResult;
+    private Lazy<Task<ComputeSystemPinnedResult>> _pinnedToTaskbarResult;
 
     // This is used to store the parameter for the thumbnail request so that it can be used with lazy initialization.
     // There is a race if it's used concurrently from different threads, however it's not expected to use this class
@@ -75,7 +75,11 @@ public class ComputeSystemCache
     {
     }
 
-    public event TypedEventHandler<ComputeSystem, ComputeSystemState> StateChanged = (sender, state) => { };
+    public event TypedEventHandler<ComputeSystem, ComputeSystemState> StateChanged
+    {
+        add => ComputeSystem.StateChanged += value;
+        remove => ComputeSystem.StateChanged -= value;
+    }
 
     public async Task<ComputeSystemStateResult> GetStateAsync()
     {
@@ -203,9 +207,24 @@ public class ComputeSystemCache
         return await _pinnedToStartResult.Value;
     }
 
+    public void ResetPinnedToStartMenu()
+    {
+        _pinnedToStartResult = new Lazy<Task<ComputeSystemPinnedResult>>(() => ComputeSystem.GetIsPinnedToStartMenuAsync());
+    }
+
     public async Task<ComputeSystemPinnedResult> GetIsPinnedToTaskbarAsync()
     {
         return await _pinnedToTaskbarResult.Value;
+    }
+
+    public void ResetPinnedToTaskbar()
+    {
+        _pinnedToTaskbarResult = new Lazy<Task<ComputeSystemPinnedResult>>(() => ComputeSystem.GetIsPinnedToTaskbarAsync());
+    }
+
+    public void ResetComputeSystemProperties()
+    {
+        _properties = new Lazy<Task<IEnumerable<ComputeSystemPropertyCache>>>(() => InitComputeSystemPropertiesAsync(_propertiesParameter));
     }
 
     public IApplyConfigurationOperation CreateApplyConfigurationOperation(string configuration)
@@ -222,6 +241,11 @@ public class ComputeSystemCache
         _ = await GetComputeSystemPropertiesAsync(string.Empty);
     }
 
+    public void ResetSupportedOperations()
+    {
+        SupportedOperations = new Lazy<ComputeSystemOperations>(() => ComputeSystem.SupportedOperations);
+    }
+
     public override string ToString()
     {
         StringBuilder builder = new();
@@ -229,8 +253,8 @@ public class ComputeSystemCache
         builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem name: {DisplayName} ");
         builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem SupplementalDisplayName: {SupplementalDisplayName} ");
         builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem associated Provider Id : {AssociatedProviderId} ");
-        builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem associated developerId LoginId: {AssociatedDeveloperId?.Value.LoginId} ");
-        builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem associated developerId Url: {AssociatedDeveloperId?.Value.Url} ");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem associated developerId LoginId: {AssociatedDeveloperId?.Value?.LoginId} ");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem associated developerId Url: {AssociatedDeveloperId?.Value?.Url} ");
 
         var supportedOperations = EnumHelper.SupportedOperationsToString<ComputeSystemOperations>(SupportedOperations.Value);
         builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem supported operations : {string.Join(",", supportedOperations)} ");

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
@@ -9,9 +9,13 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Services;
 using DevHome.Telemetry;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Serilog;
 using Windows.Foundation.Diagnostics;
+using Windows.UI;
 using WinUIEx;
 
 namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
@@ -36,7 +40,16 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
     private bool _isAnalyticSummaryAvailable;
 
     [ObservableProperty]
+    private string _countdownTimer;
+
+    [ObservableProperty]
     private string _sessionStateText;
+
+    [ObservableProperty]
+    private SolidColorBrush _sessionStateTextColor;
+
+    [ObservableProperty]
+    private bool _quietButtonEnabled;
 
     [ObservableProperty]
     private bool _quietButtonChecked;
@@ -65,6 +78,13 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
         return GetString("QuietBackgroundProcesses_Status_" + id);
     }
 
+    private void SetErrorString(string id)
+    {
+        QuietButtonEnabled = false;
+        SessionStateText = GetStatusString(id);
+        SessionStateTextColor = (SolidColorBrush)Application.Current.Resources["SystemFillColorCriticalBrush"];
+    }
+
     public bool IsQuietBackgroundProcessesFeatureEnabled => _experimentationService.IsFeatureEnabled("QuietBackgroundProcessesExperiment");
 
     public QuietBackgroundProcessesViewModel(
@@ -73,7 +93,12 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
     {
         _experimentationService = experimentationService;
         _windowEx = windowEx;
-        _sessionStateText = string.Empty;
+        _countdownTimer = string.Empty;
+        _sessionStateText = GetString("QuietBackgroundProcesses_Description");
+
+        // Set the default text color since there's no way to acquire it from
+        // the theme in code (and we want to change it when an error happens).
+        _sessionStateTextColor = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
         _dispatcherTimer = new DispatcherTimer();
     }
 
@@ -130,12 +155,14 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
                 IsAnalyticSummaryAvailable = isAvailable;
                 if (IsFeaturePresent)
                 {
+                    QuietButtonEnabled = true;
+
                     // Resume countdown if there's an existing quiet window
                     SetQuietSessionRunningState(running, timeLeftInSeconds);
                 }
                 else
                 {
-                    SessionStateText = GetStatusString("FeatureNotSupported");
+                    SetErrorString("FeatureNotSupported");
                     QuietButtonText = GetString("QuietBackgroundProcesses_QuietButton_Start");
                 }
             });
@@ -182,7 +209,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             {
                 TelemetryFactory.Get<ITelemetry>().Log("QuietBackgroundProcesses_SessionStartError", LogLevel.Critical, new QuietBackgroundProcessesEvent());
 
-                SessionStateText = GetStatusString("SessionError");
+                SetErrorString("SessionStartError");
                 _log.Error(ex, "QuietBackgroundProcessesSession::Start failed");
             }
         }
@@ -195,13 +222,13 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
                 _table = GetSession().Stop();
                 IsAnalyticSummaryAvailable = _table != null;
                 SetQuietSessionRunningState(false);
-                SessionStateText = GetLastSessionLengthString(_sessionDuration - _secondsLeft);
+                CountdownTimer = GetLastSessionLengthString(_sessionDuration - _secondsLeft);
             }
             catch (Exception ex)
             {
                 TelemetryFactory.Get<ITelemetry>().Log("QuietBackgroundProcesses_SessionStopError", LogLevel.Critical, new QuietBackgroundProcessesEvent());
 
-                SessionStateText = GetStatusString("UnableToCancelSession");
+                SetErrorString("UnableToCancelSession");
                 _log.Error(ex, "QuietBackgroundProcessesSession::Stop failed");
             }
         }
@@ -219,7 +246,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            SessionStateText = GetStatusString("SessionError");
+            SetErrorString("UnableToFindActiveSession");
             _log.Error(ex, "QuietBackgroundProcessesSession::IsActive failed");
         }
 
@@ -234,7 +261,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            SessionStateText = GetStatusString("SessionError");
+            SetErrorString("UnableToGetTimeLeft");
             _log.Error(ex, "QuietBackgroundProcessesSession::TimeLeftInSeconds failed");
             return 0;
         }
@@ -256,7 +283,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
         _secondsLeft = new TimeSpan(0, 0, (int)timeLeftInSeconds);
         _dispatcherTimer.Start();
 
-        SessionStateText = _secondsLeft.ToString();
+        CountdownTimer = _secondsLeft.ToString();
     }
 
     private void DispatcherTimer_Tick(object? sender, object e)
@@ -285,11 +312,11 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             SetQuietSessionRunningState(false);
             var lastSessionLength = _sessionDuration - _secondsLeft;
             _secondsLeft = _zero;
-            SessionStateText = GetLastSessionLengthString(lastSessionLength);
+            CountdownTimer = GetLastSessionLengthString(lastSessionLength);
         }
         else
         {
-            SessionStateText = _secondsLeft.ToString(); // CultureInfo.InvariantCulture
+            CountdownTimer = _secondsLeft.ToString(); // CultureInfo.InvariantCulture
         }
     }
 
@@ -308,7 +335,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                SessionStateText = GetStatusString("SessionError");
+                SetErrorString("UnableToGetAnalyticSummary");
                 _log.Error(ex, "QuietBackgroundProcessesSessionManager.TryGetLastPerformanceRecording failed");
             }
         }

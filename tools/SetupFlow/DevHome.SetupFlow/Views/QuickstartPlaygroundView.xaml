@@ -58,7 +58,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Vertical" Grid.Row="0">
-                        <Grid>
+                        <Grid Margin="0, 0, 0, 30">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="1*"/>
@@ -66,7 +66,7 @@
                             <TextBlock x:Uid="QuickstartPlaygroundPromptHeader"
                                        Grid.Column="0"
                                        VerticalAlignment="Center"
-                                       TextWrapping="Wrap"
+                                       TextWrapping="WrapWholeWords"
                                        Margin="10"/>
                             <ctcontrols:WrapPanel Grid.Column="1" 
                                         Orientation="Horizontal"
@@ -187,7 +187,7 @@
                                Margin="10"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Center"
-                               TextWrapping="Wrap"/>
+                               TextWrapping="WrapWholeWords"/>
                         <ProgressBar AutomationProperties.LabeledBy="{Binding ElementName=ProgressStatus}"
                                  Grid.Column="1"
                                  Margin="30"
@@ -221,6 +221,16 @@
             </Grid>
 
             <!--Bottom half of UI-->
+            <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.IsErrorViewVisible, Mode=OneWay}">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                    <Image Style="{StaticResource ErrorIconStyle}"/>
+                    <TextBlock x:Uid="QuickstartPlaygroundGenerationFailed" TextWrapping="WrapWholeWords" />
+                    <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" TextWrapping="WrapWholeWords" />
+                </StackPanel>
+            </Grid>
+
             <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.IsFileViewVisible, Mode=OneWay}">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -382,7 +392,7 @@
                                    FontFamily="{StaticResource CascadiaMonoFontFamily}"
                                    Margin="20"
                                    IsTextSelectionEnabled="True"
-                                   TextWrapping="Wrap"
+                                   TextWrapping="WrapWholeWords"
                                    IsTabStop="True"
                                    TabIndex="24">
                         </TextBlock>

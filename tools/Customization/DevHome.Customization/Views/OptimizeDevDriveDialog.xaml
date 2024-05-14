@@ -14,6 +14,7 @@
     Style="{StaticResource DefaultContentDialogStyle}"
     Title="{x:Bind ViewModel.ChooseDirectoryPromptText}"
     PrimaryButtonText="{x:Bind ViewModel.MakeChangesText}"
+    IsPrimaryButtonEnabled="{x:Bind ViewModel.IsPrimaryButtonEnabled, Mode=OneWay}"
     PrimaryButtonCommand="{x:Bind ViewModel.DirectoryInputConfirmedCommand}"
     SecondaryButtonText="Cancel">
     <StackPanel>
@@ -27,5 +28,9 @@
             <Button HorizontalAlignment="Right" Margin="10 0 0 0" Grid.Column="1" x:Uid="BrowseButton" Command="{x:Bind ViewModel.BrowseButtonClickCommand}"/>
         </Grid>
         <TextBlock Margin="0 10 0 0" TextWrapping="Wrap" Text="{x:Bind ViewModel.ExampleDevDriveLocation, Mode=OneWay}"/>
+        <Grid Visibility="{x:Bind ViewModel.IsNotDevDrive, Mode=OneWay}" Margin="0 10 0 0">
+            <FontIcon HorizontalAlignment="Left" Glyph="&#xE946;" FontSize="12" FontFamily="{StaticResource SymbolThemeFontFamily}" Foreground="{ThemeResource SystemFillColorCautionBrush}" />
+            <TextBlock Margin="20 0 0 0" TextWrapping="WrapWholeWords" Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" FontSize="12" Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+        </Grid>
     </StackPanel>
 </ContentDialog>

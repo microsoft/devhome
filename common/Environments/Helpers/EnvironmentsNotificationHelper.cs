@@ -146,6 +146,12 @@ public partial class EnvironmentsNotificationHelper
             _stringResource.GetLocalized("RestartButton"));
     }
 
+    public void DisplayComputeSystemOperationError(string providerDisplayName, string computeSystemDisplayName, string errorText)
+    {
+        var titleText = $"{providerDisplayName} ({computeSystemDisplayName})";
+        _stackedNotificationsBehavior.ShowWithWindowExtension(titleText, errorText, InfoBarSeverity.Error);
+    }
+
     [RelayCommand]
     private void RestartComputer()
     {

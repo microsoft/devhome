@@ -132,6 +132,12 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     private bool _isPromptTextBoxReadOnly = false;
 
     [ObservableProperty]
+    private bool _isErrorViewVisible = false;
+
+    [ObservableProperty]
+    private string _errorMessage = string.Empty;
+
+    [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(GenerateCodespaceCommand))]
     private bool _areDependenciesPresent = false;
 
@@ -430,6 +436,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
             // Ensure file view isn't visible (in the case where the user has previously run a Generate command
             IsFileViewVisible = false;
+            IsErrorViewVisible = false;
 
             // Without this, when the user generates two projects in sequence, the text box
             // will contain any text from last-opened file in the previous project (which is
@@ -440,6 +447,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             // Temporarily turn off the provider combobox and ensure user cannot edit the prompt for the moment
             EnableQuickstartProjectCombobox = false;
             IsPromptTextBoxReadOnly = true;
+            EnableProjectButtons = false;
 
             IProgress<QuickStartProjectProgress> progress = new Progress<QuickStartProjectProgress>(UpdateProgress);
 
@@ -458,7 +466,8 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             }
             else
             {
-                // TODO handle error scenario
+                IsErrorViewVisible = true;
+                ErrorMessage = StringResource.GetLocalized("QuickstartPlaygroundGenerationFailedDetails", _quickStartProject.Result.DisplayMessage);
                 TelemetryFactory.Get<ITelemetry>().Log("QuickstartPlaygroundGenerateFailed", LogLevel.Critical, new ProjectGenerationErrorInfo(_quickStartProject.Result.DisplayMessage, _quickStartProject.Result.ExtendedError, _quickStartProject.Result.DiagnosticText));
             }
         }
@@ -570,6 +579,15 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             _localSettingsService.SaveSettingAsync("QuickstartPlaygroundSelectedProvider", ActiveQuickstartSelection.DisplayName);
 
             _log.Information("Completed setup work for extension selection");
+        }
+        else
+        {
+            _log.Information("Reset extension selection");
+
+            ShowExamplePrompts = false;
+            ShowPrivacyAndTermsLink = false;
+            IsLaunchButtonVisible = false;
+            ConfigureForProviderSelection();
         }
     }
 }

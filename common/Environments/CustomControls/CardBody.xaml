@@ -35,7 +35,7 @@
                             Source="{x:Bind ComputeSystemImage, Mode=OneWay}"
                             Width="{StaticResource ComputeSystemImage64px}"
                             Height="{StaticResource ComputeSystemImage64px}"
-                            Stretch="Fill"/>
+                            Stretch="Uniform"/>
                     </Border>
                 </Grid>
             </Viewbox>
