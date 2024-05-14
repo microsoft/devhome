@@ -93,6 +93,7 @@ public sealed partial class PrimaryWindow : WindowEx
             if (DBarWindow == null)
             {
                 DBarWindow = new(process, hWnd);
+                DBarWindow.Closed += (s, e) => ClearBarWindow();
             }
             else
             {
