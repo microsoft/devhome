@@ -55,7 +55,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     public string PackageFullName { get; set; }
 
     private readonly Func<ComputeSystemCardBase, bool> _removalAction;
-    private bool disposedValue;
+    private bool _disposedValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ComputeSystemViewModel"/> class.
@@ -405,14 +405,14 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!_disposedValue)
         {
             if (disposing)
             {
                 _semaphoreSlimLock.Release();
             }
 
-            disposedValue = true;
+            _disposedValue = true;
         }
     }
 
