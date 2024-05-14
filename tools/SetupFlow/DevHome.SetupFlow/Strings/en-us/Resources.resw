@@ -762,7 +762,7 @@
     <comment>Description for the repo review page</comment>
   </data>
   <data name="MainPage_RepoReview_AddRepository.Content" xml:space="preserve">
-    <value>+ Add repository</value>
+    <value>Add repository</value>
     <comment>Add repository button text</comment>
   </data>
   <data name="ReposConfigPageTitle" xml:space="preserve">
@@ -834,7 +834,7 @@
     <comment>Shown when no repos are selected when the user gets to the repo page</comment>
   </data>
   <data name="RepoReview_NoReposSelectedLink.Content" xml:space="preserve">
-    <value>+ Add repository</value>
+    <value>Add repository</value>
     <comment>The hyperlink to bring the user to the repo clone dialog.  Shows if the user hasn't selected any repos to clone.</comment>
   </data>
   <data name="EditClonePathDialog.Title" xml:space="preserve">
@@ -1978,5 +1978,13 @@
   <data name="QuickstartPlaygroundSelectProvider" xml:space="preserve">
     <value>Select an extension provider before continuing.</value>
     <comment>Guidance text to instruct user to select a Quickstart provider before continuing</comment>
+  </data>
+  <data name="QuickstartPlaygroundGenerationFailed.Text" xml:space="preserve">
+    <value>Something went wrong, we weren't able to generate the content for this prompt.</value>
+    <comment>Error message shown when we failed to generate the project.</comment>
+  </data>
+  <data name="QuickstartPlaygroundGenerationFailedDetails" xml:space="preserve">
+    <value>Error: {0}</value>
+    <comment>Locked={"{0}"} Error message with additional details in {0} shown when we failed to generate the project.</comment>
   </data>
 </root>
