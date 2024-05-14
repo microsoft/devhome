@@ -41,21 +41,19 @@
                     Style="{ThemeResource BodyTextStyle}"
                     Text="{x:Bind ViewModel.Title}" />
 
-                <StackPanel Orientation="Vertical" Margin="0 16 0 0">
-                    <TextBlock
-                        Margin="0 0 0 5"
-                        TextWrapping="Wrap"
-                        VerticalAlignment="Top"
-                        TextTrimming="WordEllipsis"
-                        Text="{x:Bind ViewModel.Description}"/>
+                <TextBlock
+                    Margin="0 16 0 5"
+                    TextWrapping="Wrap"
+                    VerticalAlignment="Top"
+                    TextTrimming="WordEllipsis"
+                    Text="{x:Bind ViewModel.Description}"/>
 
-                    <HyperlinkButton
-                        Content="Learn More"
-                        NavigateUri="{x:Bind ViewModel.NavigateUri}"
-                        VerticalAlignment="Top"
-                        Padding="0 0 0 15"
-                        HorizontalAlignment="Left"/>
-                </StackPanel>
+                <HyperlinkButton
+                    Content="Learn More"
+                    NavigateUri="{x:Bind ViewModel.NavigateUri}"
+                    VerticalAlignment="Top"
+                    Padding="0 0 0 0"
+                    HorizontalAlignment="Left"/>
             </StackPanel>
         </ScrollViewer>
 
