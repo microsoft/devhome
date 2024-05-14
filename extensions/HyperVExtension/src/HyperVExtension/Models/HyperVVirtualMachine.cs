@@ -87,7 +87,7 @@ public class HyperVVirtualMachine : IComputeSystem
 
     public string? ComputerName => _psObjectHelper.MemberNameToValue<string>(HyperVStrings.ComputerName);
 
-    public bool IsDeleted => _psObjectHelper.MemberNameToValue<bool>(HyperVStrings.IsDeleted);
+    private bool _isDeleted;
 
     public string OperationErrorUnknownString => _stringResource.GetLocalized(_errorResourceKey, Logging.LogFolderRoot);
 
@@ -95,6 +95,11 @@ public class HyperVVirtualMachine : IComputeSystem
     {
         get
         {
+            if (_isDeleted)
+            {
+                return ComputeSystemOperations.None;
+            }
+
             var revertOperation = Guid.Empty.Equals(ParentCheckpointId) ? ComputeSystemOperations.None : ComputeSystemOperations.RevertSnapshot;
 
             switch (GetState())
@@ -294,6 +299,7 @@ public class HyperVVirtualMachine : IComputeSystem
                 StateChanged(this, ComputeSystemState.Deleting);
                 if (_hyperVManager.RemoveVirtualMachine(VmId))
                 {
+                    _isDeleted = true;
                     StateChanged(this, ComputeSystemState.Deleted);
                     _log.Information(OperationSuccessString(ComputeSystemOperations.Delete));
                     return new ComputeSystemOperationResult();
@@ -303,7 +309,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                StateChanged(this, GetState());
+                StateChanged(this, ComputeSystemState.Unknown);
                 _log.Error(ex, OperationErrorString(ComputeSystemOperations.Delete));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }

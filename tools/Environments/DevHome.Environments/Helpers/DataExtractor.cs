@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Services;
+using DevHome.Environments.Models;
 using DevHome.Environments.ViewModels;
 using Microsoft.Windows.DevHome.SDK;
 
@@ -41,47 +42,53 @@ public class DataExtractor
         return operations;
     }
 
-    public static async Task<List<OperationsViewModel>> FillDotButtonPinOperationsAsync(ComputeSystemCache computeSystem)
+    public static async Task<List<PinOperationData>> FillDotButtonPinOperationsAsync(ComputeSystemCache computeSystem)
     {
         var supportedOperations = computeSystem.SupportedOperations.Value;
-        var operations = new List<OperationsViewModel>();
+        var operationData = new List<PinOperationData>();
         if (supportedOperations.HasFlag(ComputeSystemOperations.PinToTaskbar))
         {
             var pinResultTaskbar = await computeSystem.GetIsPinnedToTaskbarAsync();
+            OperationsViewModel? operation = null;
             if (pinResultTaskbar.Result.Status == ProviderOperationStatus.Success)
             {
                 if (pinResultTaskbar.IsPinned)
                 {
                     var itemText = _stringResource.GetLocalized("UnpinFromTaskbarButtonContextMenuItem");
-                    operations.Add(new OperationsViewModel(itemText, "\uE77A", computeSystem.UnpinFromTaskbarAsync, ComputeSystemOperations.PinToTaskbar, "Unpin"));
+                    operation = new OperationsViewModel(itemText, "\uE77A", computeSystem.UnpinFromTaskbarAsync, ComputeSystemOperations.PinToTaskbar, "Unpin");
                 }
                 else
                 {
                     var itemText = _stringResource.GetLocalized("PinToTaskbarButtonContextMenuItem");
-                    operations.Add(new OperationsViewModel(itemText, "\uE718", computeSystem.PinToTaskbarAsync, ComputeSystemOperations.PinToTaskbar, "Pin"));
+                    operation = new OperationsViewModel(itemText, "\uE718", computeSystem.PinToTaskbarAsync, ComputeSystemOperations.PinToTaskbar, "Pin");
                 }
             }
+
+            operationData.Add(new(operation, pinResultTaskbar));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.PinToStartMenu))
         {
             var pinResultStartMenu = await computeSystem.GetIsPinnedToStartMenuAsync();
+            OperationsViewModel? operation = null;
             if (pinResultStartMenu.Result.Status == ProviderOperationStatus.Success)
             {
                 if (pinResultStartMenu.IsPinned)
                 {
                     var itemText = _stringResource.GetLocalized("UnpinFromStartButtonContextMenuItem");
-                    operations.Add(new OperationsViewModel(itemText, "\uE77A", computeSystem.UnpinFromStartMenuAsync, ComputeSystemOperations.PinToStartMenu, "Unpin"));
+                    operation = new OperationsViewModel(itemText, "\uE77A", computeSystem.UnpinFromStartMenuAsync, ComputeSystemOperations.PinToStartMenu, "Unpin");
                 }
                 else
                 {
                     var itemText = _stringResource.GetLocalized("PinToStartButtonContextMenuItem");
-                    operations.Add(new OperationsViewModel(itemText, "\uE718", computeSystem.PinToStartMenuAsync, ComputeSystemOperations.PinToStartMenu, "Pin"));
+                    operation = new OperationsViewModel(itemText, "\uE718", computeSystem.PinToStartMenuAsync, ComputeSystemOperations.PinToStartMenu, "Pin");
                 }
             }
+
+            operationData.Add(new(operation, pinResultStartMenu));
         }
 
-        return operations;
+        return operationData;
     }
 
     /// <summary>
