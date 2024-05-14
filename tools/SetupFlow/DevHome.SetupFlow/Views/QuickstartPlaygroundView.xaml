@@ -220,6 +220,16 @@
             </Grid>
 
             <!--Bottom half of UI-->
+            <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.IsErrorViewVisible, Mode=OneWay}">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                    <Image Style="{StaticResource ErrorIconStyle}"/>
+                    <TextBlock x:Uid="QuickstartPlaygroundGenerationFailed" TextWrapping="Wrap" />
+                    <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" TextWrapping="Wrap" />
+                </StackPanel>
+            </Grid>
+
             <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.IsFileViewVisible, Mode=OneWay}">
                 <Grid>
                     <Grid.RowDefinitions>
