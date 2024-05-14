@@ -90,10 +90,12 @@ public class ConfigurationFileHelper
         AppInstallItem? installItem;
         if (doInstall)
         {
+            _log.Information($"Installing {AppInstallerPackageName}");
             installItem = await installManager.StartAppInstallAsync(AppInstallerStoreId, null, true, false);
         }
         else
         {
+            _log.Information($"Updating {AppInstallerPackageName} from version {_appInstallerVersion.Major}.{_appInstallerVersion.Minor}.{_appInstallerVersion.Revision}.{_appInstallerVersion.Build}.");
             installItem = await installManager.UpdateAppByPackageFamilyNameAsync(AppInstallerPackageFamilyName);
         }
 
@@ -102,18 +104,34 @@ public class ConfigurationFileHelper
             throw new PackageOperationException(PackageOperationException.ErrorCode.DevSetupErrorUpdateNotApplicable, $"Failed to search for {AppInstallerPackageName} updates");
         }
 
-        CancellationTokenSource cancellationToken = new();
+        CancellationTokenSource cancellationToken = new(TimeSpan.FromMinutes(15));
         TypedEventHandler<AppInstallItem, object> completedHandler = (sender, args) =>
         {
-            configurationSetChangeData = GetConfigurationSetChangeData(AppInstallerPackageName, DevSetupEngineTypes.ConfigurationUnitState.Completed);
-            progressWatcher.Report(configurationSetChangeData);
             cancellationToken.Cancel();
+            _log.Information($"Completed {AppInstallerPackageName} update.");
         };
 
+        var lastStatusReportTime = DateTime.MinValue;
         TypedEventHandler<AppInstallItem, object> statusChangedHandler = (sender, args) =>
         {
-            configurationSetChangeData = GetConfigurationSetChangeData(AppInstallerPackageName, DevSetupEngineTypes.ConfigurationUnitState.InProgress);
-            progressWatcher.Report(configurationSetChangeData);
+            try
+            {
+                var installStatus = installItem.GetCurrentStatus();
+                _log.Information(GetInstallStatusDescription(installStatus));
+
+                // AppInstallManager can report progress too often (for example reporting downloading progress every few percents),
+                // so we limit the frequency of progress reports not more often than once per minute.
+                if ((DateTime.Now - lastStatusReportTime) > TimeSpan.FromMinutes(1))
+                {
+                    lastStatusReportTime = DateTime.Now;
+                    configurationSetChangeData = GetConfigurationSetChangeData(AppInstallerPackageName, DevSetupEngineTypes.ConfigurationUnitState.InProgress);
+                    progressWatcher.Report(configurationSetChangeData);
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"Failed to report {AppInstallerPackageName} update progress");
+            }
         };
 
         try
@@ -123,43 +141,41 @@ public class ConfigurationFileHelper
             installItem.Completed += completedHandler;
             installItem.StatusChanged += statusChangedHandler;
 
-#if DEBUG
-            // In debug mode report more often and with extended description.
-            var installStatus = installItem.GetCurrentStatus();
-            cancellationToken.CancelAfter(TimeSpan.FromMinutes(15));
-            while (!installStatus.ReadyForLaunch &&
-                   !cancellationToken.IsCancellationRequested &&
-                   (installStatus.InstallState != AppInstallState.Error) &&
-                   (installStatus.InstallState != AppInstallState.Canceled))
+            // Wait for the updated version of the App Installer for 15 minutes (cancellation token timeout).
+            // It looks like AppInstallManager doesn't handle well a race when someone else is installing the same app package
+            // at the same time by not sending the completion event, so we get stuck waiting for 15 minutes and then fail.
+            // To mitigate that we'll check the package version in the waiting loop below periodically and stop waiting
+            // if package was update. Then report the completion to the caller if either the package was updated or we
+            // received AppInstallState.Completed status.
+            while (!cancellationToken.IsCancellationRequested)
             {
-                installStatus = installItem.GetCurrentStatus();
-                var description = GetInstallStatusDescription(installStatus);
-                configurationSetChangeData = GetConfigurationSetChangeData(AppInstallerPackageName, DevSetupEngineTypes.ConfigurationUnitState.InProgress, description);
-                progressWatcher.Report(configurationSetChangeData);
-                await Task.Delay(5000);
-                installStatus = installItem.GetCurrentStatus();
-            }
-#else
-            try
-            {
-                await Task.Delay(TimeSpan.FromMinutes(15), cancellationToken.Token);
-            }
-            catch (TaskCanceledException)
-            {
-                // Expected
+                _appInstallerVersion = GetAppInstallerVersion();
+                _log.Information($"Current {AppInstallerPackageName} version: {_appInstallerVersion.Major}.{_appInstallerVersion.Minor}.{_appInstallerVersion.Revision}.{_appInstallerVersion.Build}.");
+
+                if (!IsAppInstallerUpdateNeeded(_appInstallerVersion))
+                {
+                    installItem.Completed -= completedHandler;
+                    installItem.StatusChanged -= statusChangedHandler;
+                    cancellationToken.Cancel();
+                    _log.Information($"Detected new {AppInstallerPackageName} version.");
+                }
+
+                cancellationToken.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(30));
             }
 
             var installStatus = installItem.GetCurrentStatus();
-            var log = Log.ForContext("SourceContext", nameof(ConfigurationFileHelper));
-            log.Information($"{AppInstallerPackageName} installation status: {installStatus}");
-            if (installStatus.InstallState != AppInstallState.Completed)
-            {
-                throw new PackageOperationException(PackageOperationException.ErrorCode.DevSetupErrorMsStoreInstallFailed, $"Failed to install {AppInstallerPackageName} updates");
-            }
-#endif
-
-            // Get the updated version of the App Installer
             _appInstallerVersion = GetAppInstallerVersion();
+            _log.Information($"{AppInstallerPackageName} installation status: {installStatus.InstallState}");
+            _log.Information($"New {AppInstallerPackageName} version: {_appInstallerVersion.Major}.{_appInstallerVersion.Minor}.{_appInstallerVersion.Revision}.{_appInstallerVersion.Build}.");
+            if (!IsAppInstallerUpdateNeeded(_appInstallerVersion))
+            {
+                configurationSetChangeData = GetConfigurationSetChangeData(AppInstallerPackageName, DevSetupEngineTypes.ConfigurationUnitState.Completed);
+                progressWatcher.Report(configurationSetChangeData);
+            }
+            else
+            {
+                throw new PackageOperationException(PackageOperationException.ErrorCode.DevSetupErrorMsStoreInstallFailed, $"Failed to install {AppInstallerPackageName}");
+            }
         }
         finally
         {
@@ -386,7 +402,6 @@ public class ConfigurationFileHelper
             configurationUnit);
     }
 
-#if DEBUG
     private static string GetInstallStatusDescription(AppInstallStatus installStatus)
     {
         switch (installStatus.InstallState)
@@ -423,5 +438,4 @@ public class ConfigurationFileHelper
                 return "Status: Unknown";
         }
     }
-#endif
 }
