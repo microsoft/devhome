@@ -332,7 +332,7 @@
             </Grid>
         </ScrollViewer>
         <Grid Grid.Row="3" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-            <InfoBar MaxWidth="480"
+            <InfoBar MaxWidth="600"
                 Margin="24"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom">

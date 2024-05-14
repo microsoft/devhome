@@ -136,7 +136,8 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                 if ((!data.WasPinnedStatusSuccessful) || (data.ViewModel == null))
                 {
                     // TODO: pinned status for dev box for example fails often. So we'll log it and not show notifications so we don't overload the user with
-                    // redundant notifications until the feature is fixed.
+                    // failure notifications until the feature is fixed. We simply do not show the pinned icons in these cases since we don't know which ones
+                    // to show.
                     _log.Error($"Pinned status check failed: for '{Name}': {data?.PinnedStatusDisplayMessage}. DiagnosticText: {data?.PinnedStatusDiagnosticText}");
                     continue;
                 }
