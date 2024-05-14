@@ -17,13 +17,13 @@ using DevHome.Common.TelemetryEvents.SetupFlow.QuickstartPlayground;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using Windows.System;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -50,8 +50,6 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     private readonly IQuickStartProjectService _quickStartProjectService;
 
     private readonly ILocalSettingsService _localSettingsService;
-
-    private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
     private readonly ObservableCollection<ExplorerItem> _dataSource = new();
 
@@ -103,6 +101,10 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     private Uri? _termsUri = default;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(OpenReferenceSampleCommand))]
+    private Uri? _referenceSampleUri = default;
+
+    [ObservableProperty]
     private string _outputFolderRoot = Path.Combine(Path.GetTempPath(), "DevHomeQuickstart");
 
     private string _outputFolderForCurrentPrompt = string.Empty;
@@ -119,6 +121,9 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private bool _isFileViewVisible = false;
+
+    [ObservableProperty]
+    private string _generatedFileContent = string.Empty;
 
     [ObservableProperty]
     private bool _isProgressOutputVisible = false;
@@ -287,6 +292,23 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             throw new ArgumentNullException("Error creating explorer items.");
         }
 
+        // TODO: Eventually the Dev Home UI will need to be generalized to support
+        // multiple reference samples. For now, it displays the first one returned.
+        ReferenceSampleUri = _quickStartProject.ReferenceSamples.FirstOrDefault();
+        if (ReferenceSampleUri == null)
+        {
+            _log.Error("Failed to retrieve a valid reference sample URI when setting up FileView for project");
+        }
+        else
+        {
+            _log.Information($"Using {ReferenceSampleUri.AbsoluteUri} as reference sample");
+        }
+
+        // Prepare the progress bar for the next run (this also ensures that the user doesn't see
+        // stale data from the previous run when they click generate the next time).
+        ProgressValue = 0;
+        ProgressMessage = string.Empty;
+
         IsFileViewVisible = true;
     }
 
@@ -416,6 +438,12 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             IsFileViewVisible = false;
             IsErrorViewVisible = false;
 
+            // Without this, when the user generates two projects in sequence, the text box
+            // will contain any text from last-opened file in the previous project (which is
+            // confusing as this project may not have anything to do with the current one). This
+            // ensures that the file view is back to a known, clean state.
+            GeneratedFileContent = string.Empty;
+
             // Temporarily turn off the provider combobox and ensure user cannot edit the prompt for the moment
             EnableQuickstartProjectCombobox = false;
             IsPromptTextBoxReadOnly = true;
@@ -472,6 +500,25 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
         await Task.Run(projectHostToLaunch.Launch);
     }
 
+    private bool EnableReferenceSample()
+    {
+        return ReferenceSampleUri != null;
+    }
+
+    [RelayCommand(CanExecute = nameof(EnableReferenceSample))]
+    private async Task OpenReferenceSample()
+    {
+        if (ReferenceSampleUri != null)
+        {
+            _log.Information("Launching reference sample for generated project");
+            await Launcher.LaunchUriAsync(ReferenceSampleUri);
+        }
+        else
+        {
+            _log.Error("User has requested to see reference sample but the URI from the extension is null.");
+        }
+    }
+
     public void ProvideFeedback(bool isPositive, string feedback)
     {
         TelemetryFactory.Get<ITelemetry>().Log("QuickstartPlaygroundFeedbackSubmitted", LogLevel.Critical, new FeedbackSubmitted(isPositive, feedback));
@@ -526,6 +573,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             EnableProjectButtons = false;
             IsQuickstartProjectComboboxExpanded = false;
             PromptTextBoxPlaceholder = StringResource.GetLocalized("QuickstartPlaygroundGenerationPromptPlaceholder");
+            ReferenceSampleUri = null;
 
             // Update our setting to indicate the user preference
             _localSettingsService.SaveSettingAsync("QuickstartPlaygroundSelectedProvider", ActiveQuickstartSelection.DisplayName);
