@@ -380,5 +380,14 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         {
             RemoveComputeSystem();
         }
+
+        if (State == ComputeSystemState.Creating)
+        {
+            IsCardCreating = true;
+        }
+        else
+        {
+            IsCardCreating = false;
+        }
     }
 }

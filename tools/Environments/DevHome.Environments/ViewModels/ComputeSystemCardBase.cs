@@ -22,7 +22,7 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
 
     public DateTime LastConnected { get; protected set; } = DateTime.Now;
 
-    public bool IsCreateComputeSystemOperation { get; protected set; }
+    public bool IsCardCreating { get; protected set; }
 
     public event TypedEventHandler<ComputeSystemCardBase, string>? ComputeSystemErrorReceived;
 
