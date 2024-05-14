@@ -55,7 +55,7 @@ steps:
       DetailedLog: true
       SymbolsMaximumWaitTime: 30
       SymbolServerType: 'TeamServices'
-      SymbolsProduct: 'Dev Home Symbols'
+      SymbolsProduct: 'DevHome'
       SymbolsVersion: ${{ parameters.symbolsVersion }}
       SymbolsArtifactName: '${{ parameters.symbolsArtifactName }}_${{ parameters.symbolsVersion }}'
       SymbolExpirationInDays: ${{ parameters.symbolExpiryTime }}
