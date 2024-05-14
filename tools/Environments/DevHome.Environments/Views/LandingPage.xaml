@@ -318,12 +318,18 @@
                         HorizontalAlignment="Center" 
                         TextWrapping="WrapWholeWords" 
                         HorizontalTextAlignment="Center" />
+                    <views:AddCreateHyperlinkButton 
+                        Grid.Column="3" 
+                        HorizontalAlignment="Center"
+                        Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
+                        Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" />
                     <HyperlinkButton 
                         Grid.Column="3" 
                         HorizontalAlignment="Center"
+                        Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay}"
                         Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
                         Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" />
-
                 </StackPanel>
             </Grid>
         </ScrollViewer>

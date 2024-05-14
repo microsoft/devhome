@@ -177,18 +177,21 @@
             </ListView>
             <Grid
                 Grid.Row="1"
-                x:Name="NoRepositoryGrid" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                x:Name="NoRepositoryGrid"
+                Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
-                <HyperlinkButton
+                <TextBlock Grid.Row="0" x:Uid="RepoReview_NoReposSelected" />
+                <views:AddCreateHyperlinkButton
                     Grid.Row="1"
-                    AutomationProperties.AutomationId="AddRepoHyperLinkButton"
+                    AutomationProperties.AutomationId="AddRepoHyperlinkButton"
                     HorizontalAlignment="Center"
                     Command="{x:Bind AddRepoCommand}"
-                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
+                    x:Uid="RepoReview_NoReposSelectedLink" />
             </Grid>
         </Grid>
     </setupControls:SetupShell>
