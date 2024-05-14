@@ -6,13 +6,12 @@ using System.Diagnostics;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Extensions;
+using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Customization.Models;
 using DevHome.SetupFlow.Utilities;
-using Microsoft.UI.Xaml;
 using Serilog;
-using Windows.UI.Notifications;
 
 namespace DevHome.Customization.ViewModels.DevDriveInsights;
 
@@ -67,6 +66,9 @@ public partial class DevDriveCardViewModel : ObservableObject
         {
             process.Start();
             process.WaitForExit();
+
+            // Send message to the DevDriveInsightsViewModel to let it refresh the Dev Drive insights UX
+            WeakReferenceMessenger.Default.Send(new DevDriveTrustedMessage(new DevDriveTrustedData()));
         }
         catch (Exception ex)
         {

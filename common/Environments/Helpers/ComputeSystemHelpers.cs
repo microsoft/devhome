@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ namespace DevHome.Common.Environments.Helpers;
 
 public static class ComputeSystemHelpers
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemHelpers));
+
     public static async Task<byte[]?> GetBitmapImageArrayAsync(ComputeSystemCache computeSystem)
     {
         try
@@ -23,7 +26,7 @@ public static class ComputeSystemHelpers
 
             if ((result.Result.Status == ProviderOperationStatus.Failure) || (result.ThumbnailInBytes.Length <= 0))
             {
-                Log.Error($"Failed to get thumbnail for compute system {computeSystem}. Error: {result.Result.DiagnosticText}");
+                _log.Error($"Failed to get thumbnail for compute system {computeSystem}. Error: {result.Result.DiagnosticText}");
 
                 // No thumbnail available, return null so that the card will display the default image.
                 return null;
@@ -33,7 +36,7 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Error(ex, $"Failed to get thumbnail for compute system {computeSystem}.");
+            _log.Error(ex, $"Failed to get thumbnail for compute system {computeSystem}.");
             return null;
         }
     }
@@ -48,7 +51,7 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Failed to get thumbnail from a byte array.");
+            _log.Error(ex, "Failed to get thumbnail from a byte array.");
             return null;
         }
     }
@@ -74,7 +77,7 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Error(ex, $"Failed to get all ComputeSystemCardProperties.");
+            _log.Error(ex, $"Failed to get all ComputeSystemCardProperties.");
             return propertyList;
         }
     }
@@ -88,7 +91,7 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Error(ex, $"Failed to get all properties for compute system {computeSystem}.");
+            _log.Error(ex, $"Failed to get all properties for compute system {computeSystem}.");
             return new List<CardProperty>();
         }
     }
@@ -101,5 +104,55 @@ public static class ComputeSystemHelpers
             ComputeSystemState.Stopped => CardStateColor.Neutral,
             _ => CardStateColor.Caution,
         };
+    }
+
+    public static EnvironmentsCallToActionData UpdateCallToActionText(int providerCount, bool isCreationPage = false)
+    {
+        var navigateToExtensionsLibrary = false;
+        string? callToActionText = null;
+        string? callToActionHyperLinkText = null;
+
+        // When the provider count is zero we'll show UX to redirect the user to the extensions library and when it is
+        // greater than zero we'll show UX to redirect user to the create environment flow.
+        if (providerCount == 0)
+        {
+            navigateToExtensionsLibrary = true;
+            callToActionText = StringResourceHelper.GetResource("NoEnvironmentsAndExtensionsNotInstalledCallToAction");
+            callToActionHyperLinkText = StringResourceHelper.GetResource("NoEnvironmentsAndExtensionsNotInstalledButton");
+        }
+        else if (providerCount > 0 && !isCreationPage)
+        {
+            // Text to redirect user to Creation flow in Machine configuration
+            callToActionText = StringResourceHelper.GetResource("NoEnvironmentsButExtensionsInstalledCallToAction");
+            callToActionHyperLinkText = StringResourceHelper.GetResource("NoEnvironmentsButExtensionsInstalledButton");
+        }
+
+        return new(navigateToExtensionsLibrary, callToActionText, callToActionHyperLinkText);
+    }
+
+    /// <summary>
+    /// Safely remove all items from an observable collection.
+    /// </summary>
+    /// <remarks>
+    /// There can be random COM exceptions due to using the "Clear()" method in an observable collection. This method
+    /// is used so that we can safely clear the observable collection without throwing an exceptions. This is related
+    /// to this GitHub issue https://github.com/microsoft/microsoft-ui-xaml/issues/8684. To work around this,
+    /// this method is used to remove all items individually from the end of the collection to the beginning of the collection.
+    /// </remarks>
+    /// <typeparam name="T">Type of objects that the collection contains</typeparam>
+    /// <param name="collection">An observable collection that contains zero to N elements</param>
+    public static void RemoveAllItems<T>(ObservableCollection<T> collection)
+    {
+        try
+        {
+            for (var i = collection.Count - 1; i >= 0; i--)
+            {
+                collection.RemoveAt(i);
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Unable to remove items from the collection");
+        }
     }
 }

@@ -27,7 +27,7 @@
 #include "ServiceInformation.h"
 
 // 2 percent is the threshold for a process to be considered as a high CPU consumer
-#define CPU_TIME_ABOVE_THRESHOLD_STRIKE_VALUE 0.02f
+#define CPU_TIME_ABOVE_THRESHOLD_STRIKE_VALUE 2.0f
 
 enum class ProcessCategory
 {

@@ -59,7 +59,7 @@
                                     ComputeSystemImage="{x:Bind ComputeSystemImage, Mode=OneWay}"
                                     StateColor="{x:Bind StateColor, Mode=OneWay}"
                                     CardState="{x:Bind CardState, Mode=OneWay}"
-                                    ComputeSystemProperties="{x:Bind ComputeSystemPropertiesForCardUI, Mode=OneWay}"
+                                    ComputeSystemProperties="{x:Bind ComputeSystemProperties, Mode=OneWay}"
                                     IsTabStop="False">
                                 <devEnvCustomControls:CardBody.ComputeSystemPropertyTemplate>
                                     <!-- Properties template for compute system properties.-->
@@ -366,14 +366,19 @@
                 </StackPanel>
                 <!--- Show the info message when no ComputeSystemsListViewModel objects were found. -->
                 <StackPanel 
-                    Visibility="{x:Bind ViewModel.ComputeSystemLoadingCompleted, Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.CallToActionText, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
-                    Margin="0 100 0 0">
-                    <TextBlock
-                        x:Uid="SetupTargetNoEnvironmentsFound"
-                        Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                        FontSize="15"/>
+                    Margin="0 200 0 0">
+                    <TextBlock 
+                        Text="{x:Bind ViewModel.CallToActionText, Mode=OneWay}"
+                        HorizontalAlignment="Center" 
+                        TextWrapping="WrapWholeWords" 
+                        HorizontalTextAlignment="Center" />
+                    <HyperlinkButton 
+                        HorizontalAlignment="Center"
+                        Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.CallToActionButtonCommand}" />
                 </StackPanel>
             </StackPanel>
         </Grid>

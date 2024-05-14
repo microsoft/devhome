@@ -15,10 +15,15 @@
                 <FontIcon FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="&#xefff;"/>
             </ctControls:SettingsExpander.HeaderIcon>
 
+            <!-- Description / error message slot -->
+            <ctControls:SettingsExpander.Description>
+                <TextBlock Text="{x:Bind ViewModel.SessionStateText, Mode=OneWay}" Foreground="{x:Bind ViewModel.SessionStateTextColor, Mode=TwoWay}" />
+            </ctControls:SettingsExpander.Description>
+
             <!-- Quiet session setting area -->
             <StackPanel Orientation="Horizontal">
                 <TextBlock
-                    Text="{x:Bind ViewModel.SessionStateText, Mode=OneWay}"
+                    Text="{x:Bind ViewModel.CountdownTimer, Mode=OneWay}"
                     Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"
                     Margin="{StaticResource MediumLeftRightMargin}"
                     VerticalAlignment="Center"
@@ -27,7 +32,7 @@
                 <!-- Start/Stop button -->
                 <ToggleButton
                     Content="{x:Bind ViewModel.QuietButtonText, Mode=OneWay}"
-                    IsEnabled="{x:Bind ViewModel.IsFeaturePresent, Mode=OneWay}"
+                    IsEnabled="{x:Bind ViewModel.QuietButtonEnabled, Mode=OneWay}"
                     IsChecked="{x:Bind ViewModel.QuietButtonChecked, Mode=OneWay}"
                     Command="{x:Bind ViewModel.QuietButtonClickedCommand}" />
             </StackPanel>

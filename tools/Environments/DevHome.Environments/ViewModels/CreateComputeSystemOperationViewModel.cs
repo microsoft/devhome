@@ -68,7 +68,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
 
         var providerDetails = Operation.ProviderDetails;
         ProviderDisplayName = providerDetails.ComputeSystemProvider.DisplayName;
-        IsCreateComputeSystemOperation = true;
+        IsCardCreating = true;
 
         // Hook up event handlers to the operation
         Operation.Completed += OnOperationCompleted;
@@ -110,7 +110,9 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
             }
             else
             {
-                UpdateUiMessage(_stringResource.GetLocalized("FailureMessageForCreateComputeSystem", createComputeSystemResult.Result.DisplayMessage));
+                // Reset text in UI card and show the error notification info bar to tell the user the operation failed
+                UpdateUiMessage(string.Empty);
+                OnErrorReceived(_stringResource.GetLocalized("FailureMessageForCreateComputeSystem", createComputeSystemResult.Result.DisplayMessage));
                 State = ComputeSystemState.Unknown;
                 StateColor = CardStateColor.Failure;
             }
