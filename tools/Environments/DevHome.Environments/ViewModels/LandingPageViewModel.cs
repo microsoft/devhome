@@ -237,7 +237,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 if (ComputeSystemCards[i] is ComputeSystemViewModel computeSystemViewModel)
                 {
                     computeSystemViewModel.RemoveStateChangedHandler();
-                    computeSystemViewModel.ComputeSystemErrorFound -= OnComputeSystemOperationError;
+                    ComputeSystemCards[i].ComputeSystemErrorReceived -= OnComputeSystemOperationError;
                     ComputeSystemCards.RemoveAt(i);
                 }
             }
@@ -275,6 +275,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 if (ComputeSystemCards[i] is CreateComputeSystemOperationViewModel operationViewModel)
                 {
                     operationViewModel!.RemoveEventHandlers();
+                    operationViewModel.ComputeSystemErrorReceived -= OnComputeSystemOperationError;
                     ComputeSystemCards.RemoveAt(i);
                 }
             }
@@ -284,10 +285,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             {
                 // this is a new operation so we need to create a view model for it.
                 ComputeSystemCards.Insert(0, new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, RemoveComputeSystemCard, AddNewlyCreatedComputeSystem, operation));
+                ComputeSystemCards.Last().ComputeSystemErrorReceived += OnComputeSystemOperationError;
                 _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
             }
 
             ComputeSystemCardsView.Refresh();
+            UpdateCallToActionText();
         }
     }
 
@@ -318,7 +321,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 packageFullName,
                 _windowEx);
 
-            computeSystemViewModel.ComputeSystemErrorFound += OnComputeSystemOperationError;
+            computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
             computeSystemViewModels.Add(computeSystemViewModel);
         }
 
@@ -460,6 +463,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 {
                     lock (ComputeSystemCards)
                     {
+                        computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
                         ComputeSystemCards.Insert(0, computeSystemViewModel);
                     }
 
@@ -477,11 +481,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
     }
 
-    private void OnComputeSystemOperationError(ComputeSystemViewModel computeSystemViewModel, string errorText)
+    private void OnComputeSystemOperationError(ComputeSystemCardBase cardBase, string errorText)
     {
         _notificationsHelper?.DisplayComputeSystemOperationError(
-            computeSystemViewModel.ProviderDisplayName,
-            computeSystemViewModel.ComputeSystem!.DisplayName.Value,
+            cardBase.ProviderDisplayName,
+            cardBase.Name,
             errorText);
     }
 
@@ -510,6 +514,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         // if there are cards in the UI don't update the text and keep their values as null.
         if (ComputeSystemCards.Count > 0)
         {
+            CallToActionText = null;
             return;
         }
 

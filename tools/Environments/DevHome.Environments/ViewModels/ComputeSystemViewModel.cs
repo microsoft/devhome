@@ -44,8 +44,6 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
     public ComputeSystemCache ComputeSystem { get; protected set; }
 
-    public event TypedEventHandler<ComputeSystemViewModel, string>? ComputeSystemErrorFound;
-
     // Launch button operations
     public ObservableCollection<OperationsViewModel> LaunchOperations { get; set; } = new();
 
@@ -165,7 +163,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem!, PackageFullName);
         lock (_lock)
         {
-            Properties.Clear();
+            ComputeSystemHelpers.RemoveAllItems(Properties);
             foreach (var property in properties)
             {
                 Properties.Add(property);
@@ -177,7 +175,8 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     {
         _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
-            if (sender.Id == ComputeSystem.Id.Value)
+            if (sender.Id == ComputeSystem.Id.Value &&
+                sender.AssociatedProviderId.Equals(ComputeSystem.AssociatedProviderId.Value, StringComparison.OrdinalIgnoreCase))
             {
                 State = newState;
                 StateColor = ComputeSystemHelpers.GetColorBasedOnState(newState);
@@ -269,7 +268,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         }
 
         // Show the error notification to tell the user the operation failed
-        ComputeSystemErrorFound?.Invoke(this, errorMessage);
+        OnErrorReceived(errorMessage);
     }
 
     /// <summary>

@@ -144,9 +144,6 @@ Try {
         if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
           $appExtension = $extension.Element($uapAppExtension)
           switch ($appExtension.Attribute("Name").Value) {
-            "com.microsoft.devhome" {
-              $appExtension.Attribute("DisplayName").Value = $newAppDisplayNameResource
-            }
             "com.microsoft.windows.widgets" {
               $appExtension.Attribute("DisplayName").Value = $newWidgetProviderDisplayName
             }
@@ -200,9 +197,6 @@ Try {
       if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
         $appExtension = $extension.Element($uapAppExtension)
         switch ($appExtension.Attribute("Name").Value) {
-          "com.microsoft.devhome" {
-            $appExtension.Attribute("DisplayName").Value = "ms-resource:AppDisplayNameDev"
-          }
           "com.microsoft.windows.widgets" {
             $appExtension.Attribute("DisplayName").Value = "ms-resource:WidgetProviderDisplayNameDev"
           }

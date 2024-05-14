@@ -28,7 +28,8 @@ public class DataExtractor
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Restart))
         {
-            operations.Add(new OperationsViewModel("Restart", "\uE777", computeSystem.RestartAsync, ComputeSystemOperations.Restart));
+            operations.Add(new OperationsViewModel(
+                _stringResource.GetLocalized("Operations_Restart"), "\uE777", computeSystem.RestartAsync, ComputeSystemOperations.Restart));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Delete))
@@ -95,37 +96,50 @@ public class DataExtractor
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Start))
         {
-            operations.Add(new OperationsViewModel("Start", "\uE768", computeSystem.StartAsync, ComputeSystemOperations.Start));
+            operations.Add(new OperationsViewModel(
+                _stringResource.GetLocalized("Operations_Start"), "\uE768", computeSystem.StartAsync, ComputeSystemOperations.Start));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.ShutDown))
         {
-            operations.Add(new OperationsViewModel("Stop", "\uE71A", computeSystem.ShutDownAsync, ComputeSystemOperations.ShutDown));
+            operations.Add(new OperationsViewModel(
+                _stringResource.GetLocalized("Operations_ShutDown"), "\uE71A", computeSystem.ShutDownAsync, ComputeSystemOperations.ShutDown));
+        }
+
+        if (supportedOperations.HasFlag(ComputeSystemOperations.Save))
+        {
+            operations.Add(new OperationsViewModel(
+                _stringResource.GetLocalized("Operations_Save"), "\uE74E", computeSystem.SaveAsync, ComputeSystemOperations.Save));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.CreateSnapshot))
         {
-            operations.Add(new OperationsViewModel("Checkpoint", "\uE7C1", computeSystem.CreateSnapshotAsync, ComputeSystemOperations.CreateSnapshot));
+            operations.Add(new OperationsViewModel(
+                _stringResource.GetLocalized("Operations_CreateCheckpoint"), "\uE7C1", computeSystem.CreateSnapshotAsync, ComputeSystemOperations.CreateSnapshot));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.RevertSnapshot))
         {
-            operations.Add(new OperationsViewModel("Revert", "\uE7A7", computeSystem.RevertSnapshotAsync, ComputeSystemOperations.RevertSnapshot));
+            operations.Add(new OperationsViewModel(
+                _stringResource.GetLocalized("Operations_RevertCheckpoint"), "\uE7A7", computeSystem.RevertSnapshotAsync, ComputeSystemOperations.RevertSnapshot));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Pause))
         {
-            operations.Add(new OperationsViewModel("Pause", "\uE769", computeSystem.PauseAsync, ComputeSystemOperations.Pause));
+            operations.Add(new OperationsViewModel(
+                _stringResource.GetLocalized("Operations_Pause"), "\uE769", computeSystem.PauseAsync, ComputeSystemOperations.Pause));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Resume))
         {
-            operations.Add(new OperationsViewModel("Resume", "\uE768", computeSystem.ResumeAsync, ComputeSystemOperations.Resume));
+            operations.Add(new OperationsViewModel(
+                _stringResource.GetLocalized("Operations_Resume"), "\uE768", computeSystem.ResumeAsync, ComputeSystemOperations.Resume));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Terminate))
         {
-            operations.Add(new OperationsViewModel("Terminate", "\uEE95", computeSystem.TerminateAsync, ComputeSystemOperations.Terminate));
+            operations.Add(new OperationsViewModel(
+                _stringResource.GetLocalized("Operations_Terminate"), "\uEE95", computeSystem.TerminateAsync, ComputeSystemOperations.Terminate));
         }
 
         return operations;

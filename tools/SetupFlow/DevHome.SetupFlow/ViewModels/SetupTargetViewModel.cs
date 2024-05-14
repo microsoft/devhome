@@ -427,6 +427,13 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
                     curListViewModel.Provider,
                     packageFullName,
                     _windowEx);
+
+                // Don't show environments that aren't in a state to configure
+                if (!ShouldShowCard(card.CardState))
+                {
+                    continue;
+                }
+
                 curListViewModel.ComputeSystemCardCollection.Add(card);
                 curListViewModel.CardSelectionChanged += OnListSelectionChanged;
             }
@@ -488,5 +495,18 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
 
         Orchestrator.NavigateToOutsideFlow(KnownPageKeys.SetupFlow, "startCreationFlow");
+    }
+
+    private bool ShouldShowCard(ComputeSystemState state)
+    {
+        switch (state)
+        {
+            case ComputeSystemState.Creating:
+            case ComputeSystemState.Deleting:
+            case ComputeSystemState.Deleted:
+                return false;
+            default:
+                return true;
+        }
     }
 }
