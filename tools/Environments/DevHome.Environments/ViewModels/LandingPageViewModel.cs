@@ -85,6 +85,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
+    private const int SortUnselected = -1;
+
     public ObservableCollection<string> Providers { get; set; }
 
     private CancellationTokenSource _cancellationTokenSource = new();
@@ -102,11 +104,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
-        SelectedSortIndex = -1;
+        SelectedSortIndex = SortUnselected;
         Providers = new() { _stringResource.GetLocalized("AllProviders") };
         _lastSyncTime = _stringResource.GetLocalized("MomentsAgo");
 
         ComputeSystemCardsView = new AdvancedCollectionView(ComputeSystemCards);
+        ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
     }
 
     public void Initialize(StackedNotificationsBehavior notificationQueue)
@@ -118,7 +121,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public async Task SyncButton()
     {
         // Reset the sort and filter
-        SelectedSortIndex = -1;
+        SelectedSortIndex = SortUnselected;
         Providers = new ObservableCollection<string> { _stringResource.GetLocalized("AllProviders") };
         SelectedProviderIndex = 0;
         _wasSyncButtonClicked = true;
@@ -269,9 +272,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         {
             for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
             {
-                if (ComputeSystemCards[i].IsCreateComputeSystemOperation)
+                if (ComputeSystemCards[i] is CreateComputeSystemOperationViewModel operationViewModel)
                 {
-                    var operationViewModel = ComputeSystemCards[i] as CreateComputeSystemOperationViewModel;
                     operationViewModel!.RemoveEventHandlers();
                     ComputeSystemCards.RemoveAt(i);
                 }
@@ -411,7 +413,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public void SortHandler()
     {
         ComputeSystemCardsView.SortDescriptions.Clear();
-        ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCreateComputeSystemOperation", SortDirection.Ascending));
+
+        if (SelectedSortIndex == SortUnselected)
+        {
+            ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
+        }
 
         switch (SelectedSortIndex)
         {
