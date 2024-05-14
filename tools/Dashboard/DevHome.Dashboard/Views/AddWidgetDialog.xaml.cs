@@ -107,6 +107,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     Content = providerDef.DisplayName,
                 };
 
+                navItem.SetValue(ToolTipService.ToolTipProperty, providerDef.DisplayName);
+
                 foreach (var widgetDef in comSafeWidgetDefinitions)
                 {
                     if (widgetDef.ProviderDefinitionId.Equals(providerDef.Id, StringComparison.Ordinal))
@@ -121,6 +123,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                         };
                         subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
                         subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
+                        subItem.SetValue(ToolTipService.ToolTipProperty, widgetDef.DisplayTitle);
 
                         navItem.MenuItems.Add(subItem);
                     }
