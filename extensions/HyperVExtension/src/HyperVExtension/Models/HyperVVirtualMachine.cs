@@ -111,22 +111,19 @@ public class HyperVVirtualMachine : IComputeSystem
                         ComputeSystemOperations.Pause |
                         ComputeSystemOperations.CreateSnapshot |
                         ComputeSystemOperations.Restart |
-                        ComputeSystemOperations.ApplyConfiguration |
                         revertOperation;
                     break;
                 case ComputeSystemState.Stopped:
                     // Supported operations when stopped
                     supportedOperations = ComputeSystemOperations.Start |
                         ComputeSystemOperations.CreateSnapshot |
-                        ComputeSystemOperations.Delete |
-                        ComputeSystemOperations.ApplyConfiguration;
+                        ComputeSystemOperations.Delete;
                     break;
                 case ComputeSystemState.Saved:
                     // Supported operations when saved
                     supportedOperations = ComputeSystemOperations.Start |
                         ComputeSystemOperations.CreateSnapshot |
                         ComputeSystemOperations.Delete |
-                        ComputeSystemOperations.ApplyConfiguration |
                         revertOperation;
                     break;
                 case ComputeSystemState.Paused:
@@ -135,19 +132,18 @@ public class HyperVVirtualMachine : IComputeSystem
                         ComputeSystemOperations.Save |
                         ComputeSystemOperations.Resume |
                         ComputeSystemOperations.CreateSnapshot |
-                        ComputeSystemOperations.ApplyConfiguration |
                         revertOperation;
                     break;
             }
 
             // Disable ApplyConfiguration for ARM
-            var arch = RuntimeInformation.ProcessArchitecture;
+            var arch = RuntimeInformation.OSArchitecture;
             if (arch == Architecture.Arm64 || arch == Architecture.Arm || arch == Architecture.Armv6)
             {
-                supportedOperations &= ~ComputeSystemOperations.ApplyConfiguration;
+                return supportedOperations;
             }
 
-            return supportedOperations;
+            return supportedOperations | ComputeSystemOperations.ApplyConfiguration;
         }
     }
 

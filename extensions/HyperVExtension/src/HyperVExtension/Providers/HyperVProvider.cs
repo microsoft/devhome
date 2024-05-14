@@ -70,7 +70,7 @@ public class HyperVProvider : IComputeSystemProvider
         get
         {
             // Disable the create operation for ARM devices.
-            var arch = RuntimeInformation.ProcessArchitecture;
+            var arch = RuntimeInformation.OSArchitecture;
             if (arch == Architecture.Arm64 || arch == Architecture.Arm || arch == Architecture.Armv6)
             {
                 return ComputeSystemProviderOperations.None;
