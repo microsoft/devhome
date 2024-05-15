@@ -62,7 +62,7 @@ public partial class UtilityViewModel : ObservableObject
         this.experimentationService = experimentationService;
         this.experimentalFeature = experimentalFeature;
         LaunchCommand = new RelayCommand(Launch);
-        _log.Information("UtilityViewModel created for Title: {Title}, exe: {ExeName}", Title, exeName);
+        _log.Information($"UtilityViewModel created for Title: {Title}, exe: {exeName}");
     }
 #nullable disable
 
@@ -84,13 +84,13 @@ public partial class UtilityViewModel : ObservableObject
             var process = Process.Start(processStartInfo);
             if (process is null)
             {
-                _log.Error("Failed to start process {ExeName}", exeName);
+                _log.Error($"Failed to start process {_exeName}");
                 throw new InvalidOperationException("Failed to start process");
             }
         }
         catch (Exception ex)
         {
-            _log.Error(ex, "Failed to start process {ExeName}", _exeName);
+            _log.Error(ex, $"Failed to start process {_exeName}");
         }
 
         TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(Title, LaunchAsAdmin), null);
