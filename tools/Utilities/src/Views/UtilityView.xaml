@@ -15,7 +15,8 @@
         Margin="0"
         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-        BorderThickness="{ThemeResource ExpanderBorderThickness}">
+        BorderThickness="{ThemeResource ExpanderBorderThickness}"
+        Visibility="{x:Bind ViewModel.Visible}">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -57,7 +58,7 @@
             </StackPanel>
         </ScrollViewer>
 
-        <SplitButton 
+        <SplitButton
             Grid.Row="2"
             HorizontalAlignment="Center"
             Command="{x:Bind ViewModel.LaunchCommand}">

@@ -135,6 +135,12 @@
     <value>Utilities</value>
     <comment>Utilities</comment>
   </data>
+  <data name="ProjectIronsidesDesc" xml:space="preserve">
+    <value>An application for gaining deeper insights into your applications</value>
+  </data>
+  <data name="ProjectIronsidesTitle" xml:space="preserve">
+    <value>Project Ironsides</value>
+  </data>
   <data name="RegistryPreviewUtilityDesc" xml:space="preserve">
     <value>A quick little utility to visualize and edit complex Windows Registry files.</value>
   </data>
