@@ -71,10 +71,4 @@ public class HotKeyHelper// : IDisposable
             HotkeyID = 0;
         }
     }
-
-    /*public void Dispose()
-    {
-        UnregisterHotKey();
-        GC.SuppressFinalize(this);
-    }*/
 }
