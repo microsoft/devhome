@@ -60,12 +60,11 @@
             </StackPanel>
         </ScrollViewer>
 
-        <SplitButton
+        <ToggleSwitch
+            x:Uid="SupportsLaunchAsAdmin"
             Grid.Row="2"
             IsOn="{x:Bind ViewModel.LaunchAsAdmin, Mode=TwoWay}"
-            Visibility="{x:Bind ViewModel.LaunchAsAdminVisibility, Mode=OneWay}"
-            OnContent="Launch as administrator"
-            OffContent="Launch as administrator"
+            Visibility="{x:Bind ViewModel.SupportsLaunchAsAdmin, Mode=OneWay}"
             Margin="15 0 0 5"/>
 
         <Button
@@ -74,8 +73,7 @@
             Command="{x:Bind ViewModel.LaunchCommand}">
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Launch" Margin="0 0 5 0" />
-                <FontIcon Glyph="&#xE8A7;" FontSize="12" />
+                <TextBlock x:Uid="LaunchButton" />
             </StackPanel>
         </Button>
 

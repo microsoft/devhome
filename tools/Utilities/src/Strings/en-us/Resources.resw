@@ -130,6 +130,9 @@
     <value>Hosts File Editor</value>
     <comment>;Locked={"Hosts"}</comment>
   </data>
+  <data name="LaunchButton.Text" xml:space="preserve">
+    <value>Launch</value>
+  </data>
   <data name="NavigationPane.Content" xml:space="preserve">
     <value>Utilities</value>
     <comment>Utilities</comment>
@@ -145,5 +148,11 @@
   </data>
   <data name="RegistryPreviewUtilityTitle" xml:space="preserve">
     <value>Registry Preview</value>
+  </data>
+  <data name="SupportsLaunchAsAdmin.OffContent" xml:space="preserve">
+    <value>Launch as administrator</value>
+  </data>
+  <data name="SupportsLaunchAsAdmin.OnContent" xml:space="preserve">
+    <value>Launch as administrator</value>
   </data>
 </root>

@@ -27,7 +27,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 Description = stringResource.GetLocalized("HostsFileEditorUtilityDesc"),
                 NavigateUri = "https://go.microsoft.com/fwlink/?Linkid=2271355",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\HostsUILib", "Hosts.ico"),
-                LaunchAsAdminVisibility = Microsoft.UI.Xaml.Visibility.Visible,
+                SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Visible,
             },
             new(Path.Combine(appExAliasAbsFolderPath, "DevHome.RegistryPreviewApp.exe"))
             {
@@ -35,7 +35,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 Description = stringResource.GetLocalized("RegistryPreviewUtilityDesc"),
                 NavigateUri = "https://go.microsoft.com/fwlink/?Linkid=2270966",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\RegistryPreview", "RegistryPreview.ico"),
-                LaunchAsAdminVisibility = Microsoft.UI.Xaml.Visibility.Collapsed,
+                SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Collapsed,
             },
             new(Path.Combine(appExAliasAbsFolderPath, "DevHome.EnvironmentVariablesApp.exe"))
             {
@@ -43,7 +43,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 Description = stringResource.GetLocalized("EnvVariablesEditorUtilityDesc"),
                 NavigateUri = "https://go.microsoft.com/fwlink/?Linkid=2270894",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\EnvironmentVariables", "EnvironmentVariables.ico"),
-                LaunchAsAdminVisibility = Microsoft.UI.Xaml.Visibility.Visible,
+                SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Visible,
             },
             new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"Microsoft\\WindowsApps\\{Package.Current.Id.FamilyName}\\devhome.pi.exe"), experimentationService, "ProjectIronsidesExperiment")
             {
