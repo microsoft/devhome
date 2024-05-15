@@ -1,5 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -99,7 +158,7 @@
     <comment>Text for the revert checkpoint button that will revert a virtual machines checkpoint to its previous checkpoint.</comment>
   </data>
   <data name="ShutdownButtonContextMenuItem" xml:space="preserve">
-    <value>Shutdown</value>
+    <value>Shut down</value>
     <comment>Text for shutdown button in the context menu that will shutdown the virtual machines operating system.</comment>
   </data>
   <data name="StartButtonContextMenuItem" xml:space="preserve">
@@ -126,13 +185,13 @@
     <value>Sync</value>
     <comment>Text for the sync button on the top right side</comment>
   </data>
-  <data name="CreateEnvironmentButton.Text" xml:space="preserve">
-    <value>Create Environment</value>
+  <data name="CreateEnvironmentButton.Content" xml:space="preserve">
+    <value>Create environment</value>
     <comment>Text for button that will redirect the user to the Create Environment page in Dev Home</comment>
   </data>
-  <data name="Titlebar.Text" xml:space="preserve">
+  <data name="EnvironmentsHeader.Text" xml:space="preserve">
     <value>Environments</value>
-    <comment>Title text for the main landing page</comment>
+    <comment>Header text for the main landing page</comment>
   </data>
   <data name="SearchTextBox.PlaceholderText" xml:space="preserve">
     <value>Filter</value>
@@ -230,7 +289,7 @@
     <value>Do you want to delete your environment?</value>
     <comment>Text for the title of the delete environment confirmation popup.</comment>
   </data>
-  <data name="Operations_Checkpoint" xml:space="preserve">
+  <data name="Operations_CreateCheckpoint" xml:space="preserve">
     <value>Checkpoint</value>
     <comment>Text for the creating the checkpoint operation shown for the environment.</comment>
   </data>
@@ -250,7 +309,7 @@
     <value>Resume</value>
     <comment>Text for the resume operation shown for the environment.</comment>
   </data>
-  <data name="Operations_Revert" xml:space="preserve">
+  <data name="Operations_RevertCheckpoint" xml:space="preserve">
     <value>Revert</value>
     <comment>Text for the revert operation shown for the environment.</comment>
   </data>
@@ -258,12 +317,16 @@
     <value>Start</value>
     <comment>Text for the start operation shown for the environment.</comment>
   </data>
-  <data name="Operations_Stop" xml:space="preserve">
-    <value>Stop</value>
-    <comment>Text for the stop operation shown for the environment.</comment>
+  <data name="Operations_Shutdown" xml:space="preserve">
+    <value>Shut down</value>
+    <comment>Text for the shutdown operation shown for the environment.</comment>
   </data>
   <data name="Operations_Terminate" xml:space="preserve">
-    <value>Terminate</value>
+    <value>Turn off</value>
+    <comment>Text for the terminate operation shown for the environment.</comment>
+  </data>
+  <data name="Operations_Save" xml:space="preserve">
+    <value>Save</value>
     <comment>Text for the terminate operation shown for the environment.</comment>
   </data>
   <data name="LaunchingEnvironmentText" xml:space="preserve">
@@ -274,18 +337,18 @@
     <value>Environment launched successfully</value>
     <comment>Text to tell the user Dev Home succeeded in launching their environment</comment>
   </data>
-  <data name="LaunchingEnvironmentFailedText" xml:space="preserve">
-    <value>Environment failed to launch due to error {0}</value>
-    <comment>Text to tell the user Dev Home failed to launch their environment. {0} is the error message sent by the extension</comment>
-  </data>
-  <data name="LaunchingEnvironmentFailedUnKnownReasonText" xml:space="preserve">
-    <value>The extension failed to launch the environment for an unknown reason. Check the extensions logs for more information</value>
-    <comment>Text to tell the user Dev Home failed to launch their environment. {0} is the error message sent by the extension</comment>
-  </data>
   <data name="UnpinFromStartButtonContextMenuItem" xml:space="preserve">
     <value>Unpin From Start Menu</value>
   </data>
   <data name="UnpinFromTaskbarButtonContextMenuItem" xml:space="preserve">
     <value>Unpin From Taskbar</value>
+  </data>
+  <data name="EnvironmentOperationFailedUnKnownReasonText" xml:space="preserve">
+    <value>The extension failed to perform the requested operation for an unknown reason. Check the extensions logs for more information.</value>
+    <comment>Text to tell the user Dev Home the extension failed to perform the operation send by the extension</comment>
+  </data>
+  <data name="GoToExtensionsLibrary.Content" xml:space="preserve">
+    <value>Go to extensions library</value>
+    <comment>Text for when the environment page in Dev Home is empty and the user has no extensions installed that support environments</comment>
   </data>
 </root>

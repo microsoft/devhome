@@ -84,10 +84,10 @@ struct UnelevatedServerReference
 #pragma warning(disable : 4324) // Avoid WRL alignment warning
 struct TimedQuietSession
 {
-    TimedQuietSession(std::chrono::seconds seconds)
+    TimedQuietSession(bool isPlacebo, std::chrono::seconds seconds)
     {
         // Save activity for telemetry
-        auto activity = DevHomeTelemetryProvider::QuietBackgroundProcesses_ElevatedServer_Session::Start(seconds.count());
+        auto activity = DevHomeTelemetryProvider::QuietBackgroundProcesses_ElevatedServer_Session::Start(isPlacebo, seconds.count());
 
         m_intendedDurationInSeconds = seconds;
 
@@ -97,7 +97,14 @@ struct TimedQuietSession
         });
 
         // Turn on quiet mode
-        m_quietState = QuietState::TurnOn();
+        if (isPlacebo)
+        {
+            // Don't actaully turn on quiet mode - i.e. control group for quiet mode in telemetry
+        }
+        else
+        {
+            m_quietState = QuietState::TurnOn();
+        }
 
         // Start performance recorder
         ABI::Windows::Foundation::TimeSpan samplingPeriod;
@@ -114,7 +121,7 @@ struct TimedQuietSession
     TimedQuietSession(const TimedQuietSession&) = delete;
     TimedQuietSession& operator=(const TimedQuietSession&) = delete;
 
-    int64_t TimeLeftInSeconds()
+    std::chrono::seconds TimeLeftInSeconds()
     {
         auto lock = std::scoped_lock(m_mutex);
         return m_timer->TimeLeftInSeconds();
@@ -152,7 +159,7 @@ private:
         // Continue activity on current thread
         auto activity = m_activity.TransferToCurrentThread();
 
-        auto totalQuietWindowTime = m_intendedDurationInSeconds - std::chrono::seconds(m_timer->TimeLeftInSeconds());
+        auto totalQuietWindowTime = m_intendedDurationInSeconds - m_timer->TimeLeftInSeconds();
 
         // Turn off quiet mode
         m_quietState.reset();

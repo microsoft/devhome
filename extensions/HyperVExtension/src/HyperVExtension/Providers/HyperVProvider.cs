@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using HyperVExtension.Common;
 using HyperVExtension.CommunicationWithGuest;
@@ -64,7 +65,22 @@ public class HyperVProvider : IComputeSystemProvider
     public string Properties { get; private set; } = string.Empty;
 
     /// <summary> Gets the supported operations of the Hyper-V provider. </summary>
-    public ComputeSystemProviderOperations SupportedOperations => ComputeSystemProviderOperations.CreateComputeSystem;
+    public ComputeSystemProviderOperations SupportedOperations
+    {
+        get
+        {
+            // Disable the create operation for ARM devices.
+            var arch = RuntimeInformation.OSArchitecture;
+            if (arch == Architecture.Arm64 || arch == Architecture.Arm || arch == Architecture.Armv6)
+            {
+                return ComputeSystemProviderOperations.None;
+            }
+            else
+            {
+                return ComputeSystemProviderOperations.CreateComputeSystem;
+            }
+        }
+    }
 
     public Uri Icon => new(Constants.ExtensionIcon);
 

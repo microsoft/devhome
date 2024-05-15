@@ -367,8 +367,23 @@ public class HyperVManager : IHyperVManager, IDisposable
                 return false;
             }
 
-            var virtualMachine = _hyperVVirtualMachineFactory(vmObject);
-            return virtualMachine.IsDeleted;
+            var psObjectHelper = new PsObjectHelper(vmObject);
+
+            // Check if the Hyper-V virtual machine object returned to use has its IsDeleted status set to true
+            if (psObjectHelper.MemberNameToValue<bool>("IsDeleted"))
+            {
+                return true;
+            }
+
+            // Unfortunately sometimes the IsDeleted property can be set to false and dynamically
+            // update to true later on. There is no documentation for the Hyper-V objects, or best practices for the Hyper-V PowerShell
+            // cmdlets, so we will do an additional check by attempting to get the VM with the Get-VM cmdlet. If there are no results
+            // we can say the VM has been deleted.
+            result = _powerShellService.Execute(GetVMCommandLineStatement(vmId), PipeType.None);
+            _log.Information($"Attempted second try of deletion check with result message: {result.CommandOutputErrorMessage}");
+
+            // If the VM does not exist then there should be no PsObjects in the list.
+            return result.PsObjects.FirstOrDefault() == null;
         }
         finally
         {
@@ -604,7 +619,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
         {
-            throw new HyperVManagerException($"Unable to get disk size due to PowerShell error: {result.CommandOutputErrorMessage}");
+            _log.Error($"Unable to get disk size due to PowerShell error: {result.CommandOutputErrorMessage}");
         }
 
         // object in the returned results should represent a virtual disk.

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Moq;
@@ -30,7 +31,7 @@ public class SetupFlowOrchestratorTest : BaseSetupFlowTest
     /// </summary>
     private (SetupFlowOrchestrator, List<Mock<SetupPageViewModelBase>>) CreateMockPages(int count)
     {
-        var orchestrator = new SetupFlowOrchestrator();
+        var orchestrator = new SetupFlowOrchestrator(null);
 
         var stringResource = TestHost.GetService<ISetupFlowStringResource>();
         var pageMocks = Enumerable.Range(0, count).Select(_ => new Mock<SetupPageViewModelBase>(stringResource, orchestrator)).ToList();
