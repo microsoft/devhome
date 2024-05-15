@@ -82,6 +82,11 @@
                                 Command="{Binding ItemsViewSelectionChangedCommand, Mode=OneWay}"  
                                 CommandParameter="{Binding SelectedItem, ElementName=ComputeSystemProviderViewModelsList, Mode=OneWay}"/>
                         </ic:EventTriggerBehavior>
+                        <ic:EventTriggerBehavior EventName="ItemInvoked">
+                            <ic:InvokeCommandAction  
+                                Command="{Binding EnableNextButtonCommand, Mode=OneWay}"  
+                                CommandParameter="{Binding SelectedItem, ElementName=ComputeSystemProviderViewModelsList, Mode=OneWay}"/>
+                        </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ItemsView>
 

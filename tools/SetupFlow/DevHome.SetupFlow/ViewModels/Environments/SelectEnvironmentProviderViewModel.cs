@@ -89,6 +89,17 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand]
+    private void EnableNextButton(ComputeSystemProviderViewModel sender)
+    {
+        // Using the default channel to send the message to the recipient. In this case, the EnvironmentCreationOptionsViewModel.
+        // In the future if we support a multi-instance setup flow, we can use a custom channel/a message broker to send messages.
+        // For now, we are using the default channel.
+        WeakReferenceMessenger.Default.Send(new CreationProviderChangedMessage(SelectedProvider));
+        CanGoToNextPage = true;
+        Orchestrator.NotifyNavigationCanExecuteChanged();
+    }
+
+    [RelayCommand]
     private void ItemsViewSelectionChanged(ComputeSystemProviderViewModel sender)
     {
         if (sender != null)
@@ -103,13 +114,6 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
 
             sender.IsSelected = true;
             SelectedProvider = sender.ProviderDetails;
-
-            // Using the default channel to send the message to the recipient. In this case, the EnvironmentCreationOptionsViewModel.
-            // In the future if we support a multi-instance setup flow, we can use a custom channel/a message broker to send messages.
-            // For now, we are using the default channel.
-            WeakReferenceMessenger.Default.Send(new CreationProviderChangedMessage(SelectedProvider));
-            CanGoToNextPage = true;
-            Orchestrator.NotifyNavigationCanExecuteChanged();
         }
     }
 
