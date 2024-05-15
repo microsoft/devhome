@@ -7,8 +7,8 @@ using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.SetupFlow.ViewModels.Environments;
+using Microsoft.UI.Dispatching;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.Common.Services;
 
@@ -22,9 +22,9 @@ public class ComputeSystemViewModelFactory
         ComputeSystemCache computeSystem,
         ComputeSystemProvider provider,
         string packageFullName,
-        WindowEx windowEx)
+        DispatcherQueue dispatcherQueue)
     {
-        var cardViewModel = new ComputeSystemCardViewModel(computeSystem, manager, windowEx, packageFullName);
+        var cardViewModel = new ComputeSystemCardViewModel(computeSystem, manager, dispatcherQueue, packageFullName);
 
         try
         {

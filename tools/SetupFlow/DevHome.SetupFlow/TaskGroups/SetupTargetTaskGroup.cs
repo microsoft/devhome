@@ -6,7 +6,7 @@ using DevHome.Common.Environments.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using WinUIEx;
+using Microsoft.UI.Dispatching;
 
 namespace DevHome.SetupFlow.TaskGroups;
 
@@ -24,7 +24,7 @@ public class SetupTargetTaskGroup : ISetupTaskGroup
         IComputeSystemManager computeSystemManager,
         ConfigurationFileBuilder configurationFileBuilder,
         SetupFlowOrchestrator setupFlowOrchestrator,
-        WindowEx windowEx)
+        DispatcherQueue dispatcherQueue)
     {
         _setupTargetViewModel = setupTargetViewModel;
         _setupTargetReviewViewModel = setupTargetReviewViewModel;
@@ -34,7 +34,7 @@ public class SetupTargetTaskGroup : ISetupTaskGroup
             computeSystemManager,
             configurationFileBuilder,
             setupFlowOrchestrator,
-            windowEx);
+            dispatcherQueue);
     }
 
     /// <summary>

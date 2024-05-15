@@ -7,24 +7,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Dashboard.ComSafeWidgetObjects;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.Storage.Streams;
-using WinUIEx;
 
 namespace DevHome.Dashboard.Services;
 
 public class WidgetScreenshotService : IWidgetScreenshotService
 {
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     private readonly ConcurrentDictionary<string, BitmapImage> _widgetLightScreenshotCache;
     private readonly ConcurrentDictionary<string, BitmapImage> _widgetDarkScreenshotCache;
 
-    public WidgetScreenshotService(WindowEx windowEx)
+    public WidgetScreenshotService(DispatcherQueue dispatcherQueue)
     {
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
 
         _widgetLightScreenshotCache = new ConcurrentDictionary<string, BitmapImage>();
         _widgetDarkScreenshotCache = new ConcurrentDictionary<string, BitmapImage>();
@@ -76,7 +76,7 @@ public class WidgetScreenshotService : IWidgetScreenshotService
         // Return the bitmap image via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
         // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
         var completionSource = new TaskCompletionSource<BitmapImage>();
-        _windowEx.DispatcherQueue.TryEnqueue(async () =>
+        _dispatcherQueue.TryEnqueue(async () =>
         {
             using var bitmapStream = await iconStreamRef.OpenReadAsync();
             var itemImage = new BitmapImage();

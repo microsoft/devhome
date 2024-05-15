@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.EnvironmentVariables.TelemetryEvents;
 using DevHome.EnvironmentVariables.Win32;
@@ -14,11 +15,10 @@ using EnvironmentVariablesUILib.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.EnvironmentVariables;
 
-public sealed partial class EnvironmentVariablesMainWindow : WindowEx
+public sealed partial class EnvironmentVariablesMainWindow : WinUIEx.WindowEx
 {
     private EnvironmentVariablesMainPage EnvVariablesUtilityMainPage { get; }
 

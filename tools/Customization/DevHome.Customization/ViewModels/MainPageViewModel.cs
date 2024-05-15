@@ -11,9 +11,8 @@ using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
-using Windows.System;
-using WinUIEx;
 
 namespace DevHome.Customization.ViewModels;
 
@@ -21,7 +20,7 @@ public partial class MainPageViewModel : ObservableObject
 {
     private INavigationService NavigationService { get; }
 
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
@@ -30,10 +29,10 @@ public partial class MainPageViewModel : ObservableObject
 
     public MainPageViewModel(
         INavigationService navigationService,
-        WindowEx windowEx)
+        DispatcherQueue dispatcherQueue)
     {
         NavigationService = navigationService;
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
 
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         Breadcrumbs = [new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!)];
@@ -47,7 +46,7 @@ public partial class MainPageViewModel : ObservableObject
             var anyDevDrivesPresent = Application.Current.GetService<IDevDriveManager>().GetAllDevDrivesThatExistOnSystem().Any();
 
             // Update the UI thread
-            await _windowEx.DispatcherQueue.EnqueueAsync(() =>
+            await _dispatcherQueue.EnqueueAsync(() =>
             {
                 AnyDevDrivesPresent = anyDevDrivesPresent;
             });
@@ -57,7 +56,7 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand]
     private async Task LaunchWindowsDeveloperSettings()
     {
-        await Launcher.LaunchUriAsync(new("ms-settings:developers"));
+        await Windows.System.Launcher.LaunchUriAsync(new("ms-settings:developers"));
     }
 
     [RelayCommand]
