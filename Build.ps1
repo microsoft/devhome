@@ -84,10 +84,10 @@ if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "DevSetupAgent") -Or ($BuildSte
     $builtX86 = $false
     foreach ($platform in $env:Build_Platform.Split(",")) {
       if ($platform -ieq "arm64") {
-        extensions\HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform $Platform -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+        HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform $Platform -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
       }
       elseif (-not $builtX86) {
-        extensions\HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform "x86" -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+        HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform "x86" -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
         $builtX86 = $true
       }
     }
@@ -152,7 +152,11 @@ Try {
             ("/p:Version="+$env:msix_version),
             ("/restore"),
             ("/binaryLogger:DevHome.$platform.$configuration.binlog"),
-            ("/p:AppxPackageOutput=$appxPackageDir\DevHome-$platform.msix"),
+            ("/p:AppxBundle=Never"),
+            ("/p:AppxPackageName=DevHome-$platform"),
+            ("/p:AppxBundlePlatforms="+$platform),
+            ("/p:AppxPackageDir=" + $appxPackageDir),
+            ("/p:AppxPackageTestDir=" + (Join-Path $appxPackageDir "DevHome\")),
             ("/p:AppxPackageSigningEnabled=false"),
             ("/p:GenerateAppxPackageOnBuild=true"),
             ("/p:BuildRing=$buildRing")
@@ -208,7 +212,7 @@ Try {
 
   if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msixbundle")) {
     foreach ($configuration in $env:Build_Configuration.Split(",")) {
-      .\build\scripts\Create-AppxBundle.ps1 -InputPath (Join-Path $env:Build_RootDirectory "AppxPackages\$configuration") -ProjectName DevHome -BundleVersion ([version]$env:msix_version) -OutputPath (Join-Path $env:Build_RootDirectory ("AppxBundles\$configuration\DevHome_" + $env:msix_version + "_8wekyb3d8bbwe.msixbundle"))
+      .\build\scripts\Create-AppxBundle.ps1 -InputPath (Join-Path $env:Build_RootDirectory "AppxPackages\$configuration\DevHome") -ProjectName DevHome -BundleVersion ([version]$env:msix_version) -OutputPath (Join-Path $env:Build_RootDirectory ("AppxBundles\$configuration\DevHome_" + $env:msix_version + "_8wekyb3d8bbwe.msixbundle"))
       if (-not($IsAzurePipelineBuild) -And $isAdmin) {
         Invoke-SignPackage ("AppxBundles\$configuration\DevHome_" + $env:msix_version + "_8wekyb3d8bbwe.msixbundle")
       }
@@ -232,7 +236,7 @@ WARNING: Cert signing requires admin privileges.  To sign, run the following in 
 "@ -ForegroundColor GREEN
   foreach ($platform in $env:Build_Platform.Split(",")) {
     foreach ($configuration in $env:Build_Configuration.Split(",")) {
-      $appxPackageFile = (Join-Path $env:Build_RootDirectory "AppxPackages\$configuration\DevHome-$platform.msix")
+      $appxPackageFile = (Join-Path $env:Build_RootDirectory ("AppxPackages\$configuration\DevHome\DevHome-$platform.msix"))
         Write-Host @"
 powershell -command "& { . build\scripts\CertSignAndInstall.ps1; Invoke-SignPackage $appxPackageFile }"
 "@ -ForegroundColor GREEN

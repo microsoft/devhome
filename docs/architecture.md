@@ -26,8 +26,6 @@ graph TD;
     DevHome.SetupFlow.ElevatedComponent-->DevHome.SetupFlow.ElevatedServer;
     DevHome.SetupFlow.ElevatedComponent.Projection-->DevHome.SetupFlow;
     CoreWidgetProvider-->DevHome;
-    HyperVExtensionServer-->DevHome;
-    DevHome.Common-->DevHome;
     DevHome.Customization-->DevHome;
     DevHome.Dashboard-->DevHome;
     DevHome.Experiments-->DevHome;

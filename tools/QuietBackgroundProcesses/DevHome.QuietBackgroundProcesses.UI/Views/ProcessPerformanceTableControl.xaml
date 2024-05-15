@@ -25,24 +25,23 @@
             HorizontalContentAlignment="Stretch"
             Margin="0"
             Padding="0"
-            ui:ListViewExtensions.AlternateColor="{StaticResource SubtleFillColorSecondaryBrush}">
+            ui:ListViewExtensions.AlternateColor="{StaticResource CardBackgroundFillColorDefaultBrush}">
             <ListView.Header>
                 <Grid ColumnSpacing="0">
                     <Grid.RowDefinitions>
-                        <RowDefinition MinHeight="35" />
+                        <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
                     
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*" />
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="180" />
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="200" />
                     </Grid.ColumnDefinitions>
                     
                     <Border Grid.Column="0" Style="{StaticResource BorderStyle}">
                         <TextBlock
                             x:Uid="ProcessPerformanceTableControl_Heading_Process"
-                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                            Padding="25 0 0 0"
+                            Padding="20 0 0 0"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             HorizontalTextAlignment="Left" />
@@ -50,8 +49,7 @@
                     <Border Grid.Column="1" Style="{StaticResource BorderStyle}">
                         <TextBlock
                             x:Uid="ProcessPerformanceTableControl_Heading_ProcessType"
-                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                            Margin="20 0 0 0"
+                            Margin="40 0 0 0"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             HorizontalTextAlignment="Left" />
@@ -59,12 +57,10 @@
                     <Border Grid.Column="2" Grid.ColumnSpan="2" Style="{StaticResource BorderStyle}">
                         <TextBlock
                             x:Uid="ProcessPerformanceTableControl_Heading_CpuAboveThreshold"
-                            Style="{StaticResource BodyStrongTextBlockStyle}"
-                            Margin="20 0 0 0"
+                            Margin="40 0 0 0"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             HorizontalTextAlignment="Left"
-                            TextWrapping="WrapWholeWords"
                             TextTrimming="CharacterEllipsis" />
                     </Border>
                 </Grid>
@@ -72,16 +68,16 @@
             
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:ProcessData">
-                    <Grid ColumnSpacing="5" AutomationProperties.Name="{x:Bind DisplayName}">
+                    <Grid ColumnSpacing="5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="3*" />
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="130" />
+                            <ColumnDefinition Width="200" />
                         </Grid.ColumnDefinitions>
 
                         <Border Grid.Column="0" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 0">
                             <TextBlock
-                                Text="{x:Bind DisplayName}"
+                                Text="{x:Bind Name}"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Left"
                                 HorizontalTextAlignment="Left"

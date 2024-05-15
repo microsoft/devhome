@@ -39,7 +39,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
     [ObservableProperty]
     private string _displayName;
 
-    public event EventHandler<ComputeSystemCache> CardSelectionChanged = (s, e) => { };
+    public event EventHandler<ComputeSystem> CardSelectionChanged = (s, e) => { };
 
     [ObservableProperty]
     private object _selectedItem;
@@ -56,7 +56,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
     public ComputeSystemsResult CurrentResult { get; set; }
 
-    public List<ComputeSystemCache> ComputeSystems { get; set; } = new();
+    public List<ComputeSystem> ComputeSystemWrappers { get; set; } = new();
 
     [ObservableProperty]
     private string _accessibilityName;
@@ -69,7 +69,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
     {
         get
         {
-            if ((CurrentDeveloperId == null) || string.IsNullOrEmpty(CurrentDeveloperId.LoginId))
+            if (CurrentDeveloperId == null || string.IsNullOrEmpty(CurrentDeveloperId.LoginId))
             {
                 return string.Empty;
             }
@@ -113,9 +113,9 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
         DisplayName = Provider.DisplayName;
 
-        if ((CurrentResult != null) && (CurrentResult.ComputeSystems != null))
+        if (CurrentResult != null && CurrentResult.ComputeSystems != null)
         {
-            ComputeSystems = CurrentResult.ComputeSystems.Select(computeSystem => new ComputeSystemCache(computeSystem)).ToList();
+            ComputeSystemWrappers = CurrentResult.ComputeSystems.Select(computeSystem => new ComputeSystem(computeSystem)).ToList();
         }
 
         // Create a new AdvancedCollectionView for the ComputeSystemCards collection.
@@ -173,7 +173,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
         }
 
         SelectedItem = viewModel;
-        CardSelectionChanged(this, viewModel.ComputeSystem);
+        CardSelectionChanged(this, viewModel.ComputeSystemWrapper);
     }
 
     public void RemoveCardViewModelEventHandlers()

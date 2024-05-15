@@ -8,7 +8,6 @@ List of common controls that are generic, customizable and reusable from all pag
 ## Controls
 - [AddCreateButton](./AddCreateButton.md)
 - [CloseButton](./CloseButton.md)
-- [ExperimentControl](./ExperimentControl.md)
 
 ## File dialog
 > [!NOTE]

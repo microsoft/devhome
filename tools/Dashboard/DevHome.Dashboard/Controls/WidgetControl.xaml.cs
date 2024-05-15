@@ -229,7 +229,6 @@ public sealed partial class WidgetControl : UserControl
                 Text = _stringResource.GetLocalized("SmallWidgetMenuText"),
             };
             menuItemSmall.Click += OnMenuItemSizeClick;
-            menuItemSmall.SetValue(AutomationProperties.AutomationIdProperty, "SmallWidgetButton");
             widgetMenuFlyout.Items.Add(menuItemSmall);
             sizeMenuItems.Add(menuItemSmall);
         }
@@ -242,7 +241,6 @@ public sealed partial class WidgetControl : UserControl
                 Text = _stringResource.GetLocalized("MediumWidgetMenuText"),
             };
             menuItemMedium.Click += OnMenuItemSizeClick;
-            menuItemMedium.SetValue(AutomationProperties.AutomationIdProperty, "MediumWidgetButton");
             widgetMenuFlyout.Items.Add(menuItemMedium);
             sizeMenuItems.Add(menuItemMedium);
         }
@@ -255,7 +253,6 @@ public sealed partial class WidgetControl : UserControl
                 Text = _stringResource.GetLocalized("LargeWidgetMenuText"),
             };
             menuItemLarge.Click += OnMenuItemSizeClick;
-            menuItemLarge.SetValue(AutomationProperties.AutomationIdProperty, "LargeWidgetButton");
             widgetMenuFlyout.Items.Add(menuItemLarge);
             sizeMenuItems.Add(menuItemLarge);
         }

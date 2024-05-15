@@ -21,7 +21,6 @@ namespace DevHome.QuietBackgroundProcesses
     {
         UInt32 Pid { get; };
         String Name { get; };
-        String ServiceName { get; };
         String PackageFullName { get; };
         String Aumid { get; };
         String Path { get; };

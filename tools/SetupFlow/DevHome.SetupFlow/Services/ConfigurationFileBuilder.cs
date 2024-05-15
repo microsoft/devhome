@@ -179,18 +179,12 @@ public class ConfigurationFileBuilder
     {
         var arguments = task.GetArguments();
         var id = arguments.PackageId;
-        var securityContext = WingGetConfigDirectives.SecurityContextCurrent;
 
         if (configurationFileKind == ConfigurationFileKind.SetupTarget)
         {
             // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
             // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
             id = $"{arguments.PackageId}{PackageNameSeparator}{task.PackageName}";
-
-            if (arguments.IsElevationRequired)
-            {
-                securityContext = WingGetConfigDirectives.SecurityContextElevated;
-            }
         }
 
         return new WinGetConfigResource()
@@ -201,7 +195,6 @@ public class ConfigurationFileBuilder
             {
                 AllowPrerelease = true,
                 Description = $"Installing {arguments.PackageId}",
-                SecurityContext = securityContext,
             },
             Settings = new WinGetDscSettings()
             {

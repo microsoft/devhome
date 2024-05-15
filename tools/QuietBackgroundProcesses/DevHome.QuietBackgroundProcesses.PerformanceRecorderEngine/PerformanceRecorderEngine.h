@@ -10,8 +10,7 @@ struct ProcessPerformanceSummary
 {
     // Process info
     ULONG pid{};
-    wchar_t name[64]{};
-    wchar_t serviceName[64]{};
+    wchar_t name[64];
     wchar_t packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
     wchar_t aumid[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};
     wchar_t path[MAX_PATH * 2]{};

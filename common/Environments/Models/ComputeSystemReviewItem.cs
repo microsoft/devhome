@@ -9,11 +9,11 @@ namespace DevHome.Common.Environments.Models;
 /// </summary>
 public class ComputeSystemReviewItem
 {
-    public ComputeSystemCache ComputeSystemToSetup { get; set; }
+    public ComputeSystem ComputeSystemToSetup { get; set; }
 
     public ComputeSystemProvider AssociatedProvider { get; set; }
 
-    public ComputeSystemReviewItem(ComputeSystemCache computeSystemToSetup, ComputeSystemProvider associatedProvider)
+    public ComputeSystemReviewItem(ComputeSystem computeSystemToSetup, ComputeSystemProvider associatedProvider)
     {
         ComputeSystemToSetup = computeSystemToSetup;
         AssociatedProvider = associatedProvider;

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
-using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -17,8 +16,6 @@ namespace DevHome.Common.Services;
 
 public class ComputeSystemService : IComputeSystemService
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemService));
-
     private const string DevHomePreviewPackageFamilyName = "Microsoft.Windows.DevHome_8wekyb3d8bbwe";
 
     private const string DevHomeDevPackageFamilyName = "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe";

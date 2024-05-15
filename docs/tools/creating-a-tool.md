@@ -1,13 +1,13 @@
 # Creating a tool
 
-1. Create a new directory with your tool's name under `tools`.
-1. Create a new `WinUI 3 Class Library` project in the directory you just created.
+1. Create a new directory with your tool's name under `tools` with three subdirectories `src`, `test`, and `uitest`
+1. Create a new `WinUI 3 Class Library` project in your `src` directory
 1. In your project file, remove `TargetFramework` and `TargetPlatformMinVersion`. Add the following line to the top:
     ```xml
     <Import Project="$(SolutionDir)ToolingVersions.props" />
     ```
 1. Remove the PackageReference to WindowsAppSDK, since it will be added via the Common project in a few steps.
-1. Create the `Strings\en-us` directories under your project directory. Add `Resources.resw` and include the following code:
+1. Create the `Strings\en-us` directories under `src`. Add `Resources.resw` and include the following code:
     ```xml
     <data name="NavigationPane.Content" xml:space="preserve">
       <value>[Name of your tool that will appear in navigation menu]</value>
