@@ -53,6 +53,7 @@
                                Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                                VerticalAlignment="Center"/>
                     <Button x:Uid="GetUpdatesButton"
+                            AutomationProperties.AutomationId="GetUpdatesButton"
                             HorizontalAlignment="Right"
                             Style="{ThemeResource AccentButtonStyle}"
                             Visibility="{x:Bind ViewModel.InstalledPackagesList.Count, Converter={StaticResource InverseCountToVisibilityConverter}, Mode=OneWay}"
@@ -72,6 +73,7 @@
                                 <StackPanel>
                                     <!-- This StackPanel is a workaround for the bug https://github.com/CommunityToolkit/Windows/issues/396 -->
                                     <Button x:Uid="MoreOptionsButton"
+                                            AutomationProperties.AutomationId="{x:Bind AutomationMoreOptionsPfn}"
                                             Content="&#xe712;"
                                             Height="36" MinWidth="36"
                                             FontFamily="{StaticResource SymbolThemeFontFamily}" 
@@ -124,6 +126,7 @@
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
                                 </ctControls:SettingsCard.HeaderIcon>
                                 <Button x:Uid="GetButton"
+                                        AutomationProperties.AutomationId="{x:Bind AutomationInstallPfn}"
                                         Padding="25 4 25 6"
                                         MinWidth="118"
                                         Command="{x:Bind LaunchStoreButtonCommand}"

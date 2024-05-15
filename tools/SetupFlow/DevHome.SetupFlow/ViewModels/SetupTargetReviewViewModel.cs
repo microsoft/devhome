@@ -29,7 +29,7 @@ public partial class SetupTargetReviewViewModel : ReviewTabViewModelBase
 
     public ComputeSystemReviewItem ComputeSystemSetupItem => _computeSystemManager.ComputeSystemSetupItem;
 
-    public IEnumerable<ComputeSystemProperty> ComputeSystemProperties { get; private set; }
+    public IEnumerable<ComputeSystemPropertyCache> ComputeSystemProperties { get; private set; }
 
     [ObservableProperty]
     private string _infoBarMessage;

@@ -23,7 +23,7 @@ public static class ComputeSystemHelpers
     {
         try
         {
-            var result = await computeSystemWrapper.GetComputeSystemThumbnailAsync(string.Empty);
+            var result = await computeSystem.GetComputeSystemThumbnailAsync(string.Empty);
 
             if ((result.Result.Status == ProviderOperationStatus.Failure) || (result.ThumbnailInBytes.Length <= 0))
             {
@@ -47,7 +47,7 @@ public static class ComputeSystemHelpers
         try
         {
             var bitmap = new BitmapImage();
-            bitmap.SetSource(result.ThumbnailInBytes.AsBuffer().AsStream().AsRandomAccessStream());
+            bitmap.SetSource(array.AsBuffer().AsStream().AsRandomAccessStream());
             return bitmap;
         }
         catch (Exception ex)
@@ -57,14 +57,19 @@ public static class ComputeSystemHelpers
         }
     }
 
-    public static async Task<List<CardProperty>> GetComputeSystemPropertiesAsync(ComputeSystem computeSystemWrapper, string packageFullName)
+    public static async Task<BitmapImage?> GetBitmapImageAsync(ComputeSystemCache computeSystem)
+    {
+        var array = await GetBitmapImageArrayAsync(computeSystem);
+        return (array != null) ? GetBitmapImageFromByteArray(array) : null;
+    }
+
+    public static List<CardProperty> GetComputeSystemCardProperties(IEnumerable<ComputeSystemPropertyCache> properties, string packageFullName)
     {
         var propertyList = new List<CardProperty>();
 
         try
         {
-            var cuurentProperties = await computeSystemWrapper.GetComputeSystemPropertiesAsync(string.Empty);
-            foreach (var property in cuurentProperties)
+            foreach (var property in properties)
             {
                 propertyList.Add(new CardProperty(property, packageFullName));
             }

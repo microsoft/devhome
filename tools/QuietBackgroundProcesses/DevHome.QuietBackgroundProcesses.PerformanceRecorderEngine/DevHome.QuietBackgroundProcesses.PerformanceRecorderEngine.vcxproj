@@ -213,6 +213,7 @@
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="PerformanceRecorderEngine.h" />
+    <ClInclude Include="ServiceInformation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />

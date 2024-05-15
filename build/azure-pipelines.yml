@@ -348,7 +348,7 @@ extends:
               - output: pipelineArtifact
                 displayName: Publish MSIX Artifact
                 artifactName: msix_${{ platform }}_${{ configuration }}
-                targetPath: $(appxPackageDir)\${{ configuration }}\DevHome
+                targetPath: $(appxPackageDir)\${{ configuration }}
                 sbomPackageName: devhome.msixpackage
                 sbomPackageVersion: $(MSIXVersion)
 
@@ -364,7 +364,7 @@ extends:
               inputs:
                 buildType: 'current'
                 artifactName: msix_${{ platform }}_${{ configuration }}
-                targetPath: $(appxPackageDir)\${{ configuration }}\DevHome
+                targetPath: $(appxPackageDir)\${{ configuration }}
 
           - task: PowerShell@2
             displayName: Create Stub Directory

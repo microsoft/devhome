@@ -10,7 +10,12 @@ namespace DevHome.Telemetry;
 [EventData]
 public class EmptyEvent : EventBase
 {
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags { get; }
+
+    public EmptyEvent(PartA_PrivTags tags)
+    {
+        PartA_PrivTags = tags;
+    }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {

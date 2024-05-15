@@ -133,7 +133,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\DevHome.QuietBackgroundProcesses.Common\;$(ProjectDir)..\DevHome.QuietBackgroundProcesses.Common\$(GeneratedFilesDir)midl;$(ProjectDir)..\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)telemetry\DevHome.Telemetry.Native\inc;$(ProjectDir)..\DevHome.QuietBackgroundProcesses.Common\;$(ProjectDir)..\DevHome.QuietBackgroundProcesses.Common\$(GeneratedFilesDir)midl;$(ProjectDir)..\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>onecore.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -184,6 +184,9 @@
     <None Include="PropertySheet.props" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\telemetry\DevHome.Telemetry.Native\DevHome.Telemetry.Native.vcxproj">
+      <Project>{8eb52f7d-d216-49ff-bf16-de06e4695950}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\DevHome.QuietBackgroundProcesses.Common\DevHome.QuietBackgroundProcesses.Common.vcxproj">
       <Project>{4b370e2f-fb1d-4887-90bf-3b72517485ce}</Project>
     </ProjectReference>
@@ -191,6 +194,7 @@
       <Project>{af5a7fa0-e3e8-44c8-8830-31dd08f583e8}</Project>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(SolutionDir)telemetry\DevHome.Telemetry.Native\DevHome.Telemetry.Native.targets" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240122.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240122.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
