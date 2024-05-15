@@ -21,7 +21,6 @@ internal sealed class ETWHelper : IDisposable
     private readonly Process targetProcess;
     private readonly ObservableCollection<WinLogsEntry> output;
 
-    // TODO Add providers
     private static readonly List<string> ProviderList = ["1AFF6089-E863-4D36-BDFD-3581F07440BE" /*COM Tracelog*/];
     private TraceEventSession? session;
 

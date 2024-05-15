@@ -24,7 +24,7 @@ public sealed partial class AddToolControl : UserControl
 
     private void HandleBrowseButton()
     {
-        // Unfortunately WinUI3's OpenFileDialog does not work if we're running elevated. So we have to use the old Win32 API.
+        // WinUI3's OpenFileDialog does not work if we're running elevated. So we have to use the old Win32 API.
         var fileName = string.Empty;
         var filter = "Executables (*.exe)\0*.exe\0Batch Files (*.bat)\0*.bat\0\0";
         var filterarray = filter.ToCharArray();

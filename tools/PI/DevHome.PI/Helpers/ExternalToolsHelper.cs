@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
+using DevHome.Common.Helpers;
 using Serilog;
 using Windows.Storage;
 
@@ -26,7 +27,7 @@ internal sealed class ExternalToolsHelper
     private ExternalToolsHelper()
     {
         string localFolder;
-        if (DesktopBridgeHelper.IsMsixPackagedApp())
+        if (RuntimeHelper.IsMSIX)
         {
             localFolder = ApplicationData.Current.LocalFolder.Path;
         }
