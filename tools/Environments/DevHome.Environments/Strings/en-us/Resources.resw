@@ -158,7 +158,7 @@
     <comment>Text for the revert checkpoint button that will revert a virtual machines checkpoint to its previous checkpoint.</comment>
   </data>
   <data name="ShutdownButtonContextMenuItem" xml:space="preserve">
-    <value>Shutdown</value>
+    <value>Shut down</value>
     <comment>Text for shutdown button in the context menu that will shutdown the virtual machines operating system.</comment>
   </data>
   <data name="StartButtonContextMenuItem" xml:space="preserve">
@@ -318,7 +318,7 @@
     <comment>Text for the start operation shown for the environment.</comment>
   </data>
   <data name="Operations_Shutdown" xml:space="preserve">
-    <value>Shutdown</value>
+    <value>Shut down</value>
     <comment>Text for the shutdown operation shown for the environment.</comment>
   </data>
   <data name="Operations_Terminate" xml:space="preserve">
