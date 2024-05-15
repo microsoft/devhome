@@ -418,7 +418,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         {
             if (disposing)
             {
-                _semaphoreSlimLock.Release();
+                _semaphoreSlimLock.Dispose();
             }
 
             _disposedValue = true;
