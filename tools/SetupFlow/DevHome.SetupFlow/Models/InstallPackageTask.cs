@@ -298,11 +298,11 @@ public class InstallPackageTask : ISetupTask
 
     private void ReportAppInstallSucceededEvent()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_InstallSucceeded", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId), _activityId);
+        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_InstallSucceeded", LogLevel.Critical, new AppInstallResultEvent(_package.Id, _package.CatalogId), _activityId);
     }
 
     private void ReportAppInstallFailedEvent()
     {
-        TelemetryFactory.Get<ITelemetry>().LogError("AppInstall_InstallFailed", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId), _activityId);
+        TelemetryFactory.Get<ITelemetry>().LogError("AppInstall_InstallFailed", LogLevel.Critical, new AppInstallResultEvent(_package.Id, _package.CatalogId), _activityId);
     }
 }
