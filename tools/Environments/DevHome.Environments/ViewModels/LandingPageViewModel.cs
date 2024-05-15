@@ -12,14 +12,11 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
 using CommunityToolkit.WinUI.Collections;
-using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using WinUIEx;
 
@@ -38,6 +35,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly EnvironmentsExtensionsService _environmentExtensionsService;
 
+    private readonly NotificationService _notificationService;
+
     private readonly IComputeSystemManager _computeSystemManager;
 
     private readonly INavigationService _navigationService;
@@ -45,8 +44,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private readonly StringResource _stringResource;
 
     private readonly object _lock = new();
-
-    private EnvironmentsNotificationHelper? _notificationsHelper;
 
     private bool _disposed;
 
@@ -75,6 +72,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
+    [ObservableProperty]
+    private bool _shouldShowCreateEnvironmentButton;
+
     public ObservableCollection<string> Providers { get; set; }
 
     private CancellationTokenSource _cancellationTokenSource = new();
@@ -83,10 +83,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         INavigationService navigationService,
         IComputeSystemManager manager,
         EnvironmentsExtensionsService extensionsService,
+        NotificationService notificationService,
         WindowEx windowEx)
     {
         _computeSystemManager = manager;
         _environmentExtensionsService = extensionsService;
+        _notificationService = notificationService;
         _windowEx = windowEx;
         _navigationService = navigationService;
 
@@ -101,7 +103,10 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     public void Initialize(StackedNotificationsBehavior notificationQueue)
     {
-        _notificationsHelper = new(notificationQueue);
+        _notificationService.Initialize(notificationQueue);
+
+        // To Do: Need to give the users a way to disable this, if they don't want to use Hyper-V
+        _ = Task.Run(() => _notificationService.CheckIfUserIsAHyperVAdminAndShowNotification());
     }
 
     [RelayCommand]
@@ -193,6 +198,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 return;
             }
 
+            ShouldShowCreateEnvironmentButton = _environmentExtensionsService.IsEnvironmentCreationEnabled;
+
             // If the page has already loaded once, then we don't need to re-load the compute systems as that can take a while.
             // The user can click the sync button to refresh the compute systems. However, there may be new operations that have started
             // since the last time the page was loaded. So we need to add those to the view model quickly.
@@ -211,19 +218,15 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             await RunSyncTimmer();
         });
 
-        lock (ComputeSystemCards)
+        for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
         {
-            for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
+            if (ComputeSystemCards[i] is ComputeSystemViewModel computeSystemViewModel)
             {
-                if (ComputeSystemCards[i] is ComputeSystemViewModel computeSystemViewModel)
-                {
-                    computeSystemViewModel.RemoveStateChangedHandler();
-                    ComputeSystemCards.RemoveAt(i);
-                }
+                computeSystemViewModel.RemoveStateChangedHandler();
+                ComputeSystemCards.RemoveAt(i);
             }
         }
 
-        _notificationsHelper?.ClearNotifications();
         ShowLoadingShimmer = true;
         await _environmentExtensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
         ShowLoadingShimmer = false;
@@ -243,77 +246,67 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         // Remove all the operations from view and then add the ones the manager has.
         _log.Information($"Adding any new create compute system operations to ComputeSystemCards list");
         var curOperations = _computeSystemManager.GetRunningOperationsForCreation();
-
-        lock (ComputeSystemCards)
+        for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
         {
-            for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
+            if (ComputeSystemCards[i].IsCreateComputeSystemOperation)
             {
-                if (ComputeSystemCards[i].IsCreateComputeSystemOperation)
-                {
-                    var operationViewModel = ComputeSystemCards[i] as CreateComputeSystemOperationViewModel;
-                    operationViewModel!.RemoveEventHandlers();
-                    ComputeSystemCards.RemoveAt(i);
-                }
+                var operationViewModel = ComputeSystemCards[i] as CreateComputeSystemOperationViewModel;
+                operationViewModel!.RemoveEventHandlers();
+                ComputeSystemCards.RemoveAt(i);
             }
+        }
 
-            // Add new operations to the list
-            foreach (var operation in curOperations)
-            {
-                // this is a new operation so we need to create a view model for it.
-                ComputeSystemCards.Add(new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, RemoveComputeSystemCard, AddNewlyCreatedComputeSystem, operation));
-                _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
-            }
+        // Add new operations to the list
+        foreach (var operation in curOperations)
+        {
+            // this is a new operation so we need to create a view model for it.
+            ComputeSystemCards.Add(new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, ComputeSystemCards.Remove, AddNewlyCreatedComputeSystem, operation));
+            _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
         }
     }
 
     private async Task AddAllComputeSystemsFromAProvider(ComputeSystemsLoadedData data)
     {
-        _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
         var provider = data.ProviderDetails.ComputeSystemProvider;
 
-        var computeSystemList = data.DevIdToComputeSystemMap.Values.SelectMany(x => x.ComputeSystems).ToList();
-
-        // In the future when we support switching between accounts in the environments page, we will need to handle this differently.
-        // for now we'll show all the compute systems from a provider.
-        if ((computeSystemList == null) || (computeSystemList.Count == 0))
+        // Show error notifications for failed provider/developer id combinations
+        foreach (var mapping in data.DevIdToComputeSystemMap.Where(kv =>
+            kv.Value.Result.Status == Microsoft.Windows.DevHome.SDK.ProviderOperationStatus.Failure))
         {
-            _log.Error($"No Compute systems found for provider: {provider.Id}");
-            return;
+            var result = mapping.Value.Result;
+            await _notificationService.ShowNotificationAsync(provider.DisplayName, result.DisplayMessage, InfoBarSeverity.Error);
+
+            _log.Error($"Error occurred while adding Compute systems to environments page for provider: {provider.Id}. {result.DiagnosticText}, {result.ExtendedError}");
+            data.DevIdToComputeSystemMap.Remove(mapping.Key);
         }
 
-        // Initialize the cards for the compute systems in parallel before adding them to the view model on UI thread
-        var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
-        var computeSystemViewModels = new List<ComputeSystemViewModel>();
-        foreach (var computeSystem in computeSystemList)
+        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
-            var computeSystemViewModel = new ComputeSystemViewModel(
-                _computeSystemManager,
-                computeSystem,
-                provider,
-                RemoveComputeSystemCard,
-                packageFullName,
-                _windowEx);
-
-            computeSystemViewModels.Add(computeSystemViewModel);
-        }
-
-        await Parallel.ForEachAsync(computeSystemViewModels, async (computeSystemModel, token) =>
-        {
-            await computeSystemModel.InitializeCardDataAsync();
-        });
-
-        await _windowEx.DispatcherQueue.EnqueueAsync(() =>
-        {
+            Providers.Add(provider.DisplayName);
             try
             {
-                Providers.Add(provider.DisplayName);
-                foreach (var computeSystemViewModel in computeSystemViewModels)
+                var computeSystemList = data.DevIdToComputeSystemMap.Values.SelectMany(x => x.ComputeSystems).ToList();
+
+                // In the future when we support switching between accounts in the environments page, we will need to handle this differently.
+                // for now we'll show all the compute systems from a provider.
+                if (computeSystemList == null || computeSystemList.Count == 0)
                 {
-                    computeSystemViewModel.InitializeUXData();
-                    lock (ComputeSystemCards)
-                    {
-                        ComputeSystemCards.Add(computeSystemViewModel);
-                    }
+                    _log.Error($"No Compute systems found for provider: {provider.Id}");
+                    return;
+                }
+
+                for (var i = 0; i < computeSystemList.Count; i++)
+                {
+                    var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
+                    var computeSystemViewModel = new ComputeSystemViewModel(
+                        _computeSystemManager,
+                        computeSystemList.ElementAt(i),
+                        provider,
+                        ComputeSystemCards.Remove,
+                        packageFullName,
+                        _windowEx);
+                    await computeSystemViewModel.InitializeCardDataAsync();
+                    ComputeSystemCards.Add(computeSystemViewModel);
                 }
             }
             catch (Exception ex)
@@ -340,8 +333,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
             if (system is ComputeSystemViewModel computeSystemViewModel)
             {
-                var systemName = computeSystemViewModel.ComputeSystem!.DisplayName.Value;
-                var systemAltName = computeSystemViewModel.ComputeSystem.SupplementalDisplayName.Value;
+                var systemName = computeSystemViewModel.ComputeSystem!.DisplayName;
+                var systemAltName = computeSystemViewModel.ComputeSystem.SupplementalDisplayName;
                 return systemName.Contains(query, StringComparison.OrdinalIgnoreCase) || systemAltName.Contains(query, StringComparison.OrdinalIgnoreCase);
             }
 
@@ -418,31 +411,19 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 _computeSystemLoadWait.WaitOne();
             }
 
-            ComputeSystemCardBase? viewModel = default;
-            lock (ComputeSystemCards)
+            lock (_lock)
             {
-                viewModel = ComputeSystemCards.FirstOrDefault(viewBase => viewBase.ComputeSystemId.Equals(computeSystemViewModel.ComputeSystemId, StringComparison.OrdinalIgnoreCase));
-            }
+                var viewModel = ComputeSystemCards.FirstOrDefault(viewBase => viewBase.ComputeSystemId.Equals(computeSystemViewModel.ComputeSystemId, StringComparison.OrdinalIgnoreCase));
 
-            if (viewModel == null)
-            {
-                _windowEx.DispatcherQueue.EnqueueAsync(() =>
+                if (viewModel == null)
                 {
-                    lock (ComputeSystemCards)
+                    _windowEx.DispatcherQueue.EnqueueAsync(() =>
                     {
                         ComputeSystemCards.Add(computeSystemViewModel);
-                    }
-                });
+                    });
+                }
             }
         });
-    }
-
-    private bool RemoveComputeSystemCard(ComputeSystemCardBase computeSystemCard)
-    {
-        lock (ComputeSystemCards)
-        {
-            return ComputeSystemCards.Remove(computeSystemCard);
-        }
     }
 
     protected virtual void Dispose(bool disposing)

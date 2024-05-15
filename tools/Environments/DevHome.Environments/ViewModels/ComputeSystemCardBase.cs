@@ -24,7 +24,7 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
     public bool IsCreateComputeSystemOperation { get; protected set; }
 
     // Will hold the supported actions that the user can perform on in the UI. E.g Remove button
-    public ObservableCollection<OperationsViewModel> DotOperations { get; protected set; } = new();
+    public ObservableCollection<OperationsViewModel>? DotOperations { get; protected set; }
 
     [ObservableProperty]
     private ComputeSystemState _state;
@@ -38,9 +38,11 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
     [ObservableProperty]
     private bool _shouldShowLaunchOperation;
 
-    public BitmapImage? HeaderImage { get; protected set; }
+    public BitmapImage? HeaderImage { get; protected set; } = new();
 
-    public BitmapImage? BodyImage { get; protected set; }
+    public BitmapImage? BodyImage { get; protected set; } = new();
+
+    public ComputeSystem? ComputeSystem { get; protected set; }
 
     public string ProviderDisplayName { get; protected set; } = string.Empty;
 

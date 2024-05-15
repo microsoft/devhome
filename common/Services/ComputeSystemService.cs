@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
-using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -17,8 +16,6 @@ namespace DevHome.Common.Services;
 
 public class ComputeSystemService : IComputeSystemService
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemService));
-
     private const string DevHomePreviewPackageFamilyName = "Microsoft.Windows.DevHome_8wekyb3d8bbwe";
 
     private const string DevHomeDevPackageFamilyName = "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe";
@@ -58,16 +55,6 @@ public class ComputeSystemService : IComputeSystemService
                 if (_devHomePackageFamilyName.Contains(extension.PackageFamilyName) &&
                     extension.PackageFamilyName != Package.Current.Id.FamilyName)
                 {
-                    continue;
-                }
-
-                // If we're looking at the Hyper-V extension and the feature isn't present on the users machine, disable the extension.
-                // This can happen if the user is not on a SKU that supports Hyper-V.
-                if (extension.ExtensionClassId.Equals(CommonConstants.HyperVExtensionClassId, StringComparison.OrdinalIgnoreCase) &&
-                    ManagementInfrastructureHelper.IsWindowsFeatureAvailable(CommonConstants.HyperVWindowsOptionalFeatureName) == FeatureAvailabilityKind.Absent)
-                {
-                    _log.Information("User machine does not have the Hyper-V feature present. Disabling the Hyper-V extension");
-                    _extensionService.DisableExtension(extension.ExtensionUniqueId);
                     continue;
                 }
 

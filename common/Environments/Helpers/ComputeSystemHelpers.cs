@@ -15,57 +15,39 @@ namespace DevHome.Common.Environments.Helpers;
 
 public static class ComputeSystemHelpers
 {
-    public static async Task<byte[]?> GetBitmapImageArrayAsync(ComputeSystemCache computeSystem)
+    public static async Task<BitmapImage?> GetBitmapImageAsync(ComputeSystem computeSystemWrapper)
     {
         try
         {
-            var result = await computeSystem.GetComputeSystemThumbnailAsync(string.Empty);
+            var result = await computeSystemWrapper.GetComputeSystemThumbnailAsync(string.Empty);
 
             if ((result.Result.Status == ProviderOperationStatus.Failure) || (result.ThumbnailInBytes.Length <= 0))
             {
-                Log.Error($"Failed to get thumbnail for compute system {computeSystem}. Error: {result.Result.DiagnosticText}");
+                Log.Error($"Failed to get thumbnail for compute system {computeSystemWrapper}. Error: {result.Result.DiagnosticText}");
 
                 // No thumbnail available, return null so that the card will display the default image.
                 return null;
             }
 
-            return result.ThumbnailInBytes;
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, $"Failed to get thumbnail for compute system {computeSystem}.");
-            return null;
-        }
-    }
-
-    public static BitmapImage? GetBitmapImageFromByteArray(byte[] array)
-    {
-        try
-        {
             var bitmap = new BitmapImage();
-            bitmap.SetSource(array.AsBuffer().AsStream().AsRandomAccessStream());
+            bitmap.SetSource(result.ThumbnailInBytes.AsBuffer().AsStream().AsRandomAccessStream());
             return bitmap;
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Failed to get thumbnail from a byte array.");
+            Log.Error(ex, $"Failed to get thumbnail for compute system {computeSystemWrapper}.");
             return null;
         }
     }
 
-    public static async Task<BitmapImage?> GetBitmapImageAsync(ComputeSystemCache computeSystem)
-    {
-        var array = await GetBitmapImageArrayAsync(computeSystem);
-        return (array != null) ? GetBitmapImageFromByteArray(array) : null;
-    }
-
-    public static List<CardProperty> GetComputeSystemCardProperties(IEnumerable<ComputeSystemPropertyCache> properties, string packageFullName)
+    public static async Task<List<CardProperty>> GetComputeSystemPropertiesAsync(ComputeSystem computeSystemWrapper, string packageFullName)
     {
         var propertyList = new List<CardProperty>();
 
         try
         {
-            foreach (var property in properties)
+            var cuurentProperties = await computeSystemWrapper.GetComputeSystemPropertiesAsync(string.Empty);
+            foreach (var property in cuurentProperties)
             {
                 propertyList.Add(new CardProperty(property, packageFullName));
             }
@@ -74,22 +56,8 @@ public static class ComputeSystemHelpers
         }
         catch (Exception ex)
         {
-            Log.Error(ex, $"Failed to get all ComputeSystemCardProperties.");
+            Log.Error(ex, $"Failed to get all properties for compute system {computeSystemWrapper}.");
             return propertyList;
-        }
-    }
-
-    public static async Task<List<CardProperty>> GetComputeSystemCardPropertiesAsync(ComputeSystemCache computeSystem, string packageFullName)
-    {
-        try
-        {
-            var curentProperties = await computeSystem.GetComputeSystemPropertiesAsync(string.Empty);
-            return GetComputeSystemCardProperties(curentProperties, packageFullName);
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, $"Failed to get all properties for compute system {computeSystem}.");
-            return new List<CardProperty>();
         }
     }
 

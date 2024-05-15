@@ -19,7 +19,6 @@ using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
-using DevHome.Utilities.Extensions;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.Extensions.Configuration;
@@ -127,6 +126,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IScreenReaderService, ScreenReaderService>();
             services.AddSingleton<IComputeSystemService, ComputeSystemService>();
             services.AddSingleton<IComputeSystemManager, ComputeSystemManager>();
+            services.AddTransient<NotificationService>();
             services.AddTransient<AdaptiveCardRenderingService>();
 
             // Core Services
@@ -163,9 +163,6 @@ public partial class App : Application, IApp
 
             // Windows customization
             services.AddWindowsCustomization(context);
-
-            // Utilities
-            services.AddUtilities(context);
         }).
         Build();
 
@@ -208,6 +205,12 @@ public partial class App : Application, IApp
 
     private async void OnActivated(object? sender, AppActivationArguments args)
     {
+        if (args.Kind == ExtendedActivationKind.ToastNotification)
+        {
+            GetService<NotificationService>().HandlerNotificationActions(args);
+            return;
+        }
+
         // Note: Keep the reference to 'args.Data' object, as 'args' may be
         // disposed before the async operation completes (RpcCallFailed: 0x800706be)
         var localArgsDataReference = args.Data;

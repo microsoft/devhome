@@ -142,9 +142,7 @@ try {
                     "tools\$tool\*UITest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\*.UITest.dll"
                 )
 
-                if (Get-ChildItem "tools\$tool\*UnitTest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\*.UnitTest.dll") {
-                    & $vstestPath $vstestArgs
-                }
+                & $vstestPath $vstestArgs
                 # TODO: UI tests are currently disabled in the pipeline until signing is solved
                 if ($RunUITests) {
                     & $vstestPath $winAppTestArgs

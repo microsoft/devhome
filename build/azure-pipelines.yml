@@ -22,7 +22,7 @@ parameters:
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
   MSIXVersion: '0.1301'
-  VersionOfSDK: '0.600'
+  VersionOfSDK: '0.500'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
   testOutputArtifactDir: 'TestResults'
@@ -79,10 +79,7 @@ extends:
         - task: PublishSymbols@2
           displayName: Publish Symbols
           inputs:
-            SearchPattern: |
-              **/bin/**/*.pdb
-              **/bin/**/*.exe
-              **/bin/**/*.dll
+            SearchPattern: '**/bin/**/*.pdb'
             IndexSources: false
             SymbolServerType: TeamServices
             SymbolsProduct: DevHomeSDK
@@ -225,7 +222,7 @@ extends:
             - task: EsrpCodeSigning@2
               inputs:
                 ConnectedServiceName: 'Xlang Code Signing'
-                FolderPath: '$(appxPackageDir)\${{ configuration }}'
+                FolderPath: '$(appxPackageDir)\${{ configuration }}\DevHome'
                 Pattern: '*.msix'
                 signConfigType: 'inlineSignParams'
                 inlineOperation: |
@@ -317,10 +314,6 @@ extends:
                 SearchPattern: >-
                   $(Build.SourcesDirectory)\**\bin\**\*.pdb
 
-                  $(Build.SourcesDirectory)\**\bin\**\*.exe
-
-                  $(Build.SourcesDirectory)\**\bin\**\*.dll
-
                   $(Build.SourcesDirectory)\**\obj\**\*.r2r.ni.pdb
                 IndexSources: true
                 SymbolServerType: TeamServices
@@ -351,7 +344,7 @@ extends:
               - output: pipelineArtifact
                 displayName: Publish MSIX Artifact
                 artifactName: msix_${{ platform }}_${{ configuration }}
-                targetPath: $(appxPackageDir)\${{ configuration }}
+                targetPath: $(appxPackageDir)\${{ configuration }}\DevHome
                 sbomPackageName: devhome.msixpackage
                 sbomPackageVersion: $(MSIXVersion)
 
@@ -367,7 +360,7 @@ extends:
               inputs:
                 buildType: 'current'
                 artifactName: msix_${{ platform }}_${{ configuration }}
-                targetPath: $(appxPackageDir)\${{ configuration }}
+                targetPath: $(appxPackageDir)\${{ configuration }}\DevHome
 
           - task: PowerShell@2
             displayName: Create Stub Directory

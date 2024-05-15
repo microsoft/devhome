@@ -69,11 +69,6 @@ public class WhatsNewCard
         get; set;
     }
 
-    public string? AutomationId
-    {
-        get; set;
-    }
-
     public Visibility HasLinkAndShouldShowIt(string? link, bool shouldShowLink)
     {
         if (link != null && shouldShowLink)

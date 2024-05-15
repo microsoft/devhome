@@ -10,7 +10,6 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
 using CommunityToolkit.WinUI.Collections;
-using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
@@ -38,8 +37,6 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     private readonly ObservableCollection<ComputeSystemsListViewModel> _computeSystemViewModelList = new();
 
     private readonly ComputeSystemViewModelFactory _computeSystemViewModelFactory;
-
-    private EnvironmentsNotificationHelper _notificationsHelper;
 
     [ObservableProperty]
     private bool _shouldShowCollectionView;
@@ -209,7 +206,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     /// </summary>
     /// <param name="sender">The ComputeSystemsListViewModel object that contains the ComputeSystemCardViewModel the user selected.</param>
     /// <param name="computeSystem">The compute system wrapper associated with the ComputeSystemCardViewModel.</param>
-    public void OnListSelectionChanged(object sender, ComputeSystemCache computeSystem)
+    public void OnListSelectionChanged(object sender, ComputeSystem computeSystem)
     {
         if (sender is not ComputeSystemsListViewModel senderListViewModel)
         {
@@ -271,7 +268,6 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         // Disable the sync and next buttons while we're getting the compute systems.
         ComputeSystemLoadingCompleted = false;
         UpdateNextButtonState();
-        _notificationsHelper?.ClearNotifications();
 
         // load the compute systems so we can show them in the UI.
         await Task.Run(LoadAllComputeSystemsInTheUIAsync);
@@ -359,26 +355,14 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
     public async Task UpdateListViewModelList(ComputeSystemsLoadedData data)
     {
-        _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
-
-        var curListViewModel = new ComputeSystemsListViewModel(data);
-
-        // Fetch data for all compute systems that support the ApplyConfiguration flag in parallel
-        // on thread pool to avoid calling expensive OOP operations on the UI thread.
-        await Parallel.ForEachAsync(curListViewModel.ComputeSystems, async (computeSystem, token) =>
-        {
-            if (computeSystem.SupportedOperations.Value.HasFlag(ComputeSystemOperations.ApplyConfiguration))
-            {
-                await computeSystem.FetchDataAsync();
-            }
-        });
-
         await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
-            foreach (var computeSystem in curListViewModel.ComputeSystems)
+            var curListViewModel = new ComputeSystemsListViewModel(data);
+
+            foreach (var wrapper in curListViewModel.ComputeSystemWrappers)
             {
                 // Remove any cards that don't support the ApplyConfiguration flag.
-                if (!computeSystem.SupportedOperations.Value.HasFlag(ComputeSystemOperations.ApplyConfiguration))
+                if (!wrapper.SupportedOperations.HasFlag(ComputeSystemOperations.ApplyConfiguration))
                 {
                     continue;
                 }
@@ -386,7 +370,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
                 var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
                 var card = await _computeSystemViewModelFactory.CreateCardViewModelAsync(
                     ComputeSystemManagerObj,
-                    computeSystem,
+                    wrapper,
                     curListViewModel.Provider,
                     packageFullName,
                     _windowEx);
@@ -429,10 +413,5 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         {
             _log.Error(ex, $"Unable to perform sort operation");
         }
-    }
-
-    public void Initialize(StackedNotificationsBehavior notificationQueue)
-    {
-        _notificationsHelper = new(notificationQueue);
     }
 }

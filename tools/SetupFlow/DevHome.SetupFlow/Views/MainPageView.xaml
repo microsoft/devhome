@@ -117,7 +117,8 @@
                         
                         <!--  settings card for setup target flow.  -->
                         <Grid 
-                            Background="Transparent">
+                            Background="Transparent"
+                            Visibility="{x:Bind ViewModel.ShouldShowSetupTargetItem}">
                             <ctControls:SettingsCard
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow_For_target"
                                 ActionIcon="{x:Null}"
@@ -129,9 +130,7 @@
                                 IsClickEnabled="True"
                                 IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}">
                                 <ctControls:SettingsCard.HeaderIcon>
-                                    <ImageIcon 
-                                        Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}"
-                                        Source="ms-appx:///DevHome.SetupFlow/Assets/SetupVirtualEnvironment.png" />
+                                    <ImageIcon Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}" Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_EndToEnd.png" />
                                 </ctControls:SettingsCard.HeaderIcon>
                             </ctControls:SettingsCard>
 
@@ -168,6 +167,7 @@
 
                         <!-- settings card for creating an environment -->
                         <ctControls:SettingsCard 
+                           Visibility="{x:Bind ViewModel.ShouldShowCreateEnvironmentItem}"
                            x:Uid="MainPageCreateEnvironment"
                            AutomationProperties.AutomationId="CreateEnvironment"
                            IsClickEnabled="True"

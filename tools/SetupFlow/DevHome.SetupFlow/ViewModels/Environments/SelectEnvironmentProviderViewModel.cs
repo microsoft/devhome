@@ -1,19 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.WinUI.Behaviors;
 using DevHome.Common.Contracts.Services;
-using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
-using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
@@ -24,8 +23,6 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     private readonly IComputeSystemService _computeSystemService;
 
     public ComputeSystemProviderDetails SelectedProvider { get; private set; }
-
-    private EnvironmentsNotificationHelper _notificationsHelper;
 
     [ObservableProperty]
     private bool _areProvidersLoaded;
@@ -55,12 +52,7 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         ProvidersViewModels = new();
         foreach (var providerDetail in providerDetails)
         {
-            // Only list providers that support creation
-            if (providerDetail.ComputeSystemProvider.SupportedOperations.HasFlag(ComputeSystemProviderOperations.CreateComputeSystem))
-            {
-                _notificationsHelper?.DisplayComputeSystemProviderErrors(providerDetail);
-                ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
-            }
+            ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
         }
 
         AreProvidersLoaded = true;
@@ -95,10 +87,5 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
             CanGoToNextPage = true;
             Orchestrator.NotifyNavigationCanExecuteChanged();
         }
-    }
-
-    public void Initialize(StackedNotificationsBehavior notificationQueue)
-    {
-        _notificationsHelper = new(notificationQueue);
     }
 }

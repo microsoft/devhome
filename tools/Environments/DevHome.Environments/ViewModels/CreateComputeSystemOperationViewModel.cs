@@ -21,7 +21,7 @@ namespace DevHome.Environments.ViewModels;
 /// </summary>
 public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBase
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CreateComputeSystemOperationViewModel));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
 
     private readonly IComputeSystemManager _computeSystemManager;
 
@@ -81,7 +81,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
         State = ComputeSystemState.Creating;
         StateColor = CardStateColor.Caution;
 
-        // Setup the button to remove the view model from the UI and the header Image
+        // Setup the button to remove the the view model from the UI and the header Image
         DotOperations = new ObservableCollection<OperationsViewModel>() { new(_stringResource.GetLocalized("RemoveButtonTextForCreateComputeSystem"), _cancelationUniCodeForGlyph, RemoveViewModelFromUI) };
         HeaderImage = CardProperty.ConvertMsResourceToIcon(providerDetails.ComputeSystemProvider.Icon, providerDetails.ExtensionWrapper.PackageFullName);
 
@@ -153,21 +153,19 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
         });
     }
 
-    private async void AddComputeSystemToUI(CreateComputeSystemResult result)
+    private void AddComputeSystemToUI(CreateComputeSystemResult result)
     {
-        var newComputeSystemViewModel = new ComputeSystemViewModel(
-            _computeSystemManager,
-            result.ComputeSystem,
-            Operation.ProviderDetails.ComputeSystemProvider,
-            _removalAction,
-            Operation.ProviderDetails.ExtensionWrapper.PackageFullName,
-            _windowEx);
-
-        await newComputeSystemViewModel.InitializeCardDataAsync();
-
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(async () =>
         {
-            newComputeSystemViewModel.InitializeUXData();
+            var newComputeSystemViewModel = new ComputeSystemViewModel(
+                _computeSystemManager,
+                result.ComputeSystem,
+                Operation.ProviderDetails.ComputeSystemProvider,
+                _removalAction,
+                Operation.ProviderDetails.ExtensionWrapper.PackageFullName,
+                _windowEx);
+
+            await newComputeSystemViewModel.InitializeCardDataAsync();
             _addComputeSystemAction(newComputeSystemViewModel);
         });
     }

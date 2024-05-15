@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
@@ -46,10 +45,6 @@ public class DevDriveManager : IDevDriveManager
     // its a Dev drive. TODO: Update this once in Windows SDK
     // https://github.com/microsoft/devhome/issues/634
     private readonly uint _devDriveVolumeStateFlag = 0x00002000;
-
-    // Query flag for persistent state info of the volume, the presence of this flag will let us know
-    // its a trusted Dev drive.
-    private readonly uint _devDriveVolumeStateTrustedFlag = 0x00004000;
 
     /// <summary>
     /// Set that holds Dev Drives that have been created through the Dev Drive manager.
@@ -196,7 +191,7 @@ public class DevDriveManager : IDevDriveManager
                 uint outputSize;
                 var volumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
                 var inputVolumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
-                inputVolumeInfo.FlagMask = _devDriveVolumeStateFlag | _devDriveVolumeStateTrustedFlag;
+                inputVolumeInfo.FlagMask = _devDriveVolumeStateFlag;
                 inputVolumeInfo.Version = 1;
 
                 SafeFileHandle volumeFileHandle = PInvoke.CreateFile(
@@ -244,7 +239,6 @@ public class DevDriveManager : IDevDriveManager
                             DriveLocation = string.Empty,
                             DriveLabel = volumeLabel,
                             State = DevDriveState.ExistsOnSystem,
-                            IsDevDriveTrusted = (volumeInfo.VolumeFlags & _devDriveVolumeStateTrustedFlag) > 0,
                         };
 
                         devDrives.Add(newDevDrive);
@@ -280,7 +274,7 @@ public class DevDriveManager : IDevDriveManager
                 TelemetryFactory.Get<ITelemetry>().Log(
                                               "DevDrive_Insufficient_DiskSpace",
                                               LogLevel.Critical,
-                                              new DevDriveInsufficientDiskSpaceEvent());
+                                              new EmptyEvent());
                 validationSuccessful = false;
             }
         }

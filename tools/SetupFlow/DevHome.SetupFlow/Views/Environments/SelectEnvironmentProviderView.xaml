@@ -8,9 +8,7 @@
     xmlns:EnvironmentViewModels="using:DevHome.SetupFlow.ViewModels.Environments"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
-    xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
-    Loaded="OnLoaded">
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -51,16 +49,9 @@
             MaxWidth="{ThemeResource MaxPageContentWidth}"
             Margin="{ThemeResource ContentPageMargin}"
             Grid.Row="1">
-            <Grid RowSpacing="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+            <StackPanel Spacing="10">
                 <!--- Show the Select environment subtitle on the page. -->
                 <TextBlock
-                    Grid.Row="0"
                     x:Uid="SelectEnvironmentSubtitle"
                     x:Name="LabelForItemsView"
                     Foreground="{ThemeResource TextFillColorSecondary}"/>
@@ -68,7 +59,6 @@
                 <!--- List of Compute system providers the user can choose from when they're loaded. -->
                 <ItemsView 
                     x:Name="ComputeSystemProviderViewModelsList"
-                    Grid.Row="1"
                     AutomationProperties.LabeledBy="{Binding ElementName=LabelForItemsView, Mode=OneWay}"
                     ItemsSource="{x:Bind ViewModel.ProvidersViewModels, Mode=OneWay}"
                     ItemTemplate="{StaticResource ProviderItemTemplate}"
@@ -86,7 +76,6 @@
                 </ItemsView>
 
                 <Grid
-                    Grid.Row="2"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Visibility="{x:Bind ViewModel.AreProvidersLoaded, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
@@ -96,18 +85,7 @@
                         Height="25"
                         Margin="0,150,0,0"/>
                 </Grid>
-
-                <InfoBar
-                    MaxWidth="480"
-                    Margin="24"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom"
-                    Grid.Row="3">
-                    <i:Interaction.Behaviors>
-                        <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
-                    </i:Interaction.Behaviors>
-                </InfoBar>
-            </Grid>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </UserControl>

@@ -19,7 +19,11 @@ public class EnvironmentsExtensionsService
 {
     private readonly IComputeSystemManager _computeSystemManager;
 
+    private const string EnvironmentsCreationFlowFeatureName = "EnvironmentsCreationFlow";
+
     private readonly IExperimentationService _experimentationService;
+
+    public bool IsEnvironmentCreationEnabled => _experimentationService.IsFeatureEnabled(EnvironmentsCreationFlowFeatureName);
 
     public EnvironmentsExtensionsService(IComputeSystemManager computeSystemManager, IExperimentationService experimentationService)
     {

@@ -685,10 +685,6 @@
     <value>Try "GitHub"</value>
     <comment>{Locked="GitHub"}Placeholder text displayed in a search box</comment>
   </data>
-  <data name="SearchBox_Experiment.PlaceholderText" xml:space="preserve">
-    <value>Search for apps</value>
-    <comment>Placeholder text displayed in a search box</comment>
-  </data>
   <data name="SelectAll.Content" xml:space="preserve">
     <value>Select all</value>
     <comment>Label for select all checkbox</comment>

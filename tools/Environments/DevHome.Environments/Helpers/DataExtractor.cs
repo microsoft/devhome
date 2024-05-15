@@ -12,7 +12,7 @@ namespace DevHome.Environments.Helpers;
 
 public class DataExtractor
 {
-    private static readonly StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
+    private static StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
     /// <summary>
     /// Checks for supported operations and adds the text, icon, and function associated with the operation.
@@ -21,10 +21,10 @@ public class DataExtractor
     /// ToDo: Add a pause after each operation
     /// </summary>
     /// <param name="computeSystem">Compute system used to fill OperationsViewModel's callback function.</param>
-    public static List<OperationsViewModel> FillDotButtonOperations(ComputeSystemCache computeSystem, WinUIEx.WindowEx windowEx)
+    public static List<OperationsViewModel> FillDotButtonOperations(ComputeSystem computeSystem, WinUIEx.WindowEx windowEx)
     {
         var operations = new List<OperationsViewModel>();
-        var supportedOperations = computeSystem.SupportedOperations.Value;
+        var supportedOperations = computeSystem.SupportedOperations;
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Restart))
         {
@@ -40,9 +40,9 @@ public class DataExtractor
         return operations;
     }
 
-    public static async Task<List<OperationsViewModel>> FillDotButtonPinOperationsAsync(ComputeSystemCache computeSystem)
+    public static async Task<List<OperationsViewModel>> FillDotButtonPinOperationsAsync(ComputeSystem computeSystem)
     {
-        var supportedOperations = computeSystem.SupportedOperations.Value;
+        var supportedOperations = computeSystem.SupportedOperations;
         var operations = new List<OperationsViewModel>();
         if (supportedOperations.HasFlag(ComputeSystemOperations.PinToTaskbar))
         {
@@ -88,10 +88,10 @@ public class DataExtractor
     /// Returns the list of operations to be added to the launch button.
     /// </summary>
     // <param name="computeSystem">Compute system used to fill OperationsViewModel's callback function.</param>
-    public static List<OperationsViewModel> FillLaunchButtonOperations(ComputeSystemCache computeSystem)
+    public static List<OperationsViewModel> FillLaunchButtonOperations(ComputeSystem computeSystem)
     {
         var operations = new List<OperationsViewModel>();
-        var supportedOperations = computeSystem.SupportedOperations.Value;
+        var supportedOperations = computeSystem.SupportedOperations;
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Start))
         {

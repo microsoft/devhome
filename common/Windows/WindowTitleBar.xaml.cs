@@ -5,7 +5,6 @@ using System;
 using DevHome.Common.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.Common.Windows;
 
@@ -21,12 +20,6 @@ public sealed partial class WindowTitleBar : UserControl
     {
         get => (string)GetValue(TitleProperty);
         set => SetValue(TitleProperty, value);
-    }
-
-    public ImageSource IconSource
-    {
-        get => (ImageSource)GetValue(IconSourceProperty) ?? (ImageSource)Application.Current.Resources["WindowTitleBarDefaultIcon"];
-        set => SetValue(IconSourceProperty, value);
     }
 
     public IconElement Icon
@@ -80,7 +73,6 @@ public sealed partial class WindowTitleBar : UserControl
     }
 
     private static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(WindowTitleBar), new PropertyMetadata(null, (s, e) => OnTitleChanged((WindowTitleBar)s, (string)e.NewValue)));
-    private static readonly DependencyProperty IconSourceProperty = DependencyProperty.Register(nameof(IconSource), typeof(string), typeof(WindowTitleBar), new PropertyMetadata(null));
     private static readonly DependencyProperty IconProperty = DependencyProperty.Register(nameof(Icon), typeof(IconElement), typeof(WindowTitleBar), new PropertyMetadata(null));
     private static readonly DependencyProperty HideIconProperty = DependencyProperty.Register(nameof(HideIcon), typeof(bool), typeof(WindowTitleBar), new PropertyMetadata(false));
     private static readonly DependencyProperty IsActiveProperty = DependencyProperty.Register(nameof(IsActive), typeof(bool), typeof(WindowTitleBar), new PropertyMetadata(true, (s, e) => OnIsActiveChanged((WindowTitleBar)s, (bool)e.NewValue)));

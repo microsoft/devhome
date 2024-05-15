@@ -55,8 +55,7 @@
         <Grid Grid.Row="0"
               MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <TextBlock x:Uid="DashboardPage_Title" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Left"/>
-            <!-- Include small upper margin so focus rect is fully visible -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,2,0,22">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,22">
                 <Button x:Name="AddWidgetButton"
                         x:Uid="AddWidget"
                         HorizontalAlignment="Right"

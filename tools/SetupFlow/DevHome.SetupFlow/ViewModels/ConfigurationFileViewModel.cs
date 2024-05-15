@@ -14,7 +14,6 @@ using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
-using Microsoft.Diagnostics.Telemetry.Internal;
 using Serilog;
 using Windows.Storage;
 using WinUIEx;
@@ -104,7 +103,6 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task OnLoadedAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Loaded", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance), Orchestrator.ActivityId);
         try
         {
             if (Configuration != null && ConfigurationUnits == null)
@@ -117,12 +115,6 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         {
             _log.Error(e, $"Failed to get configuration unit details.");
         }
-    }
-
-    [RelayCommand]
-    private void OnViewSelectionChanged(string newViewMode)
-    {
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_ViewSelectionChanged", LogLevel.Critical, new ConfigureModeCommandEvent(newViewMode), Orchestrator.ActivityId);
     }
 
     /// <summary>

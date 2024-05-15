@@ -16,8 +16,6 @@
 #include <wil/win32_helpers.h>
 #include <wil/winrt.h>
 
-#include "DevHomeTelemetryProvider.h"
-
 #include "DevHome.QuietBackgroundProcesses.h"
 
 #include "Timer.h"
@@ -80,20 +78,13 @@ struct UnelevatedServerReference
 //          teardown in unelevated server (assuming DevHome is closed), releasing the cached *strong* reference
 //          to the session (elevated) -> COM triggers teardown in elevated server.
 //
-#pragma warning(push)
-#pragma warning(disable : 4324) // Avoid WRL alignment warning
 struct TimedQuietSession
 {
     TimedQuietSession(std::chrono::seconds seconds)
     {
-        // Save activity for telemetry
-        auto activity = DevHomeTelemetryProvider::QuietBackgroundProcesses_ElevatedServer_Session::Start(seconds.count());
-
-        m_intendedDurationInSeconds = seconds;
-
         m_timer = std::make_unique<Timer>(seconds, [this]() {
             auto lock = std::scoped_lock(m_mutex);
-            Deactivate(false);
+            Deactivate();
         });
 
         // Turn on quiet mode
@@ -104,8 +95,6 @@ struct TimedQuietSession
         samplingPeriod.Duration = 1000 * 10000; // 1 second
         m_performanceRecorderEngine = MakePerformanceRecorderEngine();
         THROW_IF_FAILED(m_performanceRecorderEngine->Start(samplingPeriod));
-
-        m_activity = activity.TransferToMember();
     }
 
     TimedQuietSession(TimedQuietSession&& other) noexcept = default;
@@ -130,7 +119,7 @@ struct TimedQuietSession
     {
         auto lock = std::scoped_lock(m_mutex);
 
-        Deactivate(true, result);
+        Deactivate(result);
         m_timer->Cancel();
 
         // Destruct timer on another thread because it's destructor is blocking
@@ -142,18 +131,8 @@ struct TimedQuietSession
     }
 
 private:
-    void Deactivate(bool manuallyStopped, ABI::DevHome::QuietBackgroundProcesses::IProcessPerformanceTable** result = nullptr)
+    void Deactivate(ABI::DevHome::QuietBackgroundProcesses::IProcessPerformanceTable** result = nullptr)
     {
-        if (m_deactivated)
-        {
-            return;
-        }
-
-        // Continue activity on current thread
-        auto activity = m_activity.TransferToCurrentThread();
-
-        auto totalQuietWindowTime = m_intendedDurationInSeconds - std::chrono::seconds(m_timer->TimeLeftInSeconds());
-
         // Turn off quiet mode
         m_quietState.reset();
 
@@ -169,24 +148,13 @@ private:
         // Release lifetime handles to this elevated server and unelevated client server
         m_unelevatedServer.reset();
         m_elevatedServer.reset();
-
-        // Only allow deactivation once
-        m_deactivated = true;
-
-        // Stop activity
-        activity.Stop(manuallyStopped, totalQuietWindowTime.count());
     }
 
     UnelevatedServerReference m_unelevatedServer;   // Manager server
     ElevatedServerReference m_elevatedServer;       // Session server (this server)
 
-    bool m_deactivated{};
     QuietState::unique_quietwindowclose_call m_quietState{ false };
     std::unique_ptr<Timer> m_timer;
     wil::com_ptr<ABI::DevHome::QuietBackgroundProcesses::IPerformanceRecorderEngine> m_performanceRecorderEngine;
     std::mutex m_mutex;
-
-    DevHomeTelemetryProvider::QuietBackgroundProcesses_ElevatedServer_Session m_activity;
-    std::chrono::seconds m_intendedDurationInSeconds{};
 };
-#pragma warning(pop)

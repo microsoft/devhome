@@ -21,6 +21,7 @@ public static class ServiceExtensions
 
         // Services
         services.AddSingleton<EnvironmentsExtensionsService>();
+        services.AddSingleton<IWindowsIdentityService, WindowsIdentityService>();
 
 #if DEBUG
         // Debug only offline test compute system provider

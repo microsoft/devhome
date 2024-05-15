@@ -10,12 +10,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.Extensions;
 using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
-using DevHome.Telemetry;
 using Serilog;
 using WinUIEx;
 
@@ -163,8 +162,6 @@ public partial class ReviewViewModel : SetupPageViewModelBase
                 await Orchestrator.InitializeElevatedServerAsync();
             }
 
-            var flowPages = Orchestrator.FlowPages.Select(p => p.GetType().Name).ToList();
-            TelemetryFactory.Get<ITelemetry>().Log("Review_SetUp", LogLevel.Critical, new ReviewSetUpCommandEvent(Orchestrator.IsSettingUpATargetMachine, flowPages));
             await Orchestrator.GoToNextPage();
         }
         catch (Exception e)
@@ -189,25 +186,11 @@ public partial class ReviewViewModel : SetupPageViewModelBase
             {
                 var configFile = _configFileBuilder.BuildConfigFileStringFromTaskGroups(Orchestrator.TaskGroups, ConfigurationFileKind.Normal);
                 await File.WriteAllTextAsync(fileName, configFile);
-                ReportGenerateConfiguration();
             }
         }
         catch (Exception e)
         {
             _log.Error(e, $"Failed to download configuration file.");
         }
-    }
-
-    private void ReportGenerateConfiguration()
-    {
-        var flowPages = Orchestrator.FlowPages.Select(p => p.GetType().Name).ToList();
-        TelemetryFactory.Get<ITelemetry>().Log("Review_GenerateConfiguration", LogLevel.Critical, new ReviewGenerateConfigurationCommandEvent(flowPages));
-
-        var installTasks = Orchestrator.TaskGroups.OfType<AppManagementTaskGroup>()
-            .SelectMany(x => x.DSCTasks.OfType<InstallPackageTask>());
-
-        var installedPackagesCount = installTasks.Count(task => task.IsInstalled);
-        var nonInstalledPackagesCount = installTasks.Count() - installedPackagesCount;
-        TelemetryFactory.Get<ITelemetry>().Log("Review_GenerateConfigurationForInstallPackages", LogLevel.Critical, new ReviewGenerateConfigurationForInstallEvent(installedPackagesCount, nonInstalledPackagesCount));
     }
 }

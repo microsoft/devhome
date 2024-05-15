@@ -16,7 +16,6 @@
     xmlns:views="using:DevHome.SetupFlow.Views"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:common="using:DevHome.Common.Controls"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -56,36 +55,20 @@
                 </Grid.RowDefinitions>
 
                 <!-- Search bar -->
-                <common:ExperimentControl ExperimentKey="AppManagement_SearchBoxPlaceholder" x:Name="SearchBox">
-                    <common:ExperimentControl.Resources>
-                        <Style TargetType="AutoSuggestBox" BasedOn="{StaticResource DefaultAutoSuggestBoxStyle}">
-                            <Setter Property="QueryIcon" Value="Find"/>
-                            <Setter Property="HorizontalAlignment" Value="Left"/>
-                            <Setter Property="Width" Value="400"/>
-                            <Setter Property="Margin" Value="0,0,0,20"/>
-                        </Style>
-                    </common:ExperimentControl.Resources>
-
-                    <common:ExperimentControl.DefaultContent>
-                        <AutoSuggestBox x:Name="SearchBox_Default" x:Uid="SearchBox" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}">
-                            <i:Interaction.Behaviors>
-                                <ic:EventTriggerBehavior EventName="TextChanged">
-                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchTextChangedCommand}" CommandParameter="{x:Bind Path=SearchBox_Default.Text, Mode=OneWay}"/>
-                                </ic:EventTriggerBehavior>
-                            </i:Interaction.Behaviors>
-                        </AutoSuggestBox>
-                    </common:ExperimentControl.DefaultContent>
-
-                    <common:ExperimentControl.ExperimentContent>
-                        <AutoSuggestBox x:Name="SearchBox_Experiment" x:Uid="SearchBox_Experiment" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}">
-                            <i:Interaction.Behaviors>
-                                <ic:EventTriggerBehavior EventName="TextChanged">
-                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchTextChangedCommand}" CommandParameter="{x:Bind Path=SearchBox_Experiment.Text, Mode=OneWay}"/>
-                                </ic:EventTriggerBehavior>
-                            </i:Interaction.Behaviors>
-                        </AutoSuggestBox>
-                    </common:ExperimentControl.ExperimentContent>
-                </common:ExperimentControl>
+                <AutoSuggestBox
+                    x:Name="SearchBox"
+                    Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}"
+                    QueryIcon="Find"
+                    HorizontalAlignment="Left"
+                    Width="400"
+                    Margin="0,0,0,20"
+                    x:Uid="SearchBox">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="TextChanged">
+                            <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchTextChangedCommand}" CommandParameter="{Binding Text, ElementName=SearchBox}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </AutoSuggestBox>
 
                 <!-- Main content -->
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="MainContent" AutomationProperties.AccessibilityView="Raw">
@@ -196,7 +179,6 @@
                             </ctControls:SettingsCard.ActionIcon>
                             <Button
                                 AutomationProperties.Name="{x:Bind ButtonAutomationName, Mode=OneWay}"
-                                AutomationProperties.AutomationId="{x:Bind ButtonAutomationId}"
                                 Command="{x:Bind ToggleSelectionCommand, Mode=OneWay}"
                                 FontSize="{ThemeResource CaptionTextBlockFontSize}"
                                 Style="{ThemeResource AlternateCloseButtonStyle}">
