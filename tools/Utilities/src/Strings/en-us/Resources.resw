@@ -118,27 +118,36 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="EnvVariablesEditorUtilityDesc" xml:space="preserve">
-    <value>A quick utility for managing environment variables.</value>
+    <value>Create and manage environment variables.</value>
   </data>
   <data name="EnvVariablesEditorUtilityTitle" xml:space="preserve">
     <value>Environment Variables Editor</value>
   </data>
   <data name="HostsFileEditorUtilityDesc" xml:space="preserve">
-    <value>Quick and simple utility for managing hosts file.</value>
-    <comment>;Locked={"hosts"}</comment>
+    <value>Add, filter or remove Hosts file entries.</value>
+    <comment>;Locked={"Hosts"}</comment>
   </data>
   <data name="HostsFileEditorUtilityTitle" xml:space="preserve">
     <value>Hosts File Editor</value>
     <comment>;Locked={"Hosts"}</comment>
+  </data>
+  <data name="LaunchButton.Text" xml:space="preserve">
+    <value>Launch</value>
   </data>
   <data name="NavigationPane.Content" xml:space="preserve">
     <value>Utilities</value>
     <comment>Utilities</comment>
   </data>
   <data name="RegistryPreviewUtilityDesc" xml:space="preserve">
-    <value>A quick little utility to visualize and edit complex Windows Registry files.</value>
+    <value>Edit and visualize Windows Registry files.</value>
   </data>
   <data name="RegistryPreviewUtilityTitle" xml:space="preserve">
     <value>Registry Preview</value>
+  </data>
+  <data name="SupportsLaunchAsAdmin.OffContent" xml:space="preserve">
+    <value>Launch as administrator</value>
+  </data>
+  <data name="SupportsLaunchAsAdmin.OnContent" xml:space="preserve">
+    <value>Launch as administrator</value>
   </data>
 </root>

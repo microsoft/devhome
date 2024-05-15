@@ -25,22 +25,25 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
             {
                 Title = stringResource.GetLocalized("HostsFileEditorUtilityTitle"),
                 Description = stringResource.GetLocalized("HostsFileEditorUtilityDesc"),
-                NavigateUri = "https://aka.ms/PowerToysOverview_HostsFileEditor",
+                NavigateUri = "https://go.microsoft.com/fwlink/?Linkid=2271355",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\HostsUILib", "Hosts.ico"),
+                SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Visible,
             },
             new(Path.Combine(appExAliasAbsFolderPath, "DevHome.RegistryPreviewApp.exe"))
             {
                 Title = stringResource.GetLocalized("RegistryPreviewUtilityTitle"),
                 Description = stringResource.GetLocalized("RegistryPreviewUtilityDesc"),
-                NavigateUri = "https://aka.ms/PowerToysOverview_RegistryPreview",
+                NavigateUri = "https://go.microsoft.com/fwlink/?Linkid=2270966",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\RegistryPreview", "RegistryPreview.ico"),
+                SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Collapsed,
             },
             new(Path.Combine(appExAliasAbsFolderPath, "DevHome.EnvironmentVariablesApp.exe"))
             {
                 Title = stringResource.GetLocalized("EnvVariablesEditorUtilityTitle"),
                 Description = stringResource.GetLocalized("EnvVariablesEditorUtilityDesc"),
-                NavigateUri = "https://aka.ms/PowerToysOverview_EnvironmentVariables",
+                NavigateUri = "https://go.microsoft.com/fwlink/?Linkid=2270894",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\EnvironmentVariables", "EnvironmentVariables.ico"),
+                SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Visible,
             },
         };
     }
