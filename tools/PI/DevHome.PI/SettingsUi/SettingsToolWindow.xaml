@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<local:ToolWindow
+    x:Class="DevHome.PI.SettingsUi.SettingsToolWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DevHome.PI.ToolWindows"
+    xmlns:sui="using:DevHome.PI.SettingsUi"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="">
+    <local:ToolWindow.SystemBackdrop>
+        <MicaBackdrop/>
+    </local:ToolWindow.SystemBackdrop>
+
+    <Grid Margin="12,4,0,12" >
+        <Grid.Resources>
+            <Style TargetType="Border">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Margin" Value="0,8,-8,0"/>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="BorderThickness" Value="0"/>
+            </Style>
+            <Style TargetType="ToggleSwitch">
+                <Setter Property="HorizontalAlignment" Value="Right"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="0,0,6,0"/>
+            </Style>
+            <Style TargetType="TextBlock" x:Key="IconTextStyle">
+                <Setter Property="FontFamily" Value="Segoe Fluent Icons"/>
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="Margin" Value="8,4,0,0"/>
+                <Setter Property="Width" Value="32"/>
+                <Setter Property="Height" Value="32"/>
+            </Style>
+            <Style TargetType="TextBlock" x:Key="ItemTextStyle">
+                <Setter Property="Margin" Value="0,5,0,0"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Uid="SettingsToolHeaderTextBlock" FontSize="16" FontWeight="Bold" Margin="0,0,0,6"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ListView
+                x:Name="NavLinksList" SelectionMode="Single" VerticalAlignment="Stretch"
+                SelectionChanged="NavLinksList_SelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                Text="{Binding IconText}"
+                                FontFamily="Segoe Fluent Icons" FontSize="20" Margin="0,4,0,0"
+                                HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock
+                                Text="{Binding ContentText}"
+                                Margin="10,10,0,10" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Grid x:Name="UserProfileGrid" Grid.Column="1" Margin="12,0,24,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock x:Uid="UserProfileTextBlock" FontSize="20" Grid.ColumnSpan="3" Margin="0,0,0,8"/>
+
+                <Border Grid.Row="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xE790;" Style="{StaticResource IconTextStyle}"/>
+                        <TextBlock
+                            x:Uid="ThemeSelectionTextBlock" Grid.Column="1" Style="{StaticResource ItemTextStyle}"/>
+                        <ComboBox
+                            x:Name="ThemeComboBox" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Grid.Column="2" Margin="40,0,6,0" Width="120" SelectionChanged="ThemeComboBox_SelectionChanged">
+                            <ComboBoxItem x:Uid="ThemeLightComboItem"/>
+                            <ComboBoxItem x:Uid="ThemeDarkComboItem"/>
+                            <ComboBoxItem x:Uid="ThemeDefaultComboItem" />
+                        </ComboBox>
+                    </Grid>
+                </Border>
+
+            </Grid>
+
+            <Grid x:Name="AdditionalToolsGrid" Grid.Column="1" Margin="12,0,24,0" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock x:Uid="AdditionalToolsTextBlock" FontSize="20" Grid.ColumnSpan="3" Margin="0,0,0,8"/>
+
+                <Expander Grid.Row="1"
+                    IsExpanded="False" ExpandDirection="Down" HorizontalContentAlignment="Stretch"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6">
+                    <Expander.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="&#xE710;" Style="{StaticResource IconTextStyle}"/>
+                            <TextBlock 
+                                x:Uid="AddAToolToBarTextBlock" Grid.Column="1" Style="{StaticResource ItemTextStyle}"/>
+                        </Grid>
+                    </Expander.Header>
+                    <sui:AddToolControl x:Name="AddToolPanel"/>
+                </Expander>
+
+                <Expander Grid.Row="2"
+                    IsExpanded="False" ExpandDirection="Down" HorizontalContentAlignment="Stretch"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6">
+                    <Expander.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="&#xE70F;" Style="{StaticResource IconTextStyle}"/>
+                            <TextBlock 
+                                x:Uid="EditToolConfigurationTextBlock" Grid.Column="1" Style="{StaticResource ItemTextStyle}"/>
+                        </Grid>
+                    </Expander.Header>
+                    <sui:EditToolsControl x:Name="EditToolsPanel"/>
+                </Expander>
+
+            </Grid>
+
+            <Grid x:Name="AdvancedSettingsGrid" Grid.Column="1" Margin="12,0,24,0" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock x:Uid="AdvancedSettingsTextBlock" FontSize="20" Grid.ColumnSpan="3" Margin="0,0,0,8"/>
+
+                <Border Grid.Row="1">
+                    <Grid Margin="0,0,0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="&#xE950;" Style="{StaticResource IconTextStyle}"/>
+                        <TextBlock
+                            x:Uid="MonitorCpuSettingTextBlock" Grid.Column="1" Style="{StaticResource ItemTextStyle}"/>
+                        <ToggleSwitch
+                            x:Name="CpuUsageToggle" Grid.Column="2" Toggled="CpuUsageToggle_Toggled"/>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xE9D9;" Style="{StaticResource IconTextStyle}"/>
+                        <TextBlock
+                            x:Uid="ShowInsightsTextBlock"
+                            Grid.Column="1" Style="{StaticResource ItemTextStyle}"/>
+                        <ToggleSwitch
+                            x:Name="ShowInsightsToggle" Grid.Column="2" 
+                            Toggled="ShowInsightsToggle_Toggled"/>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="3">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xF0E3;" Style="{StaticResource IconTextStyle}"/>
+                        <TextBlock
+                            x:Uid="EnableClipboardMonitoringTextBlock"
+                            Grid.Column="1" Style="{StaticResource ItemTextStyle}"/>
+                        <ToggleSwitch
+                            x:Name="EnableClipboardMonitoringToggle" Grid.Column="2" 
+                            Toggled="EnableClipboardMonitoringToggle_Toggled"/>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="4">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="&#xE71C;" Style="{StaticResource IconTextStyle}"/>
+                        <TextBlock
+                            x:Uid="ExcludedProcessesTextBlock"
+                            Grid.Column="1" Style="{StaticResource ItemTextStyle}"/>
+                        <TextBox
+                            x:Name="ExcludedProcessesTextBox" Grid.Row="1" Grid.Column="1"
+                            AcceptsReturn="True" TextWrapping="Wrap" Margin="0,0,6,0" Height="80"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+                        <Button
+                            x:Uid="ExcludedProcessesButton"
+                            x:Name="ExcludedProcessesButton" Grid.Row="1" Grid.Column="2" 
+                            VerticalAlignment="Top" HorizontalAlignment="Left"
+                            Margin="0,0,6,0" Width="100" Height="36" Click="ExcludedProcessesButton_Click"/>
+                    </Grid>
+                </Border>
+
+            </Grid>
+
+            <Grid x:Name="AboutGrid" Grid.Column="1" Margin="12,0,24,0" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock x:Uid="AboutHeaderTextBlock" FontSize="20" Grid.ColumnSpan="3" Margin="0,0,0,8"/>
+
+                <Border Grid.Row="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="140"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Image Source="/Images/PI.ico" Width="24" Height="24" Grid.RowSpan="2" VerticalAlignment="Center"/>
+                        <TextBlock
+                            x:Uid="DevHomePISpecificationsTextBlock"
+                            Grid.Column="1" Style="{StaticResource BaseTextBlockStyle}"/>
+                        <TextBlock
+                            x:Uid="DevHomePIVersionTextBlock"
+                            Grid.Row="1" Grid.Column="1" Style="{StaticResource ItemTextStyle}"/>
+                        <TextBlock
+                            x:Name="DevHomePIVersionTextBlock" Text="2405.3.1.0"
+                            Grid.Row="1" Grid.Column="2" Style="{StaticResource ItemTextStyle}"/>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="3">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xE897;" Style="{StaticResource IconTextStyle}"/>
+                        <TextBlock Grid.Column="1" Style="{StaticResource ItemTextStyle}">
+                            <Hyperlink
+                                NavigateUri="https://github.com/microsoft/devhome/issues/2796">
+                                <Run x:Uid="DocumentationLinkLabel"/>
+                            </Hyperlink>
+                        </TextBlock>
+                    </Grid>
+                </Border>
+              
+                <Border Grid.Row="4">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xE8A5;" Style="{StaticResource IconTextStyle}"/>
+                        <TextBlock Grid.Column="1" Style="{StaticResource ItemTextStyle}">
+                            <Hyperlink
+                                NavigateUri="https://privacy.microsoft.com/en-us/privacystatement">
+                                <Run x:Uid="PrivacyLinkLabel"/>
+                            </Hyperlink>
+                        </TextBlock>
+                    </Grid>
+                </Border>
+
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+</local:ToolWindow>

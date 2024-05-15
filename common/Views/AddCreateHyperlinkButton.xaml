@@ -1,0 +1,14 @@
+<HyperlinkButton
+    x:Class="DevHome.Common.Views.AddCreateHyperlinkButton"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Style="{StaticResource DefaultHyperlinkButtonStyle}"
+    AutomationProperties.Name="{x:Bind Content}">
+
+    <StackPanel Orientation="Horizontal" Spacing="12">
+        <FontIcon FontSize="16" Glyph="&#xE710;" />
+        <TextBlock
+               FontSize="{ThemeResource BodyTextBlockFontSize}"
+               Text="{x:Bind Content}" />
+    </StackPanel>
+</HyperlinkButton>

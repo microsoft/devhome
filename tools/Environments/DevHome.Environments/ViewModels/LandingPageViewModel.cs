@@ -85,6 +85,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
+    private const int SortUnselected = -1;
+
     public ObservableCollection<string> Providers { get; set; }
 
     private CancellationTokenSource _cancellationTokenSource = new();
@@ -102,11 +104,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
-        SelectedSortIndex = -1;
+        SelectedSortIndex = SortUnselected;
         Providers = new() { _stringResource.GetLocalized("AllProviders") };
         _lastSyncTime = _stringResource.GetLocalized("MomentsAgo");
 
         ComputeSystemCardsView = new AdvancedCollectionView(ComputeSystemCards);
+        ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
     }
 
     public void Initialize(StackedNotificationsBehavior notificationQueue)
@@ -118,7 +121,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public async Task SyncButton()
     {
         // Reset the sort and filter
-        SelectedSortIndex = -1;
+        SelectedSortIndex = SortUnselected;
         Providers = new ObservableCollection<string> { _stringResource.GetLocalized("AllProviders") };
         SelectedProviderIndex = 0;
         _wasSyncButtonClicked = true;
@@ -234,7 +237,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 if (ComputeSystemCards[i] is ComputeSystemViewModel computeSystemViewModel)
                 {
                     computeSystemViewModel.RemoveStateChangedHandler();
-                    computeSystemViewModel.ComputeSystemErrorFound -= OnComputeSystemOperationError;
+                    ComputeSystemCards[i].ComputeSystemErrorReceived -= OnComputeSystemOperationError;
                     ComputeSystemCards.RemoveAt(i);
                 }
             }
@@ -269,10 +272,10 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         {
             for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
             {
-                if (ComputeSystemCards[i].IsCreateComputeSystemOperation)
+                if (ComputeSystemCards[i] is CreateComputeSystemOperationViewModel operationViewModel)
                 {
-                    var operationViewModel = ComputeSystemCards[i] as CreateComputeSystemOperationViewModel;
                     operationViewModel!.RemoveEventHandlers();
+                    operationViewModel.ComputeSystemErrorReceived -= OnComputeSystemOperationError;
                     ComputeSystemCards.RemoveAt(i);
                 }
             }
@@ -281,9 +284,13 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             foreach (var operation in curOperations)
             {
                 // this is a new operation so we need to create a view model for it.
-                ComputeSystemCards.Add(new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, RemoveComputeSystemCard, AddNewlyCreatedComputeSystem, operation));
+                ComputeSystemCards.Insert(0, new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, RemoveComputeSystemCard, AddNewlyCreatedComputeSystem, operation));
+                ComputeSystemCards.Last().ComputeSystemErrorReceived += OnComputeSystemOperationError;
                 _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
             }
+
+            ComputeSystemCardsView.Refresh();
+            UpdateCallToActionText();
         }
     }
 
@@ -314,7 +321,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 packageFullName,
                 _windowEx);
 
-            computeSystemViewModel.ComputeSystemErrorFound += OnComputeSystemOperationError;
+            computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
             computeSystemViewModels.Add(computeSystemViewModel);
         }
 
@@ -410,6 +417,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     {
         ComputeSystemCardsView.SortDescriptions.Clear();
 
+        if (SelectedSortIndex == SortUnselected)
+        {
+            ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
+        }
+
         switch (SelectedSortIndex)
         {
             case 0:
@@ -451,8 +463,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 {
                     lock (ComputeSystemCards)
                     {
-                        ComputeSystemCards.Add(computeSystemViewModel);
+                        computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
+                        ComputeSystemCards.Insert(0, computeSystemViewModel);
                     }
+
+                    ComputeSystemCardsView.Refresh();
                 });
             }
         });
@@ -466,11 +481,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
     }
 
-    private void OnComputeSystemOperationError(ComputeSystemViewModel computeSystemViewModel, string errorText)
+    private void OnComputeSystemOperationError(ComputeSystemCardBase cardBase, string errorText)
     {
         _notificationsHelper?.DisplayComputeSystemOperationError(
-            computeSystemViewModel.ProviderDisplayName,
-            computeSystemViewModel.ComputeSystem!.DisplayName.Value,
+            cardBase.ProviderDisplayName,
+            cardBase.Name,
             errorText);
     }
 
@@ -499,6 +514,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         // if there are cards in the UI don't update the text and keep their values as null.
         if (ComputeSystemCards.Count > 0)
         {
+            CallToActionText = null;
             return;
         }
 

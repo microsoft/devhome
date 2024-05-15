@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Services;
 using DevHome.Telemetry;
 using DevHome.Utilities.TelemetryEvents;
 using Serilog;
@@ -14,9 +15,28 @@ namespace DevHome.Utilities.ViewModels;
 
 public class UtilityViewModel : INotifyPropertyChanged
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(UtilityViewModel));
+#nullable enable
 
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(UtilityViewModel));
+    private readonly IExperimentationService? experimentationService;
+    private readonly string? experimentalFeature;
     private readonly string exeName;
+#nullable disable
+
+    public bool Visible
+    {
+        get
+        {
+            // Query if there is an experimental feature and return its enabled value
+            if (experimentalFeature is not null)
+            {
+                var isExperimentalFeatureEnabled = experimentationService?.IsFeatureEnabled(experimentalFeature) ?? true;
+                return isExperimentalFeatureEnabled;
+            }
+
+            return true;
+        }
+    }
 
     public string Title { get; set; }
 
@@ -37,13 +57,17 @@ public class UtilityViewModel : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public UtilityViewModel(string exeName)
+#nullable enable
+    public UtilityViewModel(string exeName, IExperimentationService? experimentationService = null, string? experimentalFeature = null)
     {
         this.exeName = exeName;
+        this.experimentationService = experimentationService;
+        this.experimentalFeature = experimentalFeature;
         LaunchCommand = new RelayCommand(Launch);
         LaunchAsAdminCommand = new RelayCommand(LaunchAsAdmin);
         _log.Information("UtilityViewModel created for Title: {Title}, exe: {ExeName}", Title, exeName);
     }
+#nullable disable
 
     private void Launch()
     {
@@ -68,11 +92,18 @@ public class UtilityViewModel : INotifyPropertyChanged
             Verb = runAsAdmin ? "runas" : "open",
         };
 
-        var process = Process.Start(processStartInfo);
-        if (process is null)
+        try
         {
-            _log.Error("Failed to start process {ExeName}", exeName);
-            throw new InvalidOperationException("Failed to start process");
+            var process = Process.Start(processStartInfo);
+            if (process is null)
+            {
+                _log.Error("Failed to start process {ExeName}", exeName);
+                throw new InvalidOperationException("Failed to start process");
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Failed to start process {ExeName}", exeName);
         }
 
         TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(Title, runAsAdmin), null);

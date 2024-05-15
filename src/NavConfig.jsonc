@@ -86,6 +86,27 @@
           "visible": true
         }
       ]
+    },
+    {
+      "identity": "ProjectIronsidesExperiment",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": true
+        }
+      ]
     }
   ]
 }

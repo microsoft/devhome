@@ -14,6 +14,8 @@
     <None Remove="Environments\CustomControls\CardHeader.xaml" />
     <None Remove="Environments\Styles\HorizontalCardStyles.xaml" />
     <None Remove="Environments\Templates\EnvironmentsTemplates.xaml" />
+    <None Remove="Views\AddCreateButton.xaml" />
+    <None Remove="Views\AddCreateHyperlinkButton.xaml" />
     <None Remove="Views\Banner.xaml" />
     <None Remove="Views\CloseButton.xaml" />
     <None Remove="Views\HyperlinkTextBlock.xaml" />
@@ -53,7 +55,7 @@
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="System.Management.Automation" Version="7.4.0" />
-    <PackageReference Include="WinUIEx" Version="1.8.0" />
+    <PackageReference Include="WinUIEx" Version="2.3.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -73,8 +75,15 @@
     <Page Update="Environments\Templates\EnvironmentsTemplates.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+    <Page Update="Views\AddCreateHyperlinkButton.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\Banner.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\AddCreateButton.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\CloseButton.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -235,8 +235,18 @@ public class ComputeSystemCache
     public async Task FetchDataAsync()
     {
         _ = await GetStateAsync();
-        _ = SupportedOperations.Value;
-        _ = await GetIsPinnedToStartMenuAsync();
+        var supportedOperations = SupportedOperations?.Value ?? ComputeSystemOperations.None;
+
+        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToStartMenu))
+        {
+            _ = await GetIsPinnedToStartMenuAsync();
+        }
+
+        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToTaskbar))
+        {
+           _ = await GetIsPinnedToTaskbarAsync();
+        }
+
         _ = await GetComputeSystemThumbnailAsync(string.Empty);
         _ = await GetComputeSystemPropertiesAsync(string.Empty);
     }

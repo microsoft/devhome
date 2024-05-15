@@ -5,9 +5,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:ui="using:CommunityToolkit.WinUI"
-    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
-    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d" 
     d:DesignHeight="300" d:DesignWidth="300">
 
@@ -18,11 +15,12 @@
         Margin="0"
         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-        BorderThickness="{ThemeResource ExpanderBorderThickness}">
+        BorderThickness="{ThemeResource ExpanderBorderThickness}"
+        Visibility="{x:Bind ViewModel.Visible}">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
@@ -36,7 +34,7 @@
 
         <ScrollViewer
             Grid.Row="1"
-            Padding="15 10 15 0">
+            Padding="15 10 15 8">
 
             <StackPanel>
                 <TextBlock
@@ -44,25 +42,23 @@
                     Style="{ThemeResource BodyTextStyle}"
                     Text="{x:Bind ViewModel.Title}" />
 
-                <StackPanel Orientation="Vertical" Margin="0 16 0 0">
-                    <TextBlock
-                        Margin="0 0 0 5"
-                        TextWrapping="Wrap"
-                        VerticalAlignment="Top"
-                        TextTrimming="WordEllipsis"
-                        Text="{x:Bind ViewModel.Description}"/>
+                <TextBlock
+                    Margin="0 16 0 5"
+                    TextWrapping="Wrap"
+                    VerticalAlignment="Top"
+                    TextTrimming="WordEllipsis"
+                    Text="{x:Bind ViewModel.Description}"/>
 
-                    <HyperlinkButton
-                        Content="Learn More"
-                        NavigateUri="{x:Bind ViewModel.NavigateUri}"
-                        VerticalAlignment="Top"
-                        Padding="0 0 0 15"
-                        HorizontalAlignment="Left"/>
-                </StackPanel>
+                <HyperlinkButton
+                    Content="Learn More"
+                    NavigateUri="{x:Bind ViewModel.NavigateUri}"
+                    VerticalAlignment="Top"
+                    Padding="0 0 0 0"
+                    HorizontalAlignment="Left"/>
             </StackPanel>
         </ScrollViewer>
 
-        <SplitButton 
+        <SplitButton
             Grid.Row="2"
             HorizontalAlignment="Center"
             Command="{x:Bind ViewModel.LaunchCommand}">

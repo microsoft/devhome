@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.Management.Automation;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using HyperVExtension.Common;
@@ -87,7 +88,7 @@ public class HyperVVirtualMachine : IComputeSystem
 
     public string? ComputerName => _psObjectHelper.MemberNameToValue<string>(HyperVStrings.ComputerName);
 
-    public bool IsDeleted => _psObjectHelper.MemberNameToValue<bool>(HyperVStrings.IsDeleted);
+    private bool _isDeleted;
 
     public string OperationErrorUnknownString => _stringResource.GetLocalized(_errorResourceKey, Logging.LogFolderRoot);
 
@@ -95,46 +96,59 @@ public class HyperVVirtualMachine : IComputeSystem
     {
         get
         {
+            if (_isDeleted)
+            {
+                return ComputeSystemOperations.None;
+            }
+
+            // Before applying the configuration we start the VM. So we will allow the ApplyConfiguration to be the base supported operation
+            // for the VM.
+            var supportedOperations = ComputeSystemOperations.ApplyConfiguration;
             var revertOperation = Guid.Empty.Equals(ParentCheckpointId) ? ComputeSystemOperations.None : ComputeSystemOperations.RevertSnapshot;
 
             switch (GetState())
             {
                 case ComputeSystemState.Running:
                     // Supported operations when running
-                    return ComputeSystemOperations.ShutDown |
+                    supportedOperations = ComputeSystemOperations.ShutDown |
                         ComputeSystemOperations.Terminate |
                         ComputeSystemOperations.Save |
                         ComputeSystemOperations.Pause |
                         ComputeSystemOperations.CreateSnapshot |
                         ComputeSystemOperations.Restart |
-                        ComputeSystemOperations.ApplyConfiguration |
                         revertOperation;
+                    break;
                 case ComputeSystemState.Stopped:
                     // Supported operations when stopped
-                    return ComputeSystemOperations.Start |
+                    supportedOperations = ComputeSystemOperations.Start |
                         ComputeSystemOperations.CreateSnapshot |
-                        ComputeSystemOperations.Delete |
-                        ComputeSystemOperations.ApplyConfiguration;
+                        ComputeSystemOperations.Delete;
+                    break;
                 case ComputeSystemState.Saved:
                     // Supported operations when saved
-                    return ComputeSystemOperations.Start |
+                    supportedOperations = ComputeSystemOperations.Start |
                         ComputeSystemOperations.CreateSnapshot |
                         ComputeSystemOperations.Delete |
-                        ComputeSystemOperations.ApplyConfiguration |
                         revertOperation;
+                    break;
                 case ComputeSystemState.Paused:
                     // Supported operations when paused
-                    return ComputeSystemOperations.Terminate |
+                    supportedOperations = ComputeSystemOperations.Terminate |
                         ComputeSystemOperations.Save |
                         ComputeSystemOperations.Resume |
                         ComputeSystemOperations.CreateSnapshot |
-                        ComputeSystemOperations.ApplyConfiguration |
                         revertOperation;
+                    break;
             }
 
-            // Before applying the configuration we start the VM. So we will allow the ApplyConfiguration to be the base supported operation
-            // for the VM.
-            return ComputeSystemOperations.ApplyConfiguration;
+            // Disable ApplyConfiguration for ARM
+            var arch = RuntimeInformation.OSArchitecture;
+            if (arch == Architecture.Arm64 || arch == Architecture.Arm || arch == Architecture.Armv6)
+            {
+                return supportedOperations;
+            }
+
+            return supportedOperations | ComputeSystemOperations.ApplyConfiguration;
         }
     }
 
@@ -294,6 +308,7 @@ public class HyperVVirtualMachine : IComputeSystem
                 StateChanged(this, ComputeSystemState.Deleting);
                 if (_hyperVManager.RemoveVirtualMachine(VmId))
                 {
+                    _isDeleted = true;
                     StateChanged(this, ComputeSystemState.Deleted);
                     _log.Information(OperationSuccessString(ComputeSystemOperations.Delete));
                     return new ComputeSystemOperationResult();
@@ -303,7 +318,7 @@ public class HyperVVirtualMachine : IComputeSystem
             }
             catch (Exception ex)
             {
-                StateChanged(this, GetState());
+                StateChanged(this, ComputeSystemState.Unknown);
                 _log.Error(ex, OperationErrorString(ComputeSystemOperations.Delete));
                 return new ComputeSystemOperationResult(ex, OperationErrorUnknownString, ex.Message);
             }

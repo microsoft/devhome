@@ -16,17 +16,18 @@
             <Button x:Uid="QuickstartPlaygroundSaveButton"
                     Command="{x:Bind ViewModel.SaveProjectCommand}"
                     Margin="4, 0"
-                    TabIndex="31" />
+                    TabIndex="30" />
             <Button Command="{x:Bind ViewModel.LaunchProjectHostCommand}"
                     Style="{ThemeResource AccentButtonStyle}"
                     Visibility="{x:Bind ViewModel.IsLaunchButtonVisible, Mode=OneWay}"
                     Margin="4, 0"
                     Content="{x:Bind ViewModel.LaunchButtonText, Mode=OneWay}"
-                    TabIndex="30"/>
+                    TabIndex="31"/>
             <DropDownButton x:Uid="QuickstartPlaygroundLaunchDropDownButton"
                     Visibility="{x:Bind ViewModel.IsLaunchDropDownVisible, Mode=OneWay}"
                     Style="{ThemeResource AccentButtonStyle}"
-                    Margin="4, 0">
+                    Margin="4, 0"
+                    TabIndex="32">
                 <DropDownButton.Flyout>
                     <MenuFlyout x:Name="DropDownButtonFlyout" />
                 </DropDownButton.Flyout>
@@ -65,7 +66,7 @@
                             <TextBlock x:Uid="QuickstartPlaygroundPromptHeader"
                                        Grid.Column="0"
                                        VerticalAlignment="Center"
-                                       TextWrapping="Wrap"
+                                       TextWrapping="WrapWholeWords"
                                        Margin="10"/>
                             <ctcontrols:WrapPanel Grid.Column="1" 
                                         Orientation="Horizontal"
@@ -186,7 +187,7 @@
                                Margin="10"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Center"
-                               TextWrapping="Wrap"/>
+                               TextWrapping="WrapWholeWords"/>
                         <ProgressBar AutomationProperties.LabeledBy="{Binding ElementName=ProgressStatus}"
                                  Grid.Column="1"
                                  Margin="30"
@@ -220,6 +221,16 @@
             </Grid>
 
             <!--Bottom half of UI-->
+            <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.IsErrorViewVisible, Mode=OneWay}">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                    <Image Style="{StaticResource ErrorIconStyle}"/>
+                    <TextBlock x:Uid="QuickstartPlaygroundGenerationFailed" TextWrapping="WrapWholeWords" />
+                    <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" TextWrapping="WrapWholeWords" />
+                </StackPanel>
+            </Grid>
+
             <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.IsFileViewVisible, Mode=OneWay}">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -227,92 +238,105 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="8" HorizontalAlignment="Left">
-                        <TextBlock x:Uid="QuickstartPlaygroundGenerationOutputLabel"
-                                   Margin="2, 20, 20, 20"/>
-                        <StackPanel Orientation="Horizontal" Margin="8" HorizontalAlignment="Right">
-                            <Button x:Name="positiveFeedbackButton"
-                                    AutomationProperties.LabeledBy="{Binding ElementName=PositiveFeedbackToolTip}"
-                                    Margin="4,0"
-                                    VerticalAlignment="Bottom"
-                                    TabIndex="20">
-                                <FontIcon Glyph="👍" FontFamily="Segoe Fluent" />
-                                <Button.Flyout>
-                                    <Flyout x:Name="positiveFeedbackFlyout" Closed="PositiveFeedbackFlyout_Closed">
-                                        <StackPanel>
-                                            <FontIcon Glyph="👍" FontFamily="Segoe Fluent"/>
-                                            <TextBlock x:Uid="QuickstartPlaygroundFeedbackHeader"
-                                                       x:Name="posProvideAddtionalFeedbackText"
-                                                       Style="{ThemeResource BaseTextBlockStyle}"
-                                                       Visibility="{x:Bind ViewModel.PositivesGroupOne, Mode=OneWay}"/>
-                                            <TextBox x:Uid="QuickstartPlaygroundPositiveFeedbackPromptPlaceholder"
-                                                     Margin="4"
-                                                     x:Name="positiveFeedbackTextBox"
-                                                     TextWrapping="Wrap"
-                                                     Visibility="{x:Bind ViewModel.PositivesGroupOne, Mode=OneWay}" />
-                                            <Button x:Uid="QuickstartPlaygroundSubmitFeedback"
-                                                    x:Name="posSubmitFeedbackButton"
-                                                    Click="PositiveFeedbackConfirmation_Click"
-                                                    HorizontalAlignment="Right"
-                                                    Visibility="{x:Bind ViewModel.PositivesGroupOne, Mode=OneWay}"/>
-                                            <TextBlock x:Uid="QuickstartPlaygroundFeedbackSubmitted"
-                                                       x:Name="posFeedbackSuccessText"
-                                                       Style="{ThemeResource BaseTextBlockStyle}"
-                                                       Visibility="{x:Bind ViewModel.PositivesGroupTwo, Mode=OneWay}"/>
-                                            <Button x:Uid="CloseButton"
-                                                    x:Name="posCloseFlyoutButton"
-                                                    Click="PosCloseFlyout_Click"
-                                                    HorizontalAlignment="Right"
-                                                    Visibility="{x:Bind ViewModel.PositivesGroupTwo, Mode=OneWay}"/>
-                                        </StackPanel>
-                                    </Flyout>
-                                </Button.Flyout>
-                                <ToolTipService.ToolTip>
-                                    <ToolTip x:Name="PositiveFeedbackToolTip" x:Uid="QuickstartPlaygroundFeedbackLikeTooltip"/>
-                                </ToolTipService.ToolTip>
-                            </Button>
-                            <Button x:Name="negativeFeedbackButton"
-                                    AutomationProperties.LabeledBy="{Binding ElementName=NegativeFeedbackToolTip}"
-                                    Margin="4,0"
-                                    VerticalAlignment="Bottom"
-                                    TabIndex="21">
-                                <FontIcon Glyph="👎" FontFamily="Segoe Fluent" />
-                                <Button.Flyout>
-                                    <Flyout x:Name="negativeFeedbackFlyout" Closed="NegativeFeedbackFlyout_Closed">
-                                        <StackPanel>
-                                            <FontIcon Glyph="👎" FontFamily="Segoe Fluent"/>
-                                            <TextBlock x:Uid="QuickstartPlaygroundFeedbackHeader"
-                                                       x:Name="negProvideAddtionalFeedbackText"
-                                                       Style="{ThemeResource BaseTextBlockStyle}"
-                                                       Visibility="{x:Bind ViewModel.NegativesGroupOne, Mode=OneWay}"/>
-                                            <TextBox x:Uid="QuickstartPlaygroundNegativeFeedbackPromptPlaceholder"
-                                                     x:Name="negativeFeedbackTextBox"
-                                                     Margin="4"
-                                                     TextWrapping="Wrap"
-                                                     Visibility="{x:Bind ViewModel.NegativesGroupOne, Mode=OneWay}"/>
-                                            <Button x:Uid="QuickstartPlaygroundSubmitFeedback"
-                                                    x:Name="negSubmitFeedbackButton"
-                                                    Click="NegativeFeedbackConfirmation_Click"
-                                                    HorizontalAlignment="Right"
-                                                    Visibility="{x:Bind ViewModel.NegativesGroupOne, Mode=OneWay}"/>
-                                            <TextBlock x:Uid="QuickstartPlaygroundFeedbackSubmitted"
-                                                       x:Name="negFeedbackSuccessText"
-                                                       Style="{ThemeResource BaseTextBlockStyle}"
-                                                       Visibility="{x:Bind ViewModel.NegativesGroupTwo, Mode=OneWay}"/>
-                                            <Button x:Uid="CloseButton"
-                                                    x:Name="negCloseFlyoutButton"
-                                                    Click="NegCloseFlyout_Click"
-                                                    HorizontalAlignment="Right"
-                                                    Visibility="{x:Bind ViewModel.NegativesGroupTwo, Mode=OneWay}"/>
-                                        </StackPanel>
-                                    </Flyout>
-                                </Button.Flyout>
-                                <ToolTipService.ToolTip>
-                                    <ToolTip x:Name="NegativeFeedbackToolTip"  x:Uid="QuickstartPlaygroundFeedbackDislikeTooltip"/>
-                                </ToolTipService.ToolTip>
-                            </Button>
+                    <Grid Grid.Row="1" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="8" HorizontalAlignment="Left">
+                            <TextBlock x:Uid="QuickstartPlaygroundGenerationOutputLabel"
+                                       Margin="2, 20, 20, 20"/>
+                            <StackPanel Orientation="Horizontal" Margin="8" HorizontalAlignment="Right">
+                                <Button x:Name="positiveFeedbackButton"
+                                        x:Uid="QuickstartPlaygroundLikeButton"
+                                        Margin="4,0"
+                                        VerticalAlignment="Bottom"
+                                        TabIndex="20">
+                                    <FontIcon Glyph="👍" FontFamily="Segoe Fluent" />
+                                    <Button.Flyout>
+                                        <Flyout x:Name="positiveFeedbackFlyout" Closed="PositiveFeedbackFlyout_Closed">
+                                            <StackPanel>
+                                                <FontIcon Glyph="👍" FontFamily="Segoe Fluent"/>
+                                                <TextBlock x:Uid="QuickstartPlaygroundFeedbackHeader"
+                                                           x:Name="posProvideAddtionalFeedbackText"
+                                                           Style="{ThemeResource BaseTextBlockStyle}"
+                                                           Visibility="{x:Bind ViewModel.PositivesGroupOne, Mode=OneWay}"/>
+                                                <TextBox x:Uid="QuickstartPlaygroundPositiveFeedbackPromptPlaceholder"
+                                                         Margin="4"
+                                                         x:Name="positiveFeedbackTextBox"
+                                                         TextWrapping="Wrap"
+                                                         Visibility="{x:Bind ViewModel.PositivesGroupOne, Mode=OneWay}" />
+                                                <Button x:Uid="QuickstartPlaygroundSubmitFeedback"
+                                                        x:Name="posSubmitFeedbackButton"
+                                                        Click="PositiveFeedbackConfirmation_Click"
+                                                        HorizontalAlignment="Right"
+                                                        Visibility="{x:Bind ViewModel.PositivesGroupOne, Mode=OneWay}"/>
+                                                <TextBlock x:Uid="QuickstartPlaygroundFeedbackSubmitted"
+                                                           x:Name="posFeedbackSuccessText"
+                                                           Style="{ThemeResource BaseTextBlockStyle}"
+                                                           Visibility="{x:Bind ViewModel.PositivesGroupTwo, Mode=OneWay}"/>
+                                                <Button x:Uid="CloseButton"
+                                                        x:Name="posCloseFlyoutButton"
+                                                        Click="PosCloseFlyout_Click"
+                                                        HorizontalAlignment="Right"
+                                                        Visibility="{x:Bind ViewModel.PositivesGroupTwo, Mode=OneWay}"/>
+                                            </StackPanel>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip x:Name="PositiveFeedbackToolTip" x:Uid="QuickstartPlaygroundFeedbackLikeTooltip"/>
+                                    </ToolTipService.ToolTip>
+                                </Button>
+                                <Button x:Name="negativeFeedbackButton"
+                                        x:Uid="QuickstartPlaygroundDislikeButton"
+                                        Margin="4,0"
+                                        VerticalAlignment="Bottom"
+                                        TabIndex="21">
+                                    <FontIcon Glyph="👎" FontFamily="Segoe Fluent" />
+                                    <Button.Flyout>
+                                        <Flyout x:Name="negativeFeedbackFlyout" Closed="NegativeFeedbackFlyout_Closed">
+                                            <StackPanel>
+                                                <FontIcon Glyph="👎" FontFamily="Segoe Fluent"/>
+                                                <TextBlock x:Uid="QuickstartPlaygroundFeedbackHeader"
+                                                           x:Name="negProvideAddtionalFeedbackText"
+                                                           Style="{ThemeResource BaseTextBlockStyle}"
+                                                           Visibility="{x:Bind ViewModel.NegativesGroupOne, Mode=OneWay}"/>
+                                                <TextBox x:Uid="QuickstartPlaygroundNegativeFeedbackPromptPlaceholder"
+                                                         x:Name="negativeFeedbackTextBox"
+                                                         Margin="4"
+                                                         TextWrapping="Wrap"
+                                                         Visibility="{x:Bind ViewModel.NegativesGroupOne, Mode=OneWay}"/>
+                                                <Button x:Uid="QuickstartPlaygroundSubmitFeedback"
+                                                        x:Name="negSubmitFeedbackButton"
+                                                        Click="NegativeFeedbackConfirmation_Click"
+                                                        HorizontalAlignment="Right"
+                                                        Visibility="{x:Bind ViewModel.NegativesGroupOne, Mode=OneWay}"/>
+                                                <TextBlock x:Uid="QuickstartPlaygroundFeedbackSubmitted"
+                                                           x:Name="negFeedbackSuccessText"
+                                                           Style="{ThemeResource BaseTextBlockStyle}"
+                                                           Visibility="{x:Bind ViewModel.NegativesGroupTwo, Mode=OneWay}"/>
+                                                <Button x:Uid="CloseButton"
+                                                        x:Name="negCloseFlyoutButton"
+                                                        Click="NegCloseFlyout_Click"
+                                                        HorizontalAlignment="Right"
+                                                        Visibility="{x:Bind ViewModel.NegativesGroupTwo, Mode=OneWay}"/>
+                                            </StackPanel>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip x:Name="NegativeFeedbackToolTip" x:Uid="QuickstartPlaygroundFeedbackDislikeTooltip"/>
+                                    </ToolTipService.ToolTip>
+                                </Button>
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8" HorizontalAlignment="Right">
+                            <TextBlock x:Uid="QuickstartPlaygroundReferenceSamplePrefix" VerticalAlignment="Center"/>
+                            <TextBlock xmlns:ui="using:CommunityToolkit.WinUI" VerticalAlignment="Center" Margin="5" >
+                                    <Hyperlink ui:HyperlinkExtensions.Command="{x:Bind ViewModel.OpenReferenceSampleCommand}"
+                                               ui:HyperlinkExtensions.CommandParameter="{Binding}">[1]</Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
                     <Grid x:Name="FileView" 
                           Grid.Row="2" 
                           BorderBrush="{ThemeResource TextControlElevationBorderBrush}" 
@@ -355,21 +379,22 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TreeView x:Name="FolderHierarchy"
-                          Grid.Column="0" 
-                          Height="Auto" 
-                          Margin="20" 
-                          ItemsSource="{x:Bind ViewModel.DataSource, Mode=OneWay}" 
-                          ItemTemplateSelector="{StaticResource ExplorerItemTemplateSelector}" 
-                          ItemInvoked="FolderHierarchy_ItemInvoked"
-                          TabIndex="22"/>
+                                  Grid.Column="0" 
+                                  Height="Auto" 
+                                  Margin="20" 
+                                  ItemsSource="{x:Bind ViewModel.DataSource, Mode=OneWay}" 
+                                  ItemTemplateSelector="{StaticResource ExplorerItemTemplateSelector}" 
+                                  ItemInvoked="FolderHierarchy_ItemInvoked"
+                                  TabIndex="23"/>
                         <TextBlock x:Name="GeneratedFileContent"
-                           Grid.Column="1"
-                           FontFamily="{StaticResource CascadiaMonoFontFamily}"
-                           Margin="20"
-                           IsTextSelectionEnabled="True"
-                           TextWrapping="Wrap"
-                           IsTabStop="True"
-                           TabIndex="23">
+                                   Text="{x:Bind ViewModel.GeneratedFileContent, Mode=OneWay}"
+                                   Grid.Column="1"
+                                   FontFamily="{StaticResource CascadiaMonoFontFamily}"
+                                   Margin="20"
+                                   IsTextSelectionEnabled="True"
+                                   TextWrapping="WrapWholeWords"
+                                   IsTabStop="True"
+                                   TabIndex="24">
                         </TextBlock>
                     </Grid>
                 </Grid>

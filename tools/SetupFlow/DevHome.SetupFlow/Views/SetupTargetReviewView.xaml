@@ -11,6 +11,7 @@
     Loaded="UserControl_Loaded">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
     </UserControl.Resources>
 
     <Grid>
@@ -83,6 +84,7 @@
                             Grid.Column="2"
                             Margin="0 0 5 0"
                             x:Uid="SetupTargetReviewPageComputeSystemVersion"
+                            Visibility="{x:Bind ViewModel.OsName, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource BodyTextBlockStyle}"
                             IsTextSelectionEnabled="True"/>
@@ -90,17 +92,8 @@
                             Grid.Row="1"
                             Grid.Column="2"
                             Margin="0 0 5 0"
-                            Text="{x:Bind ViewModel.OsName}"
-                            Visibility="{x:Bind ViewModel.WasOsNameRetrieved}"
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            IsTextSelectionEnabled="True"/>
-                        <TextBlock
-                            Grid.Row="1"
-                            Grid.Column="2"
-                            Margin="0 0 5 0"
-                            Visibility="{x:Bind ViewModel.WasOsNameRetrieved, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                             Text="{x:Bind ViewModel.OsName, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.OsName, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Style="{StaticResource BodyTextBlockStyle}"
                             IsTextSelectionEnabled="True"/>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.PI.Controls.ExpandedViewControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:DevHome.PI.Models"
+    mc:Ignorable="d">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            x:Uid="ExpandedViewHeaderTextBlock" x:Name="ExpandedViewTitleTextBlock" Text="{x:Bind viewModel.Title, Mode=OneWay}"
+            FontSize="16" FontWeight="Bold" FontFamily="Segoe UI"/>
+
+        <Grid Grid.Row="1" Margin="0,8,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ListView
+                x:Name="NavLinksList" SelectionMode="Single" VerticalAlignment="Stretch" ItemsSource="{x:Bind viewModel.Links}"
+                 SelectedIndex="{x:Bind viewModel.SelectedNavLinkIndex, Mode=TwoWay}" SelectionChanged="{x:Bind viewModel.Navigate}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding IconText}" Style="{x:Null}"
+                                FontFamily="Segoe Fluent Icons" FontSize="24" Margin="0,20,0,0"
+                                HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ContentText}"
+                                Margin="12,16,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Frame x:Name="PageFrame" Grid.Column="1" Margin="16,0,0,0"/>
+
+            <Expander
+                x:Name="ClipboardErrorExpander" Grid.Row="1" Grid.Column="1" 
+                IsExpanded="False" ExpandDirection="Up"
+                HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6" 
+                HorizontalContentAlignment="Stretch">
+                <Expander.Header>
+                    <TextBlock x:Uid="ClickboardErrorTextBlock" FontSize="10"/>
+                </Expander.Header>
+                <Grid>
+                    <Grid.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontSize" Value="10"/>
+                            <Setter Property="Margin" Value="12,0,0,0"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="FontSize" Value="10"/>
+                            <Setter Property="IsReadOnly" Value="True"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Margin" Value="0,8,0,0"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </Grid.Resources>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Uid="HexLabelTextBlock"/>
+                    <TextBox x:Name="ErrorHexTextBox" Grid.Column="1" Text="{x:Bind viewModel.ClipboardContentsHex, Mode=OneWay}"/>
+                    <TextBlock x:Uid="DecLabelTextBlock" Grid.Row="1"/>
+                    <TextBox x:Name="ErrorDecTextBox" Grid.Row="1" Grid.Column="1" Text="{x:Bind viewModel.ClipboardContentsDec, Mode=OneWay}"/>
+                    <TextBlock x:Uid="CodeLabelTextBlock" Grid.Row="2"/>
+                    <TextBox x:Name="ErrorCodeTextBox" Grid.Row="2" Grid.Column="1" Text="{x:Bind viewModel.ClipboardContentsCode, Mode=OneWay}"/>
+                    <TextBlock x:Uid="HelpLabelTextBlock" Grid.Row="3"/>
+                    <TextBox x:Name="ErrorHelpTextBox" Grid.Row="3" Grid.Column="1" 
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto" Height="36" Text="{x:Bind viewModel.ClipboardContentsHelp, Mode=OneWay}"/>
+                </Grid>
+            </Expander>
+            
+            <Grid Grid.Row="2" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal"  Margin="0,0,0,12">
+                    <StackPanel.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontSize" Value="8"/>
+                            <Setter Property="Margin" Value="12,0,0,0"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <TextBlock x:Uid="ExpandedViewTargetAppPidTextBox" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}" Text="{x:Bind viewModel.ApplicationPid, Mode=OneWay}"/>
+                    <TextBlock x:Uid="ExpandedViewAppCpuPerf" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}" Text="{x:Bind viewModel.CpuUsage, Mode=OneWay}"/>
+                    <TextBlock x:Uid="ExpandedViewAppMemoryPerf" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}" Text="{x:Bind viewModel.RamUsage, Mode=OneWay}"/>
+                    <TextBlock x:Uid="ExpandedViewAppDiskPerf" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}" Text="{x:Bind viewModel.DiskUsage, Mode=OneWay}"/>
+                </StackPanel>
+            
+                <Button
+                    x:Name="SettingsButton" Grid.Column="1" HorizontalAlignment="Right" Click="SettingsButton_Click"
+                    BorderThickness="0" Background="Transparent">
+                    <TextBlock Text="&#xe713;" FontFamily="Segoe Fluent Icons" FontSize="20"/>
+                </Button>
+
+            </Grid>
+
+        </Grid>
+    </Grid>
+</UserControl>

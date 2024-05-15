@@ -158,7 +158,7 @@
     <comment>Text for the revert checkpoint button that will revert a virtual machines checkpoint to its previous checkpoint.</comment>
   </data>
   <data name="ShutdownButtonContextMenuItem" xml:space="preserve">
-    <value>Shutdown</value>
+    <value>Shut down</value>
     <comment>Text for shutdown button in the context menu that will shutdown the virtual machines operating system.</comment>
   </data>
   <data name="StartButtonContextMenuItem" xml:space="preserve">
@@ -185,8 +185,8 @@
     <value>Sync</value>
     <comment>Text for the sync button on the top right side</comment>
   </data>
-  <data name="CreateEnvironmentButton.Text" xml:space="preserve">
-    <value>+ Create environment</value>
+  <data name="CreateEnvironmentButton.Content" xml:space="preserve">
+    <value>Create environment</value>
     <comment>Text for button that will redirect the user to the Create Environment page in Dev Home</comment>
   </data>
   <data name="EnvironmentsHeader.Text" xml:space="preserve">
@@ -289,7 +289,7 @@
     <value>Do you want to delete your environment?</value>
     <comment>Text for the title of the delete environment confirmation popup.</comment>
   </data>
-  <data name="Operations_Checkpoint" xml:space="preserve">
+  <data name="Operations_CreateCheckpoint" xml:space="preserve">
     <value>Checkpoint</value>
     <comment>Text for the creating the checkpoint operation shown for the environment.</comment>
   </data>
@@ -309,7 +309,7 @@
     <value>Resume</value>
     <comment>Text for the resume operation shown for the environment.</comment>
   </data>
-  <data name="Operations_Revert" xml:space="preserve">
+  <data name="Operations_RevertCheckpoint" xml:space="preserve">
     <value>Revert</value>
     <comment>Text for the revert operation shown for the environment.</comment>
   </data>
@@ -317,12 +317,16 @@
     <value>Start</value>
     <comment>Text for the start operation shown for the environment.</comment>
   </data>
-  <data name="Operations_Stop" xml:space="preserve">
-    <value>Stop</value>
-    <comment>Text for the stop operation shown for the environment.</comment>
+  <data name="Operations_Shutdown" xml:space="preserve">
+    <value>Shut down</value>
+    <comment>Text for the shutdown operation shown for the environment.</comment>
   </data>
   <data name="Operations_Terminate" xml:space="preserve">
-    <value>Terminate</value>
+    <value>Turn off</value>
+    <comment>Text for the terminate operation shown for the environment.</comment>
+  </data>
+  <data name="Operations_Save" xml:space="preserve">
+    <value>Save</value>
     <comment>Text for the terminate operation shown for the environment.</comment>
   </data>
   <data name="LaunchingEnvironmentText" xml:space="preserve">
@@ -343,8 +347,8 @@
     <value>The extension failed to perform the requested operation for an unknown reason. Check the extensions logs for more information.</value>
     <comment>Text to tell the user Dev Home the extension failed to perform the operation send by the extension</comment>
   </data>
-  <data name="GoToExtensionsLibrary.Text" xml:space="preserve">
-    <value>+ Go to extensions library</value>
+  <data name="GoToExtensionsLibrary.Content" xml:space="preserve">
+    <value>Go to extensions library</value>
     <comment>Text for when the environment page in Dev Home is empty and the user has no extensions installed that support environments</comment>
   </data>
 </root>
