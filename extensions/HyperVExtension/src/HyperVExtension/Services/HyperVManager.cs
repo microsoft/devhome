@@ -604,7 +604,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
         {
-            throw new HyperVManagerException($"Unable to get disk size due to PowerShell error: {result.CommandOutputErrorMessage}");
+            _log.Error($"Unable to get disk size due to PowerShell error: {result.CommandOutputErrorMessage}");
         }
 
         // object in the returned results should represent a virtual disk.

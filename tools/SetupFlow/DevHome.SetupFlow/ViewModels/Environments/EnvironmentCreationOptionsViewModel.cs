@@ -138,6 +138,8 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
 
         await Task.CompletedTask;
 
+        CanGoToNextPage = false;
+        Orchestrator.NotifyNavigationCanExecuteChanged();
         var curSelectedProviderId = _curProviderDetails?.ComputeSystemProvider?.Id ?? string.Empty;
         var upcomingSelectedProviderId = _upcomingProviderDetails?.ComputeSystemProvider?.Id;
 
@@ -195,6 +197,11 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
                 {
                     _log.Error(result.ExtendedError, $"Extension failed to generate adaptive card. DisplayMsg: {result.DisplayMessage}, DiagnosticMsg: {result.DiagnosticText}");
                     SessionErrorMessage = result.DisplayMessage;
+                    CanGoToNextPage = false;
+                }
+                else
+                {
+                    CanGoToNextPage = true;
                 }
             }
             catch (Exception ex)
@@ -202,6 +209,8 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
                 _log.Error(ex, $"Failed to get creation options adaptive card from provider {_curProviderDetails.ComputeSystemProvider.Id}.");
                 SessionErrorMessage = ex.Message;
             }
+
+            Orchestrator.NotifyNavigationCanExecuteChanged();
         });
     }
 
