@@ -21,7 +21,7 @@ public class UtilityViewModel : INotifyPropertyChanged
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(UtilityViewModel));
     private readonly IExperimentationService? experimentationService;
     private readonly string? experimentalFeature;
-    private readonly string exeName;
+    private readonly string _exeName;
 #nullable disable
 
     public bool Visible
@@ -76,7 +76,7 @@ public class UtilityViewModel : INotifyPropertyChanged
 #nullable enable
     public UtilityViewModel(string exeName, IExperimentationService? experimentationService = null, string? experimentalFeature = null)
     {
-        this.exeName = exeName;
+        this._exeName = exeName;
         this.experimentationService = experimentationService;
         this.experimentalFeature = experimentalFeature;
         LaunchCommand = new RelayCommand(Launch);
@@ -86,12 +86,12 @@ public class UtilityViewModel : INotifyPropertyChanged
 
     private void Launch()
     {
-        _log.Information("Launching {ExeName}, as admin: {RunAsAdmin}", exeName, launchAsAdmin);
+        _log.Information($"Launching {_exeName}, as admin: {launchAsAdmin}");
 
         // We need to start the process with ShellExecute to run elevated
         var processStartInfo = new ProcessStartInfo
         {
-            FileName = exeName,
+            FileName = _exeName,
             UseShellExecute = true,
 
             Verb = launchAsAdmin ? "runas" : "open",
@@ -108,7 +108,7 @@ public class UtilityViewModel : INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            _log.Error(ex, "Failed to start process {ExeName}", exeName);
+            _log.Error(ex, "Failed to start process {ExeName}", _exeName);
         }
 
         TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(Title, launchAsAdmin), null);
