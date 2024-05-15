@@ -157,8 +157,18 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     private async Task RefreshOperationDataAsync()
     {
         ComputeSystem.ResetSupportedOperations();
-        ComputeSystem.ResetPinnedToStartMenu();
-        ComputeSystem.ResetPinnedToTaskbar();
+        var supportedOperations = ComputeSystem.SupportedOperations?.Value ?? ComputeSystemOperations.None;
+
+        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToStartMenu))
+        {
+            ComputeSystem.ResetPinnedToStartMenu();
+        }
+
+        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToTaskbar))
+        {
+            ComputeSystem.ResetPinnedToTaskbar();
+        }
+
         ComputeSystem.ResetComputeSystemProperties();
         await InitializeOperationDataAsync();
     }
