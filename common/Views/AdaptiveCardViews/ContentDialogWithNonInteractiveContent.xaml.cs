@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;

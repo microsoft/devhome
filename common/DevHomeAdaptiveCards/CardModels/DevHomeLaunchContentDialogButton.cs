@@ -58,6 +58,11 @@ public partial class DevHomeLaunchContentDialogButton : IDevHomeSettingsCardNonS
 
         var dialog = new ContentDialogWithNonInteractiveContent(dialogContent);
 
+        // The dialog's content and XAMLRoot is set on the DispatcherQueue.
+        // This results in a race condition and the result is focus is not moved
+        // to the content dialog.  Wait a bit.
+        await Task.Delay(100);
+
         dialog.XamlRoot = senderObj.XamlRoot;
 
         await dialog.ShowAsync();
