@@ -13,7 +13,6 @@
     TaskBarIcon="Images/pi.ico" IsTitleBarVisible="False"
     Closed="WindowEx_Closed">
 
-    <!-- TODO Make DesktopAcrylicBackdrop/MicaBackdrop and AcrylicBackgroundFillColorBaseBrush user-configurable.-->
     <Window.SystemBackdrop>
         <MicaBackdrop/>
     </Window.SystemBackdrop>
@@ -28,7 +27,7 @@
 
         <!--Chrome buttons for a horizontal bar -->
         <controls:SystemBarHorizontal x:Name="SBarHorizontal"/>
-        
+
         <!-- Chrome buttons for a vertical bar -->
         <controls:SystemBarVertical x:Name="SBarVertical" Visibility="Collapsed"/>
 
@@ -72,27 +71,30 @@
                          Click="ProcessChooserButton_Click" HorizontalAlignment="Center" Margin="0">
                         <TextBlock Text="&#xecaa;" Margin="0"  />
                     </controls:ProcessSelectionButton>
-                    
+
                     <!-- Per App controls -->
                     <controls:AppStatusBar x:Name="AppStatus" Visibility="Visible" Margin="0,5" HorizontalAlignment="Center"/>
-                
-                    <!-- Per System controls -->                   
+
+                    <!-- Per System controls -->
                     <Button
                         x:Uid="SwitchLayoutButton"
                         x:Name="SwitchLayoutButton"
-                        Click="SwitchLayoutButton_Click" HorizontalAlignment="Center">
+                        Click="SwitchLayoutButton_Click"
+                        HorizontalAlignment="Center">
                         <TextBlock Text="&#xe8b4;"/>
                     </Button>
                     <Button
                         x:Name="LargeContentButton"
-                        Click="LargeContentButton_Click" HorizontalAlignment="Center">
+                        Click="LargeContentButton_Click"
+                        HorizontalAlignment="Center">
                         <TextBlock Text="&#xe8a1;"/>
                     </Button>
 
                     <!-- TODO When we add a tool, we should add it to the ExternalToolsMenu. -->
                     <Button
                          x:Name="ExternalToolsButton"
-                         x:Uid="ExternalToolsButton" HorizontalAlignment="Center">
+                         x:Uid="ExternalToolsButton"
+                         HorizontalAlignment="Center">
                          <Button.ContextFlyout>
                              <MenuFlyout x:Name="ExternalToolsMenu">
                              <!-- Menuitems for each external tool will be added below. -->
@@ -101,9 +103,9 @@
                         <TextBlock Text="&#xEC7A;"/>
                     </Button>
 
-                    <ItemsRepeater 
-                        x:Name="ExternalToolsRepeater" 
-                        ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.ExternalTools, Mode=OneWay}" 
+                    <ItemsRepeater
+                        x:Name="ExternalToolsRepeater"
+                        ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.ExternalTools, Mode=OneWay}"
                         Layout="{StaticResource ExternalToolsHorizontalLayout}">
                         <ItemsRepeater.ContextFlyout>
                             <MenuFlyout x:Name="ToolContextMenu">
@@ -127,9 +129,9 @@
                         </ItemsRepeater.ContextFlyout>
 
                         <DataTemplate x:DataType="helpers:ExternalTool">
-                            <Button 
-                                Click="ExternalToolButton_Click" 
-                                HorizontalAlignment="Center" Width="45" Height="45" 
+                            <Button
+                                Click="ExternalToolButton_Click"
+                                HorizontalAlignment="Center" Width="45" Height="45"
                                 ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}"
                                 Tag="{x:Bind}"
                                 PointerPressed="ExternalToolButton_PointerPressed">
@@ -149,7 +151,7 @@
 
         <Border
             x:Name="LargeContentPanel" Visibility="Collapsed" Grid.Row="2"
-            BorderThickness="0" 
+            BorderThickness="0"
             VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <controls:ExpandedViewControl x:Name="ExpandedViewControl"/>
         </Border>

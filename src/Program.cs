@@ -53,7 +53,7 @@ public static class Program
         return isRedirect;
     }
 
-    // Currently DevHome supports one set of command line arguments, most useful when debugging different apps within the DevHome package.
+    // Currently DevHome supports one set of command line arguments, most useful when debugging different apps within the Dev Home package.
     //
     // For example:
     //    --utilitylaunch DevHome.PI.Exe --utilityLaunchArgs "--application problemapp2"
