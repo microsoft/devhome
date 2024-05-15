@@ -11,7 +11,6 @@
     xmlns:selectors="using:DevHome.Environments.Selectors"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
@@ -42,7 +41,7 @@
                     x:Uid="ms-resource:///DevHome.Environments/Resources/LaunchButton"
                     Style="{StaticResource CardBodySplitButtonStyle}">
                     <SplitButton.Flyout>
-                        <customControls:CardFlyout ItemsViewModels="{x:Bind LaunchOperations}"/>
+                        <customControls:CardFlyout ItemsViewModels="{x:Bind LaunchOperations, Mode=OneWay}"/>
                     </SplitButton.Flyout>
                 </SplitButton>
             </DataTemplate>
@@ -53,7 +52,7 @@
                     <Button
                         Style="{StaticResource HorizontalThreeDotsStyle}">
                         <Button.Flyout>
-                            <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations}"/>
+                            <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}"/>
                         </Button.Flyout>
                     </Button>
                 </Grid>
@@ -65,7 +64,7 @@
                     <Button
                         Style="{StaticResource HorizontalThreeDotsStyle}">
                         <Button.Flyout>
-                            <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations}"/>
+                            <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}" />
                         </Button.Flyout>
                     </Button>
                 </Grid>
@@ -200,7 +199,6 @@
                 Grid.Column="3" 
                 Style="{ThemeResource AccentButtonStyle}" 
                 HorizontalAlignment="Right"
-                Visibility="{x:Bind ViewModel.ShouldShowCreateEnvironmentButton, Mode=OneWay}"
                 Command="{x:Bind ViewModel.CreateEnvironmentButtonCommand}" >
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -302,16 +300,15 @@
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
-
-        <muxc:InfoBar MaxWidth="480"
-                      Margin="24"
-                      HorizontalAlignment="Right"
-                      VerticalAlignment="Bottom"
-                      Grid.Row="3">
-            <i:Interaction.Behaviors>
-                <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
-            </i:Interaction.Behaviors>
-        </muxc:InfoBar>
-
+        <Grid Grid.Row="3" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <InfoBar MaxWidth="480"
+                Margin="24"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+                <i:Interaction.Behaviors>
+                    <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
+                </i:Interaction.Behaviors>
+            </InfoBar>
+        </Grid>
     </Grid>
 </pg:ToolPage>

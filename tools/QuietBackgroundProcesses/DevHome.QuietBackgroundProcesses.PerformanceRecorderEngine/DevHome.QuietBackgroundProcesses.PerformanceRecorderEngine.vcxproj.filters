@@ -19,6 +19,7 @@
     <ClInclude Include="PerformanceRecorderEngine.h">
       <Filter>inc</Filter>
     </ClInclude>
+    <ClInclude Include="ServiceInformation.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
