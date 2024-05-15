@@ -36,11 +36,7 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(EnvironmentsSetupFlowFeatureName));
-
-    private const string EnvironmentsSetupFlowFeatureName = "EnvironmentsSetupTargetFlow";
-
-    private const string EnvironmentsCreationFlowFeatureName = "EnvironmentsCreationFlow";
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(MainPageViewModel));
 
     private const string QuickstartPlaygroundFlowFeatureName = "QuickstartPlayground";
 
@@ -72,10 +68,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     public string MainPageEnvironmentSetupGroupName => StringResource.GetLocalized(StringResourceKey.MainPageEnvironmentSetupGroup);
 
     public string MainPageQuickStepsGroupName => StringResource.GetLocalized(StringResourceKey.MainPageQuickConfigurationGroup);
-
-    public bool ShouldShowSetupTargetItem => _experimentationService.IsFeatureEnabled(EnvironmentsSetupFlowFeatureName);
-
-    public bool ShouldShowCreateEnvironmentItem => _experimentationService.IsFeatureEnabled(EnvironmentsCreationFlowFeatureName);
 
     /// <summary>
     /// Event raised when the user elects to start the setup flow.

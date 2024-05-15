@@ -37,7 +37,7 @@ Extensions should create objects that represent each compute system that their u
 
 ### Example
 
-The [Hyper-V extension](https://github.com/microsoft/devhome/tree/main/HyperVExtension) interacts directly with the Hyper-V virtual machine management service to perform the above operations on the virtual machine. 
+The [Hyper-V extension](https://github.com/microsoft/devhome/tree/main/extensions/HyperVExtension) interacts directly with the Hyper-V virtual machine management service to perform the above operations on the virtual machine. 
 
 To provide Dev Home the ability to initiate one of these operations, we have created the `IComputeSystem` interface. Extensions are expected to map their software/hardware system to the `IComputeSystem` interface and send these operations back to Dev Home. Dev Home can initiate one of these operations via a method call in the `IComputeSystem` interface, based on user input. The extension can then interact with its underlying hardware/software system to perform that operation.
 

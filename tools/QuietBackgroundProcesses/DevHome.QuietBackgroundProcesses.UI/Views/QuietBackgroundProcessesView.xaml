@@ -12,7 +12,7 @@
 
             <!-- Header icon -->
             <ctControls:SettingsExpander.HeaderIcon>
-                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9d9;"/>
+                <FontIcon FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="&#xefff;"/>
             </ctControls:SettingsExpander.HeaderIcon>
 
             <!-- Description / error message slot -->
