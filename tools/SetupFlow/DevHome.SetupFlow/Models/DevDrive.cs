@@ -146,9 +146,4 @@ public class DevDrive : IDevDrive
     {
         get;
     }
-
-    public bool IsDevDriveTrusted
-    {
-        get; set;
-    }
 }

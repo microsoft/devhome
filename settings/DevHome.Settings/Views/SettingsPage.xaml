@@ -17,7 +17,7 @@
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.SettingsList, Mode=OneWay}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:SettingViewModel">
-                        <ctControls:SettingsCard Header="{x:Bind Header}" Description="{x:Bind Description}" AutomationProperties.AutomationId="{x:Bind Path}"
+                        <ctControls:SettingsCard Header="{x:Bind Header}" Description="{x:Bind Description}"
                                        IsClickEnabled="True" Command="{x:Bind NavigateSettingsCommand}" Margin="{ThemeResource SettingsCardMargin}">
                             <ctControls:SettingsCard.HeaderIcon>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="{x:Bind Glyph}"/>

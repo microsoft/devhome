@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(SolutionDir)packages\microsoft.telemetry.inbox.native\10.0.18362.1-190318-1202.19h1-release.amd64fre\build\native\Microsoft.Telemetry.Inbox.Native.targets" Condition="!Exists('$(MSBuildThisFileDirectory)inc\MicrosoftTelemetry.h')" />
-</Project>

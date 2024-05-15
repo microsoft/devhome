@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Collections;
 using DevHome.Telemetry;
+using Microsoft.UI.Xaml.Controls;
 using Serilog;
 
 namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
@@ -51,18 +52,10 @@ public partial class AnalyticSummaryPopupViewModel : ObservableObject
                         var sampleCount = row.SampleCount;
                         var sampleDuration = 1;
 
-                        var displayName = row.Name;
-                        if (!string.IsNullOrEmpty(row.ServiceName))
-                        {
-                            displayName += " (" + row.ServiceName + ")";
-                        }
-
                         var entry = new ProcessData
                         {
                             Pid = row.Pid,
                             Name = row.Name,
-                            ServiceName = row.ServiceName,
-                            DisplayName = displayName,
                             PackageFullName = row.PackageFullName,
                             Aumid = row.Aumid,
                             Path = row.Path,
@@ -176,7 +169,6 @@ public partial class AnalyticSummaryPopupViewModel : ObservableObject
                 "MaxPercent," +
                 "TimeAboveThreshold," +
                 "TotalCpuTimeInMicroseconds," +
-                "ServiceName," +
                 "PackageFullName," +
                 "Aumid," +
                 "Path," +
@@ -196,7 +188,6 @@ public partial class AnalyticSummaryPopupViewModel : ObservableObject
                     $"{data.MaxPercent}," +
                     $"{data.TimeAboveThreshold}," +
                     $"{data.TotalCpuTimeInMicroseconds}," +
-                    $"{data.ServiceName}," +
                     $"{data.PackageFullName}," +
                     $"{data.Aumid}," +
                     $"{data.Path}," +

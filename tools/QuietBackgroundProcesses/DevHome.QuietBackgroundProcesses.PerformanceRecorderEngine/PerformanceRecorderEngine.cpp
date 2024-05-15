@@ -24,7 +24,6 @@
 #include <psapi.h>
 
 #include "PerformanceRecorderEngine.h"
-#include "ServiceInformation.h"
 
 // 2 percent is the threshold for a process to be considered as a high CPU consumer
 #define CPU_TIME_ABOVE_THRESHOLD_STRIKE_VALUE 2.0f
@@ -46,7 +45,6 @@ struct ProcessPerformanceInfo
 
     // Process info
     std::wstring name;
-    std::optional<std::wstring> serviceName;
     std::wstring path;
     std::optional<std::wstring> packageFullName;
     std::optional<std::wstring> aumid;
@@ -393,7 +391,7 @@ bool UpdateProcessPerformanceInfo(ProcessPerformanceInfo& info)
 
     if (exitTime.dwHighDateTime != 0 || exitTime.dwLowDateTime != 0)
     {
-        info.exitTime = exitTime;
+        info.exitTime = info.exitTime;
         return false;
     }
 
@@ -454,8 +452,6 @@ struct MonitorThread
             {
                 auto numCpus = GetVirtualNumCpus();
 
-                auto serviceInformation = ServiceInformation::RunningServiceInformation();
-
                 while (true)
                 {
                     if (m_cancellationMechanism.m_cancelled)
@@ -481,14 +477,7 @@ struct MonitorThread
                         {
                             try
                             {
-                                // Create new process info object
-                                auto processInfo = MakeProcessPerformanceInfo(pid);
-
-                                // Add the service name if it's an svchost.exe process
-                                processInfo.serviceName = serviceInformation.TryGetServiceName(processInfo.pid, processInfo.name);
-
-                                // Add process to running processes map
-                                m_runningProcesses[pid] = std::move(processInfo);
+                                m_runningProcesses[pid] = MakeProcessPerformanceInfo(pid);
                             }
                             CATCH_LOG();
                         }
@@ -522,9 +511,6 @@ struct MonitorThread
                                 // Move from the map to the terminated list
                                 m_terminatedProcesses.push_back(std::move(info));
                                 it = m_runningProcesses.erase(it);
-
-                                // Remove from running services names
-                                serviceInformation.ForgetService(pid);
                                 continue;
                             }
                         }
@@ -609,7 +595,6 @@ struct MonitorThread
             {
                 copystr(summary.name, info.name);
             }
-            copystr(summary.serviceName, info.serviceName);
             copystr(summary.packageFullName, info.packageFullName);
             copystr(summary.aumid, info.aumid);
             copystr(summary.path, info.path);

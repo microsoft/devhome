@@ -46,7 +46,7 @@
                 </ResourceDictionary>
             </ContentControl.Resources>
             <ContentControl.Content>
-                <ImageIcon x:Name="DefaultIconContent" Source="{x:Bind IconSource}" />
+                <ImageIcon x:Name="DefaultIconContent" Source="{StaticResource WindowTitleBarDefaultIcon}" />
             </ContentControl.Content>
         </ContentControl>
 

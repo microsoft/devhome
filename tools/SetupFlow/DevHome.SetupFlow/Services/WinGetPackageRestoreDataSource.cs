@@ -10,8 +10,6 @@ using DevHome.Common.Extensions;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Models;
-using DevHome.Telemetry;
-using Microsoft.Diagnostics.Telemetry.Internal;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Serilog;
 using Windows.Storage.Streams;
@@ -53,7 +51,6 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         if (restoreDeviceInfoResult.Status == RestoreDeviceInfoStatus.Ok)
         {
             _restoreDeviceInfo = restoreDeviceInfoResult.RestoreDeviceInfo;
-            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_RestoreApps_Found", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance));
         }
         else
         {
@@ -103,11 +100,6 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         catch (Exception e)
         {
             _log.Error(e, $"Error loading packages from winget restore catalog.");
-        }
-
-        if (result.Count > 0)
-        {
-            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_RestoreApps_Loaded", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance));
         }
 
         return result;

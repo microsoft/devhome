@@ -11,7 +11,7 @@ namespace DevHome.UITest.Pages;
 /// </summary>
 public class MachineConfigurationPage : ApplicationPage
 {
-    public WindowsElement EndToEndSetupButton => Driver.FindElementByAccessibilityId("EndToEndSetupButton");
+    private WindowsElement EndToEndSetupButton => Driver.FindElementByAccessibilityId("EndToEndSetupButton");
 
     private WindowsElement DSCConfigurationButton => Driver.FindElementByAccessibilityId("DSCConfigurationButton");
 

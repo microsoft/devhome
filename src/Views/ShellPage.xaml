@@ -62,13 +62,13 @@
                 <NavigationViewItem x:Uid="Shell_IGNORE" helpers:NavigationHelper.NavigateTo="DevHome.Settings.ViewModels.SettingsViewModel" Visibility="Collapsed"/>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem x:Uid="WhatsNew" AutomationProperties.AutomationId="WhatsNew"
+                <NavigationViewItem x:Uid="WhatsNew"
                                     helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.WhatsNewViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE789;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="ms-resource:///DevHome.ExtensionLibrary/Resources/NavigationPane" AutomationProperties.AutomationId="Extensions"
+                <NavigationViewItem x:Uid="ms-resource:///DevHome.ExtensionLibrary/Resources/NavigationPane"
                                     helpers:NavigationHelper.NavigateTo="DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xEA86;"/>

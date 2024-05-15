@@ -101,9 +101,6 @@ public partial class InstalledPackageViewModel : ObservableObject
     [ObservableProperty]
     private PackageVersion _version;
 
-    [ObservableProperty]
-    private string _automationMoreOptionsPfn;
-
     public ObservableCollection<InstalledExtensionViewModel> InstalledExtensionsList { get; set; }
 
     public InstalledPackageViewModel(string displayName, string publisher, string packageFamilyName, DateTimeOffset installedDate, PackageVersion version)
@@ -113,7 +110,6 @@ public partial class InstalledPackageViewModel : ObservableObject
         _packageFamilyName = packageFamilyName;
         _installedDate = installedDate;
         _version = version;
-        _automationMoreOptionsPfn = $"MoreOptions_{packageFamilyName}";
         InstalledExtensionsList = new();
     }
 

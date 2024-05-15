@@ -42,11 +42,6 @@ public class InstallPackageTaskArguments : ITaskArguments
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether elevation is required to install the package.
-    /// </summary>
-    public bool IsElevationRequired { get; set; }
-
-    /// <summary>
     /// Try to read and parse argument list into an object.
     /// </summary>
     /// <param name="argumentList">Argument list</param>

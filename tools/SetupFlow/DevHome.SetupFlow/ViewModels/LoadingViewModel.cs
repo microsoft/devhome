@@ -27,7 +27,7 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class LoadingViewModel : SetupPageViewModelBase
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(LoadingViewModel));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileViewModel));
 
     private readonly IHost _host;
 
