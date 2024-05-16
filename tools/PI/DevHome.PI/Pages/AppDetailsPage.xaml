@@ -78,7 +78,7 @@
                         <ListView.ItemTemplate>
                             <DataTemplate x:DataType="models:FrameworkType">
                                 <local:ReadOnlyCheckBox
-                                    Content="{x:Bind Name, Mode=OneWay}" IsChecked="{x:Bind Status, Mode=OneWay}" 
+                                    Content="{x:Bind Name, Mode=OneWay}" IsChecked="{x:Bind IsTypeSupported, Mode=OneWay}" 
                                     Width="180" IsReadOnly="True"/>
                             </DataTemplate>
                         </ListView.ItemTemplate>

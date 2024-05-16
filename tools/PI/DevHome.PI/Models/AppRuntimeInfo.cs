@@ -62,7 +62,7 @@ public partial class AppRuntimeInfo : ObservableObject
         foreach (var item in FrameworkTypes)
         {
             // Skip if already matched.
-            if (item.Status == true)
+            if (item.IsTypeSupported == true)
             {
                 continue;
             }
@@ -71,14 +71,14 @@ public partial class AppRuntimeInfo : ObservableObject
             {
                 if (moduleName.Equals(item.Determinator, StringComparison.OrdinalIgnoreCase))
                 {
-                    item.Status = true;
+                    item.IsTypeSupported = true;
                 }
             }
             else
             {
                 if (moduleName.Contains(item.Determinator, StringComparison.OrdinalIgnoreCase))
                 {
-                    item.Status = true;
+                    item.IsTypeSupported = true;
                 }
             }
         }

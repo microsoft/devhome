@@ -20,7 +20,7 @@ public partial class FrameworkType : ObservableObject
     }
 
     [ObservableProperty]
-    private bool status;
+    private bool isTypeSupported;
 
     public FrameworkType(string determinator, string name, bool isExactMatch = true)
     {

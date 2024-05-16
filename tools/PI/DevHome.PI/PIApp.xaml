@@ -25,6 +25,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+            
             <StackLayout x:Name="ExternalToolsHorizontalLayout" Orientation="Horizontal" />
             <StackLayout x:Name="ExternalToolsVerticalLayout" Orientation="Vertical" />
 
