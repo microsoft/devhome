@@ -288,6 +288,7 @@ public partial class BarWindow : WindowEx, INotifyPropertyChanged
     {
         ClipboardMonitor.Instance.Stop();
         TargetAppData.Instance.ClearAppData();
+        ExpandedViewControl.CloseSettings();
 
         if (positionEventHook != IntPtr.Zero)
         {
