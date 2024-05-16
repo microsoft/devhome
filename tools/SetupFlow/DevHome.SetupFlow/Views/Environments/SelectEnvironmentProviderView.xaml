@@ -72,7 +72,8 @@
                     AutomationProperties.LabeledBy="{Binding ElementName=LabelForItemsView, Mode=OneWay}"
                     ItemsSource="{x:Bind ViewModel.ProvidersViewModels, Mode=OneWay}"
                     ItemTemplate="{StaticResource ProviderItemTemplate}"
-                    Visibility="{x:Bind ViewModel.AreProvidersLoaded, Mode=OneWay}">
+                    Visibility="{x:Bind ViewModel.AreProvidersLoaded, Mode=OneWay}"
+                    IsItemInvokedEnabled="True">
                     <ItemsView.Layout>
                         <StackLayout Spacing="5" />
                     </ItemsView.Layout>

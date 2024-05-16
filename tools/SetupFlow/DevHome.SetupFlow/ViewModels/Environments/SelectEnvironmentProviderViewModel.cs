@@ -91,6 +91,13 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void EnableNextButton(ComputeSystemProviderViewModel sender)
     {
+        if (sender == null)
+        {
+            CanGoToNextPage = false;
+            Orchestrator.NotifyNavigationCanExecuteChanged();
+            return;
+        }
+
         // Using the default channel to send the message to the recipient. In this case, the EnvironmentCreationOptionsViewModel.
         // In the future if we support a multi-instance setup flow, we can use a custom channel/a message broker to send messages.
         // For now, we are using the default channel.
@@ -104,6 +111,9 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     {
         if (sender != null)
         {
+            CanGoToNextPage = false;
+            Orchestrator.NotifyNavigationCanExecuteChanged();
+
             // When navigating between the select providers page and the configure creation options page
             // visual selection is lost, so we need deselect the providers first. Then select correct one.
             // this will ensure that the correct provider is visually selected when navigating back to the select providers page.
