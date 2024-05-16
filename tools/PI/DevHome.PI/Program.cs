@@ -80,16 +80,35 @@ public static class Program
 
     private static async Task<bool> DecideRedirection()
     {
-        AppInstance instance;
         var activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
-        if (RuntimeHelper.IsCurrentProcessRunningAsAdmin())
+        var isElevatedInstancePresent = false;
+        var isUnElevatedInstancePresent = false;
+        var instanceList = AppInstance.GetInstances();
+        foreach (var appInstance in instanceList)
+        {
+            if (appInstance.Key.Equals(MainInstanceKey, StringComparison.OrdinalIgnoreCase))
+            {
+                isUnElevatedInstancePresent = true;
+            }
+            else if (appInstance.Key.Equals(ElevatedInstanceKey, StringComparison.OrdinalIgnoreCase))
+            {
+                isElevatedInstancePresent = true;
+            }
+        }
+
+        AppInstance instance;
+        if (isElevatedInstancePresent)
+        {
+            // Redirect to the elevated instance if present.
+            instance = AppInstance.FindOrRegisterForKey(ElevatedInstanceKey);
+        }
+        else if (RuntimeHelper.IsCurrentProcessRunningAsAdmin())
         {
             // Wait for unelevated instance to exit
-            var isUnElevatedInstancePresent = false;
-            do
+            while (isUnElevatedInstancePresent)
             {
                 isUnElevatedInstancePresent = false;
-                var instanceList = AppInstance.GetInstances();
+                instanceList = AppInstance.GetInstances();
                 foreach (var appInstance in instanceList)
                 {
                     if (appInstance.Key.Equals(MainInstanceKey, StringComparison.OrdinalIgnoreCase))
@@ -98,7 +117,6 @@ public static class Program
                     }
                 }
             }
-            while (isUnElevatedInstancePresent);
 
             // Register the elevated instance key
             instance = AppInstance.FindOrRegisterForKey(ElevatedInstanceKey);
