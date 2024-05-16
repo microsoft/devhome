@@ -4,14 +4,19 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Telemetry;
 using DevHome.Utilities.TelemetryEvents;
 using Microsoft.UI.Xaml;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.Utilities.ViewModels;
 
@@ -66,7 +71,7 @@ public partial class UtilityViewModel : ObservableObject
     }
 #nullable disable
 
-    private void Launch()
+    private async void Launch()
     {
         _log.Information($"Launching {_exeName}, as admin: {LaunchAsAdmin}");
 
@@ -91,6 +96,14 @@ public partial class UtilityViewModel : ObservableObject
         catch (Exception ex)
         {
             _log.Error(ex, $"Failed to start process {_exeName}");
+            var aliasWindowsAppsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"Microsoft\\WindowsApps", Path.GetFileName(_exeName));
+            if (LaunchAsAdmin && !File.Exists(aliasWindowsAppsPath))
+            {
+                _log.Error($"Alias not found {_exeName}");
+                var mainWindow = Application.Current.GetService<WindowEx>();
+                var errorContent = $"Please enable App Execution Alias for \"{Title}\" from \"Settings > Apps > Advanced App Settings > App Execution Alias\"";
+                await WindowExExtensions.ShowErrorMessageDialogAsync(mainWindow, "Error", errorContent, "Close");
+            }
         }
 
         TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(Title, LaunchAsAdmin), null);
