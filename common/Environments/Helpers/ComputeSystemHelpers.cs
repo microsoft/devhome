@@ -155,7 +155,7 @@ public static class ComputeSystemHelpers
                 collectionToUpdate.RemoveAt(i);
             }
 
-            for (var i = listWithUpdates.Count - 1; i >= 0; i--)
+            for (var i = 0; i < listWithUpdates.Count; i++)
             {
                 collectionToUpdate.Add(listWithUpdates[i]);
             }
