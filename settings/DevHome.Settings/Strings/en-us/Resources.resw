@@ -553,4 +553,12 @@
     <value>Quiet background processes allows you to free up resources while developing</value>
     <comment>Inline description of the Quiet background processes experimental feature on the 'Settings -> Experiments' page where you enable it.</comment>
   </data>
+  <data name="FileExplorerSourceControlIntegration_Name" xml:space="preserve">
+    <value>File Explorer Source Control Integration</value>
+    <comment>Name of experimental feature 'FileExplorer SourceControl Integration' on the 'Settings -> Experiments' page where you enable it.</comment>
+  </data>
+  <data name="FileExplorerSourceControlIntegration_Description" xml:space="preserve">
+    <value>View property information (such as commit status, last commit date etc.) from source control technologies inside FileExplorer</value>
+    <comment>Inline description of the FileExplorerSourceControlIntegration experimental feature on the 'Settings -> Experiments' page where you enable it.</comment>
+  </data>
 </root>

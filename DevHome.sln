@@ -142,6 +142,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.EnvironmentVariable
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevHome.Telemetry.Native", "telemetry\DevHome.Telemetry.Native\DevHome.Telemetry.Native.vcxproj", "{8EB52F7D-D216-49FF-BF16-DE06E4695950}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitExtension", "GitExtension", "{D42E6F59-E107-4F74-AEB9-BA0DC8A7ABD9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileExplorerGitIntegration", "extensions\GitExtension\FileExplorerGitIntegration\FileExplorerGitIntegration.csproj", "{58B09B74-90D2-4333-A3C2-F13C31376416}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileExplorerGitIntegration.UnitTest", "extensions\GitExtension\FileExplorerGitIntegration.UnitTest\FileExplorerGitIntegration.UnitTest.csproj", "{0E31B8E2-D36B-46A1-B0B4-498301159CE1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.FileExplorerSourceControlIntegration", "tools\Customization\DevHome.FileExplorerSourceControlIntegration\DevHome.FileExplorerSourceControlIntegration.csproj", "{1237EEB8-F063-45E5-BD7C-534591C38464}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -698,6 +706,42 @@ Global
 		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Release|x64.Build.0 = Release|x64
 		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Release|x86.ActiveCfg = Release|Win32
 		{8EB52F7D-D216-49FF-BF16-DE06E4695950}.Release|x86.Build.0 = Release|Win32
+		{58B09B74-90D2-4333-A3C2-F13C31376416}.Debug|arm64.ActiveCfg = Debug|arm64
+		{58B09B74-90D2-4333-A3C2-F13C31376416}.Debug|arm64.Build.0 = Debug|arm64
+		{58B09B74-90D2-4333-A3C2-F13C31376416}.Debug|x64.ActiveCfg = Debug|x64
+		{58B09B74-90D2-4333-A3C2-F13C31376416}.Debug|x64.Build.0 = Debug|x64
+		{58B09B74-90D2-4333-A3C2-F13C31376416}.Debug|x86.ActiveCfg = Debug|x86
+		{58B09B74-90D2-4333-A3C2-F13C31376416}.Debug|x86.Build.0 = Debug|x86
+		{58B09B74-90D2-4333-A3C2-F13C31376416}.Release|arm64.ActiveCfg = Release|arm64
+		{58B09B74-90D2-4333-A3C2-F13C31376416}.Release|arm64.Build.0 = Release|arm64
+		{58B09B74-90D2-4333-A3C2-F13C31376416}.Release|x64.ActiveCfg = Release|x64
+		{58B09B74-90D2-4333-A3C2-F13C31376416}.Release|x64.Build.0 = Release|x64
+		{58B09B74-90D2-4333-A3C2-F13C31376416}.Release|x86.ActiveCfg = Release|x86
+		{58B09B74-90D2-4333-A3C2-F13C31376416}.Release|x86.Build.0 = Release|x86
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1}.Debug|arm64.ActiveCfg = Debug|arm64
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1}.Debug|arm64.Build.0 = Debug|arm64
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1}.Debug|x64.ActiveCfg = Debug|x64
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1}.Debug|x64.Build.0 = Debug|x64
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1}.Debug|x86.ActiveCfg = Debug|x86
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1}.Debug|x86.Build.0 = Debug|x86
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1}.Release|arm64.ActiveCfg = Release|arm64
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1}.Release|arm64.Build.0 = Release|arm64
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1}.Release|x64.ActiveCfg = Release|x64
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1}.Release|x64.Build.0 = Release|x64
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1}.Release|x86.ActiveCfg = Release|x86
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1}.Release|x86.Build.0 = Release|x86
+		{1237EEB8-F063-45E5-BD7C-534591C38464}.Debug|arm64.ActiveCfg = Debug|arm64
+		{1237EEB8-F063-45E5-BD7C-534591C38464}.Debug|arm64.Build.0 = Debug|arm64
+		{1237EEB8-F063-45E5-BD7C-534591C38464}.Debug|x64.ActiveCfg = Debug|x64
+		{1237EEB8-F063-45E5-BD7C-534591C38464}.Debug|x64.Build.0 = Debug|x64
+		{1237EEB8-F063-45E5-BD7C-534591C38464}.Debug|x86.ActiveCfg = Debug|x86
+		{1237EEB8-F063-45E5-BD7C-534591C38464}.Debug|x86.Build.0 = Debug|x86
+		{1237EEB8-F063-45E5-BD7C-534591C38464}.Release|arm64.ActiveCfg = Release|arm64
+		{1237EEB8-F063-45E5-BD7C-534591C38464}.Release|arm64.Build.0 = Release|arm64
+		{1237EEB8-F063-45E5-BD7C-534591C38464}.Release|x64.ActiveCfg = Release|x64
+		{1237EEB8-F063-45E5-BD7C-534591C38464}.Release|x64.Build.0 = Release|x64
+		{1237EEB8-F063-45E5-BD7C-534591C38464}.Release|x86.ActiveCfg = Release|x86
+		{1237EEB8-F063-45E5-BD7C-534591C38464}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -752,6 +796,10 @@ Global
 		{1317314E-9BDD-4F1C-A76F-22121637A091} = {FAB6FAA7-ADF4-4B65-9831-0C819915E6E1}
 		{2E5629CA-0D1B-42B1-8D6E-934A6E1E18D9} = {FAB6FAA7-ADF4-4B65-9831-0C819915E6E1}
 		{5F9749BC-F34E-4F45-933F-61E0F3ED521F} = {FAB6FAA7-ADF4-4B65-9831-0C819915E6E1}
+		{D42E6F59-E107-4F74-AEB9-BA0DC8A7ABD9} = {DCAF188B-60C3-4EDB-8049-BAA927FBCD7D}
+		{58B09B74-90D2-4333-A3C2-F13C31376416} = {D42E6F59-E107-4F74-AEB9-BA0DC8A7ABD9}
+		{0E31B8E2-D36B-46A1-B0B4-498301159CE1} = {D42E6F59-E107-4F74-AEB9-BA0DC8A7ABD9}
+		{1237EEB8-F063-45E5-BD7C-534591C38464} = {623998FD-B0A6-4980-95D5-A5072301CA10}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {030B5641-B206-46BB-BF71-36FF009088FA}
