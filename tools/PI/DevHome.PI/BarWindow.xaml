@@ -64,7 +64,7 @@
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
 
-                <StackPanel x:Name="AllControls" Orientation="{x:Bind BarOrientation, Mode=OneWay}" HorizontalAlignment="Center" Background="Transparent">
+                <StackPanel x:Name="AllControls" Orientation="{x:Bind BarOrientation, Mode=OneWay}" HorizontalAlignment="Center">
                     <controls:ProcessSelectionButton
                          x:Uid="ProcessChooserButton"
                          x:Name="ProcessChooserButton"

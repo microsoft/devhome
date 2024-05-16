@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
-using DevHome.PI;
 using DevHome.PI.Telemetry;
 using DevHome.PI.ViewModels;
 using Microsoft.UI.Xaml;
@@ -25,5 +24,10 @@ public sealed partial class ModulesPage : Page
     {
         base.OnNavigatedTo(e);
         Application.Current.GetService<TelemetryReporter>().SwitchTo(Feature.LoadedModule);
+    }
+
+    private void GridSplitter_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        e.Handled = true;
     }
 }

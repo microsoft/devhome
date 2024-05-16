@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:diagnostics="using:System.Diagnostics"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
 
     <Grid>
@@ -25,8 +26,10 @@
         <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+            
             <ListView x:Name="ModulesListView" SelectionMode="Single" ItemsSource="{x:Bind ViewModel.ModuleList, Mode=OneWay}"
                       SelectedIndex="{x:Bind ViewModel.SelectedModuleIndex, Mode=TwoWay}">
                 <ListView.ItemTemplate>
@@ -38,7 +41,11 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <ScrollViewer Grid.Column="1" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
+
+            <controls:GridSplitter 
+                Grid.Column="1" ResizeBehavior="BasedOnAlignment" ResizeDirection="Auto" PointerPressed="GridSplitter_PointerPressed"/>
+
+            <ScrollViewer Grid.Column="2" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
                 <StackPanel x:Name="ModuleDetailsPanel" Margin="8,0,0,0">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                         <TextBlock Text="{x:Bind ((diagnostics:ProcessModule)ModulesListView.SelectedItem).ModuleName, Mode=OneWay}"
@@ -58,6 +65,7 @@
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
+            
         </Grid>
     </Grid>
 </Page>
