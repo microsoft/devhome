@@ -1,0 +1,6 @@
+﻿CoRegisterClassObject
+CoRevokeClassObject
+CoResumeClassObjects
+MEMORYSTATUSEX
+GlobalMemoryStatusEx
+CoCreateInstance
