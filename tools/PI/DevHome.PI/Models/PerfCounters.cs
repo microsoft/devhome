@@ -89,6 +89,10 @@ public partial class PerfCounters : ObservableObject, IDisposable
         {
             ThreadPool.QueueUserWorkItem((o) => UpdateTargetProcess(TargetAppData.Instance.TargetProcess));
         }
+        else if (e.PropertyName == nameof(TargetAppData.HasExited))
+        {
+            CloseTargetCounters();
+        }
     }
 
     private void UpdateTargetProcess(Process? process)
@@ -130,15 +134,26 @@ public partial class PerfCounters : ObservableObject, IDisposable
     private void CloseTargetCounters()
     {
         cpuCounter?.Close();
+        cpuCounter?.Dispose();
+        cpuCounter = null;
         ramCounter?.Close();
+        ramCounter?.Dispose();
+        ramCounter = null;
 
         foreach (var counter in gpuCounters ?? Enumerable.Empty<PerformanceCounter>())
         {
             counter.Close();
+            counter.Dispose();
         }
 
+        gpuCounters?.Clear();
+
         readCounter?.Close();
+        readCounter?.Dispose();
+        readCounter = null;
         writeCounter?.Close();
+        writeCounter?.Dispose();
+        writeCounter = null;
     }
 
     public static List<PerformanceCounter> GetGpuCounters(int pid)
