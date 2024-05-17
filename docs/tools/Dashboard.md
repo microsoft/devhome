@@ -15,4 +15,4 @@ Widgets are rendered by Adaptive Cards, and there are a few ways Dev Home custom
 
 ### Widget providers
 
-When creating a widget for Dev Home, you should include all manifest values described in [Widget provider package manifest XML format](https://learn.microsoft.com/windows/apps/develop/widgets/widget-provider-manifest). Dev Home does not currently use `ProviderIcons`, but may choose to do so in the future, and including it will protect your widget provider from potentially breaking in the future.
+When creating a widget for Dev Home, you should include all manifest values described in [Widget provider package manifest XML format](https://learn.microsoft.com/windows/apps/develop/widgets/widget-provider-manifest).
