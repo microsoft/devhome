@@ -3,9 +3,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Configuration;
-using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -18,10 +15,9 @@ using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
-using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Dispatching;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -29,7 +25,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupTargetViewModel));
 
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     private const string SortByDisplayName = "DisplayName";
 
@@ -87,7 +83,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         SetupFlowOrchestrator orchestrator,
         IComputeSystemManager computeSystemManager,
         ComputeSystemViewModelFactory computeSystemViewModelFactory,
-        WindowEx windowEx)
+        DispatcherQueue dispatcherQueue)
         : base(stringResource, orchestrator)
     {
         // Setup initial state for page.
@@ -111,7 +107,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         // Add AdvancedCollectionView to make filtering and sorting the list of ComputeSystemsListViewModels easier.
         ComputeSystemsCollectionView = new AdvancedCollectionView(_computeSystemViewModelList, true);
 
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
         _computeSystemViewModelFactory = computeSystemViewModelFactory;
         ComputeSystemManagerObj = computeSystemManager;
         _setupFlowViewModel = setupFlowModel;
@@ -410,7 +406,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             }
         });
 
-        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
+        await _dispatcherQueue.EnqueueAsync(async () =>
         {
             foreach (var computeSystem in curListViewModel.ComputeSystems)
             {
@@ -426,7 +422,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
                     computeSystem,
                     curListViewModel.Provider,
                     packageFullName,
-                    _windowEx);
+                    _dispatcherQueue);
 
                 // Don't show environments that aren't in a state to configure
                 if (!ShouldShowCard(card.CardState))

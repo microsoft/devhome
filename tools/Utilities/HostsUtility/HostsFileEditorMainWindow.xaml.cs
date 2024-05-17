@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using DevHome.Common.Services;
-using DevHome.HostsFileEditor.Helpers;
 using DevHome.HostsFileEditor.TelemetryEvents;
 using DevHome.Telemetry;
 using HostsUILib.Helpers;
@@ -12,11 +11,10 @@ using HostsUILib.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.HostsFileEditor;
 
-public sealed partial class HostsFileEditorMainWindow : WindowEx
+public sealed partial class HostsFileEditorMainWindow : WinUIEx.WindowEx
 {
     private HostsMainPage HostsNugetMainPage { get; }
 

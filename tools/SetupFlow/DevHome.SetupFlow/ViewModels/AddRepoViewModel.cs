@@ -23,12 +23,12 @@ using DevHome.SetupFlow.Views;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation;
-using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -691,7 +691,7 @@ public partial class AddRepoViewModel : ObservableObject
         _addRepoDialog = addRepoDialog;
         _stringResource = stringResource;
         _host = host;
-        _dispatcherQueue = host.GetService<WindowEx>().DispatcherQueue;
+        _dispatcherQueue = host.GetService<DispatcherQueue>();
         _loginUiContent = new Frame();
         _setupFlowOrchestrator = setupFlowOrchestrator;
 
@@ -1295,7 +1295,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
         else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
         {
-            var windowHandle = _host.GetService<WindowEx>().GetWindowHandle();
+            var windowHandle = _host.GetService<Window>().GetWindowHandle();
             var windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
             try
             {

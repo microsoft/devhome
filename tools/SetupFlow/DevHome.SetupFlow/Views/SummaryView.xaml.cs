@@ -27,8 +27,8 @@ public sealed partial class SummaryView : UserControl, IRecipient<NewAdaptiveCar
         if (sender is HyperlinkButton hyperlinkButton && hyperlinkButton.Tag is PackageViewModel package)
         {
             var window = new InstallationNotesWindow(package.PackageTitle, package.InstallationNotes);
-            window.Activate();
             window.CenterOnWindow();
+            window.Activate();
         }
     }
 

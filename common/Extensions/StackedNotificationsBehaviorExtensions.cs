@@ -1,17 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using WinUIEx;
 
 namespace DevHome.Common.Extensions;
 
@@ -25,9 +20,9 @@ public static class StackedNotificationsBehaviorExtensions
         IRelayCommand? command = null,
         string? buttonContent = null)
     {
-        var dispatcherQueue = Application.Current.GetService<WindowEx>().DispatcherQueue;
+        var dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
 
-        dispatcherQueue.EnqueueAsync(() =>
+        dispatcherQueue?.EnqueueAsync(() =>
         {
             var notificationToShow = new Notification
             {
@@ -55,9 +50,9 @@ public static class StackedNotificationsBehaviorExtensions
 
     public static void RemoveWithWindowExtension(this StackedNotificationsBehavior behavior, Notification notification)
     {
-        var dispatcherQueue = Application.Current.GetService<WindowEx>().DispatcherQueue;
+        var dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
 
-        dispatcherQueue.EnqueueAsync(() =>
+        dispatcherQueue?.EnqueueAsync(() =>
         {
             behavior.Remove(notification);
         });
@@ -65,7 +60,7 @@ public static class StackedNotificationsBehaviorExtensions
 
     public static void ClearWithWindowExtension(this StackedNotificationsBehavior behavior)
     {
-        var dispatcherQueue = Application.Current.GetService<WindowEx>().DispatcherQueue;
+        var dispatcherQueue = Application.Current.GetService<Window>().DispatcherQueue;
 
         dispatcherQueue.EnqueueAsync(() =>
         {

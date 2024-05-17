@@ -7,6 +7,7 @@ using DevHome.Common.Environments.Models;
 using DevHome.Common.Services;
 using DevHome.Environments.Models;
 using DevHome.Environments.ViewModels;
+using Microsoft.UI.Dispatching;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Environments.Helpers;
@@ -22,7 +23,7 @@ public class DataExtractor
     /// ToDo: Add a pause after each operation
     /// </summary>
     /// <param name="computeSystem">Compute system used to fill OperationsViewModel's callback function.</param>
-    public static List<OperationsViewModel> FillDotButtonOperations(ComputeSystemCache computeSystem, WinUIEx.WindowEx windowEx)
+    public static List<OperationsViewModel> FillDotButtonOperations(ComputeSystemCache computeSystem, DispatcherQueue dispatcherQueue)
     {
         var operations = new List<OperationsViewModel>();
         var supportedOperations = computeSystem.SupportedOperations.Value;
@@ -36,7 +37,7 @@ public class DataExtractor
         if (supportedOperations.HasFlag(ComputeSystemOperations.Delete))
         {
             operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_Delete"), "\uE74D", computeSystem.DeleteAsync, ComputeSystemOperations.Delete, windowEx));
+                _stringResource.GetLocalized("Operations_Delete"), "\uE74D", computeSystem.DeleteAsync, ComputeSystemOperations.Delete, dispatcherQueue));
         }
 
         return operations;

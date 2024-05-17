@@ -8,10 +8,10 @@ using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.Storage;
-using WinUIEx;
 
 namespace DevHome.Dashboard.Services;
 
@@ -21,7 +21,7 @@ public class WidgetAdaptiveCardRenderingService : IAdaptiveCardRenderingService,
 
     public event EventHandler RendererUpdated = (_, _) => { };
 
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     private readonly IThemeSelectorService _themeSelectorService;
 
@@ -31,9 +31,9 @@ public class WidgetAdaptiveCardRenderingService : IAdaptiveCardRenderingService,
 
     private bool _disposedValue;
 
-    public WidgetAdaptiveCardRenderingService(WindowEx windowEx, IThemeSelectorService themeSelectorService)
+    public WidgetAdaptiveCardRenderingService(DispatcherQueue dispatcherQueue, IThemeSelectorService themeSelectorService)
     {
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
         _themeSelectorService = themeSelectorService;
         _themeSelectorService.ThemeChanged += OnThemeChanged;
     }
@@ -118,7 +118,7 @@ public class WidgetAdaptiveCardRenderingService : IAdaptiveCardRenderingService,
                 _log.Error(ex, "Error retrieving HostConfig");
             }
 
-            _windowEx.DispatcherQueue.TryEnqueue(() =>
+            _dispatcherQueue.TryEnqueue(() =>
             {
                 if (!string.IsNullOrEmpty(hostConfigContents))
                 {
