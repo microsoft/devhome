@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.DevHomeAdaptiveCards.CardInterfaces;
 using DevHome.Common.Views.AdaptiveCardViews;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
@@ -57,11 +58,6 @@ public partial class DevHomeLaunchContentDialogButton : IDevHomeSettingsCardNonS
         }
 
         var dialog = new ContentDialogWithNonInteractiveContent(dialogContent);
-
-        // The dialog's content and XAMLRoot is set on the DispatcherQueue.
-        // This results in a race condition and the result is focus is not moved
-        // to the content dialog.  Wait a bit.
-        await Task.Delay(100);
 
         dialog.XamlRoot = senderObj.XamlRoot;
 
