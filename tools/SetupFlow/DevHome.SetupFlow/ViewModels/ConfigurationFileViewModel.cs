@@ -15,9 +15,9 @@ using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
+using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.Storage;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -25,7 +25,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileViewModel));
     private readonly IDesiredStateConfiguration _dsc;
-    private readonly WindowEx _mainWindow;
+    private readonly Window _mainWindow;
 
     public List<ConfigureTask> TaskList { get; } = new List<ConfigureTask>();
 
@@ -50,7 +50,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     public ConfigurationFileViewModel(
         ISetupFlowStringResource stringResource,
         IDesiredStateConfiguration dsc,
-        WindowEx mainWindow,
+        Window mainWindow,
         SetupFlowOrchestrator orchestrator)
         : base(stringResource, orchestrator)
     {

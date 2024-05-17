@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -63,51 +62,15 @@ public partial class AppDetailsPageViewModel : ObservableObject
                     {
                         AppInfo.MainModuleFileName = targetProcess.MainModule.FileName;
                         uint binaryTypeValue;
+
+                        // TODO GetBinaryType only distinguishes x86 from x64. It doesn't allow for ARM or ARM64.
                         PInvoke.GetBinaryType(AppInfo.MainModuleFileName, out binaryTypeValue);
                         AppInfo.BinaryType = (WindowHelper.BinaryType)binaryTypeValue;
                     }
 
                     foreach (ProcessModule module in targetProcess.Modules)
                     {
-                        if (module.ModuleName.Equals("PresentationFramework.dll", StringComparison.OrdinalIgnoreCase))
-                        {
-                            AppInfo.UsesWpf = true;
-                        }
-
-                        if (module.ModuleName.Equals("System.Windows.Forms.dll", StringComparison.OrdinalIgnoreCase))
-                        {
-                            AppInfo.UsesWinForms = true;
-                        }
-
-                        if (module.ModuleName.Contains("mfc", StringComparison.OrdinalIgnoreCase))
-                        {
-                            AppInfo.UsesMfc = true;
-                        }
-
-                        if (module.ModuleName.Contains("Avalonia", StringComparison.OrdinalIgnoreCase))
-                        {
-                            AppInfo.IsAvalonia = true;
-                        }
-
-                        if (module.ModuleName.Contains("Microsoft.Maui", StringComparison.OrdinalIgnoreCase))
-                        {
-                            AppInfo.IsMaui = true;
-                        }
-
-                        if (module.ModuleName.Contains("Microsoft.Windows.SDK.NET", StringComparison.OrdinalIgnoreCase))
-                        {
-                            AppInfo.UsesWinAppSdk = true;
-                        }
-
-                        if (module.ModuleName.Contains("Microsoft.WinUI", StringComparison.OrdinalIgnoreCase))
-                        {
-                            AppInfo.UsesWinUi = true;
-                        }
-
-                        if (module.ModuleName.Contains("dxcore", StringComparison.OrdinalIgnoreCase))
-                        {
-                            AppInfo.UsesDirectX = true;
-                        }
+                        AppInfo.CheckFrameworkTypes(module.ModuleName);
                     }
 
                     AppInfo.IsStoreApp = PInvoke.IsImmersiveProcess(targetProcess.SafeHandle);

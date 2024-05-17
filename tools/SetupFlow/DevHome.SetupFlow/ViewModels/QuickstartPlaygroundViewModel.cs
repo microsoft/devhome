@@ -24,7 +24,6 @@ using Serilog;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.System;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -195,7 +194,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
             // TODO: Replace with WindowSaveFileDialog
             var folderPicker = new FolderPicker();
-            var hWnd = Application.Current.GetService<WindowEx>().GetWindowHandle();
+            var hWnd = Application.Current.GetService<Window>().GetWindowHandle();
             WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hWnd);
             folderPicker.FileTypeFilter.Add("*");
 
@@ -434,9 +433,16 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
             TelemetryFactory.Get<ITelemetry>().Log("QuickstartPlaygroundGenerateButtonClicked", LogLevel.Critical, new GenerateButtonClicked(userPrompt));
 
-            // Ensure file view isn't visible (in the case where the user has previously run a Generate command
+            // Ensure file view isn't visible (in the case where the user has previously run a Generate command)
             IsFileViewVisible = false;
             IsErrorViewVisible = false;
+
+            // Ensure that the launch buttons are in their default state. This is important for scenarios where
+            // the extension has more than one project host and the user is doing multiple generate attempts in sequence.
+            // It makes sure that the code in the code-behind for populating the dropdown button gets re-run to pick up
+            // the new project host objects.
+            IsLaunchButtonVisible = true;
+            IsLaunchDropDownVisible = false;
 
             // Without this, when the user generates two projects in sequence, the text box
             // will contain any text from last-opened file in the previous project (which is

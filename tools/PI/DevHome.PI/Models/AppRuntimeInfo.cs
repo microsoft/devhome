@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.PI.Helpers;
 using Microsoft.UI.Xaml;
@@ -28,31 +30,7 @@ public partial class AppRuntimeInfo : ObservableObject
     private bool isPackaged = false;
 
     [ObservableProperty]
-    private bool usesWpf = false;
-
-    [ObservableProperty]
-    private bool usesWinForms = false;
-
-    [ObservableProperty]
-    private bool usesMfc = false;
-
-    [ObservableProperty]
     private bool isStoreApp = false;
-
-    [ObservableProperty]
-    private bool isAvalonia = false;
-
-    [ObservableProperty]
-    private bool isMaui = false;
-
-    [ObservableProperty]
-    private bool usesWinAppSdk = false;
-
-    [ObservableProperty]
-    private bool usesWinUi = false;
-
-    [ObservableProperty]
-    private bool usesDirectX = false;
 
     [ObservableProperty]
     private bool isRunningAsAdmin = false;
@@ -62,4 +40,47 @@ public partial class AppRuntimeInfo : ObservableObject
 
     [ObservableProperty]
     private Visibility visibility = Visibility.Visible;
+
+    public ObservableCollection<FrameworkType> FrameworkTypes { get; } = [];
+
+    public AppRuntimeInfo()
+    {
+        // Note these are in alphabetical order of Name.
+        FrameworkTypes.Add(new FrameworkType("Avalonia.Base.dll", "Avalonia"));
+        FrameworkTypes.Add(new FrameworkType("DXCore.dll", "DirectX"));
+        FrameworkTypes.Add(new FrameworkType("Microsoft.Maui.dll", "Maui"));
+        FrameworkTypes.Add(new FrameworkType("MFC", "MFC", false));
+        FrameworkTypes.Add(new FrameworkType("Python.exe", "Python"));
+        FrameworkTypes.Add(new FrameworkType("Microsoft.Windows.SDK.NET.dll", "Windows App SDK"));
+        FrameworkTypes.Add(new FrameworkType("System.Windows.Forms.dll", "Windows Forms"));
+        FrameworkTypes.Add(new FrameworkType("Microsoft.WinUI.dll", "WinUI"));
+        FrameworkTypes.Add(new FrameworkType("PresentationFramework.dll", "WPF"));
+    }
+
+    public void CheckFrameworkTypes(string moduleName)
+    {
+        foreach (var item in FrameworkTypes)
+        {
+            // Skip if already matched.
+            if (item.IsTypeSupported == true)
+            {
+                continue;
+            }
+
+            if (item.IsExactMatch)
+            {
+                if (moduleName.Equals(item.Determinator, StringComparison.OrdinalIgnoreCase))
+                {
+                    item.IsTypeSupported = true;
+                }
+            }
+            else
+            {
+                if (moduleName.Contains(item.Determinator, StringComparison.OrdinalIgnoreCase))
+                {
+                    item.IsTypeSupported = true;
+                }
+            }
+        }
+    }
 }

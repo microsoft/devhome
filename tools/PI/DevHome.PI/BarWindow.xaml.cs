@@ -135,8 +135,6 @@ public partial class BarWindow : WindowEx, INotifyPropertyChanged
         }
     }
 
-    private readonly ObservableCollection<Button> externalTools = [];
-
     private readonly WINEVENTPROC winPositionEventDelegate;
     private readonly WINEVENTPROC winFocusEventDelegate;
 
@@ -286,6 +284,13 @@ public partial class BarWindow : WindowEx, INotifyPropertyChanged
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
+        if (LargeContentPanel is not null
+            && LargeContentPanel.Visibility == Visibility.Visible
+            && !IsMaximized)
+        {
+            CacheRestoreState();
+        }
+
         ClipboardMonitor.Instance.Stop();
         TargetAppData.Instance.ClearAppData();
 

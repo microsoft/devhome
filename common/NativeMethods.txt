@@ -13,3 +13,8 @@ SHLoadIndirectString
 StrFormatByteSizeEx
 SFBS_FLAGS
 MAX_PATH
+GetDpiForWindow
+GetWindowRect
+GetMonitorInfo
+SetWindowPos
+MonitorFromWindow

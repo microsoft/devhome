@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Helpers;
@@ -55,7 +57,11 @@ public partial class ModulesPageViewModel : ObservableObject
             {
                 if (!process.HasExited)
                 {
-                    foreach (ProcessModule module in targetProcess.Modules)
+                    // Sort the list based on the module name.
+                    var moduleList = targetProcess.Modules.Cast<ProcessModule>().ToList();
+                    moduleList = [.. moduleList.OrderBy(module => module.ModuleName)];
+
+                    foreach (var module in moduleList)
                     {
                         ModuleList.Add(module);
                     }

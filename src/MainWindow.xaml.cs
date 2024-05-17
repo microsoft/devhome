@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome;
 
-public sealed partial class MainWindow : WindowEx
+public sealed partial class MainWindow : WinUIEx.WindowEx
 {
     private readonly DateTime mainWindowCreated;
 
@@ -23,7 +23,7 @@ public sealed partial class MainWindow : WindowEx
         mainWindowCreated = DateTime.UtcNow;
     }
 
-    private void MainWindow_Closed(object sender, Microsoft.UI.Xaml.WindowEventArgs args)
+    private void MainWindow_Closed(object sender, WindowEventArgs args)
     {
         Application.Current.GetService<IExtensionService>().SignalStopExtensionsAsync();
         TelemetryFactory.Get<ITelemetry>().Log("DevHome_MainWindow_Closed_Event", LogLevel.Critical, new DevHomeClosedEvent(mainWindowCreated));

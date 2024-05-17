@@ -18,10 +18,10 @@ using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -217,7 +217,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     public void AddMessage(string message, MessageSeverityKind severityKind = MessageSeverityKind.Info)
     {
-        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        Application.Current.GetService<DispatcherQueue>().TryEnqueue(() =>
         {
             var messageToDisplay = _host.GetService<LoadingMessageViewModel>();
             messageToDisplay.MessageToShow = message;
@@ -245,9 +245,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     public void UpdateActionCenterMessage(ActionCenterMessages message, ActionMessageRequestKind requestKind)
     {
-        // All references to WindowEx and Application.Current will be removed in the future,
-        // in the loadingViewModel.
-        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        // All references to DispatcherQueue and Application.Current will be removed in the future,
+        // in the LoadingViewModel.
+        Application.Current.GetService<DispatcherQueue>().TryEnqueue(() =>
         {
             // We need to add/remove the message in a temporary list and then re add the items to a new collection. This is because
             // of the adaptive card panel and it receiving UI updates in the listview. There can be random crashes if we don't do this when
@@ -495,7 +495,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private async Task StartAllTasks(ObservableCollection<TaskInformation> tasks)
     {
         _log.Information("Starting all tasks");
-        var window = Application.Current.GetService<WindowEx>();
+        var dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
         await Task.Run(async () =>
         {
             var tasksToRunFirst = new List<TaskInformation>();
@@ -519,13 +519,13 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             // Run all tasks that don't need dev drive installed.
             await Parallel.ForEachAsync(tasksToRunFirst, async (taskInformation, token) =>
             {
-                await StartTaskAndReportResult(window, taskInformation);
+                await StartTaskAndReportResult(dispatcherQueue, taskInformation);
             });
 
             // Run all the tasks that need dev drive installed.
             await Parallel.ForEachAsync(tasksToRunSecond, async (taskInformation, token) =>
             {
-                await StartTaskAndReportResult(window, taskInformation);
+                await StartTaskAndReportResult(dispatcherQueue, taskInformation);
             });
         });
 
@@ -562,10 +562,10 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// <summary>
     /// Runs the specified task and updates the UI when the task is finished.
     /// </summary>
-    /// <param name="window">Used to get access to the dispatcher queue.</param>
+    /// <param name="dispatcherQueue">Dispatcher queue associated with the window for the task.</param>
     /// <param name="taskInformation">Information about the task to execute.  Will be modified</param>
     /// <returns>An awaitable task</returns>
-    private async Task StartTaskAndReportResult(WinUIEx.WindowEx window, TaskInformation taskInformation)
+    private async Task StartTaskAndReportResult(DispatcherQueue dispatcherQueue, TaskInformation taskInformation)
     {
         // loadingMessage is used in the catch.
         var loadingMessage = _host.GetService<LoadingMessageViewModel>();
@@ -574,7 +574,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // Start the task and wait for it to complete.
         try
         {
-            window.DispatcherQueue.TryEnqueue(() =>
+            var loadingMessage = _host.GetService<LoadingMessageViewModel>();
+            loadingMessage.MessageToShow = taskInformation.MessageToShow;
+            dispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
                 if (!Orchestrator.IsSettingUpATargetMachine)
@@ -603,7 +605,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 taskFinishedState = await taskInformation.TaskToExecute.Execute();
             }
 
-            window.DispatcherQueue.TryEnqueue(() =>
+            dispatcherQueue.TryEnqueue(() =>
             {
                 PerformPostTaskTasks(taskInformation, loadingMessage, taskFinishedState);
             });

@@ -20,7 +20,7 @@ public class ProcessSelectionButton : Button
     {
         base.OnPointerEntered(e);
 
-        // When the mouse cursor is over the button, change to the default cursor
+        // When the mouse cursor is over the button, change to the default cursor.
         ResetCursor();
     }
 
@@ -28,7 +28,7 @@ public class ProcessSelectionButton : Button
     {
         base.OnPointerExited(e);
 
-        // When the mouse cursor leaves the button, change the cursor to the cross
+        // When the mouse cursor leaves the button, change the cursor to the cross.
         ChangeCursor();
     }
 
@@ -37,7 +37,7 @@ public class ProcessSelectionButton : Button
         base.OnPointerReleased(e);
 
         // Were we showing the select cursor?
-        if (this.ProtectedCursor == null)
+        if (ProtectedCursor == null)
         {
             return;
         }
@@ -45,9 +45,8 @@ public class ProcessSelectionButton : Button
         Process? p;
         Windows.Win32.Foundation.HWND hwnd;
 
-        // Grab the window under the cursor and attach to that process
+        // Grab the window under the cursor and attach to that process.
         WindowHelper.GetAppInfoUnderMouseCursor(out p, out hwnd);
-
         if (p != null)
         {
             TargetAppData.Instance.SetNewAppData(p, hwnd);
@@ -58,11 +57,11 @@ public class ProcessSelectionButton : Button
 
     public void ChangeCursor()
     {
-        this.ProtectedCursor = InputSystemCursor.Create(InputSystemCursorShape.Cross);
+        ProtectedCursor = InputSystemCursor.Create(InputSystemCursorShape.Cross);
     }
 
     public void ResetCursor()
     {
-        this.ProtectedCursor = null;
+        ProtectedCursor = null;
     }
 }
