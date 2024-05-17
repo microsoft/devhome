@@ -47,6 +47,19 @@ public static class Program
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
 
+        var stopEvent = new EventWaitHandle(false, EventResetMode.ManualReset, $"DevHomePI - {Environment.ProcessId}");
+        var stopEventThread = new Thread(() =>
+        {
+            var waitResult = stopEvent.WaitOne();
+
+            _app?.UIDispatcher?.TryEnqueue(() =>
+            {
+                var primaryWindow = Application.Current.GetService<PrimaryWindow>();
+                primaryWindow.Close();
+            });
+        });
+        stopEventThread.Start();
+
         try
         {
             XamlCheckProcessRequirements();
@@ -67,6 +80,11 @@ public static class Program
                     OnActivated(null, AppInstance.GetCurrent().GetActivatedEventArgs());
                 });
             }
+
+            stopEvent.Set();
+            stopEventThread.Join();
+            stopEvent.Close();
+            stopEvent.Dispose();
         }
         catch (Exception ex)
         {
@@ -114,6 +132,8 @@ public static class Program
                     if (appInstance.Key.Equals(MainInstanceKey, StringComparison.OrdinalIgnoreCase))
                     {
                         isUnElevatedInstancePresent = true;
+                        var stopAppInstance = new EventWaitHandle(false, EventResetMode.ManualReset, $"DevHomePI - {appInstance.ProcessId}");
+                        stopAppInstance.Set();
                     }
                 }
             }
