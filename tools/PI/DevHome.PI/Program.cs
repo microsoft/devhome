@@ -47,8 +47,8 @@ public static class Program
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
 
-        var stopEvent = new EventWaitHandle(false, EventResetMode.ManualReset, $"DevHomePI - {Environment.ProcessId}");
-        var stopEventThread = new Thread(() =>
+        var stopEvent = new EventWaitHandle(false, EventResetMode.ManualReset, $"DevHomePI-{Environment.ProcessId}");
+        ThreadPool.QueueUserWorkItem((o) =>
         {
             var waitResult = stopEvent.WaitOne();
 
@@ -58,7 +58,6 @@ public static class Program
                 primaryWindow.Close();
             });
         });
-        stopEventThread.Start();
 
         try
         {
@@ -81,8 +80,6 @@ public static class Program
                 });
             }
 
-            stopEvent.Set();
-            stopEventThread.Join();
             stopEvent.Close();
             stopEvent.Dispose();
         }
@@ -132,7 +129,7 @@ public static class Program
                     if (appInstance.Key.Equals(MainInstanceKey, StringComparison.OrdinalIgnoreCase))
                     {
                         isUnElevatedInstancePresent = true;
-                        var stopAppInstance = new EventWaitHandle(false, EventResetMode.ManualReset, $"DevHomePI - {appInstance.ProcessId}");
+                        var stopAppInstance = new EventWaitHandle(false, EventResetMode.ManualReset, $"DevHomePI-{appInstance.ProcessId}");
                         stopAppInstance.Set();
                     }
                 }
