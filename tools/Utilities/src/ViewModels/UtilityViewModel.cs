@@ -5,22 +5,24 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Telemetry;
 using DevHome.Utilities.TelemetryEvents;
+using Microsoft.UI.Xaml;
 using Serilog;
 
 namespace DevHome.Utilities.ViewModels;
 
-public class UtilityViewModel : INotifyPropertyChanged
+public partial class UtilityViewModel : ObservableObject
 {
 #nullable enable
 
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(UtilityViewModel));
     private readonly IExperimentationService? experimentationService;
     private readonly string? experimentalFeature;
-    private readonly string exeName;
+    private readonly string _exeName;
 #nullable disable
 
     public bool Visible
@@ -48,48 +50,33 @@ public class UtilityViewModel : INotifyPropertyChanged
 
     public ICommand LaunchCommand { get; set; }
 
-    public ICommand LaunchAsAdminCommand { get; set; }
+    public Visibility SupportsLaunchAsAdmin { get; set; }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+    [ObservableProperty]
+    private bool _launchAsAdmin;
 
 #nullable enable
     public UtilityViewModel(string exeName, IExperimentationService? experimentationService = null, string? experimentalFeature = null)
     {
-        this.exeName = exeName;
+        this._exeName = exeName;
         this.experimentationService = experimentationService;
         this.experimentalFeature = experimentalFeature;
         LaunchCommand = new RelayCommand(Launch);
-        LaunchAsAdminCommand = new RelayCommand(LaunchAsAdmin);
-        _log.Information("UtilityViewModel created for Title: {Title}, exe: {ExeName}", Title, exeName);
+        _log.Information($"UtilityViewModel created for Title: {Title}, exe: {exeName}");
     }
 #nullable disable
 
     private void Launch()
     {
-        LaunchInternal(false);
-    }
-
-    private void LaunchAsAdmin()
-    {
-        LaunchInternal(true);
-    }
-
-    private void LaunchInternal(bool runAsAdmin)
-    {
-        _log.Information("Launching {ExeName}, as admin: {RunAsAdmin}", exeName, runAsAdmin);
+        _log.Information($"Launching {_exeName}, as admin: {LaunchAsAdmin}");
 
         // We need to start the process with ShellExecute to run elevated
         var processStartInfo = new ProcessStartInfo
         {
-            FileName = exeName,
+            FileName = _exeName,
             UseShellExecute = true,
 
-            Verb = runAsAdmin ? "runas" : "open",
+            Verb = LaunchAsAdmin ? "runas" : "open",
         };
 
         try
@@ -97,15 +84,15 @@ public class UtilityViewModel : INotifyPropertyChanged
             var process = Process.Start(processStartInfo);
             if (process is null)
             {
-                _log.Error("Failed to start process {ExeName}", exeName);
+                _log.Error($"Failed to start process {_exeName}");
                 throw new InvalidOperationException("Failed to start process");
             }
         }
         catch (Exception ex)
         {
-            _log.Error(ex, "Failed to start process {ExeName}", exeName);
+            _log.Error(ex, $"Failed to start process {_exeName}");
         }
 
-        TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(Title, runAsAdmin), null);
+        TelemetryFactory.Get<DevHome.Telemetry.ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(Title, LaunchAsAdmin), null);
     }
 }

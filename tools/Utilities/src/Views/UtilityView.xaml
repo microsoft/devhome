@@ -22,13 +22,15 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Image
             Grid.Row="0"
             Source="{x:Bind ViewModel.ImageSource}"
-            HorizontalAlignment="Stretch"
+            HorizontalAlignment="Left"
             VerticalAlignment="Top"
+            Margin="15 5 0 0"
             Width="64"
             Height="64"/>
 
@@ -58,29 +60,22 @@
             </StackPanel>
         </ScrollViewer>
 
-        <SplitButton
+        <ToggleSwitch
+            x:Uid="SupportsLaunchAsAdmin"
             Grid.Row="2"
-            HorizontalAlignment="Center"
+            IsOn="{x:Bind ViewModel.LaunchAsAdmin, Mode=TwoWay}"
+            Visibility="{x:Bind ViewModel.SupportsLaunchAsAdmin, Mode=OneWay}"
+            Margin="15 0 0 5"/>
+
+        <Button
+            Grid.Row="3"
+            Margin="15 5 0 0"
             Command="{x:Bind ViewModel.LaunchCommand}">
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Launch" Margin="0 0 5 0" />
-                <FontIcon Glyph="&#xE8A7;" FontSize="12" />
+                <TextBlock x:Uid="LaunchButton" />
             </StackPanel>
-
-            <SplitButton.Flyout>
-                <MenuFlyout>
-                    <MenuFlyoutItem
-                        Text="Launch as Admin"
-                        Command="{x:Bind ViewModel.LaunchAsAdminCommand}">
-
-                        <MenuFlyoutItem.Icon>
-                            <FontIcon Glyph="&#xE7EF;" />
-                        </MenuFlyoutItem.Icon>
-                    </MenuFlyoutItem>
-                </MenuFlyout>
-            </SplitButton.Flyout>
-        </SplitButton>
+        </Button>
 
     </Grid>
 </UserControl>

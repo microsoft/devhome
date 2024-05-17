@@ -5,6 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:DevHome.PI.Models"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:local="using:DevHome.PI.Controls"
     mc:Ignorable="d">
 
     <Grid>
@@ -31,19 +34,6 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"/>
@@ -51,39 +41,60 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Uid="IDTextBlock"/>
                 <TextBox Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.ProcessId, Mode=OneWay}" IsReadOnly="True"/>
-                <TextBlock Grid.Row="1" x:Uid="BasePriorityTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.BasePriority, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="2" x:Uid="PriorityClassTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PriorityClass, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="3" x:Uid="MainModuleTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.MainModuleFileName, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="4" x:Uid="BinaryTypeTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="4" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.BinaryType, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="5" x:Uid="MSIXPackagedTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="5" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsPackaged, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="6" x:Uid="UsesWPFTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="6" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.UsesWpf, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="7" x:Uid="UsesWinFormsTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="7" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.UsesWinForms, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="8" x:Uid="UsesMFCTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="8" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.UsesMfc, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="9" x:Uid="MicrosoftStoreAppTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="9" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsStoreApp, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="10" x:Uid="IsAvaloniaTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="10" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsAvalonia, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="11" x:Uid="IsMauiTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="11" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsMaui, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="12" x:Uid="UsesWinAppSdkTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="12" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.UsesWinAppSdk, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="13" x:Uid="UsesWinUiTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="13" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.UsesWinUi, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="14" x:Uid="UsesDirectXTextBlock" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBox Grid.Row="14" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.UsesDirectX, Mode=OneWay}" IsReadOnly="True" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}"/>
-                <TextBlock Grid.Row="15" x:Uid="IsRunningAsSystemTextBlock"/>
-                <TextBox Grid.Row="15" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsRunningAsSystem, Mode=OneWay}" IsReadOnly="True"/>
-                <TextBlock Grid.Row="16" x:Uid="IsRunningAsAdminTextBlock"/>
-                <TextBox Grid.Row="16" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsRunningAsAdmin, Mode=OneWay}" IsReadOnly="True"/>
-                <Button Grid.Row="17" Grid.ColumnSpan="2" x:Uid="RunElevatedButton" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}"/>
+                
+                <!-- These fields can't be reported if we get an exception accessing them,
+                for example if the target app is running elevated but PI is not. -->
+                <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Uid="BasePriorityTextBlock"/>
+                    <TextBox Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.BasePriority, Mode=OneWay}" IsReadOnly="True" />
+                    <TextBlock Grid.Row="1" x:Uid="PriorityClassTextBlock" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PriorityClass, Mode=OneWay}" IsReadOnly="True" />
+                    <TextBlock Grid.Row="2" x:Uid="MainModuleTextBlock" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.MainModuleFileName, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" />
+                    <TextBlock Grid.Row="3" x:Uid="BinaryTypeTextBlock" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.BinaryType, Mode=OneWay}" IsReadOnly="True" />
+                    <TextBlock Grid.Row="4" x:Uid="MSIXPackagedTextBlock" />
+                    <TextBox Grid.Row="4" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsPackaged, Mode=OneWay}" IsReadOnly="True" />
+                    <TextBlock Grid.Row="5" x:Uid="MicrosoftStoreAppTextBlock" />
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsStoreApp, Mode=OneWay}" IsReadOnly="True" />
+
+                    <TextBlock Grid.Row="6" x:Uid="FrameworkTypesTextBlock" />
+                    <ListView 
+                        Grid.Row="6" Grid.Column="1" IsItemClickEnabled="False"
+                        ItemsSource="{x:Bind ViewModel.AppInfo.FrameworkTypes, Mode=OneWay}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="models:FrameworkType">
+                                <local:ReadOnlyCheckBox
+                                    Content="{x:Bind Name, Mode=OneWay}" IsChecked="{x:Bind IsTypeSupported, Mode=OneWay}" 
+                                    Width="180" IsReadOnly="True"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <controls:WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ListView>
+                </Grid>
+                
+                <TextBlock Grid.Row="2" x:Uid="IsRunningAsSystemTextBlock"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsRunningAsSystem, Mode=OneWay}" IsReadOnly="True"/>
+                <TextBlock Grid.Row="3" x:Uid="IsRunningAsAdminTextBlock"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsRunningAsAdmin, Mode=OneWay}" IsReadOnly="True"/>
+                <Button Grid.Row="4" Grid.ColumnSpan="2" x:Uid="RunElevatedButton" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}"/>
             </Grid>
         </ScrollViewer>
     </Grid>

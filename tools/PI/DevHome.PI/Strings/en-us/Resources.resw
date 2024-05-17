@@ -209,18 +209,6 @@
     <value>MSIX packaged</value>
     <comment>This refers to whether the application is using MSIX packaging technology.</comment>
   </data>
-  <data name="UsesWPFTextBlock.Text" xml:space="preserve">
-    <value>Uses WPF</value>
-    <comment>This refers to whether the application is using Windows Presentation Framework (WPF) technology.</comment>
-  </data>
-  <data name="UsesWinFormsTextBlock.Text" xml:space="preserve">
-    <value>Uses Windows Forms</value>
-    <comment>This refers to whether the application is using Windows Forms technology.</comment>
-  </data>
-  <data name="UsesMFCTextBlock.Text" xml:space="preserve">
-    <value>Uses MFC</value>
-    <comment>This refers to whether the application is using Microsoft Foundation Class (MFC) technology.</comment>
-  </data>
   <data name="MicrosoftStoreAppTextBlock.Text" xml:space="preserve">
     <value>Microsoft Store app</value>
     <comment>This refers to whether the application was acquired via the Microsoft Store.</comment>
@@ -537,18 +525,6 @@
     <value>Code</value>
     <comment>This refers to a short hand for an error code representation of the contents of the clipboard.</comment>
   </data>
-  <data name="IsAvaloniaTextBlock.Text" xml:space="preserve">
-    <value>Is Avalonia</value>
-    <comment>This refers to whether the application is using the Avalonia framework</comment>
-  </data>
-  <data name="IsMauiTextBlock.Text" xml:space="preserve">
-    <value>Is Maui</value>
-    <comment>This refers to whether the application is using the Maui framework</comment>
-  </data>
-  <data name="UsesDirectXTextBlock.Text" xml:space="preserve">
-    <value>Uses DirectX</value>
-    <comment>This refers to whether the application is using DirectX</comment>
-  </data>
   <data name="IsRunningAsAdminTextBlock.Text" xml:space="preserve">
     <value>Is running as Admin</value>
     <comment>This refers to whether the application is running as admin</comment>
@@ -560,14 +536,6 @@
   <data name="RunElevatedButton.Content" xml:space="preserve">
     <value>Run PI as Admin to get more data</value>
     <comment>When the user clicks this button we relaunch PI as admin to get more app details</comment>
-  </data>
-  <data name="UsesWinAppSdkTextBlock.Text" xml:space="preserve">
-    <value>Uses Windows App SDK</value>
-    <comment>This refers to whether the application is using the Windows App SDK</comment>
-  </data>
-  <data name="UsesWinUiTextBlock.Text" xml:space="preserve">
-    <value>Uses WinUI</value>
-    <comment>This refers to whether the application is using WinUI</comment>
   </data>
   <data name="InsightsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Go to the key insights</value>
@@ -776,5 +744,9 @@
   <data name="GenericInsightDescription" xml:space="preserve">
     <value>Error {0}: {1}</value>
     <comment>Locked={"{0}", "{1}"} A description to help a user that is dealing with non-specific error situation. {0} is the error name. {1} is the error description.</comment>
+  </data>
+  <data name="FrameworkTypesTextBlock.Text" xml:space="preserve">
+    <value>Framework types</value>
+    <comment>This refers to the set of application frameworks this application uses.</comment>
   </data>
 </root>
