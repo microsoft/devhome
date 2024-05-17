@@ -56,7 +56,7 @@ public sealed partial class LandingPage : ToolPage
     {
         _ = ViewModel.LoadModelAsync(false);
 
-        // .ContinuesWith throws a COMException.
+        // .ContinueWith throws a COMException.
         while (!IsLoaded)
         {
             await Task.Delay(100);
