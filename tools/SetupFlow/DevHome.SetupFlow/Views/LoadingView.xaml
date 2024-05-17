@@ -27,6 +27,8 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
+                    <GridLength x:Key="SymbolAndProgressRingColumnWidth">18</GridLength>
+                    <x:Double x:Key="ProgressRingWidthAndHeight">18</x:Double>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -126,7 +128,7 @@
                         <DataTemplate x:DataType="viewmodels:LoadingMessageViewModel">
                             <Grid ColumnSpacing="5">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="18"/>
+                                    <ColumnDefinition Width="{StaticResource SymbolAndProgressRingColumnWidth}"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <ImageIcon
@@ -149,13 +151,15 @@
                         <DataTemplate x:DataType="viewmodels:LoadingMessageViewModel">
                             <Grid ColumnSpacing="5">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="18"/>
+                                    <ColumnDefinition Width="{StaticResource SymbolAndProgressRingColumnWidth}"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
+                                
+                                <!-- Width and Height restrict the progress ring to the column width.-->
                                 <ProgressRing
                                     Grid.Column="0"
-                                    Height="18"
-                                    Width="18"
+                                    Height="{StaticResource ProgressRingWidthAndHeight}"
+                                    Width="{StaticResource ProgressRingWidthAndHeight}"
                                     IsActive="True"/>
                                 <TextBlock 
                                     Grid.Column="1"
