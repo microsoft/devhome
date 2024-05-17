@@ -47,6 +47,18 @@ public static class Program
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
 
+        var stopEvent = new EventWaitHandle(false, EventResetMode.ManualReset, $"DevHomePI-{Environment.ProcessId}");
+        ThreadPool.QueueUserWorkItem((o) =>
+        {
+            var waitResult = stopEvent.WaitOne();
+
+            _app?.UIDispatcher?.TryEnqueue(() =>
+            {
+                var primaryWindow = Application.Current.GetService<PrimaryWindow>();
+                primaryWindow.Close();
+            });
+        });
+
         try
         {
             XamlCheckProcessRequirements();
@@ -67,6 +79,9 @@ public static class Program
                     OnActivated(null, AppInstance.GetCurrent().GetActivatedEventArgs());
                 });
             }
+
+            stopEvent.Close();
+            stopEvent.Dispose();
         }
         catch (Exception ex)
         {
@@ -80,25 +95,45 @@ public static class Program
 
     private static async Task<bool> DecideRedirection()
     {
-        AppInstance instance;
         var activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
-        if (RuntimeHelper.IsCurrentProcessRunningAsAdmin())
+        var isElevatedInstancePresent = false;
+        var isUnElevatedInstancePresent = false;
+        var instanceList = AppInstance.GetInstances();
+        foreach (var appInstance in instanceList)
+        {
+            if (appInstance.Key.Equals(MainInstanceKey, StringComparison.OrdinalIgnoreCase))
+            {
+                isUnElevatedInstancePresent = true;
+            }
+            else if (appInstance.Key.Equals(ElevatedInstanceKey, StringComparison.OrdinalIgnoreCase))
+            {
+                isElevatedInstancePresent = true;
+            }
+        }
+
+        AppInstance instance;
+        if (isElevatedInstancePresent)
+        {
+            // Redirect to the elevated instance if present.
+            instance = AppInstance.FindOrRegisterForKey(ElevatedInstanceKey);
+        }
+        else if (RuntimeHelper.IsCurrentProcessRunningAsAdmin())
         {
             // Wait for unelevated instance to exit
-            var isUnElevatedInstancePresent = false;
-            do
+            while (isUnElevatedInstancePresent)
             {
                 isUnElevatedInstancePresent = false;
-                var instanceList = AppInstance.GetInstances();
+                instanceList = AppInstance.GetInstances();
                 foreach (var appInstance in instanceList)
                 {
                     if (appInstance.Key.Equals(MainInstanceKey, StringComparison.OrdinalIgnoreCase))
                     {
                         isUnElevatedInstancePresent = true;
+                        var stopAppInstance = new EventWaitHandle(false, EventResetMode.ManualReset, $"DevHomePI-{appInstance.ProcessId}");
+                        stopAppInstance.Set();
                     }
                 }
             }
-            while (isUnElevatedInstancePresent);
 
             // Register the elevated instance key
             instance = AppInstance.FindOrRegisterForKey(ElevatedInstanceKey);
