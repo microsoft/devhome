@@ -9,7 +9,6 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.VisualBasic;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
@@ -87,8 +86,8 @@ public static class ComputeSystemHelpers
     {
         try
         {
-            var curentProperties = await computeSystem.GetComputeSystemPropertiesAsync(string.Empty);
-            return GetComputeSystemCardProperties(curentProperties, packageFullName);
+            var currentProperties = await computeSystem.GetComputeSystemPropertiesAsync(string.Empty);
+            return GetComputeSystemCardProperties(currentProperties, packageFullName);
         }
         catch (Exception ex)
         {
@@ -146,7 +145,7 @@ public static class ComputeSystemHelpers
     /// <returns>
     /// True only if we successfully replaced all items in the collection. False otherwise.
     /// </returns>
-    public static bool RemoveAllItemsAnReplace<T>(ObservableCollection<T> collectionToUpdate, List<T> listWithUpdates)
+    public static bool RemoveAllItemsAndReplace<T>(ObservableCollection<T> collectionToUpdate, List<T> listWithUpdates)
     {
         try
         {
