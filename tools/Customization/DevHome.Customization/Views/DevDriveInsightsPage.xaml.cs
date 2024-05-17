@@ -7,11 +7,10 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Customization.ViewModels;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Customization.Views;
 
-public sealed partial class DevDriveInsightsPage : Page
+public sealed partial class DevDriveInsightsPage : AutoFocusPage
 {
     public DevDriveInsightsViewModel ViewModel
     {

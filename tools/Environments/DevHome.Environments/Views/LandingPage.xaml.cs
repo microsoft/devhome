@@ -52,8 +52,16 @@ public sealed partial class LandingPage : ToolPage
     }
 #endif
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         _ = ViewModel.LoadModelAsync(false);
+
+        // .ContinuesWith throws a COMException.
+        while (!IsLoaded)
+        {
+            await Task.Delay(100);
+        }
+
+        this.Focus(FocusState.Programmatic);
     }
 }

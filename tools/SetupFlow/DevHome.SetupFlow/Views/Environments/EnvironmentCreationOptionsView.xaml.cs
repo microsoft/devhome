@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
@@ -43,7 +44,7 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecip
     /// <summary>
     /// Request the adaptive cad from the view model
     /// </summary>
-    private void ViewLoaded(object sender, RoutedEventArgs e)
+    private async void ViewLoaded(object sender, RoutedEventArgs e)
     {
         var message = WeakReferenceMessenger.Default.Send<CreationOptionsViewPageRequestMessage>();
         if (!message.HasReceivedResponse)
@@ -52,6 +53,13 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecip
         }
 
         AddAdaptiveCardToUI(message.Response);
+
+        while (!ViewModel.IsAdaptiveCardSessionLoaded)
+        {
+            await Task.Delay(500);
+        }
+
+        this.Focus(FocusState.Programmatic);
     }
 
     /// <summary>

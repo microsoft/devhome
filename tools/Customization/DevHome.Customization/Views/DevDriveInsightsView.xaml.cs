@@ -2,13 +2,14 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Customization.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Customization.Views;
 
-public sealed partial class DevDriveInsightsView : UserControl
+public sealed partial class DevDriveInsightsView : AutoFocusUserControl
 {
     public DevDriveInsightsViewModel ViewModel
     {

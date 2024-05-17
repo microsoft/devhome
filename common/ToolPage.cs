@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Microsoft.UI.Xaml.Controls;
+using DevHome.Common.Models;
 
 namespace DevHome.Common;
 
-public abstract class ToolPage : Page
+public abstract class ToolPage : AutoFocusPage
 {
     public abstract string ShortName { get; }
 }
