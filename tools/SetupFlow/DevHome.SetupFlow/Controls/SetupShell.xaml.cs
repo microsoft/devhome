@@ -76,6 +76,12 @@ public sealed partial class SetupShell : UserControl
     public SetupShell()
     {
         this.InitializeComponent();
+        Loaded += (s, e) => SetInitialVisuals();
+    }
+
+    public void SetInitialVisuals()
+    {
+        this.Focus(FocusState.Programmatic);
     }
 
     public static readonly DependencyProperty TitleProperty = DependencyProperty.RegisterAttached(nameof(Title), typeof(string), typeof(SetupShell), new PropertyMetadata(string.Empty));
