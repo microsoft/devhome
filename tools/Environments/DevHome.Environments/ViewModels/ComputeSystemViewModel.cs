@@ -188,11 +188,9 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         }
 
         var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem!, PackageFullName);
-
-        ComputeSystemHelpers.RemoveAllItems(Properties);
-        foreach (var property in properties)
+        if (!ComputeSystemHelpers.RemoveAllItemsAndReplace(Properties, properties))
         {
-            Properties.Add(property);
+            Properties = new(properties);
         }
     }
 
