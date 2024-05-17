@@ -574,8 +574,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // Start the task and wait for it to complete.
         try
         {
-            var loadingMessage = _host.GetService<LoadingMessageViewModel>();
-            loadingMessage.MessageToShow = taskInformation.MessageToShow;
             dispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
@@ -612,7 +610,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            window.DispatcherQueue.TryEnqueue(() =>
+            dispatcherQueue.TryEnqueue(() =>
             {
                 // This code block mostly duplicates logic in PerformPostTaskTasks.
                 // The difference is the message isn't stored in the task.
@@ -638,7 +636,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             _log.Error(e, $"Could not finish all tasks.");
         }
 
-        window.DispatcherQueue.TryEnqueue(() =>
+        dispatcherQueue.TryEnqueue(() =>
         {
             // Keep decrement inside TryEnqueue to enforce locking
             _numberOfExecutingTasks--;
