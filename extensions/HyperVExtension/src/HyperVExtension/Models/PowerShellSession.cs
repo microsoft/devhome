@@ -4,6 +4,8 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Management.Automation;
+using System.Management.Automation.Runspaces;
+using HyperVExtension.Helpers;
 
 namespace HyperVExtension.Models;
 
@@ -18,7 +20,9 @@ public class PowerShellSession : IPowerShellSession, IDisposable
 
     public PowerShellSession()
     {
-        _powerShellSession = PowerShell.Create();
+        var initialState = InitialSessionState.CreateDefault();
+        initialState.ImportPSModule(new string[] { HyperVStrings.HyperVModuleName });
+        _powerShellSession = PowerShell.Create(initialState);
     }
 
     /// <inheritdoc cref="IPowerShellSession.AddCommand(string)"/>
