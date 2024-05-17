@@ -20,12 +20,25 @@ public partial class ProcessListPageViewModel : ObservableObject
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
 
     [ObservableProperty]
+    private string filterProcessText;
+
+    partial void OnFilterProcessTextChanged(string value)
+    {
+        FilterProcessList();
+    }
+
+    [ObservableProperty]
     private ObservableCollection<Process> processes;
+
+    [ObservableProperty]
+    private ObservableCollection<Process> filteredProcesses;
 
     public ProcessListPageViewModel()
     {
         dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         processes = new();
+        filteredProcesses = new();
+        filterProcessText = string.Empty;
         GetFilteredProcessList();
     }
 
@@ -116,6 +129,8 @@ public partial class ProcessListPageViewModel : ObservableObject
                     currentProcess.Dispose();
                 }
             }
+
+            FilterProcessList();
         });
     }
 
@@ -134,6 +149,11 @@ public partial class ProcessListPageViewModel : ObservableObject
     {
         Settings.Default.Save();
         GetFilteredProcessList();
+    }
+
+    private void FilterProcessList()
+    {
+        FilteredProcesses = new ObservableCollection<Process>(Processes.Where(item => item.ProcessName.Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase)));
     }
 
     [RelayCommand]
