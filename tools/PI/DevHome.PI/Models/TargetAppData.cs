@@ -10,13 +10,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.PI.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Win32.SafeHandles;
+using Windows.Graphics.Imaging;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using static DevHome.PI.Helpers.WindowHelper;
 
 namespace DevHome.PI.Models;
 
-public partial class TargetAppData : ObservableObject, INotifyPropertyChanged
+public partial class TargetAppData : ObservableObject
 {
     public static readonly TargetAppData Instance = new();
 
@@ -87,18 +88,15 @@ public partial class TargetAppData : ObservableObject, INotifyPropertyChanged
                 bitmap = GetAppIcon((HWND)process.MainWindowHandle);
             }
 
+            SoftwareBitmap? softwareBitmap = null;
             if (bitmap is null && process.MainModule is not null)
             {
-                // Failing that, try and get the icon from the exe
-                bitmap = System.Drawing.Icon.ExtractAssociatedIcon(process.MainModule.FileName)?.ToBitmap();
+                softwareBitmap = GetSoftwareBitmapFromExecutable(process.MainModule.FileName);
             }
 
-            // Failing that, grab the default app icon
-            bitmap ??= System.Drawing.Icon.FromHandle(LoadDefaultAppIcon()).ToBitmap();
-
-            if (bitmap is not null)
+            if (softwareBitmap is not null)
             {
-                Icon = await WindowHelper.GetWinUI3BitmapSourceFromGdiBitmap(bitmap);
+                Icon = await GetSoftwareBitmapSourceFromSoftwareBitmap(softwareBitmap);
             }
             else
             {
