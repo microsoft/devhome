@@ -88,15 +88,18 @@ public partial class TargetAppData : ObservableObject
                 bitmap = GetAppIcon((HWND)process.MainWindowHandle);
             }
 
-            SoftwareBitmap? softwareBitmap = null;
             if (bitmap is null && process.MainModule is not null)
             {
-                softwareBitmap = GetSoftwareBitmapFromExecutable(process.MainModule.FileName);
+                // Failing that, try and get the icon from the exe
+                bitmap = System.Drawing.Icon.ExtractAssociatedIcon(process.MainModule.FileName)?.ToBitmap();
             }
 
-            if (softwareBitmap is not null)
+            // Failing that, grab the default app icon
+            bitmap ??= System.Drawing.Icon.FromHandle(LoadDefaultAppIcon()).ToBitmap();
+
+            if (bitmap is not null)
             {
-                Icon = await GetSoftwareBitmapSourceFromSoftwareBitmap(softwareBitmap);
+                Icon = await GetWinUI3BitmapSourceFromGdiBitmap(bitmap);
             }
             else
             {

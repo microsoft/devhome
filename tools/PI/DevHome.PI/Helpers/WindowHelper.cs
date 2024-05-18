@@ -281,6 +281,14 @@ public class WindowHelper
         }
     }
 
+    public static async Task<SoftwareBitmapSource> GetWinUI3BitmapSourceFromGdiBitmap(Bitmap bmp)
+    {
+        var softwareBitmap = GetSoftwareBitmapFromGdiBitmap(bmp);
+        var source = new SoftwareBitmapSource();
+        await source.SetBitmapAsync(softwareBitmap);
+        return source;
+    }
+
     public static SoftwareBitmap? GetSoftwareBitmapFromExecutable(string executable)
     {
         SoftwareBitmap? softwareBitmap = null;
