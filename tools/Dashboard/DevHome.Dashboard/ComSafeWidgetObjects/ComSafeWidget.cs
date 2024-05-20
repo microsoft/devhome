@@ -359,4 +359,9 @@ public class ComSafeWidget
             return string.Empty;
         });
     }
+
+    public Widget GetUnsafeWidgetObject()
+    {
+        return _oopWidget;
+    }
 }

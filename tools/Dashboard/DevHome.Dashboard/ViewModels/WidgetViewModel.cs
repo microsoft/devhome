@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
@@ -21,6 +22,7 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 using Windows.Data.Json;
+using WinRT;
 
 namespace DevHome.Dashboard.ViewModels;
 
@@ -317,6 +319,16 @@ public partial class WidgetViewModel : ObservableObject
             }
 
             _log.Information($"Verb = {executeAction.Verb}, Data = {dataToSend}");
+
+            try
+            {
+                CoAllowSetForegroundWindow(Widget.GetUnsafeWidgetObject());
+            }
+            catch (Exception ex)
+            {
+                _log.Warning(ex, "Failed to call CoAllowSetForegroundWindow");
+            }
+
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
         }
 
@@ -338,5 +350,16 @@ public partial class WidgetViewModel : ObservableObject
     public void UnsubscribeFromWidgetUpdates()
     {
         Widget.WidgetUpdated -= HandleWidgetUpdated;
+    }
+
+    // CoAllowSetForegroundWindow must be called on a raw COM interface, not a .NET CCW, in order to work correctly, since
+    // the underlying functionality is implemented by COM runtime and the object itself. CoAllowSetForegroundWindow wrapper
+    // below takes a WinRT object and extracts the raw COM interface pointer from it before calling native CoAllowSetForegroundWindow.
+    [DllImport("ole32.dll", ExactSpelling = true, PreserveSig = false)]
+    private static extern void CoAllowSetForegroundWindow(IntPtr pUnk, IntPtr lpvReserved);
+
+    private void CoAllowSetForegroundWindow(Widget widget)
+    {
+        CoAllowSetForegroundWindow(((IWinRTObject)widget).NativeObject.ThisPtr, 0);
     }
 }
