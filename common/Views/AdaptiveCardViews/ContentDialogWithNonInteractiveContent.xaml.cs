@@ -31,6 +31,7 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
             var card = renderer.RenderAdaptiveCardFromJsonString(content.ContentDialogInternalAdaptiveCardJson?.Stringify() ?? string.Empty);
             Content = card.FrameworkElement;
             SecondaryButtonText = content.SecondaryButtonText;
+            this.Focus(FocusState.Programmatic);
         });
     }
 }
