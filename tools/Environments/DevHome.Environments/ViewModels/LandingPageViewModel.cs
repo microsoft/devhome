@@ -18,6 +18,7 @@ using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
 using Microsoft.UI.Dispatching;
+using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
 namespace DevHome.Environments.ViewModels;

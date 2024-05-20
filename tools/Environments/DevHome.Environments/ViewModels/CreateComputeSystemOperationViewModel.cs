@@ -61,6 +61,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
         _stringResource = stringResource;
         _computeSystemManager = computeSystemManager;
         Operation = operation;
+        Name = Operation.EnvironmentName;
 
         var providerDetails = Operation.ProviderDetails;
         ProviderDisplayName = providerDetails.ComputeSystemProvider.DisplayName;
