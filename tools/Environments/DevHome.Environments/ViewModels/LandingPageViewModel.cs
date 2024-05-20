@@ -281,7 +281,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             {
                 // this is a new operation so we need to create a view model for it.
                 ComputeSystemCards.Insert(0, new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _dispatcherQueue, RemoveComputeSystemCard, AddNewlyCreatedComputeSystem, operation));
-                ComputeSystemCards.Last().ComputeSystemErrorReceived += OnComputeSystemOperationError;
+                ComputeSystemCards[0].ComputeSystemErrorReceived += OnComputeSystemOperationError;
                 _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
             }
 
