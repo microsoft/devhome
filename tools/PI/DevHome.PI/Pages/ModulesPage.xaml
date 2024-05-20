@@ -52,14 +52,14 @@
                                    FontSize="24" FontWeight="Bold"/>
                     </StackPanel>
                     <StackPanel>
-                        <TextBlock x:Uid="FileVersionInfoTextBlock" FontSize="20" />
+                        <TextBlock x:Uid="FileVersionInfoTextBlock" FontSize="18" />
                         <TextBox Text="{x:Bind ((diagnostics:ProcessModule)ModulesListView.SelectedItem).FileVersionInfo, Mode=OneWay}"
                                  FontFamily="Consolas" TextWrapping="Wrap" IsReadOnly="True"/>
-                        <!-- TODO In WinUI we get access denied on BaseAddress and EntryPointAddress-->
-                        <!--<TextBlock Text="Base address" FontSize="18" Margin="0,6,0,0"/>
+
+                        <TextBlock x:Uid="BaseAddressTextBlock" FontSize="18" Margin="0,6,0,0"/>
                         <TextBox Text="{x:Bind ((diagnostics:ProcessModule)ModulesListView.SelectedItem).BaseAddress, Mode=OneWay}" IsReadOnly="True"/>
-                        <TextBlock Text="Entrypoint address" FontSize="18" Margin="0,6,0,0"/>
-                        <TextBox Text="{x:Bind ((diagnostics:ProcessModule)ModulesListView.SelectedItem).EntryPointAddress, Mode=OneWay}" IsReadOnly="True"/>-->
+                        <TextBlock x:Uid="EntrypointAddressTextBlock" FontSize="18" Margin="0,6,0,0"/>
+                        <TextBox Text="{x:Bind ((diagnostics:ProcessModule)ModulesListView.SelectedItem).EntryPointAddress, Mode=OneWay}" IsReadOnly="True"/>                        
                         <TextBlock x:Uid="MemorySizeTextBlock" FontSize="18" Margin="0,6,0,0"/>
                         <TextBox Text="{x:Bind ((diagnostics:ProcessModule)ModulesListView.SelectedItem).ModuleMemorySize, Mode=OneWay}" IsReadOnly="True"/>
                     </StackPanel>

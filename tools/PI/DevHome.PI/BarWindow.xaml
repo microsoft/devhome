@@ -90,29 +90,16 @@
                         <TextBlock Text="&#xe8a1;"/>
                     </Button>
 
-                    <!-- TODO When we add a tool, we should add it to the ExternalToolsMenu. -->
-                    <Button
-                         x:Name="ExternalToolsButton"
-                         x:Uid="ExternalToolsButton"
-                         HorizontalAlignment="Center">
-                         <Button.ContextFlyout>
-                             <MenuFlyout x:Name="ExternalToolsMenu">
-                             <!-- Menuitems for each external tool will be added below. -->
-                             </MenuFlyout>
-                        </Button.ContextFlyout>
-                        <TextBlock Text="&#xEC7A;"/>
-                    </Button>
-
-                    <ItemsRepeater
-                        x:Name="ExternalToolsRepeater"
-                        ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.ExternalTools, Mode=OneWay}"
-                        Layout="{StaticResource ExternalToolsHorizontalLayout}">
-                        <ItemsRepeater.ContextFlyout>
+                    <!-- External tools -->
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel.ContextFlyout>
+                            <!-- TODO Re-enable this when we have Click handler implementation.-->
                             <MenuFlyout x:Name="ToolContextMenu">
                                 <MenuFlyoutItem
                                     x:Uid="UnPinMenuItem"
                                     x:Name="UnPinMenuItem"
-                                    Click="UnPinMenuItem_Click">
+                                    Click="UnPinMenuItem_Click"
+                                    IsEnabled="False">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE77A;"/>
                                     </MenuFlyoutItem.Icon>
@@ -126,19 +113,38 @@
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
                             </MenuFlyout>
-                        </ItemsRepeater.ContextFlyout>
+                        </StackPanel.ContextFlyout>
 
-                        <DataTemplate x:DataType="helpers:ExternalTool">
-                            <Button
-                                Click="ExternalToolButton_Click"
-                                HorizontalAlignment="Center" Width="45" Height="45"
-                                ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}"
-                                Tag="{x:Bind}"
-                                PointerPressed="ExternalToolButton_PointerPressed">
-                                <Image Source="{x:Bind ToolIcon, Mode=OneWay}"/>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsRepeater>
+                        <Button
+                             x:Name="ManageExternalToolsButton"
+                             x:Uid="ManageExternalToolsButton"
+                             HorizontalAlignment="Center"
+                            Click="ManageExternalToolsButton_Click">
+                            <Button.ContextFlyout>
+                                <MenuFlyout x:Name="ExternalToolsMenu">
+                                    <!-- We can't databind to MenuFlyout, so we'll add a MenuFlyoutItem
+                                    for each external tool in codebehind here. -->
+                                </MenuFlyout>
+                            </Button.ContextFlyout>
+                            <TextBlock Text="&#xEC7A;"/>
+                        </Button>
+
+                        <ItemsRepeater
+                            x:Name="ExternalToolsRepeater"
+                            ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.ExternalTools, Mode=OneWay}"
+                            Layout="{StaticResource ExternalToolsHorizontalLayout}">
+                            <DataTemplate x:DataType="helpers:ExternalTool">
+                                <Button
+                                    Click="ExternalToolButton_Click"
+                                    HorizontalAlignment="Center" Width="45" Height="45"
+                                    ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}"
+                                    Tag="{x:Bind}"
+                                    PointerPressed="ExternalToolButton_PointerPressed">
+                                    <Image Source="{x:Bind ToolIcon, Mode=OneWay}"/>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsRepeater>
+                    </StackPanel>
                 </StackPanel>
             </GridView>
 

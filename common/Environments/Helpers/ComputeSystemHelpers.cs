@@ -86,8 +86,8 @@ public static class ComputeSystemHelpers
     {
         try
         {
-            var curentProperties = await computeSystem.GetComputeSystemPropertiesAsync(string.Empty);
-            return GetComputeSystemCardProperties(curentProperties, packageFullName);
+            var currentProperties = await computeSystem.GetComputeSystemPropertiesAsync(string.Empty);
+            return GetComputeSystemCardProperties(currentProperties, packageFullName);
         }
         catch (Exception ex)
         {
@@ -131,7 +131,7 @@ public static class ComputeSystemHelpers
     }
 
     /// <summary>
-    /// Safely remove all items from an observable collection.
+    /// Safely removes all items from an observable collection and replaces them with new items.
     /// </summary>
     /// <remarks>
     /// There can be random COM exceptions due to using the "Clear()" method in an observable collection. This method
@@ -140,19 +140,32 @@ public static class ComputeSystemHelpers
     /// this method is used to remove all items individually from the end of the collection to the beginning of the collection.
     /// </remarks>
     /// <typeparam name="T">Type of objects that the collection contains</typeparam>
-    /// <param name="collection">An observable collection that contains zero to N elements</param>
-    public static void RemoveAllItems<T>(ObservableCollection<T> collection)
+    /// <param name="collectionToUpdate">An observable collection that contains zero to N elements that will have its contents replaced</param>
+    /// <param name="listWithUpdates">A list that contains zero to N elements whose elements will be added to collectionToUpdate</param>
+    /// <returns>
+    /// True only if we successfully replaced all items in the collection. False otherwise.
+    /// </returns>
+    public static bool RemoveAllItemsAndReplace<T>(ObservableCollection<T> collectionToUpdate, List<T> listWithUpdates)
     {
         try
         {
-            for (var i = collection.Count - 1; i >= 0; i--)
+            for (var i = collectionToUpdate.Count - 1; i >= 0; i--)
             {
-                collection.RemoveAt(i);
+                collectionToUpdate.RemoveAt(i);
             }
+
+            for (var i = 0; i < listWithUpdates.Count; i++)
+            {
+                collectionToUpdate.Add(listWithUpdates[i]);
+            }
+
+            return true;
         }
         catch (Exception ex)
         {
             _log.Error(ex, "Unable to remove items from the collection");
         }
+
+        return false;
     }
 }

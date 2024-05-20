@@ -11,13 +11,20 @@ using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
 using DevHome.PI.ToolWindows;
-using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.UI;
 
 namespace DevHome.PI.SettingsUi;
+
+public enum SettingsPage
+{
+    UserProfile,
+    AdditionalTools,
+    AdvancedSettings,
+    About,
+}
 
 public sealed partial class SettingsToolWindow : ToolWindow
 {
@@ -26,15 +33,15 @@ public sealed partial class SettingsToolWindow : ToolWindow
     private readonly string advancedSettingsTabName = CommonHelper.GetLocalizedString("AdvancedSettingsTabName");
     private readonly string aboutTabName = CommonHelper.GetLocalizedString("AboutTabName");
 
-    public List<NavLink> Links { get; set; } = [];
+    public List<SettingsNavLink> Links { get; set; } = [];
 
-    public SettingsToolWindow(StringCollection pos)
+    public SettingsToolWindow(StringCollection pos, SettingsPage? page)
         : base(pos)
     {
-        Links.Add(new NavLink("\uE716", userProfileTabName, null));
-        Links.Add(new NavLink("\uEC7A", additionalToolsTabName, null));
-        Links.Add(new NavLink("\uE90F", advancedSettingsTabName, null));
-        Links.Add(new NavLink("\uE946", aboutTabName, null));
+        Links.Add(new SettingsNavLink("\uE716", userProfileTabName, SettingsPage.UserProfile));
+        Links.Add(new SettingsNavLink("\uEC7A", additionalToolsTabName, SettingsPage.AdditionalTools));
+        Links.Add(new SettingsNavLink("\uE90F", advancedSettingsTabName, SettingsPage.AdvancedSettings));
+        Links.Add(new SettingsNavLink("\uE946", aboutTabName, SettingsPage.About));
 
         InitializeComponent();
 
@@ -62,6 +69,11 @@ public sealed partial class SettingsToolWindow : ToolWindow
         }
 
         ExcludedProcessesTextBox.Text = builder.ToString();
+
+        if (page.HasValue)
+        {
+            NavLinksList.SelectedItem = Links.FirstOrDefault(l => l.SettingsPage == page);
+        }
     }
 
     private void SetRequestedTheme(ElementTheme theme)
@@ -130,25 +142,25 @@ public sealed partial class SettingsToolWindow : ToolWindow
     {
         if (NavLinksList.SelectedIndex > -1)
         {
-            if (NavLinksList.SelectedItem is NavLink link)
+            if (NavLinksList.SelectedItem is SettingsNavLink link)
             {
                 UserProfileGrid.Visibility = Visibility.Collapsed;
                 AdditionalToolsGrid.Visibility = Visibility.Collapsed;
                 AdvancedSettingsGrid.Visibility = Visibility.Collapsed;
                 AboutGrid.Visibility = Visibility.Collapsed;
-                if (link.ContentText == userProfileTabName)
+                if (link.SettingsPage == SettingsPage.UserProfile)
                 {
                     UserProfileGrid.Visibility = Visibility.Visible;
                 }
-                else if (link.ContentText == additionalToolsTabName)
+                else if (link.SettingsPage == SettingsPage.AdditionalTools)
                 {
                     AdditionalToolsGrid.Visibility = Visibility.Visible;
                 }
-                else if (link.ContentText == advancedSettingsTabName)
+                else if (link.SettingsPage == SettingsPage.AdvancedSettings)
                 {
                     AdvancedSettingsGrid.Visibility = Visibility.Visible;
                 }
-                else if (link.ContentText == aboutTabName)
+                else if (link.SettingsPage == SettingsPage.About)
                 {
                     AboutGrid.Visibility = Visibility.Visible;
                 }

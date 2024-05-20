@@ -4,9 +4,9 @@
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using WinUIEx;
 
 namespace DevHome.Common.Views.AdaptiveCardViews;
 
@@ -20,7 +20,7 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
         this.InitializeComponent();
 
         // Since we use the renderer service to allow the card to receive theming updates, we need to ensure the UI thread is used.
-        var dispatcherQueue = Application.Current.GetService<WindowEx>().DispatcherQueue;
+        var dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
         dispatcherQueue.TryEnqueue(async () =>
         {
             Title = content.Title;

@@ -5,11 +5,10 @@ using System;
 using System.IO;
 using DevHome.Common.Services;
 using DevHome.HostsFileEditor.ViewModels;
-using WinUIEx;
 
 namespace DevHome.HostsFileEditor.Views;
 
-public sealed partial class HostsFileEditorSettingsWindow : WindowEx
+public sealed partial class HostsFileEditorSettingsWindow : WinUIEx.WindowEx
 {
     public HostsFileEditorSettingsViewModel ViewModel { get; }
 

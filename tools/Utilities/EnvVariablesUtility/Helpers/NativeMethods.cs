@@ -12,12 +12,6 @@ public static class NativeMethods
 
     internal delegate IntPtr WinProc(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
 
-    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    internal static extern int SendNotifyMessage(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
-
-    [DllImport("User32.dll")]
-    internal static extern int GetDpiForWindow(IntPtr hwnd);
-
     [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
     internal static extern int SetWindowLong32(IntPtr hWnd, WindowLongIndexFlags nIndex, WinProc newProc);
 
