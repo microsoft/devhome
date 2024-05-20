@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Models;
+using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation;

@@ -41,9 +41,11 @@ internal sealed class WidgetHelpers
 
     public const string DevHomeHostName = "DevHome";
 
-    private const double WidgetPxHeightSmall = 146;
-    private const double WidgetPxHeightMedium = 304;
-    private const double WidgetPxHeightLarge = 462;
+    public const double WidgetPxHeightSmall = 146;
+    public const double WidgetPxHeightMedium = 304;
+    public const double WidgetPxHeightLarge = 462;
+
+    public const double WidgetPxWidth = 300;
 
     public static WidgetSize GetLargestCapabilitySize(WidgetCapability[] capabilities)
     {
@@ -82,17 +84,6 @@ internal sealed class WidgetHelpers
             // Return something in case new sizes are added.
             return capabilities[0].Size;
         }
-    }
-
-    public static double GetPixelHeightFromWidgetSize(WidgetSize size)
-    {
-        return size switch
-        {
-            WidgetSize.Small => WidgetPxHeightSmall,
-            WidgetSize.Medium => WidgetPxHeightMedium,
-            WidgetSize.Large => WidgetPxHeightLarge,
-            _ => 0,
-        };
     }
 
     public static async Task<bool> IsIncludedWidgetProviderAsync(WidgetProviderDefinition provider)

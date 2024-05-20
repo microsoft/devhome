@@ -55,12 +55,14 @@
         <Grid Grid.Row="0"
               MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <TextBlock x:Uid="DashboardPage_Title" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Left"/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,22">
-                <Button x:Name="AddWidgetButton"
-                        x:Uid="AddWidget"
-                        HorizontalAlignment="Right"
-                        Command="{x:Bind AddWidgetClickCommand}"
-                        IsEnabled="{x:Bind ViewModel.HasWidgetService, Mode=OneWay}"/>
+            <!-- Include small upper margin so focus rect is fully visible -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,2,0,22">
+                <commonviews:AddCreateButton
+                    x:Name="AddWidgetButton"
+                    x:Uid="AddWidget"
+                    HorizontalAlignment="Right"
+                    Command="{x:Bind AddWidgetClickCommand}"
+                    IsEnabled="{x:Bind ViewModel.HasWidgetService, Mode=OneWay}"/>
             </StackPanel>
         </Grid>
 
@@ -126,7 +128,7 @@
                 <StackPanel x:Name="NoWidgetsStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0"
                             Visibility="{x:Bind ViewModel.GetNoWidgetMessageVisibility(views:DashboardView.PinnedWidgets.Count, ViewModel.IsLoading), Mode=OneWay}">
                     <TextBlock x:Uid="NoWidgetsAdded" HorizontalAlignment="Center" />
-                    <HyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" HorizontalAlignment="Center" Command="{x:Bind AddWidgetClickCommand}" />
+                    <commonviews:AddCreateHyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" HorizontalAlignment="Center" Command="{x:Bind AddWidgetClickCommand}" />
                 </StackPanel>
 
                 <!-- Widget messages -->

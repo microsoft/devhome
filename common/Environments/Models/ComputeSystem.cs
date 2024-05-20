@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Helpers;
@@ -11,6 +13,8 @@ using DevHome.Common.Helpers;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation;
+using Windows.Win32;
+using WinRT;
 
 namespace DevHome.Common.Environments.Models;
 
@@ -275,10 +279,26 @@ public class ComputeSystem
         }
     }
 
+    // We need to give DevHomeAzureExtension the ability to SetForeground on the processes it creates. In some cases
+    // these processes need to show UI, in some cases they call APIs that only succeed if they are called from a
+    // foreground process. We call CoAllowSetForegroundWindow on the COM interface that we are about to use to allow
+    // the process to set foreground window.
+    // CoAllowSetForegroundWindow must be called on a raw COM interface, not a .NET CCW, in order to work correctly, since
+    // the underlying functionality is implemented by COM runtime and the object itself. CoAllowSetForegroundWindow wrapper
+    // below takes a WinRT object and extracts the raw COM interface pointer from it before calling native CoAllowSetForegroundWindow.
+    [DllImport("ole32.dll", ExactSpelling = true, PreserveSig = false)]
+    private static extern void CoAllowSetForegroundWindow(IntPtr pUnk, IntPtr lpvReserved);
+
+    private void CoAllowSetForegroundWindow(IComputeSystem computeSystem)
+    {
+        CoAllowSetForegroundWindow(((IWinRTObject)computeSystem).NativeObject.ThisPtr, 0);
+    }
+
     public async Task<ComputeSystemOperationResult> ConnectAsync(string options)
     {
         try
         {
+            CoAllowSetForegroundWindow(_computeSystem);
             return await _computeSystem.ConnectAsync(options);
         }
         catch (Exception ex)
@@ -294,6 +314,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.PinToStartMenuAsync();
             }
 
@@ -312,6 +333,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.UnpinFromStartMenuAsync();
             }
 
@@ -330,6 +352,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.PinToTaskbarAsync();
             }
 
@@ -348,6 +371,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.UnpinFromTaskbarAsync();
             }
 
@@ -366,6 +390,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.GetIsPinnedToStartMenuAsync();
             }
 
@@ -384,6 +409,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.GetIsPinnedToTaskbarAsync();
             }
 

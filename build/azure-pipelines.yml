@@ -21,8 +21,8 @@ parameters:
 
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
-  MSIXVersion: '0.1301'
-  VersionOfSDK: '0.400'
+  MSIXVersion: '0.1401'
+  VersionOfSDK: '0.600'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
   testOutputArtifactDir: 'TestResults'
@@ -76,13 +76,18 @@ extends:
             filePath: 'Build.ps1'
             arguments: -Configuration "Release" -VersionOfSDK $(VersionOfSDK) -BuildStep "sdk" -IsAzurePipelineBuild
 
-        - task: PublishSymbols@2
-          displayName: Publish Symbols
-          inputs:
-            SearchPattern: '**/bin/**/*.pdb'
-            IndexSources: false
-            SymbolServerType: TeamServices
-            SymbolsProduct: DevHomeSDK
+        - template: ./build/templates/publish-symbolrequestprod-api.yml@self
+          parameters:
+            includePublicSymbolServer: false
+            subscription: $(symbolsubscription)
+            symbolProject: 'DevHome'
+            indexSources: false
+            symbolsArtifactName: 'DevHomeSDK'
+            symbolsVersion: '$(Build.BuildNumber)'
+            searchPattern: |
+              **/bin/**/*.pdb
+              **/bin/**/*.exe
+              **/bin/**/*.dll
 
         templateContext:
           outputs:
@@ -129,6 +134,7 @@ extends:
       - ${{ each configuration in parameters.Configurations }}:
         - ${{ each platform in parameters.Platforms }}:
           - job: Build_${{ platform }}_${{ configuration }}
+            timeoutInMinutes: 120
             steps:
             - task: NuGetToolInstaller@1
 
@@ -147,13 +153,13 @@ extends:
                 artifactName: 'SdkNugetPackage'
                 targetPath: '$(Pipeline.Workspace)\sdkArtifacts\'
 
-            - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
+            - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@3
               displayName: Send and Download Localization Files for Artifacts
               condition: and(eq(variables['EnableLocalization'], 'true'), eq(variables['UpdateLocalization'], 'true'))
               inputs:
                 teamId: 71220
-                authId: $(TouchdownAppId)
-                authKey: $(TouchdownAppKey)
+                TDBuildServiceConnection: $(TouchdownServiceConnection)
+                authType: SubjectNameIssuer
                 resourceFilePath: |
                   **\en-US\*.resw
                   **\en-US\PDP.xml
@@ -162,14 +168,14 @@ extends:
                 appendRelativeDir: true
                 pseudoSetting: Included
 
-            - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
+            - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@3
               displayName: Download and Use Localization Files
               condition: eq(variables['EnableLocalization'], 'true')
               retryCountOnTaskFailure: 2
               inputs:
                 teamId: 71220
-                authId: $(TouchdownAppId)
-                authKey: $(TouchdownAppKey)
+                TDBuildServiceConnection: $(TouchdownServiceConnection)
+                authType: SubjectNameIssuer
                 resourceFilePath: |
                   **\en-US\*.resw
                   **\en-US\PDP.xml
@@ -184,7 +190,7 @@ extends:
                 targetType: inline
                 script: >-
                   $Files = Get-ChildItem . -R -Filter 'Resources.resw' | ? FullName -Like '*en-US\*\Resources.resw'
-                  
+
                   $Files | % { Move-Item -Verbose $_.Directory $_.Directory.Parent.Parent -EA:Ignore }
 
                   $Files = Get-ChildItem . -R -Filter 'PDP.xml' | ? FullName -Like '*en-US\*\PDP.xml'
@@ -199,7 +205,7 @@ extends:
                 targetType: inline
                 script: >-
                   New-Item -Path 'locArchive' -ItemType Directory
-                  
+
                   tar czf locArchive\LocOutput.tar.gz LocOutput
                 pwsh: true
 
@@ -209,6 +215,31 @@ extends:
               inputs:
                 filePath: 'Build.ps1'
                 arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -Version $(MSIXVersion) -BuildStep "fullMsix" -AzureBuildingBranch "$(BuildingBranch)" -IsAzurePipelineBuild
+
+            - task: PowerShell@2
+              displayName: Move BinLog to output directory
+              inputs:
+                targetType: inline
+                script: >-
+                  Move-Item -Path $(Build.SourcesDirectory)\DevHome.${{ platform }}.${{ configuration }}.binlog -Destination $(Build.SourcesDirectory)\src\bin -Force
+                pwsh: true
+
+            - template: ./build/templates/publish-symbolrequestprod-api.yml@self
+              parameters:
+                includePublicSymbolServer: true
+                symbolProject: 'DevHome'
+                subscription: $(SymbolSubscription)
+                indexSources: true
+                symbolsArtifactName: 'DevHome_${{ platform }}_${{ configuration }}'
+                symbolsVersion: $(Build.BuildNumber)
+                searchPattern: >-
+                  $(Build.SourcesDirectory)\**\bin\**\*.pdb
+
+                  $(Build.SourcesDirectory)\**\bin\**\*.exe
+
+                  $(Build.SourcesDirectory)\**\bin\**\*.dll
+
+                  $(Build.SourcesDirectory)\**\obj\**\*.r2r.ni.pdb
 
             - task: EsrpCodeSigning@2
               inputs:
@@ -298,17 +329,6 @@ extends:
                 testRunTitle: '$(Agent.JobName)'
                 buildPlatform: '${{ platform }}'
                 buildConfiguration: '${{ configuration }}'
-
-            - task: PublishSymbols@2
-              displayName: Publish Symbols
-              inputs:
-                SearchPattern: >-
-                  $(Build.SourcesDirectory)\**\bin\**\*.pdb
-
-                  $(Build.SourcesDirectory)\**\obj\**\*.r2r.ni.pdb
-                IndexSources: true
-                SymbolServerType: TeamServices
-                SymbolsProduct: DevHome
 
             templateContext:
               outputs:
@@ -495,14 +515,14 @@ extends:
             artifactName: MsixBundle_Release
             targetPath: StorePublish
 
-        - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
+        - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@3
           displayName: Download and Use Localization Files
           condition: eq(variables['EnableLocalization'], 'true')
           retryCountOnTaskFailure: 2
           inputs:
             teamId: 71220
-            authId: $(TouchdownAppId)
-            authKey: $(TouchdownAppKey)
+            TDBuildServiceConnection: $(TouchdownServiceConnection)
+            authType: SubjectNameIssuer
             resourceFilePath: |
               **\en-US\PDP.xml
             localizationTarget: false

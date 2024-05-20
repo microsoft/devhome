@@ -92,7 +92,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
             var id = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
             if (!string.IsNullOrEmpty(id))
             {
-                comSafeCurrentlyPinnedWidgets.Add(new ComSafeWidget(id));
+                var comSafeWidget = new ComSafeWidget(id);
+                if (await comSafeWidget.PopulateAsync())
+                {
+                    comSafeCurrentlyPinnedWidgets.Add(comSafeWidget);
+                }
             }
         }
 
@@ -106,6 +110,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     Tag = providerDef,
                     Content = providerDef.DisplayName,
                 };
+
+                navItem.SetValue(ToolTipService.ToolTipProperty, providerDef.DisplayName);
 
                 foreach (var widgetDef in comSafeWidgetDefinitions)
                 {
@@ -121,6 +127,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                         };
                         subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
                         subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
+                        subItem.SetValue(ToolTipService.ToolTipProperty, widgetDef.DisplayTitle);
 
                         navItem.MenuItems.Add(subItem);
                     }

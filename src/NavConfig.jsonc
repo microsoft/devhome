@@ -32,54 +32,19 @@
             "viewFullName": "DevHome.Customization.Views.MainPage",
             "viewModelFullName": "DevHome.Customization.ViewModels.MainPageViewModel",
             "icon": "e9f5"
+          },
+          {
+            "identity": "DevHome.Utilities",
+            "assembly": "DevHome.Utilities",
+            "viewFullName": "DevHome.Utilities.Views.UtilitiesMainPageView",
+            "viewModelFullName": "DevHome.Utilities.ViewModels.UtilitiesMainPageViewModel",
+            "icon": "ED35"
           }
         ]
       }
     ]
   },
   "experimentalFeatures": [
-    {
-      "identity": "EnvironmentsManagementPage",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ]
-    },
-    {
-      "identity": "EnvironmentsSetupTargetFlow",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ]
-    },
     {
       "identity": "QuietBackgroundProcessesExperiment",
       "enabledByDefault": false,
@@ -102,7 +67,7 @@
       ]
     },
     {
-      "identity": "EnvironmentsCreationFlow",
+      "identity": "QuickstartPlayground",
       "enabledByDefault": false,
       "buildTypeOverrides": [
         {
@@ -112,7 +77,7 @@
         },
         {
           "buildType": "canary",
-          "enabledByDefault": true,
+          "enabledByDefault": false,
           "visible": true
         },
         {

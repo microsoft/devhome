@@ -63,14 +63,14 @@ if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
 
 if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "DevSetupAgent") -Or ($BuildStep -ieq "fullMsix")) {
   foreach ($configuration in $env:Build_Configuration.Split(",")) {
-    # We use x86 DevSetupAgent for x64 and x86 Dev Home build. Only need to build it once if we are building multiple platforms. 
+    # We use x86 DevSetupAgent for x64 and x86 Dev Home build. Only need to build it once if we are building multiple platforms.
     $builtX86 = $false
     foreach ($platform in $env:Build_Platform.Split(",")) {
-      if ($Platform -ieq "arm64") {
-        HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform $Platform -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+      if ($platform -ieq "arm64") {
+        extensions\HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform $Platform -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
       }
       elseif (-not $builtX86) {
-        HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform "x86" -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+        extensions\HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform "x86" -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
         $builtX86 = $true
       }
     }
@@ -133,7 +133,7 @@ Try {
     $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = $env:msix_version
     if (-not ([string]::IsNullOrEmpty($newPackageName))) {
       $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = $newPackageName
-    } 
+    }
     if (-not ([string]::IsNullOrEmpty($newPackageDisplayName))) {
       $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = $newPackageDisplayName
     }
@@ -144,9 +144,6 @@ Try {
         if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
           $appExtension = $extension.Element($uapAppExtension)
           switch ($appExtension.Attribute("Name").Value) {
-            "com.microsoft.devhome" {
-              $appExtension.Attribute("DisplayName").Value = $newAppDisplayNameResource
-            }
             "com.microsoft.windows.widgets" {
               $appExtension.Attribute("DisplayName").Value = $newWidgetProviderDisplayName
             }
@@ -162,6 +159,7 @@ Try {
     foreach ($platform in $env:Build_Platform.Split(",")) {
       foreach ($configuration in $env:Build_Configuration.Split(",")) {
         $appxPackageDir = (Join-Path $env:Build_RootDirectory "AppxPackages\$configuration")
+        Write-Host "Building DevHome for EnvPlatform: $env:Build_Platform Platform: $platform Configuration: $configuration BundlePlatforms: $appxBundlePlatform Dir: $appxPackageDir Ring: $buildRing"
         $msbuildArgs = @(
             ("DevHome.sln"),
             ("/p:Platform="+$platform),
@@ -181,6 +179,7 @@ Try {
         }
 
         & $msbuildPath $msbuildArgs
+
         if (-not($IsAzurePipelineBuild) -And $isAdmin) {
           Invoke-SignPackage "$appxPackageDir\DevHome-$platform.msix"
         }
@@ -198,9 +197,6 @@ Try {
       if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
         $appExtension = $extension.Element($uapAppExtension)
         switch ($appExtension.Attribute("Name").Value) {
-          "com.microsoft.devhome" {
-            $appExtension.Attribute("DisplayName").Value = "ms-resource:AppDisplayNameDev"
-          }
           "com.microsoft.windows.widgets" {
             $appExtension.Attribute("DisplayName").Value = "ms-resource:WidgetProviderDisplayNameDev"
           }
