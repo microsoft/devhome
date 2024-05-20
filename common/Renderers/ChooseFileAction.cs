@@ -111,11 +111,12 @@ public class ChooseFileParser : IAdaptiveActionParser
 
         var chooseFileAction = new ChooseFileAction
         {
+            Title = stringResource.GetLocalized("ChooseFileActionTitle"),
+            Tooltip = stringResource.GetLocalized("ChooseFileActionToolTip"),
+
             // Parse the JSON properties of the action.
             // The Verb ChooseFile is not meant to be localized.
             Verb = inputJson.GetNamedString("verb", "ChooseFile"),
-            Title = inputJson.GetNamedString("title", stringResource.GetLocalized("ChooseFileActionTitle")),
-            Tooltip = inputJson.GetNamedString("tooltip", stringResource.GetLocalized("ChooseFileActionToolTip")),
             UseIcon = inputJson.GetNamedBoolean("useIcon", false),
         };
 
@@ -137,9 +138,11 @@ public class ChooseFileActionRenderer : IAdaptiveActionRenderer
             var button = renderer.Render(element, context, renderArgs) as Button;
             if (button != null)
             {
-                var content = new StackPanel();
-                content.Orientation = Orientation.Horizontal;
-                content.Spacing = 8;
+                var content = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 8,
+                };
                 if (chooseFileElement.UseIcon)
                 {
                     content.Children.Add(new FontIcon
