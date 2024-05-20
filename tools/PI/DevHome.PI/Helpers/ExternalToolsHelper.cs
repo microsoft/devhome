@@ -69,7 +69,7 @@ internal sealed class ExternalToolsHelper
         }
 
         // The file should be in this location:
-        // %LocalAppData%\Packages\Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe\LocalState\externaltools.json
+        // %LocalAppData%\Packages\Microsoft.Windows.DevHome_8wekyb3d8bbwe\LocalState\externaltools.json
         toolInfoFileName = Path.Combine(localFolder, "externaltools.json");
         AllExternalTools = new(allExternalTools);
     }
@@ -93,7 +93,7 @@ internal sealed class ExternalToolsHelper
             {
                 // TODO If we failed to parse the JSON file, we should rename it (using DateTime.Now),
                 // create a new one, and report to the user.
-                _log.Error(ex, "Failed to parse {tool}", toolInfoFileName);
+                _log.Error(ex, $"Failed to parse {toolInfoFileName}");
             }
         }
     }
@@ -101,7 +101,7 @@ internal sealed class ExternalToolsHelper
     private void ToolItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         // The user can change the IsPinned property of a tool, to pin or unpin it on the bar.
-        if (sender is ExternalTool tool && e.PropertyName == nameof(ExternalTool.IsPinned))
+        if (sender is ExternalTool tool && string.Equals(e.PropertyName, nameof(ExternalTool.IsPinned), StringComparison.Ordinal))
         {
             if (tool.IsPinned)
             {

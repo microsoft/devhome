@@ -97,9 +97,9 @@
             x:Uid="IsPinnedToggleSwitch" x:Name="IsPinnedToggleSwitch"
             Grid.Row="4" Margin="0,12,0,0" HorizontalAlignment="Left" IsOn="True"/>
         
-        <StackPanel Orientation="Horizontal" Grid.Row="5" HorizontalAlignment="Right" Margin="0,12,0,0">
-            <Button x:Uid="AddToolsOkButton" x:Name="OkButton" Click="OkButton_Click" Width="100"/>
-            <Button x:Uid="AddToolsCancelButton" x:Name="CancelButton" Margin="6,0,0,0" Width="100"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="5" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="6">
+            <Button x:Uid="AddToolsOkButton" x:Name="OkButton" Click="OkButton_Click" MinWidth="100"/>
+            <Button x:Uid="AddToolsCancelButton" x:Name="CancelButton" MinWidth="100"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -133,11 +133,11 @@
                             <DataTemplate x:DataType="helpers:ExternalTool">
                                 <Button
                                     Click="ExternalToolButton_Click"
-                                    HorizontalAlignment="Center" Width="45" Height="45"
+                                    HorizontalAlignment="Center" 
                                     ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}"
                                     Tag="{x:Bind}"
                                     PointerPressed="ExternalToolButton_PointerPressed">
-                                    <Image Source="{x:Bind ToolIcon, Mode=OneWay}"/>
+                                    <Image Source="{x:Bind ToolIcon, Mode=OneWay}" Width="26" Height="26"/>
                                 </Button>
                             </DataTemplate>
                         </ItemsRepeater>

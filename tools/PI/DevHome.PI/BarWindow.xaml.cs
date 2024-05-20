@@ -294,7 +294,7 @@ public partial class BarWindow : WindowEx, INotifyPropertyChanged
 
     private void ExternalToolItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (sender is ExternalTool item && e.PropertyName == nameof(ExternalTool.MenuIcon))
+        if (sender is ExternalTool item && string.Equals(e.PropertyName, nameof(ExternalTool.MenuIcon), StringComparison.Ordinal))
         {
             var menuItem = (MenuFlyoutItem?)ExternalToolsMenu.Items.FirstOrDefault(i => ((ExternalTool)i.Tag).ID == item.ID);
             if (menuItem is not null)
