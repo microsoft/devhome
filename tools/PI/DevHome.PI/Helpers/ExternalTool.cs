@@ -45,6 +45,18 @@ public class ExternalTool : INotifyPropertyChanged
         get; private set;
     }
 
+    private bool isPinned;
+
+    public bool IsPinned
+    {
+        get => isPinned;
+        set
+        {
+            isPinned = value;
+            OnPropertyChanged(nameof(IsPinned));
+        }
+    }
+
     [JsonIgnore]
     private SoftwareBitmapSource? _toolIcon;
 
@@ -81,13 +93,15 @@ public class ExternalTool : INotifyPropertyChanged
         string executable,
         ExternalToolArgType argtype,
         string argprefix = "",
-        string otherArgs = "")
+        string otherArgs = "",
+        bool isPinned = false)
     {
         Name = name;
         Executable = executable;
         ArgType = argtype;
         ArgPrefix = argprefix;
         OtherArgs = otherArgs;
+        IsPinned = isPinned;
 
         ID = Guid.NewGuid().ToString();
 

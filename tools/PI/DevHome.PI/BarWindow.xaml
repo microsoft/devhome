@@ -93,13 +93,10 @@
                     <!-- External tools -->
                     <StackPanel Orientation="Horizontal">
                         <StackPanel.ContextFlyout>
-                            <!-- TODO Re-enable this when we have Click handler implementation.-->
                             <MenuFlyout x:Name="ToolContextMenu">
                                 <MenuFlyoutItem
-                                    x:Uid="UnPinMenuItem"
-                                    x:Name="UnPinMenuItem"
-                                    Click="UnPinMenuItem_Click"
-                                    IsEnabled="False">
+                                    x:Name="PinUnpinMenuItem"
+                                    Click="PinUnpinMenuItem_Click">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE77A;"/>
                                     </MenuFlyoutItem.Icon>
@@ -131,7 +128,7 @@
 
                         <ItemsRepeater
                             x:Name="ExternalToolsRepeater"
-                            ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.ExternalTools, Mode=OneWay}"
+                            ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}"
                             Layout="{StaticResource ExternalToolsHorizontalLayout}">
                             <DataTemplate x:DataType="helpers:ExternalTool">
                                 <Button
