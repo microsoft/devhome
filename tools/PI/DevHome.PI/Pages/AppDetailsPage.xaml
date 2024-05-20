@@ -94,7 +94,11 @@
                 <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsRunningAsSystem, Mode=OneWay}" IsReadOnly="True"/>
                 <TextBlock Grid.Row="3" x:Uid="IsRunningAsAdminTextBlock"/>
                 <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsRunningAsAdmin, Mode=OneWay}" IsReadOnly="True"/>
-                <Button Grid.Row="4" Grid.ColumnSpan="2" x:Uid="RunElevatedButton" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}"/>
+                
+                <Button 
+                    Grid.Row="4" Grid.ColumnSpan="2" x:Uid="RunElevatedButton" Margin="0,8,0,0"
+                    Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" 
+                    Command="{x:Bind ViewModel.RunAsAdminCommand}"/>
             </Grid>
         </ScrollViewer>
     </Grid>

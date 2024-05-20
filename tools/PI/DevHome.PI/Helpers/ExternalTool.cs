@@ -5,8 +5,10 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
+using Windows.Graphics.Imaging;
 using Windows.Win32.Foundation;
 using static DevHome.PI.Helpers.WindowHelper;
 
@@ -57,6 +59,23 @@ public class ExternalTool : INotifyPropertyChanged
         }
     }
 
+    [JsonIgnore]
+    private BitmapIcon? _menuIcon;
+
+    [JsonIgnore]
+    public BitmapIcon? MenuIcon
+    {
+        get => _menuIcon;
+        private set
+        {
+            _menuIcon = value;
+            OnPropertyChanged(nameof(MenuIcon));
+        }
+    }
+
+    [JsonIgnore]
+    private SoftwareBitmap? softwareBitmap;
+
     public ExternalTool(
         string name,
         string executable,
@@ -75,6 +94,7 @@ public class ExternalTool : INotifyPropertyChanged
         if (!string.IsNullOrEmpty(executable))
         {
             GetToolImage();
+            GetMenuIcon();
         }
     }
 
@@ -82,19 +102,36 @@ public class ExternalTool : INotifyPropertyChanged
     {
         try
         {
-            var toolIcon = System.Drawing.Icon.ExtractAssociatedIcon(Executable);
-
-            // Fall back to Windows default app icon.
-            toolIcon ??= System.Drawing.Icon.FromHandle(LoadDefaultAppIcon());
-
-            if (toolIcon is not null)
+            softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
+            if (softwareBitmap is not null)
             {
-                ToolIcon = await WindowHelper.GetWinUI3BitmapSourceFromGdiBitmap(toolIcon.ToBitmap());
+                ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmap(softwareBitmap);
             }
         }
         catch (Exception ex)
         {
-            _log.Debug(ex, "Unable to fetch tool image.");
+            _log.Error(ex, "Failed to get tool image");
+        }
+    }
+
+    private async void GetMenuIcon()
+    {
+        try
+        {
+            softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
+            if (softwareBitmap is not null)
+            {
+                var bitmapUri = await SaveSoftwareBitmapToTempFile(softwareBitmap);
+                MenuIcon = new BitmapIcon
+                {
+                    UriSource = bitmapUri,
+                    ShowAsMonochrome = false,
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Failed to get menu icon");
         }
     }
 

@@ -10,13 +10,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.PI.Helpers;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Win32.SafeHandles;
+using Windows.Graphics.Imaging;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using static DevHome.PI.Helpers.WindowHelper;
 
 namespace DevHome.PI.Models;
 
-public partial class TargetAppData : ObservableObject, INotifyPropertyChanged
+public partial class TargetAppData : ObservableObject
 {
     public static readonly TargetAppData Instance = new();
 
@@ -98,7 +99,7 @@ public partial class TargetAppData : ObservableObject, INotifyPropertyChanged
 
             if (bitmap is not null)
             {
-                Icon = await WindowHelper.GetWinUI3BitmapSourceFromGdiBitmap(bitmap);
+                Icon = await GetWinUI3BitmapSourceFromGdiBitmap(bitmap);
             }
             else
             {

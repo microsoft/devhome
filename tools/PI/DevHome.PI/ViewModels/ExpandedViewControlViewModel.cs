@@ -52,20 +52,20 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     private string title = string.Empty;
 
     [ObservableProperty]
-    private ObservableCollection<NavLink> links;
+    private ObservableCollection<PageNavLink> links;
 
     [ObservableProperty]
     private int selectedNavLinkIndex = 0;
 
     public INavigationService NavigationService { get; }
 
-    private readonly NavLink appDetailsNavLink;
-    private readonly NavLink resourceUsageNavLink;
-    private readonly NavLink modulesNavLink;
-    private readonly NavLink watsonNavLink;
-    private readonly NavLink winLogsNavLink;
-    private readonly NavLink processListNavLink;
-    private readonly NavLink insightsNavLink;
+    private readonly PageNavLink appDetailsNavLink;
+    private readonly PageNavLink resourceUsageNavLink;
+    private readonly PageNavLink modulesNavLink;
+    private readonly PageNavLink watsonNavLink;
+    private readonly PageNavLink winLogsNavLink;
+    private readonly PageNavLink processListNavLink;
+    private readonly PageNavLink insightsNavLink;
 
     public ExpandedViewControlViewModel()
     {
@@ -74,13 +74,13 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         PerfCounters.Instance.PropertyChanged += PerfCounterHelper_PropertyChanged;
         ClipboardMonitor.Instance.PropertyChanged += Clipboard_PropertyChanged;
 
-        appDetailsNavLink = new NavLink("\uE71D", CommonHelper.GetLocalizedString("AppDetailsTextBlock/Text"), typeof(AppDetailsPageViewModel));
-        resourceUsageNavLink = new NavLink("\uE950", CommonHelper.GetLocalizedString("ResourceUsageHeaderTextBlock/Text"), typeof(ResourceUsagePageViewModel));
-        modulesNavLink = new NavLink("\uE74C", CommonHelper.GetLocalizedString("ModulesHeaderTextBlock/Text"), typeof(ModulesPageViewModel));
-        watsonNavLink = new NavLink("\uE7BA", CommonHelper.GetLocalizedString("WatsonsHeaderTextBlock/Text"), typeof(WatsonPageViewModel));
-        winLogsNavLink = new NavLink("\uE7C4", CommonHelper.GetLocalizedString("WinLogsHeaderTextBlock/Text"), typeof(WinLogsPageViewModel));
-        processListNavLink = new NavLink("\uE8FD", CommonHelper.GetLocalizedString("ProcessListHeaderTextBlock/Text"), typeof(ProcessListPageViewModel));
-        insightsNavLink = new NavLink("\uE946", CommonHelper.GetLocalizedString("InsightsHeaderTextBlock/Text"), typeof(InsightsPageViewModel));
+        appDetailsNavLink = new PageNavLink("\uE71D", CommonHelper.GetLocalizedString("AppDetailsTextBlock/Text"), typeof(AppDetailsPageViewModel));
+        resourceUsageNavLink = new PageNavLink("\uE950", CommonHelper.GetLocalizedString("ResourceUsageHeaderTextBlock/Text"), typeof(ResourceUsagePageViewModel));
+        modulesNavLink = new PageNavLink("\uE74C", CommonHelper.GetLocalizedString("ModulesHeaderTextBlock/Text"), typeof(ModulesPageViewModel));
+        watsonNavLink = new PageNavLink("\uE7BA", CommonHelper.GetLocalizedString("WatsonsHeaderTextBlock/Text"), typeof(WatsonPageViewModel));
+        winLogsNavLink = new PageNavLink("\uE7C4", CommonHelper.GetLocalizedString("WinLogsHeaderTextBlock/Text"), typeof(WinLogsPageViewModel));
+        processListNavLink = new PageNavLink("\uE8FD", CommonHelper.GetLocalizedString("ProcessListHeaderTextBlock/Text"), typeof(ProcessListPageViewModel));
+        insightsNavLink = new PageNavLink("\uE946", CommonHelper.GetLocalizedString("InsightsHeaderTextBlock/Text"), typeof(InsightsPageViewModel));
 
         links = new();
         AddPagesIfNecessary(TargetAppData.Instance.TargetProcess);

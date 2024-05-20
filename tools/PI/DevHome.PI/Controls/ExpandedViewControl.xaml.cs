@@ -14,7 +14,6 @@ namespace DevHome.PI.Controls;
 public sealed partial class ExpandedViewControl : UserControl
 {
     private readonly ExpandedViewControlViewModel viewModel = new();
-    private SettingsToolWindow? settingsTool;
 
     public ExpandedViewControl()
     {
@@ -34,12 +33,7 @@ public sealed partial class ExpandedViewControl : UserControl
 
     private void SettingsButton_Click(object sender, RoutedEventArgs e)
     {
-        settingsTool = new(Settings.Default.SettingsToolPosition);
+        SettingsToolWindow settingsTool = new(Settings.Default.SettingsToolPosition, null);
         settingsTool.Activate();
-    }
-
-    public void CloseSettings()
-    {
-        settingsTool?.Close();
     }
 }

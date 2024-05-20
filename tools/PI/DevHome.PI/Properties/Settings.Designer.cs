@@ -62,18 +62,6 @@ namespace DevHome.PI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool IsProcessFilterIncludeEdge {
-            get {
-                return ((bool)(this["IsProcessFilterIncludeEdge"]));
-            }
-            set {
-                this["IsProcessFilterIncludeEdge"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool IsProcessFilterIncludeWebview {
             get {
                 return ((bool)(this["IsProcessFilterIncludeWebview"]));
