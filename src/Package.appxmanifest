@@ -68,7 +68,7 @@
         </com:Extension>
 		<com:Extension Category="windows.comServer">
 		  <com:ComServer>
-			<com:ExeServer Executable="DevHome\WindowsSandboxExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="WindowsSandboxExtension">
+			<com:ExeServer Executable="WindowsSandboxExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="WindowsSandboxExtension">
 		      <com:Class Id="6A52115B-083C-4FB1-85F4-BBE23289220E" DisplayName="WindowsSandboxExtension" />
 			</com:ExeServer>
 	      </com:ComServer>
