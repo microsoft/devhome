@@ -23,6 +23,8 @@ internal sealed class ExternalToolsHelper
 
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalToolsHelper));
 
+    private readonly ObservableCollection<ExternalTool> filteredExternalTools = [];
+
     private ObservableCollection<ExternalTool> allExternalTools = [];
 
     // The ExternalTools menu shows all registered tools.
@@ -54,7 +56,7 @@ internal sealed class ExternalToolsHelper
     }
 
     // The bar shows only the pinned tools.
-    public ObservableCollection<ExternalTool> FilteredExternalTools { get; private set; } = [];
+    public ReadOnlyObservableCollection<ExternalTool> FilteredExternalTools { get; private set; }
 
     private ExternalToolsHelper()
     {
@@ -72,6 +74,7 @@ internal sealed class ExternalToolsHelper
         // %LocalAppData%\Packages\Microsoft.Windows.DevHome_8wekyb3d8bbwe\LocalState\externaltools.json
         toolInfoFileName = Path.Combine(localFolder, "externaltools.json");
         AllExternalTools = new(allExternalTools);
+        FilteredExternalTools = new(filteredExternalTools);
     }
 
     internal void Init()
@@ -105,14 +108,14 @@ internal sealed class ExternalToolsHelper
         {
             if (tool.IsPinned)
             {
-                if (!FilteredExternalTools.Contains(tool))
+                if (!filteredExternalTools.Contains(tool))
                 {
-                    FilteredExternalTools.Add(tool);
+                    filteredExternalTools.Add(tool);
                 }
             }
             else
             {
-                FilteredExternalTools.Remove(tool);
+                filteredExternalTools.Remove(tool);
             }
         }
 
@@ -163,7 +166,7 @@ internal sealed class ExternalToolsHelper
                     {
                         if (newItem.IsPinned)
                         {
-                            FilteredExternalTools.Add(newItem);
+                            filteredExternalTools.Add(newItem);
                         }
 
                         newItem.PropertyChanged += ToolItem_PropertyChanged;
@@ -178,7 +181,7 @@ internal sealed class ExternalToolsHelper
                     foreach (ExternalTool oldItem in e.OldItems)
                     {
                         oldItem.PropertyChanged -= ToolItem_PropertyChanged;
-                        FilteredExternalTools.Remove(oldItem);
+                        filteredExternalTools.Remove(oldItem);
                     }
                 }
 
@@ -190,7 +193,7 @@ internal sealed class ExternalToolsHelper
                     foreach (ExternalTool oldItem in e.OldItems)
                     {
                         oldItem.PropertyChanged -= ToolItem_PropertyChanged;
-                        FilteredExternalTools.Remove(oldItem);
+                        filteredExternalTools.Remove(oldItem);
                     }
                 }
 
@@ -200,7 +203,7 @@ internal sealed class ExternalToolsHelper
                     {
                         if (newItem.IsPinned)
                         {
-                            FilteredExternalTools.Add(newItem);
+                            filteredExternalTools.Add(newItem);
                         }
 
                         newItem.PropertyChanged += ToolItem_PropertyChanged;
@@ -217,12 +220,12 @@ internal sealed class ExternalToolsHelper
 
     private void SynchronizeAllFilteredItems()
     {
-        FilteredExternalTools.Clear();
+        filteredExternalTools.Clear();
         foreach (var item in AllExternalTools)
         {
             if (item.IsPinned)
             {
-                FilteredExternalTools.Add(item);
+                filteredExternalTools.Add(item);
             }
         }
     }
