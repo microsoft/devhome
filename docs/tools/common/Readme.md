@@ -6,7 +6,9 @@ List of common controls that are generic, customizable and reusable from all pag
 - [Secondary window](./SecondaryWindow.md)
 
 ## Controls
+- [AddCreateButton](./AddCreateButton.md)
 - [CloseButton](./CloseButton.md)
+- [ExperimentControl](./ExperimentControl.md)
 
 ## File dialog
 > [!NOTE]

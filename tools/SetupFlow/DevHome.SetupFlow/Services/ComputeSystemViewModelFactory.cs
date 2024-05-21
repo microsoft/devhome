@@ -7,8 +7,8 @@ using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.SetupFlow.ViewModels.Environments;
+using Microsoft.UI.Dispatching;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.Common.Services;
 
@@ -19,12 +19,12 @@ public class ComputeSystemViewModelFactory
 {
     public async Task<ComputeSystemCardViewModel> CreateCardViewModelAsync(
         IComputeSystemManager manager,
-        ComputeSystem computeSystem,
+        ComputeSystemCache computeSystem,
         ComputeSystemProvider provider,
         string packageFullName,
-        WindowEx windowEx)
+        DispatcherQueue dispatcherQueue)
     {
-        var cardViewModel = new ComputeSystemCardViewModel(computeSystem, manager, windowEx);
+        var cardViewModel = new ComputeSystemCardViewModel(computeSystem, manager, dispatcherQueue, packageFullName);
 
         try
         {
@@ -32,7 +32,7 @@ public class ComputeSystemViewModelFactory
             cardViewModel.ComputeSystemImage = await ComputeSystemHelpers.GetBitmapImageAsync(computeSystem);
             cardViewModel.ComputeSystemProviderName = provider.DisplayName;
             cardViewModel.ComputeSystemProviderImage = CardProperty.ConvertMsResourceToIcon(provider.Icon, packageFullName);
-            cardViewModel.ComputeSystemProperties = await ComputeSystemHelpers.GetComputeSystemPropertiesAsync(computeSystem, packageFullName);
+            cardViewModel.ComputeSystemProperties = new(await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(computeSystem, packageFullName));
         }
         catch (Exception ex)
         {

@@ -9,3 +9,7 @@ These are the testing scenarios that need to be validated before shipping a new 
 1. [Dev Drive](tools/SetupFlow/DevHome.SetupFlow.UnitTest/TestingScenarios/DevDrive.md)
 1. [Extension Library](tools/ExtensionLibrary/DevHome.ExtensionLibrary.UnitTest/TestingScenarios/ExtensionLibrary.md)
 1. [Settings](settings/DevHome.Settings.UnitTest/TestingScenarios/Settings.md)
+1. [Managing Environments](tools/Environments/DevHome.Environments/TestingScenarios/ManageEnvironments.md)
+1. [Creating Environment](tools/SetupFlow/DevHome.SetupFlow.UnitTest/TestingScenarios/CreateEnvironment.md)
+1. [Setting up an Environment](tools/SetupFlow/DevHome.SetupFlow.UnitTest/TestingScenarios/SetupEnvironment.md)
+

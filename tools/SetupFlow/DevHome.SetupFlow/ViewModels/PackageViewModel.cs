@@ -59,6 +59,7 @@ public partial class PackageViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ButtonAutomationName))]
+    [NotifyPropertyChangedFor(nameof(ButtonAutomationId))]
     private bool _isSelected;
 
     [ObservableProperty]
@@ -132,6 +133,10 @@ public partial class PackageViewModel : ObservableObject
     public string ButtonAutomationName => IsSelected ?
         _stringResource.GetLocalized(StringResourceKey.RemoveApplication) :
         _stringResource.GetLocalized(StringResourceKey.AddApplication);
+
+    public string ButtonAutomationId => IsSelected ?
+        $"Remove_{_package.Id}" :
+        $"Add_{_package.Id}";
 
     public InstallPackageTask InstallPackageTask { get; private set; }
 

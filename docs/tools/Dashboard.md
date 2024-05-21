@@ -12,3 +12,7 @@ Widgets are rendered by Adaptive Cards, and there are a few ways Dev Home custom
 * Dev Home widgets use the [Adaptive Card schema](https://adaptivecards.io/explorer/) version 1.5, which is the most recent schema supported by the WinUI 3 Adaptive Card renderer.
 * There are [HostConfig](https://learn.microsoft.com/adaptive-cards/sdk/rendering-cards/uwp/host-config) files that define common styles (e.g., font family, font sizes, default spacing) and behaviors (e.g., max number of actions) for all the widgets. There is one for [light mode](../../tools/Dashboard/DevHome.Dashboard/Assets/HostConfigLight.json) and one for [dark mode](../tools/Dashboard/DevHome.Dashboard/Assets/HostConfigDark.json).
 * Dev Home supports a custom AdaptiveElement type called [`LabelGroup`](../../common/Renderers/LabelGroup.cs). This allows a card author to render a set of labels, each with a specified background color. For an example of how to use this type, please see the [GitHub Issues widget](https://github.com/microsoft/devhomegithubextension/blob/main/src/GitHubExtension/Widgets/Templates/GitHubIssuesTemplate.json).
+
+### Widget providers
+
+When creating a widget for Dev Home, you should include all manifest values described in [Widget provider package manifest XML format](https://learn.microsoft.com/windows/apps/develop/widgets/widget-provider-manifest).

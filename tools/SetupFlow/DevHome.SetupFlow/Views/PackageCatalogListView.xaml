@@ -10,10 +10,12 @@
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:commonControls="using:DevHome.Common.Controls"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <!-- Number of items to display per panel -->
-        <x:Int32 x:Key="ItemsPerPanel">6</x:Int32>
+        <x:String x:Key="ItemsPerPackageCatalogExperiment">AppManagement_ItemsPerPackageCatalog</x:String>
+        <x:Int32 x:Key="ItemsPerPanel_6">6</x:Int32>
+        <x:Int32 x:Key="ItemsPerPanel_9">9</x:Int32>
         <converters:EmptyObjectToObjectConverter x:Key="ViewAllConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
         <converters:EmptyObjectToObjectConverter x:Key="ViewAllInverseConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
     </UserControl.Resources>
@@ -88,10 +90,14 @@
                     <DataTemplate x:DataType="viewmodels:PackageCatalogViewModel">
                         <!-- Border configuration is applied in code-behind -->
                         <Border>
-                            <views:PackageCatalogView
-                                Catalog="{x:Bind Mode=OneWay}"
-                                PackageCount="{StaticResource ItemsPerPanel}"
-                                ViewAllCommand="{Binding ViewAllPackagesCommand}"/>
+                            <commonControls:ExperimentControl ExperimentKey="{StaticResource ItemsPerPackageCatalogExperiment}">
+                                <commonControls:ExperimentControl.DefaultContent>
+                                    <views:PackageCatalogView Catalog="{x:Bind Mode=OneWay}" PackageCount="{StaticResource ItemsPerPanel_6}" ViewAllCommand="{Binding ViewAllPackagesCommand}"/>
+                                </commonControls:ExperimentControl.DefaultContent>
+                                <commonControls:ExperimentControl.ExperimentContent>
+                                    <views:PackageCatalogView Catalog="{x:Bind Mode=OneWay}" PackageCount="{StaticResource ItemsPerPanel_9}" ViewAllCommand="{Binding ViewAllPackagesCommand}"/>
+                                </commonControls:ExperimentControl.ExperimentContent>
+                            </commonControls:ExperimentControl>
                         </Border>
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
@@ -104,7 +110,19 @@
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.PackageCatalogShimmers, Mode=OneWay}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <views:ShimmerPackageCatalogView Margin="0,0,0,18" PackageCount="{StaticResource ItemsPerPanel}" />
+                        <commonControls:ExperimentControl ExperimentKey="{StaticResource ItemsPerPackageCatalogExperiment}">
+                            <commonControls:ExperimentControl.Resources>
+                                <Style TargetType="views:ShimmerPackageCatalogView">
+                                    <Setter Property="Margin" Value="0,0,0,18" />
+                                </Style>
+                            </commonControls:ExperimentControl.Resources>
+                            <commonControls:ExperimentControl.DefaultContent>
+                                <views:ShimmerPackageCatalogView PackageCount="{StaticResource ItemsPerPanel_6}" />
+                            </commonControls:ExperimentControl.DefaultContent>
+                            <commonControls:ExperimentControl.ExperimentContent>
+                                <views:ShimmerPackageCatalogView PackageCount="{StaticResource ItemsPerPanel_9}" />
+                            </commonControls:ExperimentControl.ExperimentContent>
+                        </commonControls:ExperimentControl>
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>

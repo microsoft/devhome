@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CreationInProgress" xml:space="preserve">
+    <value>Adding network switch, secure boot and enhanced session configuration for {0}</value>
+    <comment>Locked="{0}" Text to tell the user that we're performing post creation actions like adding a network switch to the virtual machine. {0} is the name of the virtual machine</comment>
+  </data>
+  <data name="CreationStarting" xml:space="preserve">
+    <value>Starting the creation process for {0}</value>
+    <comment>Locked="{0}" Text to tell the user that we're starting the process to create the virtual machine. {0} is the name of the virtual machine</comment>
+  </data>
+  <data name="CurrentCheckpoint" xml:space="preserve">
+    <value>Current Checkpoint</value>
+    <comment>Label text to display in front of the users current checkpoint name. </comment>
+  </data>
+  <data name="DownloadFileFound" xml:space="preserve">
+    <value>File {0} already exists. We'll use this file to create the virtual machine</value>
+    <comment>Locked="{0}" text to tell the user that a file exists and we do not need to download it again. {0} is a previously download file. We show the file name in {0}.</comment>
+  </data>
+  <data name="DownloadInProgress" xml:space="preserve">
+    <value>Downloading {0} {1}</value>
+    <comment>Locked="{0}" text to tell the user that we are downloading a file from the web. {0} is the file we're downloading. {1} the progress in the form of  "bytes received / total bytes needed". E.g "10 Mb / 400 Mb"</comment>
+  </data>
+  <data name="DownloadOperationCancelled" xml:space="preserve">
+    <value>Unable to download disk image file because the operation was cancelled</value>
+    <comment>Error text to tell the user that we weren't able to download the disk file because it was cancelled.</comment>
+  </data>
+  <data name="DownloadOperationFailed" xml:space="preserve">
+    <value>Downloading the disk image file failed. Check the Hyper-V extension logs for more information</value>
+    <comment>Error text for when we fail to download the disk image file the user selected from the internet</comment>
+  </data>
+  <data name="DownloadOperationFailedCheckingHash" xml:space="preserve">
+    <value>There was a hash mismatch when attempting to compare the Sha256 hash of the to the expected hash value</value>
+    <comment>Error text for when comparing to Sha256 hashes fail</comment>
+  </data>
+  <data name="DownloadOperationFailedToCreateFile" xml:space="preserve">
+    <value>Failed to create the file needed to download the disk image into</value>
+    <comment>Error text for when we fail to create the file that the disk image will be downloaded into</comment>
+  </data>
+  <data name="ErrorPerformingOperation" xml:space="preserve">
+    <value>Unable to perform the requested operation. Check the Dev Home Hyper-V Extension's log file: {0} for more information.</value>
+    <comment>Error text for when the hyper-v extension is unable to perform an operation the user requests</comment>
+  </data>
+  <data name="VmCredentialRequest.AttemptCountText" xml:space="preserve">
+    <value>{0}/{1} attempts</value>
+    <comment>Attempt counter text for the dialog to enter Hyper-V VM admin credential ({CurrentAttempt}/{MaxAttempts}).</comment>
+  </data>
+  <data name="ExtractionInProgress" xml:space="preserve">
+    <value>Extracting file {0} {1}</value>
+    <comment>Locked="{0}" text to tell the user that we're extracting a zip file into a location on their computer. {0} is the zip file we're extracting. {1} the progress in the form of  "bytes extracted / total bytes needed". E.g "10 Mb / 400 Mb"</comment>
+  </data>
+  <data name="NoImagesFoundError" xml:space="preserve">
+    <value>Unable to find any disk images in the Hyper-V virtual machine gallery</value>
+    <comment>Error text to tell the user there was an issue retrieving the virtual machine disk images from the VM gallery. </comment>
+  </data>
+  <data name="OperationInProgressError" xml:space="preserve">
+    <value>Unable to start the operation because it is already in progress</value>
+    <comment>Error text to tell the user that the process to create the virtual machine is already in progress.</comment>
+  </data>
+  <data name="VmCredentialRequest.CancelText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Cancel button text in the dialog to enter Hyper-V VM admin credential.</comment>
+  </data>
+  <data name="VmCredentialRequest.Description" xml:space="preserve">
+    <value>In order to run setup on hyper-v machines we need admin credentials</value>
+    <comment>Text describing the purpose of the dialog to enter Hyper-V VM admin credential.</comment>
+  </data>
+  <data name="VmCredentialRequest.DismissText" xml:space="preserve">
+    <value>Dismiss</value>
+    <comment>Dismiss button text in the dialog to enter Hyper-V VM admin credential.</comment>
+  </data>
+  <data name="VmCredentialRequest.InvalidCredentialDescription" xml:space="preserve">
+    <value>Credential you entered didn't work. Please try again</value>
+    <comment>Error description text shown in the dialog to enter Hyper-V VM admin credential if the entered credential didn't work.</comment>
+  </data>
+  <data name="VmCredentialRequest.InvalidCredentialDescriptionAfterLastAttempt" xml:space="preserve">
+    <value>Failed to provide validate credential for the Hyper-V setup. We are terminating the setup request</value>
+    <comment>Error description text shown in the dialog to enter Hyper-V VM admin credential after the last attempt.</comment>
+  </data>
+  <data name="VmCredentialRequest.InvalidCredentialText" xml:space="preserve">
+    <value>Invalid credential</value>
+    <comment>Error text shown in the dialog to enter Hyper-V VM admin credential if the entered credential didn't work.</comment>
+  </data>
+  <data name="VmCredentialRequest.InvalidCredentialTextAfterLastAttempt" xml:space="preserve">
+    <value>Terminating setup</value>
+    <comment>Error text shown in the dialog to enter Hyper-V VM admin credential after the last attempt.</comment>
+  </data>
+  <data name="VmCredentialRequest.OkText" xml:space="preserve">
+    <value>Authenticate</value>
+    <comment>Ok button text in the dialog to enter Hyper-V VM admin credential.</comment>
+  </data>
+  <data name="VmCredentialRequest.PasswordLabel" xml:space="preserve">
+    <value>Password</value>
+    <comment>Label text for the user password field in the dialog to enter Hyper-V VM admin credential.</comment>
+  </data>
+  <data name="VmCredentialRequest.Title" xml:space="preserve">
+    <value>Request for admin credentials</value>
+    <comment>Title text of the dialog to enter Hyper-V VM admin credential.</comment>
+  </data>
+  <data name="VmCredentialRequest.UserNameIsRequiredText" xml:space="preserve">
+    <value>Username is required</value>
+    <comment>Validation error text shown if the user name field is empty in the dialog to enter Hyper-V VM admin credential.</comment>
+  </data>
+  <data name="VmCredentialRequest.UsernameLabel" xml:space="preserve">
+    <value>Admin username</value>
+    <comment>Label text for the user name field in the dialog to enter Hyper-V VM admin credential.</comment>
+  </data>
+  <data name="WaitForLoginRequest.AttemptCountText" xml:space="preserve">
+    <value>{0}/{1} attempts</value>
+    <comment>Attempt counter text for the dialog asking to log in to Hyper-V VM ({CurrentAttempt}/{MaxAttempts}).</comment>
+  </data>
+  <data name="WaitForLoginRequest.CancelText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Cancel button text in the dialog asking to log in to Hyper-V VM.</comment>
+  </data>
+  <data name="WaitForLoginRequest.Description" xml:space="preserve">
+    <value>Complete the action items to continue</value>
+    <comment>Text describing the purpose of the dialog asking to log in to Hyper-V VM.</comment>
+  </data>
+  <data name="WaitForLoginRequest.DismissText" xml:space="preserve">
+    <value>Dismiss</value>
+    <comment>Dismiss button text in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
+  </data>
+  <data name="WaitForLoginRequest.LoginRequiredDescriptionText" xml:space="preserve">
+    <value>To continue set up, sign into Hyper-V then select 'retry' below</value>
+    <comment>Warning description text in the dialog asking to log in to Hyper-V VM.</comment>
+  </data>
+  <data name="WaitForLoginRequest.LoginRequiredDescriptionTextAfterLastAttempt" xml:space="preserve">
+    <value>To set up this flow, you must start again.</value>
+    <comment>Error description text shown in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
+  </data>
+  <data name="WaitForLoginRequest.LoginRequiredText" xml:space="preserve">
+    <value>Hyper-V sign in required</value>
+    <comment>Warning text in the dialog asking to log in to Hyper-V VM.</comment>
+  </data>
+  <data name="WaitForLoginRequest.LoginRequiredTextAfterLastAttempt" xml:space="preserve">
+    <value>This set up has ended</value>
+    <comment>Error text shown in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
+  </data>
+  <data name="WaitForLoginRequest.OkText" xml:space="preserve">
+    <value>Retry</value>
+    <comment>Ok button text in the dialog asking to log in to Hyper-V VM.</comment>
+  </data>
+  <data name="WaitForLoginRequest.Title" xml:space="preserve">
+    <value>Sign in to Hyper-V</value>
+    <comment>Title text of the dialog asking to log in to Hyper-V VM.</comment>
+  </data>
+  <data name="AdaptiveCardStateNotRecognizedError" xml:space="preserve">
+    <value>Adaptive card state not recognized</value>
+    <comment>Error text to show when we don't recognize the state of the adaptive card that was given to us</comment>
+  </data>
+  <data name="AdaptiveCardUnRecognizedAction" xml:space="preserve">
+    <value>Action passed to the extension was not recognized. View the extension logs for more information</value>
+    <comment>Error text to show when we don't recognize the adaptive card action that was passed to the extension</comment>
+  </data>
+  <data name="ButtonToLaunchContentDialogLabel" xml:space="preserve">
+    <value>More Info</value>
+    <comment>Text for a button that will launch a content dialog that displays more information to the user about a disk image</comment>
+  </data>
+  <data name="DownloadForContentDialog" xml:space="preserve">
+    <value>Download</value>
+    <comment>label text for the download size of the disk image</comment>
+  </data>
+  <data name="EnterNewVMNameLabel" xml:space="preserve">
+    <value>New virtual machine name</value>
+    <comment>Label text for textbox where users will enter the name for their new virtual machine</comment>
+  </data>
+  <data name="EnterNewVMNamePlaceHolder" xml:space="preserve">
+    <value>Enter the name of your new virtual machine</value>
+    <comment>place holder text that will appear within a text box</comment>
+  </data>
+  <data name="InitialCreationFormGenerationFailedError" xml:space="preserve">
+    <value>Failed to generate the initial creation form</value>
+    <comment>Error text to show the user when the was an error getting the initial disk image selection page in the creation wizard flow</comment>
+  </data>
+  <data name="LastUpdatedForContentDialog" xml:space="preserve">
+    <value>Last updated</value>
+    <comment>label text for when the disk image was last updated</comment>
+  </data>
+  <data name="LocaleForContentDialog" xml:space="preserve">
+    <value>Locale</value>
+    <comment>label text for locale of operation system that is installed on the disk image</comment>
+  </data>
+  <data name="NameLabelForNewVirtualMachine" xml:space="preserve">
+    <value>Name{0}</value>
+    <comment>Locked="{0}" text label that will be on top of the name the user provides in a textbox. {0} is the colon e.g ":" special character</comment>
+  </data>
+  <data name="OsVersionForContentDialog" xml:space="preserve">
+    <value>Version</value>
+    <comment>label text for version of operating system that is installed on the disk image</comment>
+  </data>
+  <data name="PrimaryButtonForContentDialogText" xml:space="preserve">
+    <value>Ok</value>
+    <comment>Text for primary button of the content dialog </comment>
+  </data>
+  <data name="PrimaryButtonLabelForCreationFlow" xml:space="preserve">
+    <value>Next</value>
+    <comment>Text to display to the user about what the primary button does in the UI</comment>
+  </data>
+  <data name="ReviewFormGenerationFailedError" xml:space="preserve">
+    <value>Failed to generate the review form</value>
+    <comment>Error text to show the user when the was an error getting the review page in the creation wizard flow</comment>
+  </data>
+  <data name="SecondaryButtonForContentDialogText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Text for the secondary button of the content dialog</comment>
+  </data>
+  <data name="SecondaryButtonLabelForCreationFlow" xml:space="preserve">
+    <value>Previous</value>
+    <comment>Text to display to the user about what the secondary button does in the UI.</comment>
+  </data>
+  <data name="SettingsCardLabel" xml:space="preserve">
+    <value>Choose an image to use</value>
+    <comment>Label text for a list of cards that appear in the UI</comment>
+  </data>
+  <data name="WaitForLoginRequest.LoginRequiredDescriptionTextAfterLastAttempt2" xml:space="preserve">
+    <value>After 3 attempts, failed to find a logged in user. This ends the set up.</value>
+    <comment>Error description text shown in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
+  </data>
+  <data name="WaitForLoginRequest.LoginRequiredTextAfterLastAttempt2" xml:space="preserve">
+    <value>Maximum attempts reached</value>
+    <comment>Error description text shown in the dialog asking to log in to Hyper-V VM after the last attempt.</comment>
+  </data>
+  <data name="UserNotInHyperVAdminGroup" xml:space="preserve">
+    <value>User {0} is not a member of the Hyper-V Administrators group. If you have already added the user to the group you may need to log off and back on again.</value>
+    <comment>Locked="{Hyper-V}" Error text for when the user is not in the Hyper-V adminstrators group. {0} is the username of the user</comment>
+  </data>
+  <data name="HyperVFeatureNotPresent" xml:space="preserve">
+    <value>The Hyper-V Feature is not present on this SKU of Windows.</value>
+    <comment>Locked="{Hyper-V}" Error text to show the user that the Hyper-V feature is not available on the current SKU of Windows</comment>
+  </data>
+  <data name="HyperVFeatureDisabled" xml:space="preserve">
+    <value>The Hyper-V Feature is disabled. Please enable Hyper-V and reboot.</value>
+    <comment>Locked="{Hyper-V}" Error text to show the user that the Hyper-V feature is disabled</comment>
+  </data>
+  <data name="HyperVFeatureUnknown" xml:space="preserve">
+    <value>The Hyper-V Feature is in an unknown state. Unable to perform any Hyper-V functionality.</value>
+    <comment>Locked="{Hyper-V}" Error text to show the user that the state of the Hyper-V feature is unknown</comment>
+  </data>
+  <data name="HyperVVirtualMachineManagementServiceError" xml:space="preserve">
+    <value>Unable to start the virtual machine management service. The Hyper-V feature may have been recently enabled but a reboot has not been initiated. Please check that the service exists in the Windows Services snap-in if a reboot has already been done.</value>
+    <comment>{Locked="{Hyper-V}", "{Windows}"} Error text to show the user that virtual machine management service can't be started by the extension</comment>
+  </data>
+</root>

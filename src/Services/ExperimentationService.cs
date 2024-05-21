@@ -27,15 +27,7 @@ public class ExperimentationService : IExperimentationService
 
     public bool IsFeatureEnabled(string key)
     {
-        foreach (var experimentalFeature in ExperimentalFeatures)
-        {
-            if (experimentalFeature.Id == key)
-            {
-                return experimentalFeature.IsEnabled;
-            }
-        }
-
-        return false;
+        return ExperimentalFeatures.FirstOrDefault(f => f.Id == key)?.IsEnabled ?? false;
     }
 
     public void AddExperimentalFeature(ExperimentalFeature experimentalFeature)

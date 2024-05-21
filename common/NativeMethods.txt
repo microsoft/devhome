@@ -1,5 +1,4 @@
-﻿AllowSetForegroundWindow
-EnableWindow
+﻿EnableWindow
 CoCreateInstance
 FileOpenDialog
 FileSaveDialog
@@ -14,3 +13,8 @@ SHLoadIndirectString
 StrFormatByteSizeEx
 SFBS_FLAGS
 MAX_PATH
+GetDpiForWindow
+GetWindowRect
+GetMonitorInfo
+SetWindowPos
+MonitorFromWindow

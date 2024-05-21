@@ -161,6 +161,24 @@
                                 </TextBlock>
                             </ctControls:SettingsCard.Description>
                         </ctControls:SettingsCard>
+                        
+                        <!-- Settings for Quickstart Playground-->
+                        <ctControls:SettingsCard x:Uid="MainPage_QuickstartPlayground"
+                                           AutomationProperties.AutomationId="QuickstartPlayground"
+                                           IsClickEnabled="True"
+                                           Command="{x:Bind ViewModel.StartQuickstartCommand}"
+                                           CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                                           ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                                           AutomationProperties.AccessibilityView="Control"
+                                           ActionIcon="{x:Null}" 
+                                           Visibility="{x:Bind ViewModel.EnableQuickstartPlayground}" >
+                            <ctControls:SettingsCard.HeaderIcon>
+                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_QuickstartPlayground.png" />
+                            </ctControls:SettingsCard.HeaderIcon>
+                            <ctControls:SettingsCard.Description>
+                                <TextBlock x:Uid="MainPage_QuickstartPlayground_Description"/>
+                            </ctControls:SettingsCard.Description>
+                        </ctControls:SettingsCard>
                     </StackPanel>
 
                     <StackPanel Spacing="{StaticResource SettingsCardSpacing}" AutomationProperties.Name="{x:Bind ViewModel.MainPageQuickStepsGroupName}">

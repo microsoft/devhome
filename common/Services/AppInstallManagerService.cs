@@ -123,7 +123,14 @@ public class AppInstallManagerService : IAppInstallManagerService
 
             installItem.Completed += (sender, args) =>
             {
-                tcs.SetResult(true);
+                if (!tcs.TrySetResult(true))
+                {
+                    _log.Information("WidgetHostingService", $"{packageId} In Completed handler, RanToCompleted already set.");
+                }
+                else
+                {
+                    _log.Information("WidgetHostingService", $"{packageId} In Completed handler, RanToCompleted set.");
+                }
             };
 
             installItem.StatusChanged += (sender, args) =>
@@ -135,7 +142,14 @@ public class AppInstallManagerService : IAppInstallManagerService
                 }
                 else if (installItem.GetCurrentStatus().InstallState == AppInstallState.Completed)
                 {
-                    tcs.SetResult(true);
+                    if (!tcs.TrySetResult(true))
+                    {
+                        _log.Information("WidgetHostingService", $"{packageId} In StatusChanged handler, RanToCompleted already set.");
+                    }
+                    else
+                    {
+                        _log.Information("WidgetHostingService", $"{packageId} In StatusChanged handler, RanToCompleted set.");
+                    }
                 }
             };
             return tcs.Task;

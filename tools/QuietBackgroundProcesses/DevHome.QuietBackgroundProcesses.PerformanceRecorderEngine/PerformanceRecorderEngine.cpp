@@ -27,7 +27,7 @@
 #include "ServiceInformation.h"
 
 // 2 percent is the threshold for a process to be considered as a high CPU consumer
-#define CPU_TIME_ABOVE_THRESHOLD_STRIKE_VALUE 0.02f
+#define CPU_TIME_ABOVE_THRESHOLD_STRIKE_VALUE 2.0f
 
 enum class ProcessCategory
 {
@@ -331,22 +331,37 @@ ProcessPerformanceInfo MakeProcessPerformanceInfo(DWORD processId)
         auto info = ProcessPerformanceInfo{};
         info.process = nullptr;
         info.pid = processId;
+        LOG_LAST_ERROR_MSG("Failed to open process handle for PID: %d", processId);
     }
 
     auto processPathString = TryGetProcessName(process.get());
 
     auto path = std::filesystem::path(processPathString.value_or(L""));
 
-    FILETIME createTime, exitTime, kernelTime, userTime;
-    THROW_IF_WIN32_BOOL_FALSE(GetProcessTimes(process.get(), &createTime, &exitTime, &kernelTime, &userTime));
+    FILETIME createTime{};
+    FILETIME exitTime{};
+    FILETIME kernelTime{};
+    FILETIME userTime{};
+    if (process)
+    {
+        THROW_IF_WIN32_BOOL_FALSE(GetProcessTimes(process.get(), &createTime, &exitTime, &kernelTime, &userTime));
+    }
 
     std::optional<std::wstring> packageFullName;
     std::optional<std::wstring> aumid;
     wil::unique_handle processToken;
-    if (OpenProcessToken(process.get(), TOKEN_QUERY, &processToken))
+    if (process)
     {
-        packageFullName = TryGetPackageFullNameFromTokenHelper(processToken.get());
-        aumid = TryGetAppUserModelIdFromTokenHelper(processToken.get());
+        if (OpenProcessToken(process.get(), TOKEN_QUERY, &processToken))
+        {
+            packageFullName = TryGetPackageFullNameFromTokenHelper(processToken.get());
+            aumid = TryGetAppUserModelIdFromTokenHelper(processToken.get());
+        }
+        else
+        {
+            PCWSTR processPath = processPathString ? processPathString.value().c_str() : L"";
+            LOG_LAST_ERROR_MSG("Failed to open process token for PID: %d (%ls)", processId, processPath);
+        }
     }
 
     auto info = ProcessPerformanceInfo{};
@@ -422,8 +437,13 @@ struct MonitorThread
     std::map<ULONG, ProcessPerformanceInfo> m_runningProcesses;
     std::vector<ProcessPerformanceInfo> m_terminatedProcesses;
 
+    // Info
+    std::chrono::milliseconds m_samplingPeriod;
+
     MonitorThread(std::chrono::milliseconds periodMs)
     {
+        m_samplingPeriod = periodMs;
+
         if (periodMs.count() <= 0)
         {
             THROW_HR(E_INVALIDARG);
@@ -442,8 +462,6 @@ struct MonitorThread
                     {
                         break;
                     }
-
-                    std::chrono::microseconds totalMicroseconds{};
 
                     // Check for new processes to track
                     DWORD pidArray[2048];
@@ -537,8 +555,6 @@ struct MonitorThread
                             info.samplesAboveThreshold++;
                         }
 
-                        totalMicroseconds += cpuTime;
-
                         ++it;
                     }
 
@@ -561,6 +577,11 @@ struct MonitorThread
         {
             m_thread.join();
         }
+    }
+
+    std::chrono::milliseconds GetSamplingPeriod()
+    {
+        return m_samplingPeriod;
     }
 
     std::vector<ProcessPerformanceSummary> GetProcessPerformanceSummaries()
@@ -666,11 +687,16 @@ try
 }
 CATCH_RETURN()
 
-extern "C" __declspec(dllexport) HRESULT GetMonitoringProcessUtilization(void* context, ProcessPerformanceSummary** ppSummaries, size_t* summaryCount) noexcept
+extern "C" __declspec(dllexport) HRESULT GetMonitoringProcessUtilization(void* context, std::chrono::milliseconds* samplingPeriodInMs, ProcessPerformanceSummary** ppSummaries, size_t* summaryCount) noexcept
 try
 {
     auto monitorThread = reinterpret_cast<MonitorThread*>(context);
     auto summaries = monitorThread->GetProcessPerformanceSummaries();
+
+    if (samplingPeriodInMs)
+    {
+        *samplingPeriodInMs = monitorThread->GetSamplingPeriod();
+    }
 
     // Alloc summaries block
     auto ptrSummaries = make_unique_cotaskmem_array_ptr<ProcessPerformanceSummary>(summaries.size());
