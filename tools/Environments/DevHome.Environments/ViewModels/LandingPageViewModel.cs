@@ -17,7 +17,7 @@ using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
-using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Serilog;
 
 namespace DevHome.Environments.ViewModels;
@@ -31,7 +31,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly AutoResetEvent _computeSystemLoadWait = new(false);
 
-    private readonly DispatcherQueue _dispatcherQueue;
+    private readonly Window _mainWindow;
 
     private readonly EnvironmentsExtensionsService _environmentExtensionsService;
 
@@ -91,11 +91,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         INavigationService navigationService,
         IComputeSystemManager manager,
         EnvironmentsExtensionsService extensionsService,
-        DispatcherQueue dispatcherQueue)
+        Window mainWindow)
     {
         _computeSystemManager = manager;
         _environmentExtensionsService = extensionsService;
-        _dispatcherQueue = dispatcherQueue;
+        _mainWindow = mainWindow;
         _navigationService = navigationService;
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
@@ -124,7 +124,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         // Reset the old sync timer
         _cancellationTokenSource.Cancel();
-        await _dispatcherQueue.EnqueueAsync(() => LastSyncTime = _stringResource.GetLocalized("MomentsAgo"));
+        await _mainWindow.DispatcherQueue.EnqueueAsync(() => LastSyncTime = _stringResource.GetLocalized("MomentsAgo"));
 
         // We need to signal to the compute system manager that it can remove all the completed operations now that
         // we're done showing them in the view.
@@ -157,7 +157,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         if (!token.IsCancellationRequested)
         {
-            await _dispatcherQueue.EnqueueAsync(() => LastSyncTime = time);
+            await _mainWindow.DispatcherQueue.EnqueueAsync(() => LastSyncTime = time);
         }
     }
 
@@ -280,7 +280,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             foreach (var operation in curOperations)
             {
                 // this is a new operation so we need to create a view model for it.
-                ComputeSystemCards.Insert(0, new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _dispatcherQueue, RemoveComputeSystemCard, AddNewlyCreatedComputeSystem, operation));
+                ComputeSystemCards.Insert(0, new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _mainWindow, RemoveComputeSystemCard, AddNewlyCreatedComputeSystem, operation));
                 ComputeSystemCards.Last().ComputeSystemErrorReceived += OnComputeSystemOperationError;
                 _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
             }
@@ -315,7 +315,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 provider,
                 RemoveComputeSystemCard,
                 packageFullName,
-                _dispatcherQueue);
+                _mainWindow);
 
             computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
             computeSystemViewModels.Add(computeSystemViewModel);
@@ -326,7 +326,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             await computeSystemModel.InitializeCardDataAsync();
         });
 
-        await _dispatcherQueue.EnqueueAsync(() =>
+        await _mainWindow.DispatcherQueue.EnqueueAsync(() =>
         {
             try
             {
@@ -455,7 +455,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
             if (viewModel == null)
             {
-                _dispatcherQueue.EnqueueAsync(() =>
+                _mainWindow.DispatcherQueue.EnqueueAsync(() =>
                 {
                     lock (ComputeSystemCards)
                     {
