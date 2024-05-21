@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -153,7 +154,12 @@ public partial class ProcessListPageViewModel : ObservableObject
 
     private void FilterProcessList()
     {
-        FilteredProcesses = new ObservableCollection<Process>(Processes.Where(item => item.ProcessName.Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase)));
+        FilteredProcesses = new ObservableCollection<Process>(Processes.Where(
+            item =>
+            {
+                return item.ProcessName.Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase) ||
+                Convert.ToString(item.Id, CultureInfo.CurrentCulture).Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase);
+            }));
     }
 
     [RelayCommand]

@@ -29,8 +29,7 @@
                 <ComboBox
                     x:Uid="FilterDropDown"
                     x:Name="FilterDropDown" HorizontalAlignment="Stretch"
-                    MinHeight="36" Height="36"
-                    IsEditable="True"
+                    MinHeight="36" IsEditable="True"
                     Text="{x:Bind ViewModel.FilterProcessText, Mode=TwoWay}"
                     DropDownClosed="{x:Bind ViewModel.FilterDropDownClosed}">
                     <CheckBox x:Uid="BgTaskHostCheckBox" x:Name="BgTaskHostCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeBgTaskHost, Mode=TwoWay}"/>
