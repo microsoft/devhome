@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -20,12 +21,25 @@ public partial class ProcessListPageViewModel : ObservableObject
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
 
     [ObservableProperty]
+    private string filterProcessText;
+
+    partial void OnFilterProcessTextChanged(string value)
+    {
+        FilterProcessList();
+    }
+
+    [ObservableProperty]
     private ObservableCollection<Process> processes;
+
+    [ObservableProperty]
+    private ObservableCollection<Process> filteredProcesses;
 
     public ProcessListPageViewModel()
     {
         dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         processes = new();
+        filteredProcesses = new();
+        filterProcessText = string.Empty;
         GetFilteredProcessList();
     }
 
@@ -116,6 +130,8 @@ public partial class ProcessListPageViewModel : ObservableObject
                     currentProcess.Dispose();
                 }
             }
+
+            FilterProcessList();
         });
     }
 
@@ -134,6 +150,16 @@ public partial class ProcessListPageViewModel : ObservableObject
     {
         Settings.Default.Save();
         GetFilteredProcessList();
+    }
+
+    private void FilterProcessList()
+    {
+        FilteredProcesses = new ObservableCollection<Process>(Processes.Where(
+            item =>
+            {
+                return item.ProcessName.Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase) ||
+                Convert.ToString(item.Id, CultureInfo.CurrentCulture).Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase);
+            }));
     }
 
     [RelayCommand]
