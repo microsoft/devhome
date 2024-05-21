@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
+using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -28,6 +29,8 @@ public sealed partial class AddToolControl : UserControl
         var fileName = string.Empty;
         var filter = "Executables (*.exe)\0*.exe\0Batch Files (*.bat)\0*.bat\0\0";
         var filterarray = filter.ToCharArray();
+        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+
         unsafe
         {
             fixed (char* file = new char[255], pFilter = filterarray)
@@ -39,7 +42,9 @@ public sealed partial class AddToolControl : UserControl
                     lpstrFilter = pFilter,
                     nFilterIndex = 1,
                     nMaxFile = 255,
-                    hwndOwner = BarWindow.ThisHwnd,
+
+                    // TODO - This should be the Settings window, not the bar window
+                    hwndOwner = barWindow?.ThisHwnd ?? Windows.Win32.Foundation.HWND.Null,
                 };
 
                 if (PInvoke.GetOpenFileName(ref openfile))
