@@ -29,7 +29,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
     private readonly IWindowsPackageManager _windowsPackageManager;
     private readonly PackageProvider _packageProvider;
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
-    private readonly WindowEx _mainWindow;
+    private readonly Window _mainWindow;
     private readonly ISetupFlowStringResource _setupFlowStringResource;
     private static readonly char[] Separator = [','];
 
@@ -46,7 +46,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
         IWindowsPackageManager wpm,
         SetupFlowOrchestrator setupFlowOrchestrator,
         ISetupFlowStringResource setupFlowStringResource,
-        WindowEx mainWindow)
+        Window mainWindow)
     {
         _navigationService = navigationService;
         _setupFlowViewModel = setupFlowViewModel;
