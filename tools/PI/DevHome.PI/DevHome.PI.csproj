@@ -26,7 +26,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="BarWindow.xaml" />
     <None Remove="Controls\ExpandedViewControl.xaml" />
     <None Remove="Controls\GlowButton.xaml" />
     <None Remove="errors.db" />
@@ -166,11 +165,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="SettingsUi\SettingsToolWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="BarWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

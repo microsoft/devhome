@@ -137,9 +137,9 @@
     <value>Close the PI window and the service</value>
     <comment>The tooltip for the close all menu item flyout. This will cause the program to terminate.</comment>
   </data>
-  <data name="UnPinMenuItem.Text" xml:space="preserve">
-    <value>Unpin</value>
-    <comment>The label for Unpin menu flyout for an icon in the toolbar. This will cause the icon to no longer be pinned to the bar.</comment>
+  <data name="PinMenuItemText" xml:space="preserve">
+    <value>Pin</value>
+    <comment>A label for the menuitem to pin a tool on the bar.</comment>
   </data>
   <data name="UnregisterMenuItem.Text" xml:space="preserve">
     <value>Unregister</value>
@@ -756,5 +756,17 @@
   <data name="EntrypointAddressTextBlock.Text" xml:space="preserve">
     <value>Entrypoint address</value>
     <comment>The contents of a text block referring to the entrypoint address of a loaded module.</comment>
+  </data>
+  <data name="IsPinnedToggleSwitch.OnContent" xml:space="preserve">
+    <value>Pinned</value>
+    <comment>Text to show when the switch is turned on, to pin the tool to the bar.</comment>
+  </data>
+  <data name="IsPinnedToggleSwitch.OffContent" xml:space="preserve">
+    <value>Not pinned</value>
+    <comment>Text to show when the switch is turned off, to not pin the tool to the bar.</comment>
+  </data>
+  <data name="UnpinMenuItemText" xml:space="preserve">
+    <value>Unpin</value>
+    <comment>A label for the menuitem to unpin a tool on the bar.</comment>
   </data>
 </root>

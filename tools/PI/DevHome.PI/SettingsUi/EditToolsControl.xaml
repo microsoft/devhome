@@ -32,7 +32,7 @@
             GridLinesVisibility="None"
             HeadersVisibility="Column">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn x:Uid="EditToolsNameColumn" Binding="{Binding Name}" Width="90"/>
+                <controls:DataGridTextColumn x:Uid="EditToolsNameColumn" Binding="{Binding Name}" Width="150"/>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 

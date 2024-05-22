@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
 using DevHome.PI.ViewModels;
@@ -42,6 +43,11 @@ public partial class BarWindow
     {
         horizontalWindow.Close();
         verticalWindow.Close();
+
+        foreach (var window in OpenChildWindows)
+        {
+            window.Close();
+        }
     }
 
     public Frame GetFrame() => horizontalWindow.GetFrame();
@@ -87,7 +93,7 @@ public partial class BarWindow
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(Settings.IsCpuUsageMonitoringEnabled))
+        if (string.Equals(e.PropertyName, nameof(Settings.IsCpuUsageMonitoringEnabled), StringComparison.Ordinal))
         {
             if (settings.IsCpuUsageMonitoringEnabled)
             {
@@ -102,7 +108,7 @@ public partial class BarWindow
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(BarWindowViewModel.BarOrientation))
+        if (string.Equals(e.PropertyName, nameof(BarWindowViewModel.BarOrientation), StringComparison.Ordinal))
         {
             RotateBar();
         }

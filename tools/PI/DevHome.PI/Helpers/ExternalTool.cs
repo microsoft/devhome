@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
@@ -22,7 +23,7 @@ public enum ExternalToolArgType
 }
 
 // ExternalTool represents an imported tool
-public class ExternalTool : INotifyPropertyChanged
+public partial class ExternalTool : ObservableObject
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalTool));
 
@@ -45,49 +46,35 @@ public class ExternalTool : INotifyPropertyChanged
         get; private set;
     }
 
-    [JsonIgnore]
+    [ObservableProperty]
+    private bool _isPinned;
+
+    // Note the additional "property:" syntax to ensure the JsonIgnore is propagated to the generated property.
+    [ObservableProperty]
+    [property: JsonIgnore]
     private SoftwareBitmapSource? _toolIcon;
 
-    [JsonIgnore]
-    public SoftwareBitmapSource? ToolIcon
-    {
-        get => _toolIcon;
-        private set
-        {
-            _toolIcon = value;
-            OnPropertyChanged(nameof(ToolIcon));
-        }
-    }
-
-    [JsonIgnore]
+    [ObservableProperty]
+    [property: JsonIgnore]
     private BitmapIcon? _menuIcon;
 
     [JsonIgnore]
-    public BitmapIcon? MenuIcon
-    {
-        get => _menuIcon;
-        private set
-        {
-            _menuIcon = value;
-            OnPropertyChanged(nameof(MenuIcon));
-        }
-    }
-
-    [JsonIgnore]
-    private SoftwareBitmap? softwareBitmap;
+    private SoftwareBitmap? _softwareBitmap;
 
     public ExternalTool(
         string name,
         string executable,
         ExternalToolArgType argtype,
         string argprefix = "",
-        string otherArgs = "")
+        string otherArgs = "",
+        bool isPinned = false)
     {
         Name = name;
         Executable = executable;
         ArgType = argtype;
         ArgPrefix = argprefix;
         OtherArgs = otherArgs;
+        IsPinned = isPinned;
 
         ID = Guid.NewGuid().ToString();
 
@@ -102,10 +89,10 @@ public class ExternalTool : INotifyPropertyChanged
     {
         try
         {
-            softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
-            if (softwareBitmap is not null)
+            _softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
+            if (_softwareBitmap is not null)
             {
-                ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmap(softwareBitmap);
+                ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmap(_softwareBitmap);
             }
         }
         catch (Exception ex)
@@ -118,10 +105,10 @@ public class ExternalTool : INotifyPropertyChanged
     {
         try
         {
-            softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
-            if (softwareBitmap is not null)
+            _softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
+            if (_softwareBitmap is not null)
             {
-                var bitmapUri = await SaveSoftwareBitmapToTempFile(softwareBitmap);
+                var bitmapUri = await SaveSoftwareBitmapToTempFile(_softwareBitmap);
                 MenuIcon = new BitmapIcon
                 {
                     UriSource = bitmapUri,
@@ -173,12 +160,5 @@ public class ExternalTool : INotifyPropertyChanged
             _log.Error(ex, "Tool launched failed");
             return null;
         }
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

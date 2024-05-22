@@ -7,7 +7,6 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Services;
 using DevHome.Environments.Models;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
@@ -48,8 +47,6 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
 
     private Action? DevHomeAction { get; }
 
-    private readonly DispatcherQueue? _dispatcherQueue;
-
     private readonly Window? _mainWindow;
 
     private readonly StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
@@ -59,14 +56,12 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
         string icon,
         Func<string, Task<ComputeSystemOperationResult>> command,
         ComputeSystemOperations computeSystemOperation,
-        DispatcherQueue? dispatcherQueue = null,
         Window? mainWindow = null)
     {
         _operationKind = OperationKind.ExtensionTask;
         Name = name;
         IconGlyph = icon;
         ExtensionTask = command;
-        _dispatcherQueue = dispatcherQueue;
         ComputeSystemOperation = computeSystemOperation;
         _mainWindow = mainWindow;
     }
@@ -129,7 +124,7 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
                 XamlRoot = _mainWindow?.Content.XamlRoot,
             };
 
-            _dispatcherQueue?.TryEnqueue(async () =>
+            _mainWindow?.DispatcherQueue?.TryEnqueue(async () =>
             {
                 var result = await noWifiDialog.ShowAsync();
 

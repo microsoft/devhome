@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -10,6 +11,7 @@ using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
+using DevHome.PI.SettingsUi;
 using DevHome.PI.ViewModels;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
@@ -32,10 +34,12 @@ public partial class BarWindowHorizontal : WindowEx
     private readonly Settings settings = Settings.Default;
     private readonly string errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
     private readonly string errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
+    private readonly string pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
+    private readonly string unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemText");
     private readonly BarWindowViewModel viewModel;
-    private readonly ObservableCollection<Button> externalTools = [];
 
-    private Button? selectedExternalToolButton;
+    private ExternalTool? selectedExternalTool;
+    private INotifyCollectionChanged? externalTools;
 
     // Constants that control window sizes
     private const int WindowPositionOffsetY = 30;
@@ -112,14 +116,13 @@ public partial class BarWindowHorizontal : WindowEx
             ClipboardMonitor.Instance.Start(ThisHwnd);
         }
 
-        ExternalToolsHelper.Instance.Init();
+        InitializeExternalTools();
 
         // Apply the user's chosen theme setting.
         ThemeName t = ThemeName.Themes.First(t => t.Name == settings.CurrentTheme);
         SetRequestedTheme(t.Theme);
 
-        // Calculate the DPI scale. We'll also recalculate later,
-        // in case the user changes the display settings.
+        // Calculate the DPI scale.
         var dpiWindow = HwndExtensions.GetDpiForWindow(ThisHwnd);
         dpiScale = dpiWindow / 96.0;
 
@@ -144,6 +147,175 @@ public partial class BarWindowHorizontal : WindowEx
         InputNonClientPointerSource nonClientInputSrc =
             InputNonClientPointerSource.GetForWindowId(AppWindow.Id);
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
+    }
+
+    private void InitializeExternalTools()
+    {
+        ExternalToolsHelper.Instance.Init();
+
+        ExternalToolsMenu.Items.Clear();
+        foreach (var item in ExternalToolsHelper.Instance.AllExternalTools)
+        {
+            CreateMenuItemFromTool(item);
+        }
+
+        // We have to cast to INotifyCollectionChanged explicitly because the CollectionChanged
+        // event in ReadOnlyObservableCollection is protected.
+        externalTools = ExternalToolsHelper.Instance.AllExternalTools;
+        externalTools.CollectionChanged += ExternalTools_CollectionChanged;
+    }
+
+    private void ExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
+        {
+            foreach (ExternalTool item in e.NewItems)
+            {
+                CreateMenuItemFromTool(item);
+            }
+        }
+        else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
+        {
+            foreach (ExternalTool item in e.OldItems)
+            {
+                var menuItem = ExternalToolsMenu.Items.FirstOrDefault(i => ((ExternalTool)i.Tag).ID == item.ID);
+                if (menuItem is not null)
+                {
+                    ExternalToolsMenu.Items.Remove(menuItem);
+                }
+            }
+        }
+    }
+
+    private void CreateMenuItemFromTool(ExternalTool item)
+    {
+        var imageIcon = new ImageIcon
+        {
+            Source = item.ToolIcon,
+        };
+
+        var menuItem = new MenuFlyoutItem
+        {
+            Text = item.Name,
+            Tag = item,
+            Icon = item.MenuIcon,
+        };
+        menuItem.Click += ExternalToolMenuItem_Click;
+        menuItem.RightTapped += ExternalToolMenuItem_RightTapped;
+        ExternalToolsMenu.Items.Add(menuItem);
+
+        // You can't databind to MenuFlyoutItem, and the ExternalTool icon image is generated asynchronously,
+        // so we'll handle the PropertyChanged event in code, so we can update the icon when it gets set.
+        // https://github.com/microsoft/microsoft-ui-xaml/issues/1087
+        item.PropertyChanged += ExternalToolItem_PropertyChanged;
+    }
+
+    private void ExternalToolItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is ExternalTool item && string.Equals(e.PropertyName, nameof(ExternalTool.MenuIcon), StringComparison.Ordinal))
+        {
+            var menuItem = (MenuFlyoutItem?)ExternalToolsMenu.Items.FirstOrDefault(i => ((ExternalTool)i.Tag).ID == item.ID);
+            if (menuItem is not null)
+            {
+                menuItem.Icon = item.MenuIcon;
+            }
+        }
+    }
+
+    private void ManageExternalToolsButton_Click(object sender, RoutedEventArgs e)
+    {
+        SettingsToolWindow settingsTool = new(Settings.Default.SettingsToolPosition, SettingsPage.AdditionalTools);
+        settingsTool.Show();
+    }
+
+    private void ExternalToolMenuItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
+    {
+        var menuItem = sender as MenuFlyoutItem;
+        if (menuItem is not null)
+        {
+            selectedExternalTool = (ExternalTool)menuItem.Tag;
+            if (selectedExternalTool.IsPinned)
+            {
+                PinUnpinMenuItem.Text = unpinMenuItemText;
+            }
+            else
+            {
+                PinUnpinMenuItem.Text = pinMenuItemText;
+            }
+
+            ToolContextMenu.ShowAt(menuItem, e.GetPosition(menuItem));
+        }
+    }
+
+    private void ExternalToolMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem clickedMenuItem)
+        {
+            if (clickedMenuItem.Tag is ExternalTool tool)
+            {
+                InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
+            }
+        }
+    }
+
+    private void ExternalToolButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button clickedButton)
+        {
+            if (clickedButton.Tag is ExternalTool tool)
+            {
+                InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
+            }
+        }
+    }
+
+    private void InvokeTool(ExternalTool tool, int? id, HWND hWnd)
+    {
+        var process = tool.Invoke(id, hWnd);
+        if (process is null)
+        {
+            // A ContentDialog only renders in the space its parent occupies. Since the parent is a narrow
+            // bar, the dialog doesn't have enough space to render. So, we'll use MessageBox to display errors.
+            PInvoke.MessageBox(
+                ThisHwnd,
+                string.Format(CultureInfo.CurrentCulture, errorMessageText, tool.Executable),
+                errorTitleText,
+                MESSAGEBOX_STYLE.MB_ICONERROR);
+        }
+    }
+
+    private void ExternalToolButton_PointerPressed(object sender, PointerRoutedEventArgs e)
+    {
+        if (sender is Button clickedButton)
+        {
+            selectedExternalTool = (ExternalTool)clickedButton.Tag;
+            if (selectedExternalTool.IsPinned)
+            {
+                PinUnpinMenuItem.Text = unpinMenuItemText;
+            }
+            else
+            {
+                PinUnpinMenuItem.Text = pinMenuItemText;
+            }
+        }
+    }
+
+    private void PinUnpinMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        // Pin or unpin the tool on the bar.
+        if (selectedExternalTool is not null)
+        {
+            selectedExternalTool.IsPinned = !selectedExternalTool.IsPinned;
+        }
+    }
+
+    private void UnregisterMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        if (selectedExternalTool is not null)
+        {
+            ExternalToolsHelper.Instance.RemoveExternalTool(selectedExternalTool);
+            selectedExternalTool = null;
+        }
     }
 
     private void SetDefaultPosition()
@@ -176,28 +348,6 @@ public partial class BarWindowHorizontal : WindowEx
         restoreState.Width = settingSize.Width;
     }
 
-    private void ExternalToolButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button clickedButton)
-        {
-            if (clickedButton.Tag is ExternalTool tool)
-            {
-                var process = tool.Invoke(TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
-
-                if (process == null)
-                {
-                    // It appears ContentDialogs only render in the space it's parent occupies. Since the parent is a narrow
-                    // bar, the dialog doesn't have enough space to render. So, we'll use MessageBox to display errors.
-                    PInvoke.MessageBox(
-                        ThisHwnd,
-                        string.Format(CultureInfo.CurrentCulture, errorMessageText, tool.Executable),
-                        errorTitleText,
-                        MESSAGEBOX_STYLE.MB_ICONERROR);
-                }
-            }
-        }
-    }
-
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
         ClipboardMonitor.Instance.Stop();
@@ -221,27 +371,6 @@ public partial class BarWindowHorizontal : WindowEx
             else
             {
                 ClipboardMonitor.Instance.Stop();
-            }
-        }
-    }
-
-    private void ExternalToolButton_PointerPressed(object sender, PointerRoutedEventArgs e)
-    {
-        selectedExternalToolButton = (Button)sender;
-    }
-
-    private void UnPinMenuItem_Click(object sender, RoutedEventArgs e)
-    {
-        // TODO Implement unpinning a tool from the bar, assuming we continue with the pinning feature.
-    }
-
-    private void UnregisterMenuItem_Click(object sender, RoutedEventArgs e)
-    {
-        if (selectedExternalToolButton is not null)
-        {
-            if (selectedExternalToolButton.Tag is ExternalTool tool)
-            {
-                ExternalToolsHelper.Instance.RemoveExternalTool(tool);
             }
         }
     }

@@ -80,7 +80,8 @@
             <Button
                 x:Name="ManageExternalToolsButton"
                 x:Uid="ManageExternalToolsButton"
-                HorizontalAlignment="Center">
+                HorizontalAlignment="Center"
+                Click="ManageExternalToolsButton_Click">
                 <Button.ContextFlyout>
                     <MenuFlyout x:Name="ExternalToolsMenu">
                         <!-- We can't databind to MenuFlyout, so we'll add a MenuFlyoutItem
@@ -90,10 +91,10 @@
                 <TextBlock Text="&#xEC7A;"/>
             </Button>
 
-            <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.ExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsHorizontalLayout}">
+            <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsHorizontalLayout}">
                 <ItemsRepeater.ContextFlyout>
                     <MenuFlyout x:Name="ToolContextMenu">
-                        <MenuFlyoutItem x:Uid="UnPinMenuItem" x:Name="UnPinMenuItem" Click="UnPinMenuItem_Click">
+                        <MenuFlyoutItem x:Name="PinUnpinMenuItem" Click="PinUnpinMenuItem_Click">
                             <MenuFlyoutItem.Icon>
                                 <FontIcon Glyph="&#xE77A;"/>
                             </MenuFlyoutItem.Icon>
