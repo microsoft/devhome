@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
@@ -15,14 +17,46 @@ namespace DevHome.PI.Helpers;
 internal sealed class ExternalToolsHelper
 {
     private readonly JsonSerializerOptions serializerOptions = new() { WriteIndented = true };
-    private readonly ObservableCollection<ExternalTool> externalTools = [];
     private readonly string toolInfoFileName;
 
     public static readonly ExternalToolsHelper Instance = new();
 
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalToolsHelper));
 
-    public ReadOnlyObservableCollection<ExternalTool> ExternalTools { get; set; }
+    private readonly ObservableCollection<ExternalTool> filteredExternalTools = [];
+
+    private ObservableCollection<ExternalTool> allExternalTools = [];
+
+    // The ExternalTools menu shows all registered tools.
+    public ObservableCollection<ExternalTool> AllExternalTools
+    {
+        get => allExternalTools;
+        set
+        {
+            // We're assigning the collection once, and this also covers the case where we reassign it again:
+            // we need to unsubscribe from the old collection's events, subscribe to the new collection's events,
+            // and initialize the filtered collection.
+            if (allExternalTools != value)
+            {
+                if (allExternalTools != null)
+                {
+                    allExternalTools.CollectionChanged -= AllExternalTools_CollectionChanged;
+                }
+
+                allExternalTools = value;
+                if (allExternalTools != null)
+                {
+                    allExternalTools.CollectionChanged += AllExternalTools_CollectionChanged;
+                }
+
+                // Synchronize the filtered collection with this unfiltered one.
+                SynchronizeAllFilteredItems();
+            }
+        }
+    }
+
+    // The bar shows only the pinned tools.
+    public ReadOnlyObservableCollection<ExternalTool> FilteredExternalTools { get; private set; }
 
     private ExternalToolsHelper()
     {
@@ -36,37 +70,76 @@ internal sealed class ExternalToolsHelper
             localFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) ?? string.Empty;
         }
 
+        // The file should be in this location:
+        // %LocalAppData%\Packages\Microsoft.Windows.DevHome_8wekyb3d8bbwe\LocalState\externaltools.json
         toolInfoFileName = Path.Combine(localFolder, "externaltools.json");
-        ExternalTools = new(externalTools);
+        AllExternalTools = new(allExternalTools);
+        FilteredExternalTools = new(filteredExternalTools);
     }
 
     internal void Init()
     {
+        allExternalTools.Clear();
         if (File.Exists(toolInfoFileName))
         {
             try
             {
                 var jsonData = File.ReadAllText(toolInfoFileName);
                 var existingData = JsonSerializer.Deserialize<ExternalTool[]>(jsonData) ?? [];
-                foreach (var data in existingData)
+                foreach (var toolItem in existingData)
                 {
-                    externalTools.Add(data);
+                    allExternalTools.Add(toolItem);
+                    toolItem.PropertyChanged += ToolItem_PropertyChanged;
                 }
             }
             catch (Exception ex)
             {
-                // TODO If we failed parsing the JSON file... should we just delete it?
-                _log.Error(ex, "Failed to parse {tool}", toolInfoFileName);
+                // TODO If we failed to parse the JSON file, we should rename it (using DateTime.Now),
+                // create a new one, and report to the user.
+                _log.Error(ex, $"Failed to parse {toolInfoFileName}");
             }
         }
     }
 
+    private void ToolItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // The user can change the IsPinned property of a tool, to pin or unpin it on the bar.
+        if (sender is ExternalTool tool && string.Equals(e.PropertyName, nameof(ExternalTool.IsPinned), StringComparison.Ordinal))
+        {
+            if (tool.IsPinned)
+            {
+                if (!filteredExternalTools.Contains(tool))
+                {
+                    filteredExternalTools.Add(tool);
+                }
+            }
+            else
+            {
+                filteredExternalTools.Remove(tool);
+            }
+        }
+
+        WriteToolsJsonFile();
+    }
+
     public ExternalTool AddExternalTool(ExternalTool tool)
     {
-        externalTools.Add(tool);
+        allExternalTools.Add(tool);
+        WriteToolsJsonFile();
+        return tool;
+    }
 
-        // Write out to JSON file
-        var updatedJson = JsonSerializer.Serialize(externalTools, serializerOptions);
+    public void RemoveExternalTool(ExternalTool tool)
+    {
+        if (allExternalTools.Remove(tool))
+        {
+            WriteToolsJsonFile();
+        }
+    }
+
+    private void WriteToolsJsonFile()
+    {
+        var updatedJson = JsonSerializer.Serialize(allExternalTools, serializerOptions);
 
         try
         {
@@ -74,27 +147,85 @@ internal sealed class ExternalToolsHelper
         }
         catch (Exception ex)
         {
-            // TODO What should we do if we're unable to write to the file?
-            _log.Error(ex, "AddExternalTool unable to write to file");
+            // TODO If we're unable to write to the file, we should figure out why.
+            // If the file has become corrupted, we should rename it (using DateTime.Now),
+            // create a new one, and report to the user. If it's locked, we just report to the user.
+            _log.Error(ex, "WriteToolsJsonFile unable to write to file");
         }
-
-        return tool;
     }
 
-    public void RemoveExternalTool(ExternalTool tool)
+    private void AllExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        if (externalTools.Remove(tool))
+        // Whenever the "all tools" collection changes, we need to synchronize the filtered collection.
+        switch (e.Action)
         {
-            // Write out to JSON file
-            var updatedJson = JsonSerializer.Serialize(externalTools, serializerOptions);
+            case NotifyCollectionChangedAction.Add:
+                if (e.NewItems is not null)
+                {
+                    foreach (ExternalTool newItem in e.NewItems)
+                    {
+                        if (newItem.IsPinned)
+                        {
+                            filteredExternalTools.Add(newItem);
+                        }
 
-            try
+                        newItem.PropertyChanged += ToolItem_PropertyChanged;
+                    }
+                }
+
+                break;
+
+            case NotifyCollectionChangedAction.Remove:
+                if (e.OldItems is not null)
+                {
+                    foreach (ExternalTool oldItem in e.OldItems)
+                    {
+                        oldItem.PropertyChanged -= ToolItem_PropertyChanged;
+                        filteredExternalTools.Remove(oldItem);
+                    }
+                }
+
+                break;
+
+            case NotifyCollectionChangedAction.Replace:
+                if (e.OldItems is not null)
+                {
+                    foreach (ExternalTool oldItem in e.OldItems)
+                    {
+                        oldItem.PropertyChanged -= ToolItem_PropertyChanged;
+                        filteredExternalTools.Remove(oldItem);
+                    }
+                }
+
+                if (e.NewItems is not null)
+                {
+                    foreach (ExternalTool newItem in e.NewItems)
+                    {
+                        if (newItem.IsPinned)
+                        {
+                            filteredExternalTools.Add(newItem);
+                        }
+
+                        newItem.PropertyChanged += ToolItem_PropertyChanged;
+                    }
+                }
+
+                break;
+
+            case NotifyCollectionChangedAction.Reset:
+                SynchronizeAllFilteredItems();
+                break;
+        }
+    }
+
+    private void SynchronizeAllFilteredItems()
+    {
+        filteredExternalTools.Clear();
+        foreach (var item in AllExternalTools)
+        {
+            if (item.IsPinned)
             {
-                File.WriteAllText(toolInfoFileName, updatedJson);
-            }
-            catch (Exception ex)
-            {
-                _log.Error(ex, "RemoveExternalTool unable to write to file");
+                filteredExternalTools.Add(item);
             }
         }
     }

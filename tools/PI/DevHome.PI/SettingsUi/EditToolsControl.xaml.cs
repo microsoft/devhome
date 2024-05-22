@@ -12,7 +12,7 @@ public sealed partial class EditToolsControl : UserControl
     public EditToolsControl()
     {
         InitializeComponent();
-        ToolsDataGrid.ItemsSource = ExternalToolsHelper.Instance.ExternalTools;
+        ToolsDataGrid.ItemsSource = ExternalToolsHelper.Instance.AllExternalTools;
     }
 
     private void DeleteToolButton_Click(object sender, RoutedEventArgs e)

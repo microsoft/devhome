@@ -76,22 +76,29 @@ public sealed partial class AddToolControl : UserControl
         NoneRadio.IsChecked = true;
         PrefixTextBox.Text = string.Empty;
         OtherArgsTextBox.Text = string.Empty;
+        IsPinnedToggleSwitch.IsOn = true;
     }
 
     private ExternalTool GetCurrentToolDefinition()
     {
         var argType = ExternalToolArgType.None;
 
-        if (HwndRadio?.IsChecked ?? false)
+        if (HwndRadio.IsChecked ?? false)
         {
             argType = ExternalToolArgType.Hwnd;
         }
-        else if (ProcessIdRadio?.IsChecked ?? false)
+        else if (ProcessIdRadio.IsChecked ?? false)
         {
             argType = ExternalToolArgType.ProcessId;
         }
 
-        return new(ToolNameTextBox.Text, ToolPathTextBox.Text, argType, PrefixTextBox?.Text ?? string.Empty, OtherArgsTextBox?.Text ?? string.Empty);
+        return new(
+            ToolNameTextBox.Text,
+            ToolPathTextBox.Text,
+            argType,
+            PrefixTextBox.Text ?? string.Empty,
+            OtherArgsTextBox.Text ?? string.Empty,
+            IsPinnedToggleSwitch.IsOn);
     }
 
     private void UpdateSampleCommandline(object sender, TextChangedEventArgs e)
@@ -106,7 +113,7 @@ public sealed partial class AddToolControl : UserControl
 
     private void UpdateSampleCommandline()
     {
-        if (SampleCommandTextBox == null)
+        if (SampleCommandTextBox is null)
         {
             // The window is still initializing.
             return;
