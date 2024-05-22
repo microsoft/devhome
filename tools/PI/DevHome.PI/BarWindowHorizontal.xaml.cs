@@ -31,35 +31,35 @@ namespace DevHome.PI;
 
 public partial class BarWindowHorizontal : WindowEx
 {
-    private readonly Settings settings = Settings.Default;
-    private readonly string errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
-    private readonly string errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
-    private readonly string pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
-    private readonly string unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemText");
-    private readonly BarWindowViewModel viewModel;
+    private readonly Settings _settings = Settings.Default;
+    private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
+    private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
+    private readonly string _pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
+    private readonly string _unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemText");
+    private readonly BarWindowViewModel _viewModel;
 
-    private ExternalTool? selectedExternalTool;
-    private INotifyCollectionChanged? externalTools;
+    private ExternalTool? _selectedExternalTool;
+    private INotifyCollectionChanged? _externalTools;
 
     // Constants that control window sizes
-    private const int WindowPositionOffsetY = 30;
-    private const int FloatingHorizontalBarHeight = 70;
-    private const int DefaultExpandedViewTop = 30;
-    private const int DefaultExpandedViewLeft = 100;
-    private const int RightSideGap = 10;
+    private const int _WindowPositionOffsetY = 30;
+    private const int _FloatingHorizontalBarHeight = 70;
+    private const int _DefaultExpandedViewTop = 30;
+    private const int _DefaultExpandedViewLeft = 100;
+    private const int _RightSideGap = 10;
 
-    private RECT monitorRect;
+    private RECT _monitorRect;
 
-    private RestoreState restoreState = new()
+    private RestoreState _restoreState = new()
     {
-        Top = DefaultExpandedViewTop,
-        Left = DefaultExpandedViewLeft,
+        Top = _DefaultExpandedViewTop,
+        Left = _DefaultExpandedViewLeft,
         BarOrientation = Orientation.Horizontal,
         IsLargePanelVisible = true,
     };
 
-    private const int UnsnapGap = 9;
-    private double dpiScale = 1.0;
+    private const int _UnsnapGap = 9;
+    private double _dpiScale = 1.0;
 
     internal HWND ThisHwnd { get; private set; }
 
@@ -72,12 +72,12 @@ public partial class BarWindowHorizontal : WindowEx
 
     public BarWindowHorizontal(BarWindowViewModel model)
     {
-        viewModel = model;
+        _viewModel = model;
 
         TheDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         InitializeComponent();
-        viewModel.PropertyChanged += ViewModel_PropertyChanged;
+        _viewModel.PropertyChanged += ViewModel_PropertyChanged;
 
         ExtendsContentIntoTitleBar = true;
         AppWindow.TitleBar.IconShowOptions = IconShowOptions.HideIconAndSystemMenu;
@@ -86,15 +86,15 @@ public partial class BarWindowHorizontal : WindowEx
         // we may try and set our window size before our main panel gets
         // loaded (and we call SetDefaultPosition)
         var settingSize = Settings.Default.ExpandedLargeSize;
-        restoreState.Height = settingSize.Height;
-        restoreState.Width = settingSize.Width;
+        _restoreState.Height = settingSize.Height;
+        _restoreState.Width = settingSize.Width;
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(BarWindowViewModel.ShowingExpandedContent))
         {
-            if (viewModel.ShowingExpandedContent)
+            if (_viewModel.ShowingExpandedContent)
             {
                 ExpandLargeContentPanel();
             }
@@ -109,9 +109,9 @@ public partial class BarWindowHorizontal : WindowEx
     {
         ThisHwnd = (HWND)WindowNative.GetWindowHandle(this);
 
-        settings.PropertyChanged += Settings_PropertyChanged;
+        _settings.PropertyChanged += Settings_PropertyChanged;
 
-        if (settings.IsClipboardMonitoringEnabled)
+        if (_settings.IsClipboardMonitoringEnabled)
         {
             ClipboardMonitor.Instance.Start(ThisHwnd);
         }
@@ -119,12 +119,12 @@ public partial class BarWindowHorizontal : WindowEx
         InitializeExternalTools();
 
         // Apply the user's chosen theme setting.
-        ThemeName t = ThemeName.Themes.First(t => t.Name == settings.CurrentTheme);
+        ThemeName t = ThemeName.Themes.First(t => t.Name == _settings.CurrentTheme);
         SetRequestedTheme(t.Theme);
 
         // Calculate the DPI scale.
         var dpiWindow = HwndExtensions.GetDpiForWindow(ThisHwnd);
-        dpiScale = dpiWindow / 96.0;
+        _dpiScale = dpiWindow / 96.0;
 
         SetDefaultPosition();
 
@@ -161,8 +161,8 @@ public partial class BarWindowHorizontal : WindowEx
 
         // We have to cast to INotifyCollectionChanged explicitly because the CollectionChanged
         // event in ReadOnlyObservableCollection is protected.
-        externalTools = ExternalToolsHelper.Instance.AllExternalTools;
-        externalTools.CollectionChanged += ExternalTools_CollectionChanged;
+        _externalTools = ExternalToolsHelper.Instance.AllExternalTools;
+        _externalTools.CollectionChanged += ExternalTools_CollectionChanged;
     }
 
     private void ExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -233,14 +233,14 @@ public partial class BarWindowHorizontal : WindowEx
         var menuItem = sender as MenuFlyoutItem;
         if (menuItem is not null)
         {
-            selectedExternalTool = (ExternalTool)menuItem.Tag;
-            if (selectedExternalTool.IsPinned)
+            _selectedExternalTool = (ExternalTool)menuItem.Tag;
+            if (_selectedExternalTool.IsPinned)
             {
-                PinUnpinMenuItem.Text = unpinMenuItemText;
+                PinUnpinMenuItem.Text = _unpinMenuItemText;
             }
             else
             {
-                PinUnpinMenuItem.Text = pinMenuItemText;
+                PinUnpinMenuItem.Text = _pinMenuItemText;
             }
 
             ToolContextMenu.ShowAt(menuItem, e.GetPosition(menuItem));
@@ -278,8 +278,8 @@ public partial class BarWindowHorizontal : WindowEx
             // bar, the dialog doesn't have enough space to render. So, we'll use MessageBox to display errors.
             PInvoke.MessageBox(
                 ThisHwnd,
-                string.Format(CultureInfo.CurrentCulture, errorMessageText, tool.Executable),
-                errorTitleText,
+                string.Format(CultureInfo.CurrentCulture, _errorMessageText, tool.Executable),
+                _errorTitleText,
                 MESSAGEBOX_STYLE.MB_ICONERROR);
         }
     }
@@ -288,14 +288,14 @@ public partial class BarWindowHorizontal : WindowEx
     {
         if (sender is Button clickedButton)
         {
-            selectedExternalTool = (ExternalTool)clickedButton.Tag;
-            if (selectedExternalTool.IsPinned)
+            _selectedExternalTool = (ExternalTool)clickedButton.Tag;
+            if (_selectedExternalTool.IsPinned)
             {
-                PinUnpinMenuItem.Text = unpinMenuItemText;
+                PinUnpinMenuItem.Text = _unpinMenuItemText;
             }
             else
             {
-                PinUnpinMenuItem.Text = pinMenuItemText;
+                PinUnpinMenuItem.Text = _pinMenuItemText;
             }
         }
     }
@@ -303,28 +303,28 @@ public partial class BarWindowHorizontal : WindowEx
     private void PinUnpinMenuItem_Click(object sender, RoutedEventArgs e)
     {
         // Pin or unpin the tool on the bar.
-        if (selectedExternalTool is not null)
+        if (_selectedExternalTool is not null)
         {
-            selectedExternalTool.IsPinned = !selectedExternalTool.IsPinned;
+            _selectedExternalTool.IsPinned = !_selectedExternalTool.IsPinned;
         }
     }
 
     private void UnregisterMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        if (selectedExternalTool is not null)
+        if (_selectedExternalTool is not null)
         {
-            ExternalToolsHelper.Instance.RemoveExternalTool(selectedExternalTool);
-            selectedExternalTool = null;
+            ExternalToolsHelper.Instance.RemoveExternalTool(_selectedExternalTool);
+            _selectedExternalTool = null;
         }
     }
 
     private void SetDefaultPosition()
     {
-        monitorRect = GetMonitorRectForWindow(ThisHwnd);
-        var screenWidth = monitorRect.right - monitorRect.left;
+        _monitorRect = GetMonitorRectForWindow(ThisHwnd);
+        var screenWidth = _monitorRect.right - _monitorRect.left;
         this.Move(
-            (int)(((screenWidth - Width) / 2) * dpiScale),
-            (int)(WindowPositionOffsetY * dpiScale));
+            (int)(((screenWidth - Width) / 2) * _dpiScale),
+            (int)(_WindowPositionOffsetY * _dpiScale));
 
         // Get the saved settings for the ExpandedView size. On first run, this will be
         // the default 0,0, so we'll set the size proportional to the monitor size.
@@ -332,20 +332,20 @@ public partial class BarWindowHorizontal : WindowEx
         var settingSize = Settings.Default.ExpandedLargeSize;
         if (settingSize.Width == 0)
         {
-            settingSize.Width = monitorRect.Width * 2 / 3;
+            settingSize.Width = _monitorRect.Width * 2 / 3;
         }
 
         if (settingSize.Height == 0)
         {
-            settingSize.Height = monitorRect.Height * 3 / 4;
+            settingSize.Height = _monitorRect.Height * 3 / 4;
         }
 
         Settings.Default.ExpandedLargeSize = settingSize;
         Settings.Default.Save();
 
         // Set the default restore state for the ExpandedView size to the (adjusted) settings size.
-        restoreState.Height = settingSize.Height;
-        restoreState.Width = settingSize.Width;
+        _restoreState.Height = settingSize.Height;
+        _restoreState.Width = settingSize.Width;
     }
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)
@@ -364,7 +364,7 @@ public partial class BarWindowHorizontal : WindowEx
     {
         if (e.PropertyName == nameof(Settings.IsClipboardMonitoringEnabled))
         {
-            if (settings.IsClipboardMonitoringEnabled)
+            if (_settings.IsClipboardMonitoringEnabled)
             {
                 ClipboardMonitor.Instance.Start(ThisHwnd);
             }
@@ -385,7 +385,7 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void CacheRestoreState()
     {
-        restoreState = new()
+        _restoreState = new()
         {
             Left = AppWindow.Position.X,
             Top = AppWindow.Position.Y,
@@ -407,30 +407,30 @@ public partial class BarWindowHorizontal : WindowEx
 
         // If they expand to ExpandedView and they're not snapped, we can use the
         // RestoreState size & position.
-        if (!viewModel.IsSnapped)
+        if (!_viewModel.IsSnapped)
         {
             this.MoveAndResize(
-                restoreState.Left, restoreState.Top, restoreState.Width, restoreState.Height);
+                _restoreState.Left, _restoreState.Top, _restoreState.Width, _restoreState.Height);
         }
         else
         {
             // Conversely if they're snapped, the position is determined by the snap,
             // and we potentially adjust the size to ensure it doesn't extend beyond the screen.
-            var availableWidth = monitorRect.Width - Math.Abs(AppWindow.Position.X) - RightSideGap;
-            if (availableWidth < restoreState.Width)
+            var availableWidth = _monitorRect.Width - Math.Abs(AppWindow.Position.X) - _RightSideGap;
+            if (availableWidth < _restoreState.Width)
             {
-                restoreState.Width = availableWidth;
+                _restoreState.Width = availableWidth;
             }
 
-            Width = restoreState.Width;
+            Width = _restoreState.Width;
 
-            var availableHeight = monitorRect.Height - Math.Abs(AppWindow.Position.Y);
-            if (availableHeight < restoreState.Height)
+            var availableHeight = _monitorRect.Height - Math.Abs(AppWindow.Position.Y);
+            if (availableHeight < _restoreState.Height)
             {
-                restoreState.Height = availableHeight;
+                _restoreState.Height = availableHeight;
             }
 
-            Height = restoreState.Height;
+            Height = _restoreState.Height;
         }
     }
 
@@ -439,18 +439,18 @@ public partial class BarWindowHorizontal : WindowEx
         // Make sure we cache the state before switching to collapsed bar.
         CacheRestoreState();
         LargeContentPanel.Visibility = Visibility.Collapsed;
-        MaxHeight = FloatingHorizontalBarHeight;
+        MaxHeight = _FloatingHorizontalBarHeight;
     }
 
     private void ProcessChooserButton_Click(object sender, RoutedEventArgs e)
     {
-        viewModel.ShowingExpandedContent = true;
+        _viewModel.ShowingExpandedContent = true;
         ExpandedViewControl.NavigateTo(typeof(ProcessListPageViewModel));
     }
 
     internal void NavigateTo(Type viewModelType)
     {
-        viewModel.ShowingExpandedContent = true;
+        _viewModel.ShowingExpandedContent = true;
         ExpandedViewControl.NavigateTo(viewModelType);
     }
 

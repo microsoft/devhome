@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
@@ -17,22 +18,22 @@ namespace DevHome.PI;
 
 public partial class BarWindow
 {
-    private readonly Settings settings = Settings.Default;
-    private readonly BarWindowHorizontal horizontalWindow;
-    private readonly BarWindowVertical verticalWindow;
-    private readonly BarWindowViewModel viewModel = new();
+    private readonly Settings _settings = Settings.Default;
+    private readonly BarWindowHorizontal _horizontalWindow;
+    private readonly BarWindowVertical _verticalWindow;
+    private readonly BarWindowViewModel _viewModel = new();
 
     internal HWND ThisHwnd
     {
         get
         {
-            if (horizontalWindow.Visible)
+            if (_horizontalWindow.Visible)
             {
-                return horizontalWindow.ThisHwnd;
+                return _horizontalWindow.ThisHwnd;
             }
             else
             {
-                return verticalWindow.ThisHwnd;
+                return _verticalWindow.ThisHwnd;
             }
         }
     }
@@ -41,8 +42,8 @@ public partial class BarWindow
 
     public void Close()
     {
-        horizontalWindow.Close();
-        verticalWindow.Close();
+        _horizontalWindow.Close();
+        _verticalWindow.Close();
 
         foreach (var window in OpenChildWindows)
         {
@@ -50,52 +51,61 @@ public partial class BarWindow
         }
     }
 
-    public Frame GetFrame() => horizontalWindow.GetFrame();
+    public Frame GetFrame() => _horizontalWindow.GetFrame();
 
     public IntPtr GetWindowHandle()
     {
-        if (horizontalWindow.Visible)
+        if (_horizontalWindow.Visible)
         {
-            return horizontalWindow.GetWindowHandle();
+            return DevHome.Common.Extensions.WindowExExtensions.GetWindowHandle(_horizontalWindow);
         }
         else
         {
-            return verticalWindow.GetWindowHandle();
+            return DevHome.Common.Extensions.WindowExExtensions.GetWindowHandle(_verticalWindow);
         }
     }
 
     internal void SetRequestedTheme(ElementTheme theme)
     {
-        horizontalWindow.SetRequestedTheme(theme);
-        verticalWindow.SetRequestedTheme(theme);
+        _horizontalWindow.SetRequestedTheme(theme);
+        _verticalWindow.SetRequestedTheme(theme);
     }
 
-    public void NavigateTo(Type viewModelType) => horizontalWindow.NavigateTo(viewModelType);
+    public void NavigateTo(Type viewModelType) => _horizontalWindow.NavigateTo(viewModelType);
 
     public BarWindow()
     {
-        horizontalWindow = new BarWindowHorizontal(viewModel);
-        verticalWindow = new BarWindowVertical(viewModel);
+        _horizontalWindow = new BarWindowHorizontal(_viewModel);
+        _verticalWindow = new BarWindowVertical(_viewModel);
 
-        horizontalWindow.Closed += Window_Closed;
-        verticalWindow.Closed += Window_Closed;
+        _horizontalWindow.Closed += Window_Closed;
+        _verticalWindow.Closed += Window_Closed;
 
-        viewModel.PropertyChanged += ViewModel_PropertyChanged;
-        settings.PropertyChanged += Settings_PropertyChanged;
+        _viewModel.PropertyChanged += ViewModel_PropertyChanged;
+        _settings.PropertyChanged += Settings_PropertyChanged;
 
-        if (settings.IsCpuUsageMonitoringEnabled)
+        if (_settings.IsCpuUsageMonitoringEnabled)
         {
             PerfCounters.Instance.Start();
         }
 
-        horizontalWindow.Show();
+        _horizontalWindow.Show();
+    }
+
+    private void Window_Closed(object sender, WindowEventArgs args)
+    {
+        // If we receive a window closed event, clean up the system
+        TargetAppData.Instance.ClearAppData();
+
+        var primaryWindow = Application.Current.GetService<PrimaryWindow>();
+        primaryWindow.ClearBarWindow();
     }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (string.Equals(e.PropertyName, nameof(Settings.IsCpuUsageMonitoringEnabled), StringComparison.Ordinal))
         {
-            if (settings.IsCpuUsageMonitoringEnabled)
+            if (_settings.IsCpuUsageMonitoringEnabled)
             {
                 PerfCounters.Instance.Start();
             }
@@ -116,15 +126,15 @@ public partial class BarWindow
 
     public void RotateBar()
     {
-        if (horizontalWindow.Visible)
+        if (_horizontalWindow.Visible)
         {
-            horizontalWindow.Hide();
-            verticalWindow.Show();
+            _horizontalWindow.Hide();
+            _verticalWindow.Show();
         }
         else
         {
-            verticalWindow.Hide();
-            horizontalWindow.Show();
+            _verticalWindow.Hide();
+            _horizontalWindow.Show();
         }
     }
 }

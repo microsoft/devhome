@@ -18,7 +18,7 @@
         <MicaBackdrop/>
     </Window.SystemBackdrop>
 
-    <Grid x:Name="MainPanel" Padding="0" Loaded="MainPanel_Loaded" Background="Transparent" SizeChanged="MainPanel_SizeChanged">
+    <Grid x:Name="MainPanel" Loaded="MainPanel_Loaded" SizeChanged="MainPanel_SizeChanged">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -38,8 +38,8 @@
                 <Button
                       x:Uid="SnapButton"
                       x:Name="SnapButton" Style="{StaticResource ChromeButton}" FontSize="11"
-                      Click="{x:Bind viewModel.PerformSnapCommand}" HorizontalAlignment="Left" IsEnabled="{x:Bind viewModel.IsSnappingEnabled, Mode=OneWay}">
-                    <TextBlock Text="{x:Bind viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
+                      Click="{x:Bind _viewModel.PerformSnapCommand}" HorizontalAlignment="Left" IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}">
+                    <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
                 </Button>
             </StackPanel>
         </Grid>
@@ -60,20 +60,20 @@
                 </Style>
             </StackPanel.Resources>
             
-            <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Click="{x:Bind viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Margin="0">
+            <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Click="{x:Bind _viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Margin="0">
                 <TextBlock Text="&#xecaa;" Margin="0"  />
             </controls:ProcessSelectionButton>
 
             <!-- Per App controls -->
-            <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind viewModel.ApplicationIcon, Mode=OneWay}" Margin="5" Height="20" Width="20" Visibility="{x:Bind viewModel.AppBarVisibility, Mode=OneWay}"/>
-            <TextBlock x:Uid="AppPID" Text="{x:Bind viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" Visibility="{x:Bind viewModel.AppBarVisibility, Mode=OneWay}"/>
-            <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" Visibility="{x:Bind viewModel.AppBarVisibility, Mode=OneWay}"/>
+            <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" Margin="5" Height="20" Width="20" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
+            <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
+            <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
 
             <!-- Per System controls -->
-            <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" HorizontalAlignment="Center" Click="{x:Bind viewModel.SwitchLayoutCommand}">
+            <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" HorizontalAlignment="Center" Click="{x:Bind _viewModel.SwitchLayoutCommand}">
                 <TextBlock Text="&#xe8b4;"/>
             </Button>
-            <Button x:Name="LargeContentButton" Click="{x:Bind viewModel.ShowBigWindowCommand}" HorizontalAlignment="Center">
+            <Button x:Name="LargeContentButton" Click="{x:Bind _viewModel.ShowBigWindowCommand}" HorizontalAlignment="Center">
                 <TextBlock Text="&#xe8a1;"/>
             </Button>
 
@@ -115,9 +115,9 @@
             </StackPanel>
 
             <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1">
-                <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="10" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="10" VerticalAlignment="Center" Margin="5"/>
             </StackPanel>
 
         <Border

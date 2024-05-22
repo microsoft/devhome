@@ -28,25 +28,25 @@ namespace DevHome.PI;
 
 public partial class BarWindowVertical : WindowEx
 {
-    private readonly Settings settings = Settings.Default;
-    private readonly string errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
-    private readonly string errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
-    private readonly BarWindowViewModel viewModel;
+    private readonly Settings _settings = Settings.Default;
+    private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
+    private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
+    private readonly BarWindowViewModel _viewModel;
 
-    private int cursorPosX; // = 0;
-    private int cursorPosY; // = 0;
-    private int appWindowPosX; // = 0;
-    private int appWindowPosY; // = 0;
+    private int _cursorPosX; // = 0;
+    private int _cursorPosY; // = 0;
+    private int _appWindowPosX; // = 0;
+    private int _appWindowPosY; // = 0;
     private bool isWindowMoving; // = false;
     private const int UnsnapGap = 9;
 
-    private readonly WINEVENTPROC winPositionEventDelegate;
-    private readonly WINEVENTPROC winFocusEventDelegate;
+    private readonly WINEVENTPROC _winPositionEventDelegate;
+    private readonly WINEVENTPROC _winFocusEventDelegate;
 
-    private Button? selectedExternalToolButton;
+    private Button? _selectedExternalToolButton;
 
-    private HWINEVENTHOOK positionEventHook;
-    private HWINEVENTHOOK focusEventHook;
+    private HWINEVENTHOOK _positionEventHook;
+    private HWINEVENTHOOK _focusEventHook;
 
     internal HWND ThisHwnd { get; private set; }
 
@@ -57,22 +57,22 @@ public partial class BarWindowVertical : WindowEx
 
     public BarWindowVertical(BarWindowViewModel model)
     {
-        viewModel = model;
+        _viewModel = model;
 
         // The main constructor is used in all cases, including when there's no target window.
         TheDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         InitializeComponent();
-        viewModel.PropertyChanged += ViewModel_PropertyChanged;
-        winPositionEventDelegate = new(WinPositionEventProc);
-        winFocusEventDelegate = new(WinFocusEventProc);
+        _viewModel.PropertyChanged += ViewModel_PropertyChanged;
+        _winPositionEventDelegate = new(WinPositionEventProc);
+        _winFocusEventDelegate = new(WinFocusEventProc);
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(BarWindowViewModel.IsSnapped))
         {
-            if (viewModel.IsSnapped)
+            if (_viewModel.IsSnapped)
             {
                 Snap();
             }
@@ -88,7 +88,7 @@ public partial class BarWindowVertical : WindowEx
         ThisHwnd = (HWND)WindowNative.GetWindowHandle(this);
 
         // Apply the user's chosen theme setting.
-        ThemeName t = ThemeName.Themes.First(t => t.Name == settings.CurrentTheme);
+        ThemeName t = ThemeName.Themes.First(t => t.Name == _settings.CurrentTheme);
         SetRequestedTheme(t.Theme);
 
         // Regardless of what is set in the XAML, our initial window width is too big. Setting this to 70 (same as the XAML file)
@@ -109,8 +109,8 @@ public partial class BarWindowVertical : WindowEx
                     // bar, the dialog doesn't have enough space to render. So, we'll use MessageBox to display errors.
                     PInvoke.MessageBox(
                         ThisHwnd,
-                        string.Format(CultureInfo.CurrentCulture, errorMessageText, tool.Executable),
-                        errorTitleText,
+                        string.Format(CultureInfo.CurrentCulture, _errorMessageText, tool.Executable),
+                        _errorTitleText,
                         MESSAGEBOX_STYLE.MB_ICONERROR);
                 }
             }
@@ -119,22 +119,22 @@ public partial class BarWindowVertical : WindowEx
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
-        if (positionEventHook != IntPtr.Zero)
+        if (_positionEventHook != IntPtr.Zero)
         {
-            PInvoke.UnhookWinEvent(positionEventHook);
-            positionEventHook = HWINEVENTHOOK.Null;
+            PInvoke.UnhookWinEvent(_positionEventHook);
+            _positionEventHook = HWINEVENTHOOK.Null;
         }
 
-        if (focusEventHook != HWINEVENTHOOK.Null)
+        if (_focusEventHook != HWINEVENTHOOK.Null)
         {
-            PInvoke.UnhookWinEvent(focusEventHook);
-            focusEventHook = HWINEVENTHOOK.Null;
+            PInvoke.UnhookWinEvent(_focusEventHook);
+            _focusEventHook = HWINEVENTHOOK.Null;
         }
     }
 
     private void ExternalToolButton_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
-        selectedExternalToolButton = (Button)sender;
+        _selectedExternalToolButton = (Button)sender;
     }
 
     private void UnPinMenuItem_Click(object sender, RoutedEventArgs e)
@@ -144,9 +144,9 @@ public partial class BarWindowVertical : WindowEx
 
     private void UnregisterMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        if (selectedExternalToolButton is not null)
+        if (_selectedExternalToolButton is not null)
         {
-            if (selectedExternalToolButton.Tag is ExternalTool tool)
+            if (_selectedExternalToolButton.Tag is ExternalTool tool)
             {
                 ExternalToolsHelper.Instance.RemoveExternalTool(tool);
             }
@@ -173,12 +173,12 @@ public partial class BarWindowVertical : WindowEx
         {
             if (eventType == PInvoke.EVENT_OBJECT_LOCATIONCHANGE)
             {
-                if (viewModel.IsSnapped)
+                if (_viewModel.IsSnapped)
                 {
                     // If the window has been maximized, un-snap the bar window and free-float it.
                     if (PInvoke.IsZoomed(TargetAppData.Instance.HWnd))
                     {
-                        viewModel.IsSnapped = false;
+                        _viewModel.IsSnapped = false;
                     }
                     else
                     {
@@ -204,7 +204,7 @@ public partial class BarWindowVertical : WindowEx
         // If we're snapped to a target window, and that window loses and then regains focus,
         // we need to bring our window to the front also, to be in-sync. Otherwise, we can
         // end up with the target in the foreground, but our window partially obscured.
-        if (hwnd == TargetAppData.Instance.HWnd && viewModel.IsSnapped)
+        if (hwnd == TargetAppData.Instance.HWnd && _viewModel.IsSnapped)
         {
             this.SetIsAlwaysOnTop(true);
             this.SetIsAlwaysOnTop(false);
@@ -214,11 +214,11 @@ public partial class BarWindowVertical : WindowEx
 
     private void Snap()
     {
-        Debug.Assert(positionEventHook == HWINEVENTHOOK.Null, "Hook should be cleared");
-        Debug.Assert(focusEventHook == HWINEVENTHOOK.Null, "Hook should be cleared");
+        Debug.Assert(_positionEventHook == HWINEVENTHOOK.Null, "Hook should be cleared");
+        Debug.Assert(_focusEventHook == HWINEVENTHOOK.Null, "Hook should be cleared");
 
-        positionEventHook = WatchWindowPositionEvents(winPositionEventDelegate, (uint)TargetAppData.Instance.ProcessId);
-        focusEventHook = WatchWindowFocusEvents(winFocusEventDelegate, (uint)TargetAppData.Instance.ProcessId);
+        _positionEventHook = WatchWindowPositionEvents(_winPositionEventDelegate, (uint)TargetAppData.Instance.ProcessId);
+        _focusEventHook = WatchWindowFocusEvents(_winFocusEventDelegate, (uint)TargetAppData.Instance.ProcessId);
 
         SnapToWindow();
     }
@@ -232,22 +232,22 @@ public partial class BarWindowVertical : WindowEx
             AppWindow.Size.Width,
             AppWindow.Size.Height);
 
-        if (positionEventHook != HWINEVENTHOOK.Null)
+        if (_positionEventHook != HWINEVENTHOOK.Null)
         {
-            PInvoke.UnhookWinEvent(positionEventHook);
-            positionEventHook = HWINEVENTHOOK.Null;
+            PInvoke.UnhookWinEvent(_positionEventHook);
+            _positionEventHook = HWINEVENTHOOK.Null;
         }
 
-        if (focusEventHook != HWINEVENTHOOK.Null)
+        if (_focusEventHook != HWINEVENTHOOK.Null)
         {
-            PInvoke.UnhookWinEvent(focusEventHook);
-            focusEventHook = HWINEVENTHOOK.Null;
+            PInvoke.UnhookWinEvent(_focusEventHook);
+            _focusEventHook = HWINEVENTHOOK.Null;
         }
     }
 
     private void SnapToWindow()
     {
-        Debug.Assert(viewModel.IsSnapped, "We're not snapped!");
+        Debug.Assert(_viewModel.IsSnapped, "We're not snapped!");
 
         WindowHelper.SnapToWindow(TargetAppData.Instance.HWnd, ThisHwnd, AppWindow.Size);
 
@@ -268,11 +268,11 @@ public partial class BarWindowVertical : WindowEx
         isWindowMoving = false;
 
         // If we're occupying the same space as the target window, and we're not in medium/large mode, snap to the app
-        if (!viewModel.IsSnapped && TargetAppData.Instance.HWnd != HWND.Null)
+        if (!_viewModel.IsSnapped && TargetAppData.Instance.HWnd != HWND.Null)
         {
             if (DoesWindow1CoverTheRightSideOfWindow2(ThisHwnd, TargetAppData.Instance.HWnd))
             {
-                viewModel.IsSnapped = true;
+                _viewModel.IsSnapped = true;
             }
         }
     }
@@ -283,18 +283,18 @@ public partial class BarWindowVertical : WindowEx
         if (properties.IsLeftButtonPressed)
         {
             // Moving the window causes it to unsnap
-            if (viewModel.IsSnapped)
+            if (_viewModel.IsSnapped)
             {
-                viewModel.IsSnapped = false;
+                _viewModel.IsSnapped = false;
             }
 
             isWindowMoving = true;
             ((UIElement)sender).CapturePointer(e.Pointer);
-            appWindowPosX = AppWindow.Position.X;
-            appWindowPosY = AppWindow.Position.Y;
+            _appWindowPosX = AppWindow.Position.X;
+            _appWindowPosY = AppWindow.Position.Y;
             PInvoke.GetCursorPos(out var pt);
-            cursorPosX = pt.X;
-            cursorPosY = pt.Y;
+            _cursorPosX = pt.X;
+            _cursorPosY = pt.Y;
         }
     }
 
@@ -307,7 +307,7 @@ public partial class BarWindowVertical : WindowEx
             {
                 PInvoke.GetCursorPos(out var pt);
                 AppWindow.Move(new Windows.Graphics.PointInt32(
-                    appWindowPosX + (pt.X - cursorPosX), appWindowPosY + (pt.Y - cursorPosY)));
+                    _appWindowPosX + (pt.X - _cursorPosX), _appWindowPosY + (pt.Y - _cursorPosY)));
             }
 
             e.Handled = true;

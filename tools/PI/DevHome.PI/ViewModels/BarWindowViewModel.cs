@@ -23,52 +23,52 @@ namespace DevHome.PI.ViewModels;
 
 public partial class BarWindowViewModel : ObservableObject
 {
-    private const string UnsnapButtonText = "\ue89f";
-    private const string SnapButtonText = "\ue8a0";
+    private const string _UnsnapButtonText = "\ue89f";
+    private const string _SnapButtonText = "\ue8a0";
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
-    private readonly ObservableCollection<Button> externalTools = [];
-
-    [ObservableProperty]
-    private string systemCpuUsage = string.Empty;
+    private readonly ObservableCollection<Button> _externalTools = [];
 
     [ObservableProperty]
-    private string systemRamUsage = string.Empty;
+    private string _systemCpuUsage = string.Empty;
 
     [ObservableProperty]
-    private string systemDiskUsage = string.Empty;
+    private string _systemRamUsage = string.Empty;
 
     [ObservableProperty]
-    private bool isSnappingEnabled = false;
+    private string _systemDiskUsage = string.Empty;
 
     [ObservableProperty]
-    private string currentSnapButtonText = SnapButtonText;
+    private bool _isSnappingEnabled = false;
 
     [ObservableProperty]
-    private string appCpuUsage = string.Empty;
+    private string _currentSnapButtonText = _SnapButtonText;
 
     [ObservableProperty]
-    private Visibility appBarVisibility = Visibility.Visible;
+    private string _appCpuUsage = string.Empty;
 
     [ObservableProperty]
-    private int applicationPid;
+    private Visibility _appBarVisibility = Visibility.Visible;
 
     [ObservableProperty]
-    private SoftwareBitmapSource? applicationIcon;
+    private int _applicationPid;
 
     [ObservableProperty]
-    private Orientation barOrientation = Orientation.Horizontal;
+    private SoftwareBitmapSource? _applicationIcon;
 
     [ObservableProperty]
-    private bool isSnapped;
+    private Orientation _barOrientation = Orientation.Horizontal;
 
     [ObservableProperty]
-    private bool showingExpandedContent;
+    private bool _isSnapped;
+
+    [ObservableProperty]
+    private bool _showingExpandedContent;
 
     public BarWindowViewModel()
     {
-        dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         IsSnappingEnabled = TargetAppData.Instance.HWnd != HWND.Null;
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
@@ -89,12 +89,12 @@ public partial class BarWindowViewModel : ObservableObject
             ApplicationIcon = TargetAppData.Instance.Icon;
         }
 
-        CurrentSnapButtonText = IsSnapped ? UnsnapButtonText : SnapButtonText;
+        CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
     }
 
     partial void OnIsSnappedChanged(bool value)
     {
-        CurrentSnapButtonText = IsSnapped ? UnsnapButtonText : SnapButtonText;
+        CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
     }
 
     partial void OnBarOrientationChanged(Orientation value)
@@ -178,7 +178,7 @@ public partial class BarWindowViewModel : ObservableObject
         {
             var process = TargetAppData.Instance.TargetProcess;
 
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 // The App status bar is only visibile if we're attached to a process
                 AppBarVisibility = process is null ? Visibility.Collapsed : Visibility.Visible;
@@ -193,7 +193,7 @@ public partial class BarWindowViewModel : ObservableObject
         {
             SoftwareBitmapSource? icon = TargetAppData.Instance?.Icon;
 
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 ApplicationIcon = icon;
             });
@@ -208,14 +208,14 @@ public partial class BarWindowViewModel : ObservableObject
     {
         if (e.PropertyName == nameof(PerfCounters.SystemCpuUsage))
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 SystemCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.SystemCpuUsage);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.SystemRamUsageInGB))
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 // Convert from bytes to GBs
                 SystemRamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabelGB", PerfCounters.Instance.SystemRamUsageInGB);
@@ -223,14 +223,14 @@ public partial class BarWindowViewModel : ObservableObject
         }
         else if (e.PropertyName == nameof(PerfCounters.SystemDiskUsage))
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", PerfCounters.Instance.SystemDiskUsage);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.CpuUsage))
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 AppCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.CpuUsage);
             });
