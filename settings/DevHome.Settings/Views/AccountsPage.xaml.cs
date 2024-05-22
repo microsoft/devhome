@@ -5,7 +5,6 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.Views;
@@ -20,7 +19,7 @@ using Serilog;
 
 namespace DevHome.Settings.Views;
 
-public sealed partial class AccountsPage : AutoFocusPage
+public sealed partial class AccountsPage : DevHomePage
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AccountsPage));
 

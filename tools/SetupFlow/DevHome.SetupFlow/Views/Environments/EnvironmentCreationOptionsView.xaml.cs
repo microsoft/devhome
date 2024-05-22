@@ -54,12 +54,18 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecip
 
         AddAdaptiveCardToUI(message.Response);
 
-        while (!ViewModel.IsAdaptiveCardSessionLoaded)
+        // Wait at most 10 seconds.
+        var maxCount = 20;
+        var currentCount = 0;
+        while (currentCount++ < maxCount && !ViewModel.IsAdaptiveCardSessionLoaded)
         {
             await Task.Delay(500);
         }
 
-        this.Focus(FocusState.Programmatic);
+        if (ViewModel.IsAdaptiveCardSessionLoaded)
+        {
+            this.Focus(FocusState.Programmatic);
+        }
     }
 
     /// <summary>

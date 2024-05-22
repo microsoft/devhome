@@ -1,8 +1,8 @@
-<models:AutoFocusPage
+<commonViews:DevHomePage
     x:Class="DevHome.Customization.Views.FileExplorerPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:models="using:DevHome.Common.Models"
+    xmlns:commonViews="using:DevHome.Common.Views"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:views="using:DevHome.Customization.Views"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
@@ -19,4 +19,4 @@
             <views:FileExplorerView />
         </ScrollView>
     </Grid>
-</models:AutoFocusPage>
+</commonViews:DevHomePage>

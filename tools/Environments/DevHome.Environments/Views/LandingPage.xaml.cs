@@ -54,14 +54,20 @@ public sealed partial class LandingPage : ToolPage
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        _ = ViewModel.LoadModelAsync(false);
+        await ViewModel.LoadModelAsync(false);
 
         // .ContinueWith throws a COMException.
-        while (!IsLoaded)
+        // Loop will break after 10 seconds.
+        var maxCount = 100;
+        var currentCount = 0;
+        while (currentCount++ < maxCount && !IsLoaded)
         {
             await Task.Delay(100);
         }
 
-        this.Focus(FocusState.Programmatic);
+        if (IsLoaded)
+        {
+            this.Focus(FocusState.Programmatic);
+        }
     }
 }

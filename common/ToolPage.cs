@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Common.Models;
+using DevHome.Common.Views;
 
 namespace DevHome.Common;
 
-public abstract class ToolPage : AutoFocusPage
+public abstract class ToolPage : DevHomePage
 {
     public abstract string ShortName { get; }
 }

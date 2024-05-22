@@ -71,8 +71,6 @@ public partial class DashboardView : ToolPage, IDisposable
 #if DEBUG
         Loaded += AddResetButton;
 #endif
-
-        Loaded += (s, e) => { this.Focus(FocusState.Programmatic); };
     }
 
     private async Task<bool> SubscribeToWidgetCatalogEventsAsync()

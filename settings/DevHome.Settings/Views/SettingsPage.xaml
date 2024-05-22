@@ -1,14 +1,14 @@
 <!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
-<models:AutoFocusPage
+<views:DevHomePage
     x:Class="DevHome.Settings.Views.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:viewmodels="using:DevHome.Settings.ViewModels"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
-    xmlns:models="using:DevHome.Common.Models"
+    xmlns:views="using:DevHome.Common.Views"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
@@ -28,4 +28,4 @@
             </ItemsRepeater>
         </Grid>
     </ScrollViewer>
-</models:AutoFocusPage>
+</views:DevHomePage>
