@@ -76,7 +76,7 @@ internal sealed class TelemetryReporter : IDisposable
                     if (FeatureState.IsExclusive(flag))
                     {
                         // First fire any events to stop the previous features telemetry.
-                        Debug.Assert(eventGenerator != null, "eventGenerator is null");
+                        // Debug.Assert(eventGenerator != null, "eventGenerator is null");
                         if (eventGenerator != null)
                         {
                             var eventArgs = new WindowEventGenerator.InteractiveUsageEventArgs(WindowEventGenerator.InteractiveUsageEventType.Stop);

@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
@@ -79,6 +78,13 @@ public partial class BarWindowHorizontal : WindowEx
 
         ExtendsContentIntoTitleBar = true;
         AppWindow.TitleBar.IconShowOptions = IconShowOptions.HideIconAndSystemMenu;
+
+        // Get the default window size. We grab this in the constructor, as
+        // we may try and set our window size before our main panel gets
+        // loaded (and we call SetDefaultPosition)
+        var settingSize = Settings.Default.ExpandedLargeSize;
+        restoreState.Height = settingSize.Height;
+        restoreState.Width = settingSize.Width;
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -205,10 +211,13 @@ public partial class BarWindowHorizontal : WindowEx
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
         ClipboardMonitor.Instance.Stop();
-        TargetAppData.Instance.ClearAppData();
 
-        var primaryWindow = Application.Current.GetService<PrimaryWindow>();
-        primaryWindow.ClearBarWindow();
+        if (LargeContentPanel is not null &&
+            LargeContentPanel.Visibility == Visibility.Visible &&
+            this.WindowState != WindowState.Maximized)
+        {
+            CacheRestoreState();
+        }
     }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -322,6 +331,7 @@ public partial class BarWindowHorizontal : WindowEx
 
     internal void NavigateTo(Type viewModelType)
     {
+        viewModel.ShowingExpandedContent = true;
         ExpandedViewControl.NavigateTo(viewModelType);
     }
 

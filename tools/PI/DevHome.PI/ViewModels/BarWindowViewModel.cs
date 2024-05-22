@@ -157,7 +157,7 @@ public partial class BarWindowViewModel : ObservableObject
     [RelayCommand]
     public void ProcessChooserCommand()
     {
-        // Beed to be in a horizontal layout
+        // Need to be in a horizontal layout
         BarOrientation = Orientation.Horizontal;
 
         // And show expanded content

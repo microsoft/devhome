@@ -119,8 +119,6 @@ public partial class BarWindowVertical : WindowEx
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
-        TargetAppData.Instance.ClearAppData();
-
         if (positionEventHook != IntPtr.Zero)
         {
             PInvoke.UnhookWinEvent(positionEventHook);

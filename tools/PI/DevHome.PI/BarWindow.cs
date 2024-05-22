@@ -14,7 +14,7 @@ using WinUIEx;
 
 namespace DevHome.PI;
 
-public class BarWindow
+public partial class BarWindow
 {
     private readonly Settings settings = Settings.Default;
     private readonly BarWindowHorizontal horizontalWindow;
@@ -70,6 +70,9 @@ public class BarWindow
     {
         horizontalWindow = new BarWindowHorizontal(viewModel);
         verticalWindow = new BarWindowVertical(viewModel);
+
+        horizontalWindow.Closed += Window_Closed;
+        verticalWindow.Closed += Window_Closed;
 
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
         settings.PropertyChanged += Settings_PropertyChanged;

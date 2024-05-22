@@ -238,8 +238,6 @@ public static class Program
                         {
                             barWindow.NavigateTo(pageType);
                         }
-
-                        // barWindow.ShouldExpandLargeWindow = true;
                     }
                 });
             }
