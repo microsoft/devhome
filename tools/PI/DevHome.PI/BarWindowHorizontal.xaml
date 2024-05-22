@@ -77,11 +77,14 @@
                 <TextBlock Text="&#xe8a1;"/>
             </Button>
 
-            <!-- TODO When we add a tool, we should add it to the ExternalToolsMenu. -->
-            <Button x:Name="ExternalToolsButton" x:Uid="ExternalToolsButton" HorizontalAlignment="Center">
+            <Button
+                x:Name="ManageExternalToolsButton"
+                x:Uid="ManageExternalToolsButton"
+                HorizontalAlignment="Center">
                 <Button.ContextFlyout>
                     <MenuFlyout x:Name="ExternalToolsMenu">
-                        <!-- Menuitems for each external tool will be added below. -->
+                        <!-- We can't databind to MenuFlyout, so we'll add a MenuFlyoutItem
+                        for each external tool in codebehind here. -->
                     </MenuFlyout>
                 </Button.ContextFlyout>
                 <TextBlock Text="&#xEC7A;"/>

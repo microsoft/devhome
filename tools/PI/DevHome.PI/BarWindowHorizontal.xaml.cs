@@ -70,7 +70,6 @@ public partial class BarWindowHorizontal : WindowEx
     {
         viewModel = model;
 
-        // The main constructor is used in all cases, including when there's no target window.
         TheDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         InitializeComponent();
@@ -138,22 +137,13 @@ public partial class BarWindowHorizontal : WindowEx
 
         var transform = ChromeButtonPanel.TransformToVisual(null);
         var bounds = transform.TransformBounds(new Rect(0, 0, ChromeButtonPanel.ActualWidth, ChromeButtonPanel.ActualHeight));
-        Windows.Graphics.RectInt32 chromeButtonsRect = GetRect(bounds, scaleAdjustment);
+        Windows.Graphics.RectInt32 chromeButtonsRect = WindowHelper.GetRect(bounds, scaleAdjustment);
 
         var rectArray = new Windows.Graphics.RectInt32[] { chromeButtonsRect };
 
         InputNonClientPointerSource nonClientInputSrc =
             InputNonClientPointerSource.GetForWindowId(AppWindow.Id);
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
-    }
-
-    protected Windows.Graphics.RectInt32 GetRect(Rect bounds, double scale)
-    {
-        return new Windows.Graphics.RectInt32(
-            _X: (int)Math.Round(bounds.X * scale),
-            _Y: (int)Math.Round(bounds.Y * scale),
-            _Width: (int)Math.Round(bounds.Width * scale),
-            _Height: (int)Math.Round(bounds.Height * scale));
     }
 
     private void SetDefaultPosition()
