@@ -17,5 +17,27 @@
         <ScrollView Grid.Row="2" VerticalAlignment="Top">
             <views:FileExplorerView />
         </ScrollView>
+        <StackPanel x:Name="TrackRepository" Visibility="Collapsed">
+            <TextBlock Text="Enhance a Repository"/>
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,20">
+                <TextBox x:Name="RootPathTextBox"
+                  x:Uid="rootPath"
+                  Header="Enter the root folder path:" PlaceholderText="Path"
+                  Width="300" HorizontalAlignment="Left"/>
+
+                <Button Content="Add" Click="AddButton_Click" Margin="10, 27, 0, 0"/>
+                <InfoBar x:Name="RootPathErrorBar"
+                        Title="Error"
+                        Message="The root path provided is incorrect or is a UNC path. Please check for invalid characters and if the drive exists on the machine"
+                        IsOpen="False"
+                        Severity="Error">
+                </InfoBar>
+            </StackPanel>
+            <StackPanel x:Name="DisplayTrackRepository" Visibility="Collapsed">
+                <TextBlock Text="Git" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}"/>
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.TrackedRepositories}"
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Page>

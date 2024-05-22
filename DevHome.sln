@@ -150,6 +150,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileExplorerGitIntegration.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.FileExplorerSourceControlIntegration", "tools\Customization\DevHome.FileExplorerSourceControlIntegration\DevHome.FileExplorerSourceControlIntegration.csproj", "{1237EEB8-F063-45E5-BD7C-534591C38464}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevHome.FileExplorerSourceControlIntegrationUnitTest", "tools\Customization\DevHome.FileExplorerSourceControlIntegrationUnitTest\DevHome.FileExplorerSourceControlIntegrationUnitTest.csproj", "{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -742,6 +744,18 @@ Global
 		{1237EEB8-F063-45E5-BD7C-534591C38464}.Release|x64.Build.0 = Release|x64
 		{1237EEB8-F063-45E5-BD7C-534591C38464}.Release|x86.ActiveCfg = Release|x86
 		{1237EEB8-F063-45E5-BD7C-534591C38464}.Release|x86.Build.0 = Release|x86
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}.Debug|arm64.ActiveCfg = Debug|ARM64
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}.Debug|arm64.Build.0 = Debug|ARM64
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}.Debug|x64.ActiveCfg = Debug|x64
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}.Debug|x64.Build.0 = Debug|x64
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}.Debug|x86.ActiveCfg = Debug|x86
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}.Debug|x86.Build.0 = Debug|x86
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}.Release|arm64.ActiveCfg = Release|ARM64
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}.Release|arm64.Build.0 = Release|ARM64
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}.Release|x64.ActiveCfg = Release|x64
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}.Release|x64.Build.0 = Release|x64
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}.Release|x86.ActiveCfg = Release|x86
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -800,6 +814,7 @@ Global
 		{58B09B74-90D2-4333-A3C2-F13C31376416} = {D42E6F59-E107-4F74-AEB9-BA0DC8A7ABD9}
 		{0E31B8E2-D36B-46A1-B0B4-498301159CE1} = {D42E6F59-E107-4F74-AEB9-BA0DC8A7ABD9}
 		{1237EEB8-F063-45E5-BD7C-534591C38464} = {623998FD-B0A6-4980-95D5-A5072301CA10}
+		{53759D96-E4DA-4478-B0E9-9FFBAA12ECA9} = {623998FD-B0A6-4980-95D5-A5072301CA10}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {030B5641-B206-46BB-BF71-36FF009088FA}
