@@ -19,6 +19,7 @@ using DevHome.PI.ViewModels;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
@@ -36,6 +37,8 @@ public partial class BarWindow : WindowEx, INotifyPropertyChanged
     private readonly Settings settings = Settings.Default;
     private readonly string errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
     private readonly string errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
+    private readonly string pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
+    private readonly string unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemText");
     private readonly BarWindowViewModel viewModel = new();
 
     // Constants that control window sizes
@@ -138,12 +141,10 @@ public partial class BarWindow : WindowEx, INotifyPropertyChanged
     private readonly WINEVENTPROC winPositionEventDelegate;
     private readonly WINEVENTPROC winFocusEventDelegate;
 
-    private Button? selectedExternalToolButton;
-    private MenuFlyoutItem? selectedExternalToolMenuItem;
-
     private HWINEVENTHOOK positionEventHook;
     private HWINEVENTHOOK focusEventHook;
 
+    private ExternalTool? selectedExternalTool;
     private INotifyCollectionChanged? externalTools;
 
     internal static HWND ThisHwnd { get; private set; }
@@ -234,14 +235,15 @@ public partial class BarWindow : WindowEx, INotifyPropertyChanged
     {
         ExternalToolsHelper.Instance.Init();
 
-        foreach (var item in ExternalToolsHelper.Instance.ExternalTools)
+        ExternalToolsMenu.Items.Clear();
+        foreach (var item in ExternalToolsHelper.Instance.AllExternalTools)
         {
             CreateMenuItemFromTool(item);
         }
 
         // We have to cast to INotifyCollectionChanged explicitly because the CollectionChanged
         // event in ReadOnlyObservableCollection is protected.
-        externalTools = ExternalToolsHelper.Instance.ExternalTools;
+        externalTools = ExternalToolsHelper.Instance.AllExternalTools;
         externalTools.CollectionChanged += ExternalTools_CollectionChanged;
     }
 
@@ -281,7 +283,7 @@ public partial class BarWindow : WindowEx, INotifyPropertyChanged
             Icon = item.MenuIcon,
         };
         menuItem.Click += ExternalToolMenuItem_Click;
-        menuItem.RightTapped += MenuItem_RightTapped;
+        menuItem.RightTapped += ExternalToolMenuItem_RightTapped;
         ExternalToolsMenu.Items.Add(menuItem);
 
         // You can't databind to MenuFlyoutItem, and the ExternalTool icon image is generated asynchronously,
@@ -292,7 +294,7 @@ public partial class BarWindow : WindowEx, INotifyPropertyChanged
 
     private void ExternalToolItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (sender is ExternalTool item && e.PropertyName == nameof(ExternalTool.MenuIcon))
+        if (sender is ExternalTool item && string.Equals(e.PropertyName, nameof(ExternalTool.MenuIcon), StringComparison.Ordinal))
         {
             var menuItem = (MenuFlyoutItem?)ExternalToolsMenu.Items.FirstOrDefault(i => ((ExternalTool)i.Tag).ID == item.ID);
             if (menuItem is not null)
@@ -308,12 +310,21 @@ public partial class BarWindow : WindowEx, INotifyPropertyChanged
         settingsTool.Show();
     }
 
-    private void MenuItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
+    private void ExternalToolMenuItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
         var menuItem = sender as MenuFlyoutItem;
         if (menuItem is not null)
         {
-            selectedExternalToolMenuItem = menuItem;
+            selectedExternalTool = (ExternalTool)menuItem.Tag;
+            if (selectedExternalTool.IsPinned)
+            {
+                PinUnpinMenuItem.Text = unpinMenuItemText;
+            }
+            else
+            {
+                PinUnpinMenuItem.Text = pinMenuItemText;
+            }
+
             ToolContextMenu.ShowAt(menuItem, e.GetPosition(menuItem));
         }
     }
@@ -357,36 +368,35 @@ public partial class BarWindow : WindowEx, INotifyPropertyChanged
 
     private void ExternalToolButton_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
-        selectedExternalToolButton = (Button)sender;
+        if (sender is Button clickedButton)
+        {
+            selectedExternalTool = (ExternalTool)clickedButton.Tag;
+            if (selectedExternalTool.IsPinned)
+            {
+                PinUnpinMenuItem.Text = unpinMenuItemText;
+            }
+            else
+            {
+                PinUnpinMenuItem.Text = pinMenuItemText;
+            }
+        }
     }
 
-    private void UnPinMenuItem_Click(object sender, RoutedEventArgs e)
+    private void PinUnpinMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        // TODO Unpin the tool from the bar, but don't remove it from the collection,
-        // so it stays registered, and it stays in the ExternalTools menu.
-        if (selectedExternalToolButton is not null)
+        // Pin or unpin the tool on the bar.
+        if (selectedExternalTool is not null)
         {
-        }
-        else if (selectedExternalToolMenuItem is not null)
-        {
+            selectedExternalTool.IsPinned = !selectedExternalTool.IsPinned;
         }
     }
 
     private void UnregisterMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        if (selectedExternalToolButton is not null)
+        if (selectedExternalTool is not null)
         {
-            if (selectedExternalToolButton.Tag is ExternalTool tool)
-            {
-                ExternalToolsHelper.Instance.RemoveExternalTool(tool);
-            }
-        }
-        else if (selectedExternalToolMenuItem is not null)
-        {
-            if (selectedExternalToolMenuItem.Tag is ExternalTool tool)
-            {
-                ExternalToolsHelper.Instance.RemoveExternalTool(tool);
-            }
+            ExternalToolsHelper.Instance.RemoveExternalTool(selectedExternalTool);
+            selectedExternalTool = null;
         }
     }
 
