@@ -41,7 +41,7 @@ public sealed partial class PrimaryWindow : WindowEx
         else
         {
             // Activate is unreliable so use SetForegroundWindow
-            PInvoke.SetForegroundWindow((HWND)DBarWindow.GetWindowHandle());
+            PInvoke.SetForegroundWindow((HWND)DBarWindow.CurrentWindowHandle);
         }
     }
 

@@ -23,7 +23,7 @@ public partial class BarWindow
     private readonly BarWindowVertical _verticalWindow;
     private readonly BarWindowViewModel _viewModel = new();
 
-    internal HWND ThisHwnd
+    internal HWND CurrentHwnd
     {
         get
         {
@@ -53,15 +53,18 @@ public partial class BarWindow
 
     public Frame GetFrame() => _horizontalWindow.GetFrame();
 
-    public IntPtr GetWindowHandle()
+    public IntPtr CurrentWindowHandle
     {
-        if (_horizontalWindow.Visible)
+        get
         {
-            return DevHome.Common.Extensions.WindowExExtensions.GetWindowHandle(_horizontalWindow);
-        }
-        else
-        {
-            return DevHome.Common.Extensions.WindowExExtensions.GetWindowHandle(_verticalWindow);
+            if (_horizontalWindow.Visible)
+            {
+                return DevHome.Common.Extensions.WindowExExtensions.GetWindowHandle(_horizontalWindow);
+            }
+            else
+            {
+                return DevHome.Common.Extensions.WindowExExtensions.GetWindowHandle(_verticalWindow);
+            }
         }
     }
 

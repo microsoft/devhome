@@ -44,7 +44,7 @@ public sealed partial class AddToolControl : UserControl
                     nMaxFile = 255,
 
                     // TODO - This should be the Settings window, not the bar window
-                    hwndOwner = barWindow?.ThisHwnd ?? Windows.Win32.Foundation.HWND.Null,
+                    hwndOwner = barWindow?.CurrentHwnd ?? Windows.Win32.Foundation.HWND.Null,
                 };
 
                 if (PInvoke.GetOpenFileName(ref openfile))
