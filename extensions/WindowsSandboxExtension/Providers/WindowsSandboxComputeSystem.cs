@@ -51,7 +51,11 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
 
     public string SupplementalDisplayName => string.Empty;
 
-    public ComputeSystemOperations SupportedOperations => ComputeSystemOperations.Terminate;
+    public ComputeSystemOperations SupportedOperations => State switch
+    {
+        ComputeSystemState.Running => ComputeSystemOperations.Terminate,
+        _ => ComputeSystemOperations.None,
+    };
 
     public IDeveloperId? AssociatedDeveloperId => null;
 
@@ -101,33 +105,30 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
         {
             try
             {
-                lock (_windowsSandboxStartLock)
+                // Windows Sandbox is not running.
+                if (_windowsSandboxExeProcess == null || _windowsSandboxExeProcess.HasExited)
                 {
-                    // Windows Sandbox is not running.
-                    if (_windowsSandboxExeProcess == null || _windowsSandboxExeProcess.HasExited)
-                    {
-                        State = ComputeSystemState.Starting;
+                    State = ComputeSystemState.Starting;
 
-                        var system32Path = Environment.GetFolderPath(Environment.SpecialFolder.System);
-                        var windowsSandboxExePath = Path.Combine(system32Path, Constants.WindowsSandboxExe);
+                    var system32Path = Environment.GetFolderPath(Environment.SpecialFolder.System);
+                    var windowsSandboxExePath = Path.Combine(system32Path, Constants.WindowsSandboxExe);
 
-                        _windowsSandboxExeProcess = new();
-                        _windowsSandboxExeProcess.StartInfo.FileName = windowsSandboxExePath;
-                        _windowsSandboxExeProcess.EnableRaisingEvents = true;
-                        _windowsSandboxExeProcess.Exited += WindowsSandboxProcessExited;
+                    _windowsSandboxExeProcess = new();
+                    _windowsSandboxExeProcess.StartInfo.FileName = windowsSandboxExePath;
+                    _windowsSandboxExeProcess.EnableRaisingEvents = true;
+                    _windowsSandboxExeProcess.Exited += WindowsSandboxProcessExited;
 
-                        State = ComputeSystemState.Running;
-                        TraceLogging.StartingWindowsSandbox();
+                    State = ComputeSystemState.Running;
+                    TraceLogging.StartingWindowsSandbox();
 
-                        _windowsSandboxExeProcess.Start();
+                    _windowsSandboxExeProcess.Start();
 
-                        PInvoke.SetForegroundWindow((HWND)_windowsSandboxExeProcess.MainWindowHandle);
-                    }
-
-                    BringWindowsSandboxClientToForeground();
-
-                    return new ComputeSystemOperationResult();
+                    PInvoke.SetForegroundWindow((HWND)_windowsSandboxExeProcess.MainWindowHandle);
                 }
+
+                BringWindowsSandboxClientToForeground();
+
+                return new ComputeSystemOperationResult();
             }
             catch (Exception ex)
             {
@@ -151,14 +152,14 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
         _windowsSandboxExeProcess = null;
     }
 
-    private Process? WindowsSandboxClientProcess()
+    private Process? GetWindowsSandboxClientProcess()
     {
         return Process.GetProcessesByName("WindowsSandboxClient").FirstOrDefault();
     }
 
     private void BringWindowsSandboxClientToForeground()
     {
-        var clientProcess = WindowsSandboxClientProcess();
+        var clientProcess = GetWindowsSandboxClientProcess();
         var windowHandle = clientProcess?.MainWindowHandle ?? IntPtr.Zero;
 
         PInvoke.SetForegroundWindow((HWND)windowHandle);
@@ -170,16 +171,16 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
         {
             try
             {
-                lock (_windowsSandboxStartLock)
+                if (_windowsSandboxExeProcess == null || _windowsSandboxExeProcess.HasExited)
                 {
-                    if (_windowsSandboxExeProcess != null)
-                    {
-                        _windowsSandboxExeProcess.CloseMainWindow();
-                        WindowsSandboxClientProcess()?.CloseMainWindow();
-                    }
-
+                    State = ComputeSystemState.Stopped;
                     return new ComputeSystemOperationResult();
                 }
+
+                GetWindowsSandboxClientProcess()?.Kill();
+                _windowsSandboxExeProcess.Kill();
+
+                return new ComputeSystemOperationResult();
             }
             catch (Exception ex)
             {
