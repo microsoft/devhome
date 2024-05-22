@@ -9,11 +9,15 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Devices.Display;
 using Windows.Devices.Enumeration;
 using Windows.Graphics;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
@@ -277,29 +281,73 @@ public class WindowHelper
         }
     }
 
-    public static async Task<SoftwareBitmapSource> GetWinUI3BitmapSourceFromGdiBitmap(System.Drawing.Bitmap bmp)
+    public static async Task<SoftwareBitmapSource> GetWinUI3BitmapSourceFromGdiBitmap(Bitmap bmp)
     {
-        // get pixels as an array of bytes
+        var softwareBitmap = GetSoftwareBitmapFromGdiBitmap(bmp);
+        var source = new SoftwareBitmapSource();
+        await source.SetBitmapAsync(softwareBitmap);
+        return source;
+    }
+
+    public static SoftwareBitmap? GetSoftwareBitmapFromExecutable(string executable)
+    {
+        SoftwareBitmap? softwareBitmap = null;
+        var toolIcon = Icon.ExtractAssociatedIcon(executable);
+
+        // Fall back to Windows default app icon.
+        toolIcon ??= Icon.FromHandle(LoadDefaultAppIcon());
+
+        if (toolIcon is not null)
+        {
+            softwareBitmap = GetSoftwareBitmapFromGdiBitmap(toolIcon.ToBitmap());
+        }
+
+        return softwareBitmap;
+    }
+
+    public static SoftwareBitmap GetSoftwareBitmapFromGdiBitmap(Bitmap bmp)
+    {
+        // Get pixels as an array of bytes.
         var data = bmp.LockBits(
-            new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
+            new Rectangle(0, 0, bmp.Width, bmp.Height),
             System.Drawing.Imaging.ImageLockMode.ReadOnly,
             bmp.PixelFormat);
         var bytes = new byte[data.Stride * data.Height];
         Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
         bmp.UnlockBits(data);
 
-        // get WinRT SoftwareBitmap
-        var softwareBitmap = new Windows.Graphics.Imaging.SoftwareBitmap(
-            Windows.Graphics.Imaging.BitmapPixelFormat.Bgra8,
+        // Get WinRT SoftwareBitmap.
+        var softwareBitmap = new SoftwareBitmap(
+            BitmapPixelFormat.Bgra8,
             bmp.Width,
             bmp.Height,
-            Windows.Graphics.Imaging.BitmapAlphaMode.Premultiplied);
+            BitmapAlphaMode.Premultiplied);
         softwareBitmap.CopyFromBuffer(bytes.AsBuffer());
 
-        // build WinUI3 SoftwareBitmapSource
-        var source = new SoftwareBitmapSource();
-        await source.SetBitmapAsync(softwareBitmap);
-        return source;
+        return softwareBitmap;
+    }
+
+    public static async Task<SoftwareBitmapSource> GetSoftwareBitmapSourceFromSoftwareBitmap(SoftwareBitmap softwareBitmap)
+    {
+        var softwareBitmapSource = new SoftwareBitmapSource();
+        await softwareBitmapSource.SetBitmapAsync(softwareBitmap);
+        return softwareBitmapSource;
+    }
+
+    public static async Task<Uri> SaveSoftwareBitmapToTempFile(SoftwareBitmap softwareBitmap)
+    {
+        var tempFolder = ApplicationData.Current.TemporaryFolder;
+        var tempFile = await tempFolder.CreateFileAsync(
+            Guid.NewGuid().ToString() + ".png", CreationCollisionOption.ReplaceExisting);
+
+        using (var stream = await tempFile.OpenAsync(FileAccessMode.ReadWrite))
+        {
+            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+            encoder.SetSoftwareBitmap(softwareBitmap);
+            await encoder.FlushAsync();
+        }
+
+        return new Uri(tempFile.Path);
     }
 
     internal static unsafe uint GetProcessIdFromWindow(HWND hWnd)

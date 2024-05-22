@@ -10,7 +10,6 @@ using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -131,7 +130,7 @@ public partial class FolderPickerViewModel : ObservableObject
         {
             _log.Information("Opening folder picker to select clone directory");
             using var folderPicker = new WindowOpenFolderDialog();
-            var locationToCloneTo = await folderPicker.ShowAsync(Application.Current.GetService<WindowEx>());
+            var locationToCloneTo = await folderPicker.ShowAsync(Application.Current.GetService<Window>());
             if (locationToCloneTo != null && locationToCloneTo.Path.Length > 0)
             {
                 _log.Information($"Selected '{locationToCloneTo.Path}' as location to clone to");

@@ -5,8 +5,11 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
+using Windows.Graphics.Imaging;
 using Windows.Win32.Foundation;
 using static DevHome.PI.Helpers.WindowHelper;
 
@@ -20,7 +23,7 @@ public enum ExternalToolArgType
 }
 
 // ExternalTool represents an imported tool
-public class ExternalTool : INotifyPropertyChanged
+public partial class ExternalTool : ObservableObject
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalTool));
 
@@ -43,38 +46,42 @@ public class ExternalTool : INotifyPropertyChanged
         get; private set;
     }
 
-    [JsonIgnore]
+    [ObservableProperty]
+    private bool _isPinned;
+
+    // Note the additional "property:" syntax to ensure the JsonIgnore is propagated to the generated property.
+    [ObservableProperty]
+    [property: JsonIgnore]
     private SoftwareBitmapSource? _toolIcon;
 
+    [ObservableProperty]
+    [property: JsonIgnore]
+    private BitmapIcon? _menuIcon;
+
     [JsonIgnore]
-    public SoftwareBitmapSource? ToolIcon
-    {
-        get => _toolIcon;
-        private set
-        {
-            _toolIcon = value;
-            OnPropertyChanged(nameof(ToolIcon));
-        }
-    }
+    private SoftwareBitmap? _softwareBitmap;
 
     public ExternalTool(
         string name,
         string executable,
         ExternalToolArgType argtype,
         string argprefix = "",
-        string otherArgs = "")
+        string otherArgs = "",
+        bool isPinned = false)
     {
         Name = name;
         Executable = executable;
         ArgType = argtype;
         ArgPrefix = argprefix;
         OtherArgs = otherArgs;
+        IsPinned = isPinned;
 
         ID = Guid.NewGuid().ToString();
 
         if (!string.IsNullOrEmpty(executable))
         {
             GetToolImage();
+            GetMenuIcon();
         }
     }
 
@@ -82,19 +89,36 @@ public class ExternalTool : INotifyPropertyChanged
     {
         try
         {
-            var toolIcon = System.Drawing.Icon.ExtractAssociatedIcon(Executable);
-
-            // Fall back to Windows default app icon.
-            toolIcon ??= System.Drawing.Icon.FromHandle(LoadDefaultAppIcon());
-
-            if (toolIcon is not null)
+            _softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
+            if (_softwareBitmap is not null)
             {
-                ToolIcon = await WindowHelper.GetWinUI3BitmapSourceFromGdiBitmap(toolIcon.ToBitmap());
+                ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmap(_softwareBitmap);
             }
         }
         catch (Exception ex)
         {
-            _log.Debug(ex, "Unable to fetch tool image.");
+            _log.Error(ex, "Failed to get tool image");
+        }
+    }
+
+    private async void GetMenuIcon()
+    {
+        try
+        {
+            _softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
+            if (_softwareBitmap is not null)
+            {
+                var bitmapUri = await SaveSoftwareBitmapToTempFile(_softwareBitmap);
+                MenuIcon = new BitmapIcon
+                {
+                    UriSource = bitmapUri,
+                    ShowAsMonochrome = false,
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Failed to get menu icon");
         }
     }
 
@@ -136,12 +160,5 @@ public class ExternalTool : INotifyPropertyChanged
             _log.Error(ex, "Tool launched failed");
             return null;
         }
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

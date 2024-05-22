@@ -9,14 +9,11 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Services;
 using DevHome.Telemetry;
-using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Serilog;
 using Windows.Foundation.Diagnostics;
-using Windows.UI;
-using WinUIEx;
 
 namespace DevHome.QuietBackgroundProcesses.UI.ViewModels;
 
@@ -28,7 +25,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
 
     private readonly TimeSpan _zero = new(0, 0, 0);
     private readonly TimeSpan _oneSecond = new(0, 0, 1);
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
     private TimeSpan _sessionDuration;
     private QuietBackgroundProcessesSession? _session;
     private ProcessPerformanceTable? _table;
@@ -89,10 +86,10 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
 
     public QuietBackgroundProcessesViewModel(
         IExperimentationService experimentationService,
-        WindowEx windowEx)
+        DispatcherQueue dispatcherQueue)
     {
         _experimentationService = experimentationService;
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
         _countdownTimer = string.Empty;
         _sessionStateText = GetString("QuietBackgroundProcesses_Description");
 
@@ -149,7 +146,7 @@ public partial class QuietBackgroundProcessesViewModel : ObservableObject
             }
 
             // Update the UI thread
-            await _windowEx.DispatcherQueue.EnqueueAsync(() =>
+            await _dispatcherQueue.EnqueueAsync(() =>
             {
                 IsFeaturePresent = isFeaturePresent;
                 IsAnalyticSummaryAvailable = isAvailable;

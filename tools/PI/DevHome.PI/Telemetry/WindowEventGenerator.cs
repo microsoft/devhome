@@ -2,18 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Diagnostics;
 using System.Threading;
 using DevHome.Common.Extensions;
-using DevHome.PI;
 using DevHome.PI.Helpers;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using Windows.Foundation;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using WinUIEx;
 
 namespace DevHome.Telemetry;
 

@@ -17,7 +17,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.Settings.Views;
 
@@ -174,7 +173,7 @@ public sealed partial class AccountsPage : AutoFocusPage
         }
         else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
         {
-            var windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
+            var windowHandle = Application.Current.GetService<Window>().GetWindowHandle();
             var windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
             try
             {

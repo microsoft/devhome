@@ -21,14 +21,13 @@ using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Telemetry;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
-using Windows.System;
-using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
 
@@ -48,7 +47,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private readonly SemaphoreSlim _pinnedWidgetsLock = new(1, 1);
 
-    private static WindowEx _windowEx;
+    private static DispatcherQueue _dispatcherQueue;
     private readonly ILocalSettingsService _localSettingsService;
     private bool _disposedValue;
 
@@ -66,7 +65,7 @@ public partial class DashboardView : ToolPage, IDisposable
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
         PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
 
-        _windowEx = Application.Current.GetService<WindowEx>();
+        _dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
         _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
 
 #if DEBUG
@@ -460,11 +459,11 @@ public partial class DashboardView : ToolPage, IDisposable
     {
         if (Common.Helpers.RuntimeHelper.IsOnWindows11)
         {
-            await Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
+            await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
         }
         else
         {
-            await Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
+            await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
         }
     }
 
@@ -550,7 +549,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private async Task ShowCreateWidgetErrorMessage()
     {
-        var mainWindow = Application.Current.GetService<WindowEx>();
+        var mainWindow = Application.Current.GetService<Window>();
         var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
         await mainWindow.ShowErrorMessageDialogAsync(
             title: string.Empty,
@@ -583,7 +582,7 @@ public partial class DashboardView : ToolPage, IDisposable
                     new ReportPinnedWidgetEvent(comSafeWidgetDefinition.ProviderDefinitionId, widgetDefinitionId));
 
                 var wvm = _widgetViewModelFactory(widget, size, comSafeWidgetDefinition);
-                _windowEx.DispatcherQueue.TryEnqueue(() =>
+                _dispatcherQueue.TryEnqueue(() =>
                 {
                     try
                     {
@@ -660,7 +659,7 @@ public partial class DashboardView : ToolPage, IDisposable
             // If we're no longer allowed to have multiple instances of this widget, delete all but the first.
             if (++matchingWidgetsFound > 1 && comSafeNewDefinition.AllowMultiple == false && oldDef.AllowMultiple == true)
             {
-                _windowEx.DispatcherQueue.TryEnqueue(async () =>
+                _dispatcherQueue.TryEnqueue(async () =>
                 {
                     _log.Information($"No longer allowed to have multiple of widget {updatedDefinitionId}");
                     _log.Information($"Delete widget {widgetToUpdate.Widget.Id}");
@@ -700,7 +699,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
         var definitionId = args.DefinitionId;
-        _windowEx.DispatcherQueue.TryEnqueue(async () =>
+        _dispatcherQueue.TryEnqueue(async () =>
         {
             _log.Information($"WidgetDefinitionDeleted {definitionId}");
             foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
