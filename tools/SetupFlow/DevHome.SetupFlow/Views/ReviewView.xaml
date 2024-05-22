@@ -62,7 +62,7 @@
             <StackPanel>
                 <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           IsExpanded="true"
-                          MinHeight="64" CornerRadius="4" Padding="24,0,24,7"
+                          MinHeight="64" CornerRadius="{ThemeResource ControlCornerRadius}" Padding="24,0,24,7"
                           AutomationProperties.Name="{x:Bind ViewModel.ReviewPageExpanderDescription, Mode=OneWay}">
                     <Expander.Header>
                         <Grid>
