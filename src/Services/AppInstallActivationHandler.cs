@@ -69,16 +69,15 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
 
         if (parameters != null)
         {
-            var searchQuery = parameters.Get(ActivationQueryType.Search.ToString());
-            var wingetURIs = parameters.Get(ActivationQueryType.WingetURIs.ToString());
+            foreach (ActivationQueryType queryType in Enum.GetValues(typeof(ActivationQueryType)))
+            {
+                var query = parameters.Get(queryType.ToString());
 
-            if (!string.IsNullOrEmpty(searchQuery))
-            {
-                await AppActivationFlowAsync(searchQuery, ActivationQueryType.Search);
-            }
-            else if (!string.IsNullOrEmpty(wingetURIs))
-            {
-                await AppActivationFlowAsync(wingetURIs, ActivationQueryType.WingetURIs);
+                if (!string.IsNullOrEmpty(query))
+                {
+                    await AppActivationFlowAsync(query, queryType);
+                    return; // Exit after handling the first non-null query
+                }
             }
         }
     }
@@ -95,7 +94,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
             return;
         }
 
-        var identifiers = ParseIdentifiers(query, queryType);
+        var identifiers = SplitAndTrimIdentifiers(query);
         if (identifiers.Length == 0)
         {
             _log.Warning("No valid identifiers provided in the query.");
@@ -106,23 +105,6 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
         _navigationService.NavigateTo(typeof(SetupFlowViewModel).FullName!);
         _setupFlowViewModel.StartAppManagementFlow(queryType == ActivationQueryType.Search ? identifiers[0] : null);
         await HandleAppSelectionAsync(identifiers, queryType);
-    }
-
-    private string[] ParseIdentifiers(string query, ActivationQueryType queryType)
-    {
-        switch (queryType)
-        {
-            case ActivationQueryType.Search:
-                var terms = SplitAndTrimIdentifiers(query);
-                return terms.Length > 0 ? [terms[0]] : [];
-
-            case ActivationQueryType.WingetURIs:
-                return SplitAndTrimIdentifiers(query);
-
-            default:
-                _log.Warning($"Unsupported activation query type: {queryType}");
-                return [];
-        }
     }
 
     private string[] SplitAndTrimIdentifiers(string query)
