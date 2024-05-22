@@ -69,8 +69,8 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
 
         if (parameters != null)
         {
-            var searchQuery = parameters.Get("search");
-            var wingetURIs = parameters.Get("URIs");
+            var searchQuery = parameters.Get(ActivationQueryType.Search.ToString());
+            var wingetURIs = parameters.Get(ActivationQueryType.WingetURIs.ToString());
 
             if (!string.IsNullOrEmpty(searchQuery))
             {

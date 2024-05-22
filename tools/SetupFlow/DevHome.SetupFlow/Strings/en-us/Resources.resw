@@ -138,7 +138,7 @@
     <comment>Description for Add packages page</comment>
   </data>
   <data name="AppInstallActivationTitle" xml:space="preserve">
-    <value>App Install Activation</value>
+    <value>Configuration in progress</value>
     <comment>Title displayed to the user when they attempt to activate the app through a URI but the machine configuration flow is currently in progress.</comment>
   </data>
   <data name="AppListBackupBanner.Title" xml:space="preserve">
