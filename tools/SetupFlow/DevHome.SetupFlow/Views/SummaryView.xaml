@@ -31,7 +31,7 @@
                     <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible" />
                     <converters:DoubleToVisibilityConverter x:Key="ZeroCountWillNotSpanColumnsConverter" GreaterThan="0" FalseValue="0" TrueValue="*"/>
                     <ControlTemplate x:Key="LinksTemplate">
-                        <StackPanel>
+                        <StackPanel XYFocusKeyboardNavigation="Enabled">
                             <StackPanel.Resources>
                                 <Style TargetType="HyperlinkButton" BasedOn="{StaticResource TextBlockButtonStyle}"/>
                             </StackPanel.Resources>
