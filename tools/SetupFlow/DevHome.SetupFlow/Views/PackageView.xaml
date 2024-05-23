@@ -73,7 +73,8 @@
                         <!-- Select button -->
                         <Button
                             Grid.Column="1"
-                            AutomationProperties.Name="{Binding ButtonAutomationName}"
+                            ToolTipService.ToolTip="{Binding ActionButtonDescription}"
+                            AutomationProperties.Name="{Binding ActionButtonDescription}"
                             Command="{Binding ToggleSelectionCommand}"
                             HorizontalAlignment="Right"
                             Padding="5">
