@@ -139,7 +139,8 @@
                         <commonCustomControls:CardHeader
                             HeaderCaption="{x:Bind ProviderDisplayName, Mode=OneWay}"
                             HeaderIcon="{x:Bind HeaderImage, Mode=OneWay}"
-                            ActionControlTemplate="{StaticResource ThreeDotsButton}" />
+                            ActionControlTemplate="{StaticResource ThreeDotsButton}"
+                            OperationsVisibility="{x:Bind ShouldShowDotOperations, Mode=OneWay}"/>
                     </Grid>
                     <!-- Card Body : Name, thumbnail, 'Launch' button -->
                     <Grid Grid.Row="1">

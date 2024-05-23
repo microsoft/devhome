@@ -237,16 +237,7 @@ public class ComputeSystemCache
         _ = await GetStateAsync();
         var supportedOperations = SupportedOperations?.Value ?? ComputeSystemOperations.None;
 
-        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToStartMenu))
-        {
-            _ = await GetIsPinnedToStartMenuAsync();
-        }
-
-        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToTaskbar))
-        {
-           _ = await GetIsPinnedToTaskbarAsync();
-        }
-
+        var s2 = DateTime.Now;
         _ = await GetComputeSystemThumbnailAsync(string.Empty);
         _ = await GetComputeSystemPropertiesAsync(string.Empty);
     }
