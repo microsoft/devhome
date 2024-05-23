@@ -14,6 +14,13 @@ public class UtilitiesLaunchEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
+    public enum Phase
+    {
+        Start,
+        Error,
+        Complete,
+    }
+
     public string UtilityName
     {
         get;
@@ -24,10 +31,22 @@ public class UtilitiesLaunchEvent : EventBase
         get;
     }
 
-    public UtilitiesLaunchEvent(string utilityName, bool launchedAsAdmin)
+    public Phase LaunchPhase
+    {
+        get;
+    }
+
+    public string ErrorString
+    {
+        get;
+    }
+
+    public UtilitiesLaunchEvent(string utilityName, bool launchedAsAdmin, Phase phase, string errorString = "")
     {
         UtilityName = utilityName;
         LaunchedAsAdmin = launchedAsAdmin;
+        LaunchPhase = phase;
+        ErrorString = errorString;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
