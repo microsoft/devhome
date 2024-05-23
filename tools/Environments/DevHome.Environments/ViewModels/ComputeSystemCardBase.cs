@@ -42,6 +42,10 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
     [ObservableProperty]
     private bool _shouldShowLaunchOperation;
 
+    /// <summary>
+    /// This string can, and should, be in a resource file.  But can't because this string used in a
+    /// data template.
+    /// </summary>
     [ObservableProperty]
     private string _moreOptionsButtonName;
 
