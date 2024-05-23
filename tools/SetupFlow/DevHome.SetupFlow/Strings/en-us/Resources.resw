@@ -2003,4 +2003,8 @@
     <value>Error: {0}</value>
     <comment>Locked={"{0}"} Error message with additional details in {0} shown when we failed to generate the project.</comment>
   </data>
+  <data name="VersionComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Version</value>
+    <comment>Name for the version combo box</comment>
+  </data>
 </root>

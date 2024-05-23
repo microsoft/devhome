@@ -81,6 +81,7 @@
                 </controls:PackageDetailsSettingsCard.HeaderIcon>
                 <StackPanel Orientation="Horizontal" Spacing="10">
                     <ComboBox
+                        AutomationProperties.Name="VersionComboBox"
                         Visibility="{Binding ShowVersionList}"
                         BorderThickness="0"
                         FontSize="{ThemeResource CaptionTextBlockFontSize}"

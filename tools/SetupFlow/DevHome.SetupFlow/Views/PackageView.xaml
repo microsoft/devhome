@@ -103,6 +103,7 @@
 
                         <!-- Package version list -->
                         <ComboBox
+                            AutomationProperties.Name="VersionComboBox"
                             Grid.Row="1"
                             Visibility="{Binding ShowVersionList}"
                             BorderThickness="0"
