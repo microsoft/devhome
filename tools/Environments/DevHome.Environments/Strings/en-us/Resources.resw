@@ -351,4 +351,8 @@
     <value>Go to extensions library</value>
     <comment>Text for when the environment page in Dev Home is empty and the user has no extensions installed that support environments</comment>
   </data>
+  <data name="MoreOptionsButtonName" xml:space="preserve">
+    <value>More Options</value>
+    <comment>The text narrator should say for the ... button</comment>
+  </data>
 </root>
