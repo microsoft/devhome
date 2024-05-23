@@ -183,7 +183,7 @@
                     </Grid>
 
                     <!-- Next steps section -->
-                    <ContentControl Grid.Column="1" Template="{ThemeResource LinksTemplate}" />
+                    <ContentControl Grid.Column="1" IsTabStop="False" Template="{ThemeResource LinksTemplate}" />
                 </Grid>
 
                 <!-- Target setup results -->
@@ -340,7 +340,7 @@
                                 </ListView.ItemTemplate>
                             </ListView>
                         </Grid>
-                        <ContentControl Grid.Row="2" Template="{ThemeResource LinksTemplate}" />
+                        <ContentControl Grid.Row="2" IsTabStop="False" Template="{ThemeResource LinksTemplate}" />
                     </Grid>
 
                     <!-- Displays the repos cloned and apps downloaded -->
@@ -586,7 +586,7 @@
                                 </ListView.ItemTemplate>
                             </ListView>
                         </Grid>
-                        <ContentControl Grid.Row="2" Template="{ThemeResource LinksTemplate}" />
+                        <ContentControl Grid.Row="2" IsTabStop="False" Template="{ThemeResource LinksTemplate}" />
                     </Grid>
 
                     <!-- Displays the repos cloned and apps downloaded -->
