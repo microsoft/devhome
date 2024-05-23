@@ -712,9 +712,10 @@
                                                         Tag="{Binding ElementName=ViewAllButton}"
                                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                         Text="{x:Bind InstallationNotes}"/>
-                                                    <HyperlinkButton
+                                                    <Button
                                                         Name="ViewAllButton"
                                                         Visibility="Collapsed"
+                                                        Padding="0,5,0,6"
                                                         Click="ViewAllButton_Click"
                                                         Style="{ThemeResource TextBlockButtonStyle}"
                                                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ViewAll"
