@@ -546,7 +546,7 @@
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_QuickstartPlayground.Description" xml:space="preserve">
-    <value>[Experimental] Use natural language and AI to set up a new devcontainer-based programming environment</value>
+    <value>[Experimental] Use natural language and AI to set up a new devcontainer-based programming environment.</value>
     <comment>Body text description for a card than when clicked takes the user to a flow for creating a devcontainer environment for their project idea</comment>
   </data>
   <data name="MainPage_QuickstartPlayground.Header" xml:space="preserve">
@@ -1793,7 +1793,7 @@
     <comment>Header for a card that when clicked takes the user to a multi-step flow for creating an environment</comment>
   </data>
   <data name="MainPageCreateEnvironment.Description" xml:space="preserve">
-    <value>Create a local or cloud environment</value>
+    <value>Create a local or cloud environment.</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for creating an environment</comment>
   </data>
   <data name="SelectEnvironmentPage.Description" xml:space="preserve">

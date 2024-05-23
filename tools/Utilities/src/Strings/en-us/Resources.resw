@@ -139,7 +139,7 @@
     <comment>Utilities</comment>
   </data>
   <data name="ProjectIronsidesDesc" xml:space="preserve">
-    <value>An application for gaining deeper insights into your applications</value>
+    <value>An application for gaining deeper insights into your applications.</value>
   </data>
   <data name="ProjectIronsidesTitle" xml:space="preserve">
     <value>Project Ironsides</value>
