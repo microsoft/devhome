@@ -673,7 +673,7 @@
                                                     <TextBlock Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{x:Bind PackageFullDescription}" />
                                                 </controls:PackageDetailsSettingsCard.Description>
                                                 <controls:PackageDetailsSettingsCard.HeaderIcon>
-                                                    <ImageIcon Source="{x:Bind Icon}"/>
+                                                    <ImageIcon AutomationProperties.Name="{x:Bind PackageTitle}" Source="{x:Bind Icon}"/>
                                                 </controls:PackageDetailsSettingsCard.HeaderIcon>
                                             </controls:PackageDetailsSettingsCard>
                                         </DataTemplate>

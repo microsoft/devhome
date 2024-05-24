@@ -77,7 +77,7 @@
                     </StackPanel>
                 </controls:PackageDetailsSettingsCard.Description>
                 <controls:PackageDetailsSettingsCard.HeaderIcon>
-                    <ImageIcon Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
+                    <ImageIcon AutomationProperties.Name="{Binding PackageTitle}" Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
                 </controls:PackageDetailsSettingsCard.HeaderIcon>
                 <StackPanel Orientation="Horizontal" Spacing="10">
                     <ComboBox

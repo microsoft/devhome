@@ -68,7 +68,7 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- Package image -->
-                        <ImageIcon Name="Image" Width="24" VerticalAlignment="Center" Source="{Binding Icon}"/>
+                        <ImageIcon AutomationProperties.Name="{Binding PackageTitle}" Name="Image" Width="24" VerticalAlignment="Center" Source="{Binding Icon}"/>
 
                         <!-- Select button -->
                         <Button
