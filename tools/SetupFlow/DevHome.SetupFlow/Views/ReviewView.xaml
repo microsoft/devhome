@@ -77,16 +77,18 @@
                                 <Button Command="{x:Bind ViewModel.DownloadConfigurationCommand}"
                                         x:Uid="Review_GenerateConfigurationFileButton"/>
                                 <!-- Info icon -->
-                                <TextBlock Text="&#xE946;"
-                                           FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                           VerticalAlignment="Center">
-                                    <ToolTipService.ToolTip>
-                                        <ToolTip>
-                                            <TextBlock TextWrapping="WrapWholeWords"
-                                                       x:Uid="Review_DownloadFileTooltip"/>
-                                        </ToolTip>
-                                    </ToolTipService.ToolTip>
-                                </TextBlock>
+                                <Button Style="{ThemeResource AlternateCloseButtonStyle}"
+                                        x:Name="GenerateConfigInfoButton"
+                                        PointerEntered="GenerateConfigInfoButton_PointerEntered"
+                                        Click="GenerateConfigInfoButton_Click">
+                                    <TextBlock Text="&#xE946;"
+                                               FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                               VerticalAlignment="Center"/>
+                                </Button>
+                                <TeachingTip x:Name="GenerateConfigInfoTeachingTip"
+                                             x:Uid="Review_DownloadFileTooltip"
+                                             Target="{x:Bind GenerateConfigInfoButton}"
+                                             IsLightDismissEnabled="True"/>
                             </StackPanel>
                         </Grid>
                     </Expander.Header>

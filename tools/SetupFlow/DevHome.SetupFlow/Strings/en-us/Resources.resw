@@ -657,7 +657,7 @@
     <value>Generate Configuration file</value>
     <comment>Text for a generating configuration file button</comment>
   </data>
-  <data name="Review_DownloadFileTooltip.Text" xml:space="preserve">
+  <data name="Review_DownloadFileTooltip.Subtitle" xml:space="preserve">
     <value>Generate a WinGet Configuration file (.winget) to repeat this set up in the future or share it with others.</value>
     <comment>{Locked="WinGet",".winget"}Tooltip text about the generated configuration file</comment>
   </data>
