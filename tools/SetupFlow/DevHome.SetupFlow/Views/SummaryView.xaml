@@ -695,7 +695,7 @@
                                 <ListView SelectionMode="None" ItemsSource="{x:Bind ViewModel.AppsDownloadedInstallationNotes}">
                                     <ListView.ItemTemplate>
                                         <DataTemplate x:DataType="viewModels:PackageViewModel">
-                                            <Grid ColumnSpacing="12" Margin="0,0,0,4" CornerRadius="8" Padding="18,20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                                            <Grid AutomationProperties.Name="{x:Bind PackageTitle}" ColumnSpacing="12" Margin="0,0,0,4" CornerRadius="8" Padding="18,20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="auto" />
                                                     <ColumnDefinition Width="*" />
