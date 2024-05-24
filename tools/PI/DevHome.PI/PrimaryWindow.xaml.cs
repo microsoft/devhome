@@ -41,7 +41,7 @@ public sealed partial class PrimaryWindow : WindowEx
         else
         {
             // Activate is unreliable so use SetForegroundWindow
-            PInvoke.SetForegroundWindow((HWND)DBarWindow.GetWindowHandle());
+            PInvoke.SetForegroundWindow((HWND)DBarWindow.CurrentWindowHandle);
         }
     }
 
@@ -90,23 +90,9 @@ public sealed partial class PrimaryWindow : WindowEx
                 return;
             }
 
-            if (DBarWindow == null)
-            {
-                DBarWindow = new(process, hWnd);
-                DBarWindow.Closed += (s, e) => ClearBarWindow();
-            }
-            else
-            {
-                TargetAppData.Instance.SetNewAppData(process, hWnd);
-            }
+            TargetAppData.Instance.SetNewAppData(process, hWnd);
         }
-        else
-        {
-            // There's no foreground window. Start with the full window, open to the process list.
-            if (DBarWindow == null)
-            {
-                DBarWindow = new();
-            }
-        }
+
+        DBarWindow ??= new();
     }
 }

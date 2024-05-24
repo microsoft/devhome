@@ -154,6 +154,7 @@ internal sealed class Telemetry : ITelemetry
                 innerMessage,
                 innerStackTrace = innerStackTrace.ToString(),
                 message = this.ReplaceSensitiveStrings(e.Message),
+                PartA_PrivTags = PartA_PrivTags.ProductAndServicePerformance,
             },
             relatedActivityId,
             isError: true);
@@ -174,6 +175,7 @@ internal sealed class Telemetry : ITelemetry
             {
                 eventName,
                 timeTakenMilliseconds,
+                PartA_PrivTags = PartA_PrivTags.ProductAndServicePerformance,
             },
             relatedActivityId,
             isError: false);
