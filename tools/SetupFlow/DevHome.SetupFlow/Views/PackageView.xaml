@@ -104,7 +104,7 @@
 
                         <!-- Package version list -->
                         <ComboBox
-                            AutomationProperties.Name="VersionComboBox"
+                            x:Uid="VersionComboBox"
                             Grid.Row="1"
                             Visibility="{Binding ShowVersionList}"
                             BorderThickness="0"

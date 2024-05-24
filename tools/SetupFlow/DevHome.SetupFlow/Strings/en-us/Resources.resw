@@ -2007,4 +2007,8 @@
     <value>Version</value>
     <comment>Name for the version combo box</comment>
   </data>
+  <data name="VersionComboBox.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Version</value>
+    <comment>Name for the version combo box</comment>
+  </data>
 </root>
