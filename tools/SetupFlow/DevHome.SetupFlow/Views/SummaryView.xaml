@@ -660,14 +660,9 @@
                                             <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
                                         </ItemsPanelTemplate>
                                     </GridView.ItemsPanel>
-                                    <GridView.ItemContainerStyle>
-                                        <Style TargetType="GridViewItem">
-                                            <Setter Property="IsTabStop" Value="False" />
-                                        </Style>
-                                    </GridView.ItemContainerStyle>
                                     <GridView.ItemTemplate>
                                         <DataTemplate x:DataType="viewModels:PackageViewModel">
-                                            <controls:PackageDetailsSettingsCard IsTabStop="True" Width="250" Padding="5">
+                                            <controls:PackageDetailsSettingsCard AutomationProperties.Name="{x:Bind PackageTitle}" Width="250" Padding="5">
                                                 <ToolTipService.ToolTip>
                                                     <controls:PackageDetailsTooltip Package="{x:Bind}" />
                                                 </ToolTipService.ToolTip>
