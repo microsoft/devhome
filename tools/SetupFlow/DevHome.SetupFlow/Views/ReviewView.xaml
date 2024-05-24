@@ -61,7 +61,6 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                          AutomationProperties.Name="{x:Bind ReviewExpanderTitle.Text, Mode=OneWay}"
                           IsExpanded="true"
                           MinHeight="64" CornerRadius="{ThemeResource ControlCornerRadius}" Padding="24,0,24,7"
                           AutomationProperties.Name="{x:Bind ViewModel.ReviewPageExpanderDescription, Mode=OneWay}">
@@ -73,7 +72,6 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock VerticalAlignment="Center"
-                                       x:Name="ReviewExpanderTitle"
                                        Style="{StaticResource BodyStrongTextBlockStyle}" 
                                        Text="{x:Bind ViewModel.ReviewPageExpanderDescription, Mode=OneWay}" />
                             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" Visibility="{x:Bind ViewModel.ShouldShowGenerateConfigurationFile}">
