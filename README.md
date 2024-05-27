@@ -18,6 +18,10 @@
 
 ## ⚙️ Machine Configuration
 
+The [machine configuration](https://learn.microsoft.com/windows/dev-home/setup#machine-configuration) tool utilizes the Dev Home GitHub Extension, but isn't required to clone and install apps. The app installation tool is powered by winget.
+
+**Popular apps**
+
 The machine configuration tool provides a list of popular apps when selecting applications to install. This is currently a hard-coded list of applications that have been popular with developers on Windows. Popularity was determined by high levels of installation and usage. As this is a moment in time, we are not accepting submissions for this list. We're looking to improve the experience with [Suggested Apps](https://github.com/microsoft/devhome/issues/375) so the list can be optimized for developers.
 
 ## 🧰 Dev Home Extensions
@@ -68,7 +72,7 @@ winget install --id Microsoft.DevHome -e
 
 ## 🛣️ Roadmap
 
-For info on the WinUI release schedule and high level plans please see the [Dev Home Roadmap](docs/roadmap.md).
+For info on the application release cadence we're planning please see the [Dev Home Roadmap](docs/roadmap.md).
 
 ## 📢 Contributing to Dev Home
 
