@@ -5,37 +5,45 @@
     Dev Home
 </h1>
 <p align="center">
-  <a href="https://apps.microsoft.com/detail/9P3JFPWWDZRC?launch=true&mode=mini">
+  <a href="https://aka.ms/devhome">
     <img src="assets/storeBadge.png" width="200" /></a>
 </p>
 
-Dev Home is a new experience from Microsoft aiming to give developers more power on Windows.
-
-https://learn.microsoft.com/en-us/windows/dev-home
+[Dev Home](https://learn.microsoft.com/en-us/windows/dev-home) is a new experience from Microsoft aiming to give developers more power on Windows.
 
 - **Customizable widgets:** Use the dashboard to monitor workflows, track your dev projects, coding tasks, Azure DevOps queries, GitHub issues, pull requests, available SSH connections, and system CPU, GPU, Memory, and Network performance.
-- **Machine Configuration:** Set up your development environment on a new device or onboard a new dev project.
-- **Extensible:** Set up widgets that display developer-specific information. Create and share your own custom-built extensions.
-- **Dev Drive:** Create a Dev Drive to store your project files and Git repositories.
+- **Environment for developers:** Set up your development environment on a new device or onboard a new dev project.
+- **Extensibility:** Set up widgets that display developer-specific information. Create and share your own custom-built extensions.
+- **Maximize productivity:** Create a Dev Drive to store your project files and Git repositories.
 
-## Dev Home Extensions
+## ⚙️ Machine Configuration
+
+The machine configuration tool provides a list of popular apps when selecting applications to install. This is currently a hard-coded list of applications that have been popular with developers on Windows. Popularity was determined by high levels of installation and usage. As this is a moment in time, we are not accepting submissions for this list. We're looking to improve the experience with [Suggested Apps](https://github.com/microsoft/devhome/issues/375) so the list can be optimized for developers.
+
+## 🧰 Dev Home Extensions
 
 Here're some popular extensions:
 
 - [Dev Home GitHub Extension](https://github.com/microsoft/devhomegithubextension)
 - [Dev Home Azure Extension](https://github.com/microsoft/devhomeazureextension)
 
-## Getting started with Dev Home
+## 🚀 Getting started with Dev Home
 
-> [!NOTE]
-> Dev Home requires Windows 11 21H2 (build 22000) or later.
+Your Windows has to be Windows 11.
 
-If you are running Windows 11 23H2 (build 22621.2361) or later, you can install and run Dev Home just by finding it in the Start menu.
+Windows|Availability
+---|---
+Windows 10 or earlier|❌ Unavailable
+Windows 11 21H2 (OS build 22000)|✅ Available on Microsoft Store
+Windows 11 22H1 (OS build 22621)|✅ Available on Microsoft Store
+Windows 11 23H2 (OS build 22631) or higher|✅ Pre-installed
 
-Otherwise, you can install [from the Microsoft Store](https://aka.ms/devhome).
-This allows you to always be on the latest version when we release new builds with automatic upgrades. Note that widgets may not work on older versions of Windows.
+The full documentation can be found in [Microsoft Learn](https://learn.microsoft.com/windows/apps/desktop):
 
-The full documentation can be found in [Microsoft Learn](https://learn.microsoft.com/windows/apps/desktop/):
+- [Set up Development Environment](https://learn.microsoft.com/windows/dev-home/setup)
+- [Set up Development Utilities](https://learn.microsoft.com/windows/dev-home/utilities)
+- [Install Dev Home extensions](https://learn.microsoft.com/windows/dev-home/extensions)
+- [Customize Windows setup](https://learn.microsoft.com/windows/dev-home/windows-customization)
 
 ### Installing via GitHub
 
@@ -49,29 +57,26 @@ For users who are unable to install Dev Home from the Microsoft Store, released 
 winget install --id Microsoft.DevHome -e
 ```
 
+### Requirements to develop Dev Home
+
+- Windows 11 21H2 (OS build 22000) or higher
+- [Enable Developer Mode on Windows](https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development)
+- Visual Studio 2022
+- Windows SDK
+- Windows App SDK
+- .NET 8
+
 ## 🛣️ Roadmap
 
 For info on the WinUI release schedule and high level plans please see the [Dev Home Roadmap](docs/roadmap.md).
 
-## Dev Home overview
-
-Please take a few minutes to review the overview below before diving into the code:
-
-### Dashboard
-
-The Dev Home dashboard displays Windows widgets. These widgets are built using the Windows widget platform, which relies on Adaptive Cards.
-
-### Machine configuration
-
-The machine configuration tool utilizes the Dev Home GitHub Extension, but isn't required to clone and install apps. The app installation tool is powered by winget.
-
-## Contributing to Dev Home
+## 📢 Contributing to Dev Home
 
 We are excited to work alongside you, our amazing community, to build and enhance Dev Home!
 
 ***BEFORE you start work on a feature/fix,*** please read & follow our [Contributor's Guide](CONTRIBUTING.md) to help avoid any wasted or duplicate effort.
 
-## Contact
+## 📇 Contact
 
 The easiest way to communicate with the team is via GitHub issues.
 
@@ -83,14 +88,7 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
 * [Clint Rutkas](https://github.com/crutkas), Principal Product Manager: [@clintrutkas](https://twitter.com/clintrutkas) 
 * [Leeza Mathew](https://github.com/mathewleeza), Engineering Lead: [@leezamathew](https://twitter.com/leezamathew)
 
-## Developer guidance
-
-* You must be running Windows 11 21H2 (build >= 10.0.22000.0) to run Dev Home
-* You must [enable Developer Mode in the Windows Settings app](https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development)
-
----
-
-## Code of conduct
+### Code of conduct
 
 We welcome contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
@@ -98,11 +96,11 @@ When you submit a pull request, a CLA bot will automatically determine whether y
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-## Trademarks
+### Trademarks
 
 This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos is subject to those third-parties' policies.
 
-## Thanks to our contributors
+### Thanks to our contributors
 
 <a href="https://github.com/microsoft/devhome/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=microsoft/devhome" />
