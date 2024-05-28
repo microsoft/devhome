@@ -9,7 +9,7 @@
     <img src="assets/storeBadge.png" width="200" /></a>
 </p>
 
-[Dev Home](https://learn.microsoft.com/en-us/windows/dev-home) is a new experience from Microsoft aiming to give developers more power on Windows.
+[Dev Home](https://learn.microsoft.com/windows/dev-home) is a new experience from Microsoft aiming to give developers more power on Windows.
 
 - **Customizable widgets:** Use the dashboard to monitor workflows, track your dev projects, coding tasks, Azure DevOps queries, GitHub issues, pull requests, available SSH connections, and system CPU, GPU, Memory, and Network performance.
 - **Environment for developers:** Set up your development environment on a new device or onboard a new dev project.
@@ -64,7 +64,7 @@ winget install --id Microsoft.DevHome -e
 ### Requirements to develop Dev Home
 
 - Windows 11 21H2 (OS build 22000) or higher
-- [Enable Developer Mode on Windows](https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development)
+- [Enable Developer Mode on Windows](https://docs.microsoft.com/windows/uwp/get-started/enable-your-device-for-development)
 - Visual Studio 2022
 - Windows SDK
 - Windows App SDK
@@ -102,7 +102,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ### Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos is subject to those third-parties' policies.
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos is subject to those third-parties' policies.
 
 ### Thanks to our contributors
 
