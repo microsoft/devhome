@@ -84,6 +84,11 @@
                             <environmentViews:EnvironmentCreationOptionsView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.EnvironmentCreationOptionsTemplate>
+                    <selectors:SetupFlowViewSelector.QuickstartPlaygroundTemplate>
+                        <DataTemplate>
+                            <views:QuickstartPlaygroundView/>
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.QuickstartPlaygroundTemplate>
                 </selectors:SetupFlowViewSelector>
             </ContentControl.ContentTemplateSelector>
         </ContentControl>
@@ -102,12 +107,12 @@
                             <HyperlinkButton
                                 AutomationProperties.AutomationControlType="Button"
                                 Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
-                                MinWidth="120" Margin="4,0"
+                                MinWidth="120" Margin="6,0"
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel"
                                 Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowDoneButton, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
                             <Button
                                 Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
-                                MinWidth="120" Margin="4,0"
+                                MinWidth="120" Margin="6,0"
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DoneButton"
                                 Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowDoneButton, Mode=OneWay}"/>
                         </Grid>
@@ -115,7 +120,7 @@
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultPreviousTemplate>
                         <Button
                             Command="{x:Bind ViewModel.Orchestrator.GoToPreviousPageCommand, Mode=OneWay}"
-                            MinWidth="120" Margin="4,0"
+                            MinWidth="120" Margin="6,0"
                             Visibility="{x:Bind ViewModel.Orchestrator.HasPreviousPage, Mode=OneWay}"
                             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Previous" />
                     </setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultPreviousTemplate>
@@ -126,7 +131,7 @@
                             <Button
                                 Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
                                 Style="{StaticResource AccentButtonStyle}"
-                                MinWidth="120" Margin="4,0"
+                                MinWidth="120" Margin="6,0"
                                 Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
                         </Grid>

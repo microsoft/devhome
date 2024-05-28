@@ -20,11 +20,6 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
                 <ResourceDictionary>
                     <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
-                    
-                    <!-- The TextBlock styles and the converter are duplicated below.  However, these resources needs to exist
-                    both here and in the data context.  If the resources from here are removed, errors happen.
-                    If you can figure out why and fix the issues, feel free to do so.-->
-                    <converters:BoolToObjectConverter x:Key="BoolToTextBrush" TrueValue="{ThemeResource PrimaryTextStyle}" FalseValue="{ThemeResource SecondaryTextStyle}"/>
                     <Style x:Key="DevHomeBorderStyle" TargetType="Border" >
                         <Setter Property="BorderBrush">
                             <Setter.Value>
@@ -32,27 +27,15 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-                    <Style x:Key="PrimaryTextStyle" TargetType="TextBlock">
-                        <Setter Property="Foreground">
-                            <Setter.Value>
-                                <SolidColorBrush Color="{ThemeResource TextFillColorPrimary}"/>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                    <Style x:Key="SecondaryTextStyle" TargetType="TextBlock">
-                        <Setter Property="Foreground">
-                            <Setter.Value>
-                                <SolidColorBrush Color="{ThemeResource TextFillColorSecondary}"/>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
+                    <GridLength x:Key="SymbolAndProgressRingColumnWidth">18</GridLength>
+                    <x:Double x:Key="ProgressRingWidthAndHeight">18</x:Double>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <!-- Page split layout -->
-    <Grid RowSpacing="10" MaxWidth="{ThemeResource MaxPageContentWidth}">
+    <Grid RowSpacing="10" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="*" />
@@ -135,48 +118,61 @@
             VerticalScrollBarVisibility="Auto"
             Grid.Column="0"
             Grid.Row="2">
-            <ListView  Grid.Column="0" Grid.Row="1" ItemsSource="{x:Bind ViewModel.Messages, Mode=OneWay}" SelectionMode="None">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="viewmodels:LoadingMessageViewModel">
-                        <Grid ColumnSpacing="5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="18"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.Resources>
-                                <ResourceDictionary>
-                                    <Style x:Key="PrimaryTextStyle" TargetType="TextBlock">
-                                        <Setter Property="Foreground">
-                                            <Setter.Value>
-                                                <SolidColorBrush Color="{ThemeResource TextFillColorPrimary}"/>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                    <Style x:Key="SecondaryTextStyle" TargetType="TextBlock">
-                                        <Setter Property="Foreground">
-                                            <Setter.Value>
-                                                <SolidColorBrush Color="{ThemeResource TextFillColorSecondary}"/>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </ResourceDictionary>
-                            </Grid.Resources>
-                            <ImageIcon
-                                Grid.Column="0"
-                                VerticalAlignment="Top"
-                                Visibility="{x:Bind ShouldShowStatusSymbolIcon, Mode=OneWay}"
-                                Source="{x:Bind StatusSymbolIcon, Mode=OneWay}"/>
-                            <ProgressRing
-                                Grid.Column="0"
-                                Height="18"
-                                Width="18"
-                                IsActive="{x:Bind ShouldShowProgressRing, Mode=OneWay}"
-                                Visibility="{x:Bind ShouldShowProgressRing, Mode=OneWay}"/>
-                            <TextBlock Grid.Column="1" Text="{x:Bind MessageToShow, Mode=OneWay}" VerticalAlignment="Center" Style="{x:Bind ShouldShowProgressRing, Mode=OneWay, Converter={StaticResource BoolToTextBrush}}" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ListView x:Name="NonExecutingTasks"  Grid.Row="0" ItemsSource="{x:Bind ViewModel.NonExecutingMessages, Mode=OneWay}" SelectionMode="Single">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:LoadingMessageViewModel">
+                            <Grid ColumnSpacing="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="{StaticResource SymbolAndProgressRingColumnWidth}"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ImageIcon
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Source="{x:Bind StatusSymbolIcon, Mode=OneWay}"/>
+                                <TextBlock 
+                                    Grid.Column="1"
+                                    Text="{x:Bind MessageToShow, Mode=OneWay}"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondary}"
+                                    TextWrapping="Wrap"
+                                    IsTextSelectionEnabled="True"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <ListView x:Name="ExecutingTasks" Grid.Row="1" ItemsSource="{x:Bind ViewModel.ExecutingMessages, Mode=OneWay}" SelectionMode="None">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:LoadingMessageViewModel">
+                            <Grid ColumnSpacing="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="{StaticResource SymbolAndProgressRingColumnWidth}"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Width and Height restrict the progress ring to the column width.-->
+                                <ProgressRing
+                                    Grid.Column="0"
+                                    Height="{StaticResource ProgressRingWidthAndHeight}"
+                                    Width="{StaticResource ProgressRingWidthAndHeight}"
+                                    IsActive="True"/>
+                                <TextBlock 
+                                    Grid.Column="1"
+                                    Text="{x:Bind MessageToShow, Mode=OneWay}"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorPrimary}"
+                                    TextWrapping="Wrap"
+                                    IsTextSelectionEnabled="True"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
         </ScrollViewer>
         <Grid 
             Grid.Column="1"

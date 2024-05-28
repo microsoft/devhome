@@ -9,18 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Serilog" Version="3.1.1" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
-    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="YamlDotNet" Version="15.1.0" />
   </ItemGroup>
 
@@ -39,6 +32,9 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Styles\QuickstartStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\CloneRepoSummaryInformationView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -46,6 +42,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\SetupTargetView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\QuickstartPlaygroundView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Styles\AppManagement_ThemeResources.xaml">
@@ -80,6 +79,7 @@
     <None Remove="SetupFlowPage.xaml" />
     <None Remove="Controls\SetupShell.xaml" />
     <None Remove="Styles\AppManagement_ThemeResources.xaml" />
+    <None Remove="Styles\QuickstartStyles.xaml" />
     <None Remove="Styles\SetupFlowStyles.xaml" />
     <None Remove="Styles\SetupFlow_ThemeResources.xaml" />
     <None Remove="Views\AddRepoDialog.xaml" />
@@ -89,6 +89,7 @@
     <None Remove="Views\EditClonePathDialog.xaml" />
     <None Remove="Views\LoadingView.xaml" />
     <None Remove="Views\MainPageView.xaml" />
+    <None Remove="Views\QuickstartPlaygroundView.xaml" />
     <None Remove="Views\RepoConfigReviewView.xaml" />
     <None Remove="Views\RepoConfigView.xaml" />
     <None Remove="Views\ReviewView.xaml" />
@@ -232,6 +233,9 @@
     <Content Update="Assets\Setup_EndToEnd.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+	<Content Update="Assets\Setup_QuickstartPlayground.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
     <Content Update="Assets\Setup_RepoConfig.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

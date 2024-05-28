@@ -23,12 +23,12 @@ using DevHome.SetupFlow.Views;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation;
-using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -324,6 +324,7 @@ public partial class AddRepoViewModel : ObservableObject
             IsCancelling = true;
             ShouldShowLoginUi = false;
             ShouldShowXButtonInLoginUi = false;
+            ShouldShowNoRepoMessage = false;
 
             return;
         }
@@ -336,6 +337,7 @@ public partial class AddRepoViewModel : ObservableObject
             IsCancelling = true;
             ShouldShowLoginUi = false;
             ShouldShowXButtonInLoginUi = false;
+            ShouldShowNoRepoMessage = false;
 
             return;
         }
@@ -485,6 +487,12 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private bool _shouldShowChangeSearchTermsHyperlinkButton;
+
+    [ObservableProperty]
+    private bool _shouldShowNoRepoMessage;
+
+    [ObservableProperty]
+    private string _noRepositoriesMessage;
 
     /// <summary>
     /// Switches the repos shown to the account selected.
@@ -683,7 +691,7 @@ public partial class AddRepoViewModel : ObservableObject
         _addRepoDialog = addRepoDialog;
         _stringResource = stringResource;
         _host = host;
-        _dispatcherQueue = host.GetService<WindowEx>().DispatcherQueue;
+        _dispatcherQueue = host.GetService<DispatcherQueue>();
         _loginUiContent = new Frame();
         _setupFlowOrchestrator = setupFlowOrchestrator;
 
@@ -705,6 +713,7 @@ public partial class AddRepoViewModel : ObservableObject
         UrlParsingError = string.Empty;
         ShouldShowUrlError = false;
         ShowErrorTextBox = false;
+        ShouldShowNoRepoMessage = false;
         _accountIndex = -1;
     }
 
@@ -1286,7 +1295,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
         else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
         {
-            var windowHandle = _host.GetService<WindowEx>().GetWindowHandle();
+            var windowHandle = _host.GetService<Window>().GetWindowHandle();
             var windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
             try
             {
@@ -1401,6 +1410,16 @@ public partial class AddRepoViewModel : ObservableObject
             SelectionOptionsPlaceholderText = repoSearchInformation.SelectionOptionsPlaceHolderText;
 
             IsFetchingRepos = false;
+
+            if (!_repositoriesForAccount.Any())
+            {
+                NoRepositoriesMessage = _stringResource.GetLocalized(StringResourceKey.RepoToolNoRepositoriesMessage, _providers.DisplayName(_selectedRepoProvider));
+                ShowRepoPage = false;
+                ShouldShowNoRepoMessage = true;
+                ShouldShowGranularSearch = false;
+                FolderPickerViewModel.ShouldShowFolderPicker = false;
+                EditDevDriveViewModel.ShowDevDriveInformation = false;
+            }
         });
     }
 

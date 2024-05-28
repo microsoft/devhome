@@ -33,6 +33,7 @@ public static class ServiceExtensions
         services.AddRepoConfig();
         services.AddReview();
         services.AddSummary();
+        services.AddQuickstart();
         services.AddSummaryInformation();
         services.AddCreateEnvironment();
 
@@ -193,6 +194,18 @@ public static class ServiceExtensions
         services.AddTransient<SetupTargetViewModel>();
         services.AddTransient<SetupTargetReviewViewModel>();
         services.AddTransient<SetupTargetTaskGroup>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddQuickstart(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<QuickstartPlaygroundViewModel>();
+
+        // Services
+        services.AddTransient<DeveloperQuickstartTaskGroup>();
+        services.AddSingleton<IQuickStartProjectService, QuickStartProjectService>();
 
         return services;
     }

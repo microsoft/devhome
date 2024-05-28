@@ -65,6 +65,8 @@ public class InstallPackageTask : ISetupTask
 
     public string PackageName => _package.Name;
 
+    public bool IsInstalled => _package.IsInstalled;
+
 #pragma warning disable 67
     public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
 #pragma warning restore 67
@@ -123,6 +125,7 @@ public class InstallPackageTask : ISetupTask
             PackageId = _package.Id,
             CatalogName = _package.CatalogName,
             Version = _installVersion,
+            IsElevationRequired = _package.IsElevationRequired,
         };
     }
 
@@ -287,15 +290,19 @@ public class InstallPackageTask : ISetupTask
     private void ReportAppSelectedForInstallEvent()
     {
         TelemetryFactory.Get<ITelemetry>().Log("AppInstall_AppSelected", LogLevel.Critical, new AppInstallUserEvent(_package.Id, _package.CatalogId), _activityId);
+        if (_installVersion != _package.DefaultInstallVersion)
+        {
+            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_VersionSpecified", LogLevel.Critical, new AppInstallUserEvent(_package.Id, _package.CatalogId), _activityId);
+        }
     }
 
     private void ReportAppInstallSucceededEvent()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_InstallSucceeded", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId), _activityId);
+        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_InstallSucceeded", LogLevel.Critical, new AppInstallResultEvent(_package.Id, _package.CatalogId), _activityId);
     }
 
     private void ReportAppInstallFailedEvent()
     {
-        TelemetryFactory.Get<ITelemetry>().LogError("AppInstall_InstallFailed", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId), _activityId);
+        TelemetryFactory.Get<ITelemetry>().LogError("AppInstall_InstallFailed", LogLevel.Critical, new AppInstallResultEvent(_package.Id, _package.CatalogId), _activityId);
     }
 }

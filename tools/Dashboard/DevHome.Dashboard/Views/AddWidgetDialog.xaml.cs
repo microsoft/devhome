@@ -12,6 +12,7 @@ using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
@@ -20,7 +21,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
 
@@ -36,7 +36,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private readonly IWidgetHostingService _hostingService;
     private readonly IWidgetIconService _widgetIconService;
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     public AddWidgetDialog()
     {
@@ -46,7 +46,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         this.InitializeComponent();
 
-        _windowEx = Application.Current.GetService<WindowEx>();
+        _dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
 
         RequestedTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
     }
@@ -92,7 +92,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
             var id = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
             if (!string.IsNullOrEmpty(id))
             {
-                comSafeCurrentlyPinnedWidgets.Add(new ComSafeWidget(id));
+                var comSafeWidget = new ComSafeWidget(id);
+                if (await comSafeWidget.PopulateAsync())
+                {
+                    comSafeCurrentlyPinnedWidgets.Add(comSafeWidget);
+                }
             }
         }
 
@@ -106,6 +110,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     Tag = providerDef,
                     Content = providerDef.DisplayName,
                 };
+
+                navItem.SetValue(ToolTipService.ToolTipProperty, providerDef.DisplayName);
 
                 foreach (var widgetDef in comSafeWidgetDefinitions)
                 {
@@ -121,6 +127,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                         };
                         subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
                         subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
+                        subItem.SetValue(ToolTipService.ToolTipProperty, widgetDef.DisplayTitle);
 
                         navItem.MenuItems.Add(subItem);
                     }
@@ -304,7 +311,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         var deletedDefinitionId = args.DefinitionId;
 
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _dispatcherQueue.TryEnqueue(() =>
         {
             // If we currently have the deleted widget open, un-select it.
             if (_selectedWidget is not null &&

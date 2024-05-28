@@ -10,15 +10,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.ApplicationModel;
 using Windows.Data.Json;
 using Windows.Storage;
-using Windows.System;
-using WinUIEx;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
 
@@ -29,7 +29,14 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     private readonly string devHomeProductId = "9N8MHTPHNGVV";
 
     private readonly IExtensionService _extensionService;
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
+
+    // All internal Dev Home extensions that should allow users to enable/disable them, should add
+    // their class Ids to this set.
+    private readonly HashSet<string> _internalClassIdsToBeShownInExtensionsPage = new()
+    {
+        CommonConstants.HyperVExtensionClassId,
+    };
 
     public ObservableCollection<StorePackageViewModel> StorePackagesList { get; set; }
 
@@ -38,10 +45,10 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowStoreError = false;
 
-    public ExtensionLibraryViewModel(IExtensionService extensionService, WindowEx windowEx)
+    public ExtensionLibraryViewModel(IExtensionService extensionService, DispatcherQueue dispatcherQueue)
     {
         _extensionService = extensionService;
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
 
         extensionService.OnExtensionsChanged -= OnExtensionsChanged;
         extensionService.OnExtensionsChanged += OnExtensionsChanged;
@@ -53,7 +60,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [RelayCommand]
     public async Task GetUpdatesButtonAsync()
     {
-        await Launcher.LaunchUriAsync(new("ms-windows-store://downloadsandupdates"));
+        await Windows.System.Launcher.LaunchUriAsync(new("ms-windows-store://downloadsandupdates"));
     }
 
     [RelayCommand]
@@ -65,7 +72,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
     private async void OnExtensionsChanged(object? sender, EventArgs e)
     {
-        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
+        await _dispatcherQueue.EnqueueAsync(async () =>
         {
             ShouldShowStoreError = false;
             await GetInstalledExtensionsAsync();
@@ -83,8 +90,10 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
         foreach (var extensionWrapper in extensionWrappers)
         {
-            // Don't show self as an extension.
-            if (Package.Current.Id.FullName == extensionWrapper.PackageFullName)
+            // Don't show self as an extension unless internal extension is allowed to be enabled/disabled in the
+            // extensions page.
+            if (Package.Current.Id.FullName == extensionWrapper.PackageFullName &&
+                !_internalClassIdsToBeShownInExtensionsPage.Contains(extensionWrapper.ExtensionClassId))
             {
                 continue;
             }
