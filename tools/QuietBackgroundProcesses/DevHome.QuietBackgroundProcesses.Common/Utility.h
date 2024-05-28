@@ -99,11 +99,16 @@ inline void WaitForDebuggerIfPresent()
     }
 }
 
-inline bool IsTokenElevated(HANDLE token)
+inline LONG GetTokenMandatoryLabel(HANDLE token)
 {
     auto mandatoryLabel = wil::get_token_information<TOKEN_MANDATORY_LABEL>(token);
     LONG levelRid = static_cast<SID*>(mandatoryLabel->Label.Sid)->SubAuthority[0];
-    return levelRid == SECURITY_MANDATORY_HIGH_RID;
+    return levelRid;
+}
+
+inline bool IsTokenElevated(HANDLE token)
+{
+    return GetTokenMandatoryLabel(token) == SECURITY_MANDATORY_HIGH_RID;
 }
 
 inline void SelfElevate(std::optional<std::wstring> const& arguments)

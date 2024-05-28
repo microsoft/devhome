@@ -1,0 +1,81 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+import "inspectable.idl";
+import "windows.foundation.idl";
+
+// Elevation voucher infrastructure
+namespace DevHome.Elevation
+{
+    [contractversion(1)]
+    apicontract ElevationContract
+    {
+    }
+
+    // Elevation zones
+    enum ElevationZone
+    {
+        ElevationZoneA,
+        ElevationZoneB,
+        VirtualMachineManagement,
+    };
+
+    // Elevation levels
+    enum ElevationLevel
+    {
+        Medium,
+        High,
+    };
+
+
+    [contract(ElevationContract, 1.0), uuid(2b69fc32-cabe-4758-b9a0-fb8542e9c55c)]
+    interface IElevationZone
+    {
+    }
+
+    // A voucher that can be redeemed for an elevation zone
+    [default_interface]
+    runtimeclass ElevationVoucher
+    {
+        ElevationVoucher(
+            String voucherName,
+            ElevationLevel requestedElevationLevel,
+            ElevationZone zoneId,
+            UInt32 processId,
+            // HANDLE process, // Cannot use a handle in modern idl
+            Windows.Foundation.DateTime processCreateTime);
+
+        String VoucherName { get; };
+        ElevationLevel ElevationLevel { get; };
+        ElevationZone ZoneId { get; };
+        UInt32 ProcessId { get; };
+        Windows.Foundation.DateTime ProcessCreateTime { get; };
+        
+        IElevationZone Redeem();
+    };
+
+    // Elevation voucher manager that allows vouchers to activated and claimed
+    [default_interface]
+    runtimeclass ElevationVoucherManager
+    {
+        // Make the voucher claimable (call from elevated process)
+        static void AddVoucherToWillCall(ElevationVoucher voucher, Windows.Foundation.TimeSpan validDuration);
+
+        // Claim the voucher (call from unelevated process)
+        static ElevationVoucher ClaimVoucher(String voucherName);
+    }
+}
+
+// Specific Elevation Zones
+namespace DevHome.Elevation.Zones
+{    
+    runtimeclass ElevationZoneA
+    {
+        UInt32 GetSomething();
+    }
+
+    runtimeclass VirtualMachineManagement
+    {
+        UInt32 DoSomething();
+    }
+}
