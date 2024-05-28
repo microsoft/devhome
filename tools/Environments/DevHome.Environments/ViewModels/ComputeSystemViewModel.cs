@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
@@ -130,7 +131,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
             _ = Task.Run(async () =>
             {
-                var s1 = DateTime.Now;
+                var start = DateTime.Now;
                 List<OperationsViewModel> validData = new();
                 foreach (var data in await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem))
                 {
@@ -148,10 +149,10 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                     WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedMessage, OperationsViewModel>(this, data.ViewModel);
                 }
 
-                _log.Information($"Registering pin operations for {Name} in background took {DateTime.Now - s1}");
+                _log.Information($"Registering pin operations for {Name} in background took {DateTime.Now - start}");
 
                 // Add valid data to the DotOperations collection
-                _windowEx.DispatcherQueue.TryEnqueue(() =>
+                _mainWindow.DispatcherQueue.TryEnqueue(() =>
                 {
                     ShouldShowDotOperations = true;
                     foreach (var data in validData)

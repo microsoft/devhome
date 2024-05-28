@@ -237,7 +237,6 @@ public class ComputeSystemCache
         _ = await GetStateAsync();
         var supportedOperations = SupportedOperations?.Value ?? ComputeSystemOperations.None;
 
-        var s2 = DateTime.Now;
         _ = await GetComputeSystemThumbnailAsync(string.Empty);
         _ = await GetComputeSystemPropertiesAsync(string.Empty);
     }
