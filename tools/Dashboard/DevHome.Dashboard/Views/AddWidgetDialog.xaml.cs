@@ -181,7 +181,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         var itemText = new TextBlock()
         {
-            Text = text.Trim(),
+            Text = text,
             TextWrapping = TextWrapping.Wrap,
             VerticalAlignment = VerticalAlignment.Center,
         };
