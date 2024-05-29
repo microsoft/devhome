@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
 using DevHome.Common.Extensions;
+using DevHome.Common.Views;
 using DevHome.Environments.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -48,26 +49,12 @@ public sealed partial class LandingPage : ToolPage
     [RelayCommand]
     private async Task LocalLoadButton()
     {
-        await ViewModel.LoadModelAsync(true);
+        await ViewModel.LoadModelAsync(SetFocus, true);
     }
 #endif
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        await ViewModel.LoadModelAsync(false);
-
-        // .ContinueWith throws a COMException.
-        // Loop will break after 10 seconds.
-        var maxCount = 100;
-        var currentCount = 0;
-        while (currentCount++ < maxCount && !IsLoaded)
-        {
-            await Task.Delay(100);
-        }
-
-        if (IsLoaded)
-        {
-            this.Focus(FocusState.Programmatic);
-        }
+        await ViewModel.LoadModelAsync(SetFocus, false);
     }
 }

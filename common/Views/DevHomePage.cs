@@ -8,11 +8,18 @@ namespace DevHome.Common.Views;
 
 public class DevHomePage : Page
 {
+    public delegate void CanSetFocus();
+
     public DevHomePage()
     {
         Loaded += (s, e) =>
         {
             Focus(FocusState.Programmatic);
         };
+    }
+
+    public void SetFocus()
+    {
+        Focus(FocusState.Programmatic);
     }
 }

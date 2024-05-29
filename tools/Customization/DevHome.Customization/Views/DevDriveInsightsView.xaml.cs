@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Transactions;
 using DevHome.Common.Extensions;
 using DevHome.Common.Views;
 using DevHome.Customization.ViewModels;
@@ -24,6 +25,6 @@ public sealed partial class DevDriveInsightsView : DevHomeUserControl
 
     private void UserControl_Loaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnFirstNavigateTo();
+        ViewModel.OnFirstNavigateTo(SetFocus);
     }
 }

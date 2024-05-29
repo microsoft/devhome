@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Common.Views;
 using DevHome.Customization.Helpers;
 using DevHome.Customization.Models;
 using DevHome.Customization.ViewModels.DevDriveInsights;
@@ -92,11 +93,16 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
     /// Make sure we only get the list of DevDrives from the DevDriveManager once when the page is first navigated to.
     /// All other times will be through the use of the sync button.
     /// </summary>
-    public void OnFirstNavigateTo()
+    public void OnFirstNavigateTo(DevHomeUserControl.CanSetFocus? callback = null)
     {
         GetDevDrives();
         GetDevDriveOptimizers();
         GetDevDriveOptimizeds();
+
+        if (callback != null)
+        {
+            callback();
+        }
     }
 
     /// <summary>
