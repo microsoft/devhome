@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:genTemplate="http://schemas.microsoft.com/appx/developer/templatestudio" xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6" IgnorableNamespaces="uap uap3 uap5 rescap genTemplate desktop6">
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5" xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:genTemplate="http://schemas.microsoft.com/appx/developer/templatestudio" xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6" IgnorableNamespaces="uap uap3 uap5 uap10 rescap genTemplate desktop6">
   <Extensions>
     <Extension Category="windows.activatableClass.proxyStub">
       <ProxyStub ClassId="00000355-0000-0000-C000-000000000046">
@@ -7,23 +7,6 @@
         <Interface Name="Microsoft.Windows.Widgets.Providers.IWidgetProvider" InterfaceId="5C5774CC-72A0-452D-B9ED-075C0DD25EED" />
         <Interface Name="Microsoft.Windows.Widgets.Providers.IWidgetProvider2" InterfaceId="38C3A963-DD93-479D-9276-04BF84EE1816" />
       </ProxyStub>
-    </Extension>
-    <!-- QuietBackgroundProcesses unelevated server which initiates & obtains a reference to a quiet session -->
-    <Extension Category="windows.activatableClass.outOfProcessServer">
-      <OutOfProcessServer ServerName="DevHome.QuietBackgroundProcesses.Server" uap5:IdentityType="activateAsPackage" uap5:RunFullTrust="true">
-        <Path>DevHome.QuietBackgroundProcesses.Server.exe</Path>
-        <Instancing>singleInstance</Instancing>
-        <ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager" />
-      </OutOfProcessServer>
-    </Extension>
-    <!-- QuietBackgroundProcesses elevated server owns the quiet session -->
-    <Extension Category="windows.activatableClass.outOfProcessServer">
-      <OutOfProcessServer ServerName="DevHome.QuietBackgroundProcesses.ElevatedServer" uap5:IdentityType="activateAsPackage" uap5:RunFullTrust="true">
-        <Path>DevHome.QuietBackgroundProcesses.ElevatedServer.exe</Path>
-        <Instancing>singleInstance</Instancing>
-        <ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession" />
-        <ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine" />
-      </OutOfProcessServer>
     </Extension>
   </Extensions>
   <Identity Name="Microsoft.Windows.DevHome.Dev" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.0.0.0" />
@@ -48,6 +31,23 @@
         <uap:SplashScreen Image="Assets\Logos\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
+        <!-- QuietBackgroundProcesses unelevated server which initiates & obtains a reference to a quiet session -->
+        <uap5:Extension Category="windows.activatableClass.outOfProcessServer" uap10:TrustLevel="mediumIL" uap10:RuntimeBehavior="packagedClassicApp">
+          <uap5:OutOfProcessServer ServerName="DevHome.QuietBackgroundProcesses.Server" RunFullTrust="true">
+            <uap5:Path>DevHome.QuietBackgroundProcesses.Server.exe</uap5:Path>
+            <uap5:Instancing>singleInstance</uap5:Instancing>
+            <uap5:ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager" />
+          </uap5:OutOfProcessServer>
+        </uap5:Extension>
+        <!-- QuietBackgroundProcesses elevated server owns the quiet session -->
+        <uap5:Extension Category="windows.activatableClass.outOfProcessServer" uap10:TrustLevel="mediumIL" uap10:RuntimeBehavior="packagedClassicApp">
+          <uap5:OutOfProcessServer ServerName="DevHome.QuietBackgroundProcesses.ElevatedServer" RunFullTrust="true">
+            <uap5:Path>DevHome.QuietBackgroundProcesses.ElevatedServer.exe</uap5:Path>
+            <uap5:Instancing>singleInstance</uap5:Instancing>
+            <uap5:ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession" />
+            <uap5:ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine" />
+          </uap5:OutOfProcessServer>
+        </uap5:Extension>
         <uap3:Extension Category="windows.appExtensionHost">
           <uap3:AppExtensionHost>
             <uap3:Name>com.microsoft.devhome</uap3:Name>
@@ -66,6 +66,13 @@
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
+		<com:Extension Category="windows.comServer">
+		  <com:ComServer>
+			<com:ExeServer Executable="WindowsSandboxExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="WindowsSandboxExtension">
+		      <com:Class Id="6A52115B-083C-4FB1-85F4-BBE23289220E" DisplayName="WindowsSandboxExtension" />
+			</com:ExeServer>
+	      </com:ComServer>
+		</com:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="CoreWidgetProvider">
@@ -107,7 +114,21 @@
             </uap3:Properties>
           </uap3:AppExtension>
         </uap3:Extension>
-        <uap3:Extension Category="windows.appExtension">
+		<uap3:Extension Category="windows.appExtension">
+			<uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID3" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameWindowsSandboxExt" Description="ms-resource:AppDescriptionWindowsSandboxExt">
+				<uap3:Properties>
+					<DevHomeProvider>
+						<Activation>
+							<CreateInstance ClassId="6A52115B-083C-4FB1-85F4-BBE23289220E" />
+						</Activation>
+						<SupportedInterfaces>
+							<ComputeSystem />
+						</SupportedInterfaces>
+					</DevHomeProvider>
+				</uap3:Properties>
+			</uap3:AppExtension>
+		 </uap3:Extension>
+		<uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="ms-resource:WidgetProviderDisplayNameDev" Id="CoreWidgetProvider" PublicFolder="Public">
             <uap3:Properties>
               <WidgetProvider>
@@ -284,6 +305,62 @@
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
+      </Extensions>
+    </Application>
+    <Application Id="Devhome.PI" Executable="DevHome.PI.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:PIDisplayName" Description="ms-resource:PIAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" AppListEntry="none">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <!-- Limitations in Microsoft.Extension.Configuration require this to be a key=value pair.-->
+        <uap5:Extension Category="windows.startupTask" uap10:Parameters="/startuptask=true">
+          <uap5:StartupTask TaskId="DevHome.PI.Hotkey" Enabled="true" DisplayName="ms-resource:PIStartupTaskDisplayName" />
+        </uap5:Extension>
+        <uap3:Extension Category="windows.appExecutionAlias" Executable="DevHome.PI.exe" EntryPoint="Windows.FullTrustApplication" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="devhome.pi.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+    <Application Id="DevHome.HostsFileEditor" Executable="DevHome.HostsFileEditor.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:HostsFileEditorAppDisplayName" Description="ms-resource:HostsFileEditorAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\HostsFileEditor\Square150x150Logo.png" Square44x44Logo="Assets\HostsFileEditor\Square44x44Logo.png" AppListEntry="none">
+        <uap:DefaultTile Wide310x150Logo="Assets\HostsFileEditor\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\HostsFileEditor\SplashScreen.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <uap3:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="DevHome.HostsFileEditorApp.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+    <Application Id="DevHome.RegistryPreview" Executable="DevHome.RegistryPreview.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:RegistryPreviewAppDisplayName" Description="ms-resource:RegistryPreviewAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\RegistryPreview\Square150x150Logo.png" Square44x44Logo="Assets\RegistryPreview\Square44x44Logo.png" AppListEntry="none">
+        <uap:DefaultTile Wide310x150Logo="Assets\RegistryPreview\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\RegistryPreview\SplashScreen.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <uap3:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="DevHome.RegistryPreviewApp.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+    <Application Id="DevHome.EnvironmentVariables" Executable="DevHome.EnvironmentVariables.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:EnvironmentVariablesAppDisplayName" Description="ms-resource:EnvironmentVariablesAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\EnvironmentVariables\Square150x150Logo.png" Square44x44Logo="Assets\EnvironmentVariables\Square44x44Logo.png" AppListEntry="none">
+        <uap:DefaultTile Wide310x150Logo="Assets\EnvironmentVariables\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\EnvironmentVariables\SplashScreen.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <uap3:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="DevHome.EnvironmentVariablesApp.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
       </Extensions>
     </Application>
   </Applications>

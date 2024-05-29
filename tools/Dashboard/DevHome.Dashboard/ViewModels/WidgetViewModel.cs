@@ -13,6 +13,7 @@ using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Telemetry;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -20,8 +21,6 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 using Windows.Data.Json;
-using Windows.System;
-using WinUIEx;
 
 namespace DevHome.Dashboard.ViewModels;
 
@@ -41,7 +40,7 @@ public partial class WidgetViewModel : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetViewModel));
 
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
     private readonly WidgetAdaptiveCardRenderingService _renderingService;
 
     private RenderedAdaptiveCard _renderedCard;
@@ -99,10 +98,10 @@ public partial class WidgetViewModel : ObservableObject
         WidgetSize widgetSize,
         ComSafeWidgetDefinition widgetDefinition,
         WidgetAdaptiveCardRenderingService adaptiveCardRenderingService,
-        WindowEx windowEx)
+        DispatcherQueue dispatcherQueue)
     {
         _renderingService = adaptiveCardRenderingService;
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
 
         Widget = widget;
         WidgetSize = widgetSize;
@@ -174,7 +173,7 @@ public partial class WidgetViewModel : ObservableObject
             }
 
             // Render card on the UI thread.
-            _windowEx.DispatcherQueue.TryEnqueue(async () =>
+            _dispatcherQueue.TryEnqueue(async () =>
             {
                 try
                 {
@@ -236,7 +235,7 @@ public partial class WidgetViewModel : ObservableObject
     public void ShowLoadingCard()
     {
         _log.Debug("Show loading card.");
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _dispatcherQueue.TryEnqueue(() =>
         {
             WidgetFrameworkElement = new ProgressRing();
         });
@@ -245,7 +244,7 @@ public partial class WidgetViewModel : ObservableObject
     // Used to show a message instead of Adaptive Card content in a widget.
     public void ShowErrorCard(string error, string subError = null)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _dispatcherQueue.TryEnqueue(() =>
         {
             WidgetFrameworkElement = GetErrorCard(error, subError);
         });
@@ -298,7 +297,7 @@ public partial class WidgetViewModel : ObservableObject
         if (args.Action is AdaptiveOpenUrlAction openUrlAction)
         {
             _log.Information($"Url = {openUrlAction.Url}");
-            await Launcher.LaunchUriAsync(openUrlAction.Url);
+            await Windows.System.Launcher.LaunchUriAsync(openUrlAction.Url);
         }
         else if (args.Action is AdaptiveExecuteAction executeAction)
         {

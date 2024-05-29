@@ -24,11 +24,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.Globalization.NumberFormatting;
-using Windows.Storage.Pickers;
 using Windows.System;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -104,7 +102,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <summary>
     /// Gets a value indicating the window title of the Dev Drive window.
     /// </summary>
-    public string AppTitle => Application.Current.GetService<WindowEx>().Title;
+    public string AppTitle => Application.Current.GetService<Window>().Title;
 
     public DevDriveViewModel(
         ISetupFlowStringResource stringResource,
@@ -143,6 +141,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// This is the location that we will save the virtual disk file to.
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DriveLabel))]
     [NotifyCanExecuteChangedFor(nameof(SaveButtonCommand))]
     private string _location;
 
@@ -260,6 +259,17 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
             if (!string.IsNullOrWhiteSpace(location?.Path))
             {
                 _log.Information($"Selected Dev Drive location: {location.Path}");
+
+                // If the user encounters an error, like file already exists, then they fix the issue
+                // (deleted the file) DevHome won't check if the issue is resolved.  A user needs to
+                // re-enter a path.  If the path is the same as the previously entered path Location
+                // will not update because the two string values are similiar.
+                if (string.Equals(Location, location.Path, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Change Location to empty to force Location updates.
+                    Location = string.Empty;
+                }
+
                 Location = location.Path;
             }
             else

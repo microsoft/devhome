@@ -21,12 +21,12 @@ using DevHome.SetupFlow.Models.WingetConfigure;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;
 using Windows.Foundation;
-using WinUIEx;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -35,7 +35,7 @@ public class ConfigureTargetTask : ISetupTask
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigureTargetTask));
 
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     private readonly ISetupFlowStringResource _stringResource;
 
@@ -69,7 +69,7 @@ public class ConfigureTargetTask : ISetupTask
 
     public ActionCenterMessages ActionCenterMessages { get; set; } = new() { ExtensionAdaptiveCardPanel = new(), };
 
-    public string ComputeSystemName => _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup.DisplayName ?? string.Empty;
+    public string ComputeSystemName => _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup.DisplayName.Value ?? string.Empty;
 
     public SDK.IExtensionAdaptiveCardSession2 ExtensionAdaptiveCardSession { get; private set; }
 
@@ -100,13 +100,13 @@ public class ConfigureTargetTask : ISetupTask
         IComputeSystemManager computeSystemManager,
         ConfigurationFileBuilder configurationFileBuilder,
         SetupFlowOrchestrator setupFlowOrchestrator,
-        WindowEx windowEx)
+        DispatcherQueue dispatcherQueue)
     {
         _stringResource = stringResource;
         _computeSystemManager = computeSystemManager;
         _configurationFileBuilder = configurationFileBuilder;
         _setupFlowOrchestrator = setupFlowOrchestrator;
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
         _adaptiveCardRenderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
     }
 
@@ -346,7 +346,7 @@ public class ConfigureTargetTask : ISetupTask
     /// </summary>
     public void RemoveAdaptiveCardPanelFromLoadingUI()
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _dispatcherQueue.TryEnqueue(() =>
         {
             if (ActionCenterMessages.ExtensionAdaptiveCardPanel != null)
             {
@@ -382,7 +382,7 @@ public class ConfigureTargetTask : ISetupTask
                 TelemetryFactory.Get<ITelemetry>().Log(
                     "Environment_OperationInvoked_Event",
                     LogLevel.Measure,
-                    new EnvironmentOperationUserEvent(EnvironmentsTelemetryStatus.Started, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId, string.Empty, _setupFlowOrchestrator.ActivityId));
+                    new EnvironmentOperationUserEvent(EnvironmentsTelemetryStatus.Started, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId.Value, string.Empty, _setupFlowOrchestrator.ActivityId));
 
                 ApplyConfigurationAsyncOperation = applyConfigurationOperation.StartAsync();
                 var result = await ApplyConfigurationAsyncOperation.AsTask().WaitAsync(tokenSource.Token);
@@ -458,7 +458,7 @@ public class ConfigureTargetTask : ISetupTask
     /// <param name="session">Adaptive card session sent by the extension when it needs a user to perform an action</param>
     public async Task CreateCorrectiveActionPanel(IExtensionAdaptiveCardSession2 session)
     {
-        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
+        await _dispatcherQueue.EnqueueAsync(async () =>
         {
             var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
 
@@ -519,6 +519,6 @@ public class ConfigureTargetTask : ISetupTask
         TelemetryFactory.Get<ITelemetry>().Log(
             "Environment_OperationInvoked_Event",
             LogLevel.Measure,
-            new EnvironmentOperationUserEvent(status, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId, string.Empty, _setupFlowOrchestrator.ActivityId));
+            new EnvironmentOperationUserEvent(status, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId.Value, string.Empty, _setupFlowOrchestrator.ActivityId));
     }
 }

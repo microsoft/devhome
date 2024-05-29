@@ -14,9 +14,7 @@
         <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible"/>
 
         <DataTemplate x:Key="AccountsProviderButtonTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
-            <StackPanel>
-                <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Stretch" Click="AddDeveloperId_Click" Tag="{x:Bind}" />
-            </StackPanel>
+            <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Stretch" Click="AddDeveloperId_Click" Tag="{x:Bind}"/>
         </DataTemplate>
 
         <DataTemplate x:Key="AccountsProviderViewTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
@@ -41,12 +39,19 @@
                     <ctControls:SettingsCard.HeaderIcon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8fa;"/>
                     </ctControls:SettingsCard.HeaderIcon>
-                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right" Click="AddAccountButton_Click">
+                    <Button
+                        x:Uid="Settings_Accounts_AddAccountButton"
+                        AutomationProperties.AutomationId="AddAccountsButton"
+                        HorizontalAlignment="Right"
+                        Click="AddAccountButton_Click">
                         <Button.Resources>
                             <Flyout x:Name="AccountsProvidersFlyout" Placement="Bottom">
                                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}"
                                                ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
                                                HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                    <ItemsRepeater.Layout>
+                                        <StackLayout Orientation="Vertical" Spacing="8" />
+                                    </ItemsRepeater.Layout>
                                 </ItemsRepeater>
                                 <Flyout.FlyoutPresenterStyle>
                                     <Style TargetType="FlyoutPresenter">

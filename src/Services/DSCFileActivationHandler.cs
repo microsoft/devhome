@@ -25,14 +25,14 @@ public class DSCFileActivationHandler : ActivationHandler<FileActivatedEventArgs
     private readonly INavigationService _navigationService;
     private readonly SetupFlowViewModel _setupFlowViewModel;
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
-    private readonly WindowEx _mainWindow;
+    private readonly Window _mainWindow;
 
     public DSCFileActivationHandler(
         ISetupFlowStringResource setupFlowStringResource,
         INavigationService navigationService,
         SetupFlowOrchestrator setupFlowOrchestrator,
         SetupFlowViewModel setupFlowViewModel,
-        WindowEx mainWindow)
+        Window mainWindow)
     {
         _setupFlowStringResource = setupFlowStringResource;
         _setupFlowViewModel = setupFlowViewModel;

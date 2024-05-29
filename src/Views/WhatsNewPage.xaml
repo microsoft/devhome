@@ -19,18 +19,15 @@
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/LightTheme/Background.png</x:String>
-                    <Color x:Key="ButtonAccentBackground">#6659CA</Color>
-                    <Color x:Key="ButtonAccentForeground">#FFFFFF</Color>
                     <Color x:Key="LearnMoreForeground">#005FB8</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
-                    <Color x:Key="ButtonAccentBackground">#47E1DA</Color>
-                    <Color x:Key="ButtonAccentForeground">#000000</Color>
                     <Color x:Key="LearnMoreForeground">#60CDFF</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="HighContrast">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
+                    <Color x:Key="LearnMoreForeground">#60CDFF</Color>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
@@ -71,6 +68,7 @@
                         TextWrapping="WrapWholeWords" />
                     <Button
                         x:Uid="WhatsNewPage_GetStartedButton"
+                        AutomationProperties.AutomationId="WhatsNewPage_GetStartedButton"
                         Margin="0 16"
                         MinWidth="248"
                         Style="{ThemeResource AccentButtonStyle}"
@@ -91,6 +89,7 @@
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_ExtensionsCard"
                             x:Key="WhatsNewPage_ExtensionsCard"
+                            AutomationId="WhatsNewPage_ExtensionsButton"
                             DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/Extensions.png"
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/Extensions.png"
                             DarkThemeImageBig="ms-appx:///Assets/WhatsNewPage/DarkTheme/ExtensionsBig.png"
@@ -172,6 +171,7 @@
                                         Margin="0 0 0 10"
                                         Padding="50 5 50 5"
                                         DataContext="{x:Bind PageKey}"
+                                        AutomationProperties.AutomationId="{x:Bind AutomationId}"
                                         Click="Button_ClickAsync"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Bottom"
@@ -196,6 +196,7 @@
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDashCard"
                             x:Key="WhatsNewPage_DevDashCard"
+                            AutomationId="WhatsNewPage_DevDashButton"
                             DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DashboardHero.png"
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DashboardHero.png"
                             PageKey="DevHome.Dashboard.ViewModels.DashboardViewModel"
@@ -204,6 +205,7 @@
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevIdCard"
                             x:Key="WhatsNewPage_DevIdCard"
+                            AutomationId="WhatsNewPage_DevIdButton"
                             DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DevIdHero.png"
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevIdHero.png"
                             PageKey="DevHome.Settings.ViewModels.AccountsViewModel"
@@ -212,6 +214,7 @@
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDriveCard"
                             x:Key="WhatsNewPage_DevDriveCard"
+                            AutomationId="WhatsNewPage_DevDrive"
                             DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DevDriveHero.png"
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevDriveHero.png"
                             PageKey="ms-settings:disksandvolumes"
@@ -297,6 +300,7 @@
                                 <Button
                                     Grid.Row="2"
                                     Margin="15 0 15 10"
+                                    AutomationProperties.AutomationId="{x:Bind AutomationId}"
                                     DataContext="{x:Bind PageKey}"
                                     Click="Button_ClickAsync"
                                     HorizontalAlignment="Stretch"

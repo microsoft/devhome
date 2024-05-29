@@ -25,7 +25,7 @@ public class CardItemTemplateSelector : DataTemplateSelector
     }
 
     /// <summary>
-    /// Resolves the data template based on the if the ComputeSystemsListViewModel currently containers any ComputeSystemWrappers.
+    /// Resolves the data template based on the if the ComputeSystemsListViewModel currently containers any ComputeSystems.
     /// </summary>
     /// <param name="item">The ComputeSystemsListViewModel object</param>
     private DataTemplate? ResolveDataTemplate(object item)

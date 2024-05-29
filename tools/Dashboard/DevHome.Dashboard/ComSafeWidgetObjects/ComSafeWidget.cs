@@ -56,6 +56,17 @@ public class ComSafeWidget
     }
 
     /// <summary>
+    /// ComSafeWidgets must be populated before use to guarantee their properties are valid.
+    /// Calling methods will populate the object, but referencing properties cannot.
+    /// </summary>
+    /// <returns>true if the ComSafeWidget was successfully populated, false if not.</returns>
+    public async Task<bool> PopulateAsync()
+    {
+        await LazilyLoadOopWidget();
+        return _hasValidProperties;
+    }
+
+    /// <summary>
     /// Gets the card template from the widget. Tries multiple times in case of COM exceptions.
     /// </summary>
     /// <returns>The card template, or empty JSON in the case of failure.</returns>
@@ -328,26 +339,21 @@ public class ComSafeWidget
     }
 
     /// <summary>
-    /// Get a widget's ID from a widget object. Tries multiple times in case of COM exceptions.
+    /// Get a widget's ID from a widget object.
     /// </summary>
     /// <param name="widget">Widget</param>
     /// <returns>The Widget's Id, or in the case of failure string.Empty</returns>
     public static async Task<string> GetIdFromUnsafeWidgetAsync(Widget widget)
     {
-        var retries = 5;
-
         return await Task.Run(() =>
         {
-            while (retries-- > 0)
+            try
             {
-                try
-                {
-                    return widget.Id;
-                }
-                catch (Exception ex)
-                {
-                    Log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}, try {retries} more times");
-                }
+                return widget.Id;
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, $"Failed to operate on out-of-proc object with error code: 0x{ex.HResult:x}");
             }
 
             return string.Empty;

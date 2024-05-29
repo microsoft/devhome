@@ -21,14 +21,13 @@ using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Telemetry;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
-using Windows.System;
-using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
 
@@ -48,7 +47,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private readonly SemaphoreSlim _pinnedWidgetsLock = new(1, 1);
 
-    private static WindowEx _windowEx;
+    private static DispatcherQueue _dispatcherQueue;
     private readonly ILocalSettingsService _localSettingsService;
     private bool _disposedValue;
 
@@ -66,7 +65,7 @@ public partial class DashboardView : ToolPage, IDisposable
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
         PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
 
-        _windowEx = Application.Current.GetService<WindowEx>();
+        _dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
         _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
 
 #if DEBUG
@@ -246,7 +245,11 @@ public partial class DashboardView : ToolPage, IDisposable
             var id = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
             if (!string.IsNullOrEmpty(id))
             {
-                comSafeHostWidgets.Add(new ComSafeWidget(id));
+                var comSafeWidget = new ComSafeWidget(id);
+                if (await comSafeWidget.PopulateAsync())
+                {
+                    comSafeHostWidgets.Add(comSafeWidget);
+                }
             }
         }
 
@@ -301,7 +304,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
                 // Ensure only one copy of a widget is pinned if that widget's definition only allows for one instance.
                 var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
-                if (!await comSafeWidgetDefinition.Populate())
+                if (!await comSafeWidgetDefinition.PopulateAsync())
                 {
                     _log.Error($"Error populating widget definition for widget {widgetDefinitionId}");
                     await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
@@ -413,23 +416,23 @@ public partial class DashboardView : ToolPage, IDisposable
             var unsafeWidgetId = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
             if (unsafeWidgetId == string.Empty)
             {
-                _log.Error($"Couldn't get Widget.Id, can't create the widget");
-
                 // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
-                // Again, we can fail silently since this isn't in response to user action.
-                try
-                {
-                    await unsafeWidget.DeleteAsync();
-                }
-                catch (Exception)
-                {
-                    _log.Error($"Error deleting the widget that we couldn't create a ComSafeWidget for");
-                }
-
+                // We can fail silently since this isn't in response to user action.
+                _log.Error("Couldn't get Widget.Id, can't create the widget");
+                await unsafeWidget.DeleteAsync();
                 return;
             }
 
             var comSafeWidget = new ComSafeWidget(unsafeWidgetId);
+            if (!await comSafeWidget.PopulateAsync())
+            {
+                // If we created the widget but can't populate the ComSafeWidget, delete the widget.
+                // We can fail silently since this isn't in response to user action.
+                _log.Error("Couldn't populate ComSafeWidget, can't create the widget");
+                await unsafeWidget.DeleteAsync();
+                return;
+            }
+
             _log.Information($"Created default widget {unsafeWidgetId}");
 
             // Set custom state on new widget.
@@ -444,6 +447,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         catch (Exception ex)
         {
+            // We can fail silently since this isn't in response to user action.
             _log.Error(ex, $"PinDefaultWidget failed: ");
         }
     }
@@ -453,11 +457,11 @@ public partial class DashboardView : ToolPage, IDisposable
     {
         if (Common.Helpers.RuntimeHelper.IsOnWindows11)
         {
-            await Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
+            await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
         }
         else
         {
-            await Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
+            await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
         }
     }
 
@@ -483,6 +487,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 if (unsafeWidget == null)
                 {
                     // Couldn't create the widget, show an error message.
+                    _log.Error($"Failure in CreateWidgetAsync, can't create the widget");
                     await ShowCreateWidgetErrorMessage();
                     return;
                 }
@@ -495,19 +500,21 @@ public partial class DashboardView : ToolPage, IDisposable
 
                     // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
                     // We can try and catch silently, since the user already saw an error that the widget couldn't be created.
-                    try
-                    {
-                        await unsafeWidget.DeleteAsync();
-                    }
-                    catch (Exception)
-                    {
-                        _log.Error($"Error deleting the widget that we couldn't create a ComSafeWidget for");
-                    }
-
+                    await TryDeleteUnsafeWidget(unsafeWidget);
                     return;
                 }
 
                 var comSafeWidget = new ComSafeWidget(unsafeWidgetId);
+                if (!await comSafeWidget.PopulateAsync())
+                {
+                    _log.Error($"Couldn't populate the ComSafeWidget, can't create the widget");
+                    await ShowCreateWidgetErrorMessage();
+
+                    // If we created the widget but can't get a ComSafeWidget and show it, delete the widget.
+                    // We can try and catch silently, since the user already saw an error that the widget couldn't be created.
+                    await TryDeleteUnsafeWidget(unsafeWidget);
+                    return;
+                }
 
                 // Set custom state on new widget.
                 var position = PinnedWidgets.Count;
@@ -526,9 +533,21 @@ public partial class DashboardView : ToolPage, IDisposable
         }
     }
 
+    private async Task TryDeleteUnsafeWidget(Widget unsafeWidget)
+    {
+        try
+        {
+            await unsafeWidget.DeleteAsync();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error deleting widget");
+        }
+    }
+
     private async Task ShowCreateWidgetErrorMessage()
     {
-        var mainWindow = Application.Current.GetService<WindowEx>();
+        var mainWindow = Application.Current.GetService<Window>();
         var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
         await mainWindow.ShowErrorMessageDialogAsync(
             title: string.Empty,
@@ -548,7 +567,7 @@ public partial class DashboardView : ToolPage, IDisposable
             if (unsafeWidgetDefinition != null)
             {
                 var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
-                if (!await comSafeWidgetDefinition.Populate())
+                if (!await comSafeWidgetDefinition.PopulateAsync())
                 {
                     _log.Error($"Error inserting widget in pinned widgets, id = {widgetId}, index = {index}");
                     await widget.DeleteAsync();
@@ -561,7 +580,7 @@ public partial class DashboardView : ToolPage, IDisposable
                     new ReportPinnedWidgetEvent(comSafeWidgetDefinition.ProviderDefinitionId, widgetDefinitionId));
 
                 var wvm = _widgetViewModelFactory(widget, size, comSafeWidgetDefinition);
-                _windowEx.DispatcherQueue.TryEnqueue(() =>
+                _dispatcherQueue.TryEnqueue(() =>
                 {
                     try
                     {
@@ -618,7 +637,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
         var widgetDefinitionId = await ComSafeWidgetDefinition.GetIdFromUnsafeWidgetDefinitionAsync(unsafeWidgetDefinition);
         var comSafeNewDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
-        if (!await comSafeNewDefinition.Populate())
+        if (!await comSafeNewDefinition.PopulateAsync())
         {
             _log.Error($"Error populating widget definition for widget {widgetDefinitionId}");
             return;
@@ -638,7 +657,7 @@ public partial class DashboardView : ToolPage, IDisposable
             // If we're no longer allowed to have multiple instances of this widget, delete all but the first.
             if (++matchingWidgetsFound > 1 && comSafeNewDefinition.AllowMultiple == false && oldDef.AllowMultiple == true)
             {
-                _windowEx.DispatcherQueue.TryEnqueue(async () =>
+                _dispatcherQueue.TryEnqueue(async () =>
                 {
                     _log.Information($"No longer allowed to have multiple of widget {updatedDefinitionId}");
                     _log.Information($"Delete widget {widgetToUpdate.Widget.Id}");
@@ -678,7 +697,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
         var definitionId = args.DefinitionId;
-        _windowEx.DispatcherQueue.TryEnqueue(async () =>
+        _dispatcherQueue.TryEnqueue(async () =>
         {
             _log.Information($"WidgetDefinitionDeleted {definitionId}");
             foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())

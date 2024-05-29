@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.PI.SettingsUi.AddToolControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid x:Name="ContentGrid" Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Margin="0">
+            <StackPanel Orientation="Vertical">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Uid="ToolNameHeaderTextBlock" VerticalAlignment="Center"/>
+                    <TextBox x:Name="ToolNameTextBox" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                </Grid>
+                <Grid Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Uid="ToolPathHeaderTextBlock" Grid.Row="2" VerticalAlignment="Center"/>
+                    <TextBox x:Name="ToolPathTextBox" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" TextChanged="UpdateSampleCommandline"/>
+                    <Button 
+                        x:Uid="ToolBrowseButton" Name="BrowseButton" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left"
+                        Width="100" Margin="8,0,0,0" Click="BrowseButton_Click"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Margin="0,12,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock x:Uid="BasicArgumentsTextBlock"/>
+                <Grid Grid.Row="1" Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <RadioButton x:Uid="NoneRadio" x:Name="NoneRadio" IsChecked="True" GroupName="SwitchGroup" Checked="UpdateSampleCommandline"/>
+                        <RadioButton x:Uid="HwndRadio" x:Name="HwndRadio" GroupName="SwitchGroup" Checked="UpdateSampleCommandline"/>
+                        <RadioButton x:Uid="ProcessIdRadio" x:Name="ProcessIdRadio"  GroupName="SwitchGroup" Checked="UpdateSampleCommandline"/>
+                    </StackPanel>
+                    <TextBlock x:Uid="PrefixTextBlock" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <TextBox x:Name="PrefixTextBox" Grid.Column="2" Width="92" HorizontalAlignment="Right" Height="30" TextChanged="UpdateSampleCommandline"/>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Margin="0,12,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock x:Uid="OtherArgumentsTextBlock"/>
+                <TextBox
+                    x:Name="OtherArgsTextBox" Grid.Row="1" MinHeight="30" Height="50"
+                    TextWrapping="Wrap" Margin="0,6,0,0" TextChanged="UpdateSampleCommandline"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="3" Margin="0,12,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock x:Uid="SampleCommandLineTextBlock"/>
+                <TextBox
+                    x:Name="SampleCommandTextBox" Grid.Row="1" MinHeight="30" Height="50"
+                    TextWrapping="Wrap" Margin="0,0,0,0" IsReadOnly="True"/>
+            </Grid>
+        </Border>
+
+        <ToggleSwitch 
+            x:Uid="IsPinnedToggleSwitch" x:Name="IsPinnedToggleSwitch"
+            Grid.Row="4" Margin="0,12,0,0" HorizontalAlignment="Left" IsOn="True"/>
+        
+        <StackPanel Orientation="Horizontal" Grid.Row="5" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="6">
+            <Button x:Uid="AddToolsOkButton" x:Name="OkButton" Click="OkButton_Click" MinWidth="100"/>
+            <Button x:Uid="AddToolsCancelButton" x:Name="CancelButton" MinWidth="100"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
