@@ -3,10 +3,6 @@
 
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
-using FileExplorerSourceControlIntegration;
-using LibGit2Sharp;
-using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Storage;
 
@@ -92,7 +88,7 @@ public class RepositoryTracking
                     }
                     catch (Exception ex)
                     {
-                        log.Error($"Added event signaling failed: ", ex);
+                        log.Error(ex, $"Added event signaling failed: ");
                     }
 
                     log.Information("Repository added to repo store");
@@ -120,7 +116,7 @@ public class RepositoryTracking
                 }
                 catch (Exception ex)
                 {
-                    log.Error($"Removed event signaling failed: ", ex);
+                    log.Error(ex, $"Removed event signaling failed: ");
                 }
             }
 

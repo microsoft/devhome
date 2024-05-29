@@ -43,8 +43,7 @@ public partial class FileExplorerViewModel : ObservableObject
     public void RefreshTrackedRepositories()
     {
         var experimentationService = Application.Current.GetService<IExperimentationService>();
-        var isEnabled = experimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration");
-        if (isEnabled)
+        if (experimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
         {
             TrackedRepositories.Clear();
             var repoCollection = RepoTracker.GetAllTrackedRepositories();
