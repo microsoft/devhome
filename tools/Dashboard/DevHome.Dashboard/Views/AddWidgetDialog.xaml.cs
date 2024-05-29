@@ -104,7 +104,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 {
                     IsExpanded = true,
                     Tag = providerDef,
-                    Content = new TextBlock { Text = providerDef.DisplayName, TextWrapping = TextWrapping.WrapWholeWords },
+                    Content = new TextBlock { Text = providerDef.DisplayName, TextWrapping = TextWrapping.Wrap },
                 };
 
                 navItem.SetValue(ToolTipService.ToolTipProperty, providerDef.DisplayName);
@@ -167,7 +167,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             {
                 Width = 16,
                 Height = 16,
-                Margin = new Thickness(0, 0, 10, 0),
+                Margin = new Thickness(0, 0, 9, 0),
                 Fill = new ImageBrush
                 {
                     ImageSource = image,
@@ -181,10 +181,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         var itemText = new TextBlock()
         {
-            Text = text,
-            TextWrapping = TextWrapping.WrapWholeWords,
+            Text = text.Trim(),
+            TextWrapping = TextWrapping.Wrap,
+            VerticalAlignment = VerticalAlignment.Center,
         };
         Grid.SetColumn(itemText, 1);
+
         itemContent.Children.Add(itemText);
 
         return itemContent;
