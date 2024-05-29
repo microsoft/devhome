@@ -191,15 +191,6 @@ public sealed partial class SettingsToolWindow : ToolWindow
     {
         Settings.Default.IsCpuUsageMonitoringEnabled = CpuUsageToggle.IsOn;
         Settings.Default.Save();
-
-        if (CpuUsageToggle.IsOn)
-        {
-            PerfCounters.Instance.Start();
-        }
-        else
-        {
-            PerfCounters.Instance.Stop();
-        }
     }
 
     private void ShowInsightsToggle_Toggled(object sender, RoutedEventArgs e)

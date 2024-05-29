@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Devices.Display;
 using Windows.Devices.Enumeration;
+using Windows.Foundation;
 using Windows.Graphics;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
@@ -225,6 +226,15 @@ public class WindowHelper
         rectangle.Height = winSize.Height;
 
         return rectangle;
+    }
+
+    public static Windows.Graphics.RectInt32 GetRect(Rect bounds, double scale)
+    {
+        return new Windows.Graphics.RectInt32(
+            _X: (int)Math.Round(bounds.X * scale),
+            _Y: (int)Math.Round(bounds.Y * scale),
+            _Width: (int)Math.Round(bounds.Width * scale),
+            _Height: (int)Math.Round(bounds.Height * scale));
     }
 
     public enum BinaryType : int
