@@ -11,7 +11,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
-using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Models;
@@ -32,11 +31,17 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     public IAsyncRelayCommand LoadFeaturesCommand { get; }
 
+    public bool FeaturesLoaded => !LoadFeaturesCommand.IsRunning;
+
+    public IAsyncRelayCommand ApplyChangesCommand { get; }
+
+    public bool ChangesApplied => !ApplyChangesCommand.IsRunning;
+
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
     public ObservableCollection<OptionalFeatureState> Features { get; } = new();
 
-    public bool HasFeatureChanges => Features.Any(f => f.HasChanged);
+    public bool HasFeatureChanges => FeaturesLoaded && Features.Any(f => f.HasChanged);
 
     public VirtualMachineManagementViewModel(DispatcherQueue dispatcherQueue)
     {
@@ -52,6 +57,26 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
         _commonStringResource = new StringResource("DevHome.Common.pri", "DevHome.Common/Resources");
 
         LoadFeaturesCommand = new AsyncRelayCommand(LoadFeaturesAsync);
+        LoadFeaturesCommand.PropertyChanged += async (s, e) =>
+        {
+            if (e.PropertyName == nameof(LoadFeaturesCommand.IsRunning))
+            {
+                await _dispatcherQueue.EnqueueAsync(() =>
+                {
+                    OnPropertyChanged(nameof(FeaturesLoaded));
+                    OnPropertyChanged(nameof(HasFeatureChanges));
+                });
+            }
+        };
+
+        ApplyChangesCommand = new AsyncRelayCommand(ApplyChangesAsync);
+        ApplyChangesCommand.PropertyChanged += async (s, e) =>
+        {
+            if (e.PropertyName == nameof(ApplyChangesCommand.IsRunning))
+            {
+                await _dispatcherQueue.EnqueueAsync(() => OnPropertyChanged(nameof(ChangesApplied)));
+            }
+        };
 
         _ = LoadFeaturesCommand.ExecuteAsync(null);
     }
@@ -69,11 +94,15 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
         }
     }
 
-    public async Task LoadFeaturesAsync()
+    private async Task LoadFeaturesAsync()
     {
         await Task.Run(async () =>
         {
-            Features.Clear();
+            await _dispatcherQueue.EnqueueAsync(() =>
+            {
+                Features.Clear();
+            });
+
             foreach (var featureName in WindowsOptionalFeatureNames.VirtualMachineFeatures)
             {
                 var feature = ManagementInfrastructureHelper.GetWindowsFeatureDetails(featureName);
@@ -91,17 +120,25 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
         });
     }
 
-    [RelayCommand]
-    public void ApplyChanges()
+    private async Task ApplyChangesAsync()
     {
-        // TODO: Use script to apply changes and prompt to restart the computer. Keep track of whether or not a reboot is required
-        // and disable all the toggles until the reboot is complete.
-        _notificationsHelper?.ShowWithWindowExtension(
-            "Changes applied",
-            _commonStringResource.GetLocalized("RestartAfterChangesMessage"),
-            InfoBarSeverity.Warning,
-            RestartComputerCommand,
-            _commonStringResource.GetLocalized("RestartButton"));
+        await Task.Run(async () =>
+        {
+            await _dispatcherQueue.EnqueueAsync(async () =>
+            {
+                await LoadFeaturesCommand.ExecuteAsync(null);
+            });
+
+            // TODO: Use script to apply changes and prompt to restart the computer. Keep track of whether or not a reboot is required
+            // and disable all the toggles until the reboot is complete.
+            _notificationsHelper?.ShowWithWindowExtension(
+                "Changes applied",
+                _commonStringResource.GetLocalized("RestartAfterChangesMessage"),
+                InfoBarSeverity.Warning,
+                RestartComputerCommand,
+                _commonStringResource.GetLocalized("RestartButton"));
+            return Task.CompletedTask;
+        });
     }
 
     [RelayCommand]
