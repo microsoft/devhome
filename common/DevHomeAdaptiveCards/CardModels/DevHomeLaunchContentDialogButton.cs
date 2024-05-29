@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.DevHomeAdaptiveCards.CardInterfaces;
+using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Common.Views.AdaptiveCardViews;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
 
@@ -56,7 +59,17 @@ public partial class DevHomeLaunchContentDialogButton : IDevHomeSettingsCardNonS
             return;
         }
 
-        var dialog = new ContentDialogWithNonInteractiveContent(dialogContent);
+        var rendererService = Application.Current.GetService<AdaptiveCardRenderingService>();
+        var renderer = await rendererService.GetRendererAsync();
+        var dialog = new ContentDialog();
+
+        renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+        var card = renderer.RenderAdaptiveCardFromJsonString(dialogContent.ContentDialogInternalAdaptiveCardJson?.Stringify() ?? string.Empty);
+
+        dialog.Title = dialogContent.Title;
+        dialog.PrimaryButtonText = dialogContent.PrimaryButtonText;
+        dialog.Content = card.FrameworkElement;
+        dialog.SecondaryButtonText = dialogContent.SecondaryButtonText;
 
         dialog.XamlRoot = senderObj.XamlRoot;
 

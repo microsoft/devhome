@@ -41,7 +41,8 @@
             <views:AddCreateButton
                 AutomationProperties.AutomationId="AddRepositoriesButton"
                 x:Uid="MainPage_RepoReview_AddRepository"
-                Command="{x:Bind AddRepoCommand}" />
+                Command="{x:Bind AddRepoCommand}" 
+                x:Name="MyCoolButton"/>
         </setupControls:SetupShell.Header>
         <Grid x:Name="RepoConfigGrid" RowSpacing="10">
             <Grid.RowDefinitions>
