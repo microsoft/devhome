@@ -66,6 +66,9 @@ public partial class BarWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _showingExpandedContent;
 
+    [ObservableProperty]
+    private bool _isAlwaysOnTop = true;
+
     public BarWindowViewModel()
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();

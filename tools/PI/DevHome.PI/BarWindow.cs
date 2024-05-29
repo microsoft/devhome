@@ -22,6 +22,7 @@ public partial class BarWindow
     private readonly BarWindowHorizontal _horizontalWindow;
     private readonly BarWindowVertical _verticalWindow;
     private readonly BarWindowViewModel _viewModel = new();
+    private readonly SnapHelper _snapHelper;
 
     internal HWND CurrentHwnd
     {
@@ -80,6 +81,7 @@ public partial class BarWindow
     {
         _horizontalWindow = new BarWindowHorizontal(_viewModel);
         _verticalWindow = new BarWindowVertical(_viewModel);
+        _snapHelper = new(_viewModel);
 
         _horizontalWindow.Closed += Window_Closed;
         _verticalWindow.Closed += Window_Closed;
@@ -99,6 +101,7 @@ public partial class BarWindow
     {
         // If we receive a window closed event, clean up the system
         TargetAppData.Instance.ClearAppData();
+        _snapHelper.Close();
 
         var primaryWindow = Application.Current.GetService<PrimaryWindow>();
         primaryWindow.ClearBarWindow();

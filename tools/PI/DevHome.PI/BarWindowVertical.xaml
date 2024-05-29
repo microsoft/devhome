@@ -11,7 +11,7 @@
     mc:Ignorable="d"
     Title="" MinHeight="700" MinWidth="70" MaxWidth="70" Width="70" Height="700"
     TaskBarIcon="Images/pi.ico" IsTitleBarVisible="False"
-    Closed="WindowEx_Closed" >
+    IsAlwaysOnTop="{x:Bind _viewModel.IsAlwaysOnTop, Mode=TwoWay}">
 
     <!-- TODO Make DesktopAcrylicBackdrop/MicaBackdrop and AcrylicBackgroundFillColorBaseBrush user-configurable.-->
     <Window.SystemBackdrop>
