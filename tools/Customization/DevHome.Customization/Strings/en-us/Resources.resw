@@ -301,4 +301,16 @@
     <value>Windows developer settings</value>
     <comment>The header for the Windows developer settings card</comment>
   </data>
+  <data name="VirtualMachineManagement_Header" xml:space="preserve">
+    <value>Virtual machine management</value>
+    <comment>Header for main Windows customization page in the breadcrumb bar</comment>
+  </data>
+  <data name="VirtualMachineManagementCard.Description" xml:space="preserve">
+    <value>Access, manage, create and edit virtual machine environments in Windows</value>
+    <comment>The description for the virtual machine management settings card</comment>
+  </data>
+  <data name="VirtualMachineManagementCard.Header" xml:space="preserve">
+    <value>Virtual machine management</value>
+    <comment>The header for the virtual machine management settings card</comment>
+  </data>
 </root>

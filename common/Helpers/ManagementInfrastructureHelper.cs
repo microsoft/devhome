@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Globalization;
 using Microsoft.Management.Infrastructure;
 using Serilog;
 
@@ -24,6 +23,11 @@ public static class ManagementInfrastructureHelper
 
     public static FeatureAvailabilityKind IsWindowsFeatureAvailable(string featureName)
     {
+        return GetWindowsFeatureDetails(featureName)?.AvailabilityKind ?? FeatureAvailabilityKind.Unknown;
+    }
+
+    public static WindowsOptionalFeature? GetWindowsFeatureDetails(string featureName)
+    {
         try
         {
             // use the local session
@@ -37,7 +41,11 @@ public static class ManagementInfrastructureHelper
                     var featureAvailability = GetAvailabilityKindFromState(installState);
 
                     _log.Information($"Found feature: '{featureName}' with enablement state: '{featureAvailability}'");
-                    return featureAvailability;
+
+                    return new WindowsOptionalFeature(
+                        featureInstance.CimInstanceProperties["Caption"]?.Value as string ?? string.Empty,
+                        featureInstance.CimInstanceProperties["Description"]?.Value as string ?? string.Empty,
+                        featureAvailability);
                 }
             }
         }
@@ -47,7 +55,7 @@ public static class ManagementInfrastructureHelper
         }
 
         _log.Information($"Unable to get state of {featureName} feature");
-        return FeatureAvailabilityKind.Unknown;
+        return null;
     }
 
     private static FeatureAvailabilityKind GetAvailabilityKindFromState(uint state)

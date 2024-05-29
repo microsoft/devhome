@@ -28,6 +28,9 @@ public static class ServiceExtensions
 
         services.AddTransient<QuietBackgroundProcessesViewModel>();
 
+        services.AddSingleton<VirtualMachineManagementViewModel>();
+        services.AddTransient<VirtualMachineManagementPage>();
+
         return services;
     }
 }

@@ -1,0 +1,74 @@
+<Page
+    x:Class="DevHome.Customization.Views.VirtualMachineManagementPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:converters="using:DevHome.Common.Converters"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:models="using:DevHome.Customization.Models"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
+    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
+    Loaded="OnLoaded">
+
+    <Page.Resources>
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+    </Page.Resources>
+
+    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+
+        <InfoBar
+            MaxWidth="480"
+            Margin="24"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Grid.Row="2">
+            <i:Interaction.Behaviors>
+                <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
+            </i:Interaction.Behaviors>
+        </InfoBar>
+
+        <ProgressRing IsActive="{x:Bind ViewModel.LoadFeaturesCommand.IsRunning, Mode=OneWay}"
+            Visibility="{x:Bind ViewModel.LoadFeaturesCommand.IsRunning, Mode=OneWay}"
+            HorizontalAlignment="Center"/>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <ScrollView>
+                <muxc:ItemsRepeater ItemsSource="{x:Bind ViewModel.Features}"
+                Visibility="{x:Bind ViewModel.LoadFeaturesCommand.IsRunning, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    <muxc:ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="models:OptionalFeatureState">
+                            <controls:SettingsCard Header="{x:Bind Feature.DisplayName}" Description="{x:Bind Feature.Description}" IsClickEnabled="False">
+                                <StackPanel Orientation="Horizontal">
+                                    <FontIcon
+                                        Glyph="&#xE783;" 
+                                        Visibility="{x:Bind HasChanged, Mode=OneWay}" 
+                                        ToolTipService.ToolTip="Click the apply button to confirm changes"
+                                        Margin="0 0 10 0" />
+                                    <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=TwoWay}" />
+                                </StackPanel>
+                            </controls:SettingsCard>
+                        </DataTemplate>
+                    </muxc:ItemsRepeater.ItemTemplate>
+                </muxc:ItemsRepeater>
+            </ScrollView>
+
+            <Button
+                Grid.Row="1"
+                Content="Apply"
+                Command="{x:Bind ViewModel.ApplyChangesCommand}"
+                Style="{StaticResource AccentButtonStyle}"
+                Visibility="{x:Bind ViewModel.HasFeatureChanges, Mode=OneWay}"
+                Margin="0,24,0,24"
+                HorizontalAlignment="Right"
+                MinWidth="120"/>
+        </Grid>
+    </Grid>
+</Page>
