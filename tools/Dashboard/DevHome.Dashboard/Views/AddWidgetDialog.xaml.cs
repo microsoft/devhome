@@ -171,7 +171,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             {
                 Width = 16,
                 Height = 16,
-                Margin = new Thickness(0, 0, 9, 0),
+                Margin = new Thickness(0, 0, 8, 0),
                 Fill = new ImageBrush
                 {
                     ImageSource = image,
