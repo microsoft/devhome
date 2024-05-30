@@ -26,14 +26,4 @@ public class PIAppInfoService
             return Assembly.GetExecutingAssembly().GetName().Version!;
         }
     }
-
-    private static bool RunningAsAdmin
-    {
-        get
-        {
-            using var identity = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-    }
 }

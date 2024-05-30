@@ -2,9 +2,7 @@
 <Application
     x:Class="DevHome.PI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:behaviors="using:DevHome.Common.Behaviors">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Application.Resources>
         <ResourceDictionary>
