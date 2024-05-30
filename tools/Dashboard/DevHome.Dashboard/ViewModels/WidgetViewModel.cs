@@ -42,6 +42,7 @@ public partial class WidgetViewModel : ObservableObject
 
     private readonly DispatcherQueue _dispatcherQueue;
     private readonly WidgetAdaptiveCardRenderingService _renderingService;
+    private readonly IScreenReaderService _screenReaderService;
 
     private RenderedAdaptiveCard _renderedCard;
 
@@ -98,9 +99,11 @@ public partial class WidgetViewModel : ObservableObject
         WidgetSize widgetSize,
         ComSafeWidgetDefinition widgetDefinition,
         WidgetAdaptiveCardRenderingService adaptiveCardRenderingService,
+        IScreenReaderService screenReaderService,
         DispatcherQueue dispatcherQueue)
     {
         _renderingService = adaptiveCardRenderingService;
+        _screenReaderService = screenReaderService;
         _dispatcherQueue = dispatcherQueue;
 
         Widget = widget;
@@ -183,6 +186,7 @@ public partial class WidgetViewModel : ObservableObject
                     {
                         _renderedCard.Action += HandleAdaptiveAction;
                         WidgetFrameworkElement = _renderedCard.FrameworkElement;
+                        AnnounceWarnings(card.AdaptiveCard);
                     }
                     else
                     {
@@ -274,6 +278,8 @@ public partial class WidgetViewModel : ObservableObject
         };
         sp.Children.Add(errorText);
 
+        var errorTextToAnnounce = errorText.Text;
+
         if (subError is not null)
         {
             var subErrorText = new TextBlock
@@ -285,7 +291,10 @@ public partial class WidgetViewModel : ObservableObject
             };
 
             sp.Children.Add(subErrorText);
+            errorTextToAnnounce += $" {subErrorText.Text}";
         }
+
+        _screenReaderService.Announce(errorTextToAnnounce);
 
         grid.Children.Add(sp);
         return grid;
@@ -338,5 +347,58 @@ public partial class WidgetViewModel : ObservableObject
     public void UnsubscribeFromWidgetUpdates()
     {
         Widget.WidgetUpdated -= HandleWidgetUpdated;
+    }
+
+    private void AnnounceWarnings(AdaptiveCard card)
+    {
+        foreach (var element in card.Body)
+        {
+            SearchForWarning(element, false);
+        }
+    }
+
+    private void SearchForWarning(IAdaptiveCardElement element, bool isInsideWarningContainer)
+    {
+        // We are only interested in plain texts. Buttons, Actions, Images
+        // and textboxes are all ignored. Including ActionSets and ImageSets.
+        if (element is AdaptiveTextBlock)
+        {
+            var textBlock = (AdaptiveTextBlock)element;
+            if (isInsideWarningContainer)
+            {
+                _screenReaderService.Announce(textBlock.Text);
+            }
+        }
+
+        // We are treating any text inside a container with the "Warning" style
+        // as an actual warning to be announced.
+        // For now, the only types of containers widgets use are Containers and Columns. In the future,
+        // we may add Caroussels, Tables and Facts to this list.
+        if (element is AdaptiveContainer)
+        {
+            var container = (AdaptiveContainer)element;
+            foreach (var subelement in container.Items)
+            {
+                SearchForWarning(subelement, isInsideWarningContainer || container.Style == ContainerStyle.Warning);
+            }
+        }
+
+        if (element is AdaptiveColumnSet)
+        {
+            var columnSet = (AdaptiveColumnSet)element;
+            foreach (var subelement in columnSet.Columns)
+            {
+                SearchForWarning(subelement, isInsideWarningContainer || columnSet.Style == ContainerStyle.Warning);
+            }
+        }
+
+        if (element is AdaptiveColumn)
+        {
+            var column = (AdaptiveColumn)element;
+            foreach (var subelement in column.Items)
+            {
+                SearchForWarning(subelement, isInsideWarningContainer || column.Style == ContainerStyle.Warning);
+            }
+        }
     }
 }
