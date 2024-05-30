@@ -2,7 +2,9 @@
 <Application
     x:Class="DevHome.PI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:behaviors="using:DevHome.Common.Behaviors">
 
     <Application.Resources>
         <ResourceDictionary>
@@ -28,6 +30,17 @@
             
             <StackLayout x:Name="ExternalToolsHorizontalLayout" Orientation="Horizontal" />
             <StackLayout x:Name="ExternalToolsVerticalLayout" Orientation="Vertical" />
+
+            <Thickness x:Key="SettingsCardMargin">0,0,0,4</Thickness>
+            <Thickness x:Key="XSmallTopBottomMargin">0,8,0,8</Thickness>
+            <Thickness x:Key="HyperlinkButtonNegativeMargin">-12,0,0,0</Thickness>
+
+            <x:Double x:Key="BreadcrumbBarChevronFontSize">12</x:Double>
+            <Thickness x:Key="BreadcrumbBarChevronPadding">12,0</Thickness>
+            <FontFamily x:Key="ContentControlThemeFontFamily">XamlAutoFontFamily</FontFamily>
+            <x:Double x:Key="BreadcrumbBarItemFontSize">20</x:Double>
+            <StaticResource x:Key="BreadcrumbBarItemThemeFontSize" ResourceKey="BreadcrumbBarItemFontSize"/>
+            <FontWeight x:Key="BreadcrumbBarItemFontWeight">SemiBold</FontWeight>
 
         </ResourceDictionary>
     </Application.Resources>

@@ -11,7 +11,6 @@ using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
-using DevHome.PI.SettingsUi;
 using DevHome.PI.ViewModels;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
@@ -224,8 +223,8 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void ManageExternalToolsButton_Click(object sender, RoutedEventArgs e)
     {
-        SettingsToolWindow settingsTool = new(Settings.Default.SettingsToolPosition, SettingsPage.AdditionalTools);
-        settingsTool.Show();
+        ExpandLargeContentPanel();
+        ExpandedViewControl.NavigateToSettings(typeof(AdditionalToolsViewModel).FullName!);
     }
 
     private void ExternalToolMenuItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
