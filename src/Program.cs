@@ -6,6 +6,7 @@ using DevHome.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.UI.Dispatching;
 using Serilog;
+using Windows.ApplicationModel;
 
 namespace DevHome;
 
@@ -73,9 +74,11 @@ public static class Program
         {
             try
             {
+                var appExAliasAbsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"Microsoft\\WindowsApps\\{Package.Current.Id.FamilyName}");
+
                 var processStartInfo = new ProcessStartInfo
                 {
-                    FileName = utilityToLaunch,
+                    FileName = Path.Combine(appExAliasAbsFolderPath, utilityToLaunch),
                     Arguments = utilityLaunchArgs,
                 };
 
