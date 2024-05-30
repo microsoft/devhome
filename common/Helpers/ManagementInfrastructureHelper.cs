@@ -43,6 +43,7 @@ public static class ManagementInfrastructureHelper
                     _log.Information($"Found feature: '{featureName}' with enablement state: '{featureAvailability}'");
 
                     return new WindowsOptionalFeature(
+                        featureName,
                         featureInstance.CimInstanceProperties["Caption"]?.Value as string ?? string.Empty,
                         featureInstance.CimInstanceProperties["Description"]?.Value as string ?? string.Empty,
                         featureAvailability);

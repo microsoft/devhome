@@ -14,15 +14,19 @@ using CommunityToolkit.WinUI.Behaviors;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Models;
+using DevHome.Common.Scripts;
 using DevHome.Common.Services;
 using DevHome.Customization.Models;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
+using Serilog;
 
 namespace DevHome.Customization.ViewModels;
 
 public partial class VirtualMachineManagementViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(VirtualMachineManagementViewModel));
+
     private readonly DispatcherQueue _dispatcherQueue;
 
     private readonly StringResource _commonStringResource;
@@ -106,7 +110,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
             foreach (var featureName in WindowsOptionalFeatureNames.VirtualMachineFeatures)
             {
                 var feature = ManagementInfrastructureHelper.GetWindowsFeatureDetails(featureName);
-                if (feature != null)
+                if (feature != null && feature.IsAvailable)
                 {
                     var featureState = new OptionalFeatureState(feature);
                     featureState.PropertyChanged += FeatureState_PropertyChanged;
@@ -122,23 +126,21 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     private async Task ApplyChangesAsync()
     {
-        await Task.Run(async () =>
+        await _dispatcherQueue.EnqueueAsync(async () =>
         {
-            await _dispatcherQueue.EnqueueAsync(async () =>
-            {
-                await LoadFeaturesCommand.ExecuteAsync(null);
-            });
-
-            // TODO: Use script to apply changes and prompt to restart the computer. Keep track of whether or not a reboot is required
-            // and disable all the toggles until the reboot is complete.
-            _notificationsHelper?.ShowWithWindowExtension(
-                "Changes applied",
-                _commonStringResource.GetLocalized("RestartAfterChangesMessage"),
-                InfoBarSeverity.Warning,
-                RestartComputerCommand,
-                _commonStringResource.GetLocalized("RestartButton"));
-            return Task.CompletedTask;
+            await ModifyFeatures();
+            await LoadFeaturesCommand.ExecuteAsync(null);
         });
+    }
+
+    private void ShowRestartNotification()
+    {
+        _notificationsHelper?.ShowWithWindowExtension(
+            "Changes applied",
+            _commonStringResource.GetLocalized("RestartAfterChangesMessage"),
+            InfoBarSeverity.Warning,
+            RestartComputerCommand,
+            _commonStringResource.GetLocalized("RestartButton"));
     }
 
     [RelayCommand]
@@ -159,5 +161,72 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
             StartInfo = startInfo,
         };
         process.Start();
+    }
+
+    private async Task ModifyFeatures()
+    {
+        if (!HasFeatureChanges)
+        {
+            return;
+        }
+
+        var featuresString = string.Empty;
+
+        foreach (var featureState in Features)
+        {
+            if (featureState.HasChanged)
+            {
+                featuresString += $"{featureState.Feature.FeatureName}={featureState.IsEnabled}`n";
+            }
+        }
+
+        var startInfo = new ProcessStartInfo();
+
+        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+        startInfo.FileName = $"powershell.exe";
+        startInfo.Arguments = $"-ExecutionPolicy Bypass -Command \"{ModifyWindowsOptionalFeatures.ModifyFunction.Replace("$args[0]", $"\"{featuresString}\"")}\"";
+        startInfo.UseShellExecute = true;
+        startInfo.Verb = "runas";
+
+        var process = new Process();
+        process.StartInfo = startInfo;
+        await Task.Run(() =>
+        {
+            // Since a UAC prompt will be shown, we need to wait for the process to exit
+            // This can also be cancelled by the user which will result in an exception
+            try
+            {
+                process.Start();
+                process.WaitForExit();
+
+                _notificationsHelper?.ClearWithWindowExtension();
+                _log.Information($"Script exited with code: '{process.ExitCode}'");
+
+                // ExitCodes come directly from within the script in HyperVSetupScript.SetupFunction.
+                switch (process.ExitCode)
+                {
+                    case 0:
+                        // The script successfully modified all features
+                        ShowRestartNotification();
+                        return Task.CompletedTask;
+                    case 1:
+                        // The script found that nothing needed to be done. The features will be reloaded
+                        // to show the correct state.
+                        return Task.CompletedTask;
+                    case 2:
+                    default:
+                        // Script failed to modify features, TODO: Show error dialog
+                        ShowRestartNotification();
+                        return Task.CompletedTask;
+                }
+            }
+            catch (Exception ex)
+            {
+                // This is most likely a case where the user cancelled the UAC prompt. TODO: Show error dialog
+                _log.Error(ex, "Script failed");
+            }
+
+            return Task.CompletedTask;
+        });
     }
 }
