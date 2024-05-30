@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.Animations;
 using DevHome.Common.Services;
 using DevHome.Telemetry;
 using DevHome.Utilities.TelemetryEvents;
@@ -68,8 +69,9 @@ public partial class UtilityViewModel : ObservableObject
 
     private void Launch()
     {
+        var activityId = Guid.NewGuid();
         _log.Information($"Launching {_exeName}, as admin: {LaunchAsAdmin}");
-        TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Start));
+        TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Start));
 
         // We need to start the process with ShellExecute to run elevated
         var processStartInfo = new ProcessStartInfo
@@ -86,16 +88,16 @@ public partial class UtilityViewModel : ObservableObject
             if (process is null)
             {
                 _log.Error($"Failed to start process {_exeName}");
-                TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Error));
+                TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Error));
                 throw new InvalidOperationException("Failed to start process");
             }
         }
         catch (Exception ex)
         {
             _log.Error(ex, $"Failed to start process {_exeName}");
-            TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Error, ex.ToString()));
+            TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Error, ex.ToString()));
         }
 
-        TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Complete), null);
+        TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Complete), null);
     }
 }

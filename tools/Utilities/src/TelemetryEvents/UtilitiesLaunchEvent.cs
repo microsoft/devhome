@@ -21,28 +21,19 @@ public class UtilitiesLaunchEvent : EventBase
         Complete,
     }
 
-    public string UtilityName
-    {
-        get;
-    }
+    public string ActivityId { get; }
 
-    public bool LaunchedAsAdmin
-    {
-        get;
-    }
+    public string UtilityName { get; }
 
-    public Phase LaunchPhase
-    {
-        get;
-    }
+    public bool LaunchedAsAdmin { get; }
 
-    public string ErrorString
-    {
-        get;
-    }
+    public Phase LaunchPhase { get; }
 
-    public UtilitiesLaunchEvent(string utilityName, bool launchedAsAdmin, Phase phase, string errorString = "")
+    public string ErrorString { get; }
+
+    public UtilitiesLaunchEvent(Guid activityId, string utilityName, bool launchedAsAdmin, Phase phase, string errorString = "")
     {
+        ActivityId = activityId.ToString();
         UtilityName = utilityName;
         LaunchedAsAdmin = launchedAsAdmin;
         LaunchPhase = phase;
