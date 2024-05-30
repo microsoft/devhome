@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
-    xmlns:converters="using:DevHome.Common.Converters"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:models="using:DevHome.Customization.Models"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
@@ -13,24 +12,22 @@
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
     Loaded="OnLoaded">
 
-    <Page.Resources>
-        <converters:BoolNegationConverter x:Key="BoolNegationConverter"/>
-    </Page.Resources>
-
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
 
         <InfoBar
+            Grid.Row="2"
             MaxWidth="480"
             Margin="24"
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom"
-            Grid.Row="2">
+            Background="{ThemeResource SystemControlAcrylicWindowBrush}">>
             <i:Interaction.Behaviors>
                 <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
             </i:Interaction.Behaviors>
         </InfoBar>
 
-        <ProgressRing IsActive="{x:Bind ViewModel.LoadFeaturesCommand.IsRunning, Mode=OneWay}"
+        <ProgressRing
+            IsActive="{x:Bind ViewModel.LoadFeaturesCommand.IsRunning, Mode=OneWay}"
             Visibility="{x:Bind ViewModel.LoadFeaturesCommand.IsRunning, Mode=OneWay}"
             HorizontalAlignment="Center"/>
 
@@ -41,14 +38,18 @@
             </Grid.RowDefinitions>
 
             <ScrollView>
-                <muxc:ItemsRepeater ItemsSource="{x:Bind ViewModel.Features}"
-                Visibility="{x:Bind ViewModel.FeaturesLoaded, Mode=OneWay}">
+                <muxc:ItemsRepeater
+                    ItemsSource="{x:Bind ViewModel.Features}"
+                    Visibility="{x:Bind ViewModel.FeaturesLoaded, Mode=OneWay}">
                     <muxc:ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="models:OptionalFeatureState">
-                            <controls:SettingsCard Header="{x:Bind Feature.DisplayName}" Description="{x:Bind Feature.Description}" IsClickEnabled="False">
+                            <controls:SettingsCard
+                                Header="{x:Bind Feature.DisplayName}"
+                                Description="{x:Bind Feature.Description}"
+                                IsClickEnabled="False">
                                 <StackPanel Orientation="Horizontal">
                                     <FontIcon
-                                        Glyph="&#xE783;" 
+                                        Glyph="&#xE783;"
                                         Visibility="{x:Bind HasChanged, Mode=OneWay}" 
                                         ToolTipService.ToolTip="Click the apply button to confirm changes"
                                         Margin="0 0 10 0" />
@@ -62,16 +63,24 @@
                 </muxc:ItemsRepeater>
             </ScrollView>
 
-            <Button
+            <StackPanel
                 Grid.Row="1"
-                Content="Apply"
-                Command="{x:Bind ViewModel.ApplyChangesCommand}"
-                Style="{StaticResource AccentButtonStyle}"
-                Visibility="{x:Bind ViewModel.HasFeatureChanges, Mode=OneWay}"
-                IsEnabled="{x:Bind ViewModel.ChangesApplied, Mode=OneWay}"
-                Margin="0,24,0,24"
+                Orientation="Horizontal"
                 HorizontalAlignment="Right"
-                MinWidth="120"/>
+                Visibility="{x:Bind ViewModel.HasFeatureChanges, Mode=OneWay}">
+                <ProgressRing
+                    IsActive="{x:Bind ViewModel.ApplyChangesCommand.IsRunning, Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.ApplyChangesCommand.IsRunning, Mode=OneWay}"
+                    Margin="0,0,10,0"/>
+                <Button
+                    Content="Apply"
+                    Command="{x:Bind ViewModel.ApplyChangesCommand}"
+                    Style="{StaticResource AccentButtonStyle}"
+                    IsEnabled="{x:Bind ViewModel.ChangesCanBeApplied, Mode=OneWay}"
+                    Margin="0,24,0,24"
+                    MinWidth="120"/>
+            </StackPanel>
+
         </Grid>
     </Grid>
 </Page>

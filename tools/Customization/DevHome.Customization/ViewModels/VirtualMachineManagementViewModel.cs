@@ -41,7 +41,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     public IAsyncRelayCommand ApplyChangesCommand { get; }
 
-    public bool ChangesApplied => !ApplyChangesCommand.IsRunning;
+    public bool ChangesCanBeApplied => !ApplyChangesCommand.IsRunning;
 
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
@@ -80,7 +80,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
         {
             if (e.PropertyName == nameof(ApplyChangesCommand.IsRunning))
             {
-                await _dispatcherQueue.EnqueueAsync(() => OnPropertyChanged(nameof(ChangesApplied)));
+                await _dispatcherQueue.EnqueueAsync(() => OnPropertyChanged(nameof(ChangesCanBeApplied)));
             }
         };
 
@@ -119,7 +119,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
                 var feature = ManagementInfrastructureHelper.GetWindowsFeatureDetails(featureName);
                 if (feature != null && feature.IsAvailable)
                 {
-                    var featureState = new OptionalFeatureState(feature, _isUserAdministrator);
+                    var featureState = new OptionalFeatureState(feature, _isUserAdministrator, ApplyChangesCommand);
                     featureState.PropertyChanged += FeatureState_PropertyChanged;
 
                     await _dispatcherQueue.EnqueueAsync(() =>
