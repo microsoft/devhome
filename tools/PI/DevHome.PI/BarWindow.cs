@@ -103,6 +103,7 @@ public partial class BarWindow
     {
         // If we receive a window closed event, clean up the system
         TargetAppData.Instance.ClearAppData();
+        PerfCounters.Instance.Stop();
 
         var primaryWindow = Application.Current.GetService<PrimaryWindow>();
         primaryWindow.ClearBarWindow();
