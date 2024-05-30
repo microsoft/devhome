@@ -134,6 +134,9 @@
   <data name="LaunchButton.Text" xml:space="preserve">
     <value>Launch</value>
   </data>
+  <data name="LaunchButtonBase.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Launch</value>
+  </data>
   <data name="NavigationPane.Content" xml:space="preserve">
     <value>Utilities</value>
     <comment>Utilities</comment>
