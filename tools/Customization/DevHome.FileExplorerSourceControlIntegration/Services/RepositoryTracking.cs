@@ -10,7 +10,7 @@ namespace DevHome.FileExplorerSourceControlIntegration.Services;
 
 public class RepositoryTracking
 {
-    public RepoStoreOptions? RepoStoreOptions
+    public RepoStoreOptions RepoStoreOptions
     {
         get; set;
     }
@@ -33,7 +33,7 @@ public class RepositoryTracking
 
     public RepositoryTracking(string? path)
     {
-        if (RuntimeHelper.IsMSIX && path == null)
+        if (RuntimeHelper.IsMSIX)
         {
             RepoStoreOptions = new RepoStoreOptions
             {
@@ -45,7 +45,7 @@ public class RepositoryTracking
         {
             RepoStoreOptions = new RepoStoreOptions
             {
-                RepoStoreFolderPath = path!,
+                RepoStoreFolderPath = path ?? string.Empty,
             };
         }
 
@@ -55,16 +55,13 @@ public class RepositoryTracking
 
     public void RestoreTrackedRepositoriesFomJson()
     {
-        if (RepoStoreOptions != null)
+        lock (trackRepoLock)
         {
-            lock (trackRepoLock)
-            {
-                TrackedRepositories = fileService.Read<Dictionary<string, string>>(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName);
+            TrackedRepositories = fileService.Read<Dictionary<string, string>>(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName);
 
-                // No repositories are currently being tracked. The file will be created on first add to repository tracking.
-                log.Debug("Repo store has just been created with the first registered repository root path");
-                TrackedRepositories ??= new Dictionary<string, string>();
-            }
+            // No repositories are currently being tracked. The file will be created on first add to repository tracking.
+            log.Debug("Repo store has just been created with the first registered repository root path");
+            TrackedRepositories ??= new Dictionary<string, string>();
         }
 
         log.Information($"Repositories retrieved from Repo Store, number of registered repositories: {TrackedRepositories.Count}");
@@ -74,61 +71,55 @@ public class RepositoryTracking
     // mapping here
     public void AddRepositoryPath(string extension, string rootPath)
     {
-        if (RepoStoreOptions != null)
+        lock (trackRepoLock)
         {
-            lock (trackRepoLock)
+            if (!TrackedRepositories.ContainsKey(rootPath))
             {
-                if (!TrackedRepositories.ContainsKey(rootPath))
+                TrackedRepositories[rootPath] = extension!;
+                fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
+                try
                 {
-                    TrackedRepositories[rootPath] = extension!;
-                    fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
-                    try
-                    {
-                        RepositoryChanged?.Invoke(extension, RepositoryChange.Added);
-                    }
-                    catch (Exception ex)
-                    {
-                        log.Error(ex, $"Added event signaling failed: ");
-                    }
+                    RepositoryChanged?.Invoke(extension, RepositoryChange.Added);
+                }
+                catch (Exception ex)
+                {
+                    log.Error(ex, $"Added event signaling failed: ");
+                }
 
-                    log.Information("Repository added to repo store");
-                }
-                else
-                {
-                    log.Warning("Repository root path already registered in the repo store");
-                }
+                log.Information("Repository added to repo store");
+            }
+            else
+            {
+                log.Warning("Repository root path already registered in the repo store");
             }
         }
     }
 
     public void RemoveRepositoryPath(string rootPath)
     {
-        if (RepoStoreOptions != null)
+        lock (trackRepoLock)
         {
-            lock (trackRepoLock)
+            TrackedRepositories.TryGetValue(rootPath, out var extension);
+            TrackedRepositories.Remove(rootPath);
+            fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
+            try
             {
-                TrackedRepositories.TryGetValue(rootPath, out var extension);
-                TrackedRepositories.Remove(rootPath);
-                fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
-                try
-                {
-                    RepositoryChanged?.Invoke(extension ??= string.Empty, RepositoryChange.Removed);
-                }
-                catch (Exception ex)
-                {
-                    log.Error(ex, $"Removed event signaling failed: ");
-                }
+                RepositoryChanged?.Invoke(extension ??= string.Empty, RepositoryChange.Removed);
             }
-
-            log.Information("Repository removed from repo store");
+            catch (Exception ex)
+            {
+                log.Error(ex, $"Removed event signaling failed: ");
+            }
         }
+
+        log.Information("Repository removed from repo store");
     }
 
     public Dictionary<string, string> GetAllTrackedRepositories()
     {
         lock (trackRepoLock)
         {
-            if (RepoStoreOptions != null && TrackedRepositories == null)
+            if (TrackedRepositories == null)
             {
                 TrackedRepositories = fileService.Read<Dictionary<string, string>>(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName);
                 TrackedRepositories ??= new Dictionary<string, string>();
