@@ -17,6 +17,7 @@ using Microsoft.Diagnostics.Tracing.StackSources;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Graphics;
 using Windows.Win32.Foundation;
 
 namespace DevHome.PI.ViewModels;
@@ -68,6 +69,9 @@ public partial class BarWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isAlwaysOnTop = true;
+
+    [ObservableProperty]
+    private PointInt32 _windowPosition;
 
     public BarWindowViewModel()
     {

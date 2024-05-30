@@ -66,11 +66,7 @@ public class WindowHelper
         }
     }
 
-    // TODO The SnapOffsetHorizontal and SnapThreshold values don't allow for different DPIs.
-
-    // It seems the way rounded corners are implemented means that the window is really 8px
-    // bigger than it seems, so we'll subtract this when we do sidecar snapping.
-    private const int SnapOffsetHorizontal = 8;
+    // TODO The SnapThreshold values don't allow for different DPIs.
 
     // If the target window is moved to within SnapThreshold px of the edge of the screen, we unsnap.
     private const int SnapThreshold = 10;
@@ -492,12 +488,6 @@ public class WindowHelper
         {
             return FindParentControl<T>(parentObject);
         }
-    }
-
-    internal static void SnapToWindow(IntPtr targetHwnd, IntPtr dbarHwnd, SizeInt32 size)
-    {
-        PInvoke.GetWindowRect((HWND)targetHwnd, out var rect);
-        PInvoke.MoveWindow((HWND)dbarHwnd, rect.right - SnapOffsetHorizontal, rect.top, size.Width, size.Height, true);
     }
 
     internal static bool IsWindowSnapped(HWND hwnd)

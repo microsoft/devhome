@@ -50,6 +50,8 @@ public partial class BarWindow
         {
             window.Close();
         }
+
+        _snapHelper.Close();
     }
 
     public Frame GetFrame() => _horizontalWindow.GetFrame();
@@ -81,7 +83,7 @@ public partial class BarWindow
     {
         _horizontalWindow = new BarWindowHorizontal(_viewModel);
         _verticalWindow = new BarWindowVertical(_viewModel);
-        _snapHelper = new(_viewModel, _verticalWindow);
+        _snapHelper = new(_viewModel);
 
         _horizontalWindow.Closed += Window_Closed;
         _verticalWindow.Closed += Window_Closed;
@@ -101,7 +103,6 @@ public partial class BarWindow
     {
         // If we receive a window closed event, clean up the system
         TargetAppData.Instance.ClearAppData();
-        _snapHelper.Close();
 
         var primaryWindow = Application.Current.GetService<PrimaryWindow>();
         primaryWindow.ClearBarWindow();

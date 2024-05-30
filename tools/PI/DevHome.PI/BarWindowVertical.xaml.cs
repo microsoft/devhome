@@ -56,6 +56,7 @@ public partial class BarWindowVertical : WindowEx
         TheDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         InitializeComponent();
+        _viewModel.PropertyChanged += ViewModel_PropertyChanged;
     }
 
     private void MainPanel_Loaded(object sender, RoutedEventArgs e)
@@ -68,6 +69,14 @@ public partial class BarWindowVertical : WindowEx
 
         // Regardless of what is set in the XAML, our initial window width is too big. Setting this to 70 (same as the XAML file)
         Width = 70;
+    }
+
+    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(BarWindowViewModel.WindowPosition))
+        {
+            this.Move(_viewModel.WindowPosition.X, _viewModel.WindowPosition.Y);
+        }
     }
 
     private void ExternalToolButton_Click(object sender, RoutedEventArgs e)

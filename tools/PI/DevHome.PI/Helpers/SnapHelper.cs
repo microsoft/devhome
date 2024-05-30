@@ -15,20 +15,23 @@ namespace DevHome.PI.Helpers;
 
 public class SnapHelper
 {
+    // TODO The SnapOffsetHorizontal and UnsnapGap values don't allow for different DPIs.
     private const int UnsnapGap = 9;
+
+    // It seems the way rounded corners are implemented means that the window is really 8px
+    // bigger than it seems, so we'll subtract this when we do sidecar snapping.
+    private const int SnapOffsetHorizontal = 8;
 
     private readonly WINEVENTPROC _winPositionEventDelegate;
     private readonly WINEVENTPROC _winFocusEventDelegate;
     private readonly BarWindowViewModel _viewModel;
-    private readonly BarWindowVertical _barWindowVertical;
 
     private HWINEVENTHOOK _positionEventHook;
     private HWINEVENTHOOK _focusEventHook;
 
-    public SnapHelper(BarWindowViewModel viewModel, BarWindowVertical barWindowVertical)
+    public SnapHelper(BarWindowViewModel viewModel)
     {
         _viewModel = viewModel;
-        _barWindowVertical = barWindowVertical;
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
         _winPositionEventDelegate = new(WinPositionEventProc);
         _winFocusEventDelegate = new(WinFocusEventProc);
@@ -114,8 +117,8 @@ public class SnapHelper
     private void Unsnap()
     {
         // Set a gap from the associated app window to provide positive feedback.
-        var appWindow = _barWindowVertical.AppWindow;
-        _barWindowVertical.MoveAndResize(appWindow.Position.X + UnsnapGap, appWindow.Position.Y, appWindow.Size.Width, appWindow.Size.Height);
+        PInvoke.GetWindowRect(TargetAppData.Instance.HWnd, out var rect);
+        _viewModel.WindowPosition = new Windows.Graphics.PointInt32(rect.right - SnapOffsetHorizontal + UnsnapGap, rect.top);
 
         if (_positionEventHook != HWINEVENTHOOK.Null)
         {
@@ -134,7 +137,8 @@ public class SnapHelper
     {
         Debug.Assert(_viewModel.IsSnapped, "We're not snapped!");
 
-        WindowHelper.SnapToWindow(TargetAppData.Instance.HWnd, _barWindowVertical.ThisHwnd, _barWindowVertical.AppWindow.Size);
+        PInvoke.GetWindowRect(TargetAppData.Instance.HWnd, out var rect);
+        _viewModel.WindowPosition = new Windows.Graphics.PointInt32(rect.right - SnapOffsetHorizontal, rect.top);
 
         _viewModel.IsAlwaysOnTop = true;
         _viewModel.IsAlwaysOnTop = false;
