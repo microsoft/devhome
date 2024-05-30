@@ -11,8 +11,7 @@
     mc:Ignorable="d"
     Title="" MinHeight="700" MinWidth="70" MaxWidth="70" Width="70" Height="700"
     TaskBarIcon="Images/pi.ico" IsTitleBarVisible="False"
-    IsAlwaysOnTop="{x:Bind _viewModel.IsAlwaysOnTop, Mode=TwoWay}">
-
+    IsAlwaysOnTop="{x:Bind _viewModel.IsAlwaysOnTop, Mode=OneWay}">
     <!-- TODO Make DesktopAcrylicBackdrop/MicaBackdrop and AcrylicBackgroundFillColorBaseBrush user-configurable.-->
     <Window.SystemBackdrop>
         <MicaBackdrop/>
@@ -28,7 +27,7 @@
         <!-- Chrome buttons for a vertical bar -->
         <StackPanel x:Name="ChromeButtonPanelVertical" Orientation="Vertical" HorizontalAlignment="Center" Margin="0, 10" Grid.Row="0">
             <TextBlock x:Name="GripTextBlock" Text="&#xe76f;&#xe76f;" FontSize="10" Margin="0" HorizontalAlignment="Center" FontFamily="Segoe Fluent Icons"  PointerPressed="Window_PointerPressed" PointerMoved="Window_PointerMoved" PointerReleased="Window_PointerReleased"/>
-                <Button
+            <Button Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"
                     Margin="0,20, 0, 0"
                     Style="{StaticResource ChromeButton}"
                     HorizontalAlignment="Center"

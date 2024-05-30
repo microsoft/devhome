@@ -81,7 +81,7 @@ public partial class BarWindow
     {
         _horizontalWindow = new BarWindowHorizontal(_viewModel);
         _verticalWindow = new BarWindowVertical(_viewModel);
-        _snapHelper = new(_viewModel);
+        _snapHelper = new(_viewModel, _verticalWindow);
 
         _horizontalWindow.Closed += Window_Closed;
         _verticalWindow.Closed += Window_Closed;

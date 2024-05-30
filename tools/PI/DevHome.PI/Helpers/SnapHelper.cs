@@ -9,6 +9,7 @@ using DevHome.PI.ViewModels;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
+using WinUIEx;
 
 namespace DevHome.PI.Helpers;
 
@@ -19,13 +20,15 @@ public class SnapHelper
     private readonly WINEVENTPROC _winPositionEventDelegate;
     private readonly WINEVENTPROC _winFocusEventDelegate;
     private readonly BarWindowViewModel _viewModel;
+    private readonly BarWindowVertical _barWindowVertical;
 
     private HWINEVENTHOOK _positionEventHook;
     private HWINEVENTHOOK _focusEventHook;
 
-    public SnapHelper(BarWindowViewModel viewModel)
+    public SnapHelper(BarWindowViewModel viewModel, BarWindowVertical barWindowVertical)
     {
         _viewModel = viewModel;
+        _barWindowVertical = barWindowVertical;
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
         _winPositionEventDelegate = new(WinPositionEventProc);
         _winFocusEventDelegate = new(WinFocusEventProc);
@@ -111,7 +114,8 @@ public class SnapHelper
     private void Unsnap()
     {
         // Set a gap from the associated app window to provide positive feedback.
-        this.MoveAndResize(AppWindow.Position.X + UnsnapGap, AppWindow.Position.Y, AppWindow.Size.Width, AppWindow.Size.Height);
+        var appWindow = _barWindowVertical.AppWindow;
+        _barWindowVertical.MoveAndResize(appWindow.Position.X + UnsnapGap, appWindow.Position.Y, appWindow.Size.Width, appWindow.Size.Height);
 
         if (_positionEventHook != HWINEVENTHOOK.Null)
         {
@@ -130,7 +134,7 @@ public class SnapHelper
     {
         Debug.Assert(_viewModel.IsSnapped, "We're not snapped!");
 
-        WindowHelper.SnapToWindow(TargetAppData.Instance.HWnd, ThisHwnd, AppWindow.Size);
+        WindowHelper.SnapToWindow(TargetAppData.Instance.HWnd, _barWindowVertical.ThisHwnd, _barWindowVertical.AppWindow.Size);
 
         _viewModel.IsAlwaysOnTop = true;
         _viewModel.IsAlwaysOnTop = false;
