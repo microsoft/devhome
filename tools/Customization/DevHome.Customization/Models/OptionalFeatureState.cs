@@ -9,7 +9,24 @@ namespace DevHome.Customization.Models;
 
 public partial class OptionalFeatureState : ObservableObject
 {
-    public WindowsOptionalFeature Feature { get; }
+    private WindowsOptionalFeature _feature;
+
+    public WindowsOptionalFeature Feature
+    {
+        get => _feature;
+
+        set
+        {
+            var wasChanged = HasChanged;
+            _feature = value;
+            IsEnabled = value.IsEnabled;
+
+            if (wasChanged)
+            {
+                OnPropertyChanged(nameof(HasChanged));
+            }
+        }
+    }
 
     private readonly bool _isModifiable;
 
@@ -47,8 +64,8 @@ public partial class OptionalFeatureState : ObservableObject
 
     public OptionalFeatureState(WindowsOptionalFeature feature, bool modifiable, IAsyncRelayCommand applyChangesCommand)
     {
-        Feature = feature;
-        IsEnabled = feature.IsEnabled;
+        _feature = feature;
+        _isEnabled = feature.IsEnabled;
         _isModifiable = modifiable;
 
         // Ensure that when a command is running, the feature state is not modifiable.
