@@ -2,12 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI.Animations;
 using DevHome.Common.Services;
 using DevHome.Telemetry;
 using DevHome.Utilities.TelemetryEvents;
