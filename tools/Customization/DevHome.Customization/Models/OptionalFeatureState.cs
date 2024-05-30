@@ -10,6 +10,8 @@ public partial class OptionalFeatureState : ObservableObject
 {
     public WindowsOptionalFeature Feature { get; }
 
+    public bool IsModifiable { get; }
+
     private bool _isEnabled;
 
     public bool IsEnabled
@@ -26,9 +28,10 @@ public partial class OptionalFeatureState : ObservableObject
 
     public bool HasChanged => IsEnabled != Feature.IsEnabled;
 
-    public OptionalFeatureState(WindowsOptionalFeature feature)
+    public OptionalFeatureState(WindowsOptionalFeature feature, bool modifiable)
     {
         Feature = feature;
         IsEnabled = feature.IsEnabled;
+        IsModifiable = modifiable;
     }
 }

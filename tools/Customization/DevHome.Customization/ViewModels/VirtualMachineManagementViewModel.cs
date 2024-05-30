@@ -27,6 +27,8 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(VirtualMachineManagementViewModel));
 
+    private readonly bool _isUserAdministrator = WindowsIdentityHelper.IsUserAdministrator();
+
     private readonly DispatcherQueue _dispatcherQueue;
 
     private readonly StringResource _commonStringResource;
@@ -88,6 +90,11 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
     public void Initialize(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = notificationQueue;
+
+        if (!_isUserAdministrator)
+        {
+            _dispatcherQueue.EnqueueAsync(ShowNonAdminUserNotification);
+        }
     }
 
     private void FeatureState_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -112,7 +119,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
                 var feature = ManagementInfrastructureHelper.GetWindowsFeatureDetails(featureName);
                 if (feature != null && feature.IsAvailable)
                 {
-                    var featureState = new OptionalFeatureState(feature);
+                    var featureState = new OptionalFeatureState(feature, _isUserAdministrator);
                     featureState.PropertyChanged += FeatureState_PropertyChanged;
 
                     await _dispatcherQueue.EnqueueAsync(() =>
@@ -138,7 +145,33 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
         _notificationsHelper?.ShowWithWindowExtension(
             "Changes applied",
             _commonStringResource.GetLocalized("RestartAfterChangesMessage"),
-            InfoBarSeverity.Warning,
+            InfoBarSeverity.Informational,
+            RestartComputerCommand,
+            _commonStringResource.GetLocalized("RestartButton"));
+    }
+
+    private void ShowNonAdminUserNotification()
+    {
+        _notificationsHelper?.ShowWithWindowExtension(
+            "Current user is not an administrator",
+            "Only users with the Administrator role can modify optional features.",
+            InfoBarSeverity.Informational);
+    }
+
+    private void ShowChangesNotAppliedNotification()
+    {
+        _notificationsHelper?.ShowWithWindowExtension(
+            "Changes not applied",
+            "Changes were not applied. Please try again.",
+            InfoBarSeverity.Warning);
+    }
+
+    private void ShowFailedToApplyAllNotification()
+    {
+        _notificationsHelper?.ShowWithWindowExtension(
+            "Failed to apply all changes",
+            "Restart the computer and try again.",
+            InfoBarSeverity.Error,
             RestartComputerCommand,
             _commonStringResource.GetLocalized("RestartButton"));
     }
@@ -216,7 +249,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
                     case 2:
                     default:
                         // Script failed to modify features, TODO: Show error dialog
-                        ShowRestartNotification();
+                        ShowFailedToApplyAllNotification();
                         return Task.CompletedTask;
                 }
             }
@@ -224,6 +257,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
             {
                 // This is most likely a case where the user cancelled the UAC prompt. TODO: Show error dialog
                 _log.Error(ex, "Script failed");
+                ShowChangesNotAppliedNotification();
             }
 
             return Task.CompletedTask;

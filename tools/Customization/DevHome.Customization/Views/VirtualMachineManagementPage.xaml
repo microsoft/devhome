@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:converters="using:DevHome.Common.Converters"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:models="using:DevHome.Customization.Models"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
@@ -11,6 +12,10 @@
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
     Loaded="OnLoaded">
+
+    <Page.Resources>
+        <converters:BoolNegationConverter x:Key="BoolNegationConverter"/>
+    </Page.Resources>
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
 
@@ -47,7 +52,9 @@
                                         Visibility="{x:Bind HasChanged, Mode=OneWay}" 
                                         ToolTipService.ToolTip="Click the apply button to confirm changes"
                                         Margin="0 0 10 0" />
-                                    <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=TwoWay}" />
+                                    <ToggleSwitch
+                                        IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
+                                        IsEnabled="{x:Bind IsModifiable, Mode=OneWay}"/>
                                 </StackPanel>
                             </controls:SettingsCard>
                         </DataTemplate>
