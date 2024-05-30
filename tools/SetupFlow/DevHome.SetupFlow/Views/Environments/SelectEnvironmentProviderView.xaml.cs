@@ -2,7 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
+using CommunityToolkit.WinUI;
+using DevHome.Common.Extensions;
 using DevHome.SetupFlow.ViewModels.Environments;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -20,5 +23,7 @@ public sealed partial class SelectEnvironmentProviderView : UserControl
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         await ViewModel.InitializeAsync(NotificationQueue);
+        await Task.Delay(100);
+        this.Focus(FocusState.Programmatic);
     }
 }
