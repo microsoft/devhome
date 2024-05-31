@@ -317,4 +317,32 @@
     <value>Go to extensions library</value>
     <comment>Text for when the environment page in Dev Home is empty and the user has no extensions installed that support environments</comment>
   </data>
+  <data name="ChangesAppliedTitle" xml:space="preserve">
+    <value>Changes applied</value>
+    <comment>The title for a notification shown to the user to indicate that changes have been successfully applied.</comment>
+  </data>
+  <data name="ChangesNotAppliedMessage" xml:space="preserve">
+    <value>Changes were not applied. Please try again.</value>
+    <comment>The message for a notificatrion shown to the user to indicate that changes were not applied, hinting that they should try again, given this is usually because they canceled the operation.</comment>
+  </data>
+  <data name="ChangesNotAppliedTitle" xml:space="preserve">
+    <value>Changes not applied</value>
+    <comment>The title for a notification shown to the user to indicate that changes were not able to applied, most likely because they were canceled.</comment>
+  </data>
+  <data name="FailedToApplyChangesMessage" xml:space="preserve">
+    <value>Restart the computer and try again.</value>
+    <comment>The message for a notification shown to the user to indicate that some changes failed to apply and that restarting the computer is the most likely solution.</comment>
+  </data>
+  <data name="FailedToApplyChangesTitle" xml:space="preserve">
+    <value>Failed to apply some changes</value>
+    <comment>The title for a notification shown to the user to indicate that some, but maybe not all, changes failed to apply. Usually this is due to the system being in an invalid state, such as a Windows Update being queued.</comment>
+  </data>
+  <data name="NonAdminUserMessage" xml:space="preserve">
+    <value>Only users with the Administrator role can modify optional features.</value>
+    <comment>The message for a notification shown to the user to further describe that only users with the Administrator role in Windows can modify optional feature state.</comment>
+  </data>
+  <data name="NonAdminUserTitle" xml:space="preserve">
+    <value>The current user is not an administrator</value>
+    <comment>The title for a notification shown to the user to indicate that the current Windows user is not an administrator, meaning they are not able to change certain settings.</comment>
+  </data>
 </root>

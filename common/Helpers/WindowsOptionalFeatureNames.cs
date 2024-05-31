@@ -7,6 +7,7 @@ namespace DevHome.Common.Helpers;
 
 public static class WindowsOptionalFeatureNames
 {
+    public const string Containers = "Containers";
     public const string GuardedHost = "HostGuardian";
     public const string HyperV = "Microsoft-Hyper-V-All";
     public const string HyperVManagementTools = "Microsoft-Hyper-V-Tools-All";
@@ -18,6 +19,7 @@ public static class WindowsOptionalFeatureNames
 
     public static IEnumerable<string> VirtualMachineFeatures => new[]
     {
+        Containers,
         GuardedHost,
         HyperV,
         HyperVManagementTools,

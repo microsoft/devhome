@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Helpers;
 
-namespace DevHome.Customization.Models;
+namespace DevHome.Common.Models;
 
 public partial class OptionalFeatureState : ObservableObject
 {

@@ -5,7 +5,7 @@
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:models="using:DevHome.Customization.Models"
+    xmlns:models="using:DevHome.Common.Models"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"

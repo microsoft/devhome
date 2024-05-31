@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -15,8 +13,6 @@ using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using DevHome.Common.Scripts;
 using DevHome.Common.Services;
-using DevHome.Customization.Helpers;
-using DevHome.Customization.Models;
 using Microsoft.UI.Dispatching;
 using Serilog;
 
@@ -130,62 +126,8 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
     {
         await _dispatcherQueue.EnqueueAsync(async () =>
         {
-            await ModifyFeatures();
+            await ModifyWindowsOptionalFeatures.ModifyFeaturesAsync(Features, _notificationsHelper, _log);
             await LoadFeaturesCommand.ExecuteAsync(null);
-        });
-    }
-
-    private async Task ModifyFeatures()
-    {
-        if (!HasFeatureChanges)
-        {
-            return;
-        }
-
-        var featuresString = string.Empty;
-
-        foreach (var featureState in Features)
-        {
-            if (featureState.HasChanged)
-            {
-                featuresString += $"{featureState.Feature.FeatureName}={featureState.IsEnabled}`n";
-            }
-        }
-
-        var startInfo = new ProcessStartInfo();
-
-        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-        startInfo.FileName = $"powershell.exe";
-        startInfo.Arguments = $"-ExecutionPolicy Bypass -Command \"{ModifyWindowsOptionalFeatures.ModifyFunction.Replace("$args[0]", $"\"{featuresString}\"")}\"";
-        startInfo.UseShellExecute = true;
-        startInfo.Verb = "runas";
-
-        var process = new Process();
-        process.StartInfo = startInfo;
-        await Task.Run(() =>
-        {
-            // Since a UAC prompt will be shown, we need to wait for the process to exit
-            // This can also be cancelled by the user which will result in an exception,
-            // which is handled as a failure.
-            var exitCode = ModifyWindowsOptionalFeatures.ExitCode.Failure;
-
-            try
-            {
-                process.Start();
-                process.WaitForExit();
-
-                exitCode = ModifyWindowsOptionalFeatures.FromExitCode(process.ExitCode);
-                _notificationsHelper?.HandleModifyFeatureResult(exitCode);
-            }
-            catch (Exception ex)
-            {
-                // This is most likely a case where the user cancelled the UAC prompt.
-                _log.Error(ex, "Script failed");
-            }
-
-            _notificationsHelper?.HandleModifyFeatureResult(exitCode);
-
-            return Task.CompletedTask;
         });
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using static DevHome.Common.Scripts.ModifyWindowsOptionalFeatures;
 
-namespace DevHome.Customization.Helpers;
+namespace DevHome.Common.Helpers;
 
 public partial class OptionalFeatureNotificationHelper
 {
@@ -22,12 +22,9 @@ public partial class OptionalFeatureNotificationHelper
 
     private readonly StringResource _commonStringResource;
 
-    private readonly StringResource _customizationResource;
-
     public OptionalFeatureNotificationHelper(StackedNotificationsBehavior notificationsHelper, ILogger log)
     {
         _commonStringResource = new StringResource("DevHome.Common.pri", "DevHome.Common/Resources");
-        _customizationResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         _notificationsHelper = notificationsHelper;
         _log = log;
     }
@@ -58,7 +55,7 @@ public partial class OptionalFeatureNotificationHelper
     private void ShowRestartNotification()
     {
         _notificationsHelper?.ShowWithWindowExtension(
-            _customizationResource.GetLocalized("ChangesAppliedTitle"),
+            _commonStringResource.GetLocalized("ChangesAppliedTitle"),
             _commonStringResource.GetLocalized("RestartAfterChangesMessage"),
             InfoBarSeverity.Informational,
             RestartComputerCommand,
@@ -68,24 +65,24 @@ public partial class OptionalFeatureNotificationHelper
     public void ShowNonAdminUserNotification()
     {
         _notificationsHelper?.ShowWithWindowExtension(
-            _customizationResource.GetLocalized("NonAdminUserTitle"),
-            _customizationResource.GetLocalized("NonAdminUserMessage"),
+            _commonStringResource.GetLocalized("NonAdminUserTitle"),
+            _commonStringResource.GetLocalized("NonAdminUserMessage"),
             InfoBarSeverity.Informational);
     }
 
     private void ShowChangesNotAppliedNotification()
     {
         _notificationsHelper?.ShowWithWindowExtension(
-            _customizationResource.GetLocalized("ChangesNotAppliedTitle"),
-            _customizationResource.GetLocalized("ChangesNotAppliedMessage"),
+            _commonStringResource.GetLocalized("ChangesNotAppliedTitle"),
+            _commonStringResource.GetLocalized("ChangesNotAppliedMessage"),
             InfoBarSeverity.Warning);
     }
 
     private void ShowFailedToApplyAllNotification()
     {
         _notificationsHelper?.ShowWithWindowExtension(
-            _customizationResource.GetLocalized("FailedToApplyChangesTitle"),
-            _customizationResource.GetLocalized("FailedToApplyChangesMessage"),
+            _commonStringResource.GetLocalized("FailedToApplyChangesTitle"),
+            _commonStringResource.GetLocalized("FailedToApplyChangesMessage"),
             InfoBarSeverity.Error,
             RestartComputerCommand,
             _commonStringResource.GetLocalized("RestartButton"));
