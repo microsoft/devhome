@@ -14,9 +14,21 @@
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
 
+        <InfoBar
+            Grid.Row="2"
+            MaxWidth="480"
+            Margin="24"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Background="{ThemeResource SystemControlAcrylicWindowBrush}">>
+            <i:Interaction.Behaviors>
+                <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
+            </i:Interaction.Behaviors>
+        </InfoBar>
+
         <ProgressRing
-            IsActive="{x:Bind ViewModel.ShowFullPageProgressRing, Mode=OneWay}"
-            Visibility="{x:Bind ViewModel.ShowFullPageProgressRing, Mode=OneWay}"
+            IsActive="{x:Bind ViewModel.LoadFeaturesCommand.IsRunning, Mode=OneWay}"
+            Visibility="{x:Bind ViewModel.LoadFeaturesCommand.IsRunning, Mode=OneWay}"
             HorizontalAlignment="Center"/>
 
         <Grid>
@@ -28,7 +40,7 @@
             <ScrollView>
                 <muxc:ItemsRepeater
                     ItemsSource="{x:Bind ViewModel.Features}"
-                    Visibility="{x:Bind ViewModel.ShowFeaturesList, Mode=OneWay}">
+                    Visibility="{x:Bind ViewModel.FeaturesLoaded, Mode=OneWay}">
                     <muxc:ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="models:OptionalFeatureState">
                             <controls:SettingsCard
@@ -70,18 +82,5 @@
             </StackPanel>
 
         </Grid>
-
-        <InfoBar
-            Grid.Row="2"
-            MaxWidth="480"
-            Margin="24"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"
-            Background="{ThemeResource SystemControlAcrylicWindowBrush}">>
-            <i:Interaction.Behaviors>
-                <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
-            </i:Interaction.Behaviors>
-        </InfoBar>
-
     </Grid>
 </Page>

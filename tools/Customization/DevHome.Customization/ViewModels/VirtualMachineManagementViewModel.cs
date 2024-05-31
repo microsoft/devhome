@@ -37,11 +37,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     public IAsyncRelayCommand LoadFeaturesCommand { get; }
 
-    [ObservableProperty]
-    private bool _showFullPageProgressRing = true;
-
-    [ObservableProperty]
-    private bool _showFeaturesList;
+    public bool FeaturesLoaded => !LoadFeaturesCommand.IsRunning;
 
     public IAsyncRelayCommand ApplyChangesCommand { get; }
 
@@ -51,7 +47,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     public ObservableCollection<OptionalFeatureState> Features { get; } = new();
 
-    public bool HasFeatureChanges => !LoadFeaturesCommand.IsRunning && Features.Any(f => f.HasChanged);
+    public bool HasFeatureChanges => FeaturesLoaded && Features.Any(f => f.HasChanged);
 
     public VirtualMachineManagementViewModel(DispatcherQueue dispatcherQueue)
     {
@@ -73,6 +69,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
             {
                 await _dispatcherQueue.EnqueueAsync(() =>
                 {
+                    OnPropertyChanged(nameof(FeaturesLoaded));
                     OnPropertyChanged(nameof(HasFeatureChanges));
                 });
             }
@@ -112,45 +109,25 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
     {
         await Task.Run(async () =>
         {
+            await _dispatcherQueue.EnqueueAsync(() =>
+            {
+                Features.Clear();
+            });
+
             foreach (var featureName in WindowsOptionalFeatureNames.VirtualMachineFeatures)
             {
                 var feature = ManagementInfrastructureHelper.GetWindowsFeatureDetails(featureName);
-                await _dispatcherQueue.EnqueueAsync(() =>
+                if (feature != null && feature.IsAvailable)
                 {
-                    var existingFeatureState = Features.FirstOrDefault(f => f.Feature.FeatureName == featureName);
-                    if (existingFeatureState != null)
-                    {
-                        // Update the properties of the existing feature, removing the feature if it is no longer available.
-                        if (feature == null || !feature.IsAvailable)
-                        {
-                            Features.Remove(existingFeatureState);
-                        }
-                        else
-                        {
-                            existingFeatureState.Feature = feature;
-                        }
-                    }
-                    else if (feature != null)
-                    {
-                        // Add the feature if it is available.
-                        var featureState = new OptionalFeatureState(feature, _isUserAdministrator, ApplyChangesCommand);
-                        featureState.PropertyChanged += FeatureState_PropertyChanged;
+                    var featureState = new OptionalFeatureState(feature, _isUserAdministrator, ApplyChangesCommand);
+                    featureState.PropertyChanged += FeatureState_PropertyChanged;
 
-                        if (featureState.Feature != null && featureState.Feature.IsAvailable)
-                        {
-                            Features.Add(featureState);
-                        }
-                    }
-                });
+                    await _dispatcherQueue.EnqueueAsync(() =>
+                    {
+                        Features.Add(featureState);
+                    });
+                }
             }
-
-            // Update the UI to show the features list and hide the progress ring. Note that the progress ring
-            // is only shown when the page is first loaded.
-            await _dispatcherQueue.EnqueueAsync(() =>
-            {
-                ShowFullPageProgressRing = false;
-                ShowFeaturesList = true;
-            });
         });
     }
 
