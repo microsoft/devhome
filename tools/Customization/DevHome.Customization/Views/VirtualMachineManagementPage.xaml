@@ -14,18 +14,6 @@
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
 
-        <InfoBar
-            Grid.Row="2"
-            MaxWidth="480"
-            Margin="24"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"
-            Background="{ThemeResource SystemControlAcrylicWindowBrush}">>
-            <i:Interaction.Behaviors>
-                <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
-            </i:Interaction.Behaviors>
-        </InfoBar>
-
         <ProgressRing
             IsActive="{x:Bind ViewModel.LoadFeaturesCommand.IsRunning, Mode=OneWay}"
             Visibility="{x:Bind ViewModel.LoadFeaturesCommand.IsRunning, Mode=OneWay}"
@@ -49,9 +37,9 @@
                                 IsClickEnabled="False">
                                 <StackPanel Orientation="Horizontal">
                                     <FontIcon
+                                        x:Uid="ApplyChangesToolTip"
                                         Glyph="&#xE783;"
-                                        Visibility="{x:Bind HasChanged, Mode=OneWay}" 
-                                        ToolTipService.ToolTip="Click the apply button to confirm changes"
+                                        Visibility="{x:Bind HasChanged, Mode=OneWay}"
                                         Margin="0 0 10 0" />
                                     <ToggleSwitch
                                         IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
@@ -80,7 +68,18 @@
                     Margin="0,24,0,24"
                     MinWidth="120"/>
             </StackPanel>
-
         </Grid>
+
+        <InfoBar
+            Grid.Row="2"
+            MaxWidth="480"
+            Margin="24"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom">
+            <i:Interaction.Behaviors>
+                <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
+            </i:Interaction.Behaviors>
+        </InfoBar>
+
     </Grid>
 </Page>

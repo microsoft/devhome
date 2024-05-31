@@ -11,14 +11,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
-using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using DevHome.Common.Scripts;
 using DevHome.Common.Services;
+using DevHome.Customization.Helpers;
 using DevHome.Customization.Models;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml.Controls;
 using Serilog;
 
 namespace DevHome.Customization.ViewModels;
@@ -31,9 +30,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     private readonly DispatcherQueue _dispatcherQueue;
 
-    private readonly StringResource _commonStringResource;
-
-    private StackedNotificationsBehavior? _notificationsHelper;
+    private OptionalFeatureNotificationHelper? _notificationsHelper;
 
     public IAsyncRelayCommand LoadFeaturesCommand { get; }
 
@@ -59,8 +56,6 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
             new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
             new(stringResource.GetLocalized("VirtualMachineManagement_Header"), typeof(VirtualMachineManagementViewModel).FullName!)
         ];
-
-        _commonStringResource = new StringResource("DevHome.Common.pri", "DevHome.Common/Resources");
 
         LoadFeaturesCommand = new AsyncRelayCommand(LoadFeaturesAsync);
         LoadFeaturesCommand.PropertyChanged += async (s, e) =>
@@ -89,11 +84,11 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     public void Initialize(StackedNotificationsBehavior notificationQueue)
     {
-        _notificationsHelper = notificationQueue;
+        _notificationsHelper = new(notificationQueue, _log);
 
         if (!_isUserAdministrator)
         {
-            _dispatcherQueue.EnqueueAsync(ShowNonAdminUserNotification);
+            _dispatcherQueue.EnqueueAsync(_notificationsHelper.ShowNonAdminUserNotification);
         }
     }
 
@@ -140,62 +135,6 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
         });
     }
 
-    private void ShowRestartNotification()
-    {
-        _notificationsHelper?.ShowWithWindowExtension(
-            "Changes applied",
-            _commonStringResource.GetLocalized("RestartAfterChangesMessage"),
-            InfoBarSeverity.Informational,
-            RestartComputerCommand,
-            _commonStringResource.GetLocalized("RestartButton"));
-    }
-
-    private void ShowNonAdminUserNotification()
-    {
-        _notificationsHelper?.ShowWithWindowExtension(
-            "Current user is not an administrator",
-            "Only users with the Administrator role can modify optional features.",
-            InfoBarSeverity.Informational);
-    }
-
-    private void ShowChangesNotAppliedNotification()
-    {
-        _notificationsHelper?.ShowWithWindowExtension(
-            "Changes not applied",
-            "Changes were not applied. Please try again.",
-            InfoBarSeverity.Warning);
-    }
-
-    private void ShowFailedToApplyAllNotification()
-    {
-        _notificationsHelper?.ShowWithWindowExtension(
-            "Failed to apply all changes",
-            "Restart the computer and try again.",
-            InfoBarSeverity.Error,
-            RestartComputerCommand,
-            _commonStringResource.GetLocalized("RestartButton"));
-    }
-
-    [RelayCommand]
-    private void RestartComputer()
-    {
-        var startInfo = new ProcessStartInfo
-        {
-            WindowStyle = ProcessWindowStyle.Hidden,
-
-            // Restart the computer
-            FileName = Environment.SystemDirectory + "\\shutdown.exe",
-            Arguments = "-r -t 0",
-            Verb = string.Empty,
-        };
-
-        var process = new Process
-        {
-            StartInfo = startInfo,
-        };
-        process.Start();
-    }
-
     private async Task ModifyFeatures()
     {
         if (!HasFeatureChanges)
@@ -226,39 +165,25 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
         await Task.Run(() =>
         {
             // Since a UAC prompt will be shown, we need to wait for the process to exit
-            // This can also be cancelled by the user which will result in an exception
+            // This can also be cancelled by the user which will result in an exception,
+            // which is handled as a failure.
+            var exitCode = ModifyWindowsOptionalFeatures.ExitCode.Failure;
+
             try
             {
                 process.Start();
                 process.WaitForExit();
 
-                _notificationsHelper?.ClearWithWindowExtension();
-                _log.Information($"Script exited with code: '{process.ExitCode}'");
-
-                // ExitCodes come directly from within the script in HyperVSetupScript.SetupFunction.
-                switch (process.ExitCode)
-                {
-                    case 0:
-                        // The script successfully modified all features
-                        ShowRestartNotification();
-                        return Task.CompletedTask;
-                    case 1:
-                        // The script found that nothing needed to be done. The features will be reloaded
-                        // to show the correct state.
-                        return Task.CompletedTask;
-                    case 2:
-                    default:
-                        // Script failed to modify features, TODO: Show error dialog
-                        ShowFailedToApplyAllNotification();
-                        return Task.CompletedTask;
-                }
+                exitCode = ModifyWindowsOptionalFeatures.FromExitCode(process.ExitCode);
+                _notificationsHelper?.HandleModifyFeatureResult(exitCode);
             }
             catch (Exception ex)
             {
-                // This is most likely a case where the user cancelled the UAC prompt. TODO: Show error dialog
+                // This is most likely a case where the user cancelled the UAC prompt.
                 _log.Error(ex, "Script failed");
-                ShowChangesNotAppliedNotification();
             }
+
+            _notificationsHelper?.HandleModifyFeatureResult(exitCode);
 
             return Task.CompletedTask;
         });

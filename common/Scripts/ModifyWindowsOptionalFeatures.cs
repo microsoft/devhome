@@ -5,6 +5,23 @@ namespace DevHome.Common.Scripts;
 
 public static class ModifyWindowsOptionalFeatures
 {
+    public enum ExitCode
+    {
+        Success = 0,
+        NoChange = 1,
+        Failure = 2,
+    }
+
+    public static ExitCode FromExitCode(int exitCode)
+    {
+        return exitCode switch
+        {
+            0 => ExitCode.Success,
+            1 => ExitCode.NoChange,
+            _ => ExitCode.Failure,
+        };
+    }
+
     public const string ModifyFunction = @"
         enum OperationStatus
         {
