@@ -42,10 +42,16 @@ public static class ManagementInfrastructureHelper
 
                     _log.Information($"Found feature: '{featureName}' with enablement state: '{featureAvailability}'");
 
+                    var description = featureInstance.CimInstanceProperties["Description"]?.Value as string;
+                    if (string.IsNullOrEmpty(description) && WindowsOptionalFeatureNames.FeatureDescriptions.TryGetValue(featureName, out var featureDescription))
+                    {
+                        description = featureDescription;
+                    }
+
                     return new WindowsOptionalFeature(
                         featureName,
-                        featureInstance.CimInstanceProperties["Caption"]?.Value as string ?? string.Empty,
-                        featureInstance.CimInstanceProperties["Description"]?.Value as string ?? string.Empty,
+                        featureInstance.CimInstanceProperties["Caption"]?.Value as string ?? featureName,
+                        description ?? string.Empty,
                         featureAvailability);
                 }
             }
