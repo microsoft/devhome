@@ -49,12 +49,12 @@ public sealed partial class LandingPage : ToolPage
     [RelayCommand]
     private async Task LocalLoadButton()
     {
-        await ViewModel.LoadModelAsync(SetFocus, true);
+        await ViewModel.LoadModelAsync(true);
     }
 #endif
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        await ViewModel.LoadModelAsync(SetFocus, false);
+        await ViewModel.LoadModelAsync(false);
     }
 }

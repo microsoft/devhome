@@ -44,7 +44,7 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecip
     /// <summary>
     /// Request the adaptive cad from the view model
     /// </summary>
-    private async void ViewLoaded(object sender, RoutedEventArgs e)
+    private void ViewLoaded(object sender, RoutedEventArgs e)
     {
         var message = WeakReferenceMessenger.Default.Send<CreationOptionsViewPageRequestMessage>();
         if (!message.HasReceivedResponse)
@@ -53,19 +53,6 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl, IRecip
         }
 
         AddAdaptiveCardToUI(message.Response);
-
-        // Wait at most 10 seconds.
-        var maxCount = 20;
-        var currentCount = 0;
-        while (currentCount++ < maxCount && !ViewModel.IsAdaptiveCardSessionLoaded)
-        {
-            await Task.Delay(500);
-        }
-
-        if (ViewModel.IsAdaptiveCardSessionLoaded)
-        {
-            this.Focus(FocusState.Programmatic);
-        }
     }
 
     /// <summary>

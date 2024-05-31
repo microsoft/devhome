@@ -25,6 +25,6 @@ public sealed partial class DevDriveInsightsView : DevHomeUserControl
 
     private void UserControl_Loaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnFirstNavigateTo(SetFocus);
+        ViewModel.OnFirstNavigateTo();
     }
 }

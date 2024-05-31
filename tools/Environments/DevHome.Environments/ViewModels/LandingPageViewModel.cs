@@ -200,17 +200,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     /// <summary>
     /// Main entry point for loading the view model.
     /// </summary>
-    public async Task LoadModelAsync(DevHomePage.CanSetFocus? callback = null, bool useDebugValues = false)
+    public async Task LoadModelAsync(bool useDebugValues = false)
     {
         lock (_lock)
         {
             if (IsLoading)
             {
-                if (callback != null)
-                {
-                    callback();
-                }
-
                 return;
             }
 
@@ -224,10 +219,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             }
 
             IsLoading = true;
-            if (callback != null)
-            {
-                callback();
-            }
         }
 
         // Start a new sync timer

@@ -93,16 +93,11 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
     /// Make sure we only get the list of DevDrives from the DevDriveManager once when the page is first navigated to.
     /// All other times will be through the use of the sync button.
     /// </summary>
-    public void OnFirstNavigateTo(DevHomeUserControl.CanSetFocus? callback = null)
+    public void OnFirstNavigateTo()
     {
         GetDevDrives();
         GetDevDriveOptimizers();
         GetDevDriveOptimizeds();
-
-        if (callback != null)
-        {
-            callback();
-        }
     }
 
     /// <summary>
