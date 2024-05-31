@@ -24,6 +24,13 @@ public class UtilitiesPage : ApplicationPage
         WindowsElement hostsUtilityView = Driver.FindElementByAccessibilityId("HostsFileEditorAutomationId");
         var button = hostsUtilityView.FindElementByAccessibilityId("LaunchButtonAutomationId");
         button.Click();
+
+        // look for processes to find DevHome.HostsFileEditor.exe
+        var processes = Process.GetProcessesByName("DevHome.HostsFileEditor");
+        if (processes.Length == 0)
+        {
+            Trace.WriteLine("DevHome.HostsFileEditor did not launch");
+        }
     }
 
     public void LaunchHostsUtilityAsAdmin()
