@@ -127,6 +127,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         await _semaphoreSlimLock.WaitAsync();
         try
         {
+            ShouldShowDotOperations = false;
             RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _mainWindow), DataExtractor.FillLaunchButtonOperations(ComputeSystem));
 
             _ = Task.Run(async () =>
@@ -137,9 +138,6 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                 {
                     if ((!data.WasPinnedStatusSuccessful) || (data.ViewModel == null))
                     {
-                        // TODO: pinned status for dev box for example fails often. So we'll log it and not show notifications so we don't overload the user with
-                        // failure notifications until the feature is fixed. We simply do not show the pinned icons in these cases since we don't know which ones
-                        // to show.
                         _log.Error($"Pinned status check failed: for '{Name}': {data?.PinnedStatusDisplayMessage}. DiagnosticText: {data?.PinnedStatusDiagnosticText}");
                         continue;
                     }
