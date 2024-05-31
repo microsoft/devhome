@@ -4,8 +4,12 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.PI.Models;
 using DevHome.PI.ViewModels;
+using Microsoft.UI.Xaml;
+using Windows.Graphics;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
@@ -24,31 +28,46 @@ public class SnapHelper
 
     private readonly WINEVENTPROC _winPositionEventDelegate;
     private readonly WINEVENTPROC _winFocusEventDelegate;
-    private readonly BarWindowViewModel _viewModel;
 
     private HWINEVENTHOOK _positionEventHook;
     private HWINEVENTHOOK _focusEventHook;
 
-    public SnapHelper(BarWindowViewModel viewModel)
+    public SnapHelper()
     {
-        _viewModel = viewModel;
-        _viewModel.PropertyChanged += ViewModel_PropertyChanged;
         _winPositionEventDelegate = new(WinPositionEventProc);
         _winFocusEventDelegate = new(WinFocusEventProc);
     }
 
-    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    public void Snap()
     {
-        if (e.PropertyName == nameof(BarWindowViewModel.IsSnapped))
+        Debug.Assert(_positionEventHook == HWINEVENTHOOK.Null, "Hook should be cleared");
+        Debug.Assert(_focusEventHook == HWINEVENTHOOK.Null, "Hook should be cleared");
+
+        _positionEventHook = WindowHelper.WatchWindowPositionEvents(_winPositionEventDelegate, (uint)TargetAppData.Instance.ProcessId);
+        _focusEventHook = WindowHelper.WatchWindowFocusEvents(_winFocusEventDelegate, (uint)TargetAppData.Instance.ProcessId);
+
+        SnapToWindow();
+    }
+
+    public void Unsnap()
+    {
+        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+        Debug.Assert(barWindow != null, "BarWindow should not be null.");
+
+        // Set a gap from the associated app window to provide positive feedback.
+        PInvoke.GetWindowRect(TargetAppData.Instance.HWnd, out var rect);
+        barWindow.UpdateBarWindowPosition(new PointInt32(rect.right - SnapOffsetHorizontal + UnsnapGap, rect.top));
+
+        if (_positionEventHook != HWINEVENTHOOK.Null)
         {
-            if (_viewModel.IsSnapped)
-            {
-                Snap();
-            }
-            else
-            {
-                Unsnap();
-            }
+            PInvoke.UnhookWinEvent(_positionEventHook);
+            _positionEventHook = HWINEVENTHOOK.Null;
+        }
+
+        if (_focusEventHook != HWINEVENTHOOK.Null)
+        {
+            PInvoke.UnhookWinEvent(_focusEventHook);
+            _focusEventHook = HWINEVENTHOOK.Null;
         }
     }
 
@@ -64,12 +83,14 @@ public class SnapHelper
         {
             if (eventType == PInvoke.EVENT_OBJECT_LOCATIONCHANGE)
             {
-                if (_viewModel.IsSnapped)
+                var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+                Debug.Assert(barWindow != null, "BarWindow should not be null.");
+                if (barWindow.IsBarSnappedToWindow())
                 {
                     // If the window has been maximized, un-snap the bar window and free-float it.
                     if (PInvoke.IsZoomed(TargetAppData.Instance.HWnd))
                     {
-                        _viewModel.IsSnapped = false;
+                        barWindow.UnsnapBarWindow();
                     }
                     else
                     {
@@ -95,67 +116,23 @@ public class SnapHelper
         // If we're snapped to a target window, and that window loses and then regains focus,
         // we need to bring our window to the front also, to be in-sync. Otherwise, we can
         // end up with the target in the foreground, but our window partially obscured.
-        if (hwnd == TargetAppData.Instance.HWnd && _viewModel.IsSnapped)
+        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+        Debug.Assert(barWindow != null, "BarWindow should not be null.");
+        if (hwnd == TargetAppData.Instance.HWnd && barWindow.IsBarSnappedToWindow())
         {
-            _viewModel.IsAlwaysOnTop = true;
-            _viewModel.IsAlwaysOnTop = false;
+            barWindow.ResetBarWindowVisibility();
             return;
-        }
-    }
-
-    private void Snap()
-    {
-        Debug.Assert(_positionEventHook == HWINEVENTHOOK.Null, "Hook should be cleared");
-        Debug.Assert(_focusEventHook == HWINEVENTHOOK.Null, "Hook should be cleared");
-
-        _positionEventHook = WindowHelper.WatchWindowPositionEvents(_winPositionEventDelegate, (uint)TargetAppData.Instance.ProcessId);
-        _focusEventHook = WindowHelper.WatchWindowFocusEvents(_winFocusEventDelegate, (uint)TargetAppData.Instance.ProcessId);
-
-        SnapToWindow();
-    }
-
-    private void Unsnap()
-    {
-        // Set a gap from the associated app window to provide positive feedback.
-        PInvoke.GetWindowRect(TargetAppData.Instance.HWnd, out var rect);
-        _viewModel.WindowPosition = new Windows.Graphics.PointInt32(rect.right - SnapOffsetHorizontal + UnsnapGap, rect.top);
-
-        if (_positionEventHook != HWINEVENTHOOK.Null)
-        {
-            PInvoke.UnhookWinEvent(_positionEventHook);
-            _positionEventHook = HWINEVENTHOOK.Null;
-        }
-
-        if (_focusEventHook != HWINEVENTHOOK.Null)
-        {
-            PInvoke.UnhookWinEvent(_focusEventHook);
-            _focusEventHook = HWINEVENTHOOK.Null;
         }
     }
 
     private void SnapToWindow()
     {
-        Debug.Assert(_viewModel.IsSnapped, "We're not snapped!");
+        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+        Debug.Assert(barWindow != null, "BarWindow should not be null.");
+        Debug.Assert(barWindow.IsBarSnappedToWindow(), "We're not snapped!");
 
         PInvoke.GetWindowRect(TargetAppData.Instance.HWnd, out var rect);
-        _viewModel.WindowPosition = new Windows.Graphics.PointInt32(rect.right - SnapOffsetHorizontal, rect.top);
-
-        _viewModel.IsAlwaysOnTop = true;
-        _viewModel.IsAlwaysOnTop = false;
-    }
-
-    public void Close()
-    {
-        if (_positionEventHook != HWINEVENTHOOK.Null)
-        {
-            PInvoke.UnhookWinEvent(_positionEventHook);
-            _positionEventHook = HWINEVENTHOOK.Null;
-        }
-
-        if (_focusEventHook != HWINEVENTHOOK.Null)
-        {
-            PInvoke.UnhookWinEvent(_focusEventHook);
-            _focusEventHook = HWINEVENTHOOK.Null;
-        }
+        barWindow.UpdateBarWindowPosition(new PointInt32(rect.right - SnapOffsetHorizontal, rect.top));
+        barWindow.ResetBarWindowVisibility();
     }
 }

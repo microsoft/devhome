@@ -30,6 +30,7 @@ public partial class BarWindowViewModel : ObservableObject
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     private readonly ObservableCollection<Button> _externalTools = [];
+    private readonly SnapHelper _snapHelper;
 
     [ObservableProperty]
     private string _systemCpuUsage = string.Empty;
@@ -97,11 +98,22 @@ public partial class BarWindowViewModel : ObservableObject
         }
 
         CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
+
+        _snapHelper = new();
     }
 
     partial void OnIsSnappedChanged(bool value)
     {
-        CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
+        if (IsSnapped)
+        {
+            CurrentSnapButtonText = _UnsnapButtonText;
+            _snapHelper.Snap();
+        }
+        else
+        {
+            CurrentSnapButtonText = _SnapButtonText;
+            _snapHelper.Unsnap();
+        }
     }
 
     partial void OnBarOrientationChanged(Orientation value)

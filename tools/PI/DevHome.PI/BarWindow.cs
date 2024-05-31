@@ -11,6 +11,7 @@ using DevHome.PI.Properties;
 using DevHome.PI.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Windows.Graphics;
 using Windows.Win32.Foundation;
 using WinUIEx;
 
@@ -22,7 +23,6 @@ public partial class BarWindow
     private readonly BarWindowHorizontal _horizontalWindow;
     private readonly BarWindowVertical _verticalWindow;
     private readonly BarWindowViewModel _viewModel = new();
-    private readonly SnapHelper _snapHelper;
 
     internal HWND CurrentHwnd
     {
@@ -43,6 +43,8 @@ public partial class BarWindow
 
     public void Close()
     {
+        UnsnapBarWindow();
+
         _horizontalWindow.Close();
         _verticalWindow.Close();
 
@@ -50,8 +52,6 @@ public partial class BarWindow
         {
             window.Close();
         }
-
-        _snapHelper.Close();
     }
 
     public Frame GetFrame() => _horizontalWindow.GetFrame();
@@ -83,7 +83,6 @@ public partial class BarWindow
     {
         _horizontalWindow = new BarWindowHorizontal(_viewModel);
         _verticalWindow = new BarWindowVertical(_viewModel);
-        _snapHelper = new(_viewModel);
 
         _horizontalWindow.Closed += Window_Closed;
         _verticalWindow.Closed += Window_Closed;
@@ -144,5 +143,26 @@ public partial class BarWindow
             _verticalWindow.Hide();
             _horizontalWindow.Show();
         }
+    }
+
+    public void UpdateBarWindowPosition(PointInt32 position)
+    {
+        _viewModel.WindowPosition = position;
+    }
+
+    public void ResetBarWindowVisibility()
+    {
+        _viewModel.IsAlwaysOnTop = true;
+        _viewModel.IsAlwaysOnTop = false;
+    }
+
+    public void UnsnapBarWindow()
+    {
+        _viewModel.IsSnapped = false;
+    }
+
+    public bool IsBarSnappedToWindow()
+    {
+        return _viewModel.IsSnapped;
     }
 }
