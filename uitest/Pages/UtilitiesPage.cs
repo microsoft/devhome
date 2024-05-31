@@ -1,12 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
 using DevHome.UITest.Dialogs;
 using DevHome.UITest.Extensions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Win32.SafeHandles;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Windows;
 using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.PageObjects;
+using Windows.Win32;
 
 namespace DevHome.UITest.Pages;
 
@@ -18,25 +25,45 @@ public class UtilitiesPage : ApplicationPage
     {
     }
 
-    public void LaunchHostsUtility()
+    public void LaunchAndVerifyUtility(string utilityName, bool launchAsAdmin = false)
     {
-        Trace.WriteLine("Launching Hosts Utility");
-        WindowsElement hostsUtilityView = Driver.FindElementByAccessibilityId("HostsFileEditorAutomationId");
-        var button = hostsUtilityView.FindElementByAccessibilityId("LaunchButtonAutomationId");
-        button.Click();
+        Trace.WriteLine($"Launching {utilityName} with admin: {launchAsAdmin}");
+        WindowsElement utilityView = Driver.FindElementByAccessibilityId(utilityName);
 
-        // look for processes to find DevHome.HostsFileEditor.exe
-        var processes = Process.GetProcessesByName("DevHome.HostsFileEditor");
-        if (processes.Length == 0)
+        if (launchAsAdmin)
         {
-            Trace.WriteLine("DevHome.HostsFileEditor did not launch");
+            var launchAsAdminToggle = utilityView.FindElementByAccessibilityId("AdminToggleAutomationId");
+            launchAsAdminToggle.Click();
         }
-    }
 
-    public void LaunchHostsUtilityAsAdmin()
-    {
-        // Trace.WriteLine("Launching Hosts Utility");
-        // HostsUtilityView.FindElementByAccessibilityId("AdminToggleAutomationId").Click();
-        // HostsUtilityView.FindElementByAccessibilityId("LaunchButtonAutomationId").Click();
+        var launchButton = utilityView.FindElementByAccessibilityId("LaunchButtonAutomationId");
+        launchButton.Click();
+
+        // Wait for the utility to launch
+        Thread.Sleep(2000);
+
+        var processes = Process.GetProcessesByName(utilityName);
+        Assert.IsTrue(processes.Length == 1, $"{utilityName} as admin:{launchAsAdmin} did not launch");
+
+        if (launchAsAdmin)
+        {
+            try
+            {
+                var isAdmin = false;
+                SafeFileHandle processToken;
+                var result = PInvoke.OpenProcessToken(processes.First().SafeHandle, Windows.Win32.Security.TOKEN_ACCESS_MASK.TOKEN_QUERY, out processToken);
+                if (result != 0)
+                {
+                    var identity = new WindowsIdentity(processToken.DangerousGetHandle());
+                    isAdmin = identity?.Owner?.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid) ?? false;
+                }
+
+                Assert.IsTrue(isAdmin, $"{utilityName} did not launch as admin");
+            }
+            catch (Win32Exception ex)
+            {
+                Assert.Fail($"Failed to check if {utilityName} launched as admin: {ex.Message}");
+            }
+        }
     }
 }
