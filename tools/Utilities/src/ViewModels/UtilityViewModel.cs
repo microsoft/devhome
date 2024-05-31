@@ -55,6 +55,9 @@ public partial class UtilityViewModel : ObservableObject
     [ObservableProperty]
     private bool _launchAsAdmin;
 
+    [ObservableProperty]
+    private string _utilityAutomationId;
+
 #nullable enable
     public UtilityViewModel(string exeName, IExperimentationService? experimentationService = null, string? experimentalFeature = null)
     {

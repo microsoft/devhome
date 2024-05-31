@@ -28,6 +28,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 NavigateUri = "https://go.microsoft.com/fwlink/?Linkid=2271355",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\HostsUILib", "Hosts.ico"),
                 SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Visible,
+                UtilityAutomationId = "HostsFileEditorAutomationId",
             },
             new(Path.Combine(appExAliasAbsFolderPath, "DevHome.RegistryPreviewApp.exe"))
             {
@@ -36,6 +37,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 NavigateUri = "https://go.microsoft.com/fwlink/?Linkid=2270966",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\RegistryPreview", "RegistryPreview.ico"),
                 SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Collapsed,
+                UtilityAutomationId = "RegistryPreviewAutomationId",
             },
             new(Path.Combine(appExAliasAbsFolderPath, "DevHome.EnvironmentVariablesApp.exe"))
             {
@@ -44,6 +46,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 NavigateUri = "https://go.microsoft.com/fwlink/?Linkid=2270894",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\EnvironmentVariables", "EnvironmentVariables.ico"),
                 SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Visible,
+                UtilityAutomationId = "EnvVariablesAutomationId",
             },
             new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"Microsoft\\WindowsApps\\{Package.Current.Id.FamilyName}\\devhome.pi.exe"), experimentationService, "ProjectIronsidesExperiment")
             {
@@ -51,6 +54,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 Description = stringResource.GetLocalized("ProjectIronsidesDesc"),
                 NavigateUri = "https://aka.ms/projectironsides",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "PI.ico"),
+                UtilityAutomationId = "PIAutomationId",
             },
         };
     }
