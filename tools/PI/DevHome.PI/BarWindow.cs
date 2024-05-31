@@ -135,7 +135,7 @@ public partial class BarWindow
         _viewModel.WindowPosition = position;
     }
 
-    public void ResetBarWindowVisibility()
+    public void ResetBarWindowOnTop()
     {
         _viewModel.IsAlwaysOnTop = true;
         _viewModel.IsAlwaysOnTop = false;

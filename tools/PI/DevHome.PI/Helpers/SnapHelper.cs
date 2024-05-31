@@ -120,7 +120,7 @@ public class SnapHelper
         Debug.Assert(barWindow != null, "BarWindow should not be null.");
         if (hwnd == TargetAppData.Instance.HWnd && barWindow.IsBarSnappedToWindow())
         {
-            barWindow.ResetBarWindowVisibility();
+            barWindow.ResetBarWindowOnTop();
             return;
         }
     }
@@ -131,6 +131,7 @@ public class SnapHelper
         Debug.Assert(barWindow != null, "BarWindow should not be null.");
         Debug.Assert(barWindow.IsBarSnappedToWindow(), "We're not snapped!");
 
+        // If BarWindow is snapped to a TargetApp and BarWindow is in foreground, bring TargetApp to foreground.
         if (barWindow.CurrentHwnd == PInvoke.GetForegroundWindow())
         {
             PInvoke.SetForegroundWindow(TargetAppData.Instance.HWnd);
@@ -139,9 +140,10 @@ public class SnapHelper
         PInvoke.GetWindowRect(TargetAppData.Instance.HWnd, out var rect);
         barWindow.UpdateBarWindowPosition(new PointInt32(rect.right - SnapOffsetHorizontal, rect.top));
 
+        // Only reset BarWindow on top, if TargetApp is in foreground.
         if (TargetAppData.Instance.HWnd == PInvoke.GetForegroundWindow())
         {
-            barWindow.ResetBarWindowVisibility();
+            barWindow.ResetBarWindowOnTop();
         }
     }
 }
