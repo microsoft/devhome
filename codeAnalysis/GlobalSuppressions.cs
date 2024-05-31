@@ -55,3 +55,7 @@ using System.Diagnostics.CodeAnalysis;
 
 // Code quality
 [assembly: SuppressMessage("CodeQuality", "IDE0076:Invalid global 'SuppressMessageAttribute'", Justification = "Affect predefined suppressions.")]
+
+// Logger
+[assembly: SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "Allow using LoggerExtensions methods")]
+[assembly: SuppressMessage("Usage", "CA2254:Template should be a static expression", Justification = "Allow string concatenation or interpolation")]
