@@ -30,19 +30,23 @@
     <None Remove="Controls\GlowButton.xaml" />
     <None Remove="errors.db" />
     <None Remove="Images\PI.ico" />
+    <None Remove="Pages\AboutPage.xaml" />
+    <None Remove="Pages\AdditionalToolsPage.xaml" />
+    <None Remove="Pages\AdvancedSettingsPage.xaml" />
     <None Remove="Pages\AppDetailsPage.xaml" />
     <None Remove="Pages\EtwPage.xaml" />
     <None Remove="Pages\EventsPage.xaml" />
     <None Remove="Pages\HelpPage.xaml" />
     <None Remove="Pages\InsightsPage.xaml" />
     <None Remove="Pages\ModulesPage.xaml" />
+    <None Remove="Pages\PreferencesPage.xaml" />
     <None Remove="Pages\ProcessListPage.xaml" />
     <None Remove="Pages\ResourceUsagePage.xaml" />
+    <None Remove="Pages\SettingsPage.xaml" />
     <None Remove="Pages\WatsonsPage.xaml" />
     <None Remove="Pages\WinLogsPage.xaml" />
     <None Remove="SettingsUi\AddToolControl.xaml" />
     <None Remove="SettingsUi\EditToolsControl.xaml" />
-    <None Remove="SettingsUi\SettingsToolWindow.xaml" />
   </ItemGroup>
 
   <!-- Needed to avoid conflicts with DevHome's App.xaml and to let
@@ -71,6 +75,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.0.240109" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.3" />
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.1.9" GeneratePathProperty="true" />
@@ -151,6 +156,21 @@
     <None Update="appsettings_pi.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Pages\AboutPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\AdvancedSettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\AdditionalToolsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\PreferencesPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Controls\GlowButton.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -162,9 +182,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="SettingsUi\AddToolControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="SettingsUi\SettingsToolWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
