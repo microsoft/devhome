@@ -55,8 +55,8 @@ public class SnapHelper
         Debug.Assert(barWindow != null, "BarWindow should not be null.");
 
         // Set a gap from the associated app window to provide positive feedback.
-        PInvoke.GetWindowRect(TargetAppData.Instance.HWnd, out var rect);
-        barWindow.UpdateBarWindowPosition(new PointInt32(rect.right - SnapOffsetHorizontal + UnsnapGap, rect.top));
+        PInvoke.GetWindowRect(barWindow.CurrentHwnd, out var rect);
+        barWindow.UpdateBarWindowPosition(new PointInt32(rect.left + UnsnapGap, rect.top));
 
         if (_positionEventHook != HWINEVENTHOOK.Null)
         {
