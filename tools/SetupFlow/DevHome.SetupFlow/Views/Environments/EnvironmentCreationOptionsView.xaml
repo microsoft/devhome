@@ -5,6 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:setupControls="using:DevHome.SetupFlow.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
     Unloaded="ViewUnloaded"
     Loaded="ViewLoaded">
     <UserControl.Resources>
@@ -46,10 +48,15 @@
                 </Grid>
 
                 <!--- Show the adaptive card on the page if its loaded. -15 Padding added as the adaptive card adds an extra 40px of padding on all sides -->
+                <!-- Set focus to this grid because it is the first container with selectable elements.-->
                 <Grid
                     Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay}"
                     x:Name="AdaptiveCardGrid" 
-                    Padding="-15"/>
+                    Padding="-15">
+                    <i:Interaction.Behaviors>
+                        <behaviors:FocusBehavior/>
+                    </i:Interaction.Behaviors>
+                </Grid>
 
                 <Grid
                     HorizontalAlignment="Center"

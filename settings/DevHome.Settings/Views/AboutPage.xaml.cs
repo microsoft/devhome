@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Views;
 using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -12,7 +13,7 @@ using Serilog;
 
 namespace DevHome.Settings.Views;
 
-public sealed partial class AboutPage : Page
+public sealed partial class AboutPage : DevHomePage
 {
     public AboutViewModel ViewModel { get; }
 
