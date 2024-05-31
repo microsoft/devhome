@@ -19,7 +19,12 @@ public static class Program
     {
         // Be sure to parse these args in this instance of the exe... don't redirect this to another instance for parsing which
         // may be running in a different security context.
-        ParseCommandLine(args);
+        var continueLaunching = ParseCommandLine(args);
+
+        if (!continueLaunching)
+        {
+            return;
+        }
 
         WinRT.ComWrappersSupport.InitializeComWrappers();
 
@@ -60,7 +65,7 @@ public static class Program
     //
     // --utilityLaunch is the name of the utility to launch
     // --utilityLaunchArgs are the arguments to pass to the utility. This is optional, but be sure to include the quotes if you have spaces in the arguments.
-    private static void ParseCommandLine(string[] args)
+    private static bool ParseCommandLine(string[] args)
     {
         var builder = new ConfigurationBuilder();
         builder.AddCommandLine(args);
@@ -85,6 +90,10 @@ public static class Program
             {
                 _log.Error(ex, $"Error launching utility: {ex.Message}");
             }
+
+            return false;
         }
+
+        return true;
     }
 }
