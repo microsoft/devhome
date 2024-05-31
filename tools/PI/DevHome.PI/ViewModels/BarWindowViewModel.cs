@@ -131,7 +131,7 @@ public partial class BarWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void SwitchLayoutCommand()
+    public void SwitchLayout()
     {
         if (BarOrientation == Orientation.Horizontal)
         {
@@ -144,7 +144,7 @@ public partial class BarWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void PerformSnapCommand()
+    public void PerformSnap()
     {
         if (IsSnapped)
         {
@@ -159,7 +159,7 @@ public partial class BarWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void ShowBigWindowCommand()
+    public void ShowBigWindow()
     {
         if (!ShowingExpandedContent)
         {
@@ -174,7 +174,7 @@ public partial class BarWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void ProcessChooserCommand()
+    public void ProcessChooser()
     {
         // Need to be in a horizontal layout
         BarOrientation = Orientation.Horizontal;
@@ -191,14 +191,17 @@ public partial class BarWindowViewModel : ObservableObject
     {
         if (e.PropertyName == nameof(TargetAppData.HWnd))
         {
-            IsSnappingEnabled = TargetAppData.Instance.HWnd != HWND.Null;
-
-            // If snapped, retarget to the new window
-            if (IsSnapped)
+            _dispatcher.TryEnqueue(() =>
             {
-                _snapHelper.Unsnap();
-                _snapHelper.Snap();
-            }
+                IsSnappingEnabled = TargetAppData.Instance.HWnd != HWND.Null;
+
+                // If snapped, retarget to the new window
+                if (IsSnapped)
+                {
+                    _snapHelper.Unsnap();
+                    _snapHelper.Snap();
+                }
+            });
         }
         else if (e.PropertyName == nameof(TargetAppData.TargetProcess))
         {

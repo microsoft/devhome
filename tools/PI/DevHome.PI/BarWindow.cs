@@ -56,21 +56,6 @@ public partial class BarWindow
 
     public Frame GetFrame() => _horizontalWindow.GetFrame();
 
-    public IntPtr CurrentWindowHandle
-    {
-        get
-        {
-            if (_horizontalWindow.Visible)
-            {
-                return DevHome.Common.Extensions.WindowExExtensions.GetWindowHandle(_horizontalWindow);
-            }
-            else
-            {
-                return DevHome.Common.Extensions.WindowExExtensions.GetWindowHandle(_verticalWindow);
-            }
-        }
-    }
-
     internal void SetRequestedTheme(ElementTheme theme)
     {
         _horizontalWindow.SetRequestedTheme(theme);

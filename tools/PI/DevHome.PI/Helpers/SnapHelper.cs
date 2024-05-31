@@ -138,6 +138,10 @@ public class SnapHelper
 
         PInvoke.GetWindowRect(TargetAppData.Instance.HWnd, out var rect);
         barWindow.UpdateBarWindowPosition(new PointInt32(rect.right - SnapOffsetHorizontal, rect.top));
-        barWindow.ResetBarWindowVisibility();
+
+        if (TargetAppData.Instance.HWnd == PInvoke.GetForegroundWindow())
+        {
+            barWindow.ResetBarWindowVisibility();
+        }
     }
 }
