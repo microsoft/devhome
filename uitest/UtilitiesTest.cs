@@ -20,7 +20,6 @@ public class UtilitiesTest : DevHomeTestBase
     [DataRow("DevHome.PI", true, DisplayName = "PI as Admin")]
     public void LaunchUtilityTest(string utilityName, bool launchAsAdmin)
     {
-        // Arrange
         var utilities = Application.NavigateToUtilitiesPage();
         utilities.LaunchAndVerifyUtility(utilityName, launchAsAdmin);
     }
@@ -34,7 +33,6 @@ public class UtilitiesTest : DevHomeTestBase
         {
             var processes = Process.GetProcessesByName(utilityName);
 
-            // Cleanup
             foreach (var process in processes)
             {
                 process.Kill();

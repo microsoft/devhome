@@ -19,7 +19,6 @@ namespace DevHome.UITest.Pages;
 
 public class UtilitiesPage : ApplicationPage
 {
-    // public WindowsElement HostsUtilityView => Driver.FindElementByAccessibilityId("HostsFileEditorAutomationId");
     public UtilitiesPage(WindowsDriver<WindowsElement> driver)
         : base(driver)
     {
