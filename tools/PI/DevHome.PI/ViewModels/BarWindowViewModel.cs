@@ -192,6 +192,13 @@ public partial class BarWindowViewModel : ObservableObject
         if (e.PropertyName == nameof(TargetAppData.HWnd))
         {
             IsSnappingEnabled = TargetAppData.Instance.HWnd != HWND.Null;
+
+            // If snapped, retarget to the new window
+            if (IsSnapped)
+            {
+                _snapHelper.Unsnap();
+                _snapHelper.Snap();
+            }
         }
         else if (e.PropertyName == nameof(TargetAppData.TargetProcess))
         {
