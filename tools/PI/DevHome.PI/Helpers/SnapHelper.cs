@@ -131,6 +131,11 @@ public class SnapHelper
         Debug.Assert(barWindow != null, "BarWindow should not be null.");
         Debug.Assert(barWindow.IsBarSnappedToWindow(), "We're not snapped!");
 
+        if (barWindow.CurrentHwnd == PInvoke.GetForegroundWindow())
+        {
+            PInvoke.SetForegroundWindow(TargetAppData.Instance.HWnd);
+        }
+
         PInvoke.GetWindowRect(TargetAppData.Instance.HWnd, out var rect);
         barWindow.UpdateBarWindowPosition(new PointInt32(rect.right - SnapOffsetHorizontal, rect.top));
         barWindow.ResetBarWindowVisibility();
