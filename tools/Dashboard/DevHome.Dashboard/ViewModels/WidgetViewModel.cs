@@ -361,43 +361,41 @@ public partial class WidgetViewModel : ObservableObject
     {
         // We are only interested in plain texts. Buttons, Actions, Images
         // and textboxes are all ignored. Including ActionSets and ImageSets.
-        if (element is AdaptiveTextBlock)
+        if (element is AdaptiveTextBlock textBlock)
         {
-            var textBlock = (AdaptiveTextBlock)element;
             if (isInsideWarningContainer)
             {
                 _screenReaderService.Announce(textBlock.Text);
             }
+
+            return;
         }
 
         // We are treating any text inside a container with the "Warning" style
         // as an actual warning to be announced.
         // For now, the only types of containers widgets use are Containers and Columns. In the future,
         // we may add Caroussels, Tables and Facts to this list.
-        if (element is AdaptiveContainer)
+        if (element is AdaptiveContainer container)
         {
-            var container = (AdaptiveContainer)element;
             foreach (var subelement in container.Items)
             {
-                SearchForWarning(subelement, isInsideWarningContainer || container.Style == ContainerStyle.Warning);
+                SearchForWarning(subelement, isInsideWarningContainer || (container.Style == ContainerStyle.Warning));
             }
         }
 
-        if (element is AdaptiveColumnSet)
+        if (element is AdaptiveColumnSet columnSet)
         {
-            var columnSet = (AdaptiveColumnSet)element;
             foreach (var subelement in columnSet.Columns)
             {
-                SearchForWarning(subelement, isInsideWarningContainer || columnSet.Style == ContainerStyle.Warning);
+                SearchForWarning(subelement, isInsideWarningContainer || (columnSet.Style == ContainerStyle.Warning));
             }
         }
 
-        if (element is AdaptiveColumn)
+        if (element is AdaptiveColumn column)
         {
-            var column = (AdaptiveColumn)element;
             foreach (var subelement in column.Items)
             {
-                SearchForWarning(subelement, isInsideWarningContainer || column.Style == ContainerStyle.Warning);
+                SearchForWarning(subelement, isInsideWarningContainer || (column.Style == ContainerStyle.Warning));
             }
         }
     }
