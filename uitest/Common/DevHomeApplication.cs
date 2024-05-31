@@ -108,8 +108,7 @@ public sealed class DevHomeApplication
     {
         Trace.WriteLine("Navigating to Utilities");
         UtilitiesNavigationItem.Click();
-        var utilities = new UtilitiesPage(_devHomeSession.Driver);
-        return utilities;
+        return new(_devHomeSession.Driver);
     }
 
     /// <summary>

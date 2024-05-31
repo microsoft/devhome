@@ -3,16 +3,10 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Security.Principal;
-using DevHome.UITest.Dialogs;
-using DevHome.UITest.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32.SafeHandles;
-using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Windows;
-using OpenQA.Selenium.Interactions;
-using OpenQA.Selenium.Support.PageObjects;
 using Windows.Win32;
 
 namespace DevHome.UITest.Pages;

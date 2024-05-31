@@ -10,7 +10,7 @@
 
     <Grid
         AutomationProperties.Name="{x:Bind ViewModel.Title}"
-        AutomationProperties.AutomationId="{x:Bind ViewModel.UtilityAutomationId}"
+        AutomationProperties.AutomationId="{x:Bind ViewModel.UtilityAutomationId, Mode=OneWay}"
         HorizontalAlignment="Stretch"
         Padding="15 15"
         CornerRadius="{ThemeResource ControlCornerRadius}"
