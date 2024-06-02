@@ -765,8 +765,16 @@
     <value>Not pinned</value>
     <comment>Text to show when the switch is turned off, to not pin the tool to the bar.</comment>
   </data>
-  <data name="UnpinMenuItemText" xml:space="preserve">
+  <data name="UnpinMenuItem.Text" xml:space="preserve">
     <value>Unpin</value>
     <comment>A label for the menuitem to unpin a tool on the bar.</comment>
+  </data>
+  <data name="UnpinMenuItemRawText" xml:space="preserve">
+    <value>Unpin</value>
+    <comment>Should be the same as UnpinMenuItem.Text</comment>
+  </data>
+  <data name="UnregisterMenuItemRawText" xml:space="preserve">
+    <value>Unregister</value>
+    <comment>Same as UnregisterMenuItem.Text</comment>
   </data>
 </root>

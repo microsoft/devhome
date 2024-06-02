@@ -26,10 +26,6 @@ namespace DevHome.PI;
 public partial class BarWindowHorizontal : WindowEx
 {
     private readonly Settings _settings = Settings.Default;
-    private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
-    private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
-    private readonly string _pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
-    private readonly string _unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemText");
     private readonly BarWindowViewModel _viewModel;
 
     // Constants that control window sizes
@@ -129,12 +125,19 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void ExternalTools_MenuItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        // For simplicity sake, rather than apply the diff, build the menu from scratch
-        ExternalToolsMenu.Items.Clear();
-
-        foreach (var menuItem in _viewModel.ExternalToolsMenuItems)
+        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
         {
-            ExternalToolsMenu.Items.Add(menuItem);
+            foreach (MenuFlyoutItem item in e.NewItems)
+            {
+                ExternalToolsMenu.Items.Add(item);
+            }
+        }
+        else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
+        {
+            foreach (MenuFlyoutItem item in e.OldItems)
+            {
+                ExternalToolsMenu.Items.Remove(item);
+            }
         }
     }
 

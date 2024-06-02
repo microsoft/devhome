@@ -47,6 +47,9 @@ public partial class ExternalTool : ObservableObject
     }
 
     [ObservableProperty]
+    private string _pinGlyph;
+
+    [ObservableProperty]
     private bool _isPinned;
 
     // Note the additional "property:" syntax to ensure the JsonIgnore is propagated to the generated property.
@@ -75,6 +78,7 @@ public partial class ExternalTool : ObservableObject
         ArgPrefix = argprefix;
         OtherArgs = otherArgs;
         IsPinned = isPinned;
+        PinGlyph = IsPinned ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
 
         ID = Guid.NewGuid().ToString();
 
@@ -83,6 +87,11 @@ public partial class ExternalTool : ObservableObject
             GetToolImage();
             GetMenuIcon();
         }
+    }
+
+    partial void OnIsPinnedChanged(bool oldValue, bool newValue)
+    {
+        PinGlyph = newValue ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
     }
 
     private async void GetToolImage()
@@ -160,5 +169,15 @@ public partial class ExternalTool : ObservableObject
             _log.Error(ex, "Tool launched failed");
             return null;
         }
+    }
+
+    public void TogglePinnedState()
+    {
+        IsPinned = !IsPinned;
+    }
+
+    public void UnregisterTool()
+    {
+        ExternalToolsHelper.Instance.RemoveExternalTool(this);
     }
 }

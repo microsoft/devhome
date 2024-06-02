@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -42,8 +43,6 @@ public partial class BarWindowVertical : WindowEx
 
     private readonly WINEVENTPROC _winPositionEventDelegate;
     private readonly WINEVENTPROC _winFocusEventDelegate;
-
-    private Button? _selectedExternalToolButton;
 
     private HWINEVENTHOOK _positionEventHook;
     private HWINEVENTHOOK _focusEventHook;
@@ -93,26 +92,29 @@ public partial class BarWindowVertical : WindowEx
 
         // Regardless of what is set in the XAML, our initial window width is too big. Setting this to 70 (same as the XAML file)
         Width = 70;
+
+        foreach (var menuItem in _viewModel.ExternalToolsMenuItems)
+        {
+            ExternalToolsMenu.Items.Add(menuItem);
+        }
+
+        ((INotifyCollectionChanged)_viewModel.ExternalToolsMenuItems).CollectionChanged += ExternalTools_MenuItemsChanged;
     }
 
-    private void ExternalToolButton_Click(object sender, RoutedEventArgs e)
+    private void ExternalTools_MenuItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        if (sender is Button clickedButton)
+        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
         {
-            if (clickedButton.Tag is ExternalTool tool)
+            foreach (MenuFlyoutItem item in e.NewItems)
             {
-                var process = tool.Invoke(TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
-
-                if (process == null)
-                {
-                    // It appears ContentDialogs only render in the space it's parent occupies. Since the parent is a narrow
-                    // bar, the dialog doesn't have enough space to render. So, we'll use MessageBox to display errors.
-                    PInvoke.MessageBox(
-                        ThisHwnd,
-                        string.Format(CultureInfo.CurrentCulture, _errorMessageText, tool.Executable),
-                        _errorTitleText,
-                        MESSAGEBOX_STYLE.MB_ICONERROR);
-                }
+                ExternalToolsMenu.Items.Add(item);
+            }
+        }
+        else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
+        {
+            foreach (MenuFlyoutItem item in e.OldItems)
+            {
+                ExternalToolsMenu.Items.Remove(item);
             }
         }
     }
@@ -129,27 +131,6 @@ public partial class BarWindowVertical : WindowEx
         {
             PInvoke.UnhookWinEvent(_focusEventHook);
             _focusEventHook = HWINEVENTHOOK.Null;
-        }
-    }
-
-    private void ExternalToolButton_PointerPressed(object sender, PointerRoutedEventArgs e)
-    {
-        _selectedExternalToolButton = (Button)sender;
-    }
-
-    private void UnPinMenuItem_Click(object sender, RoutedEventArgs e)
-    {
-        // TODO Implement unpinning a tool from the bar, assuming we continue with the pinning feature.
-    }
-
-    private void UnregisterMenuItem_Click(object sender, RoutedEventArgs e)
-    {
-        if (_selectedExternalToolButton is not null)
-        {
-            if (_selectedExternalToolButton.Tag is ExternalTool tool)
-            {
-                ExternalToolsHelper.Instance.RemoveExternalTool(tool);
-            }
         }
     }
 
