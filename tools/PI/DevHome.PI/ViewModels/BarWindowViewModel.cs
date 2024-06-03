@@ -508,6 +508,8 @@ public partial class BarWindowViewModel : ObservableObject
 
     private void HideFlyout(object sender)
     {
+        // It's surprisingly difficult to find the parent MenuFlyout of a MenuFlyoutItem. We'll
+        // just hide all of them.
         foreach (MenuFlyout fly in _externalToolMenus)
         {
             fly.Hide();
