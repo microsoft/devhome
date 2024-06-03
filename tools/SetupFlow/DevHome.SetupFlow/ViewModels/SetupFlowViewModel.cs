@@ -144,7 +144,7 @@ public partial class SetupFlowViewModel : ObservableObject
         }
     }
 
-    public void StartAppManagementFlow(string query)
+    public void StartAppManagementFlow(string query = null)
     {
         Orchestrator.FlowPages = [_mainPageViewModel];
         _mainPageViewModel.StartAppManagementFlow(query);
