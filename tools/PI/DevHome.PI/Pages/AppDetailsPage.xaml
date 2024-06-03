@@ -8,7 +8,8 @@
     xmlns:models="using:DevHome.PI.Models"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:local="using:DevHome.PI.Controls"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled">
 
     <Grid>
         <Grid.Resources>
