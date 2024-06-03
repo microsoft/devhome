@@ -19,7 +19,11 @@
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
             <converters:BoolToObjectConverter x:Key="BoolToOpacityConverter" TrueValue="1" FalseValue="0.4" />
             <x:Double x:Key="SettingsCardHeaderIconMaxSize">32</x:Double>
-
+            <Style x:Key="ListViewItemStretchStyle" TargetType="ListViewItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Margin" Value="0, 0, 0, 4" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -87,10 +91,11 @@
                         BackgroundSource="{ThemeResource Setup_Banner_Back}"
                         OverlaySource="{ThemeResource Setup_Banner_Front}" />
 
-                    <StackPanel Spacing="{StaticResource SettingsCardSpacing}" AutomationProperties.Name="{x:Bind ViewModel.MainPageEnvironmentSetupGroupName}">
+                    <StackPanel AutomationProperties.Name="{x:Bind ViewModel.MainPageEnvironmentSetupGroupName}">
                         <TextBlock x:Name="SetupEnvironmentHeader"  Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_EnvironmentSetup"/>
                         <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
-                        <Grid Background="Transparent">
+                        <ListView ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}" SelectionMode="Single">
+                            <Grid Background="Transparent">
                             <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
                                                AutomationProperties.AutomationId="EndToEndSetupButton"
                                                IsClickEnabled="True"
@@ -179,6 +184,7 @@
                                 <TextBlock x:Uid="MainPage_QuickstartPlayground_Description"/>
                             </ctControls:SettingsCard.Description>
                         </ctControls:SettingsCard>
+                        </ListView>
                     </StackPanel>
 
                     <StackPanel Spacing="{StaticResource SettingsCardSpacing}" AutomationProperties.Name="{x:Bind ViewModel.MainPageQuickStepsGroupName}">
