@@ -124,7 +124,6 @@ public partial class BarWindowViewModel : ObservableObject
     public void RegisterExternalToolsMenuFlyout(MenuFlyout menuFlyout)
     {
         _externalToolMenus.Add(menuFlyout);
-
         foreach (var item in ExternalToolsHelper.Instance.AllExternalTools)
         {
             AddExternalToolToContextMenu(menuFlyout, item);

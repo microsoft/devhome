@@ -81,10 +81,10 @@
             </Button>
 
             <Button
-                 x:Name="ManageExternalToolsButton"
-                 x:Uid="ManageExternalToolsButton"
-                 HorizontalAlignment="Center"
-                 Click="{x:Bind _viewModel.ManageExternalToolsButton_Click}">
+                x:Name="ManageExternalToolsButton"
+                x:Uid="ManageExternalToolsButton"
+                HorizontalAlignment="Center"
+                Click="{x:Bind _viewModel.ManageExternalToolsButton_Click}">
                 <Button.ContextFlyout>
                     <MenuFlyout x:Name="ExternalToolsMenu">
                         <!-- We can't databind to MenuFlyout, so we'll add a MenuFlyoutItem
