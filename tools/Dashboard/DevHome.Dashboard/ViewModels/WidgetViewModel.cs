@@ -2,6 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
@@ -375,27 +379,26 @@ public partial class WidgetViewModel : ObservableObject
         // as an actual warning to be announced.
         // For now, the only types of containers widgets use are Containers and Columns. In the future,
         // we may add Caroussels, Tables and Facts to this list.
-        if (element is AdaptiveContainer container)
+        var containerTypes = new Dictionary<Type, string>
         {
-            foreach (var subelement in container.Items)
-            {
-                SearchForWarning(subelement, isInsideWarningContainer || (container.Style == ContainerStyle.Warning));
-            }
-        }
+            { typeof(AdaptiveContainer), "get_Items" },
+            { typeof(AdaptiveColumn), "get_Items" },
+            { typeof(AdaptiveColumnSet), "get_Columns" },
+        };
 
-        if (element is AdaptiveColumnSet columnSet)
+        if (element is IAdaptiveContainerBase containerElement)
         {
-            foreach (var subelement in columnSet.Columns)
+            foreach (var containerType in containerTypes)
             {
-                SearchForWarning(subelement, isInsideWarningContainer || (columnSet.Style == ContainerStyle.Warning));
-            }
-        }
+                if (containerElement.GetType() == containerType.Key)
+                {
+                    MethodInfo itemsMethod = containerType.Key.GetMethod(containerType.Value, BindingFlags.Public | BindingFlags.Instance);
 
-        if (element is AdaptiveColumn column)
-        {
-            foreach (var subelement in column.Items)
-            {
-                SearchForWarning(subelement, isInsideWarningContainer || (column.Style == ContainerStyle.Warning));
+                    foreach (var subelement in itemsMethod.Invoke(containerElement, null) as IEnumerable)
+                    {
+                        SearchForWarning((IAdaptiveCardElement)subelement, isInsideWarningContainer || (containerElement.Style == ContainerStyle.Warning));
+                    }
+                }
             }
         }
     }
