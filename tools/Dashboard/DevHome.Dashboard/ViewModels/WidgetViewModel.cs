@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
@@ -210,7 +211,7 @@ public partial class WidgetViewModel : ObservableObject
                             }
                             else
                             {
-                                _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
+                                _dispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
                                 {
                                     WidgetFrameworkElement.Focus(FocusState.Programmatic);
                                 });
@@ -401,7 +402,7 @@ public partial class WidgetViewModel : ObservableObject
         }
         catch (Exception e)
         {
-            Log.Logger()?.ReportError("WidgetViewModel", e.Message);
+           _log.Error("WidgetViewModel", e.Message);
         }
 
         return pathOnTree;
@@ -448,7 +449,7 @@ public partial class WidgetViewModel : ObservableObject
             // back to the widget as a whole.
             if (i >= VisualTreeHelper.GetChildrenCount(element))
             {
-                _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
+                _dispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
                 {
                     WidgetFrameworkElement.Focus(FocusState.Programmatic);
                 });
@@ -459,7 +460,7 @@ public partial class WidgetViewModel : ObservableObject
         }
 
         // Set the focus to the object after we reach it.
-        _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
+        _dispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () =>
         {
             element.Focus(FocusState.Programmatic);
         });
