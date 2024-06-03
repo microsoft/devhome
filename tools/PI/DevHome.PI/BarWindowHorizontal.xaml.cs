@@ -114,7 +114,7 @@ public partial class BarWindowHorizontal : WindowEx
 
         SetRegionsForTitleBar();
 
-        _viewModel.RegisterExternalToolsMenuFlyout(ExternalToolsMenu);
+        _viewModel.RegisterExternalToolButton(ManageExternalToolsButton);
     }
 
     public void SetRegionsForTitleBar()

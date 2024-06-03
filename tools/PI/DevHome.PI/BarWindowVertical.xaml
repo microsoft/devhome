@@ -85,12 +85,6 @@
                 x:Uid="ManageExternalToolsButton"
                 HorizontalAlignment="Center"
                 Click="{x:Bind _viewModel.ManageExternalToolsButton_Click}">
-                <Button.ContextFlyout>
-                    <MenuFlyout x:Name="ExternalToolsMenu">
-                        <!-- We can't databind to MenuFlyout, so we'll add a MenuFlyoutItem
-                        for each external tool in codebehind here. -->
-                    </MenuFlyout>
-                </Button.ContextFlyout>
                 <TextBlock Text="&#xEC7A;"/>
             </Button>
 

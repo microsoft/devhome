@@ -35,7 +35,7 @@ public partial class BarWindowViewModel : ObservableObject
     private readonly string _unregisterMenuItemText = CommonHelper.GetLocalizedString("UnregisterMenuItemRawText");
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-    private readonly List<MenuFlyout> _externalToolMenus = [];
+    private readonly List<Button> _externalToolButtons = [];
 
     private readonly ObservableCollection<Button> _externalTools = [];
 
@@ -121,18 +121,25 @@ public partial class BarWindowViewModel : ObservableObject
         }
     }
 
-    public void RegisterExternalToolsMenuFlyout(MenuFlyout menuFlyout)
+    public void RegisterExternalToolButton(Button button)
     {
-        _externalToolMenus.Add(menuFlyout);
-        foreach (var item in ExternalToolsHelper.Instance.AllExternalTools)
+        _externalToolButtons.Add(button);
+
+        if (ExternalToolsHelper.Instance.AllExternalTools.Count > 0)
         {
-            AddExternalToolToContextMenu(menuFlyout, item);
+            var flyout = new MenuFlyout();
+            button.ContextFlyout = flyout;
+
+            foreach (var item in ExternalToolsHelper.Instance.AllExternalTools)
+            {
+                AddExternalToolToContextMenu(flyout, item);
+            }
         }
     }
 
-    public void UnregisterExternalToolsMenuFlyout(MenuFlyout menuFlyout)
+    public void UnregisterExternalToolsMenuFlyout(Button menuFlyout)
     {
-        _externalToolMenus.Remove(menuFlyout);
+        _externalToolButtons.Remove(menuFlyout);
     }
 
     [RelayCommand]
@@ -296,8 +303,15 @@ public partial class BarWindowViewModel : ObservableObject
             {
                 foreach (ExternalTool tool in e.NewItems)
                 {
-                    foreach (MenuFlyout flyout in _externalToolMenus)
+                    foreach (Button button in _externalToolButtons)
                     {
+                        // If this button doens't have a flyout, create one
+                        if (button.ContextFlyout is not MenuFlyout flyout)
+                        {
+                            flyout = new MenuFlyout();
+                            button.ContextFlyout = flyout;
+                        }
+
                         AddExternalToolToContextMenu(flyout, tool);
                     }
 
@@ -311,9 +325,19 @@ public partial class BarWindowViewModel : ObservableObject
                 {
                     tool.PropertyChanged -= ExternalToolItem_PropertyChanged;
 
-                    foreach (MenuFlyout flyout in _externalToolMenus)
+                    foreach (Button button in _externalToolButtons)
                     {
-                        RemoveExternalToolFromContextMenu(flyout, tool);
+                        // If this button doens't have a flyout, create one
+                        if (button.ContextFlyout is MenuFlyout flyout)
+                        {
+                            RemoveExternalToolFromContextMenu(flyout, tool);
+
+                            // If we've removed all the items from the flyout, remove the flyout
+                            if (flyout.Items.Count == 0)
+                            {
+                                button.ContextFlyout = null;
+                            }
+                        }
                     }
                 }
             }
@@ -409,8 +433,11 @@ public partial class BarWindowViewModel : ObservableObject
 
         _dispatcher.TryEnqueue(() =>
         {
-            foreach (MenuFlyout flyout in _externalToolMenus)
+            foreach (Button button in _externalToolButtons)
             {
+                MenuFlyout? flyout = button.ContextFlyout as MenuFlyout;
+                Debug.Assert(flyout is not null, "Why does this button not have a menu flyout?");
+
                 // Update the submenu item for this tool
                 foreach (MenuFlyoutItem menuItem in flyout.Items)
                 {
@@ -509,9 +536,12 @@ public partial class BarWindowViewModel : ObservableObject
     {
         // It's surprisingly difficult to find the parent MenuFlyout of a MenuFlyoutItem. We'll
         // just hide all of them.
-        foreach (MenuFlyout fly in _externalToolMenus)
+        foreach (Button button in _externalToolButtons)
         {
-            fly.Hide();
+            if (button.ContextFlyout is MenuFlyout flyout)
+            {
+                flyout.Hide();
+            }
         }
     }
 
