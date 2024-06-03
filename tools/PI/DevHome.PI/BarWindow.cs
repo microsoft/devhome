@@ -149,7 +149,7 @@ public partial class BarWindow
 
     public void UnsnapBarWindow()
     {
-        _viewModel.IsSnapped = false;
+        _viewModel.UnsnapBarWindow();
     }
 
     public bool IsBarSnappedToWindow()

@@ -129,7 +129,6 @@ public class SnapHelper
     {
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         Debug.Assert(barWindow != null, "BarWindow should not be null.");
-        Debug.Assert(barWindow.IsBarSnappedToWindow(), "We're not snapped!");
 
         // If BarWindow is snapped to a TargetApp and BarWindow is in foreground, bring TargetApp to foreground.
         if (barWindow.CurrentHwnd == PInvoke.GetForegroundWindow())

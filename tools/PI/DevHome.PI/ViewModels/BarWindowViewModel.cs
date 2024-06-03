@@ -104,16 +104,7 @@ public partial class BarWindowViewModel : ObservableObject
 
     partial void OnIsSnappedChanged(bool value)
     {
-        if (IsSnapped)
-        {
-            CurrentSnapButtonText = _UnsnapButtonText;
-            _snapHelper.Snap();
-        }
-        else
-        {
-            CurrentSnapButtonText = _SnapButtonText;
-            _snapHelper.Unsnap();
-        }
+        CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
     }
 
     partial void OnBarOrientationChanged(Orientation value)
@@ -143,17 +134,24 @@ public partial class BarWindowViewModel : ObservableObject
         }
     }
 
+    public void UnsnapBarWindow()
+    {
+        _snapHelper.Unsnap();
+        IsSnapped = false;
+    }
+
     [RelayCommand]
     public void PerformSnap()
     {
         if (IsSnapped)
         {
-            IsSnapped = false;
+            UnsnapBarWindow();
         }
         else
         {
             // First need to be in a Vertical layout
             BarOrientation = Orientation.Vertical;
+            _snapHelper.Snap();
             IsSnapped = true;
         }
     }
