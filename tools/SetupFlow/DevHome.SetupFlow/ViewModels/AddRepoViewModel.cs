@@ -220,9 +220,6 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private string _primaryButtonText;
 
-    [ObservableProperty]
-    private string _secondaryButtonText;
-
     /// <summary>
     /// The string to show the user if the url can't be parsed.
     /// </summary>
