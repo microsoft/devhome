@@ -160,15 +160,28 @@ public partial class AddRepoDialog : ContentDialog
     /// </summary>
     private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
+        var deferral = args.GetDeferral();
+
+        // Collect search inputs.
+        Dictionary<string, string> searchInput = new();
+        foreach (var searchBox in ShowingSearchTermsGrid.Children)
+        {
+            if (searchBox is AutoSuggestBox suggestBox)
+            {
+                searchInput.Add(suggestBox.Header as string, suggestBox.Text);
+            }
+        }
+
+        args.Cancel = await AddRepoViewModel.PrimaryButtonClick(searchInput);
+
+        deferral.Complete();
+
+        /*
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
             // Get the number of repos already selected to clone in a previous instance.
             // Used to figure out if the repo was added after the user logged into an account.
             var numberOfReposToCloneCount = AddRepoViewModel.EverythingToClone.Count;
-
-            // If the user is logging in, the close button text will change.
-            // Keep a copy of the original to revert when this button click is done.
-            var originalCloseButtonText = AddRepoContentDialog.CloseButtonText;
 
             var deferral = args.GetDeferral();
             await AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
@@ -220,6 +233,7 @@ public partial class AddRepoDialog : ContentDialog
             AddRepoViewModel.SearchForRepos(searchInput);
             deferral.Complete();
         }
+        */
     }
 
     /// <summary>

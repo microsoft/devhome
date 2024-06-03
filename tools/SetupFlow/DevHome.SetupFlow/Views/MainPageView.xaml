@@ -19,7 +19,6 @@
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
             <converters:BoolToObjectConverter x:Key="BoolToOpacityConverter" TrueValue="1" FalseValue="0.4" />
             <x:Double x:Key="SettingsCardHeaderIconMaxSize">32</x:Double>
-
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
