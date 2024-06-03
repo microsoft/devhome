@@ -152,11 +152,12 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                 // Add valid data to the DotOperations collection
                 _mainWindow.DispatcherQueue.TryEnqueue(() =>
                 {
-                    ShouldShowDotOperations = true;
                     foreach (var data in validData)
                     {
                         DotOperations.Add(data);
                     }
+
+                    ShouldShowDotOperations = true;
                 });
             });
 
