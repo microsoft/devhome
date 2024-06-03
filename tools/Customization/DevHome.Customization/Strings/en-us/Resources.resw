@@ -389,4 +389,16 @@
     <value>A restart may be required for long path changes to take effect.</value>
     <comment>Message instructing the user to restart their machine to apply changes</comment>
   </data>
+   <data name="EnhanceRepository.Text" xml:space="preserve">
+    <value>Enhance a repository</value>
+    <comment>The title for adding a repository for source control integration</comment>
+  </data>
+  <data name="RootPathTextBox.Header" xml:space="preserve">
+    <value>Enter the root folder path:</value>
+    <comment>The header for adding a root path for source control integration</comment>
+  </data>
+  <data name="ErrorRootPathValidation.Title" xml:space="preserve">
+    <value>The root path provided is incorrect or is a UNC path. Please check for invalid characters and if the drive exists on the machine.</value>
+    <comment>The error message for root path validation</comment>
+  </data>
 </root>

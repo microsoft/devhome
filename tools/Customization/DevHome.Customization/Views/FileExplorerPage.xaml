@@ -8,9 +8,42 @@
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
-    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-        <ScrollView VerticalAlignment="Top">
-            <views:FileExplorerView />
-        </ScrollView>
-    </Grid>
-</commonViews:DevHomePage>
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+        <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <!-- This is initial experimental UI. The UI will be updated in future and is temporary -->
+            <StackPanel x:Name="TrackRepository" Visibility="Collapsed">
+                <views:FileExplorerView />
+                <TextBlock x:Uid="EnhanceRepository" Margin="0,20,0,0"/>
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,20">
+                    <TextBox x:Name="RootPathTextBox"
+                  x:Uid="RootPathTextBox"
+                  PlaceholderText="Path"
+                  MinWidth="300" 
+                  HorizontalAlignment="Left"/>
+
+                    <Button  Content="Add" 
+                         Click="AddButton_Click" 
+                         Margin="10, 27, 0, 0"/>
+                    <InfoBar x:Name="RootPathErrorBar"
+                         x:Uid="ErrorRootPathValidation"
+                         Title="Error"
+                         Margin="10, 10, 10, 0"
+                         IsOpen="False"
+                         Severity="Error">
+                    </InfoBar>
+                </StackPanel>
+                <StackPanel x:Name="DisplayTrackRepository" Visibility="Collapsed">
+                    <TextBlock Text="Git" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}"/>
+                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.TrackedRepositories}"
+                               HorizontalAlignment="Stretch" 
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>
