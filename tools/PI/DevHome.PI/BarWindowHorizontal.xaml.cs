@@ -347,7 +347,7 @@ public partial class BarWindowHorizontal : WindowEx
         _restoreState.Width = settingSize.Width;
     }
 
-    private void WindowEx_Closed(object sender, WindowEventArgs args)
+    public void WindowEx_Closed(object sender, WindowEventArgs args)
     {
         ClipboardMonitor.Instance.Stop();
 

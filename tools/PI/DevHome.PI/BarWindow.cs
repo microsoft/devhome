@@ -82,7 +82,9 @@ public partial class BarWindow
         _verticalWindow = new BarWindowVertical(_viewModel);
 
         _horizontalWindow.Closed += Window_Closed;
+        _horizontalWindow.Closed += _verticalWindow.WindowEx_Closed;
         _verticalWindow.Closed += Window_Closed;
+        _verticalWindow.Closed += _horizontalWindow.WindowEx_Closed;
 
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
         _settings.PropertyChanged += Settings_PropertyChanged;
