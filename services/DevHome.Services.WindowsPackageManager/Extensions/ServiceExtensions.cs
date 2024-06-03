@@ -3,7 +3,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DevHome.Services.WindowsPackageManager;
+namespace DevHome.Services.WindowsPackageManager.Extensions;
 
 public static class ServiceExtensions
 {
