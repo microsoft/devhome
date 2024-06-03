@@ -59,7 +59,7 @@ public partial class ExternalTool : ObservableObject
 
     [ObservableProperty]
     [property: JsonIgnore]
-    private BitmapIcon? _menuIcon;
+    private ImageIcon? _menuIcon;
 
     [JsonIgnore]
     private SoftwareBitmap? _softwareBitmap;
@@ -84,8 +84,7 @@ public partial class ExternalTool : ObservableObject
 
         if (!string.IsNullOrEmpty(executable))
         {
-            GetToolImage();
-            GetMenuIcon();
+            GetIcons();
         }
     }
 
@@ -94,7 +93,7 @@ public partial class ExternalTool : ObservableObject
         PinGlyph = newValue ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
     }
 
-    private async void GetToolImage()
+    private async void GetIcons()
     {
         try
         {
@@ -103,31 +102,15 @@ public partial class ExternalTool : ObservableObject
             {
                 ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmap(_softwareBitmap);
             }
+
+            MenuIcon = new ImageIcon
+            {
+                Source = ToolIcon,
+            };
         }
         catch (Exception ex)
         {
             _log.Error(ex, "Failed to get tool image");
-        }
-    }
-
-    private async void GetMenuIcon()
-    {
-        try
-        {
-            _softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
-            if (_softwareBitmap is not null)
-            {
-                var bitmapUri = await SaveSoftwareBitmapToTempFile(_softwareBitmap);
-                MenuIcon = new BitmapIcon
-                {
-                    UriSource = bitmapUri,
-                    ShowAsMonochrome = false,
-                };
-            }
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "Failed to get menu icon");
         }
     }
 

@@ -113,8 +113,6 @@ public partial class BarWindowHorizontal : WindowEx
         SetDefaultPosition();
 
         SetRegionsForTitleBar();
-
-        _viewModel.RegisterExternalToolButton(ManageExternalToolsButton);
     }
 
     public void SetRegionsForTitleBar()

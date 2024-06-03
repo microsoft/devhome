@@ -88,8 +88,6 @@ public partial class BarWindowVertical : WindowEx
 
         // Regardless of what is set in the XAML, our initial window width is too big. Setting this to 70 (same as the XAML file)
         Width = 70;
-
-        _viewModel.RegisterExternalToolButton(ManageExternalToolsButton);
     }
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)

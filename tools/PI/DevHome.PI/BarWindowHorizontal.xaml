@@ -77,13 +77,14 @@
                 <TextBlock Text="&#xe8a1;"/>
             </Button>
 
-            <Button
+            <controls:ExternalToolsManagementButton
                 x:Name="ManageExternalToolsButton"
                 x:Uid="ManageExternalToolsButton"
                 HorizontalAlignment="Center"
-                Click="{x:Bind _viewModel.ManageExternalToolsButton_Click}">
+                Click="{x:Bind _viewModel.ManageExternalToolsButton_Click}"
+                ExternalToolLaunchRequest="{x:Bind _viewModel.ManageExternalToolsButton_ExternalToolLaunchRequest}">
                 <TextBlock Text="&#xEC7A;"/>
-            </Button>
+            </controls:ExternalToolsManagementButton>
 
             <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsHorizontalLayout}">
                 <DataTemplate x:DataType="helpers:ExternalTool">

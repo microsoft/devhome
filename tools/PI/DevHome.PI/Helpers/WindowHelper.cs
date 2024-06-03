@@ -344,22 +344,6 @@ public class WindowHelper
         return softwareBitmapSource;
     }
 
-    public static async Task<Uri> SaveSoftwareBitmapToTempFile(SoftwareBitmap softwareBitmap)
-    {
-        var tempFolder = ApplicationData.Current.TemporaryFolder;
-        var tempFile = await tempFolder.CreateFileAsync(
-            Guid.NewGuid().ToString() + ".png", CreationCollisionOption.ReplaceExisting);
-
-        using (var stream = await tempFile.OpenAsync(FileAccessMode.ReadWrite))
-        {
-            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
-            encoder.SetSoftwareBitmap(softwareBitmap);
-            await encoder.FlushAsync();
-        }
-
-        return new Uri(tempFile.Path);
-    }
-
     internal static unsafe uint GetProcessIdFromWindow(HWND hWnd)
     {
         uint processID = 0;
