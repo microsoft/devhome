@@ -27,15 +27,15 @@
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
                 Content="{x:Bind helpers:WinLogsHelper.EtwLogsName}"/>
             <CheckBox
-                x:Uid="DebugOutputCheckbox" x:Name="DebugOutputCheckbox" IsChecked="false" Tag="{x:Bind models:WinLogsTool.DebugOutput}"
+                x:Uid="DebugOutputCheckbox" x:Name="DebugOutputCheckbox" IsChecked="{x:Bind ViewModel.IsDebugOutputEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.DebugOutput}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
                 Content="{x:Bind helpers:WinLogsHelper.DebugOutputLogsName}"/>
             <CheckBox
-                x:Uid="EventViewerCheckbox" x:Name="EventViewerCheckbox" IsChecked="true" Tag="{x:Bind models:WinLogsTool.EventViewer}"
+                x:Uid="EventViewerCheckbox" x:Name="EventViewerCheckbox" IsChecked="{x:Bind ViewModel.IsEventViewerEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.EventViewer}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
                 Content="{x:Bind helpers:WinLogsHelper.EventViewerName}"/>
             <CheckBox
-                x:Uid="WatsonCheckbox" x:Name="WatsonCheckbox" IsChecked="true" Tag="{x:Bind models:WinLogsTool.Watson}"
+                x:Uid="WatsonCheckbox" x:Name="WatsonCheckbox" IsChecked="{x:Bind ViewModel.IsWatsonEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.Watson}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
                 Content="{x:Bind helpers:WinLogsHelper.WatsonName}"/>
             <Button
