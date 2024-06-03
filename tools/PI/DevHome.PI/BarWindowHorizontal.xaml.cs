@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using DevHome.PI.Controls;
@@ -115,30 +114,7 @@ public partial class BarWindowHorizontal : WindowEx
 
         SetRegionsForTitleBar();
 
-        foreach (var menuItem in _viewModel.ExternalToolsMenuItems)
-        {
-            ExternalToolsMenu.Items.Add(menuItem);
-        }
-
-        ((INotifyCollectionChanged)_viewModel.ExternalToolsMenuItems).CollectionChanged += ExternalTools_MenuItemsChanged;
-    }
-
-    private void ExternalTools_MenuItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
-        {
-            foreach (MenuFlyoutItem item in e.NewItems)
-            {
-                ExternalToolsMenu.Items.Add(item);
-            }
-        }
-        else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
-        {
-            foreach (MenuFlyoutItem item in e.OldItems)
-            {
-                ExternalToolsMenu.Items.Remove(item);
-            }
-        }
+        _viewModel.RegisterExternalToolsMenuFlyout(ExternalToolsMenu);
     }
 
     public void SetRegionsForTitleBar()

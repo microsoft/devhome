@@ -2,10 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
@@ -14,13 +12,11 @@ using DevHome.PI.Properties;
 using DevHome.PI.ViewModels;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
-using Windows.Win32.UI.WindowsAndMessaging;
 using WinRT.Interop;
 using WinUIEx;
 using static DevHome.PI.Helpers.WindowHelper;
@@ -93,30 +89,7 @@ public partial class BarWindowVertical : WindowEx
         // Regardless of what is set in the XAML, our initial window width is too big. Setting this to 70 (same as the XAML file)
         Width = 70;
 
-        foreach (var menuItem in _viewModel.ExternalToolsMenuItems)
-        {
-            ExternalToolsMenu.Items.Add(menuItem);
-        }
-
-        ((INotifyCollectionChanged)_viewModel.ExternalToolsMenuItems).CollectionChanged += ExternalTools_MenuItemsChanged;
-    }
-
-    private void ExternalTools_MenuItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
-        {
-            foreach (MenuFlyoutItem item in e.NewItems)
-            {
-                ExternalToolsMenu.Items.Add(item);
-            }
-        }
-        else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
-        {
-            foreach (MenuFlyoutItem item in e.OldItems)
-            {
-                ExternalToolsMenu.Items.Remove(item);
-            }
-        }
+        _viewModel.RegisterExternalToolsMenuFlyout(ExternalToolsMenu);
     }
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)

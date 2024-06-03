@@ -3,7 +3,7 @@
     "DevHome (Package)": {
       "commandName": "MsixPackage",
       "commandLineArgs": "--utilitylaunch DevHome.PI.exe",
-      "nativeDebugging": true,
+      "nativeDebugging": false,
       "doNotLaunchApp": true
     },
     "DevHome (Unpackaged)": {

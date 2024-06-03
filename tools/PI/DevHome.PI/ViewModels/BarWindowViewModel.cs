@@ -2,11 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
@@ -18,6 +20,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Win32.Foundation;
 using WinUIEx;
@@ -37,10 +40,7 @@ public partial class BarWindowViewModel : ObservableObject
     private readonly string _unregisterMenuItemText = CommonHelper.GetLocalizedString("UnregisterMenuItemRawText");
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-
-    private readonly ObservableCollection<MenuFlyoutItem> _externalToolsMenuItems = [];
-
-    public ReadOnlyObservableCollection<MenuFlyoutItem> ExternalToolsMenuItems { get; private set; }
+    private readonly List<MenuFlyout> _externalToolMenus = [];
 
     [ObservableProperty]
     private string _systemCpuUsage = string.Empty;
@@ -102,8 +102,6 @@ public partial class BarWindowViewModel : ObservableObject
         }
 
         CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
-
-        ExternalToolsMenuItems = new(_externalToolsMenuItems);
         InitializeExternalTools();
     }
 
@@ -124,6 +122,21 @@ public partial class BarWindowViewModel : ObservableObject
             // Don't show expanded content in vertical mode
             ShowingExpandedContent = false;
         }
+    }
+
+    public void RegisterExternalToolsMenuFlyout(MenuFlyout menuFlyout)
+    {
+        _externalToolMenus.Add(menuFlyout);
+
+        foreach (var item in ExternalToolsHelper.Instance.AllExternalTools)
+        {
+            AddExternalToolToContextMenu(menuFlyout, item);
+        }
+    }
+
+    public void UnregisterExternalToolsMenuFlyout(MenuFlyout menuFlyout)
+    {
+        _externalToolMenus.Remove(menuFlyout);
     }
 
     [RelayCommand]
@@ -256,11 +269,10 @@ public partial class BarWindowViewModel : ObservableObject
     private void InitializeExternalTools()
     {
         ExternalToolsHelper.Instance.Init();
-        _externalToolsMenuItems.Clear();
 
-        foreach (var item in ExternalToolsHelper.Instance.AllExternalTools)
+        foreach (var tool in ExternalToolsHelper.Instance.AllExternalTools)
         {
-            AddExternalToolToContextMenu(item);
+            tool.PropertyChanged += ExternalToolItem_PropertyChanged;
         }
 
         // We have to cast to INotifyCollectionChanged explicitly because the CollectionChanged
@@ -274,39 +286,45 @@ public partial class BarWindowViewModel : ObservableObject
         {
             if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
             {
-                foreach (ExternalTool item in e.NewItems)
+                foreach (ExternalTool tool in e.NewItems)
                 {
-                    AddExternalToolToContextMenu(item);
+                    foreach (MenuFlyout flyout in _externalToolMenus)
+                    {
+                        AddExternalToolToContextMenu(flyout, tool);
+                    }
+
+                    // Listen for tool changes
+                    tool.PropertyChanged += ExternalToolItem_PropertyChanged;
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
             {
-                foreach (ExternalTool item in e.OldItems)
+                foreach (ExternalTool tool in e.OldItems)
                 {
-                    RemoveExternalToolFromContextMenu(item);
+                    tool.PropertyChanged -= ExternalToolItem_PropertyChanged;
+
+                    foreach (MenuFlyout flyout in _externalToolMenus)
+                    {
+                        RemoveExternalToolFromContextMenu(flyout, tool);
+                    }
                 }
             }
         });
     }
 
-    private void AddExternalToolToContextMenu(ExternalTool tool)
+    private void AddExternalToolToContextMenu(MenuFlyout menuFlyout, ExternalTool tool)
     {
-        _externalToolsMenuItems.Add(CreateContextMenuItemForTool(tool));
-
-        // You can't databind to MenuFlyoutItem, and the ExternalTool icon image is generated asynchronously,
-        // so we'll handle the PropertyChanged event in code, so we can update the icon when it gets set.
-        // https://github.com/microsoft/microsoft-ui-xaml/issues/1087
-        tool.PropertyChanged += ExternalToolItem_PropertyChanged;
+        menuFlyout.Items.Add(CreateContextMenuItemForTool(tool));
     }
 
-    private void RemoveExternalToolFromContextMenu(ExternalTool tool)
+    private void RemoveExternalToolFromContextMenu(MenuFlyout menuFlyout, ExternalTool tool)
     {
-        foreach (var menuItem in _externalToolsMenuItems)
+        foreach (var menuItem in menuFlyout.Items)
         {
             if (menuItem.Tag == tool)
             {
                 tool.PropertyChanged -= ExternalToolItem_PropertyChanged;
-                _externalToolsMenuItems.Remove(menuItem);
+                menuFlyout.Items.Remove(menuItem);
                 break;
             }
         }
@@ -314,26 +332,34 @@ public partial class BarWindowViewModel : ObservableObject
 
     // This creates a Menu Flyout item for an external tool. It also creates a sub-menu item for pinning/unpinning
     // and unregistering the tool.
-    private MenuFlyoutItem CreateContextMenuItemForTool(ExternalTool item)
+    private MenuFlyoutItem CreateContextMenuItemForTool(ExternalTool tool)
     {
         var imageIcon = new ImageIcon
         {
-            Source = item.ToolIcon,
+            Source = tool.ToolIcon,
         };
 
         var menuItem = new MenuFlyoutItem
         {
-            Text = item.Name,
-            Tag = item,
-            Icon = item.MenuIcon,
+            Text = tool.Name,
+            Tag = tool,
+            Icon = tool.MenuIcon,
         };
         menuItem.Click += ExternalToolMenuItem_Click;
 
+        var pinMenuSubItemItem = new MenuFlyoutItem
+        {
+            Text = _pinMenuItemText,
+            Icon = GetFontIcon(CommonHelper.PinGlyph),
+            Tag = tool,
+        };
+        pinMenuSubItemItem.Click += ExternalToolPinUnpin_Click;
+
         var unPinMenuSubItemItem = new MenuFlyoutItem
         {
-            Text = item.IsPinned ? _unpinMenuItemText : _pinMenuItemText,
-            Icon = GetFontIcon(item.IsPinned ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph),
-            Tag = item,
+            Text = _unpinMenuItemText,
+            Icon = GetFontIcon(CommonHelper.UnpinGlyph),
+            Tag = tool,
         };
         unPinMenuSubItemItem.Click += ExternalToolPinUnpin_Click;
 
@@ -341,13 +367,24 @@ public partial class BarWindowViewModel : ObservableObject
         {
             Text = _unregisterMenuItemText,
             Icon = GetFontIcon(_UnregisterButtonText),
-            Tag = item,
+            Tag = tool,
         };
         unRegisterMenuSubItemItem.Click += UnregisterMenuItem_Click;
 
         var menuSubItemFlyout = new MenuFlyout();
+
+        menuSubItemFlyout.Items.Add(pinMenuSubItemItem);
         menuSubItemFlyout.Items.Add(unPinMenuSubItemItem);
         menuSubItemFlyout.Items.Add(unRegisterMenuSubItemItem);
+
+        if (tool.IsPinned)
+        {
+            pinMenuSubItemItem.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            unPinMenuSubItemItem.Visibility = Visibility.Collapsed;
+        }
 
         menuItem.ContextFlyout = menuSubItemFlyout;
 
@@ -364,28 +401,34 @@ public partial class BarWindowViewModel : ObservableObject
 
         _dispatcher.TryEnqueue(() =>
         {
-            // Update the submenu item for this tool
-            foreach (var menuItem in _externalToolsMenuItems)
+            foreach (MenuFlyout flyout in _externalToolMenus)
             {
-                if (menuItem.Tag == tool)
+                // Update the submenu item for this tool
+                foreach (MenuFlyoutItem menuItem in flyout.Items)
                 {
-                    // Update the name if it's changed
-                    menuItem.Text = tool.Name;
+                    if (menuItem.Tag == tool)
+                    {
+                        // Update the name if it's changed
+                        menuItem.Text = tool.Name;
 
-                    // Update the icon if we've loaded the external tool image. If the image
-                    // changes after the fact, we should delete the menu item and recreate it.
-                    // If we don't do that, we seem to hit a XAML crash
-                    menuItem.Icon ??= tool.MenuIcon;
+                        // Update the icon if we've loaded the external tool image. If the image
+                        // changes after the fact, we should delete the menu item and recreate it.
+                        // If we don't do that, we seem to hit a XAML crash
+                        menuItem.Icon ??= tool.MenuIcon;
 
-                    var menuSubItemFlyout = menuItem.ContextFlyout as MenuFlyout;
-                    Debug.Assert(menuSubItemFlyout != null, "Why is this null?");
+                        var menuSubItemFlyout = menuItem.ContextFlyout as MenuFlyout;
+                        Debug.Assert(menuSubItemFlyout != null, "Why is this null?");
 
-                    var menuSubItemItem = menuSubItemFlyout.Items[0] as MenuFlyoutItem;
-                    Debug.Assert(menuSubItemItem != null, "Why is this null?");
+                        var pinSubItemItem = menuSubItemFlyout.Items[0] as MenuFlyoutItem;
+                        Debug.Assert(pinSubItemItem != null, "Why is this null?");
 
-                    menuSubItemItem.Text = tool.IsPinned ? _unpinMenuItemText : _pinMenuItemText;
-                    menuSubItemItem.Icon = GetFontIcon(tool.IsPinned ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph);
-                    break;
+                        var unPinSubItemItem = menuSubItemFlyout.Items[1] as MenuFlyoutItem;
+                        Debug.Assert(unPinSubItemItem != null, "Why is this null?");
+
+                        pinSubItemItem.Visibility = tool.IsPinned ? Visibility.Collapsed : Visibility.Visible;
+                        unPinSubItemItem.Visibility = tool.IsPinned ? Visibility.Visible : Visibility.Collapsed;
+                        break;
+                    }
                 }
             }
         });
@@ -404,13 +447,17 @@ public partial class BarWindowViewModel : ObservableObject
 
     private void ExternalToolPinUnpin_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is MenuFlyoutItem clickedMenuItem)
-        {
-            if (clickedMenuItem.Tag is ExternalTool tool)
-            {
-                tool.IsPinned = !tool.IsPinned;
-            }
-        }
+        ExternalTool tool = GetToolFromSender(sender);
+        tool.IsPinned = !tool.IsPinned;
+        HideFlyout(sender);
+    }
+
+    public void UnregisterMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        ExternalTool tool = GetToolFromSender(sender);
+        tool.UnregisterTool();
+
+        HideFlyout(sender);
     }
 
     public void ExternalToolButton_Click(object sender, RoutedEventArgs e)
@@ -445,16 +492,22 @@ public partial class BarWindowViewModel : ObservableObject
         }
     }
 
-    public void UnregisterMenuItem_Click(object sender, RoutedEventArgs e)
+    private ExternalTool GetToolFromSender(object sender)
     {
-        var menuFlyoutItem = sender as MenuFlyoutItem;
-        Debug.Assert(menuFlyoutItem != null, "Why is this null?");
-        var tool = menuFlyoutItem.Tag as ExternalTool;
+        MenuFlyoutItem? clickedMenuItem = sender as MenuFlyoutItem;
+        Debug.Assert(clickedMenuItem != null, "Why is this null?");
+
+        ExternalTool? tool = clickedMenuItem.Tag as ExternalTool;
         Debug.Assert(tool != null, "Why is this null?");
 
-        if (tool is not null)
+        return tool;
+    }
+
+    private void HideFlyout(object sender)
+    {
+        foreach (MenuFlyout fly in _externalToolMenus)
         {
-            tool.UnregisterTool();
+            fly.Hide();
         }
     }
 
