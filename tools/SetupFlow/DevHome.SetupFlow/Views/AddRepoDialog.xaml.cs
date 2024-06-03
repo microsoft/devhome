@@ -175,65 +175,6 @@ public partial class AddRepoDialog : ContentDialog
         args.Cancel = await AddRepoViewModel.PrimaryButtonClick(searchInput);
 
         deferral.Complete();
-
-        /*
-        if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
-        {
-            // Get the number of repos already selected to clone in a previous instance.
-            // Used to figure out if the repo was added after the user logged into an account.
-            var numberOfReposToCloneCount = AddRepoViewModel.EverythingToClone.Count;
-
-            var deferral = args.GetDeferral();
-            await AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
-
-            AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
-
-            // If the repo was not added.
-            if (numberOfReposToCloneCount == AddRepoViewModel.EverythingToClone.Count)
-            {
-                AddRepoViewModel.ShouldEnablePrimaryButton = false;
-                args.Cancel = true;
-                deferral.Complete();
-                return;
-            }
-
-            deferral.Complete();
-        }
-        else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
-        {
-            args.Cancel = true;
-            var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
-            if (!string.IsNullOrEmpty(repositoryProviderName))
-            {
-                var originalCloseButtonText = AddRepoContentDialog.CloseButtonText;
-
-                var deferral = args.GetDeferral();
-                await AddRepoViewModel.ChangeToRepoPageAsync();
-
-                AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
-
-                deferral.Complete();
-            }
-        }
-        else if (AddRepoViewModel.CurrentPage == PageKind.SearchFields)
-        {
-            args.Cancel = true;
-            Dictionary<string, string> searchInput = new();
-            foreach (var searchBox in ShowingSearchTermsGrid.Children)
-            {
-                if (searchBox is AutoSuggestBox suggestBox)
-                {
-                    searchInput.Add(suggestBox.Header as string, suggestBox.Text);
-                }
-            }
-
-            // switching to the repo page causes repos to be queried.
-            var deferral = args.GetDeferral();
-            await AddRepoViewModel.ChangeToRepoPageAsync();
-            AddRepoViewModel.SearchForRepos(searchInput);
-            deferral.Complete();
-        }
-        */
     }
 
     /// <summary>
