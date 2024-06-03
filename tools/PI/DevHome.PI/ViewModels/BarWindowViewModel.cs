@@ -1,26 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
-using DevHome.PI.SettingsUi;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Documents;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Win32.Foundation;
 using WinUIEx;
@@ -41,6 +36,8 @@ public partial class BarWindowViewModel : ObservableObject
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly List<MenuFlyout> _externalToolMenus = [];
+
+    private readonly ObservableCollection<Button> _externalTools = [];
 
     [ObservableProperty]
     private string _systemCpuUsage = string.Empty;
@@ -194,6 +191,18 @@ public partial class BarWindowViewModel : ObservableObject
         // And navigate to the appropriate page
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         barWindow?.NavigateTo(typeof(ProcessListPageViewModel));
+    }
+
+    public void ManageExternalToolsButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Need to be in a horizontal layout
+        BarOrientation = Orientation.Horizontal;
+
+        // And show expanded content
+        ShowingExpandedContent = true;
+
+        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+        barWindow?.NavigateToSettings(typeof(AdditionalToolsViewModel).FullName!);
     }
 
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -469,12 +478,6 @@ public partial class BarWindowViewModel : ObservableObject
                 InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
             }
         }
-    }
-
-    public void ManageExternalToolsButton_Click(object sender, RoutedEventArgs e)
-    {
-        SettingsToolWindow settingsTool = new(Settings.Default.SettingsToolPosition, SettingsPage.AdditionalTools);
-        settingsTool.Show();
     }
 
     private void InvokeTool(ExternalTool tool, int? id, HWND hWnd)

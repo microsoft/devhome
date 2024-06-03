@@ -76,6 +76,8 @@ public partial class BarWindow
 
     public void NavigateTo(Type viewModelType) => _horizontalWindow.NavigateTo(viewModelType);
 
+    public void NavigateToSettings(string settingsPage) => _horizontalWindow.NavigateToSettings(settingsPage);
+
     public BarWindow()
     {
         _horizontalWindow = new BarWindowHorizontal(_viewModel);
@@ -99,6 +101,7 @@ public partial class BarWindow
     {
         // If we receive a window closed event, clean up the system
         TargetAppData.Instance.ClearAppData();
+        PerfCounters.Instance.Stop();
 
         var primaryWindow = Application.Current.GetService<PrimaryWindow>();
         primaryWindow.ClearBarWindow();

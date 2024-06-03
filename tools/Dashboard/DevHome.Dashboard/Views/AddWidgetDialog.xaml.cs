@@ -108,7 +108,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 {
                     IsExpanded = true,
                     Tag = providerDef,
-                    Content = providerDef.DisplayName,
+                    Content = new TextBlock { Text = providerDef.DisplayName, TextWrapping = TextWrapping.Wrap },
                 };
 
                 navItem.SetValue(ToolTipService.ToolTipProperty, providerDef.DisplayName);
@@ -148,17 +148,21 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
-    private async Task<StackPanel> BuildWidgetNavItem(ComSafeWidgetDefinition widgetDefinition)
+    private async Task<Grid> BuildWidgetNavItem(ComSafeWidgetDefinition widgetDefinition)
     {
         var image = await _widgetIconService.GetIconFromCacheAsync(widgetDefinition, ActualTheme);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
     }
 
-    private StackPanel BuildNavItem(BitmapImage image, string text)
+    private Grid BuildNavItem(BitmapImage image, string text)
     {
-        var itemContent = new StackPanel
+        var itemContent = new Grid
         {
-            Orientation = Orientation.Horizontal,
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = GridLength.Auto },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+            },
         };
 
         if (image is not null)
@@ -167,13 +171,14 @@ public sealed partial class AddWidgetDialog : ContentDialog
             {
                 Width = 16,
                 Height = 16,
-                Margin = new Thickness(0, 0, 10, 0),
+                Margin = new Thickness(0, 0, 8, 0),
                 Fill = new ImageBrush
                 {
                     ImageSource = image,
                     Stretch = Stretch.Uniform,
                 },
             };
+            Grid.SetColumn(itemSquare, 0);
 
             itemContent.Children.Add(itemSquare);
         }
@@ -181,7 +186,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
         var itemText = new TextBlock()
         {
             Text = text,
+            TextWrapping = TextWrapping.Wrap,
+            VerticalAlignment = VerticalAlignment.Center,
         };
+        Grid.SetColumn(itemText, 1);
+
         itemContent.Children.Add(itemText);
 
         return itemContent;

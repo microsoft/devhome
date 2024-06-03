@@ -45,7 +45,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\EnvironmentVariables", "EnvironmentVariables.ico"),
                 SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Visible,
             },
-            new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"Microsoft\\WindowsApps\\{Package.Current.Id.FamilyName}\\devhome.pi.exe"), experimentationService, "ProjectIronsidesExperiment")
+            new(Path.Combine(appExAliasAbsFolderPath, "devhome.pi.exe"), experimentationService, "ProjectIronsidesExperiment")
             {
                 Title = stringResource.GetLocalized("ProjectIronsidesTitle"),
                 Description = stringResource.GetLocalized("ProjectIronsidesDesc"),

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WindowsSandboxExtension": {
+      "commandName": "Project",
+      "commandLineArgs": "-RegisterProcessAsComServer"
+    }
+  }
+}

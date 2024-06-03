@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.PI;
 using DevHome.PI.Models;
-using DevHome.PI.SettingsUi;
 using DevHome.PI.Telemetry;
 using DevHome.PI.TelemetryEvents;
 using DevHome.Telemetry;

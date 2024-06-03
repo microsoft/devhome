@@ -259,16 +259,16 @@ public partial class BarWindowHorizontal : WindowEx
         MaxHeight = _FloatingHorizontalBarHeight;
     }
 
-    private void ProcessChooserButton_Click(object sender, RoutedEventArgs e)
-    {
-        _viewModel.ShowingExpandedContent = true;
-        ExpandedViewControl.NavigateTo(typeof(ProcessListPageViewModel));
-    }
-
     internal void NavigateTo(Type viewModelType)
     {
         _viewModel.ShowingExpandedContent = true;
         ExpandedViewControl.NavigateTo(viewModelType);
+    }
+
+    internal void NavigateToSettings(string settingsPage)
+    {
+        _viewModel.ShowingExpandedContent = true;
+        ExpandedViewControl.NavigateToSettings(settingsPage);
     }
 
     internal Frame GetFrame()
