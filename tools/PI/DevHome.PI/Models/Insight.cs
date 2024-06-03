@@ -23,6 +23,8 @@ public sealed class Insight
     internal string Description { get; set; } = string.Empty;
 
     internal InsightType InsightType { get; set; } = InsightType.Unknown;
+
+    internal bool IsExpanded { get; set; }
 }
 
 internal sealed class InsightRegex

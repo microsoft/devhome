@@ -12,7 +12,7 @@
         <ItemsControl ItemsSource="{x:Bind ViewModel.InsightsList}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:Insight">
-                    <Expander IsExpanded="False" ExpandDirection="Down" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6">
+                    <Expander IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}" ExpandDirection="Down" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6">
                         <Expander.Header>
                             <TextBlock Text="{x:Bind Title}"/>
                         </Expander.Header>

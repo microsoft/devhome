@@ -193,6 +193,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         {
             if (newInsight is not null)
             {
+                newInsight.IsExpanded = true;
                 var insightsPageViewModel = Application.Current.GetService<InsightsPageViewModel>();
                 insightsPageViewModel.AddInsight(newInsight);
                 InsightsButtonVisibility = Visibility.Visible;
