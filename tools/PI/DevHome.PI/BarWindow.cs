@@ -137,6 +137,12 @@ public partial class BarWindow
 
     public void ResetBarWindowOnTop()
     {
+        // If we're snapped to a target window, and that window loses and then regains focus,
+        // we need to bring our window to the front also, to be in-sync. Otherwise, we can
+        // end up with the target in the foreground, but our window partially obscured.
+        // We set IsAlwaysOnTop to true to get it in foreground and then set to false,
+        // this ensures we don't steal focus from target window and at the same time
+        // bar window is not partially obscured.
         _viewModel.IsAlwaysOnTop = true;
         _viewModel.IsAlwaysOnTop = false;
     }
