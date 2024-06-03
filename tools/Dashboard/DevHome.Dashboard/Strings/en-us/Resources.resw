@@ -1,5 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -59,16 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddWidget.Content" xml:space="preserve">
-    <value>+ Add widget</value>
-    <comment>Label for "Add widget" button"</comment>
+    <value>Add widget</value>
+    <comment>Label for "Add widget" button</comment>
   </data>
   <data name="DashboardBanner.Title" xml:space="preserve">
-    <value>Monitor your GitHub Issues and Pull Requests</value>
-    <comment>Title text of an instruction banner on the widget dashboard. GitHub refers to a website. GitHub should not be localized {StrContains=GitHub}.</comment>
+    <value>Monitor your projects using widgets</value>
+    <comment>Title text of an instruction banner on the widget dashboard</comment>
   </data>
   <data name="DashboardBanner.Description" xml:space="preserve">
-    <value>Copy the URL from GitHub to monitor issues and pull requests at a glance.</value>
-    <comment>Description text of an instruction banner on the widget dashboard. GitHub refers to a website. GitHub should not be localized {StrContains=GitHub}.</comment>
+    <value>Check out widgets that can help you connect to your developer account and manage your projects.</value>
+    <comment>Description text of an instruction banner on the widget dashboard</comment>
   </data>
   <data name="DashboardBanner.ButtonText" xml:space="preserve">
     <value>Learn more</value>
@@ -85,6 +144,10 @@
   <data name="PinButtonText.Text" xml:space="preserve">
     <value>Pin</value>
     <comment>Label for button that pins the widget</comment>
+  </data>
+  <data name="PinButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Pin</value>
+    <comment>Name of the button that pins the widget</comment>
   </data>
   <data name="UpdateWidgetButton.Content" xml:space="preserve">
     <value>Update</value>
@@ -123,8 +186,20 @@
     <comment>Message shown when no widgets have been added to the Dashboard</comment>
   </data>
   <data name="AddFirstWidgetLink.Content" xml:space="preserve">
-    <value>+ Add new widget</value>
+    <value>Add new widget</value>
     <comment>The hyperlink to bring the user to the Add Widget dialog. Shows if the user hasn't added any widgets.</comment>
+  </data>
+  <data name="RestartDevHomeMessage.Text" xml:space="preserve">
+    <value>We're having trouble displaying widgets. Restarting Dev Home may help.</value>
+    <comment>Message shown when there's no widget service and the user should restart Dev Home.</comment>
+  </data>
+  <data name="UpdateWidgetsMessage.Text" xml:space="preserve">
+    <value>You do not have the required dependency installed to display widgets. Please install or update the package from the Store and then restart Dev Home.</value>
+    <comment>Message shown when no widgets have been added to the Dashboard</comment>
+  </data>
+  <data name="UpdateWidgetsMessageLink.Content" xml:space="preserve">
+    <value>Get in Store app</value>
+    <comment>Button text to go to store listing</comment>
   </data>
   <data name="WidgetErrorCardDisplayText" xml:space="preserve">
     <value>This widget could not be displayed</value>
@@ -157,5 +232,29 @@
   <data name="DashboardBanner.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Dashboard Banner</value>
     <comment>Name of the dashboard banner for automation</comment>
+  </data>
+  <data name="CustomizeWidgetTitle.Text" xml:space="preserve">
+    <value>Customize widget</value>
+    <comment>Title for "Customize" dialog</comment>
+  </data>
+  <data name="WidgetSizeSelected" xml:space="preserve">
+    <value>Selected</value>
+    <comment>State of selected size for automatiom purposes</comment>
+  </data>
+  <data name="CouldNotCreateWidgetError" xml:space="preserve">
+    <value>Dev Home encountered an error. The widget could not be created.</value>
+    <comment>Error that pops up in a message dialog when the user tries to pin a widget but the widget could not be created.</comment>
+  </data>
+  <data name="CloseButtonText" xml:space="preserve">
+    <value>Close</value>
+    <comment>Text for a button to close a content dialog.</comment>
+  </data>
+  <data name="DashboardPage.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Dashboard</value>
+    <comment>Dashboard accessible name to be narrated</comment>
+  </data>
+  <data name="WidgetRemoved" xml:space="preserve">
+    <value>Widget removed</value>
+    <comment>This is said by narrator whenever a widget is removed</comment>
   </data>
 </root>

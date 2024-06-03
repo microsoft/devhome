@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Services;
@@ -15,7 +15,7 @@ public class AppManagementInitializerTest : BaseSetupFlowTest
     {
         // Setup
         WindowsPackageManager
-            .Setup(wpm => wpm.IsCOMServerAvailableAsync())
+            .Setup(wpm => wpm.IsAvailableAsync())
             .ReturnsAsync(true);
 
         // Act
@@ -26,9 +26,9 @@ public class AppManagementInitializerTest : BaseSetupFlowTest
         WindowsPackageManager
             .Verify(dep => dep.RegisterAppInstallerAsync(), Times.Never);
         WindowsPackageManager
-            .Verify(wpm => wpm.ConnectToAllCatalogsAsync(It.IsAny<bool>()), Times.Once);
+            .Verify(wpm => wpm.InitializeAsync(), Times.Once);
         WindowsPackageManager
-            .Verify(wpm => wpm.IsCOMServerAvailableAsync(), Times.Once);
+            .Verify(wpm => wpm.IsAvailableAsync(), Times.Once);
     }
 
     [TestMethod]
@@ -36,7 +36,7 @@ public class AppManagementInitializerTest : BaseSetupFlowTest
     {
         // Setup
         WindowsPackageManager
-            .SetupSequence(wpm => wpm.IsCOMServerAvailableAsync())
+            .SetupSequence(wpm => wpm.IsAvailableAsync())
             .ReturnsAsync(false)
             .ReturnsAsync(true);
         WindowsPackageManager.
@@ -51,9 +51,9 @@ public class AppManagementInitializerTest : BaseSetupFlowTest
         WindowsPackageManager
             .Verify(dep => dep.RegisterAppInstallerAsync(), Times.Once);
         WindowsPackageManager
-            .Verify(wpm => wpm.ConnectToAllCatalogsAsync(It.IsAny<bool>()), Times.Once);
+            .Verify(wpm => wpm.InitializeAsync(), Times.Once);
         WindowsPackageManager
-            .Verify(wpm => wpm.IsCOMServerAvailableAsync(), Times.Exactly(2));
+            .Verify(wpm => wpm.IsAvailableAsync(), Times.Exactly(2));
     }
 
     [TestMethod]
@@ -61,7 +61,7 @@ public class AppManagementInitializerTest : BaseSetupFlowTest
     {
         // Setup
         WindowsPackageManager
-            .Setup(wpm => wpm.IsCOMServerAvailableAsync())
+            .Setup(wpm => wpm.IsAvailableAsync())
             .ReturnsAsync(false);
         WindowsPackageManager.
             Setup(wpm => wpm.RegisterAppInstallerAsync())
@@ -75,9 +75,9 @@ public class AppManagementInitializerTest : BaseSetupFlowTest
         WindowsPackageManager
             .Verify(dep => dep.RegisterAppInstallerAsync(), Times.Once);
         WindowsPackageManager
-            .Verify(wpm => wpm.ConnectToAllCatalogsAsync(It.IsAny<bool>()), Times.Never);
+            .Verify(wpm => wpm.InitializeAsync(), Times.Never);
         WindowsPackageManager
-            .Verify(wpm => wpm.IsCOMServerAvailableAsync(), Times.Once);
+            .Verify(wpm => wpm.IsAvailableAsync(), Times.Once);
     }
 
     [TestMethod]
@@ -85,7 +85,7 @@ public class AppManagementInitializerTest : BaseSetupFlowTest
     {
         // Setup
         WindowsPackageManager
-            .Setup(wpm => wpm.IsCOMServerAvailableAsync())
+            .Setup(wpm => wpm.IsAvailableAsync())
             .ReturnsAsync(false);
         WindowsPackageManager.
             Setup(wpm => wpm.RegisterAppInstallerAsync())
@@ -99,8 +99,8 @@ public class AppManagementInitializerTest : BaseSetupFlowTest
         WindowsPackageManager
             .Verify(dep => dep.RegisterAppInstallerAsync(), Times.Once);
         WindowsPackageManager
-            .Verify(wpm => wpm.ConnectToAllCatalogsAsync(It.IsAny<bool>()), Times.Never);
+            .Verify(wpm => wpm.InitializeAsync(), Times.Never);
         WindowsPackageManager
-            .Verify(wpm => wpm.IsCOMServerAvailableAsync(), Times.Exactly(2));
+            .Verify(wpm => wpm.IsAvailableAsync(), Times.Exactly(2));
     }
 }

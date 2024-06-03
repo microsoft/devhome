@@ -1,18 +1,37 @@
-jobs:
-- job: SyncMirror
-  dependsOn: []
-  pool:
-    vmImage: 'windows-latest'
-  steps:
-  - task: AzureKeyVault@1
-    inputs:
-      azureSubscription: 'DevHomeAzureServiceConnection'
-      KeyVaultName: 'DevHomeKeyVault'
-      SecretsFilter: 'GitHubPAT'
-      RunAsPreJob: false
-      
-  - template: SyncMirror-Steps.yml
-    parameters:
-      SourceRepository: "https://$(GitHubPAT)@github.com/microsoft/DevHome.git"
-      TargetBranch: "$(SourceToTargetBranch)"
-      SourceBranch: "$(SourceToTargetBranch)"
+resources:
+  repositories:
+  - repository: m365Pipelines
+    type: git
+    name: 1ESPipelineTemplates/M365GPT
+    ref: refs/tags/release
+extends:
+  template: v1/M365.Official.PipelineTemplate.yml@m365Pipelines
+  parameters:
+    sdl:
+      roslyn:
+        enabled: true
+      arrow:
+        serviceConnection: DevHome Build VM Generation
+    pool:
+      name: Azure-Pipelines-1ESPT-ExDShared
+      image: windows-2022
+      os: windows
+    customBuildTags:
+    - ES365AIMigrationTooling
+    stages:
+    - stage: SyncMirror
+      jobs:
+      - job: SyncMirror
+        dependsOn: []
+        steps:
+        - task: AzureKeyVault@1
+          inputs:
+            azureSubscription: 'DevHomeAzureServiceConnection'
+            KeyVaultName: 'DevHomeKeyVault'
+            SecretsFilter: 'GitHubPAT'
+            RunAsPreJob: false
+        - template: /build/SyncMirror-Steps.yml@self
+          parameters:
+            SourceRepository: "https://$(GitHubPAT)@github.com/microsoft/DevHome.git"
+            TargetBranch: "$(SourceToTargetBranch)"
+            SourceBranch: "$(SourceToTargetBranch)"

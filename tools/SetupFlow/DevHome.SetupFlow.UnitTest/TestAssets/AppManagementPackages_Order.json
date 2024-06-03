@@ -4,10 +4,10 @@
     "DescriptionResourceKey": "mockDescription_1",
     "WinGetPackages": [
       {
-        "Id": "mock1"
+        "Uri": "x-ms-winget://winget/mock1"
       },
       {
-        "Id": "mock2"
+        "Uri": "x-ms-winget://winget/mock2"
       }
     ]
   },
@@ -16,10 +16,10 @@
     "DescriptionResourceKey": "mockDescription_2",
     "WinGetPackages": [
       {
-        "Id": "mock2"
+        "Uri": "x-ms-winget://winget/mock2"
       },
       {
-        "Id": "mock1"
+        "Uri": "x-ms-winget://winget/mock1"
       }
     ]
   }

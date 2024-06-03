@@ -1,9 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Exceptions;
@@ -11,8 +11,9 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.Management.Configuration;
-using Microsoft.Management.Configuration.Processor;
+using Serilog;
 using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.Common.Configuration;
 
@@ -41,45 +42,30 @@ public class ConfigurationFileHelper
         }
     }
 
-    private readonly StorageFile _file;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileHelper));
+    private const string PowerShellHandlerIdentifier = "pwsh";
+    private readonly Guid _activityId;
     private ConfigurationProcessor _processor;
     private ConfigurationSet _configSet;
 
-    public ConfigurationFileHelper(StorageFile file)
+    public ConfigurationFileHelper(Guid activityId)
     {
-        _file = file;
+        _activityId = activityId;
     }
 
-    public async Task OpenConfigurationSetAsync()
+    public IList<ConfigurationUnit> Units => _configSet?.Units;
+
+    /// <summary>
+    /// Open configuration set from the provided <paramref name="content"/>.
+    /// </summary>
+    /// <param name="filePath">DSC configuration file path</param>
+    /// <param name="content">DSC configuration file content</param>
+    public async Task OpenConfigurationSetAsync(string filePath, string content)
     {
         try
         {
-            var modulesPath = Path.Combine(AppContext.BaseDirectory, @"runtimes\win\lib\net6.0\Modules");
-            var externalModulesPath = Path.Combine(AppContext.BaseDirectory, "ExternalModules");
-            var properties = new ConfigurationProcessorFactoryProperties();
-            properties.Policy = ConfigurationProcessorPolicy.Unrestricted;
-            properties.AdditionalModulePaths = new List<string>() { modulesPath, externalModulesPath };
-            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Additional module paths: {string.Join(", ", properties.AdditionalModulePaths)}");
-            var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
-
-            _processor = new ConfigurationProcessor(factory);
-            _processor.MinimumLevel = DiagnosticLevel.Verbose;
-            _processor.Diagnostics += (sender, args) => LogConfigurationDiagnostics(args);
-            _processor.Caller = nameof(DevHome);
-
-            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {_file.Path}");
-            var parentDir = await _file.GetParentAsync();
-            var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
-            _configSet = openResult.Set;
-            if (_configSet == null)
-            {
-                throw new OpenConfigurationSetException(openResult.ResultCode, openResult.Field);
-            }
-
-            // Set input file path to the configuration set
-            _configSet.Name = _file.Name;
-            _configSet.Origin = parentDir.Path;
-            _configSet.Path = _file.Path;
+            _processor = await CreateConfigurationProcessorAsync();
+            _configSet = await OpenConfigurationSetInternalAsync(_processor, filePath, content);
         }
         catch
         {
@@ -89,6 +75,34 @@ public class ConfigurationFileHelper
         }
     }
 
+    public async Task ResolveConfigurationUnitDetails()
+    {
+        if (_processor == null || _configSet == null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        await _processor.GetSetDetailsAsync(_configSet, ConfigurationUnitDetailFlags.ReadOnly);
+    }
+
+    private async Task<ConfigurationSet> OpenConfigurationSetInternalAsync(ConfigurationProcessor processor, string filePath, string content)
+    {
+        var file = await StorageFile.GetFileFromPathAsync(filePath);
+        var parentDir = await file.GetParentAsync();
+        var inputStream = StringToStream(content);
+
+        var openConfigResult = processor.OpenConfigurationSet(inputStream);
+        var configSet = openConfigResult.Set ?? throw new OpenConfigurationSetException(openConfigResult.ResultCode, openConfigResult.Field, openConfigResult.Value);
+
+        // Set input file path in the configuration set to inform the
+        // processor about the working directory when applying the
+        // configuration
+        configSet.Name = file.Name;
+        configSet.Origin = parentDir.Path;
+        configSet.Path = file.Path;
+        return configSet;
+    }
+
     public async Task<ApplicationResult> ApplyConfigurationAsync()
     {
         if (_processor == null || _configSet == null)
@@ -96,39 +110,81 @@ public class ConfigurationFileHelper
             throw new InvalidOperationException();
         }
 
-        Log.Logger?.ReportInfo(Log.Component.Configuration, "Starting to apply configuration set");
+        _log.Information("Starting to apply configuration set");
         var result = await _processor.ApplySetAsync(_configSet, ApplyConfigurationSetFlags.None);
 
         foreach (var unitResult in result.UnitResults)
         {
-            TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_UnitResult", LogLevel.Critical, new ConfigurationUnitResultEvent(unitResult));
+            TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_UnitResult", LogLevel.Critical, new ConfigurationUnitResultEvent(unitResult), _activityId);
         }
 
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Result", LogLevel.Critical, new ConfigurationSetResultEvent(_configSet, result));
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Result", LogLevel.Critical, new ConfigurationSetResultEvent(_configSet, result), _activityId);
 
-        Log.Logger?.ReportInfo(Log.Component.Configuration, $"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
+        _log.Information($"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
         return new ApplicationResult(result);
     }
 
-    private void LogConfigurationDiagnostics(DiagnosticInformation diagnosticInformation)
+    /// <summary>
+    /// Create and configure the configuration processor.
+    /// </summary>
+    /// <returns>Configuration processor</returns>
+    private async Task<ConfigurationProcessor> CreateConfigurationProcessorAsync()
     {
-        var sourceComponent = nameof(ConfigurationProcessor);
+        ConfigurationStaticFunctions config = new();
+        var factory = await config.CreateConfigurationSetProcessorFactoryAsync(PowerShellHandlerIdentifier).AsTask();
+
+        // Create and configure the configuration processor.
+        var processor = config.CreateConfigurationProcessor(factory);
+        processor.Caller = nameof(DevHome);
+        processor.Diagnostics += LogConfigurationDiagnostics;
+        processor.MinimumLevel = DiagnosticLevel.Verbose;
+        return processor;
+    }
+
+    /// <summary>
+    /// Log configuration diagnostics event handler
+    /// </summary>
+    /// <param name="sender">Event sender</param>
+    /// <param name="diagnosticInformation">Diagnostic information</param>
+    private void LogConfigurationDiagnostics(object sender, IDiagnosticInformation diagnosticInformation)
+    {
+        var log = _log.ForContext("SourceContext", nameof(ConfigurationProcessor));
         switch (diagnosticInformation.Level)
         {
             case DiagnosticLevel.Warning:
-                Log.Logger?.ReportWarn(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                log.Warning(diagnosticInformation.Message);
                 return;
             case DiagnosticLevel.Error:
-                Log.Logger?.ReportError(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                log.Error(diagnosticInformation.Message);
                 return;
             case DiagnosticLevel.Critical:
-                Log.Logger?.ReportCritical(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                log.Fatal(diagnosticInformation.Message);
                 return;
             case DiagnosticLevel.Verbose:
             case DiagnosticLevel.Informational:
             default:
-                Log.Logger?.ReportInfo(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                log.Information(diagnosticInformation.Message);
                 return;
         }
+    }
+
+    /// <summary>
+    /// Convert a string to an input stream
+    /// </summary>
+    /// <param name="str">Target string</param>
+    /// <returns>Input stream</returns>
+    private InMemoryRandomAccessStream StringToStream(string str)
+    {
+        InMemoryRandomAccessStream result = new();
+        using (DataWriter writer = new(result))
+        {
+            writer.UnicodeEncoding = UnicodeEncoding.Utf8;
+            writer.WriteString(str);
+            writer.StoreAsync().AsTask().Wait();
+            writer.DetachStream();
+        }
+
+        result.Seek(0);
+        return result;
     }
 }

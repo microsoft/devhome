@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <UserControl
@@ -11,16 +11,16 @@
     <Grid Grid.Row="1"
           Padding="0 24"
           BorderThickness="0 1 0 0"
-          BorderBrush="{ThemeResource ControlStrokeColorDefault}" >
+          BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
-        <ContentControl Content="{x:Bind ContentTemplate, Mode=OneWay}" />
+        <ContentControl IsTabStop="False" Content="{x:Bind ContentTemplate, Mode=OneWay}" />
         <StackPanel Grid.Column="1" Orientation="Horizontal" >
-            <ContentControl Visibility="{x:Bind CancelVisibility, Mode=OneWay}" Content="{x:Bind CancelTemplate, Mode=OneWay}" />
-            <ContentControl Visibility="{x:Bind PreviousVisibility, Mode=OneWay}" Content="{x:Bind PreviousTemplate, Mode=OneWay}" />
-            <ContentControl Visibility="{x:Bind NextVisibility, Mode=OneWay}" Content="{x:Bind NextTemplate, Mode=OneWay}" />
+            <ContentControl IsTabStop="False" Visibility="{x:Bind CancelVisibility, Mode=OneWay}" Content="{x:Bind CancelTemplate, Mode=OneWay}" />
+            <ContentControl IsTabStop="False" Visibility="{x:Bind PreviousVisibility, Mode=OneWay}" Content="{x:Bind PreviousTemplate, Mode=OneWay}" />
+            <ContentControl IsTabStop="False" Visibility="{x:Bind NextVisibility, Mode=OneWay}" Content="{x:Bind NextTemplate, Mode=OneWay}" />
         </StackPanel>
     </Grid>
 </UserControl>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.SetupFlow.Views.Environments.EnvironmentCreationOptionsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:setupControls="using:DevHome.SetupFlow.Controls"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    Unloaded="ViewUnloaded"
+    Loaded="ViewLoaded">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="CollapsedWhenTrueBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectVisibleWhenEmptyConverter" NotEmptyValue="Collapsed" EmptyValue="Visible"/>
+    </UserControl.Resources>
+
+    <!--- Show the Choose environment header on the page. -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <!--- Make SetupShellContent. -->
+        <setupControls:SetupShell 
+            Title="{x:Bind ViewModel.PageTitle}"
+            x:Uid="ConfigureEnvironmentPage"
+            Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+            Foreground="{ThemeResource TextFillColorSecondary}" 
+            Grid.Row="0"
+            ContentVisibility="Collapsed">
+        </setupControls:SetupShell>
+        <ScrollViewer 
+            MaxWidth="{ThemeResource MaxPageContentWidth}"
+            Margin="{ThemeResource ContentPageMargin}"
+            Grid.Row="1">
+            <Grid>
+                <Grid
+                    HorizontalAlignment="Stretch"
+                    Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
+                    <InfoBar
+                        IsOpen="True"
+                        x:Uid="ErrorRetrievingAdaptiveCardSession"
+                        Severity="Error"
+                        Message="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay}" >
+                    </InfoBar>
+                </Grid>
+
+                <!--- Show the adaptive card on the page if its loaded. -15 Padding added as the adaptive card adds an extra 40px of padding on all sides -->
+                <Grid
+                    Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay}"
+                    x:Name="AdaptiveCardGrid" 
+                    Padding="-15"/>
+
+                <Grid
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    ColumnSpacing="10"
+                    Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ProgressRing
+                        Grid.Column="0"
+                        Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectVisibleWhenEmptyConverter}}"
+                        IsActive="True"
+                        Width="20"
+                        Height="20"/>
+                    <TextBlock 
+                        Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectVisibleWhenEmptyConverter}}"
+                        Grid.Column="1" Text="{x:Bind ViewModel.AdaptiveCardLoadingMessage, Mode=OneWay}" />
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

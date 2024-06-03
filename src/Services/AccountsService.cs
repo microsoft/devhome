@@ -1,14 +1,13 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics;
 using DevHome.Common.Contracts.Services;
-using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Telemetry;
-using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 
@@ -16,46 +15,73 @@ namespace DevHome.Services;
 
 public class AccountsService : IAccountsService
 {
-    public AccountsService()
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AccountsService));
+
+    private readonly IExtensionService _extensionService;
+
+    public AccountsService(IExtensionService extensionService)
     {
+        _extensionService = extensionService;
     }
 
     public async Task InitializeAsync()
     {
         (await GetDevIdProviders()).ToList().ForEach((devIdProvider) =>
         {
-            var devIds = devIdProvider.GetLoggedInDeveloperIds().ToList();
+            var developerIdsResult = devIdProvider.GetLoggedInDeveloperIds();
+            if (developerIdsResult.Result.Status == ProviderOperationStatus.Failure)
+            {
+                _log.Error($"{developerIdsResult.Result.DisplayMessage} - {developerIdsResult.Result.DiagnosticText}");
+                return;
+            }
 
-            TelemetryFactory.Get<ITelemetry>().Log("Startup_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.GetName(), devIds));
+            var devIds = developerIdsResult.DeveloperIds.ToList();
 
-            devIdProvider.LoggedIn += LoggedInEventHandler;
-            devIdProvider.LoggedOut += LoggedOutEventHandler;
+            TelemetryFactory.Get<ITelemetry>().Log("Startup_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.DisplayName, devIds));
+
+            devIdProvider.Changed += ChangedEventHandler;
         });
     }
 
     public async Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders()
     {
         var devIdProviders = new List<IDeveloperIdProvider>();
-        var pluginService = Application.Current.GetService<IPluginService>();
-        var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
-
-        foreach (var plugin in plugins)
+        var extensions = await _extensionService.GetInstalledExtensionsAsync(ProviderType.DeveloperId);
+        foreach (var extension in extensions)
         {
-            var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
-            if (devIdProvider is not null)
+            try
             {
-                devIdProviders.Add(devIdProvider);
+                var devIdProvider = await extension.GetProviderAsync<IDeveloperIdProvider>();
+                if (devIdProvider is not null)
+                {
+                    devIdProviders.Add(devIdProvider);
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"Failed to get {nameof(IDeveloperIdProvider)} provider from '{extension.PackageFamilyName}/{extension.ExtensionDisplayName}'");
             }
         }
 
         return devIdProviders;
     }
 
-    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider) => iDevIdProvider.GetLoggedInDeveloperIds().ToList();
-
-    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IPlugin plugin)
+    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider)
     {
-        if (plugin.GetProvider(ProviderType.DeveloperId) is IDeveloperIdProvider devIdProvider)
+        var developerIdsResult = iDevIdProvider.GetLoggedInDeveloperIds();
+        if (developerIdsResult.Result.Status == ProviderOperationStatus.Failure)
+        {
+            _log.Error($"{developerIdsResult.Result.DisplayMessage} - {developerIdsResult.Result.DiagnosticText}");
+            return (IReadOnlyList<IDeveloperId>)Enumerable.Empty<IDeveloperId>();
+        }
+
+        return developerIdsResult.DeveloperIds.ToList();
+    }
+
+    // public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider) => iDevIdProvider.GetLoggedInDeveloperIds().ToList();
+    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IExtension extension)
+    {
+        if (extension.GetProvider(ProviderType.DeveloperId) is IDeveloperIdProvider devIdProvider)
         {
             return GetDeveloperIds(devIdProvider);
         }
@@ -63,22 +89,23 @@ public class AccountsService : IAccountsService
         return new List<IDeveloperId>();
     }
 
-    public void LoggedInEventHandler(object? sender, IDeveloperId developerId)
+    public void ChangedEventHandler(object? sender, IDeveloperId developerId)
     {
         if (sender is IDeveloperIdProvider devIdProvider)
         {
-            TelemetryFactory.Get<ITelemetry>().Log("Login_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.GetName(), developerId));
-        }
+            var authenticationState = devIdProvider.GetDeveloperIdState(developerId);
 
-        // Bring focus back to DevHome after login
-        _ = PInvoke.SetForegroundWindow((HWND)Process.GetCurrentProcess().MainWindowHandle);
-    }
+            if (authenticationState == AuthenticationState.LoggedIn)
+            {
+                TelemetryFactory.Get<ITelemetry>().Log("Login_DevId_Event", LogLevel.Critical, new DeveloperIdUserEvent(devIdProvider.DisplayName, developerId));
 
-    public void LoggedOutEventHandler(object? sender, IDeveloperId developerId)
-    {
-        if (sender is IDeveloperIdProvider devIdProvider)
-        {
-            TelemetryFactory.Get<ITelemetry>().Log("Logout_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.GetName(), developerId));
+                // Bring focus back to DevHome after login
+                _ = PInvoke.SetForegroundWindow((HWND)Process.GetCurrentProcess().MainWindowHandle);
+            }
+            else if (authenticationState == AuthenticationState.LoggedOut)
+            {
+                TelemetryFactory.Get<ITelemetry>().Log("Logout_DevId_Event", LogLevel.Critical, new DeveloperIdUserEvent(devIdProvider.DisplayName, developerId));
+            }
         }
     }
 }

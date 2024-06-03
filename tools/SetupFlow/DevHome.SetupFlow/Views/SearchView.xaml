@@ -4,16 +4,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.Labs.WinUI"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:CollectionVisibilityConverter x:Name="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         <converters:StringFormatConverter x:Name="StringFormatConverter" />
-        <!-- Show `RevToggleKey` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
-        <converters:BoolToObjectConverter x:Name="SelectButtonGlyphConverter" TrueValue="&#xE845;" FalseValue="&#xE710;" />
-        <converters:BoolNegationConverter x:Name="BoolNegationConverter" />
-        <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
     </UserControl.Resources>
     <!-- Search view layout -->
     <Grid Margin="0 0 23 0">
@@ -56,114 +51,20 @@
         </StackPanel>
 
         <!-- Search result -->
-        <ListView Name="PackagesListView" Grid.Row="1" ItemsSource="{x:Bind ViewModel.ResultPackages, Mode=OneWay}" SelectionMode="None">
+        <ListView
+            Name="PackagesListView"
+            Grid.Row="1"
+            Loaded="PackagesListView_Loaded"
+            ItemsSource="{x:Bind ViewModel.ResultPackages, Mode=OneWay}"
+            SelectionMode="None">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate>
-                                <Grid>
-                                    <Grid.Resources>
-                                        <ResourceDictionary>
-                                            <!--  Show "Learn more" or "Installed"-->
-                                            <converters:BoolToObjectConverter x:Key="LearnMoreInstalledConverter">
-                                                <converters:BoolToObjectConverter.FalseValue>
-                                                    <HyperlinkButton Name="LearnMoreButton" Command="{Binding LearnMoreCommand,Mode=OneWay}">
-                                                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
-                                                    </HyperlinkButton>
-                                                </converters:BoolToObjectConverter.FalseValue>
-                                                <converters:BoolToObjectConverter.TrueValue>
-                                                    <TextBlock Padding="0,0,12,0" Foreground="{ThemeResource TextFillColorDisabled}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Installed"/>
-                                                </converters:BoolToObjectConverter.TrueValue>
-                                            </converters:BoolToObjectConverter>
-                                        </ResourceDictionary>
-                                    </Grid.Resources>
-
-                                    <VisualStateManager.VisualStateGroups>
-                                        <VisualStateGroup x:Name="CommonStates">
-                                            <VisualState>
-                                                <VisualState.StateTriggers>
-                                                    <StateTrigger IsActive="{Binding IsInstalled}" />
-                                                    <StateTrigger IsActive="{Binding IsSelected}" />
-                                                </VisualState.StateTriggers>
-                                                <VisualState.Setters>
-                                                    <Setter Target="Image.Opacity" Value="0.4"/>
-                                                    <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
-                                                    <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
-                                                </VisualState.Setters>
-                                            </VisualState>
-                                        </VisualStateGroup>
-                                    </VisualStateManager.VisualStateGroups>
-
-                                    <controls:SettingsCard Background="Transparent" BorderThickness="0">
-                                        <controls:SettingsCard.Resources>
-                                            <Thickness x:Key="SettingsCardPadding">0, 10</Thickness>
-                                            <Thickness x:Key="SettingsCardMinHeight">0</Thickness>
-                                            <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
-                                            <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-                                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
-                                        </controls:SettingsCard.Resources>
-                                        <ToolTipService.ToolTip>
-                                            <ToolTip>
-                                                <StackPanel>
-                                                    <StackPanel.Resources>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
-                                                        </Style>
-                                                    </StackPanel.Resources>
-                                                    <TextBlock
-                                                        Foreground="{ThemeResource TextFillColorPrimary}"
-                                                        FontWeight="Bold" Text="{Binding TooltipIsInstalled}"
-                                                        Visibility="{Binding TooltipIsInstalled, Converter={StaticResource StringVisibilityConverter}}"/>
-                                                    <TextBlock Text="{Binding TooltipName}"/>
-                                                    <TextBlock Text="{Binding TooltipVersion}"/>
-                                                    <TextBlock Text="{Binding TooltipSource}"/>
-                                                    <TextBlock Text="{Binding TooltipPublisher}"/>
-                                                </StackPanel>
-                                            </ToolTip>
-                                        </ToolTipService.ToolTip>
-                                        <controls:SettingsCard.Header>
-                                            <TextBlock
-                                                Name="Title"
-                                                TextTrimming="CharacterEllipsis"
-                                                MaxLines="1"
-                                                Style="{ThemeResource CaptionTextBlockStyle}"
-                                                Text="{Binding PackageTitle}"/>
-                                        </controls:SettingsCard.Header>
-                                        <controls:SettingsCard.Description>
-                                            <TextBlock
-                                                Name="Version"
-                                                TextTrimming="CharacterEllipsis"
-                                                MaxLines="1"
-                                                Foreground="{ThemeResource TextFillColorSecondary}"
-                                                Style="{ThemeResource CaptionTextBlockStyle}"
-                                                Text="{Binding PackageDescription}"/>
-                                        </controls:SettingsCard.Description>
-                                        <controls:SettingsCard.HeaderIcon>
-                                            <ImageIcon Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
-                                        </controls:SettingsCard.HeaderIcon>
-                                        <StackPanel Orientation="Horizontal" Spacing="10">
-                                            <ContentControl Content="{Binding IsInstalled, Converter={StaticResource LearnMoreInstalledConverter}}" />
-                                            <Button
-                                                IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
-                                                Command="{Binding ToggleSelectionCommand,Mode=OneWay}"
-                                                Padding="5">
-                                                <FontIcon
-                                                    Glyph="{Binding IsSelected,Mode=OneWay, Converter={StaticResource SelectButtonGlyphConverter}}"
-                                                    FontSize="{ThemeResource CaptionTextBlockFontSize}"
-                                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
-                                            </Button>
-                                        </StackPanel>
-                                    </controls:SettingsCard>
-                                </Grid>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
+                    <Setter Property="Template" Value="{ThemeResource AppManagementSelectablePackageTemplate}" />
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Spacing="2" />
+                    <StackPanel Spacing="20" />
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
         </ListView>

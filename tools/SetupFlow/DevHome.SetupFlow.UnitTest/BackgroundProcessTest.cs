@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 extern alias Server;
 
@@ -26,13 +26,13 @@ public class BackgroundProcessTest
     [Ignore]
     public void BackgroundProcessIPCSetup()
     {
-        (var remoteElevatedFactory, var backgroundProcess) =
-            IPCSetup.CreateOutOfProcessObjectAndGetProcess<IElevatedComponentFactory>(isForTesting: true);
+        (var remoteElevatedOperation, var backgroundProcess) =
+            IPCSetup.CreateOutOfProcessObjectAndGetProcess<IElevatedComponentOperation>(null, isForTesting: true);
         Assert.IsFalse(backgroundProcess.HasExited, "Process should still be running right after creation");
 
         // Write a random string on the background process
         var randomString = Guid.NewGuid().ToString();
-        remoteElevatedFactory.Value.WriteToStdOut(randomString);
+        remoteElevatedOperation.Value.WriteToStdOut(randomString);
         Assert.IsFalse(backgroundProcess.HasExited, "Process should still be running after calling a method");
 
         // Release the completion mutex to signal the process to exit
@@ -42,7 +42,7 @@ public class BackgroundProcessTest
             waitForExit.Set();
         };
 
-        remoteElevatedFactory.Dispose();
+        remoteElevatedOperation.Dispose();
 
         // Confirm the process exits and it had the expected output
         // The first assert with the timeout ensures we don't sit here waiting for too long;

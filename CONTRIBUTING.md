@@ -112,6 +112,14 @@ Bugs and tasks are obviously the easiest to get started with, but don't feel afr
 
 Generally, we like to assign issues that generally belong to somebody's area of expertise to the team member that owns that area. This doesn't mean the community can't jump in -- they should reach out and have a chat with the assignee to see if it'd okay to take. If an issue was assigned more than a month ago, there's a good chance it's fair game to try yourself.
 
+### Contributing to Windows Customization
+
+If you'd like to suggest a new feature/improvement to Windows Customization, **you must first file an issue with the provided `Windows Customization` [template](https://github.com/microsoft/devhome/issues/new?template=feature_request_windows_customization.yml)**. This will help us understand what you're looking for and why, and will help us ensure that the feature is something that we can support in the long run. For changes that rely on registry key behaviors that are undocumented, we will first have to review with internal stakeholders how to support the desired functionality and may not be able to support them in the long term. In these cases, we may have to modify your PR with a different approach after chatting with the internal teams.
+
+We will not accept or review PRs that add new features to Windows Customization without an associated issue that follows the `Windows Customization` template.
+
+For bug fixes, please still use the existing [bug template](https://github.com/microsoft/devhome/issues/new?template=Bug_Report.yml). If you are able to fix the bug, please indicate that in the issue and we'll be happy to review your PR.
+
 ### To spec or not to spec
 
 Some issues/features may be quick and simple to describe and understand. For such scenarios, once a team member has agreed with your approach, skip ahead to the section headed "Fork, Branch, and Create your PR", below.
@@ -152,6 +160,36 @@ Once you've discussed your proposed feature/fix/etc. with a team member and you'
 4. Create a [Draft Pull Request (PR)](https://github.blog/2019-02-14-introducing-draft-pull-requests/)
 5. Work on your changes
 6. Build and see if it works
+
+## Building the code
+
+1. Clone the repository
+2. Configure your system
+   * Please use the [configuration file](.configurations/configuration.dsc.yaml). This can be applied by either:
+     * Dev Home's machine configuration tool
+     * WinGet configuration. If you have WinGet version [v1.6.2631 or later](https://github.com/microsoft/winget-cli/releases), run `winget configure .configurations/configuration.dsc.yaml` in an elevated shell from the project root so relative paths resolve correctly
+   * Alternatively, if you already are running the minimum OS version, have Visual Studio installed, and have developer mode enabled, you may configure your Visual Studio directly via the .vsconfig file. To do this:
+     * Open the Visual Studio Installer, select “More” on your product card and then "Import configuration"
+     * Specify the .vsconfig file at the root of the repo and select “Review Details”
+
+## Running & debugging
+
+In Visual Studio, you should be able to build and debug Dev Home by hitting <kbd>F5</kbd>. Make sure to select either the `x64` or the `x86` platform and set DevHome as the selected startup project.
+
+Alternatively,
+
+- Open the Developer Command Prompt for Visual Studio
+- Run `Build` from Dev Home's root directory.  You can pass in a list of platforms/configurations
+- The Dev Home MSIX will be in your repo under `AppxPackages\x64\debug`
+
+
+### Rules
+
+- **Follow the pattern of what you already see in the code.**
+- [Coding style](./docs/style.md).
+- Try to package new ideas/components into libraries that have nicely defined interfaces.
+- Package new ideas into classes or refactor existing ideas into a class as you extend.
+- When adding new classes/methods/changing existing code: add new unit tests or update the existing tests.
 
 ### Code review
 

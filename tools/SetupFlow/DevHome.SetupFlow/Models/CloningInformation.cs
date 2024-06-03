@@ -1,14 +1,15 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Extensions;
-using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
+using Windows.Graphics.Imaging;
+using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -18,14 +19,12 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloningInformation : ObservableObject, IEquatable<CloningInformation>
 {
-    // TODO: Remove when plugin SDK has the ability to pass an icon to DevHome.
-    private static readonly BitmapImage LightGithub = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Light.png"));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CloningInformation));
 
-    private static readonly BitmapImage DarkGithub = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Dark.png"));
+    // Use git icons for the generic provider.
+    private static readonly BitmapImage LightGit = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitLight.png"));
 
-    private static readonly BitmapImage LightGit = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitLight.png"));
-
-    private static readonly BitmapImage DarkGit = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitDark.png"));
+    private static readonly BitmapImage DarkGit = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitDark.png"));
 
     /// <summary>
     /// Gets a value indicating whether the repo is a private repo.  If changed to "IsPublic" the
@@ -63,11 +62,6 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         get; set;
     }
 
-    public string PluginName
-    {
-        get; set;
-    }
-
     /// <summary>
     /// Gets or sets a value indicating whether the repository is to be cloned on a Dev Drive.
     /// </summary>
@@ -87,33 +81,94 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     [ObservableProperty]
     private BitmapImage _repositoryTypeIcon;
 
-    public void SetIcon(ElementTheme theme)
+    private BitmapImage GetGitIcon(ElementTheme theme)
     {
+        BitmapImage gitIcon;
         if (theme == ElementTheme.Dark)
         {
-            // Currently the only providers are Github and the generic provider.  The provider type
-            // for the generic provider is git.
-            // TODO: Remove when extensions have a GetIcon method.
-            if (ProviderName.Equals("github", StringComparison.OrdinalIgnoreCase))
-            {
-                RepositoryTypeIcon = DarkGithub;
-            }
-            else
-            {
-                RepositoryTypeIcon = DarkGit;
-            }
+            gitIcon = DarkGit;
         }
         else
         {
-            if (ProviderName.Equals("github", StringComparison.OrdinalIgnoreCase))
+            gitIcon = LightGit;
+        }
+
+        RepositoryTypeIcon = gitIcon;
+
+        return gitIcon;
+    }
+
+    /// <summary>
+    /// Sets RepositoryTypeIcon according to the theme.
+    /// </summary>
+    /// <param name="theme">The theme to use to determine the icon.</param>
+    /// <remarks>
+    /// This is for monochrome icons only.
+    /// Additionally, this assumes the icon coming from the extension is colored for the dark theme.
+    /// If the provider is null (Generic repo) or if the icon is null, the git icon is used instead.
+    /// </remarks>
+    public void SetIcon(ElementTheme theme)
+    {
+        // RepositoryProvider can be null in the case of URL cloning.
+        if (RepositoryProvider == null || RepositoryProvider.Icon == null)
+        {
+            RepositoryTypeIcon = GetGitIcon(theme);
+            return;
+        }
+
+        BitmapDecoder decoder;
+
+        try
+        {
+            decoder = BitmapDecoder.CreateAsync(RepositoryProvider.Icon.OpenReadAsync().AsTask().Result).AsTask().Result;
+        }
+        catch (Exception e)
+        {
+            _log.Error(e, e.Message);
+            RepositoryTypeIcon = GetGitIcon(theme);
+            return;
+        }
+
+        // Get the pixel data as a byte array
+        PixelDataProvider pixelData = decoder.GetPixelDataAsync().AsTask().Result;
+        var pixels = pixelData.DetachPixelData();
+
+        // Assume that the icon is colored for dark mode.
+        if (theme != ElementTheme.Dark)
+        {
+            // Loop through the pixels and toggle black to white and vice versa
+            // Assuming the pixel format is BGRA8
+            for (var i = 0; i < pixels.Length; i += 4)
             {
-                RepositoryTypeIcon = LightGithub;
-            }
-            else
-            {
-                RepositoryTypeIcon = LightGit;
+                // Get the color components of the pixel
+                var b = pixels[i];
+                var g = pixels[i + 1];
+                var r = pixels[i + 2];
+
+                // Check if the pixel is black or white
+                if (r == 0 && g == 0 && b == 0)
+                {
+                    // Change black to white
+                    pixels[i] = 255;
+                    pixels[i + 1] = 255;
+                    pixels[i + 2] = 255;
+                }
+                else if (r == 255 && g == 255 && b == 255)
+                {
+                    // Change white to black
+                    pixels[i] = 0;
+                    pixels[i + 1] = 0;
+                    pixels[i + 2] = 0;
+                }
             }
         }
+
+        var reversedStream = new InMemoryRandomAccessStream();
+        var encoder = BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, reversedStream).AsTask().Result;
+        encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, decoder.PixelWidth, decoder.PixelHeight, decoder.DpiX, decoder.DpiY, pixels);
+        encoder.FlushAsync().AsTask().Wait();
+
+        RepositoryTypeIcon.SetSource(reversedStream);
     }
 
     /// <summary>
@@ -129,7 +184,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     public string RepositoryId => $"{RepositoryToClone.DisplayName ?? string.Empty}";
 
     /// <summary>
-    /// Gets the repository in a [organization]\[reponame] style
+    /// Gets the repository in a [owning account name]\[reponame] style
     /// </summary>
     public string RepositoryOwnerAndName => Path.Join(RepositoryToClone.OwningAccountName ?? string.Empty, RepositoryToClone.DisplayName);
 
@@ -172,8 +227,51 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     }
 
     /// <summary>
+    /// Gets or sets the provider to use to clone the repository
+    /// </summary>
+    public IRepositoryProvider RepositoryProvider
+    {
+        get => _repositoryProvider;
+
+        set
+        {
+            var iconStream = value.Icon.OpenReadAsync().AsTask().Result;
+
+            RepositoryTypeIcon = new BitmapImage();
+            RepositoryTypeIcon.SetSource(iconStream);
+
+            _repositoryProvider = value;
+        }
+    }
+
+    private IRepositoryProvider _repositoryProvider;
+
+    public string RepositoryProviderDisplayName
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_repositoryProviderDisplayName))
+            {
+                try
+                {
+                    // This can be null in the case of URL cloning.
+                    _repositoryProviderDisplayName = RepositoryProvider?.DisplayName ?? "git";
+                }
+                catch (Exception e)
+                {
+                    _log.Error(e, e.Message);
+                }
+            }
+
+            return _repositoryProviderDisplayName;
+        }
+    }
+
+    private string _repositoryProviderDisplayName = string.Empty;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="CloningInformation"/> class.
-    /// Public constructor for XAML view to construct a CLoningInformation
+    /// Public constructor for XAML view to construct a CloningInformation
     /// </summary>
     public CloningInformation()
     {

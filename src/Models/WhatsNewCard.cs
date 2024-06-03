@@ -1,9 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using Windows.Web.AtomPub;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.Models;
+
 public class WhatsNewCard
 {
     public int Priority
@@ -31,6 +32,16 @@ public class WhatsNewCard
         get; set;
     }
 
+    public string? LightThemeImageBig
+    {
+        get; set;
+    }
+
+    public string? DarkThemeImageBig
+    {
+        get; set;
+    }
+
     public string? Button
     {
         get; set;
@@ -46,8 +57,32 @@ public class WhatsNewCard
         get; set;
     }
 
-    public bool? ShouldShowLink
+    public bool ShouldShowLink { get; set; } = true;
+
+    public bool? ShouldShowIcon
     {
         get; set;
+    }
+
+    public bool? IsBig
+    {
+        get; set;
+    }
+
+    public string? AutomationId
+    {
+        get; set;
+    }
+
+    public Visibility HasLinkAndShouldShowIt(string? link, bool shouldShowLink)
+    {
+        if (link != null && shouldShowLink)
+        {
+            return Visibility.Visible;
+        }
+        else
+        {
+            return Visibility.Collapsed;
+        }
     }
 }

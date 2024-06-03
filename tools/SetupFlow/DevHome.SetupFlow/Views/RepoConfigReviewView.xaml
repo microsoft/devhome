@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <UserControl
@@ -7,8 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ctControls="using:CommunityToolkit.Labs.WinUI"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:models="using:DevHome.SetupFlow.Models"
@@ -23,6 +22,7 @@
             <Style x:Key="ListViewItemStretchStyle" TargetType="ListViewItem">
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="Margin" Value="0" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
                 <Setter Property="Padding" Value="0" />
             </Style>
         </ResourceDictionary>
@@ -45,10 +45,10 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="550" />
+                        <ColumnDefinition Width="1.5*" />
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 0">
-                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryNameHeader" VerticalAlignment="Center" HorizontalTextAlignment="Left" Padding="15, 0, 0, 0"/>
+                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryNameHeader" VerticalAlignment="Center" HorizontalTextAlignment="Left"/>
                     </Border>
                     <TextBlock Grid.Column="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryClonePathHeader" VerticalAlignment="Center" HorizontalTextAlignment="Left" Padding="15, 0, 0, 0"/>
                 </Grid>
@@ -56,15 +56,12 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:CloneRepoTask">
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="40"/>
-                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="550" />
+                            <ColumnDefinition Width="1.5*" />
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Style="{StaticResource BorderStyle}" BorderThickness="0, 1, 1, 0">
-                            <Grid ColumnSpacing="5">
+                            <Grid>
                                 <ToolTipService.ToolTip>
                                     <ToolTip IsEnabled="{x:Bind IsRepoNameTrimmed, Mode=OneWay}" Content="{x:Bind RepositoryOwnerAndName}"/>
                                 </ToolTipService.ToolTip>
@@ -72,8 +69,8 @@
                                     <ColumnDefinition Width="0.1*"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <FontIcon Grid.Column="0" Width="20" Height="20" FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="{x:Bind RepositoryToClone.IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
-                                <TextBlock Grid.Column="1" Text="{x:Bind RepositoryOwnerAndName}" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis">
+                                <FontIcon Grid.Column="0" FontSize="16" FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="{x:Bind RepositoryToClone.IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}" HorizontalAlignment="Left"/>
+                                <TextBlock Grid.Column="1" Text="{x:Bind RepositoryOwnerAndName}" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
                                      <i:Interaction.Behaviors>
                                         <ic:EventTriggerBehavior EventName="IsTextTrimmedChanged">
                                             <ic:InvokeCommandAction Command="{x:Bind RepoNameTrimmedCommand}"/>
@@ -82,11 +79,11 @@
                                 </TextBlock>
                             </Grid>
                         </Border>
-                        <Border Grid.Column="1" Style="{StaticResource BorderStyle}" BorderThickness="1, 1, 0, 0">
+                        <Border Grid.Column="1" Style="{StaticResource BorderStyle}" BorderThickness="0, 1, 0, 0">
                             <ToolTipService.ToolTip>
                                 <ToolTip IsEnabled="{x:Bind IsClonePathTrimmed, Mode=OneWay}" Content="{x:Bind CloneLocation}"/>
                             </ToolTipService.ToolTip>
-                            <TextBlock Text="{x:Bind CloneLocation}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Padding="10, 0, 0, 0">
+                            <TextBlock Text="{x:Bind CloneLocation}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Padding="15, 0, 0, 0">
                                  <i:Interaction.Behaviors>
                                         <ic:EventTriggerBehavior EventName="IsTextTrimmedChanged">
                                             <ic:InvokeCommandAction Command="{x:Bind ClonePathTrimmedCommand}"/>

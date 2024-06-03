@@ -1,10 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Diagnostics.Tracing;
-using System.Security.Cryptography;
-using System.Text;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
@@ -13,9 +12,9 @@ using Microsoft.Windows.DevHome.SDK;
 namespace DevHome.Common.TelemetryEvents.SetupFlow;
 
 [EventData]
-public class ReposCloneEvent : EventBase
+public class RepoCloneEvent : EventBase
 {
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public string ProviderName
     {
@@ -28,11 +27,11 @@ public class ReposCloneEvent : EventBase
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ReposCloneEvent"/> class.
+    /// Initializes a new instance of the <see cref="RepoCloneEvent"/> class.
     /// </summary>
     /// <param name="providerName">Name of the provider to use to clone the repo</param>
     /// <param name="developerId">The account to use for private/org repos.  Can be null</param>
-    public ReposCloneEvent(string providerName, IDeveloperId developerId)
+    public RepoCloneEvent(string providerName, IDeveloperId developerId)
     {
         ProviderName = providerName;
 

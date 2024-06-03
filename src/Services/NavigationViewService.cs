@@ -1,12 +1,14 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
 using DevHome.Settings.ViewModels;
-using DevHome.ViewModels;
+using DevHome.Telemetry;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Services;
@@ -17,6 +19,8 @@ public class NavigationViewService : INavigationViewService
 
     private readonly IPageService _pageService;
 
+    private readonly IScreenReaderService _screenReaderService;
+
     private NavigationView? _navigationView;
 
     public IList<object>? MenuItems => _navigationView?.MenuItems;
@@ -25,10 +29,11 @@ public class NavigationViewService : INavigationViewService
 
     public object? SettingsItem => _navigationView?.SettingsItem;
 
-    public NavigationViewService(INavigationService navigationService, IPageService pageService)
+    public NavigationViewService(INavigationService navigationService, IPageService pageService, IScreenReaderService screenReaderService)
     {
         _navigationService = navigationService;
         _pageService = pageService;
+        _screenReaderService = screenReaderService;
     }
 
     [MemberNotNull(nameof(_navigationView))]
@@ -37,6 +42,15 @@ public class NavigationViewService : INavigationViewService
         _navigationView = navigationView;
         _navigationView.BackRequested += OnBackRequested;
         _navigationView.ItemInvoked += OnItemInvoked;
+
+        _navigationView.RegisterPropertyChangedCallback(NavigationView.IsPaneOpenProperty, OnIsPaneOpenChanged);
+    }
+
+    private void OnIsPaneOpenChanged(DependencyObject sender, DependencyProperty dp)
+    {
+        var announcementText = _navigationView!.IsPaneOpen ? "NavigationPaneOpened" : "NavigationPaneClosed";
+
+        _screenReaderService.Announce(announcementText.GetLocalized());
     }
 
     public void UnregisterEvents()
@@ -62,6 +76,16 @@ public class NavigationViewService : INavigationViewService
 
     private void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
     {
+        if (args.InvokedItem != null)
+        {
+            var invokedItem = (string)args.InvokedItem;
+            if (invokedItem != null)
+            {
+                var currentItem = _navigationService.Frame?.CurrentSourcePageType.Name ?? string.Empty;
+                TelemetryFactory.Get<ITelemetry>().Log("NavigationView_Clicked", LogLevel.Critical, new NavigationViewItemEvent(invokedItem, currentItem));
+            }
+        }
+
         if (args.IsSettingsInvoked)
         {
             _navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);

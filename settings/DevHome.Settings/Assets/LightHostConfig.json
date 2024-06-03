@@ -10,9 +10,9 @@
         "extraLarge": 26
       },
       "fontWeights": {
-        "lighter": 600,
-        "default": 800,
-        "bolder": 1000
+        "lighter": 200,
+        "default": 400,
+        "bolder": 600
       }
     },
     "monospace": {
@@ -45,8 +45,8 @@
           "subtle": "#880063B1"
         },
         "attention": {
-          "default": "#FF0000",
-          "subtle": "#DDFF0000"
+          "default": "#C00000",
+          "subtle": "#DDC00000"
         },
         "good": {
           "default": "#54a254",
@@ -71,8 +71,8 @@
           "subtle": "#882E89FC"
         },
         "attention": {
-          "default": "#FF0000",
-          "subtle": "#DDFF0000"
+          "default": "#C00000",
+          "subtle": "#DDC00000"
         },
         "good": {
           "default": "#54a254",
@@ -86,9 +86,9 @@
     }
   },
   "imageSizes": {
-    "small": 110,
-    "medium": 150,
-    "large": 210
+    "small": 80,
+    "medium": 130,
+    "large": 180
   },
   "actions": {
     "maxActions": 5,

@@ -1,7 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.UnitTest.Helpers;
 using DevHome.SetupFlow.ViewModels;
@@ -28,10 +29,7 @@ public class SearchViewModelTest : BaseSetupFlowTest
     [TestMethod]
     public void Search_CancelledToken_ReturnsCancelledStatusAndNull()
     {
-        var allcatalogs = new Mock<IWinGetCatalog>();
-        allcatalogs.Setup(c => c.IsConnected).Returns(true);
         var searchViewModel = TestHost!.GetService<SearchViewModel>();
-        WindowsPackageManager!.Setup(wpm => wpm.AllCatalogs).Returns(allcatalogs.Object);
 
         var (status, packages) = searchViewModel.SearchAsync("mock", new CancellationToken(canceled: true)).GetAwaiter().GetResult();
 
@@ -42,9 +40,7 @@ public class SearchViewModelTest : BaseSetupFlowTest
     [TestMethod]
     public void Search_CatalogNotConnected_ReturnsNotConnectedStatusAndNull()
     {
-        var allcatalogs = new Mock<IWinGetCatalog>();
-        allcatalogs.Setup(c => c.IsConnected).Returns(false);
-        WindowsPackageManager!.Setup(wpm => wpm.AllCatalogs).Returns(allcatalogs.Object);
+        WindowsPackageManager!.Setup(wpm => wpm.SearchAsync(It.IsAny<string>(), It.IsAny<uint>())).ThrowsAsync(new WindowsPackageManagerRecoveryException());
         var searchViewModel = TestHost!.GetService<SearchViewModel>();
 
         var (status, packages) = searchViewModel.SearchAsync("mock", new CancellationToken(false)).GetAwaiter().GetResult();
@@ -56,10 +52,7 @@ public class SearchViewModelTest : BaseSetupFlowTest
     [TestMethod]
     public void Search_Exception_ReturnsExceptionStatusAndNull()
     {
-        var allcatalogs = new Mock<IWinGetCatalog>();
-        allcatalogs.Setup(c => c.IsConnected).Returns(true);
-        allcatalogs.Setup(c => c.SearchAsync(It.IsAny<string>(), It.IsAny<uint>())).ThrowsAsync(new InvalidOperationException());
-        WindowsPackageManager!.Setup(wpm => wpm.AllCatalogs).Returns(allcatalogs.Object);
+        WindowsPackageManager!.Setup(wpm => wpm.SearchAsync(It.IsAny<string>(), It.IsAny<uint>())).ThrowsAsync(new InvalidOperationException());
         var searchViewModel = TestHost!.GetService<SearchViewModel>();
 
         var (status, packages) = searchViewModel.SearchAsync("mock", new CancellationToken(false)).GetAwaiter().GetResult();
@@ -71,14 +64,11 @@ public class SearchViewModelTest : BaseSetupFlowTest
     [TestMethod]
     public void Search_NonEmptyText_ReturnsOkStatusAndNonNullResult()
     {
-        var allcatalogs = new Mock<IWinGetCatalog>();
-        allcatalogs.Setup(c => c.IsConnected).Returns(true);
-        allcatalogs.Setup(c => c.SearchAsync(It.IsAny<string>(), It.IsAny<uint>())).ReturnsAsync(new List<IWinGetPackage>()
+        WindowsPackageManager!.Setup(wpm => wpm.SearchAsync(It.IsAny<string>(), It.IsAny<uint>())).ReturnsAsync(new List<IWinGetPackage>()
         {
             // Mock a single result package
             PackageHelper.CreatePackage("mock").Object,
         });
-        WindowsPackageManager!.Setup(wpm => wpm.AllCatalogs).Returns(allcatalogs.Object);
         var searchViewModel = TestHost!.GetService<SearchViewModel>();
 
         var (status, packages) = searchViewModel.SearchAsync("mock", new CancellationToken(false)).GetAwaiter().GetResult();

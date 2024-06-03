@@ -1,5 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using DevHome.Common.Views;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -14,5 +16,17 @@ public class ActionCenterMessages
     public string PrimaryMessage
     {
         get; set;
+    }
+
+    public ExtensionAdaptiveCardPanel ExtensionAdaptiveCardPanel { get; set; }
+
+    public ActionCenterMessages(ExtensionAdaptiveCardPanel panel, string primaryMessage)
+    {
+        ExtensionAdaptiveCardPanel = panel;
+        PrimaryMessage = primaryMessage;
+    }
+
+    public ActionCenterMessages()
+    {
     }
 }

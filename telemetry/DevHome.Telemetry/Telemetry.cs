@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -7,10 +7,11 @@ using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
 using Microsoft.Diagnostics.Telemetry;
+using Microsoft.Diagnostics.Telemetry.Internal;
 
 namespace DevHome.Telemetry;
 
-internal class Telemetry : ITelemetry
+internal sealed class Telemetry : ITelemetry
 {
     private const string ProviderName = "Microsoft.Windows.DevHome"; // Generated provider GUID: {2e74ff65-bbda-5e80-4c0a-bd8320d4223b}
 
@@ -35,48 +36,48 @@ internal class Telemetry : ITelemetry
     /// Logs telemetry locally, but shouldn't upload it.  Similar to an ETW event.
     /// Should be the same as EventSourceOptions(), as Verbose is the default level.
     /// </summary>
-    private static readonly EventSourceOptions LocalOption = new () { Level = EventLevel.Verbose };
+    private static readonly EventSourceOptions LocalOption = new() { Level = EventLevel.Verbose };
 
     /// <summary>
     /// Logs error telemetry locally, but shouldn't upload it.  Similar to an ETW event.
     /// </summary>
-    private static readonly EventSourceOptions LocalErrorOption = new () { Level = EventLevel.Error };
+    private static readonly EventSourceOptions LocalErrorOption = new() { Level = EventLevel.Error };
 
     /// <summary>
     /// Logs telemetry.
     /// Currently this is at 0% sampling for both internal and external retail devices.
     /// </summary>
-    private static readonly EventSourceOptions InfoOption = new () { Keywords = TelemetryEventSource.TelemetryKeyword };
+    private static readonly EventSourceOptions InfoOption = new() { Keywords = TelemetryEventSource.TelemetryKeyword };
 
     /// <summary>
     /// Logs error telemetry.
     /// Currently this is at 0% sampling for both internal and external retail devices.
     /// </summary>
-    private static readonly EventSourceOptions InfoErrorOption = new () { Level = EventLevel.Error, Keywords = TelemetryEventSource.TelemetryKeyword };
+    private static readonly EventSourceOptions InfoErrorOption = new() { Level = EventLevel.Error, Keywords = TelemetryEventSource.TelemetryKeyword };
 
     /// <summary>
     /// Logs measure telemetry.
     /// This should be sent back on internal devices, and a small, sampled % of external retail devices.
     /// </summary>
-    private static readonly EventSourceOptions MeasureOption = new () { Keywords = TelemetryEventSource.MeasuresKeyword };
+    private static readonly EventSourceOptions MeasureOption = new() { Keywords = TelemetryEventSource.MeasuresKeyword };
 
     /// <summary>
     /// Logs measure error telemetry.
     /// This should be sent back on internal devices, and a small, sampled % of external retail devices.
     /// </summary>
-    private static readonly EventSourceOptions MeasureErrorOption = new () { Level = EventLevel.Error, Keywords = TelemetryEventSource.MeasuresKeyword };
+    private static readonly EventSourceOptions MeasureErrorOption = new() { Level = EventLevel.Error, Keywords = TelemetryEventSource.MeasuresKeyword };
 
     /// <summary>
     /// Logs critical telemetry.
     /// This should be sent back on all devices sampled at 100%.
     /// </summary>
-    private static readonly EventSourceOptions CriticalDataOption = new () { Keywords = TelemetryEventSource.CriticalDataKeyword };
+    private static readonly EventSourceOptions CriticalDataOption = new() { Keywords = TelemetryEventSource.CriticalDataKeyword };
 
     /// <summary>
     /// Logs critical error telemetry.
     /// This should be sent back on all devices sampled at 100%.
     /// </summary>
-    private static readonly EventSourceOptions CriticalDataErrorOption = new () { Level = EventLevel.Error, Keywords = TelemetryEventSource.CriticalDataKeyword };
+    private static readonly EventSourceOptions CriticalDataErrorOption = new() { Level = EventLevel.Error, Keywords = TelemetryEventSource.CriticalDataKeyword };
 
     /// <summary>
     /// ActivityId so we can correlate all events in the same run
@@ -86,7 +87,7 @@ internal class Telemetry : ITelemetry
     /// <summary>
     /// List of strings we should try removing for sensitivity reasons.
     /// </summary>
-    private readonly List<KeyValuePair<string, string>> sensitiveStrings = new ();
+    private readonly List<KeyValuePair<string, string>> sensitiveStrings = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Telemetry"/> class.
@@ -143,7 +144,7 @@ internal class Telemetry : ITelemetry
 
         this.LogInternal(
             ExceptionThrownEventName,
-            LogLevel.Measure,
+            LogLevel.Critical,
             new
             {
                 action,
@@ -153,6 +154,7 @@ internal class Telemetry : ITelemetry
                 innerMessage,
                 innerStackTrace = innerStackTrace.ToString(),
                 message = this.ReplaceSensitiveStrings(e.Message),
+                PartA_PrivTags = PartA_PrivTags.ProductAndServicePerformance,
             },
             relatedActivityId,
             isError: true);
@@ -173,6 +175,7 @@ internal class Telemetry : ITelemetry
             {
                 eventName,
                 timeTakenMilliseconds,
+                PartA_PrivTags = PartA_PrivTags.ProductAndServicePerformance,
             },
             relatedActivityId,
             isError: false);
@@ -184,9 +187,9 @@ internal class Telemetry : ITelemetry
     /// <param name="eventName">The name of the event to log</param>
     /// <param name="isError">Set to true if an error condition raised this event.</param>
     /// <param name="relatedActivityId">GUID to correlate activities.</param>
-    public void LogMeasure(string eventName, bool isError = false, Guid? relatedActivityId = null)
+    public void LogCritical(string eventName, bool isError = false, Guid? relatedActivityId = null)
     {
-        this.LogInternal(eventName, LogLevel.Measure, new EmptyEvent(), relatedActivityId, isError);
+        this.LogInternal(eventName, LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServiceUsage), relatedActivityId, isError);
     }
 
     /// <summary>

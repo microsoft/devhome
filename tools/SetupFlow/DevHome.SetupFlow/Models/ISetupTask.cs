@@ -1,12 +1,27 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 extern alias Projection;
 
+using DevHome.SetupFlow.ViewModels;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
+
+public enum ActionMessageRequestKind
+{
+    Add,
+    Remove,
+}
+
+public enum MessageSeverityKind
+{
+    Info,
+    Success,
+    Warning,
+    Error,
+}
 
 /// <summary>
 /// A single atomic task to perform during the setup flow.
@@ -27,12 +42,16 @@ public interface ISetupTask
     /// <remarks>
     /// This will be used to guide whether we show a warning to the user about possible reboots
     /// before beginning the setup.
-    /// TODO: We need to figure a story around how to handle reboots and the different cases.
-    ///       Setting up WSL (future) will require us to reboot the machine to finish, but other
-    ///       tasks like installing an app may trigger a reboot out of our control.
-    /// https://github.com/microsoft/devhome/issues/637
     /// </remarks>
     public bool RequiresReboot
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets target device name.
+    /// </summary>
+    public string TargetName
     {
         get;
     }
@@ -56,11 +75,11 @@ public interface ISetupTask
     /// <summary>
     /// Executes this setup task as admin.
     /// </summary>
-    /// <param name="elevatedComponentFactory">Helper object to create the needed objects on the elevated process.</param>
+    /// <param name="elevatedComponentOperation">Helper object to execute operation on the elevated process.</param>
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
-    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory);
+    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation);
 
     /// <summary>
     /// Gets the object used to display all messages in the loading screen.
@@ -91,4 +110,20 @@ public interface ISetupTask
     {
         get;
     }
+
+    public delegate void ChangeMessageHandler(string message, MessageSeverityKind severityKind);
+
+    /// <summary>
+    /// Use this event to insert a message into the loading screen.
+    /// </summary>
+    public event ChangeMessageHandler AddMessage;
+
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
+
+    public delegate void ChangeActionCenterMessageHandler(ActionCenterMessages message, ActionMessageRequestKind requestKind);
+
+    /// <summary>
+    /// Use this event to insert a message into the action center of the loading screen.
+    /// </summary>
+    public event ChangeActionCenterMessageHandler UpdateActionCenterMessage;
 }

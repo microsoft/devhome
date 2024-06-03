@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Diagnostics.Tracing;
@@ -11,11 +11,11 @@ using Microsoft.Management.Configuration;
 namespace DevHome.SetupFlow.Common.TelemetryEvents;
 
 [EventData]
-internal class ConfigurationUnitResultEvent : EventBase
+internal sealed class ConfigurationUnitResultEvent : EventBase
 {
     private readonly ApplyConfigurationUnitResult _unitResult;
 
-    public string UnitName => _unitResult.Unit.UnitName;
+    public string Type => _unitResult.Unit.Type;
 
     public int ExceptionHResult => _unitResult.ResultInformation.ResultCode?.HResult ?? 0;
 
@@ -25,7 +25,7 @@ internal class ConfigurationUnitResultEvent : EventBase
 
     public bool RebootRequired => _unitResult.RebootRequired;
 
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public ConfigurationUnitResultEvent(ApplyConfigurationUnitResult unitResult)
     {

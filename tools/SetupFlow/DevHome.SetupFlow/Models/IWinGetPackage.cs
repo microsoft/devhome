@@ -1,23 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
-using DevHome.SetupFlow.Common.WindowsPackageManager;
+using System.Collections.Generic;
 using DevHome.SetupFlow.Services;
 using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.Models;
-
-/// <summary>
-/// Record for a package unique key following a value-based equality semantics
-/// </summary>
-/// <remarks>
-/// A package id is unique in a catalog, but not across catalogs. To globally
-/// identify a package, use a composite key of package id and catalog id.
-/// </remarks>
-/// <param name="packageId">Package id</param>
-/// <param name="catalogId">Catalog id</param>
-public record class PackageUniqueKey(string packageId, string catalogId);
 
 /// <summary>
 /// Interface for a winget package.
@@ -68,11 +57,25 @@ public interface IWinGetPackage
     }
 
     /// <summary>
-    /// Gets the version of the package which could be of any format supported
-    /// by WinGet package manager (e.g. alpha-numeric, 'Unknown', '1-preview, etc...).
-    /// <seealso cref="https://github.com/microsoft/winget-cli/blob/master/src/Microsoft.Management.Deployment/PackageManager.idl"/>
+    /// Gets the installed version of the package or null if the package is not installed
     /// </summary>
-    public string Version
+    public string InstalledVersion
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the default version to install
+    /// </summary>
+    public string DefaultInstallVersion
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the list of available versions for the package
+    /// </summary>
+    public IReadOnlyList<string> AvailableVersions
     {
         get;
     }
@@ -126,14 +129,35 @@ public interface IWinGetPackage
     }
 
     /// <summary>
+    /// Gets the package installation notes
+    /// </summary>
+    public string InstallationNotes
+    {
+        get;
+    }
+
+    /// <summary>
     /// Create an install task for this package
     /// </summary>
     /// <param name="wpm">Windows package manager service</param>
     /// <param name="stringResource">String resource service</param>
-    /// <param name="wingetFactory">WinGet factory</param>
+    /// <param name="installVersion">Version to install</param>
+    /// <param name="activityId">Activity id</param>
     /// <returns>Task object for installing this package</returns>
     InstallPackageTask CreateInstallTask(
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory);
+        string installVersion,
+        Guid activityId);
 }
+
+/// <summary>
+/// Record for a package unique key following a value-based equality semantics
+/// </summary>
+/// <remarks>
+/// A package id is unique in a catalog, but not across catalogs. To globally
+/// identify a package, use a composite key of package id and catalog id.
+/// </remarks>
+/// <param name="packageId">Package id</param>
+/// <param name="catalogId">Catalog id</param>
+public record class PackageUniqueKey(string PackageId, string CatalogId);

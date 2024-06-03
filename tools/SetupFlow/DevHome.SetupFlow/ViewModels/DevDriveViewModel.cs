@@ -1,10 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,34 +13,35 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.TelemetryEvents;
+using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.Windows;
 using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+using Serilog;
 using Windows.Globalization.NumberFormatting;
-using Windows.Storage.Pickers;
 using Windows.System;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewModel
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DevDriveViewModel));
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IDevDriveManager _devDriveManager;
+    private readonly IHost _host;
     private readonly string _localizedBrowseButtonText;
     private readonly string _devHomeIconPath = "Assets/DevHome.ico";
     private readonly Dictionary<ByteUnit, string> _byteUnitList;
+    private readonly Guid _activityId;
 
-    private Models.DevDrive _concreteDevDrive = new ();
+    private Models.DevDrive _concreteDevDrive = new();
     private DevDriveTaskGroup _taskGroup;
 
     /// <summary>
@@ -102,12 +102,14 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <summary>
     /// Gets a value indicating the window title of the Dev Drive window.
     /// </summary>
-    public string AppTitle => Application.Current.GetService<WindowEx>().Title;
+    public string AppTitle => Application.Current.GetService<Window>().Title;
 
     public DevDriveViewModel(
         ISetupFlowStringResource stringResource,
         DevDriveTaskGroup taskGroup,
-        IDevDriveManager devDriveManager)
+        IDevDriveManager devDriveManager,
+        IHost host,
+        SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _taskGroup = taskGroup;
         _stringResource = stringResource;
@@ -121,6 +123,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         _devDriveManager.RequestToCloseViewModelWindow += CloseRequestedDevDriveWindow;
         RefreshDriveLetterToSizeMapping();
         PropertyChanged += (_, args) => ValidatePropertyByName(args.PropertyName);
+        _host = host;
+        _activityId = setupFlowOrchestrator.ActivityId;
     }
 
     /// <summary>
@@ -137,6 +141,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// This is the location that we will save the virtual disk file to.
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DriveLabel))]
     [NotifyCanExecuteChangedFor(nameof(SaveButtonCommand))]
     private string _location;
 
@@ -154,6 +159,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     [NotifyPropertyChangedFor(nameof(MinimumAllowedSize))]
     [NotifyPropertyChangedFor(nameof(MaximumAllowedSize))]
+    [NotifyCanExecuteChangedFor(nameof(SaveButtonCommand))]
     [ObservableProperty]
     private int _comboBoxByteUnit;
 
@@ -180,7 +186,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// Gets or sets the drive letters available on the system and is not already in use by a Dev Drive
     /// that the Dev Drive manager is holding in memory.
     /// </summary>
-    public List<char> DriveLetters { get; set; } = new ();
+    public List<char> DriveLetters { get; set; } = new();
 
     /// <summary>
     /// Gets the maximum size allowed in the Number box based
@@ -190,6 +196,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         get
         {
+            ValidateDriveSize();
             if ((ByteUnit)ComboBoxByteUnit == ByteUnit.TB)
             {
                 return DevDriveUtil.MaxSizeForTbComboBox;
@@ -207,6 +214,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         get
         {
+            ValidateDriveSize();
             if ((ByteUnit)ComboBoxByteUnit == ByteUnit.TB)
             {
                 return DevDriveUtil.MinSizeForTbComboBox;
@@ -225,7 +233,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <summary>
     /// Gets or sets a Dictionary where the keys are current drive letters in use by the system and the values are the free space in bytes the drives have available.
     /// </summary>
-    public Dictionary<char, ulong> DriveLetterToSizeMapping { get; set; } = new ();
+    public Dictionary<char, ulong> DriveLetterToSizeMapping { get; set; } = new();
 
     /// <summary>
     /// Gets the localized Browse button text for the browse button.
@@ -235,29 +243,43 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <summary>
     /// Gets the list of DevDriveValidationResults that will be converted to localized text and shown in error info bars in the UI.
     /// </summary>
-    public ObservableCollection<DevDriveValidationResult> FileNameAndSizeErrorList { get; } = new ();
+    public ObservableCollection<DevDriveValidationResult> FileNameAndSizeErrorList { get; } = new();
 
     /// <summary>
     /// Opens folder picker and adds folder to the drive location, if the user does not cancel the dialog.
     /// </summary>
     [RelayCommand]
-    public async void ChooseFolderLocation()
+    public async Task ChooseFolderLocationAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Opening file picker to select dev drive location");
-        var folderPicker = new FolderPicker();
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, DevDriveWindowContainer.GetWindowHandle());
-        folderPicker.FileTypeFilter.Add("*");
+        try
+        {
+            _log.Information("Opening file picker to select dev drive location");
+            using var folderPicker = new WindowOpenFolderDialog();
+            var location = await folderPicker.ShowAsync(DevDriveWindowContainer);
+            if (!string.IsNullOrWhiteSpace(location?.Path))
+            {
+                _log.Information($"Selected Dev Drive location: {location.Path}");
 
-        var location = await folderPicker.PickSingleFolderAsync();
-        if (!string.IsNullOrWhiteSpace(location?.Path))
-        {
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Selected Dev Drive location: {location.Path}");
-            Location = location.Path;
-            OnPropertyChanged(nameof(Location));
+                // If the user encounters an error, like file already exists, then they fix the issue
+                // (deleted the file) DevHome won't check if the issue is resolved.  A user needs to
+                // re-enter a path.  If the path is the same as the previously entered path Location
+                // will not update because the two string values are similiar.
+                if (string.Equals(Location, location.Path, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Change Location to empty to force Location updates.
+                    Location = string.Empty;
+                }
+
+                Location = location.Path;
+            }
+            else
+            {
+                _log.Information("No location selected for Dev Drive");
+            }
         }
-        else
+        catch (Exception e)
         {
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, "No location selected for Dev Drive");
+            _log.Error(e, "Failed to open folder picker.");
         }
     }
 
@@ -269,7 +291,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         if (IsDevDriveWindowOpen)
         {
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Closing dev drive window");
+            _log.Information("Closing dev drive window");
             DevDriveWindowContainer.Close();
         }
     }
@@ -280,7 +302,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     public void UpdateDevDriveInfo(IDevDrive devDrive)
     {
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Updating Dev Drive info");
+        _log.Information("Updating Dev Drive info");
         AssociatedDrive = devDrive;
         if (devDrive.DriveSizeInBytes > DevDriveUtil.MinDevDriveSizeInBytes)
         {
@@ -316,13 +338,14 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// Opens the Windows settings app and redirects the user to the disks and volumes page.
     /// </summary>
     [RelayCommand]
-    public async void LaunchDisksAndVolumesSettingsPage()
+    public async Task LaunchDisksAndVolumesSettingsPageAsync()
     {
         // Critical level approved by subhasan
         TelemetryFactory.Get<ITelemetry>().Log(
             "LaunchDisksAndVolumesSettingsPageTriggered",
             LogLevel.Critical,
-            new DisksAndVolumesSettingsPageTriggeredEvent(source: "DevDriveView"));
+            new DisksAndVolumesSettingsPageTriggeredEvent(source: "DevDriveView"),
+            _host.GetService<SetupFlowOrchestrator>().ActivityId);
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
 
@@ -334,9 +357,9 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [RelayCommand(CanExecute = nameof(CanSave))]
     private void SaveButton()
     {
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Saving changes to Dev Drive");
+        _log.Information("Saving changes to Dev Drive");
         ByteUnit driveUnitOfMeasure = (ByteUnit)ComboBoxByteUnit;
-        var tempDrive = new Models.DevDrive()
+        var tempDrive = new DevDrive()
         {
             DriveLetter = ComboBoxDriveLetter.Value,
             DriveSizeInBytes = DevDriveUtil.ConvertToBytes(Size, driveUnitOfMeasure),
@@ -383,10 +406,14 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     public Task<bool> LaunchDevDriveWindow()
     {
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Launching window to set up Dev Drive");
+        _log.Information("Launching window to set up Dev Drive");
         ResetErrors();
-        DevDriveWindowContainer = new (this);
+        DevDriveWindowContainer = new(this);
         DevDriveWindowContainer.Closed += ViewContainerClosed;
+
+        // Setting this before the window activates prevents the window from showing up on the screen,
+        // then moving abruptly to the center.
+        DevDriveWindowContainer.CenterOnWindow();
         DevDriveWindowContainer.Activate();
         IsDevDriveWindowOpen = true;
         RefreshDriveLetterToSizeMapping();
@@ -425,7 +452,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         FolderLocationError = null;
         foreach (DevDriveValidationResult result in resultSet)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Input validation Error in Dev Drive window: {result}");
+            _log.Error($"Input validation Error in Dev Drive window: {result}");
             switch (result)
             {
                 case DevDriveValidationResult.NoDriveLettersAvailable:
@@ -492,7 +519,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to refresh the drive letter to size mapping.", ex);
+            _log.Error(ex, $"Failed to refresh the drive letter to size mapping.");
 
             // Clear the mapping since it can't be refreshed. This shouldn't happen unless DriveInfo.GetDrives() fails. In that case we won't know which drive
             // in the list is causing GetDrives()'s to throw. If there are values inside the dictionary at this point, they could be stale. Clearing the list
@@ -612,7 +639,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         DriveLetterError = null;
 
-        if (!DriveLetters.Any())
+        if (DriveLetters.Count == 0)
         {
             DriveLetterError = DevDriveValidationResult.NoDriveLettersAvailable;
         }

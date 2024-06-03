@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.QuietBackgroundProcesses.UI.Views.ProcessPerformanceTableControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DevHome.QuietBackgroundProcesses.UI"
+    xmlns:ui="using:CommunityToolkit.WinUI">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <Style x:Key="BorderStyle" TargetType="Border">
+                        <Setter Property="BorderBrush" Value="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                    </Style>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <ListView
+            ItemsSource="{x:Bind ItemsSource}"
+            SelectionMode="Extended"
+            HorizontalContentAlignment="Stretch"
+            Margin="0"
+            Padding="0"
+            ui:ListViewExtensions.AlternateColor="{StaticResource SubtleFillColorSecondaryBrush}">
+            <ListView.Header>
+                <Grid ColumnSpacing="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition MinHeight="35" />
+                    </Grid.RowDefinitions>
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <Border Grid.Column="0" Style="{StaticResource BorderStyle}">
+                        <TextBlock
+                            x:Uid="ProcessPerformanceTableControl_Heading_Process"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Padding="25 0 0 0"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            HorizontalTextAlignment="Left" />
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource BorderStyle}">
+                        <TextBlock
+                            x:Uid="ProcessPerformanceTableControl_Heading_ProcessType"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Margin="20 0 0 0"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            HorizontalTextAlignment="Left" />
+                    </Border>
+                    <Border Grid.Column="2" Grid.ColumnSpan="2" Style="{StaticResource BorderStyle}">
+                        <TextBlock
+                            x:Uid="ProcessPerformanceTableControl_Heading_CpuAboveThreshold"
+                            Style="{StaticResource BodyStrongTextBlockStyle}"
+                            Margin="20 0 0 0"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            HorizontalTextAlignment="Left"
+                            TextWrapping="WrapWholeWords"
+                            TextTrimming="CharacterEllipsis" />
+                    </Border>
+                </Grid>
+            </ListView.Header>
+            
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:ProcessData">
+                    <Grid ColumnSpacing="5" AutomationProperties.Name="{x:Bind DisplayName}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 0">
+                            <TextBlock
+                                Text="{x:Bind DisplayName}"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left"
+                                HorizontalTextAlignment="Left"
+                                TextTrimming="CharacterEllipsis"
+                                Padding="11" />
+                        </Border>
+
+                        <Border Grid.Column="1" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 0">
+                            <TextBlock
+                                Text="{x:Bind Category}"
+                                VerticalAlignment="Center"
+                                Margin="20 0 0 0"
+                                HorizontalAlignment="Left"
+                                HorizontalTextAlignment="Left" />
+                        </Border>
+
+                        <Border Grid.Column="2" Style="{StaticResource BorderStyle}">
+                            <TextBlock VerticalAlignment="Center" Margin="20 0 0 0" HorizontalAlignment="Left" HorizontalTextAlignment="Left" >
+                                <Run Text="{x:Bind x:String.Format('{0:0.#}', TimeAboveThresholdInMinutes)}" /> <Run x:Uid="MinutesAbbreviation" />
+                            </TextBlock>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</UserControl>

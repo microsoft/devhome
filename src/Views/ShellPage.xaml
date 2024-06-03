@@ -2,35 +2,32 @@
     x:Class="DevHome.Views.ShellPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:DevHome.Helpers"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:windows="using:DevHome.Common.Windows"
     Loaded="OnLoaded">
 
     <Grid>
-        <Grid x:Name="AppTitleBar"
-              Canvas.ZIndex="1"
-              Height="{Binding ElementName=NavigationViewControl, Path=CompactPaneLength}"
-              IsHitTestVisible="True"
-              VerticalAlignment="Top">
-            <Image Source="/Assets/DevHome.ico"
-                   HorizontalAlignment="Left"
-                   Width="16"
-                   Height="16" />
-            <TextBlock x:Name="AppTitleBarText"
-                       VerticalAlignment="Center"
-                       TextWrapping="NoWrap"
-                       Style="{StaticResource CaptionTextBlockStyle}"
-                       Margin="28,0,0,0"/>
-        </Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <windows:WindowTitleBar
+            Grid.Row="0"
+            x:Name="AppTitleBar"
+            Title="{x:Bind ViewModel.Title}"
+            Height="{x:Bind NavigationViewControl.CompactPaneLength}" />
+
         <NavigationView
+            Grid.Row="1"
             x:Name="NavigationViewControl"
             Canvas.ZIndex="0"
             IsBackButtonVisible="Collapsed"
+            IsTitleBarAutoPaddingEnabled="True"
             SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
             IsSettingsVisible="True"
+            OpenPaneLength="350"
             ExpandedModeThresholdWidth="1280"
             DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
             Header="{x:Bind ((ContentControl)ViewModel.Selected).Content, Mode=OneWay}">
@@ -65,18 +62,25 @@
                 <NavigationViewItem x:Uid="Shell_IGNORE" helpers:NavigationHelper.NavigateTo="DevHome.Settings.ViewModels.SettingsViewModel" Visibility="Collapsed"/>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem x:Uid="WhatsNew" helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.WhatsNewViewModel">
+                <NavigationViewItem x:Uid="WhatsNew" AutomationProperties.AutomationId="WhatsNew"
+                                    helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.WhatsNewViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE789;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Uid="ms-resource:///DevHome.ExtensionLibrary/Resources/NavigationPane" AutomationProperties.AutomationId="Extensions"
+                                    helpers:NavigationHelper.NavigateTo="DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xEA86;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>
             <NavigationView.HeaderTemplate>
                 <DataTemplate>
-                    <Grid>
+                    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                         <TextBlock
                             Text="{Binding}"
-                            Style="{ThemeResource TitleTextBlockStyle}" />
+                            Style="{ThemeResource SubtitleTextBlockStyle}" />
                     </Grid>
                 </DataTemplate>
             </NavigationView.HeaderTemplate>
@@ -85,10 +89,10 @@
                     DefaultHeader="{x:Bind ((ContentControl)ViewModel.Selected).Content, Mode=OneWay}">
                     <behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
                         <DataTemplate>
-                            <Grid>
+                            <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                                 <TextBlock
                                     Text="{Binding}"
-                                    Style="{ThemeResource TitleTextBlockStyle}" />
+                                    Style="{ThemeResource SubtitleTextBlockStyle}" />
                             </Grid>
                         </DataTemplate>
                     </behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
@@ -110,10 +114,20 @@
                     Message="{x:Bind ViewModel.ShellInfoBarModel.Description, Mode=TwoWay}" 
                     IsOpen="{x:Bind ViewModel.ShellInfoBarModel.IsOpen, Mode=TwoWay}" 
                     MaxWidth="{ThemeResource MaxPageContentWidth}" />
-                <Grid Grid.Row="1">
-                    <Frame x:Name="NavigationFrame" />
-                </Grid>
+                <Frame
+                    Grid.Row="1"
+                    x:Name="NavigationFrame"
+                    CornerRadius="{ThemeResource OverlayCornerRadius}" />
             </Grid>
         </NavigationView>
+
+        <!-- A "hidden" TextBlock read by the narrator on value change.
+             Setting the visibility to Collapsed prevents the screen reader
+             from reading the control value. -->
+        <TextBlock Width="0" Height="0" IsTabStop="False" Text="{x:Bind ViewModel.AnnouncementText, Mode=OneWay}">
+            <i:Interaction.Behaviors>
+                <behaviors:TextBlockAutomationBehavior RaiseLiveRegionChangedEvent="True" LiveSetting="Assertive" />
+            </i:Interaction.Behaviors>
+        </TextBlock>
     </Grid>
 </Page>

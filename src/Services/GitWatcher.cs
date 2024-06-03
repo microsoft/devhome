@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -10,7 +10,7 @@ namespace DevHome.Services;
 
 public class GitWatcher : IGitWatcher
 {
-    private static readonly Lazy<GitWatcher> LazyInstance = new (() => new ());
+    private static readonly Lazy<GitWatcher> LazyInstance = new(() => new());
 
     public static GitWatcher Instance => LazyInstance.Value;
 
@@ -22,20 +22,20 @@ public class GitWatcher : IGitWatcher
     private readonly Dictionary<string, FileSystemWatcher> existingRepoWatchers;
 
     // Used to protect two dictionaries above from simultaneous modification
-    private readonly object modificationLock = new ();
+    private readonly object modificationLock = new();
 
     // Checks for one of the following formats of drive roots (must be a full string match):
     // c:
     // D:\
     // \\?\X:
-    private static readonly Regex RootIsDrive = new (@"^(([a-z]:\\?)|(\\\\\?\\[a-z]:))$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex RootIsDrive = new(@"^(([a-z]:\\?)|(\\\\\?\\[a-z]:))$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     private GitWatcher()
     {
         // TODO: Add rehydration logic either here or in core app initialization code
         // https://github.com/microsoft/devhome/issues/618
-        newRepoWatchers = new ();
-        existingRepoWatchers = new ();
+        newRepoWatchers = new();
+        existingRepoWatchers = new();
     }
 
     public void AddTrackedRepositories(Collection<string> repositoryPaths)
@@ -88,7 +88,7 @@ public class GitWatcher : IGitWatcher
                 {
                     // TODO: handle WSL paths
                     // https://github.com/microsoft/devhome/issues/619
-                    FileSystemWatcher watcher = new (source)
+                    FileSystemWatcher watcher = new(source)
                     {
                         NotifyFilter = NotifyFilters.LastWrite
                         | NotifyFilters.CreationTime
@@ -128,7 +128,7 @@ public class GitWatcher : IGitWatcher
     {
         lock (modificationLock)
         {
-            FileSystemWatcher deletionWatcher = new (path + @"\.git")
+            FileSystemWatcher deletionWatcher = new(path + @"\.git")
             {
                 NotifyFilter = NotifyFilters.LastWrite
                     | NotifyFilters.CreationTime
@@ -209,7 +209,7 @@ public class GitFileWatcher : IGitFileWatcher
     private readonly GitWatcher owner;
 
     // Used to protect "watchers" from simultaneous modification
-    private readonly object modificationLock = new ();
+    private readonly object modificationLock = new();
 
     public bool IsOpen { get; private set; }
 
@@ -226,7 +226,7 @@ public class GitFileWatcher : IGitFileWatcher
         this.owner = owner;
         Filter = filePattern;
 
-        watchers = new ();
+        watchers = new();
 
         owner.GitRepositoryCreated += OnRepoCreated;
         owner.GitRepositoryDeleted += OnRepoDeleted;
@@ -236,7 +236,7 @@ public class GitFileWatcher : IGitFileWatcher
 
     private void CreateWatcher(string filePattern, string repository)
     {
-        FileSystemWatcher watcher = new (repository)
+        FileSystemWatcher watcher = new(repository)
         {
             NotifyFilter = NotifyFilters.LastWrite
                         | NotifyFilters.CreationTime
@@ -255,10 +255,9 @@ public class GitFileWatcher : IGitFileWatcher
         lock (modificationLock)
         {
             var key = repository.ToLower(CultureInfo.InvariantCulture);
-            if (!watchers.ContainsKey(key))
+            if (watchers.TryAdd(key, watcher))
             {
                 watcher.EnableRaisingEvents = true;
-                watchers.Add(key, watcher);
             }
         }
     }

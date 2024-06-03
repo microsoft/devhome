@@ -5,40 +5,42 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:commonviews="using:DevHome.Common.Views"
+    AutomationProperties.Name="{x:Bind Title}"
     mc:Ignorable="d">
-    <Grid Height="214">
+    <Grid x:Name="BannerGrid" Height="214">
         <Grid.Background>
             <ImageBrush Stretch="Fill" ImageSource="{x:Bind BackgroundSource, Mode=OneWay}" />
         </Grid.Background>
 
-        <!-- Set Min sizes so that image gets clipped as window narrows, rather than scaling down -->
-        <Image Stretch="Uniform" Source="{x:Bind OverlaySource, Mode=OneWay}" 
+        <!-- Background image -->
+        <!-- Set MinWidth so that image gets clipped as window narrows, rather than scaling down -->
+        <Image Height="{Binding ElementName=BannerGrid, Path=Height}"
+               Stretch="Uniform" Source="{x:Bind OverlaySource, Mode=OneWay}"
                AutomationProperties.AccessibilityView="Raw"
-               Margin="0 0 0 0" MinHeight="214" MinWidth="{ThemeResource MaxPageContentWidth}"
+               MinWidth="{ThemeResource MaxPageContentWidth}"
                FlowDirection="{x:Bind FlowDirection}" />
+
+        <!-- Content -->
+        <StackPanel x:Name="PanelTextContent" VerticalAlignment="Center" Margin="38 0 0 0" Spacing="12" SizeChanged="PanelTextContent_SizeChanged">
+            <TextBlock MaxWidth="{x:Bind TextWidth}"
+                       HorizontalAlignment="Left"
+                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                       Text="{x:Bind Title}"/>
+            <TextBlock MaxWidth="{x:Bind TextWidth}"
+                       HorizontalAlignment="Left"
+                       TextWrapping="Wrap"
+                       Text="{x:Bind Description}"/>
+            <Button Margin="0 15 0 0"
+                    Padding="25 4 25 6"
+                    MinWidth="120"
+                    Command="{x:Bind ButtonCommand}"
+                    Content="{x:Bind ButtonText}"/>
+        </StackPanel>
 
         <!-- Hide Banner Button -->
         <commonviews:CloseButton Margin="5"
                                  x:Uid="BannerHideButton"
                                  Command="{x:Bind HideButtonCommand}"
                                  Visibility="{x:Bind HideButtonVisibility}" />
-        <StackPanel VerticalAlignment="Center" Margin="38 0 0 0" Spacing="12">
-            <TextBlock
-                MaxWidth="{x:Bind TextWidth}"
-                HorizontalAlignment="Left"
-                Style="{ThemeResource SubtitleTextBlockStyle}"
-                Text="{x:Bind Title}"/>
-            <TextBlock
-                MaxWidth="{x:Bind TextWidth}"
-                HorizontalAlignment="Left"
-                TextWrapping="Wrap"
-                Text="{x:Bind Description}"/>
-            <Button
-                Margin="0 15 0 0"
-                Padding="25 4 25 6"
-                MinWidth="120"
-                Command="{x:Bind ButtonCommand}"
-                Content="{x:Bind ButtonText}"/>
-        </StackPanel>
     </Grid>
 </UserControl>

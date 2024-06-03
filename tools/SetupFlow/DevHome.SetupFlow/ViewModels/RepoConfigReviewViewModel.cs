@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -15,7 +15,7 @@ public partial class RepoConfigReviewViewModel : ReviewTabViewModelBase
     private readonly RepoConfigTaskGroup _repoTaskGroup;
 
     public ReadOnlyObservableCollection<CloneRepoTask> RepositoriesToClone =>
-        new (new ObservableCollection<CloneRepoTask>(_repoTaskGroup.CloneTasks));
+        new(new ObservableCollection<CloneRepoTask>(_repoTaskGroup.CloneTasks));
 
     public override bool HasItems => RepositoriesToClone.Any();
 

@@ -1,8 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using DevHome.SetupFlow.ViewModels;
+using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -30,6 +31,16 @@ public class ReviewTabViewSelector : DataTemplateSelector
         get; set;
     }
 
+    public DataTemplate SetupTargetTabTemplate
+    {
+        get; set;
+    }
+
+    public DataTemplate CreateEnvironmentTabTemplate
+    {
+        get; set;
+    }
+
     protected override DataTemplate SelectTemplateCore(object item)
     {
         return ResolveDataTemplate(item, () => base.SelectTemplateCore(item));
@@ -53,6 +64,8 @@ public class ReviewTabViewSelector : DataTemplateSelector
             DevDriveReviewViewModel => DevDriveTabTemplate,
             RepoConfigReviewViewModel => RepoConfigTabTemplate,
             AppManagementReviewViewModel => AppManagementTabTemplate,
+            SetupTargetReviewViewModel => SetupTargetTabTemplate,
+            CreateEnvironmentReviewViewModel => CreateEnvironmentTabTemplate,
             _ => defaultDataTemplate(),
         };
     }

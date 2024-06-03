@@ -10,7 +10,7 @@ param(
     [Parameter(HelpMessage="Path to makeappx.exe")]
     [ValidateScript({Test-Path $_ -Type Leaf})]
     [string]
-    $MakeAppxPath = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x86\MakeAppx.exe"
+    $MakeAppxPath = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\MakeAppx.exe"
 )
 
 function Unbundle-AppxBundle

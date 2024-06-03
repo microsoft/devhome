@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using Microsoft.UI.Xaml;
@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Controls;
 namespace DevHome.Common.Views;
 
 /// <summary>
-/// Custom control for a text block that contains an hyperlink in the text.
+/// Custom control for a text block that contains a hyperlink in the text.
 /// </summary>
 /// <remarks>
 /// The <see cref="Text"/> property must contain a substring enclosed in square

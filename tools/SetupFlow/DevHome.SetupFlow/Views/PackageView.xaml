@@ -4,7 +4,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
+    AutomationProperties.Name="{Binding PackageTitle}"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -13,7 +15,6 @@
             </ResourceDictionary.MergedDictionaries>
             <!-- Show `RevToggleKey` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
             <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE845;" FalseValue="&#xE710;" />
-            <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
             <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
 
             <!--  Show "Learn more" or "Installed"-->
@@ -31,7 +32,7 @@
     </UserControl.Resources>
 
     <!-- Package card -->
-    <ContentControl>
+    <ContentControl IsTabStop="False">
         <ContentControl.Template>
             <ControlTemplate>
                 <Grid Style="{ThemeResource CardGridSecondaryStyle}" Padding="12" RowSpacing="12">
@@ -44,11 +45,10 @@
                         <VisualStateGroup x:Name="CommonStates">
                             <VisualState>
                                 <VisualState.StateTriggers>
-                                    <StateTrigger IsActive="{Binding IsInstalled}" />
                                     <StateTrigger IsActive="{Binding IsSelected}" />
                                 </VisualState.StateTriggers>
                                 <VisualState.Setters>
-                                    <Setter Target="Image.Opacity" Value="0.4"/>
+                                    <Setter Target="Image.Opacity" Value="{ThemeResource AppManagementIconDisabledOpacity}"/>
                                     <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
                                     <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
                                 </VisualState.Setters>
@@ -57,22 +57,7 @@
                     </VisualStateManager.VisualStateGroups>
 
                     <ToolTipService.ToolTip>
-                        <StackPanel>
-                            <StackPanel.Resources>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
-                                </Style>
-                            </StackPanel.Resources>
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorPrimary}"
-                                FontWeight="Bold"
-                                Text="{Binding TooltipIsInstalled}"
-                                Visibility="{Binding TooltipIsInstalled, Converter={StaticResource StringVisibilityConverter}}"/>
-                            <TextBlock Text="{Binding TooltipName}"/>
-                            <TextBlock Text="{Binding TooltipVersion}"/>
-                            <TextBlock Text="{Binding TooltipSource}"/>
-                            <TextBlock Text="{Binding TooltipPublisher}"/>
-                        </StackPanel>
+                        <controls:PackageDetailsTooltip Package="{Binding}" />
                     </ToolTipService.ToolTip>
 
                     <!-- Package card header layout -->
@@ -88,9 +73,7 @@
                         <!-- Select button -->
                         <Button
                             Grid.Column="1"
-                            IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
-                            Background="Transparent"
-                            BorderThickness="0"
+                            AutomationProperties.Name="{Binding ButtonAutomationName}"
                             Command="{Binding ToggleSelectionCommand}"
                             HorizontalAlignment="Right"
                             Padding="5">
@@ -107,6 +90,7 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
 
                         <!-- Package title -->
@@ -117,18 +101,33 @@
                             Style="{ThemeResource BodyTextBlockStyle}"
                             Text="{Binding PackageTitle}"/>
 
+                        <!-- Package version list -->
+                        <ComboBox
+                            Grid.Row="1"
+                            Visibility="{Binding ShowVersionList}"
+                            BorderThickness="0"
+                            FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            HorizontalAlignment="Left"
+                            IsTextSearchEnabled="True"
+                            Background="Transparent"
+                            Padding="0"
+                            SelectedItem="{Binding SelectedVersion, Mode=TwoWay}"
+                            ItemsSource="{Binding AvailableVersions}"/>
+
                         <!-- Package Version -->
                         <TextBlock
                             Name="Version"
-                            Grid.Row="1"
+                            Grid.Row="2"
                             MaxLines="1"
                             TextTrimming="CharacterEllipsis"
                             Style="{ThemeResource CaptionTextBlockStyle}"
-                            Text="{Binding PackageDescription}"/>
+                            Text="{Binding PackageShortDescription}"/>
 
                         <!-- Package link / "Installed" -->
                         <ContentControl
-                            Grid.Row="2"
+                            IsTabStop="False"
+                            Grid.Row="3"
                             Content="{Binding IsInstalled, Converter={StaticResource LearnMoreInstalledConverter}}" />
                     </Grid>
                 </Grid>

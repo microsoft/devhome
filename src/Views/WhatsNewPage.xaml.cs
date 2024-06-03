@@ -1,31 +1,28 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using System;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
-using DevHome.Dashboard.ViewModels;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Models;
-using DevHome.Services;
-using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.DevHome.SDK;
 using Windows.System;
 
 namespace DevHome.Views;
 
 public sealed partial class WhatsNewPage : Page
 {
-    private readonly Uri _devDrivePageKeyUri = new ("ms-settings:disksandvolumes");
-    private readonly Uri _devDriveLearnMoreLinkUri = new ("https://go.microsoft.com/fwlink/?linkid=2236041");
+    private readonly Uri _devDrivePageKeyUri = new("ms-settings:disksandvolumes");
+    private readonly Uri _devDriveLearnMoreLinkUri = new("https://go.microsoft.com/fwlink/?linkid=2236041");
     private const string _devDriveLinkResourceKey = "WhatsNewPage_DevDriveCard/Link";
+    private const string _accountsPageNavigationLink = "DevHome.Settings.ViewModels.AccountsViewModel";
 
     public WhatsNewViewModel ViewModel
     {
@@ -63,9 +60,32 @@ public sealed partial class WhatsNewPage : Page
                     card.ShouldShowLink = false;
                 }
             }
+            else
+            {
+                card.ShouldShowIcon = false;
+            }
 
             ViewModel.AddCard(card);
         }
+
+        var whatsNewBigCards = BigFeaturesContainer.Resources
+            .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
+            .Select(card => card.Value as WhatsNewCard)
+            .OrderBy(card => card?.Priority ?? 0);
+
+        foreach (var card in whatsNewBigCards)
+        {
+            if (card is null)
+            {
+                continue;
+            }
+
+            ViewModel.AddBigCard(card);
+        }
+
+        ViewModel.NumberOfBigCards = whatsNewBigCards.Count();
+
+        MoveBigCardsIfNeeded(this.ActualWidth);
     }
 
     private void MachineConfigButton_Click(object sender, RoutedEventArgs e)
@@ -96,8 +116,36 @@ public sealed partial class WhatsNewPage : Page
         }
         else
         {
+            if (pageKey.Equals(_accountsPageNavigationLink, StringComparison.OrdinalIgnoreCase))
+            {
+                TelemetryFactory.Get<ITelemetry>().Log(
+                                                        "EntryPoint_DevId_Event",
+                                                        LogLevel.Critical,
+                                                        new EntryPointEvent(EntryPointEvent.EntryPoint.WhatsNewPage));
+            }
+
             var navigationService = Application.Current.GetService<INavigationService>();
             navigationService.NavigateTo(pageKey!);
+        }
+    }
+
+    public void OnSizeChanged(object sender, SizeChangedEventArgs args)
+    {
+        if ((Page)sender == this)
+        {
+            MoveBigCardsIfNeeded(args.NewSize.Width);
+        }
+    }
+
+    private void MoveBigCardsIfNeeded(double newWidth)
+    {
+        if (newWidth < 786)
+        {
+            ViewModel.SwitchToSmallerView();
+        }
+        else
+        {
+            ViewModel.SwitchToLargerView();
         }
     }
 

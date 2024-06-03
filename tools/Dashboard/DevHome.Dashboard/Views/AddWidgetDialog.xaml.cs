@@ -1,12 +1,16 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Contracts.Services;
+using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -16,69 +20,89 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Widgets.Hosts;
-using WinUIEx;
+using Serilog;
 
 namespace DevHome.Dashboard.Views;
+
 public sealed partial class AddWidgetDialog : ContentDialog
 {
-    private readonly WidgetHost _widgetHost;
-    private readonly WidgetCatalog _widgetCatalog;
-    private Widget _currentWidget;
-    private static DispatcherQueue _dispatcher;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AddWidgetDialog));
 
-    public Widget AddedWidget { get; set; }
+    private ComSafeWidgetDefinition _selectedWidget;
 
-    public WidgetViewModel ViewModel { get; set; }
+    public ComSafeWidgetDefinition AddedWidget { get; private set; }
 
-    public AddWidgetDialog(
-        WidgetHost host,
-        WidgetCatalog catalog,
-        AdaptiveCardRenderer renderer,
-        DispatcherQueue dispatcher,
-        ElementTheme theme)
+    public AddWidgetViewModel ViewModel { get; set; }
+
+    private readonly IWidgetHostingService _hostingService;
+    private readonly IWidgetIconService _widgetIconService;
+    private readonly DispatcherQueue _dispatcherQueue;
+
+    public AddWidgetDialog()
     {
-        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, renderer, dispatcher);
+        ViewModel = Application.Current.GetService<AddWidgetViewModel>();
+        _hostingService = Application.Current.GetService<IWidgetHostingService>();
+        _widgetIconService = Application.Current.GetService<IWidgetIconService>();
+
         this.InitializeComponent();
 
-        _widgetHost = host;
-        _widgetCatalog = catalog;
-        _dispatcher = dispatcher;
+        _dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
 
-        // Strange behavior: just setting the requested theme when we new-up the dialog results in
-        // the wrong theme's resources being used. Setting RequestedTheme here fixes the problem.
-        RequestedTheme = theme;
+        RequestedTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
+    }
 
-        // Get the application root window so we know when it has closed.
-        Application.Current.GetService<WindowEx>().Closed += OnMainWindowClosed;
+    [RelayCommand]
+    public async Task OnLoadedAsync()
+    {
+        try
+        {
+            var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+            widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        }
+        catch (Exception ex)
+        {
+            // If there was an error getting the widget catalog, log it and continue.
+            // If a WidgetDefinition is deleted while the dialog is open, we won't know to remove it from
+            // the list automatically, but we can show a helpful error message if the user tries to pin it.
+            // https://github.com/microsoft/devhome/issues/2623
+            _log.Error(ex, "Exception in AddWidgetDialog.OnLoadedAsync:");
+        }
 
-        _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
-
-        FillAvailableWidgets();
+        await FillAvailableWidgetsAsync();
         SelectFirstWidgetByDefault();
     }
 
-    private void FillAvailableWidgets()
+    private async Task FillAvailableWidgetsAsync()
     {
         AddWidgetNavigationView.MenuItems.Clear();
 
-        if (_widgetCatalog is null)
-        {
-            // We should never have gotten here if we don't have a WidgetCatalog.
-            Log.Logger()?.ReportError("AddWidgetDialog", $"Opened the AddWidgetDialog, but WidgetCatalog is null.");
-            return;
-        }
+        // Show the providers and widgets underneath them in alphabetical order.
+        var providerDefinitions = (await _hostingService.GetProviderDefinitionsAsync()).OrderBy(x => x.DisplayName);
+        var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(_hostingService);
 
-        var providerDefs = _widgetCatalog.GetProviderDefinitions();
-        var widgetDefs = _widgetCatalog.GetWidgetDefinitions();
-
-        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefs.Length} providers and {widgetDefs.Length} widgets");
+        _log.Information($"Filling available widget list, found {providerDefinitions.Count()} providers and {comSafeWidgetDefinitions.Count} widgets");
 
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
-        foreach (var providerDef in providerDefs)
+        var unsafeCurrentlyPinnedWidgets = await _hostingService.GetWidgetsAsync();
+        var comSafeCurrentlyPinnedWidgets = new List<ComSafeWidget>();
+        foreach (var unsafeWidget in unsafeCurrentlyPinnedWidgets)
         {
-            if (WidgetHelpers.IsIncludedWidgetProvider(providerDef))
+            var id = await ComSafeWidget.GetIdFromUnsafeWidgetAsync(unsafeWidget);
+            if (!string.IsNullOrEmpty(id))
+            {
+                var comSafeWidget = new ComSafeWidget(id);
+                if (await comSafeWidget.PopulateAsync())
+                {
+                    comSafeCurrentlyPinnedWidgets.Add(comSafeWidget);
+                }
+            }
+        }
+
+        foreach (var providerDef in providerDefinitions)
+        {
+            if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
             {
                 var navItem = new NavigationViewItem
                 {
@@ -87,12 +111,14 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     Content = providerDef.DisplayName,
                 };
 
-                foreach (var widgetDef in widgetDefs)
+                navItem.SetValue(ToolTipService.ToolTipProperty, providerDef.DisplayName);
+
+                foreach (var widgetDef in comSafeWidgetDefinitions)
                 {
-                    if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
+                    if (widgetDef.ProviderDefinitionId.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
-                        var subItemContent = BuildWidgetNavItem(widgetDef);
-                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef);
+                        var subItemContent = await BuildWidgetNavItem(widgetDef);
+                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, [.. comSafeCurrentlyPinnedWidgets]);
                         var subItem = new NavigationViewItem
                         {
                             Tag = widgetDef,
@@ -101,6 +127,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                         };
                         subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
                         subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
+                        subItem.SetValue(ToolTipService.ToolTipProperty, widgetDef.DisplayTitle);
 
                         navItem.MenuItems.Add(subItem);
                     }
@@ -113,16 +140,17 @@ public sealed partial class AddWidgetDialog : ContentDialog
             }
         }
 
-        // If there were no available widgets, show a message.
+        // If there were no available widgets, log an error.
+        // This should never happen since Dev Home's core widgets are always available.
         if (!AddWidgetNavigationView.MenuItems.Any())
         {
-            ViewModel.ShowErrorCard("WidgetErrorCardNoWidgetsText");
+            _log.Error($"FillAvailableWidgetsAsync found no available widgets.");
         }
     }
 
-    private StackPanel BuildWidgetNavItem(WidgetDefinition widgetDefinition)
+    private async Task<StackPanel> BuildWidgetNavItem(ComSafeWidgetDefinition widgetDefinition)
     {
-        var image = WidgetIconCache.GetWidgetIconForTheme(widgetDefinition, ActualTheme);
+        var image = await _widgetIconService.GetIconFromCacheAsync(widgetDefinition, ActualTheme);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
     }
 
@@ -159,12 +187,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
         return itemContent;
     }
 
-    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef)
+    private bool IsSingleInstanceAndAlreadyPinned(ComSafeWidgetDefinition widgetDef, ComSafeWidget[] currentlyPinnedWidgets)
     {
         // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
         if (!widgetDef.AllowMultiple)
         {
-            var currentlyPinnedWidgets = _widgetHost.GetWidgets();
             if (currentlyPinnedWidgets != null)
             {
                 foreach (var pinnedWidget in currentlyPinnedWidgets)
@@ -197,126 +224,111 @@ public sealed partial class AddWidgetDialog : ContentDialog
         NavigationView sender,
         NavigationViewSelectionChangedEventArgs args)
     {
-        // Delete previously shown configuration widget.
-        // Clearing the UI here results in a flash, so don't bother. It will update soon.
-        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Widget selection changed, delete widget if one exists");
-        var clearWidgetTask = ClearCurrentWidget();
-
-        // Selected item could be null if list of widgets became empty.
+        // Selected item could be null if list of widgets became empty, but list should never be empty
+        // since core widgets are always available.
         if (sender.SelectedItem is null)
         {
+            ViewModel.Clear();
             return;
         }
 
-        // Load selected widget configuration.
+        // Get selected widget definition.
         var selectedTag = (sender.SelectedItem as NavigationViewItem).Tag;
         if (selectedTag is null)
         {
-            Log.Logger()?.ReportError("AddWidgetDialog", $"Selected widget description did not have a tag");
+            _log.Error($"Selected widget description did not have a tag");
+            ViewModel.Clear();
             return;
         }
 
-        // If the user has selected a widget, show configuration UI. If they selected a provider, leave space blank.
-        if (selectedTag as WidgetDefinition is WidgetDefinition selectedWidgetDefinition)
+        // If the user has selected a widget, show preview. If they selected a provider, leave space blank.
+        if (selectedTag as ComSafeWidgetDefinition is ComSafeWidgetDefinition selectedWidgetDefinition)
         {
-            var size = WidgetHelpers.GetLargestCapabilitySize(selectedWidgetDefinition.GetWidgetCapabilities());
-
-            // Create the widget for configuration. We will need to delete it if the user closes the dialog
-            // without pinning, or selects a different widget.
-            var widget = await _widgetHost.CreateWidgetAsync(selectedWidgetDefinition.Id, size);
-            if (widget is not null)
-            {
-                Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
-
-                ViewModel.Widget = widget;
-                ViewModel.IsInAddMode = true;
-                PinButton.Visibility = Visibility.Visible;
-
-                clearWidgetTask.Wait();
-            }
-            else
-            {
-                Log.Logger()?.ReportWarn("AddWidgetDialog", $"Widget creation failed.");
-                ViewModel.ShowErrorCard("WidgetErrorCardCreate1Text", "WidgetErrorCardCreate2Text");
-            }
-
-            _currentWidget = widget;
+            _selectedWidget = selectedWidgetDefinition;
+            await ViewModel.SetWidgetDefinition(selectedWidgetDefinition);
         }
         else if (selectedTag as WidgetProviderDefinition is not null)
         {
-            // Null out the view model background so we don't bind to the old one.
-            ViewModel.WidgetBackground = null;
-            ConfigurationContentFrame.Content = null;
-            PinButton.Visibility = Visibility.Collapsed;
+            ViewModel.Clear();
         }
     }
 
-    private void PinButton_Click(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    private async Task UpdateThemeAsync()
     {
-        AddedWidget = _currentWidget;
-
-        HideDialog();
+        // Update the icons for each available widget listed.
+        foreach (var providerItem in AddWidgetNavigationView.MenuItems.OfType<NavigationViewItem>())
+        {
+            foreach (var widgetItem in providerItem.MenuItems.OfType<NavigationViewItem>())
+            {
+                if (widgetItem.Tag is ComSafeWidgetDefinition widgetDefinition)
+                {
+                    var image = await _widgetIconService.GetIconFromCacheAsync(widgetDefinition, ActualTheme);
+                    widgetItem.Content = BuildNavItem(image, widgetDefinition.DisplayTitle);
+                }
+            }
+        }
     }
 
-    private async void CancelButton_Click(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    private void PinButtonClick()
     {
-        // Delete previously shown configuration card.
-        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Canceled dialog, delete widget");
-        await ClearCurrentWidget();
+        _log.Debug($"Pin selected");
+        AddedWidget = _selectedWidget;
 
-        HideDialog();
+        HideDialogAsync();
     }
 
-    private void HideDialog()
+    [RelayCommand]
+    private void CancelButtonClick()
     {
-        _currentWidget = null;
+        _log.Debug($"Canceled dialog");
+        AddedWidget = null;
+
+        HideDialogAsync();
+    }
+
+    private async void HideDialogAsync()
+    {
+        _selectedWidget = null;
         ViewModel = null;
 
-        Application.Current.GetService<WindowEx>().Closed -= OnMainWindowClosed;
-        _widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        try
+        {
+            var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+            widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        }
+        catch (Exception ex)
+        {
+            // If there was an error getting the widget catalog, log it and continue.
+            _log.Error(ex, "Exception in HideDialogAsync:");
+        }
 
         this.Hide();
-    }
-
-    private async void OnMainWindowClosed(object sender, WindowEventArgs args)
-    {
-        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Window Closed, delete partially created widget");
-        await ClearCurrentWidget();
-    }
-
-    private async Task ClearCurrentWidget()
-    {
-        if (_currentWidget != null)
-        {
-            var widgetIdToDelete = _currentWidget.Id;
-            await _currentWidget.DeleteAsync();
-            Log.Logger()?.ReportInfo("AddWidgetDialog", $"Deleted Widget {widgetIdToDelete}");
-            _currentWidget = null;
-        }
     }
 
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
         var deletedDefinitionId = args.DefinitionId;
 
-        _dispatcher.TryEnqueue(() =>
+        _dispatcherQueue.TryEnqueue(() =>
         {
-            // If we currently have the deleted widget open, show an error message instead.
-            if (_currentWidget is not null &&
-                _currentWidget.DefinitionId.Equals(deletedDefinitionId, StringComparison.Ordinal))
+            // If we currently have the deleted widget open, un-select it.
+            if (_selectedWidget is not null &&
+                _selectedWidget.Id.Equals(deletedDefinitionId, StringComparison.Ordinal))
             {
-                Log.Logger()?.ReportInfo("AddWidgetDialog", $"Widget definition deleted while creating that widget.");
-                ViewModel.ShowErrorCard("WidgetErrorCardCreate1Text", "WidgetErrorCardCreate2Text");
+                _log.Information($"Widget definition deleted while selected.");
+                ViewModel.Clear();
                 AddWidgetNavigationView.SelectedItem = null;
             }
 
             // Remove the deleted WidgetDefinition from the list of available widgets.
             var menuItems = AddWidgetNavigationView.MenuItems;
-            foreach (var providerItem in menuItems.Cast<NavigationViewItem>())
+            foreach (var providerItem in menuItems.OfType<NavigationViewItem>())
             {
-                foreach (var widgetItem in providerItem.MenuItems.Cast<NavigationViewItem>())
+                foreach (var widgetItem in providerItem.MenuItems.OfType<NavigationViewItem>())
                 {
-                    if (widgetItem.Tag is WidgetDefinition tagDefinition)
+                    if (widgetItem.Tag is ComSafeWidgetDefinition tagDefinition)
                     {
                         if (tagDefinition.Id.Equals(deletedDefinitionId, StringComparison.Ordinal))
                         {
@@ -327,12 +339,15 @@ public sealed partial class AddWidgetDialog : ContentDialog
                             {
                                 menuItems.Remove(providerItem);
 
-                                // If we've removed all providers from the list, show a message.
+                                // If we've removed all providers from the list, log an error.
+                                // This should never happen since Dev Home's core widgets are always available.
                                 if (!menuItems.Any())
                                 {
-                                    ViewModel.ShowErrorCard("WidgetErrorCardNoWidgetsText");
+                                    _log.Error($"WidgetCatalog_WidgetDefinitionDeleted found no available widgets.");
                                 }
                             }
+
+                            return;
                         }
                     }
                 }
@@ -342,11 +357,34 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private void ContentDialog_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        const int ContentDialogMaxHeight = 684;
+        var contentDialogMaxHeight = (double)Resources["ContentDialogMaxHeight"];
+        const int SmallThreshold = 324;
+        const int MediumThreshold = 360;
 
-        AddWidgetNavigationView.Height = Math.Min(this.ActualHeight, ContentDialogMaxHeight) - AddWidgetTitleBar.ActualHeight;
+        var smallPinButtonMargin = (Thickness)Resources["SmallPinButtonMargin"];
+        var largePinButtonMargin = (Thickness)Resources["LargePinButtonMargin"];
+        var smallWidgetPreviewTopMargin = (Thickness)Resources["SmallWidgetPreviewTopMargin"];
+        var largeWidgetPreviewTopMargin = (Thickness)Resources["LargeWidgetPreviewTopMargin"];
 
-        // Subtract 45 for the margin around ConfigurationContentFrame.
-        ConfigurationContentViewer.Height = AddWidgetNavigationView.Height - PinRow.ActualHeight - 45;
+        AddWidgetNavigationView.Height = Math.Min(this.ActualHeight, contentDialogMaxHeight) - AddWidgetTitleBar.ActualHeight;
+
+        var previewHeightAvailable = AddWidgetNavigationView.Height - TitleRow.ActualHeight - PinRow.ActualHeight;
+
+        // Adjust margins when the height gets too small to show everything.
+        if (previewHeightAvailable < SmallThreshold)
+        {
+            PreviewRow.Padding = smallWidgetPreviewTopMargin;
+            PinButton.Margin = smallPinButtonMargin;
+        }
+        else if (previewHeightAvailable < MediumThreshold)
+        {
+            PreviewRow.Padding = smallWidgetPreviewTopMargin;
+            PinButton.Margin = largePinButtonMargin;
+        }
+        else
+        {
+            PreviewRow.Padding = largeWidgetPreviewTopMargin;
+            PinButton.Margin = largePinButtonMargin;
+        }
     }
 }

@@ -5,95 +5,95 @@
     "DescriptionResourceKey": "PopularAppsDescription",
     "WinGetPackages": [
       {
-        "Id": "Microsoft.VisualStudio.2022.Community",
+        "Uri": "x-ms-winget://winget/Microsoft.VisualStudio.2022.Community",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.VisualStudio.2022.Community.ico"
       },
       {
-        "Id": "Microsoft.VisualStudioCode",
+        "Uri": "x-ms-winget://winget/Microsoft.VisualStudioCode",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.VisualStudioCode.ico"
       },
       {
-        "Id": "Microsoft.PowerShell",
+        "Uri": "x-ms-winget://winget/Microsoft.PowerShell",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.PowerShell.ico"
       },
       {
-        "Id": "Git.Git",
+        "Uri": "x-ms-winget://winget/Git.Git",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Git.Git.ico"
       },
       {
-        "Id": "Notepad++.Notepad++",
+        "Uri": "x-ms-winget://winget/Notepad++.Notepad++",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Notepad++.Notepad++.ico"
       },
       {
-        "Id": "Microsoft.SQLServerManagementStudio",
+        "Uri": "x-ms-winget://winget/Microsoft.SQLServerManagementStudio",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.SQLServerManagementStudio.ico"
       },
       {
-        "Id": "Microsoft.PowerToys",
+        "Uri": "x-ms-winget://winget/Microsoft.PowerToys",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.PowerToys.ico"
       },
       {
-        "Id": "7zip.7zip",
+        "Uri": "x-ms-winget://winget/7zip.7zip",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/7zip.7zip.ico"
       },
       {
-        "Id": "Google.AndroidStudio",
+        "Uri": "x-ms-winget://winget/Google.AndroidStudio",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Google.AndroidStudio.ico"
       },
       {
-        "Id": "JetBrains.IntelliJIDEA.Community",
+        "Uri": "x-ms-winget://winget/JetBrains.IntelliJIDEA.Community",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/JetBrains.IntelliJIDEA.Community.ico"
       },
       {
-        "Id": "JetBrains.PyCharm.Community",
+        "Uri": "x-ms-winget://winget/JetBrains.PyCharm.Community",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/JetBrains.PyCharm.Community.ico"
       },
       {
-        "Id": "Python.Python.3.11",
+        "Uri": "x-ms-winget://winget/Python.Python.3.11",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Python.Python.3.11.ico"
       },
       {
-        "Id": "Microsoft.DotNet.SDK.7",
+        "Uri": "x-ms-winget://winget/Microsoft.DotNet.SDK.7",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.DotNet.SDK.7.ico"
       },
       {
-        "Id": "Docker.DockerDesktop",
+        "Uri": "x-ms-winget://winget/Docker.DockerDesktop",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Docker.DockerDesktop.ico"
       },
       {
-        "Id": "PuTTY.PuTTY",
+        "Uri": "x-ms-winget://winget/PuTTY.PuTTY",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/PuTTY.PuTTY.ico"
       },
       {
-        "Id": "Unity.Unity.2022",
+        "Uri": "x-ms-winget://winget/Unity.Unity.2022",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Unity.Unity.2022.ico"
       },
       {
-        "Id": "Orwell.Dev-C++",
+        "Uri": "x-ms-winget://winget/Orwell.Dev-C++",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Orwell.Dev-C++.ico"
       },
       {
-        "Id": "Codeblocks.Codeblocks",
+        "Uri": "x-ms-winget://winget/Codeblocks.Codeblocks",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Codeblocks.Codeblocks.ico"
       },
       {
-        "Id": "SublimeHQ.SublimeText.4",
+        "Uri": "x-ms-winget://winget/SublimeHQ.SublimeText.4",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/SublimeHQ.SublimeText.4.ico"
       },
       {
-        "Id": "vim.vim",
+        "Uri": "x-ms-winget://winget/vim.vim",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/vim.vim.ico"
       },
       {
-        "Id": "Postman.Postman",
+        "Uri": "x-ms-winget://winget/Postman.Postman",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Postman.Postman.ico"
       },
       {
-        "Id": "GitHub.GitHubDesktop",
+        "Uri": "x-ms-winget://winget/GitHub.GitHubDesktop",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/GitHub.GitHubDesktop.ico"
       },
       {
-        "Id": "OpenJS.NodeJS",
+        "Uri": "x-ms-winget://winget/OpenJS.NodeJS",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/OpenJS.NodeJS.ico"
       }
     ]

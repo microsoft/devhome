@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Exceptions;
@@ -20,10 +20,11 @@ public class WinGetPackageJsonDataSourceTest : BaseSetupFlowTest
         // Prepare expected package
         var expectedPackages = new List<IWinGetPackage>
         {
-            PackageHelper.CreatePackage("mock1").Object,
-            PackageHelper.CreatePackage("mock2").Object,
+            PackageHelper.CreatePackage("mock1", "winget").Object,
+            PackageHelper.CreatePackage("mock2", "winget").Object,
         };
-        ConfigureWinGetCatalogPackages(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<WinGetPackageUri>>())).ReturnsAsync(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.CreatePackageUri(It.IsAny<IWinGetPackage>())).Returns<IWinGetPackage>(p => new WinGetPackageUri(p.CatalogName, p.Id));
 
         // Act
         var loadedPackages = LoadCatalogsFromJsonDataSource("AppManagementPackages_Success.json");
@@ -35,36 +36,8 @@ public class WinGetPackageJsonDataSourceTest : BaseSetupFlowTest
         Assert.AreEqual(expectedPackages.Count, loadedPackages[0].Packages.Count);
         Assert.AreEqual(expectedPackages[0].Id, loadedPackages[0].Packages.ElementAt(0).Id);
         Assert.AreEqual(expectedPackages[1].Id, loadedPackages[0].Packages.ElementAt(1).Id);
-    }
-
-    [TestMethod]
-    public void LoadCatalogs_OrderedPackages_ReturnsWinGetCatalogsWithMatchingInputOrder()
-    {
-        // Prepare expected package
-        var expectedPackages = new List<IWinGetPackage>
-        {
-            PackageHelper.CreatePackage("mock1").Object,
-            PackageHelper.CreatePackage("mock2").Object,
-        };
-        ConfigureWinGetCatalogPackages(expectedPackages);
-
-        // Act
-        var loadedPackages = LoadCatalogsFromJsonDataSource("AppManagementPackages_Order.json");
-
-        // Assert
-        Assert.AreEqual(2, loadedPackages.Count);
-
-        Assert.AreEqual("mockTitle_1", loadedPackages[0].Name);
-        Assert.AreEqual("mockDescription_1", loadedPackages[0].Description);
-        Assert.AreEqual(expectedPackages.Count, loadedPackages[0].Packages.Count);
-        Assert.AreEqual(expectedPackages[0].Id, loadedPackages[0].Packages.ElementAt(0).Id);
-        Assert.AreEqual(expectedPackages[1].Id, loadedPackages[0].Packages.ElementAt(1).Id);
-
-        Assert.AreEqual("mockTitle_2", loadedPackages[1].Name);
-        Assert.AreEqual("mockDescription_2", loadedPackages[1].Description);
-        Assert.AreEqual(expectedPackages.Count, loadedPackages[1].Packages.Count);
-        Assert.AreEqual(expectedPackages[1].Id, loadedPackages[1].Packages.ElementAt(0).Id);
-        Assert.AreEqual(expectedPackages[0].Id, loadedPackages[1].Packages.ElementAt(1).Id);
+        Assert.AreEqual(expectedPackages[0].CatalogName, loadedPackages[0].Packages.ElementAt(0).CatalogName);
+        Assert.AreEqual(expectedPackages[1].CatalogName, loadedPackages[0].Packages.ElementAt(1).CatalogName);
     }
 
     [TestMethod]
@@ -72,23 +45,21 @@ public class WinGetPackageJsonDataSourceTest : BaseSetupFlowTest
     {
         // Prepare expected package
         var expectedPackages = new List<IWinGetPackage>();
-        var catalog = ConfigureWinGetCatalogPackages(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<WinGetPackageUri>>())).ReturnsAsync(expectedPackages);
 
         // Act
         var loadedPackages = LoadCatalogsFromJsonDataSource("AppManagementPackages_Empty.json");
 
         // Assert
         Assert.AreEqual(0, loadedPackages.Count);
-        catalog.Verify(c => c.GetPackagesAsync(It.IsAny<HashSet<string>>()), Times.Never());
+        WindowsPackageManager.Verify(c => c.GetPackagesAsync(It.IsAny<IList<WinGetPackageUri>>()), Times.Never());
     }
 
     [TestMethod]
     public void LoadCatalogs_ExceptionThrownWhenGettingPackages_ReturnsNoCatalogs()
     {
-        // Configure winget catalog
-        var catalogs = new Mock<IWinGetCatalog>();
-        catalogs.Setup(c => c.GetPackagesAsync(It.IsAny<HashSet<string>>())).ThrowsAsync(new FindPackagesException(FindPackagesResultStatus.CatalogError));
-        WindowsPackageManager!.Setup(wpm => wpm.WinGetCatalog).Returns(catalogs.Object);
+        // Configure package manager
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<WinGetPackageUri>>())).ThrowsAsync(new FindPackagesException(FindPackagesResultStatus.CatalogError));
 
         // Act
         var loadedPackages = LoadCatalogsFromJsonDataSource("AppManagementPackages_Success.json");
@@ -102,7 +73,7 @@ public class WinGetPackageJsonDataSourceTest : BaseSetupFlowTest
     {
         // Prepare expected package
         var expectedPackages = new List<IWinGetPackage>();
-        ConfigureWinGetCatalogPackages(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<IList<WinGetPackageUri>>())).ReturnsAsync(expectedPackages);
 
         // Act/Assert
         var fileName = TestHelpers.GetTestFilePath("file_not_found");
@@ -110,19 +81,6 @@ public class WinGetPackageJsonDataSourceTest : BaseSetupFlowTest
         Assert.ThrowsException<FileNotFoundException>(() => jsonDataSource.InitializeAsync().GetAwaiter().GetResult());
         Assert.AreEqual(0, jsonDataSource.CatalogCount);
         Assert.AreEqual(0, jsonDataSource.LoadCatalogsAsync().GetAwaiter().GetResult().Count);
-    }
-
-    /// <summary>
-    /// Configure winget catalog packages
-    /// </summary>
-    /// <param name="expectedPackages">Expected packages</param>
-    /// <returns>Mock winget catalog</returns>
-    private Mock<IWinGetCatalog> ConfigureWinGetCatalogPackages(IList<IWinGetPackage> expectedPackages)
-    {
-        var catalog = new Mock<IWinGetCatalog>();
-        catalog.Setup(c => c.GetPackagesAsync(It.IsAny<HashSet<string>>())).ReturnsAsync(expectedPackages);
-        WindowsPackageManager!.Setup(wpm => wpm.WinGetCatalog).Returns(catalog.Object);
-        return catalog;
     }
 
     /// <summary>

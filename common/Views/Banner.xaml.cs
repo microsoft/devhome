@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System.Windows.Input;
@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Common.Views;
+
 public sealed partial class Banner : UserControl
 {
     /// <summary>
@@ -106,7 +107,7 @@ public sealed partial class Banner : UserControl
     /// </summary>
     /// <remarks>
     /// Use this control to put a banner at the top of your Dev Home page. It can optionally be dismissed and not shown
-    /// again on subsequent app launches.
+    /// again on subsequent launches.
     /// </remarks>
     public Banner()
     {
@@ -122,4 +123,13 @@ public sealed partial class Banner : UserControl
     public static readonly DependencyProperty ButtonCommandProperty = DependencyProperty.Register(nameof(ButtonCommand), typeof(ICommand), typeof(Banner), new PropertyMetadata(null));
     public static readonly DependencyProperty HideButtonVisibilityProperty = DependencyProperty.Register(nameof(HideButtonVisibility), typeof(bool), typeof(Banner), new PropertyMetadata(true));
     public static readonly DependencyProperty HideButtonCommandProperty = DependencyProperty.Register(nameof(HideButtonCommand), typeof(ICommand), typeof(Banner), new PropertyMetadata(null));
+
+    // If the text and button don't fit in the default height of banner, stretch the banner vertically.
+    // Set height this way rather than setting MinHeight on the banner, since the banner image assets
+    // are taller than the default height and would stretch the banner regardless of the text.
+    private void PanelTextContent_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        var defaultBannerHeight = 214;
+        BannerGrid.Height = (e.NewSize.Height <= defaultBannerHeight) ? defaultBannerHeight : e.NewSize.Height;
+    }
 }

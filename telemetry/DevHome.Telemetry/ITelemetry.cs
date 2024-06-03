@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 
@@ -43,12 +43,12 @@ public interface ITelemetry
     public void LogTimeTaken(string eventName, uint timeTakenMilliseconds, Guid? relatedActivityId = null);
 
     /// <summary>
-    /// Log an informal event with no additional data.
+    /// Log an event with no additional data.
     /// </summary>
     /// <param name="eventName">The name of the event to log</param>
     /// <param name="isError">Set to true if an error condition raised this event.</param>
     /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
-    public void LogMeasure(string eventName, bool isError = false, Guid? relatedActivityId = null);
+    public void LogCritical(string eventName, bool isError = false, Guid? relatedActivityId = null);
 
     /// <summary>
     /// Log an informational event. Typically used for just a single event that's only called one place in the code.

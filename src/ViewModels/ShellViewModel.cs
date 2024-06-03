@@ -1,54 +1,69 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Contracts;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.Windows.AppLifecycle;
 
 namespace DevHome.ViewModels;
 
 public partial class ShellViewModel : ObservableObject
 {
     private readonly ILocalSettingsService _localSettingsService;
+    private readonly IAppInfoService _appInfoService;
+    private readonly IThemeSelectorService _themeSelectorService;
 
-    public INavigationService NavigationService
-    {
-        get;
-    }
+    [ObservableProperty]
+    private string? _announcementText;
 
-    public INavigationViewService NavigationViewService
-    {
-        get;
-    }
+    public string Title => _appInfoService.GetAppNameLocalized();
+
+    public INavigationService NavigationService { get; }
+
+    public INavigationViewService NavigationViewService { get; }
 
     [ObservableProperty]
     private object? _selected;
 
     [ObservableProperty]
-    private InfoBarModel _shellInfoBarModel = new ();
+    private InfoBarModel _shellInfoBarModel = new();
 
-    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, ILocalSettingsService localSettingsService)
+    public ShellViewModel(
+        INavigationService navigationService,
+        INavigationViewService navigationViewService,
+        ILocalSettingsService localSettingsService,
+        IScreenReaderService screenReaderService,
+        IAppInfoService appInfoService,
+        IThemeSelectorService themeSelectorService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
         _localSettingsService = localSettingsService;
+        _appInfoService = appInfoService;
+        _themeSelectorService = themeSelectorService;
+
+        screenReaderService.AnnouncementTextChanged += OnAnnouncementTextChanged;
     }
 
     public async Task OnLoaded()
     {
-        if (await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun))
+        switch (AppInstance.GetCurrent().GetActivatedEventArgs().Kind)
         {
-            NavigationService.NavigateTo(NavigationService.DefaultPage);
-        }
-        else
-        {
-            NavigationService.NavigateTo(typeof(WhatsNewViewModel).FullName!);
+            case ExtendedActivationKind.File:
+                // Allow the file activation handler to navigate to the appropriate page.
+                break;
+            case ExtendedActivationKind.Protocol:
+                break;
+            case ExtendedActivationKind.Launch:
+            default:
+                var isNotFirstRun = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun);
+                NavigationService.NavigateTo(isNotFirstRun ? NavigationService.DefaultPage : typeof(WhatsNewViewModel).FullName!);
+                break;
         }
     }
 
@@ -74,8 +89,21 @@ public partial class ShellViewModel : ObservableObject
             return false;
         }
 
-#pragma warning disable CA1310 // Specify StringComparison for correctness
-        return pageType.StartsWith("DevHome.Settings");
-#pragma warning restore CA1310 // Specify StringComparison for correctness
+        return pageType.StartsWith("DevHome.Settings", StringComparison.Ordinal);
+    }
+
+    private void OnAnnouncementTextChanged(object? sender, string text)
+    {
+        // Clear previous value to notify all bindings.
+        // This allows announcing the same text consecutively multiple times.
+        AnnouncementText = string.Empty;
+
+        // Set new announcement title
+        AnnouncementText = text;
+    }
+
+    internal void NotifyActualThemeChanged()
+    {
+        _themeSelectorService.SetRequestedTheme();
     }
 }

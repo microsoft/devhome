@@ -1,35 +1,81 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
+using System;
+using System.Linq;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Helpers;
+using Serilog;
 
 namespace DevHome.SetupFlow.Services;
+
+/// <summary>
+/// Class responsible for initializing the App Management system in the setup flow.
+/// </summary>
 public class AppManagementInitializer : IAppManagementInitializer
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AppManagementInitializer));
     private readonly IWindowsPackageManager _wpm;
-    private readonly CatalogDataSourceLoacder _catalogDataSourceLoader;
+    private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
+    private readonly IDesiredStateConfiguration _dsc;
 
     public AppManagementInitializer(
         IWindowsPackageManager wpm,
-        CatalogDataSourceLoacder catalogDataSourceLoader)
+        IDesiredStateConfiguration dsc,
+        ICatalogDataSourceLoader catalogDataSourceLoader)
     {
         _wpm = wpm;
+        _dsc = dsc;
         _catalogDataSourceLoader = catalogDataSourceLoader;
     }
 
     /// <inheritdoc />
     public async Task InitializeAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing {nameof(AppManagementInitializer)}");
+        _log.Information($"Initializing app management");
+
+        // Initialize catalogs from all data sources
         await InitializeCatalogsAsync();
+
+        // Ensure AppInstaller is registered
         if (await TryRegisterAppInstallerAsync())
         {
-            await _wpm.ConnectToAllCatalogsAsync();
-            await LoadCatalogsAsync();
+            await Task.WhenAll(
+                UnstubConfigurationAsync(),
+                InitializeWindowsPackageManagerAsync());
         }
 
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed {nameof(AppManagementInitializer)} initialization");
+        _log.Information($"Completed app management initialization");
+    }
+
+    /// <inheritdoc />
+    public async Task ReinitializeAsync()
+    {
+        _log.Information($"Reinitializing app management");
+        await InitializeWindowsPackageManagerAsync();
+        _log.Information($"Completed app management reinitialization");
+    }
+
+    /// <summary>
+    /// Initialize app management services
+    /// </summary>
+    private async Task InitializeWindowsPackageManagerAsync()
+    {
+        try
+        {
+            _log.Information($"Ensuring app management initialization");
+
+            // Initialize windows package manager after AppInstaller is registered
+            await _wpm.InitializeAsync();
+
+            // Load catalogs from all data sources
+            await LoadCatalogsAsync();
+
+            _log.Information($"Finished ensuring app management initialization");
+        }
+        catch (Exception e)
+        {
+            _log.Error(e, $"Unable to correctly initialize app management at the moment. Further attempts will be performed later.");
+        }
     }
 
     /// <summary>
@@ -37,7 +83,7 @@ public class AppManagementInitializer : IAppManagementInitializer
     /// </summary>
     private async Task InitializeCatalogsAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Initialize catalogs from all data sources");
+        _log.Information("Initialize catalogs from all data sources");
         await _catalogDataSourceLoader.InitializeAsync();
     }
 
@@ -46,10 +92,22 @@ public class AppManagementInitializer : IAppManagementInitializer
     /// </summary>
     private async Task LoadCatalogsAsync()
     {
-        Log.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to reduce the wait time when this information is requested");
+        _log.Information($"Loading catalogs from all data sources at launch time to reduce the wait time when this information is requested");
         await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
         {
-            Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
+            _log.Information($"Loaded {dataSourceCatalogs.Count} catalogs [{string.Join(", ", dataSourceCatalogs.Select(c => c.Name))}]");
+        }
+    }
+
+    private async Task UnstubConfigurationAsync()
+    {
+        var isUnstubbed = await _dsc.IsUnstubbedAsync();
+        _log.Information($"Configuration is {(isUnstubbed ? "unstubbed" : "stubbed")}");
+        if (!isUnstubbed)
+        {
+            _log.Information($"Starting to unstub configuration");
+            var unstubResult = await _dsc.UnstubAsync();
+            _log.Information($"Finished unstubbing configuration with result: {unstubResult}");
         }
     }
 
@@ -59,27 +117,29 @@ public class AppManagementInitializer : IAppManagementInitializer
     /// <returns>True if AppInstaller is registered, false otherwise</returns>
     private async Task<bool> TryRegisterAppInstallerAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Ensuring AppInstaller is registered ...");
+        _log.Information("Ensuring AppInstaller is registered ...");
 
         // If WinGet COM Server is available, then AppInstaller is registered
-        if (await _wpm.IsCOMServerAvailableAsync())
+        if (await _wpm.IsAvailableAsync())
         {
+            _log.Information("AppInstaller is already registered");
             return true;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "WinGet COM Server is not availbale. AppInstaller might be staged but not registered, attempting to register it to fix the issue");
+        _log.Information("WinGet COM Server is not available. AppInstaller might be staged but not registered, attempting to register it to fix the issue");
         if (await _wpm.RegisterAppInstallerAsync())
         {
-            if (await _wpm.IsCOMServerAvailableAsync())
+            if (await _wpm.IsAvailableAsync())
             {
+                _log.Information("AppInstaller was registered successfully");
                 return true;
             }
 
-            Log.Logger?.ReportError(Log.Component.AppManagement, "WinGet COM Server is not available after AppInstaller registration");
+            _log.Error("WinGet COM Server is not available after AppInstaller registration");
         }
         else
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, "AppInstaller was not registered");
+            _log.Error("AppInstaller was not registered");
         }
 
         return false;

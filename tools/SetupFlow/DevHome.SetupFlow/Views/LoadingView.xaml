@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <UserControl
@@ -7,10 +7,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="using:DevHome.SetupFlow.Models"
+    xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     xmlns:commonModels="using:DevHome.SetupFlow.Models"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     setupFlowBehaviors:SetupFlowNavigationBehavior.CancelVisibility="Collapsed"
     setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
     mc:Ignorable="d">
@@ -19,11 +19,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
                 <ResourceDictionary>
-                    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
-                    <converters:BoolNegationConverter x:Key="BoolNegation"/>
-                    <converters:BoolToObjectConverter x:Key="BoolToTextBrush" TrueValue="{ThemeResource PrimaryTextStyle}" FalseValue="{ThemeResource SecondaryTextStyle}"/>
-                </ResourceDictionary>
-                <ResourceDictionary>
+                    <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
                     <Style x:Key="DevHomeBorderStyle" TargetType="Border" >
                         <Setter Property="BorderBrush">
                             <Setter.Value>
@@ -31,145 +27,195 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-                    <Style x:Key="PrimaryTextStyle" TargetType="TextBlock">
-                        <Setter Property="Foreground">
-                            <Setter.Value>
-                                <SolidColorBrush Color="{ThemeResource TextFillColorPrimary}"/>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                    <Style x:Key="SecondaryTextStyle" TargetType="TextBlock">
-                        <Setter Property="Foreground">
-                            <Setter.Value>
-                                <SolidColorBrush Color="{ThemeResource TextFillColorSecondary}"/>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
+                    <GridLength x:Key="SymbolAndProgressRingColumnWidth">18</GridLength>
+                    <x:Double x:Key="ProgressRingWidthAndHeight">18</x:Double>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <StackPanel x:Name="LoadingPageStackPanel" Orientation="Vertical" Spacing="20">
-        <Grid Visibility="{x:Bind ViewModel.ShowOutOfRetriesBanner, Mode=OneWay}" Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition MinWidth="100" />
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="5" >
-                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF167;" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" />
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_Header" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_Body" VerticalAlignment="Center" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5" >
-                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_MaxRetriesReached_Button" Command="{x:Bind ViewModel.GoToSummaryPageCommand}" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
-                <Button Command="{x:Bind ViewModel.HideMaxRetryBannerCommand}" Style="{ThemeResource AlternateCloseButtonStyle}">
-                    <Button.Content>
-                        <SymbolIcon Symbol="Cancel"/>
-                    </Button.Content>
-                </Button>
-            </StackPanel>
-        </Grid>
-        <Grid x:Name="HeaderGrid" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical" Grid.Column="0" >
-                <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderTopRow"/>
-                <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderBottomRow"/>
-            </StackPanel>
-        </Grid>
-        <ProgressBar AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_SetupProgressBar_Description" x:Name="SetupTaskProgressBar" Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
-        <TextBlock Text="{x:Bind ViewModel.ExecutingTasks, Mode=OneWay}" />
-        <Grid ColumnSpacing="50" Height="500" RowSpacing="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="50"/>
-                <RowDefinition Height="500"/>
-            </Grid.RowDefinitions>
-            <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Style="{StaticResource SemiBoldTextStyle}"/>
-            </Border>
-            <ScrollViewer Grid.Column="0" Grid.Row="1" x:Name="AllRunningTasksScrollViewer" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" Margin="0, 10, 0, 0">
-                <ListView ItemsSource="{x:Bind ViewModel.TasksToRun, Mode=OneWay}" SelectionMode="None">
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:TaskInformation">
-                            <StackPanel Orientation="Horizontal" Spacing="5">
-                                <StackPanel.Resources>
-                                    <ResourceDictionary>
-                                        <Style x:Key="PrimaryTextStyle" TargetType="TextBlock">
-                                            <Setter Property="Foreground">
-                                                <Setter.Value>
-                                                    <SolidColorBrush Color="{ThemeResource TextFillColorPrimary}"/>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                        <Style x:Key="SecondaryTextStyle" TargetType="TextBlock">
-                                            <Setter Property="Foreground">
-                                                <Setter.Value>
-                                                    <SolidColorBrush Color="{ThemeResource TextFillColorSecondary}"/>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </ResourceDictionary>
-                                </StackPanel.Resources>
-                                <ImageIcon
-                                    Width="18"
-                                    Height="18"
-                                    Visibility="{x:Bind StatusIconGridVisibility, Mode=OneWay}"
-                                    Source="{x:Bind StatusSymbolIcon, Mode=OneWay}"/>
+    <!-- Page split layout -->
+    <Grid RowSpacing="10" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-                                <!-- If the status icon is visible it means the task has stopped.  Don't show progress ring.-->
-                                <ProgressRing
-                                    IsActive="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource BoolNegation}}"
-                                    Visibility="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
-                                    Width="20" Height="20"/>
-                                <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" VerticalAlignment="Center" Style="{x:Bind ShouldShowProgressRing, Mode=OneWay, Converter={StaticResource BoolToTextBrush}}"/>
-                            </StackPanel>
+        <Grid
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            ColumnSpacing="20"
+            RowSpacing="20"
+            Grid.Row="0"
+            Margin="0 0 0 20">
+            <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.ShowOutOfRetriesBanner, Mode=OneWay}" Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition MinWidth="100" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="5" >
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF167;" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" />
+                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_Header" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
+                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_Body" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5" >
+                        <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_MaxRetriesReached_Button" Command="{x:Bind ViewModel.GoToSummaryPageCommand}" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
+                        <Button Command="{x:Bind ViewModel.HideMaxRetryBannerCommand}" Style="{ThemeResource AlternateCloseButtonStyle}">
+                            <Button.Content>
+                                <SymbolIcon Symbol="Cancel"/>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Grid.Row="1" Spacing="0" >
+                    <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="{x:Bind ViewModel.HeaderText, Mode=OneWay}"/>
+                    <TextBlock Visibility="{x:Bind ViewModel.ShowSetupTarget, Mode=OneWay}" Text="{x:Bind ViewModel.SetupTargetText, Mode=OneWay}" />
+                </StackPanel>
+                <ProgressBar Grid.Row="2" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_SetupProgressBar_Description" x:Name="SetupTaskProgressBar" IsIndeterminate="{x:Bind ViewModel.IsIndeterminateProgressBar, Mode=OneWay}" Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
+                <TextBlock Grid.Row="3" Text="{x:Bind ViewModel.ExecutingTasks, Mode=OneWay}" />
+        </Grid>
+        <Grid
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            Margin="0 0 0 10">
+            <Grid 
+                RowSpacing="5" 
+                ColumnSpacing="50" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition/>
+                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
+                    <TextBlock Text="{x:Bind ViewModel.TasksTitleText, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Bottom" Padding="0, 0, 0, 6"/>
+                </Border>
+                <Border Grid.Column="1" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter" VerticalAlignment="Bottom" Style="{StaticResource BodyStrongTextBlockStyle}" Padding="0, 0, 0, 6"/>
+                        <HyperlinkButton Grid.Row="0" Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}" HorizontalAlignment="right" Margin="0, 8, 0, 0"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+        <ScrollViewer 
+            VerticalScrollBarVisibility="Auto"
+            Grid.Column="0"
+            Grid.Row="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ListView x:Name="NonExecutingTasks"  Grid.Row="0" ItemsSource="{x:Bind ViewModel.NonExecutingMessages, Mode=OneWay}" SelectionMode="Single">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:LoadingMessageViewModel">
+                            <Grid ColumnSpacing="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="{StaticResource SymbolAndProgressRingColumnWidth}"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ImageIcon
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Source="{x:Bind StatusSymbolIcon, Mode=OneWay}"/>
+                                <TextBlock 
+                                    Grid.Column="1"
+                                    Text="{x:Bind MessageToShow, Mode=OneWay}"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorSecondary}"
+                                    TextWrapping="Wrap"
+                                    IsTextSelectionEnabled="True"/>
+                            </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-            </ScrollViewer>
-            <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1" >
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="33"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter" VerticalAlignment="Center" Style="{StaticResource SemiBoldTextStyle}"/>
-                    <HyperlinkButton Grid.Row="0" Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}" HorizontalAlignment="right"/>
-                </Grid>
-            </Border>
-            <Grid Grid.Row="1" Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="500"/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}" Margin="0, 0, 0,10"/>
-                <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <StackPanel.Resources>
-                            <StackLayout x:Name="SecondVerticalStackLayout" Orientation="Vertical" Spacing="8"/>
-                            <DataTemplate x:Key="SecondHorizontalBarTemplate" x:DataType="commonModels:ActionCenterMessages">
-                                <StackPanel Orientation="Vertical" Spacing="10" Background="{ThemeResource CardBackgroundFillColorDefault}" CornerRadius="10" Padding="20">
-                                    <TextBlock Text="{x:Bind PrimaryMessage}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </StackPanel.Resources>
-                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.ActionCenterItems, Mode=OneWay}"
-                           Layout="{StaticResource SecondVerticalStackLayout}" 
-                           ItemTemplate="{StaticResource SecondHorizontalBarTemplate}">
-                        </ItemsRepeater>
-                    </StackPanel>
-                </ScrollViewer>
+                <ListView x:Name="ExecutingTasks" Grid.Row="1" ItemsSource="{x:Bind ViewModel.ExecutingMessages, Mode=OneWay}" SelectionMode="None">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:LoadingMessageViewModel">
+                            <Grid ColumnSpacing="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="{StaticResource SymbolAndProgressRingColumnWidth}"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Width and Height restrict the progress ring to the column width.-->
+                                <ProgressRing
+                                    Grid.Column="0"
+                                    Height="{StaticResource ProgressRingWidthAndHeight}"
+                                    Width="{StaticResource ProgressRingWidthAndHeight}"
+                                    IsActive="True"/>
+                                <TextBlock 
+                                    Grid.Column="1"
+                                    Text="{x:Bind MessageToShow, Mode=OneWay}"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextFillColorPrimary}"
+                                    TextWrapping="Wrap"
+                                    IsTextSelectionEnabled="True"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Grid>
+        </ScrollViewer>
+        <Grid 
+            Grid.Column="1"
+            Grid.Row="2"
+            RowSpacing="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock 
+                Grid.Row="0" 
+                Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}" Margin="18, 0, 0, 5" Foreground="{ThemeResource TextFillColorSecondary}"/>
+            <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.ActionCenterItems, Mode=OneWay}" SelectionMode="None" Margin="0, 0, 0, 5">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="commonModels:ActionCenterMessages">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel 
+                                Visibility="{x:Bind PrimaryMessage, Converter={StaticResource EmptyObjectToObjectConverter}}"
+                                Grid.Row="0"
+                                Margin="0, 0, 0, 10" 
+                                Background="{ThemeResource CardBackgroundFillColorDefault}" 
+                                CornerRadius="10" 
+                                Padding="20">
+                                <TextBlock Text="{x:Bind PrimaryMessage}" Style="{StaticResource BodyStrongTextBlockStyle}" IsTextSelectionEnabled="True" TextWrapping="Wrap"/>
+                            </StackPanel>
+                            <ContentControl
+                                Grid.Row="1"
+                                CornerRadius="10"
+                                Unloaded="ContentControl_Unloaded"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch"
+                                Content="{x:Bind ExtensionAdaptiveCardPanel}">
+                            </ContentControl>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
-    </StackPanel>
+    </Grid>
 </UserControl>

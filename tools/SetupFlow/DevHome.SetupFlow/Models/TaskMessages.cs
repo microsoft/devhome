@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 namespace DevHome.SetupFlow.Models;
 
@@ -36,6 +36,16 @@ public class TaskMessages
     /// Gets or sets the message that is displayed when the task requires a reboot of the machine.
     /// </summary>
     public string NeedsReboot
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the message that is displayed when an extension provides Dev Home with an adaptive card
+    /// while we're executing tasks. These adaptive cards can be used by the extensions to allow users to
+    /// perform a corrective action.
+    /// </summary>
+    public string ActionRequired
     {
         get; set;
     }

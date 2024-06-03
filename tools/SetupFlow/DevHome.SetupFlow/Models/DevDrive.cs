@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using DevHome.Common.Models;
@@ -15,6 +15,7 @@ public class DevDrive : IDevDrive
     public DevDrive(
         char driveLetter,
         ulong driveSizeInBytes,
+        ulong driveSizeRemainingInBytes,
         ByteUnit driveUnitOfMeasure,
         string driveLocation,
         string driveLabel,
@@ -24,6 +25,7 @@ public class DevDrive : IDevDrive
     {
         DriveLetter = driveLetter;
         DriveSizeInBytes = driveSizeInBytes;
+        DriveSizeRemainingInBytes = driveSizeRemainingInBytes;
         DriveUnitOfMeasure = driveUnitOfMeasure;
         DriveLocation = driveLocation;
         DriveLabel = driveLabel;
@@ -35,6 +37,7 @@ public class DevDrive : IDevDrive
     {
         DriveLetter = devDrive.DriveLetter;
         DriveSizeInBytes = devDrive.DriveSizeInBytes;
+        DriveSizeRemainingInBytes = devDrive.DriveSizeRemainingInBytes;
         DriveUnitOfMeasure = devDrive.DriveUnitOfMeasure;
         DriveLocation = devDrive.DriveLocation;
         DriveLabel = devDrive.DriveLabel;
@@ -47,6 +50,7 @@ public class DevDrive : IDevDrive
     {
         DriveLetter = devDrive.DriveLetter;
         DriveSizeInBytes = devDrive.DriveSizeInBytes;
+        DriveSizeRemainingInBytes = devDrive.DriveSizeRemainingInBytes;
         DriveLocation = devDrive.DriveLocation;
         DriveLabel = devDrive.DriveLabel;
         State = devDrive.State;
@@ -95,6 +99,15 @@ public class DevDrive : IDevDrive
     }
 
     /// <summary>
+    /// Gets or sets the size remaining for the Dev Drive. This size is represented in base2 where one kilobyte is
+    /// 1024 bytes.
+    /// </summary>
+    public ulong DriveSizeRemainingInBytes
+    {
+        get; set;
+    }
+
+    /// <summary>
     /// Gets or sets the file system location of the Dev Drive. This should be a fully qualified folder path.
     /// </summary>
     public string DriveLocation
@@ -132,5 +145,10 @@ public class DevDrive : IDevDrive
     public DiskMediaType DriveMediaType
     {
         get;
+    }
+
+    public bool IsDevDriveTrusted
+    {
+        get; set;
     }
 }

@@ -4,76 +4,44 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.Labs.WinUI"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     xmlns:views="using:DevHome.SetupFlow.Views"
     mc:Ignorable="d">
-    <StackPanel>
+    <StackPanel Spacing="12">
         <!-- Card header -->
-        <controls:SettingsCard
-            SizeChanged="SettingsCard_SizeChanged"
-            Background="Transparent"
-            Header="{x:Bind Catalog.Name}"
-            Description="{x:Bind Catalog.Description}">
-            <controls:SettingsCard.Resources>
-                <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
-                <Thickness x:Key="SettingsCardPadding">0,0,0,15</Thickness>
-                <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
-                <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
-                <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
-                <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-            </controls:SettingsCard.Resources>
-            <controls:SettingsCard.ActionIcon>
-                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE711;"/>
-            </controls:SettingsCard.ActionIcon>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="{x:Bind Catalog.Name, Mode=OneWay}" Style="{ThemeResource AppManagementPackageTitleTextBlock}" />
+                <TextBlock Text="{x:Bind Catalog.Description, Mode=OneWay}" Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" />
+            </StackPanel>
             <HyperlinkButton
                 Grid.Column="1"
-                Visibility="{x:Bind Catalog.CanAddAllPackages, Mode=OneWay}"
-                Command="{x:Bind Catalog.AddAllPackagesCommand}">
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AddAll" />
+                AutomationProperties.AutomationControlType="Button"
+                CommandParameter="{x:Bind Catalog, Mode=OneWay}"
+                Command="{x:Bind ViewAllCommand, Mode=OneWay}">
+                <TextBlock x:Uid="ViewAll" />
             </HyperlinkButton>
-        </controls:SettingsCard>
+        </Grid>
 
-        <!-- Packages flip view -->
-        <FlipView
-            x:Name="PackagesFlipView"
-            Background="Transparent"
-            SelectionChanged="PackagesFlipView_SelectionChanged"
-            ItemsSource="{x:Bind PackageGroups, Mode=OneWay}">
-            <FlipView.ItemTemplate>
-                <DataTemplate>
-                    <!-- Grid added here to help update the FlipView
-                    height (in code-behind) to fit its content for various
-                    control width -->
-                    <Grid VerticalAlignment="Top">
-                        <ItemsRepeater ItemsSource="{Binding}">
-                            <ItemsRepeater.Layout>
-                                <UniformGridLayout
-                                    Orientation="Horizontal"
-                                    MinItemWidth="190"
-                                    MaximumRowsOrColumns="3"
-                                    MinRowSpacing="4"
-                                    MinColumnSpacing="4"
-                                    MinItemHeight="140"
-                                    ItemsStretch="Fill" />
-                            </ItemsRepeater.Layout>
-                            <ItemsRepeater.ItemTemplate>
-                                <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                                    <views:PackageView Height="140" />
-                                </DataTemplate>
-                            </ItemsRepeater.ItemTemplate>
-                        </ItemsRepeater>
-                    </Grid>
+        <!-- List of packages -->
+        <ItemsRepeater ItemsSource="{x:Bind DisplayPackages, Mode=OneWay}">
+            <ItemsRepeater.Layout>
+                <UniformGridLayout
+                    Orientation="Horizontal"
+                    MaximumRowsOrColumns="3"
+                    MinRowSpacing="4"
+                    MinColumnSpacing="4"
+                    ItemsStretch="Fill" />
+            </ItemsRepeater.Layout>
+            <ItemsRepeater.ItemTemplate>
+                <DataTemplate x:DataType="viewmodels:PackageViewModel">
+                    <views:PackageView MinHeight="150" />
                 </DataTemplate>
-            </FlipView.ItemTemplate>
-        </FlipView>
-
-        <!-- Packages pagination -->
-        <PipsPager
-            Visibility="{x:Bind PagerVisibility,Mode=OneWay}"
-            HorizontalAlignment="Center"
-            Margin="0 15 0 0"
-            NumberOfPages="{x:Bind PackageGroups.Count, Mode=OneWay}"
-            SelectedPageIndex="{x:Bind Path=PackagesFlipView.SelectedIndex, Mode=TwoWay}" />
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
     </StackPanel>
 </UserControl>

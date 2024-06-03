@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using DevHome.Common.Extensions;
@@ -153,10 +153,10 @@ public class SetupFlowNavigationBehavior : Behavior<SetupFlowNavigation>
     {
         base.OnAttached();
 
-        var orchestrator = Application.Current.GetService<SetupFlowOrchestrator>();
-        orchestrator.PageChanging += OnPageChanging;
-
+        // Set instance first
         _instance = this;
+
+        Application.Current.GetService<SetupFlowOrchestrator>().PageChanging += OnPageChanging;
         ResetToDefault();
     }
 
@@ -269,12 +269,15 @@ public class SetupFlowNavigationBehavior : Behavior<SetupFlowNavigation>
     private void ResetToDefault()
     {
         // Initialize to default template and values
-        UpdateContentTemplate(_instance.DefaultContentTemplate);
-        UpdateCancelTemplate(_instance.DefaultCancelTemplate);
-        UpdateCancelVisibility(Visibility.Visible);
-        UpdatePreviousTemplate(_instance.DefaultPreviousTemplate);
-        UpdatePreviousVisibility(Visibility.Visible);
-        UpdateNextTemplate(_instance.DefaultNextTemplate);
-        UpdateNextVisibility(Visibility.Visible);
+        if (_instance != null)
+        {
+            UpdateContentTemplate(_instance.DefaultContentTemplate);
+            UpdateCancelTemplate(_instance.DefaultCancelTemplate);
+            UpdateCancelVisibility(Visibility.Visible);
+            UpdatePreviousTemplate(_instance.DefaultPreviousTemplate);
+            UpdatePreviousVisibility(Visibility.Visible);
+            UpdateNextTemplate(_instance.DefaultNextTemplate);
+            UpdateNextVisibility(Visibility.Visible);
+        }
     }
 }

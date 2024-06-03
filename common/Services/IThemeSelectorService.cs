@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Threading.Tasks;
@@ -9,12 +9,12 @@ namespace DevHome.Contracts.Services;
 
 public interface IThemeSelectorService
 {
+    /// <summary>
+    /// Occurs when the theme has changed, either due to user selection or the system theme changing.
+    /// </summary>
     public event EventHandler<ElementTheme> ThemeChanged;
 
-    ElementTheme Theme
-    {
-        get;
-    }
+    ElementTheme Theme { get; }
 
     Task InitializeAsync();
 
@@ -27,4 +27,6 @@ public interface IThemeSelectorService
     /// </summary>
     /// <returns>True if the current theme is dark</returns>
     bool IsDarkTheme();
+
+    ElementTheme GetActualTheme();
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 namespace DevHome.SetupFlow.Services;
 
@@ -8,6 +8,11 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public class SetupFlowOptions
 {
+    public string StringResourceName
+    {
+        get; set;
+    }
+
     /// <summary>
     /// Gets or sets the string resource map path for the setup flow project
     /// </summary>

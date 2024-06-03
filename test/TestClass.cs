@@ -1,9 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics;
-
-using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Test;
 
@@ -51,7 +49,14 @@ public class TestClass
     [TestMethod]
     public void TestHelpersIngestion()
     {
-        Microsoft.Internal.Windows.DevHome.Helpers.Helpers helpers = new ();
+        Microsoft.Internal.Windows.DevHome.Helpers.Helpers helpers = new();
         Assert.AreEqual("This is a test", helpers.Test());
+    }
+
+    [TestMethod]
+    public void TestExperimentHelpers()
+    {
+        Microsoft.Internal.Windows.DevHome.Helpers.Experimentation.Experiment experiment = new();
+        Assert.IsTrue(experiment.IsEnabled("Sample_FeatureStaging"));
     }
 }

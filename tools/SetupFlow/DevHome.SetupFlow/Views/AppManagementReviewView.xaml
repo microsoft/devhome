@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <UserControl
@@ -7,9 +7,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ctControls="using:CommunityToolkit.Labs.WinUI"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -38,41 +39,18 @@
             </GridView.ItemsPanel>
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                    <ctControls:SettingsCard Width="320" Padding="5" Background="Transparent">
-                        <ctControls:SettingsCard.Resources>
-                            <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
-                            <Thickness x:Key="SettingsCardPadding">0</Thickness>
-                            <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
-                            <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
-                            <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
-                            <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
-                        </ctControls:SettingsCard.Resources>
+                    <controls:PackageDetailsSettingsCard AutomationProperties.Name="{x:Bind PackageTitle}" Width="320" Padding="5">
                         <ToolTipService.ToolTip>
-                            <StackPanel>
-                                <StackPanel.Resources>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
-                                    </Style>
-                                </StackPanel.Resources>
-                                <TextBlock Text="{x:Bind TooltipName, Mode=OneWay}"/>
-                                <TextBlock Text="{x:Bind TooltipVersion, Mode=OneWay}"/>
-                                <TextBlock Text="{x:Bind TooltipSource, Mode=OneWay}"/>
-                                <TextBlock Text="{x:Bind TooltipPublisher, Mode=OneWay}"/>
-                            </StackPanel>
+                            <controls:PackageDetailsTooltip Package="{x:Bind}" />
                         </ToolTipService.ToolTip>
                         <ctControls:SettingsCard.Header>
-                            <TextBlock
-                                Text="{x:Bind PackageTitle, Mode=OneWay}"
-                                MaxLines="2"
-                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock Style="{ThemeResource AppManagementPackageTitleTextBlock}" Text="{x:Bind PackageTitle, Mode=OneWay}"/>
                         </ctControls:SettingsCard.Header>
                         <ctControls:SettingsCard.Description>
                             <StackPanel>
                                 <TextBlock
-                                    Text="{x:Bind PackageDescription, Mode=OneWay}"
-                                    MaxLines="1"
-                                    TextTrimming="CharacterEllipsis" />
+                                    Style="{ThemeResource AppManagementPackageDescriptionTextBlock}"
+                                    Text="{x:Bind PackageFullDescription, Mode=OneWay}" />
                                 <HyperlinkButton
                                     Padding="0"
                                     Style="{ThemeResource TextBlockButtonStyle}"
@@ -84,7 +62,7 @@
                         <ctControls:SettingsCard.HeaderIcon>
                             <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
                         </ctControls:SettingsCard.HeaderIcon>
-                    </ctControls:SettingsCard>
+                    </controls:PackageDetailsSettingsCard>
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>

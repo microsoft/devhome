@@ -1,6 +1,8 @@
 ![dev-home-readme-header](https://github.com/microsoft/devhome/blob/main/src/Assets/Preview/StoreDisplay-150.png)
 
-# Welcome to the Dev Home repo
+# Welcome to the Dev Home repo!
+
+Dev Home is a new experience from Microsoft aiming to give developers more power on Windows.
 
 This repository contains the source code for:
 
@@ -10,15 +12,16 @@ This repository contains the source code for:
 Related repositories include:
 
 * [Dev Home GitHub Extension](https://github.com/microsoft/devhomegithubextension)
+* [Dev Home Azure Extension](https://github.com/microsoft/devhomeazureextension)
 
 ## Installing and running Dev Home
 
 > **Note**: Dev Home requires Windows 11 21H2 (build 22000) or later.
 
-### Microsoft Store [Recommended]
+If you are running Windows 11 23H2 (build 22621.2361) or later, you can install and run Dev Home just by finding it in the Start menu.
 
-Install [Dev Home from the Microsoft Store](https://aka.ms/devhome).
-This allows you to always be on the latest version when we release new builds with automatic upgrades.
+Otherwise, you can install [Dev Home from the Microsoft Store](https://aka.ms/devhome).
+This allows you to always be on the latest version when we release new builds with automatic upgrades. Note that widgets may not work on older versions of Windows.
 
 This is our preferred method.
 
@@ -82,26 +85,14 @@ Please file new issues, feature requests, and suggestions but **DO search for si
 
 If you would like to ask a question that you feel doesn't warrant an issue (yet), please reach out to us via Twitter:
 
-* [Kayla Cinnamon](https://github.com/cinnamon-msft), Product Manager: [@cinnamon_msft](https://twitter.com/cinnamon_msft)
-* [Clint Rutkas](https://github.com/crutkas), Senior Product Manager: [@clintrutkas](https://twitter.com/clintrutkas) 
+* [Kayla Cinnamon](https://github.com/cinnamon-msft), Senior Product Manager: [@cinnamon_msft](https://twitter.com/cinnamon_msft)
+* [Clint Rutkas](https://github.com/crutkas), Principal Product Manager: [@clintrutkas](https://twitter.com/clintrutkas) 
 * [Leeza Mathew](https://github.com/mathewleeza), Engineering Lead: [@leezamathew](https://twitter.com/leezamathew)
-* [Ujjwal Chadha](https://github.com/ujjwalchadha), Developer: [@ujjwalscript](https://twitter.com/ujjwalscript)
 
 ## Developer guidance
 
 * You must be running Windows 11 21H2 (build >= 10.0.22000.0) to run Dev Home
 * You must [enable Developer Mode in the Windows Settings app](https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development)
-
-## Building the code
-
-1. Clone the repository
-2. Configure your system, please use the [configuration file](.configurations/configuration.dsc.yaml). This can be applied by either:
-   * Dev Home's machine configuration tool
-   * WinGet configuration. If you have the experimental feature enabled, run `winget configure .configurations/configuration.dsc.yaml` from the project root so relative paths resolve correctly
-
-## Running & debugging
-
-In Visual Studio, you should be able to build and debug Dev Home by hitting <kbd>F5</kbd>. Make sure to select either the "x64" or the "x86" platform and set DevHome as the selected startup project.
 
 ---
 
@@ -115,4 +106,10 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos are subject to those third-party's policies.
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos is subject to those third-parties' policies.
+
+## Thanks to our contributors
+
+<a href="https://github.com/microsoft/devhome/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=microsoft/devhome" />
+</a>

@@ -2,23 +2,23 @@
     x:Class="DevHome.Settings.Views.AccountsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="using:DevHome.Settings.ViewModels"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:models="using:DevHome.Settings.Models"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:viewmodels="using:DevHome.Settings.ViewModels"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
-    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
-    mc:Ignorable="d">
+    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
+
     <Page.Resources>
+        <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible"/>
+
         <DataTemplate x:Key="AccountsProviderButtonTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
-            <StackPanel>
-                <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Stretch" Click="AddDeveloperId_Click" Tag="{x:Bind}" />
-            </StackPanel>
+            <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Stretch" Click="AddDeveloperId_Click" Tag="{x:Bind}"/>
         </DataTemplate>
 
         <DataTemplate x:Key="AccountsProviderViewTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
-            <StackPanel>
+            <StackPanel Visibility="{x:Bind LoggedInAccounts.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}">
                 <TextBlock Text="{x:Bind ProviderName}" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}"/>
                 <ItemsRepeater ItemsSource="{x:Bind LoggedInAccounts}" ItemTemplate="{StaticResource AccountsViewTemplate}"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible" />
@@ -26,27 +26,32 @@
         </DataTemplate>
 
         <DataTemplate x:Key="AccountsViewTemplate" x:DataType="models:Account">
-            <labs:SettingsCard Header="{x:Bind LoginId}" Margin="{StaticResource SettingsCardMargin}">
+            <ctControls:SettingsCard Header="{x:Bind LoginId}" Margin="{StaticResource SettingsCardMargin}">
                 <Button Tag="{x:Bind}" x:Uid="Settings_Accounts_LogoutButton" Click="Logout_Click"/>
-            </labs:SettingsCard>
+            </ctControls:SettingsCard>
         </DataTemplate>
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-        <StackPanel x:Name="AccountsContentArea">
-            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
-
-            <StackPanel x:Name="AddAccountMainStackPanel" Margin="{StaticResource XSmallTopMargin}">
-                <labs:SettingsCard x:Uid="Settings_Accounts_AddAccount">
-                    <labs:SettingsCard.HeaderIcon>
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+        <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <StackPanel>
+                <ctControls:SettingsCard x:Uid="Settings_Accounts_AddAccount">
+                    <ctControls:SettingsCard.HeaderIcon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8fa;"/>
-                    </labs:SettingsCard.HeaderIcon>
-                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right" Click="AddAccountButton_Click">
+                    </ctControls:SettingsCard.HeaderIcon>
+                    <Button
+                        x:Uid="Settings_Accounts_AddAccountButton"
+                        AutomationProperties.AutomationId="AddAccountsButton"
+                        HorizontalAlignment="Right"
+                        Click="AddAccountButton_Click">
                         <Button.Resources>
                             <Flyout x:Name="AccountsProvidersFlyout" Placement="Bottom">
                                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}"
                                                ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
                                                HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                    <ItemsRepeater.Layout>
+                                        <StackLayout Orientation="Vertical" Spacing="8" />
+                                    </ItemsRepeater.Layout>
                                 </ItemsRepeater>
                                 <Flyout.FlyoutPresenterStyle>
                                     <Style TargetType="FlyoutPresenter">
@@ -58,15 +63,13 @@
                             </Flyout>
                         </Button.Resources>
                     </Button>
-                </labs:SettingsCard>
-            </StackPanel>
+                </ctControls:SettingsCard>
                 
-            <StackPanel>
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}"
                                ItemTemplate="{StaticResource AccountsProviderViewTemplate}"
                                HorizontalAlignment="Stretch" VerticalAlignment="Center">
                 </ItemsRepeater>
             </StackPanel>
-        </StackPanel>
+        </Grid>
     </ScrollViewer>
 </Page>

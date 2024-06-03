@@ -1,8 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -57,11 +58,15 @@ public class BaseSetupFlowTest
                 // Common services
                 services.AddSingleton<IThemeSelectorService>(ThemeSelectorService!.Object);
                 services.AddSingleton<ISetupFlowStringResource>(StringResource.Object);
+                services.AddSingleton<SetupFlowOrchestrator>(new SetupFlowOrchestrator(null));
+                services.AddSingleton<IExtensionService>(new ExtensionService());
 
                 // App-management view models
                 services.AddTransient<PackageViewModel>();
                 services.AddTransient<PackageCatalogViewModel>();
                 services.AddTransient<SearchViewModel>();
+                services.AddTransient<LoadingViewModel>();
+                services.AddTransient<IDevDriveManager, DevDriveManager>();
 
                 // App-management services
                 services.AddSingleton<IWindowsPackageManager>(WindowsPackageManager.Object);
@@ -72,7 +77,9 @@ public class BaseSetupFlowTest
                 services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory());
                 services.AddSingleton<IAppManagementInitializer, AppManagementInitializer>();
                 services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
-                services.AddSingleton<CatalogDataSourceLoacder>();
+                services.AddSingleton<ICatalogDataSourceLoader, CatalogDataSourceLoader>();
+                services.AddSingleton<IScreenReaderService>(new Mock<IScreenReaderService>().Object);
+                services.AddSingleton<IDesiredStateConfiguration>(new Mock<IDesiredStateConfiguration>().Object);
 
                 // DI factory pattern
                 services.AddSingleton<PackageViewModelFactory>(sp => package => ActivatorUtilities.CreateInstance<PackageViewModel>(sp, package));

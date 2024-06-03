@@ -1,33 +1,47 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 extern alias Projection;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Configuration;
-using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
+using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
-using WinRT;
 
 namespace DevHome.SetupFlow.Models;
 
 public class ConfigureTask : ISetupTask
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigureTask));
     private readonly ISetupFlowStringResource _stringResource;
+    private readonly IDesiredStateConfiguration _dsc;
     private readonly StorageFile _file;
-    private ConfigurationFileHelper _configurationFileHelper;
+    private readonly Guid _activityId;
+
+    public event ISetupTask.ChangeMessageHandler AddMessage;
+
+#pragma warning disable 67
+    public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
+#pragma warning restore 67
 
     // Configuration files can run as either admin or as a regular user
     // depending on the user, make this settable.
     public bool RequiresAdmin { get; set; }
 
     public bool RequiresReboot { get; private set; }
+
+    /// <summary>
+    /// Gets target device name. Inherited via ISetupTask but unused.
+    /// </summary>
+    public string TargetName => string.Empty;
 
     public bool DependsOnDevDriveToBeInstalled => false;
 
@@ -36,29 +50,23 @@ public class ConfigureTask : ISetupTask
         get; private set;
     }
 
-    public ConfigureTask(ISetupFlowStringResource stringResource, StorageFile file)
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
+
+    public ConfigureTask(
+        ISetupFlowStringResource stringResource,
+        IDesiredStateConfiguration dsc,
+        StorageFile file,
+        Guid activityId)
     {
         _stringResource = stringResource;
+        _dsc = dsc;
         _file = file;
-    }
-
-    public async Task OpenConfigurationSetAsync()
-    {
-        try
-        {
-            _configurationFileHelper = new ConfigurationFileHelper(_file);
-            await _configurationFileHelper.OpenConfigurationSetAsync();
-        }
-        catch (Exception e)
-        {
-            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to open configuration set.", e);
-            throw;
-        }
+        _activityId = activityId;
     }
 
     TaskMessages ISetupTask.GetLoadingMessages()
     {
-        return new ()
+        return new()
         {
             Executing = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplying),
             Error = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplyError),
@@ -69,7 +77,7 @@ public class ConfigureTask : ISetupTask
 
     public ActionCenterMessages GetErrorMessages()
     {
-        return new ()
+        return new()
         {
             PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplyError),
         };
@@ -77,7 +85,7 @@ public class ConfigureTask : ISetupTask
 
     public ActionCenterMessages GetRebootMessage()
     {
-        return new ()
+        return new()
         {
             PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplySuccessReboot),
         };
@@ -89,7 +97,8 @@ public class ConfigureTask : ISetupTask
         {
             try
             {
-                var result = await _configurationFileHelper.ApplyConfigurationAsync();
+                AddMessage(_stringResource.GetLocalized(StringResourceKey.ApplyingConfigurationMessage), MessageSeverityKind.Info);
+                var result = await _dsc.ApplyConfigurationAsync(_file.Path, _activityId);
                 RequiresReboot = result.RequiresReboot;
                 UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
                 if (result.Succeeded)
@@ -103,7 +112,7 @@ public class ConfigureTask : ISetupTask
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration.", e);
+                _log.Error(e, $"Failed to apply configuration.");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -111,13 +120,12 @@ public class ConfigureTask : ISetupTask
 
     /// <inheritdoc/>
     /// <remarks><seealso cref="RequiresAdmin"/></remarks>
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
         return Task.Run(async () =>
         {
-            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file {_file.Path}");
-            var elevatedTask = elevatedComponentFactory.CreateElevatedConfigurationTask();
-            var elevatedResult = await elevatedTask.ApplyConfiguration(_file);
+            _log.Information($"Starting elevated application of configuration file {_file.Path}");
+            var elevatedResult = await elevatedComponentOperation.ApplyConfigurationAsync(_activityId);
             RequiresReboot = elevatedResult.RebootRequired;
             UnitResults = new List<ConfigurationUnitResult>();
 
@@ -130,5 +138,25 @@ public class ConfigureTask : ISetupTask
 
             return elevatedResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
         }).AsAsyncOperation();
+    }
+
+    /// <summary>
+    /// Get the arguments for this task
+    /// </summary>
+    /// <returns>Arguments for this task</returns>
+    public ConfigureTaskArguments GetArguments()
+    {
+        var fileData = GetFileData();
+        return new ConfigureTaskArguments
+        {
+            FilePath = fileData.FilePath,
+            Content = fileData.Content,
+        };
+    }
+
+    private (string FilePath, string Content) GetFileData()
+    {
+        var content = File.ReadAllText(_file.Path);
+        return (_file.Path, content);
     }
 }

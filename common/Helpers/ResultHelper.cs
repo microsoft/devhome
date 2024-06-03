@@ -1,19 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 
 namespace DevHome.Common.ResultHelper;
 
-public class HresultException : Exception
-{
-    public HresultException(int errorCode)
-    {
-        HResult = errorCode;
-    }
-}
-
-public static class Result
+public static class ResultHelper
 {
     /// <summary>
     /// Throw an exception if <paramref name="hresult"/> is an error.
@@ -24,6 +16,14 @@ public static class Result
         if (hresult < 0)
         {
             throw new HresultException(hresult);
+        }
+    }
+
+    public class HresultException : Exception
+    {
+        public HresultException(int errorCode)
+        {
+            HResult = errorCode;
         }
     }
 }

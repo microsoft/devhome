@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using DevHome.SetupFlow.ViewModels;
@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media;
 using Windows.UI;
 
 namespace DevHome.SetupFlow.Views;
+
 public sealed partial class PackageCatalogListView : UserControl
 {
     public PackageCatalogListViewModel ViewModel => (PackageCatalogListViewModel)DataContext;
@@ -20,11 +21,19 @@ public sealed partial class PackageCatalogListView : UserControl
     private void ItemsRepeater_ElementPrepared(ItemsRepeater sender, ItemsRepeaterElementPreparedEventArgs args)
     {
         // Add a separator between consecutive items
-        if (args.Element is Border border && args.Index > 0)
+        if (args.Element is Border border)
         {
-            border.Padding = new Thickness(0, 30, 0, 0);
-            border.BorderBrush = new SolidColorBrush((Color)Application.Current.Resources["ControlStrokeColorDefault"]);
-            border.BorderThickness = new Thickness(0, 1, 0, 0);
+            if (args.Index == 0)
+            {
+                border.Padding = new Thickness(0);
+                border.BorderThickness = new Thickness(0);
+            }
+            else
+            {
+                border.Padding = new Thickness(0, 30, 0, 0);
+                border.BorderBrush = new SolidColorBrush((Color)Application.Current.Resources["ControlStrokeColorDefault"]);
+                border.BorderThickness = new Thickness(0, 1, 0, 0);
+            }
         }
     }
 }

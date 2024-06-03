@@ -1,8 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using DevHome.Contracts.Services;
 using DevHome.Services;
@@ -57,8 +56,8 @@ public class GitWatcherTests
         var newRepoEventFired = new ManualResetEvent(false);
         var repoDeletedEventFired = new ManualResetEvent(false);
 
-        GitRepositoryChangedEventArgs newResult = new (GitRepositoryChangeType.Deleted, "Invalid");
-        GitRepositoryChangedEventArgs deletedResult = new (GitRepositoryChangeType.Created, "Invalid");
+        GitRepositoryChangedEventArgs newResult = new(GitRepositoryChangeType.Deleted, "Invalid");
+        GitRepositoryChangedEventArgs deletedResult = new(GitRepositoryChangeType.Created, "Invalid");
 
         GitWatcher.Instance.GitRepositoryCreated += (_, e) =>
         {
@@ -128,7 +127,7 @@ public class GitWatcherTests
         var pathToGitFolder3 = Path.Combine(testRepoPath3, ".git");
         var pathToTargetFile3 = Path.Combine(testRepoPath3, WatcherTargetFile);
 
-        GitFileChangedEventArgs eventArgs = new (GitFileChangeType.Deleted, "Invalid", "Invalid");
+        GitFileChangedEventArgs eventArgs = new(GitFileChangeType.Deleted, "Invalid", "Invalid");
         var eventFired = new ManualResetEvent(false);
 
         Directory.CreateDirectory(pathToGitFolder2);
@@ -173,7 +172,7 @@ public class GitWatcherTests
 
         // Test file modification
         testFile2 = File.OpenWrite(pathToTargetFile2);
-        testFile2.Write(new byte[4] { 1, 2, 3, 4 });
+        testFile2.Write([1, 2, 3, 4]);
         testFile2.Close();
         Assert.IsTrue(eventFired.WaitOne(1000));
         eventFired.Reset();
@@ -205,7 +204,7 @@ public class GitWatcherTests
 
         // Test file modification
         testFile3 = File.OpenWrite(pathToTargetFile3);
-        testFile3.Write(new byte[4] { 1, 2, 3, 4 });
+        testFile3.Write([1, 2, 3, 4]);
         testFile3.Close();
         Assert.IsTrue(eventFired.WaitOne(1000));
         eventFired.Reset();

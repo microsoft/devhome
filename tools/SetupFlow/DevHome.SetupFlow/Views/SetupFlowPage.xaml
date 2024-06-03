@@ -1,27 +1,25 @@
-﻿<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+﻿<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <pg:ToolPage
     x:Class="DevHome.SetupFlow.Views.SetupFlowPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:pg="using:DevHome.Common"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
+    xmlns:environmentViews="using:DevHome.SetupFlow.Views.Environments"
     xmlns:selectors="using:DevHome.SetupFlow.Selectors"
     xmlns:views="using:DevHome.SetupFlow.Views"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
-    mc:Ignorable="d">
+    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never">
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
     </Page.Resources>
 
-    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
@@ -32,6 +30,7 @@
             Grid.Row="0"
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
+            IsTabStop="False"
             Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel, Mode=OneWay}">
             <ContentControl.ContentTemplateSelector>
                 <selectors:SetupFlowViewSelector>
@@ -40,6 +39,11 @@
                             <views:MainPageView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.MainPageTemplate>
+                    <selectors:SetupFlowViewSelector.SetupTargetTemplate>
+                        <DataTemplate>
+                            <views:SetupTargetView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.SetupTargetTemplate>
                     <selectors:SetupFlowViewSelector.RepoConfigTemplate>
                         <DataTemplate>
                             <views:RepoConfigView />
@@ -70,25 +74,45 @@
                             <views:ConfigurationFileView/>
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.ConfigurationFileTemplate>
+                    <selectors:SetupFlowViewSelector.SelectEnvironmentsProviderTemplate>
+                        <DataTemplate>
+                            <environmentViews:SelectEnvironmentProviderView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.SelectEnvironmentsProviderTemplate>
+                    <selectors:SetupFlowViewSelector.EnvironmentCreationOptionsTemplate>
+                        <DataTemplate>
+                            <environmentViews:EnvironmentCreationOptionsView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.EnvironmentCreationOptionsTemplate>
+                    <selectors:SetupFlowViewSelector.QuickstartPlaygroundTemplate>
+                        <DataTemplate>
+                            <views:QuickstartPlaygroundView/>
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.QuickstartPlaygroundTemplate>
                 </selectors:SetupFlowViewSelector>
             </ContentControl.ContentTemplateSelector>
         </ContentControl>
 
         <controls:SetupFlowNavigation
             Grid.Row="1"
+            MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}"
             Visibility="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.IsNavigationBarVisible, Mode=OneWay}">
             <i:Interaction.Behaviors>
                 <setupFlowBehaviors:SetupFlowNavigationBehavior>
+                    <!-- TODO: https://github.com/microsoft/devhome/issues/1494
+                         - DefaultCancelTemplate should not contain multiple elements, instead CancelTemplate should be used to overwrite the default behavior.
+                         - Explore the option to share the style in the setup flow navigation control to eliminate redundancy -->
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultCancelTemplate>
                         <Grid>
                             <HyperlinkButton
+                                AutomationProperties.AutomationControlType="Button"
                                 Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
-                                MinWidth="120" Margin="4,0"
+                                MinWidth="120" Margin="6,0"
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel"
                                 Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowDoneButton, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
                             <Button
                                 Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
-                                MinWidth="120" Margin="4,0"
+                                MinWidth="120" Margin="6,0"
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DoneButton"
                                 Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowDoneButton, Mode=OneWay}"/>
                         </Grid>
@@ -96,19 +120,18 @@
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultPreviousTemplate>
                         <Button
                             Command="{x:Bind ViewModel.Orchestrator.GoToPreviousPageCommand, Mode=OneWay}"
-                            MinWidth="120" Margin="4,0"
+                            MinWidth="120" Margin="6,0"
                             Visibility="{x:Bind ViewModel.Orchestrator.HasPreviousPage, Mode=OneWay}"
                             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Previous" />
                     </setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultPreviousTemplate>
                     <!-- Workaround to show a tooltip on a disabled button
                          https://github.com/microsoft/microsoft-ui-xaml/issues/2262-->
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
-                        <Grid ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
-                            <TextBlock IsTabStop="False" />
+                        <Grid Background="Transparent" ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
                             <Button
                                 Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
                                 Style="{StaticResource AccentButtonStyle}"
-                                MinWidth="120" Margin="4,0"
+                                MinWidth="120" Margin="6,0"
                                 Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
                                 ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
                         </Grid>

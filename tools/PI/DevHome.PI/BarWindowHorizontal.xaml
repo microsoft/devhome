@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<winex:WindowEx
+    x:Class="DevHome.PI.BarWindowHorizontal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:winex="using:WinUIEx"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:DevHome.PI.Controls"
+    xmlns:helpers="using:DevHome.PI.Helpers"
+    mc:Ignorable="d"
+    Title="" MinHeight="70" MinWidth="700" Height="70" Width="700" MaxHeight="70"
+    TaskBarIcon="Images/pi.ico"
+    Closed="WindowEx_Closed">
+
+    <!-- TODO Make DesktopAcrylicBackdrop/MicaBackdrop and AcrylicBackgroundFillColorBaseBrush user-configurable.-->
+    <Window.SystemBackdrop>
+        <MicaBackdrop/>
+    </Window.SystemBackdrop>
+
+    <Grid x:Name="MainPanel" Loaded="MainPanel_Loaded" SizeChanged="MainPanel_SizeChanged">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--Chrome buttons for a horizontal bar -->
+        <Grid x:Name="HorizontalBar" Background="Transparent" VerticalAlignment="Center" Height="28" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
+                <ColumnDefinition x:Name="ExtraSystemButtons" Width="*"/>
+                <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="TitleTextBlock" Text="DevHome PI" FontSize="10" Margin="10,0,0,0" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center"/>
+            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0, 0, 10, 0"  Background="Transparent" Grid.Column="1">
+                <Button
+                      x:Uid="SnapButton"
+                      x:Name="SnapButton" Style="{StaticResource ChromeButton}" FontSize="11"
+                      Click="{x:Bind _viewModel.PerformSnapCommand}" HorizontalAlignment="Left" IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}">
+                    <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel x:Name="AllControls" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Background="Transparent" >
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontFamily" Value="Segoe Fluent Icons"/>
+                    <Setter Property="FontSize" Value="20"/>
+                </Style>
+                <Style TargetType="Button">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                </Style>
+                <Style TargetType="controls:ProcessSelectionButton">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                </Style>
+            </StackPanel.Resources>
+            
+            <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Click="{x:Bind _viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Margin="0">
+                <TextBlock Text="&#xecaa;" Margin="0"  />
+            </controls:ProcessSelectionButton>
+
+            <!-- Per App controls -->
+            <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" Margin="5" Height="20" Width="20" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
+            <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
+            <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
+
+            <!-- Per System controls -->
+            <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" HorizontalAlignment="Center" Click="{x:Bind _viewModel.SwitchLayoutCommand}">
+                <TextBlock Text="&#xe8b4;"/>
+            </Button>
+            <Button x:Name="LargeContentButton" Click="{x:Bind _viewModel.ShowBigWindowCommand}" HorizontalAlignment="Center">
+                <TextBlock Text="&#xe8a1;"/>
+            </Button>
+
+            <Button
+                x:Name="ManageExternalToolsButton"
+                x:Uid="ManageExternalToolsButton"
+                HorizontalAlignment="Center"
+                Click="ManageExternalToolsButton_Click">
+                <Button.ContextFlyout>
+                    <MenuFlyout x:Name="ExternalToolsMenu">
+                        <!-- We can't databind to MenuFlyout, so we'll add a MenuFlyoutItem
+                        for each external tool in codebehind here. -->
+                    </MenuFlyout>
+                </Button.ContextFlyout>
+                <TextBlock Text="&#xEC7A;"/>
+            </Button>
+
+            <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsHorizontalLayout}">
+                <ItemsRepeater.ContextFlyout>
+                    <MenuFlyout x:Name="ToolContextMenu">
+                        <MenuFlyoutItem x:Name="PinUnpinMenuItem" Click="PinUnpinMenuItem_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xE77A;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Uid="UnregisterMenuItem" x:Name="UnregisterMenuItem" Click="UnregisterMenuItem_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xECC9;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </ItemsRepeater.ContextFlyout>
+                <DataTemplate x:DataType="helpers:ExternalTool">
+                    <Button Click="ExternalToolButton_Click" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" Tag="{x:Bind}" PointerPressed="ExternalToolButton_PointerPressed">
+                        <Image Source="{x:Bind ToolIcon, Mode=OneWay}" Width="22" Height="22" Stretch="Uniform"/>
+                    </Button>
+                </DataTemplate>
+            </ItemsRepeater>
+            </StackPanel>
+
+            <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1">
+                <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="10" VerticalAlignment="Center" Margin="5"/>
+            </StackPanel>
+
+        <Border
+        x:Name="LargeContentPanel" Visibility="Collapsed" Grid.Row="2"
+        BorderThickness="0" 
+        VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <controls:ExpandedViewControl x:Name="ExpandedViewControl"/>
+        </Border>
+    </Grid>
+</winex:WindowEx>

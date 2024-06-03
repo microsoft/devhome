@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Contracts;
 using DevHome.Contracts.Services;
@@ -44,6 +44,11 @@ public class ThemeSelectorService : IThemeSelectorService
         // https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.elementtheme?view=windows-app-sdk-1.2#fields
         return Theme == ElementTheme.Dark ||
             (Theme == ElementTheme.Default && Application.Current.RequestedTheme == ApplicationTheme.Dark);
+    }
+
+    public ElementTheme GetActualTheme()
+    {
+        return IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
     }
 
     private async Task<ElementTheme> LoadThemeFromSettingsAsync()

@@ -1,6 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
+using System.Diagnostics;
 using OpenQA.Selenium.Appium.Windows;
 
 namespace DevHome.UITest.Pages;
@@ -10,7 +11,7 @@ namespace DevHome.UITest.Pages;
 /// </summary>
 public class MachineConfigurationPage : ApplicationPage
 {
-    private WindowsElement EndToEndSetupButton => Driver.FindElementByAccessibilityId("EndToEndSetupButton");
+    public WindowsElement EndToEndSetupButton => Driver.FindElementByAccessibilityId("EndToEndSetupButton");
 
     private WindowsElement DSCConfigurationButton => Driver.FindElementByAccessibilityId("DSCConfigurationButton");
 
@@ -23,5 +24,12 @@ public class MachineConfigurationPage : ApplicationPage
     public MachineConfigurationPage(WindowsDriver<WindowsElement> driver)
         : base(driver)
     {
+    }
+
+    public RepoConfigPage GoToRepoPage()
+    {
+        Trace.WriteLine("Going to repo page");
+        CloneRepoButton.Click();
+        return new RepoConfigPage(Driver);
     }
 }

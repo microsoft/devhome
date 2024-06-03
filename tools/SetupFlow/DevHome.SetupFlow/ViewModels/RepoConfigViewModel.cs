@@ -1,16 +1,24 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Helpers;
+using DevHome.Common.TelemetryEvents.SetupFlow.RepoTool;
+using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.SetupFlow.Utilities;
+using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Xaml;
+using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -19,20 +27,73 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class RepoConfigViewModel : SetupPageViewModelBase
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepoConfigViewModel));
+
     /// <summary>
     /// All the tasks that need to be ran during the loading page.
     /// </summary>
     private readonly RepoConfigTaskGroup _taskGroup;
 
+    public IHost Host
+    {
+        get;
+    }
+
     private readonly IDevDriveManager _devDriveManager;
 
+    private readonly IThemeSelectorService _themeSelectorService;
+
+    /// <summary>
+    /// The minimum available space the user should have on the drive that holds their OS, in gigabytes.
+    /// This value is not in bytes.
+    /// </summary>
+    private const double MinimumAvailableSpaceInGbForDevDriveAutoCheckbox = 200D;
+
+    /// <summary>
+    /// The minimum available space the user should have on the drive that holds their OS, in bytes.
+    /// </summary>
+    private readonly ulong _minimumAvailableSpaceInBytesForDevDriveAutoCheckbox = DevDriveUtil.ConvertToBytes(MinimumAvailableSpaceInGbForDevDriveAutoCheckbox, ByteUnit.GB);
+
+    private bool _shouldAutoCheckDevDriveCheckbox = true;
+
     public ISetupFlowStringResource LocalStringResource { get; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the Dev Drive checkbox should be enabled when the user launches the add repository dialog.
+    /// If the user unchecks the checkbox then we respect their choice for that instance of the setup flow.
+    /// </summary>
+    public bool ShouldAutoCheckDevDriveCheckbox
+    {
+        get
+        {
+            try
+            {
+                var osDrive = new DriveInfo(Path.GetPathRoot(Environment.SystemDirectory));
+                if (!osDrive.IsReady || _minimumAvailableSpaceInBytesForDevDriveAutoCheckbox > (ulong)osDrive.AvailableFreeSpace)
+                {
+                    _shouldAutoCheckDevDriveCheckbox = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Information($"Unable to check if Dev Drive checkbox should be auto checked: {ex.Message}");
+                _shouldAutoCheckDevDriveCheckbox = false;
+            }
+
+            return _shouldAutoCheckDevDriveCheckbox;
+        }
+
+        set => _shouldAutoCheckDevDriveCheckbox = value;
+    }
+
+    [ObservableProperty]
+    private string _pageSubTitle;
 
     /// <summary>
     /// All repositories the user wants to clone.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<CloningInformation> _repoReviewItems = new ();
+    private ObservableCollection<CloningInformation> _repoReviewItems = new();
 
     public IDevDriveManager DevDriveManager => _devDriveManager;
 
@@ -40,7 +101,8 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         IDevDriveManager devDriveManager,
-        RepoConfigTaskGroup taskGroup)
+        RepoConfigTaskGroup taskGroup,
+        IHost host)
         : base(stringResource, orchestrator)
     {
         _taskGroup = taskGroup;
@@ -49,6 +111,22 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         RepoDialogCancelled += _devDriveManager.CancelChangesToDevDrive;
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReposConfigPageTitle);
         NextPageButtonToolTipText = stringResource.GetLocalized(StringResourceKey.RepoToolNextButtonTooltip);
+        _themeSelectorService = host.GetService<IThemeSelectorService>();
+        _themeSelectorService.ThemeChanged += OnThemeChanged;
+        Host = host;
+
+        PageSubTitle = Orchestrator.IsSettingUpLocalMachine
+            ? stringResource.GetLocalized(StringResourceKey.SetupShellRepoConfigLocalMachine)
+            : stringResource.GetLocalized(StringResourceKey.SetupShellRepoConfigTargetMachine);
+    }
+
+    private void OnThemeChanged(object sender, ElementTheme newRequestedTheme)
+    {
+        // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
+        foreach (var cloneInformation in RepoReviewItems)
+        {
+            cloneInformation.SetIcon(_themeSelectorService.GetActualTheme());
+        }
     }
 
     /// <summary>
@@ -105,7 +183,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// <param name="cloningInformation">The cloning information to remove.</param>
     public void RemoveCloningInformation(CloningInformation cloningInformation)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {cloningInformation.RepositoryId} from repos to clone");
+        _log.Information($"Removing repository {cloningInformation.RepositoryId} from repos to clone");
         RepoReviewItems.Remove(cloningInformation);
 
         // force collection to be empty(?) converter won't fire otherwise.
@@ -124,6 +202,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         {
             RepoReviewItems[location] = cloningInformation;
             _taskGroup.SaveSetupTaskInformation(RepoReviewItems.ToList());
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_RepoModification_Event", LogLevel.Critical, new RepoInfoModificationEvent("ClonePath"), Host.GetService<SetupFlowOrchestrator>().ActivityId);
         }
     }
 
@@ -134,12 +213,12 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// <param name="cloningInfo">Cloning info that has a new path for the Dev Drive</param>
     public void UpdateCollectionWithDevDriveInfo(CloningInformation cloningInfo)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Updating dev drive location on repos to clone after change to dev drive");
+        _log.Information("Updating dev drive location on repos to clone after change to dev drive");
         foreach (var item in RepoReviewItems)
         {
             if (item.CloneToDevDrive && item.CloningLocation != cloningInfo.CloningLocation)
             {
-                Log.Logger?.ReportDebug(Log.Component.RepoConfig, $"Updating {item.RepositoryId}");
+                _log.Debug($"Updating {item.RepositoryId}");
                 item.CloningLocation = new System.IO.DirectoryInfo(cloningInfo.CloningLocation.FullName);
                 item.CloneLocationAlias = cloningInfo.CloneLocationAlias;
             }
@@ -160,7 +239,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
     public void ReportDialogCancellation()
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repo add/edit dialog cancelled");
+        _log.Information("Repo add/edit dialog cancelled");
         RepoDialogCancelled();
     }
 }

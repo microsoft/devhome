@@ -2,45 +2,41 @@
     x:Class="DevHome.Settings.Views.AboutPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:helpers="using:DevHome.Common.Helpers"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
-    mc:Ignorable="d">
+    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
-    <ScrollViewer
-        MaxWidth="{ThemeResource MaxPageContentWidth}"
-        Margin="{ThemeResource ContentPageMargin}"
-        VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="{StaticResource XSmallTopMargin}">
-            <BreadcrumbBar
-                x:Name="BreadcrumbBar"
-                Margin="0,0,0,16"
-                ItemClicked="BreadcrumbBar_ItemClicked"
-                ItemsSource="{x:Bind Breadcrumbs}" />
-
-            <labs:SettingsExpander x:Uid="Settings_About_Card" IsExpanded="True">
-                <labs:SettingsExpander.HeaderIcon>
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+        <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <ctControls:SettingsExpander x:Uid="Settings_About_Card" IsExpanded="True">
+                <ctControls:SettingsExpander.HeaderIcon>
                     <BitmapIcon ShowAsMonochrome="False" UriSource="/Assets/DevHome.ico" />
-                </labs:SettingsExpander.HeaderIcon>
+                </ctControls:SettingsExpander.HeaderIcon>
                 <TextBlock
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     IsTextSelectionEnabled="True"
                     Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" />
-                <labs:SettingsExpander.Items>
-                    <labs:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
+                <ctControls:SettingsExpander.Items>
+                    <ctControls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
                         <StackPanel Orientation="Vertical">
                             <TextBlock x:Uid="Settings_About_RelatedLinks" Margin="{StaticResource XSmallTopBottomMargin}" />
                             <HyperlinkButton x:Uid="SettingsPage_SourceCodeLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
                             <HyperlinkButton x:Uid="SettingsPage_DocumentationLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
                             <HyperlinkButton x:Uid="SettingsPage_ReleaseNotesLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
                             <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
+                            <HyperlinkButton x:Uid="SettingsPage_OpenThirdPartyNoticeLink" Command="{x:Bind ViewModel.OpenThirdPartyNoticeCommand}" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
                         </StackPanel>
-                    </labs:SettingsCard>
-                </labs:SettingsExpander.Items>
-            </labs:SettingsExpander>
-        </StackPanel>
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard
+                        Visibility="Collapsed"
+                        x:Name="ViewLogsSettingsCard"
+                        x:Uid="ViewLogs"
+                        IsClickEnabled="True"
+                        ActionIcon="{ui:FontIcon Glyph=&#xE8A7;}" />
+                </ctControls:SettingsExpander.Items>
+            </ctControls:SettingsExpander>
+        </Grid>
     </ScrollViewer>
 </Page>

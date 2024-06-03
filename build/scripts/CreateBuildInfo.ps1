@@ -6,7 +6,7 @@ Param(
 )
 
 $Major = "0"
-$Minor = "4"
+$Minor = "14"
 $Patch = "99" # default to 99 for local builds
 
 $versionSplit = $Version.Split(".");
@@ -55,9 +55,7 @@ if ([string]::IsNullOrWhiteSpace($Build)) {
   }
 }
 #
-if ($IsSdkVersion) {
-  $version_dotquad = [int[]]($Major, ($Minor + $Patch), $Elapsed)
-} else {
-  $version_dotquad = [int[]]($Major, ($Minor + $Patch), $Elapsed, $Build)
-}
+
+$version_dotquad = [int[]]($Major, ($Minor + $Patch), $Elapsed, $Build)
+
 return ($version_dotquad -Join ".")

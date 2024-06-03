@@ -1,8 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services.WinGet;
+using DevHome.SetupFlow.Services.WinGet.Operations;
 
 namespace DevHome.SetupFlow.Services;
 
@@ -13,73 +16,43 @@ namespace DevHome.SetupFlow.Services;
 public interface IWindowsPackageManager
 {
     /// <summary>
-    /// Gets the predefined WinGet catalog id
+    /// Initialize the winget package manager.
     /// </summary>
-    public string WinGetCatalogId
-    {
-        get;
-    }
+    public Task InitializeAsync();
 
-    /// <summary>
-    /// Gets the predefined MsStore catalog id
-    /// </summary>
-    public string MsStoreId
-    {
-        get;
-    }
+    /// <inheritdoc cref="IWinGetOperations.InstallPackageAsync"/>
+    public Task<InstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri);
 
-    /// <summary>
-    /// Gets a composite catalog for all remote and local catalogs.
-    /// </summary>
-    public IWinGetCatalog AllCatalogs
-    {
-        get;
-    }
+    /// <inheritdoc cref="IWinGetOperations.GetPackagesAsync"/>
+    public Task<IList<IWinGetPackage>> GetPackagesAsync(IList<WinGetPackageUri> packageUris);
 
-    /// <summary>
-    /// Gets a composite catalog for the predefined <c>winget</c> and local catalogs.
-    /// </summary>
-    public IWinGetCatalog WinGetCatalog
-    {
-        get;
-    }
+    /// <inheritdoc cref="IWinGetOperations.SearchAsync"/>
+    public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit);
 
-    /// <summary>
-    /// Opens all custom composite catalogs.
-    /// </summary>
-    /// <param name="force">Force connect</param>
-    /// <exception cref="CatalogConnectionException">Exception thrown if a catalog connection failed</exception>
-    public Task ConnectToAllCatalogsAsync(bool force = false);
+    /// <inheritdoc cref="IWinGetDeployment.IsUpdateAvailableAsync"/>
+    public Task<bool> IsUpdateAvailableAsync();
 
-    /// <summary>
-    /// Install a winget package
-    /// </summary>
-    /// <param name="package">Package to install</param>
-    /// <returns>Install package result</returns>
-    public Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package);
+    /// <inheritdoc cref="IWinGetDeployment.IsAvailableAsync"/>
+    public Task<bool> IsAvailableAsync();
 
-    /// <summary>
-    /// Checks if AppInstaller has an available update
-    /// </summary>
-    /// <returns>True if an AppInstaller update is available, false otherwise</returns>
-    public Task<bool> IsAppInstallerUpdateAvailableAsync();
-
-    /// <summary>
-    /// Start AppInstaller update
-    /// </summary>
-    /// <returns>True if the update started, false otherwise.</returns>
-    public Task<bool> StartAppInstallerUpdateAsync();
-
-    /// <summary>
-    /// Check whether the WindowsPackageManagerServer is available to create
-    /// out-of-proc COM objects
-    /// </summary>
-    /// <returns>True if COM Server is available, false otherwise</returns>
-    public Task<bool> IsCOMServerAvailableAsync();
-
-    /// <summary>
-    /// Register AppInstaller
-    /// </summary>
-    /// <returns>True if AppInstaller was registered, false otherwise.</returns>
+    /// <inheritdoc cref="IWinGetDeployment.RegisterAppInstallerAsync"/>
     public Task<bool> RegisterAppInstallerAsync();
+
+    /// <inheritdoc cref="IWinGetCatalogConnector.IsMsStorePackage"/>
+    public bool IsMsStorePackage(IWinGetPackage package);
+
+    /// <inheritdoc cref="IWinGetCatalogConnector.IsWinGetPackage"/>
+    public bool IsWinGetPackage(IWinGetPackage package);
+
+    /// <inheritdoc cref="IWinGetProtocolParser.CreatePackageUri"/>
+    public WinGetPackageUri CreatePackageUri(IWinGetPackage package);
+
+    /// <inheritdoc cref="IWinGetProtocolParser.CreateWinGetCatalogPackageUri"/>
+    public WinGetPackageUri CreateWinGetCatalogPackageUri(string packageId);
+
+    /// <inheritdoc cref="IWinGetProtocolParser.CreateMsStoreCatalogPackageUri"/>
+    public WinGetPackageUri CreateMsStoreCatalogPackageUri(string packageId);
+
+    /// <inheritdoc cref="IWinGetProtocolParser.CreateCustomCatalogPackageUri"/>
+    public WinGetPackageUri CreateCustomCatalogPackageUri(string packageId, string catalogName);
 }

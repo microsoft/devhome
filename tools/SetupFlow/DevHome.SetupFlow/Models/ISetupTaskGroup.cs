@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.Generic;
 using DevHome.SetupFlow.ViewModels;
@@ -29,9 +29,17 @@ public interface ISetupTaskGroup
     public ReviewTabViewModelBase GetReviewTabViewModel();
 
     /// <summary>
-    /// Gets all the individual setup tasks that make up this group
+    /// Gets all the setup tasks that make up this group
     /// </summary>
     public IEnumerable<ISetupTask> SetupTasks
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets all the DSC tasks that make up this group
+    /// </summary>
+    public IEnumerable<ISetupTask> DSCTasks
     {
         get;
     }

@@ -1,35 +1,34 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common;
-using DevHome.Contracts.Services;
-using DevHome.Helpers;
-using DevHome.Settings.ViewModels;
-using DevHome.Settings.Views;
+using DevHome.Common.Contracts;
+using DevHome.Common.Models;
+using DevHome.Common.Services;
+using DevHome.Customization.Extensions;
+using DevHome.ExtensionLibrary.Extensions;
+using DevHome.Settings.Extensions;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.UI.Xaml.Controls;
-using Newtonsoft.Json;
-using WinRT;
 
 namespace DevHome.Services;
 
 public class PageService : IPageService
 {
-    private readonly Dictionary<string, Type> _pages = new ();
+#if CANARY_BUILD
+    private const string BuildType = "canary";
+#elif STABLE_BUILD
+    private const string BuildType = "stable";
+#else
+    private const string BuildType = "dev";
+#endif
 
-    public PageService()
+    private readonly Dictionary<string, Type> _pages = new();
+
+    public PageService(ILocalSettingsService localSettingsService, IExperimentationService experimentationService, IQuickstartSetupService quickstartSetupService)
     {
-        Configure<SettingsViewModel, SettingsPage>();
-        Configure<PreferencesViewModel, PreferencesPage>();
-        Configure<AccountsViewModel, AccountsPage>();
-        Configure<ExtensionsViewModel, ExtensionsPage>();
-        Configure<AboutViewModel, AboutPage>();
-        Configure<FeedbackViewModel, FeedbackPage>();
-        Configure<WhatsNewViewModel, WhatsNewPage>();
-
+        // Configure top-level pages from registered tools
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var group in App.NavConfig.NavMenu.Groups)
         {
@@ -41,6 +40,32 @@ public class PageService : IPageService
 
                 Configure(tool.ViewModelFullName, toolType.First());
             }
+        }
+
+        // Configure footer pages
+        Configure<WhatsNewViewModel, WhatsNewPage>();
+        this.ConfigureExtensionLibraryPages();
+        this.ConfigureSettingsPages();
+        this.ConfigureCustomizationPages();
+
+        // Configure Experimental Feature pages
+        ExperimentalFeature.LocalSettingsService = localSettingsService;
+        ExperimentalFeature.QuickstartSetupService = quickstartSetupService;
+        foreach (var experimentalFeature in App.NavConfig.ExperimentFeatures ?? Array.Empty<DevHome.Helpers.ExperimentalFeatures>())
+        {
+            var enabledByDefault = experimentalFeature.EnabledByDefault;
+            var isVisible = true;
+            foreach (var buildTypeOverride in experimentalFeature.BuildTypeOverrides ?? Array.Empty<DevHome.Helpers.BuildTypeOverrides>())
+            {
+                if (buildTypeOverride.BuildType == BuildType)
+                {
+                    enabledByDefault = buildTypeOverride.EnabledByDefault;
+                    isVisible = buildTypeOverride.Visible;
+                    break;
+                }
+            }
+
+            experimentationService.AddExperimentalFeature(new ExperimentalFeature(experimentalFeature.Identity, enabledByDefault, isVisible));
         }
     }
 
@@ -58,7 +83,7 @@ public class PageService : IPageService
         return pageType;
     }
 
-    private void Configure<T_VM, T_V>()
+    public void Configure<T_VM, T_V>()
         where T_VM : ObservableObject
         where T_V : Page
     {

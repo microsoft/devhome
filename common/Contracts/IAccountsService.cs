@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,5 +15,5 @@ public interface IAccountsService
 
     IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider);
 
-    IReadOnlyList<IDeveloperId> GetDeveloperIds(IPlugin plugin);
+    IReadOnlyList<IDeveloperId> GetDeveloperIds(IExtension extension);
 }

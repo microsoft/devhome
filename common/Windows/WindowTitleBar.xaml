@@ -1,0 +1,63 @@
+<UserControl
+    x:Class="DevHome.Common.Windows.WindowTitleBar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    VerticalAlignment="Top"
+    Height="{StaticResource WindowTitleBarHeight}"
+    Margin="{StaticResource WindowTitleBarOffset}"
+    IsHitTestVisible="True"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:BoolToObjectConverter
+                x:Key="SpacingConverter"
+                FalseValue="{StaticResource WindowTitleBarComponentSpacing}"
+                TrueValue="0"/>
+            <converters:BoolToObjectConverter
+                x:Key="IconContainerConverter"
+                FalseValue="auto"
+                TrueValue="0"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid ColumnSpacing="{x:Bind HideIcon, Mode=OneWay, Converter={StaticResource SpacingConverter}}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{x:Bind HideIcon, Mode=OneWay, Converter={StaticResource IconContainerConverter}}"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Icon -->
+        <ContentControl
+            x:Name="IconControl"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            IsTabStop="False">
+            <ContentControl.Resources>
+                <ResourceDictionary>
+                    <Style TargetType="ImageIcon">
+                        <Setter Property="Width" Value="{StaticResource WindowTitleBarIconWidth}" />
+                        <Setter Property="Height" Value="{StaticResource WindowTitleBarIconHeight}" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="HorizontalAlignment" Value="Left" />
+                    </Style>
+                </ResourceDictionary>
+            </ContentControl.Resources>
+            <ContentControl.Content>
+                <ImageIcon x:Name="DefaultIconContent" Source="{x:Bind IconSource}" />
+            </ContentControl.Content>
+        </ContentControl>
+
+        <!-- Title -->
+        <TextBlock
+            x:Name="TitleTextBlock"
+            Grid.Column="1"
+            Text="{x:Bind Title, Mode=OneWay}"
+            Style="{ThemeResource CaptionTextBlockStyle}"
+            VerticalAlignment="Center"
+            TextTrimming="CharacterEllipsis"
+            TextWrapping="NoWrap" />
+    </Grid>
+</UserControl>

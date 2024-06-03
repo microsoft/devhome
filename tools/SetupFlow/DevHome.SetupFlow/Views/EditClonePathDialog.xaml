@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <ContentDialog
@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/EditClonePathDialog"
     mc:Ignorable="d"
     IsPrimaryButtonEnabled="{x:Bind EditClonePathViewModel.IsPrimaryButtonEnabled, Mode=OneWay}"
@@ -18,17 +18,15 @@
     <ContentDialog.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupToolStyles.xaml" />
                 <ResourceDictionary>
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ContentDialog.Resources>
-    <StackPanel MinWidth="420">
+    <StackPanel>
         <StackPanel
             Visibility="{x:Bind EditClonePathViewModel.ShouldShowAreYouSureMessage, Mode=OneWay}"
-            Width="400"
             Margin="0 20 0 20">
             <TextBlock
                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/EditClonePathDialogUncheckedCheckMarkWarning"
@@ -41,7 +39,7 @@
             MinWidth="500">
             <StackPanel.Resources>
                 <ResourceDictionary>
-                    <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+                    <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource AccentButtonStyle}">
                         <Setter Property="Background">
                             <Setter.Value>
                                 <SolidColorBrush Color="{ThemeResource SystemAccentColor}"/>
@@ -54,7 +52,7 @@
             <Grid Visibility="{x:Bind FolderPickerViewModel.ShouldShowFolderPicker, Mode=OneWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <!--Folder picker-->
                 <StackPanel
@@ -84,7 +82,7 @@
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" 
                     Click="ChooseCloneLocationButton_Click"  
                     Grid.Column="1" 
-                    Margin="5, 25, 0, 0"
+                    Margin="5, 27, 10, 0"
                     Padding="8 5 10 5"/>
                 </Grid>
             </Grid>

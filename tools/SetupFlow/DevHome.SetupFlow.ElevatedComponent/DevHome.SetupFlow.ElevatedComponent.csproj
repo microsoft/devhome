@@ -1,13 +1,13 @@
-﻿<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+﻿<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <Project Sdk="Microsoft.NET.Sdk">
-
-
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Platforms>x86;x64;arm64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <!-- CsWinRT properties -->
@@ -20,23 +20,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.188-beta">
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
-    <!-- 
-    The ExcludeAssets=runtime is needed to prevent build errors from System.Management.dll being produced in 2 different locations.
-    DevHome.SetupFlow.Common.csproj, uses System.Management instead, to prevent the reference from escaping into here
-    and producing a separate dll that will break the build, this package reference overwrites the one inherited from the comInterop the project.
-    The ComInterop project was used since this The ElevatedComponent already depends on it. But a better solution is needed once we figure out 
-    why 2 separate dlls get produced.
-    -->
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
-    <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
   </ItemGroup>
 </Project>

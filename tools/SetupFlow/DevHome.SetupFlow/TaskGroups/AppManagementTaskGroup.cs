@@ -1,8 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -25,9 +26,24 @@ public class AppManagementTaskGroup : ISetupTaskGroup
         _appManagementReviewViewModel = appManagementReviewViewModel;
     }
 
-    public IEnumerable<ISetupTask> SetupTasks => _packageProvider.SelectedPackages.Select(sp => sp.InstallPackageTask);
+    public IEnumerable<ISetupTask> SetupTasks => _packageProvider.SelectedPackages
+        .Where(sp => sp.CanInstall)
+        .Select(sp => sp.InstallPackageTask);
+
+    public IEnumerable<ISetupTask> DSCTasks => _packageProvider.SelectedPackages
+        .Select(sp => sp.InstallPackageTask);
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _appManagementViewModel;
 
     public ReviewTabViewModelBase GetReviewTabViewModel() => _appManagementReviewViewModel;
+
+    public void HandleSearchQuery(string query)
+    {
+        var searchParameter = HttpUtility.ParseQueryString(query)["search"];
+        if (!string.IsNullOrEmpty(searchParameter))
+        {
+            var trimmedSearchParameter = searchParameter.Trim('\"');
+            _appManagementViewModel.PerformSearch(trimmedSearchParameter);
+        }
+    }
 }

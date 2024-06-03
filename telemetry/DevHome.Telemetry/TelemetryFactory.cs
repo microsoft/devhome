@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 namespace DevHome.Telemetry;
 
@@ -8,7 +8,7 @@ namespace DevHome.Telemetry;
 /// This would be useful for the future when interfaces have been updated for logger like ITelemetry2, ITelemetry3 and so on
 public class TelemetryFactory
 {
-    private static readonly object LockObj = new ();
+    private static readonly object LockObj = new();
 
     private static Telemetry telemetryInstance;
 

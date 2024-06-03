@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
 
@@ -8,11 +8,21 @@ namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
 /// </summary>
 public sealed class ElevatedConfigureUnitTaskResult
 {
-    public string? UnitName { get; set; }
+    public string? Type { get; set; }
+
+    public string? Id { get; set; }
+
+    public string? UnitDescription { get; set; }
 
     public string? Intent { get; set; }
 
     public bool IsSkipped { get; set; }
 
     public int HResult { get; set; }
+
+    public int ResultSource { get; set; }
+
+    public string? Details { get; set; }
+
+    public string? ErrorDescription { get; set; }
 }

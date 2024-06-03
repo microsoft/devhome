@@ -1,10 +1,7 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.ObjectModel;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
-using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -13,35 +10,25 @@ namespace DevHome.Settings.Views;
 
 public sealed partial class PreferencesPage : Page
 {
-    public PreferencesViewModel ViewModel
-    {
-        get;
-    }
-
-    public ObservableCollection<Breadcrumb> Breadcrumbs
-    {
-        get;
-    }
+    public PreferencesViewModel ViewModel { get; }
 
     public PreferencesPage()
     {
         ViewModel = Application.Current.GetService<PreferencesViewModel>();
         this.InitializeComponent();
-
-        var stringResource = new StringResource("DevHome.Settings/Resources");
-        Breadcrumbs = new ObservableCollection<Breadcrumb>
-        {
-            new Breadcrumb(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
-            new Breadcrumb(stringResource.GetLocalized("Settings_Preferences_Header"), typeof(PreferencesViewModel).FullName!),
-        };
     }
 
-    private void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
+    private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        if (args.Index < Breadcrumbs.Count - 1)
+        var selectedTheme = ViewModel.ElementTheme;
+        foreach (var item in ThemeSelectionComboBox.Items)
         {
-            var crumb = (Breadcrumb)args.Item;
-            crumb.NavigateTo();
+            var comboItem = item as ComboBoxItem;
+            if (comboItem?.Tag is ElementTheme tag && tag == selectedTheme)
+            {
+                ThemeSelectionComboBox.SelectedValue = item;
+                break;
+            }
         }
     }
 }

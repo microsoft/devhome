@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -9,9 +9,9 @@ namespace DevHome.SetupFlow.Common.WindowsPackageManager;
 
 internal static class ClassesDefinition
 {
-    private static Dictionary<Type, ClassModel> Classes { get; } = new ()
+    private static Dictionary<Type, ClassModel> Classes { get; } = new()
     {
-        [typeof(PackageManager)] = new ()
+        [typeof(PackageManager)] = new()
         {
             ProjectedClassType = typeof(PackageManager),
             InterfaceType = typeof(IPackageManager),
@@ -22,7 +22,7 @@ internal static class ClassesDefinition
             },
         },
 
-        [typeof(FindPackagesOptions)] = new ()
+        [typeof(FindPackagesOptions)] = new()
         {
             ProjectedClassType = typeof(FindPackagesOptions),
             InterfaceType = typeof(IFindPackagesOptions),
@@ -33,7 +33,7 @@ internal static class ClassesDefinition
             },
         },
 
-        [typeof(CreateCompositePackageCatalogOptions)] = new ()
+        [typeof(CreateCompositePackageCatalogOptions)] = new()
         {
             ProjectedClassType = typeof(CreateCompositePackageCatalogOptions),
             InterfaceType = typeof(ICreateCompositePackageCatalogOptions),
@@ -44,7 +44,7 @@ internal static class ClassesDefinition
             },
         },
 
-        [typeof(InstallOptions)] = new ()
+        [typeof(InstallOptions)] = new()
         {
             ProjectedClassType = typeof(InstallOptions),
             InterfaceType = typeof(IInstallOptions),
@@ -55,7 +55,7 @@ internal static class ClassesDefinition
             },
         },
 
-        [typeof(UninstallOptions)] = new ()
+        [typeof(UninstallOptions)] = new()
         {
             ProjectedClassType = typeof(UninstallOptions),
             InterfaceType = typeof(IUninstallOptions),
@@ -66,7 +66,7 @@ internal static class ClassesDefinition
             },
         },
 
-        [typeof(PackageMatchFilter)] = new ()
+        [typeof(PackageMatchFilter)] = new()
         {
             ProjectedClassType = typeof(PackageMatchFilter),
             InterfaceType = typeof(IPackageMatchFilter),

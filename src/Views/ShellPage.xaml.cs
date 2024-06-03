@@ -1,26 +1,22 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Markup;
-using Microsoft.UI.Xaml.Media;
 using Windows.System;
 
 namespace DevHome.Views;
 
 public sealed partial class ShellPage : Page
 {
-    public ShellViewModel ViewModel
-    {
-        get;
-    }
+    public ShellViewModel ViewModel { get; }
 
     public ShellPage(ShellViewModel viewModel)
     {
@@ -36,9 +32,10 @@ public sealed partial class ShellPage : Page
         App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.Activated += MainWindow_Activated;
-        AppTitleBarText.Text = Application.Current.GetService<IAppInfoService>().GetAppNameLocalized();
 
         ActualThemeChanged += OnActualThemeChanged;
+
+        PointerPressed += OnPointerPressed;
     }
 
     private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -47,6 +44,8 @@ public sealed partial class ShellPage : Page
 
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
+        KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Right, VirtualKeyModifiers.Menu));
+        KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoForward));
 
         await ViewModel.OnLoaded();
     }
@@ -55,29 +54,22 @@ public sealed partial class ShellPage : Page
     {
         // Update the title bar if the system theme changes.
         TitleBarHelper.UpdateTitleBar(App.MainWindow, ActualTheme);
+        AppTitleBar.Repaint();
+
+        ViewModel.NotifyActualThemeChanged();
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
-        var resource = args.WindowActivationState == WindowActivationState.Deactivated ? "WindowCaptionForegroundDisabled" : "WindowCaptionForeground";
-
-        AppTitleBarText.Foreground = (SolidColorBrush)App.Current.Resources[resource];
+        AppTitleBar.IsActive = args.WindowActivationState != WindowActivationState.Deactivated;
     }
 
     private void NavigationViewControl_DisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)
     {
-        AppTitleBar.Margin = new Thickness()
-        {
-            Left = sender.CompactPaneLength,
-            Top = AppTitleBar.Margin.Top,
-            Right = AppTitleBar.Margin.Right,
-            Bottom = AppTitleBar.Margin.Bottom,
-        };
-
         ShellInfoBar.Margin = new Thickness()
         {
             Left = ShellInfoBar.Margin.Left,
-            Top = sender.DisplayMode == NavigationViewDisplayMode.Minimal ? 50 : 5,
+            Top = sender.DisplayMode == NavigationViewDisplayMode.Minimal ? 50 : 0,
             Right = ShellInfoBar.Margin.Right,
             Bottom = ShellInfoBar.Margin.Bottom,
         };
@@ -99,24 +91,76 @@ public sealed partial class ShellPage : Page
 
     private static void OnKeyboardAcceleratorInvoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
-        var navigationService = Application.Current.GetService<INavigationService>();
+        if ((sender.Key == VirtualKey.GoBack) ||
+            ((sender.Key == VirtualKey.Left) && sender.Modifiers.HasFlag(VirtualKeyModifiers.Menu)))
+        {
+            args.Handled = Application.Current.GetService<INavigationService>().GoBack();
+        }
+        else if ((sender.Key == VirtualKey.GoForward) ||
+            ((sender.Key == VirtualKey.Right) && sender.Modifiers.HasFlag(VirtualKeyModifiers.Menu)))
+        {
+            args.Handled = Application.Current.GetService<INavigationService>().GoForward();
+        }
+    }
 
-        var result = navigationService.GoBack();
+    private static void OnPointerPressed(object sender, PointerRoutedEventArgs args)
+    {
+        var handled = false;
 
-        args.Handled = result;
+        // Handle mouse forward and back navigation.
+        if (args.GetCurrentPoint(null).Properties.IsXButton1Pressed)
+        {
+            handled = Application.Current.GetService<INavigationService>().GoBack();
+        }
+        else if (args.GetCurrentPoint(null).Properties.IsXButton2Pressed)
+        {
+            handled = Application.Current.GetService<INavigationService>().GoForward();
+        }
+
+        args.Handled = handled;
+    }
+
+    public static readonly DependencyProperty ExperimentalFeatureProperty = DependencyProperty.Register(
+        "ExperimentalFeature",
+        typeof(ExperimentalFeature),
+        typeof(ShellPage),
+        new PropertyMetadata(null, OnExperimentalFeatureChanged));
+
+    private static void OnExperimentalFeatureChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (e.NewValue != null && e.NewValue is ExperimentalFeature experimentalFeature)
+        {
+            var navigationViewItem = (NavigationViewItem)d;
+            navigationViewItem.Visibility = experimentalFeature.IsEnabled ? Visibility.Visible : Visibility.Collapsed;
+        }
+    }
+
+    private static ExperimentalFeature? GetExperimentalFeature(NavigationViewItem navigationViewItem) => (ExperimentalFeature)navigationViewItem.GetValue(ExperimentalFeatureProperty);
+
+    public void UpdateExperimentalPageState(ExperimentalFeature expFeature)
+    {
+        var nvis = NavigationViewControl.MenuItems.Where(s => GetExperimentalFeature((NavigationViewItem)s) == expFeature);
+        foreach (NavigationViewItem nvi in nvis)
+        {
+            nvi.Visibility = expFeature.IsEnabled ? Visibility.Visible : Visibility.Collapsed;
+        }
     }
 
     private void UpdateNavigationMenuItems()
     {
+        var expService = App.Current.GetService<IExperimentationService>();
         foreach (var group in App.NavConfig.NavMenu.Groups)
         {
             foreach (var tool in group.Tools)
             {
+                var expFeature = expService.ExperimentalFeatures.FirstOrDefault(x => x.Id == tool.ExperimentalFeatureIdentity);
+
                 var navigationViewItemString = $@"
                     <NavigationViewItem
                         xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
                         xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
                         xmlns:helpers=""using:DevHome.Helpers""
+                        xmlns:views=""using:DevHome.Views""
                         x:Uid=""/{tool.Assembly}/Resources/NavigationPane""
                         helpers:NavigationHelper.NavigateTo=""{tool.ViewModelFullName}""
                         AutomationProperties.AutomationId=""{tool.Identity}"">
@@ -125,6 +169,21 @@ public sealed partial class ShellPage : Page
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>";
                 NavigationViewItem navigationViewItem = (NavigationViewItem)XamlReader.Load(navigationViewItemString);
+
+                if (expFeature != null)
+                {
+                    navigationViewItem.Visibility = expFeature.IsEnabled ? Visibility.Visible : Visibility.Collapsed;
+                    expFeature.PropertyChanged += (s, e) =>
+                    {
+                        if (e.PropertyName == nameof(ExperimentalFeature.IsEnabled))
+                        {
+                            UpdateExperimentalPageState(expFeature);
+                        }
+                    };
+                }
+
+                navigationViewItem.SetValue(ExperimentalFeatureProperty, expFeature);
+
                 NavigationViewControl.MenuItems.Add(navigationViewItem);
             }
         }

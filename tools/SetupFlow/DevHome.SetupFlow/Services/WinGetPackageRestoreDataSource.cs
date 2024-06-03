@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -7,14 +7,18 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
+using DevHome.Telemetry;
+using Microsoft.Diagnostics.Telemetry.Internal;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
+using Serilog;
 using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.Services;
+
 public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WinGetPackageRestoreDataSource));
     private readonly IRestoreInfo _restoreInfo;
     private readonly ISetupFlowStringResource _stringResource;
     private IRestoreDeviceInfo _restoreDeviceInfo;
@@ -47,10 +51,11 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         if (restoreDeviceInfoResult.Status == RestoreDeviceInfoStatus.Ok)
         {
             _restoreDeviceInfo = restoreDeviceInfoResult.RestoreDeviceInfo;
+            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_RestoreApps_Found", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance));
         }
         else
         {
-            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Restore data source skipped with status: {restoreDeviceInfoResult.Status}");
+            _log.Warning($"Restore data source skipped with status: {restoreDeviceInfoResult.Status}");
         }
     }
 
@@ -59,22 +64,25 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         var result = new List<PackageCatalog>();
         if (_restoreDeviceInfo == null)
         {
-            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Load catalogs skipped because no restore device information was found");
+            _log.Warning($"Load catalogs skipped because no restore device information was found");
             return result;
         }
 
         try
         {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Finding packages from restore data");
-            var packages = await GetPackagesAsync(
-                _restoreDeviceInfo.WinGetApplicationsInfo,
-                appInfo => appInfo.Id,
-                async (package, appInfo) =>
+            _log.Information("Finding packages from restore data");
+            var packages = await GetPackagesAsync(_restoreDeviceInfo.WinGetApplicationsInfo.Select(p => GetPackageUri(p)).ToList());
+            foreach (var package in packages)
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for restore package {package.Id}");
-                package.LightThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Light);
-                package.DarkThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Dark);
-            });
+                var packageUri = WindowsPackageManager.CreatePackageUri(package);
+                _log.Information($"Obtaining icon information for restore package {package.Id}");
+                var appInfo = _restoreDeviceInfo.WinGetApplicationsInfo.FirstOrDefault(p => packageUri == GetPackageUri(p));
+                if (appInfo != null)
+                {
+                    package.LightThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Light);
+                    package.DarkThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Dark);
+                }
+            }
 
             if (packages.Any())
             {
@@ -87,12 +95,17 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
             }
             else
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, "No packages found from restore");
+                _log.Information("No packages found from restore");
             }
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget restore catalog.", e);
+            _log.Error(e, $"Error loading packages from winget restore catalog.");
+        }
+
+        if (result.Count > 0)
+        {
+            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_RestoreApps_Loaded", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance));
         }
 
         return result;
@@ -125,10 +138,10 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get icon for restore package {appInfo.Id}", e);
+            _log.Error(e, $"Failed to get icon for restore package {appInfo.Id}");
         }
 
-        Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No {theme} icon found for restore package {appInfo.Id}. A default one will be provided.");
+        _log.Warning($"No {theme} icon found for restore package {appInfo.Id}. A default one will be provided.");
         return null;
     }
 
@@ -145,5 +158,16 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         }
 
         return _stringResource.GetLocalized(StringResourceKey.RestorePackagesDescriptionWithDate, _restoreDeviceInfo.DisplayName, _restoreDeviceInfo.LastModifiedTime.ToString("d", CultureInfo.CurrentCulture));
+    }
+
+    /// <summary>
+    /// Gets the package URI for a restore application
+    /// </summary>
+    /// <param name="appInfo">Application information</param>
+    /// <returns>Package URI</returns>
+    /// <remarks>All restored applications are from winget catalog</remarks>
+    private WinGetPackageUri GetPackageUri(IRestoreApplicationInfo appInfo)
+    {
+        return WindowsPackageManager.CreateWinGetCatalogPackageUri(appInfo.Id);
     }
 }

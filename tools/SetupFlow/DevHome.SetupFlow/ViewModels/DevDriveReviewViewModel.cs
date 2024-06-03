@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -36,7 +36,7 @@ public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
     {
         get
         {
-            ObservableCollection<DevDriveReviewTabItem> devDriveReviewTabItem = new ();
+            ObservableCollection<DevDriveReviewTabItem> devDriveReviewTabItem = new();
             var manager = Application.Current.GetService<IDevDriveManager>();
             if (manager.RepositoriesUsingDevDrive > 0)
             {

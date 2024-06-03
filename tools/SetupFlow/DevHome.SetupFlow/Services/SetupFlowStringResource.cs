@@ -1,19 +1,20 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.Extensions.Options;
+using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Diagnostics.Debug;
 
 namespace DevHome.SetupFlow.Services;
+
 public class SetupFlowStringResource : StringResource, ISetupFlowStringResource
 {
     public SetupFlowStringResource(IOptions<SetupFlowOptions> setupFlowOptions)
-        : base(setupFlowOptions.Value.StringResourcePath)
+        : base(setupFlowOptions.Value.StringResourceName, setupFlowOptions.Value.StringResourcePath)
     {
     }
 
@@ -37,7 +38,8 @@ public class SetupFlowStringResource : StringResource, ISetupFlowStringResource
                 if (msgLength == 0)
                 {
                     // if formatting the error code into a message fails, then log this and just return the error code.
-                    Log.Logger?.ReportError(logComponent, $"Failed to format error code.  0x{errorCode:X}");
+                    var log = Log.ForContext("SourceContext", nameof(SetupFlowStringResource));
+                    log.Error($"Failed to format error code.  0x{errorCode:X}");
                     return $"(0x{errorCode:X})";
                 }
 
@@ -45,7 +47,7 @@ public class SetupFlowStringResource : StringResource, ISetupFlowStringResource
             }
             finally
             {
-                PInvoke.LocalFree((IntPtr)formattedMessage.Value);
+                PInvoke.LocalFree((HLOCAL)(IntPtr)formattedMessage.Value);
             }
         }
     }

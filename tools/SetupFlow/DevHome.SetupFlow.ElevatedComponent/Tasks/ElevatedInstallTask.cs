@@ -1,12 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using DevHome.Logging;
 using DevHome.SetupFlow.Common.Extensions;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Microsoft.Management.Deployment;
+using Serilog;
 using Windows.Foundation;
 using Windows.Win32.Foundation;
 
@@ -30,40 +29,41 @@ namespace DevHome.SetupFlow.ElevatedComponent.Tasks;
 //// https://github.com/microsoft/devhome/issues/622
 public sealed class ElevatedInstallTask
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ElevatedInstallTask));
     private readonly WindowsPackageManagerFactory _wingetFactory = new WindowsPackageManagerManualActivationFactory();
 
     /// <summary>
     /// Installs a package given its ID and the ID of the catalog it comes from.
     /// </summary>
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(string packageId, string catalogName)
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(string packageId, string catalogName, string version)
     {
         return Task.Run(async () =>
         {
             var result = new ElevatedInstallTaskResult();
             try
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Elevated install requested for package [{packageId}] from catalog [{catalogName}]");
+                _log.Information($"Elevated install requested for package [{packageId}] from catalog [{catalogName}]");
 
                 var packageManager = _wingetFactory.CreatePackageManager();
 
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Connecting to catalog [{catalogName}]");
+                _log.Information($"Connecting to catalog [{catalogName}]");
                 var catalogReference = packageManager.GetPackageCatalogByName(catalogName);
                 var connectResult = await catalogReference.ConnectAsync();
                 if (connectResult.Status != ConnectResultStatus.Ok)
                 {
-                    Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to the catalog [{catalogName}] with status {connectResult.Status}");
+                    _log.Error($"Failed to connect to the catalog [{catalogName}] with status {connectResult.Status}");
                     result.TaskAttempted = false;
                     return result;
                 }
 
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Finding package [{packageId}] in catalog");
+                _log.Information($"Finding package [{packageId}] in catalog");
                 var findOptions = CreateFindOptionsForPackageId(packageId);
                 var findResult = connectResult.PackageCatalog.FindPackages(findOptions);
                 if (findResult.Status != FindPackagesResultStatus.Ok
                     || findResult.Matches.Count < 1
                     || findResult.WasLimitExceeded)
                 {
-                    Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to find package. Status={findResult.Status}, Matches Count={findResult.Matches.Count}, LimitReached={findResult.WasLimitExceeded}");
+                    _log.Error($"Failed to find package. Status={findResult.Status}, Matches Count={findResult.Matches.Count}, LimitReached={findResult.WasLimitExceeded}");
                     result.TaskAttempted = false;
                     return result;
                 }
@@ -72,15 +72,23 @@ public sealed class ElevatedInstallTask
 
                 var installOptions = _wingetFactory.CreateInstallOptions();
                 installOptions.PackageInstallMode = PackageInstallMode.Silent;
+                if (!string.IsNullOrWhiteSpace(version))
+                {
+                    installOptions.PackageVersionId = FindVersionOrThrow(result, packageToInstall, version);
+                }
+                else
+                {
+                    _log.Information($"Install version not specified. Falling back to default install version {packageToInstall.DefaultInstallVersion.Version}");
+                }
 
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initiating install of package {packageId}");
+                _log.Information($"Initiating install of package {packageId}");
                 var installResult = await packageManager.InstallPackageAsync(packageToInstall, installOptions);
                 var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
 
                 // Contract version 4
                 var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK);
 
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Install finished. Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
+                _log.Information($"Install finished. Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
                 result.TaskAttempted = true;
                 result.TaskSucceeded = installResult.Status == InstallResultStatus.Ok;
                 result.RebootRequired = installResult.RebootRequired;
@@ -92,7 +100,7 @@ public sealed class ElevatedInstallTask
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.AppManagement, "Elevated app install failed.", e);
+                _log.Error(e, "Elevated app install failed.");
                 result.TaskSucceeded = false;
             }
 
@@ -116,5 +124,31 @@ public sealed class ElevatedInstallTask
         findOptions.ResultLimit = 1;
 
         return findOptions;
+    }
+
+    /// <summary>
+    /// Find a specific version in the list of available versions for a package.
+    /// </summary>
+    /// <param name="package">Target package</param>
+    /// <param name="version">Version to find</param>
+    /// <returns>Specified version</returns>
+    /// <exception>Exception thrown if the specified version was not found</exception>
+    private PackageVersionId FindVersionOrThrow(ElevatedInstallTaskResult result, CatalogPackage package, string version)
+    {
+        // Find the version in the list of available versions
+        for (var i = 0; i < package.AvailableVersions.Count; i++)
+        {
+            if (package.AvailableVersions[i].Version == version)
+            {
+                return package.AvailableVersions[i];
+            }
+        }
+
+        var installErrorInvalidParameter = unchecked((int)0x8A150112);
+        result.Status = (int)InstallResultStatus.InvalidOptions;
+        result.ExtendedErrorCode = installErrorInvalidParameter;
+        var message = $"Specified install version was not found {version}.";
+        _log.Error(message);
+        throw new ArgumentException(message);
     }
 }

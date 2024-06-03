@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,7 +23,7 @@ public class DevHomeTestBase
 
     private string TestDeploymentDir => TestContext.Properties[nameof(TestDeploymentDir)].ToString();
 
-    private string TestRunDirectory => TestContext.Properties[nameof(TestRunDirectory)].ToString();
+    public string TestRunDirectory => TestContext.Properties[nameof(TestRunDirectory)].ToString();
 
     [TestInitialize]
     public void TestInitialize()
@@ -47,6 +47,13 @@ public class DevHomeTestBase
         }
 
         Application.Stop();
+    }
+
+    public void RestartDevHome()
+    {
+        Application.Stop();
+
+        Application.Start();
     }
 
     /// <summary>

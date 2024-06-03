@@ -1,26 +1,21 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DevHome.Common.Helpers;
-using DevHome.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Windows.Storage;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.System.Com;
-using Windows.Win32.UI.Shell;
-using Windows.Win32.UI.Shell.Common;
-using WinUIEx;
+using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace DevHome.Common.Extensions;
 
 /// <summary>
-/// This class add extension methods to the <see cref="WindowEx"/> class.
+/// This class add extension methods to the <see cref="Window"/> class.
 /// </summary>
 public static class WindowExExtensions
 {
@@ -33,7 +28,7 @@ public static class WindowExExtensions
     /// <param name="title">Dialog title.</param>
     /// <param name="content">Dialog content.</param>
     /// <param name="buttonText">Close button text.</param>
-    public static async Task ShowErrorMessageDialogAsync(this WindowEx window, string title, string content, string buttonText)
+    public static async Task ShowErrorMessageDialogAsync(this Window window, string title, string content, string buttonText)
     {
         await window.ShowMessageDialogAsync(dialog =>
         {
@@ -41,7 +36,7 @@ public static class WindowExExtensions
             dialog.Content = new TextBlock()
             {
                 Text = content,
-                TextWrapping = Microsoft.UI.Xaml.TextWrapping.WrapWholeWords,
+                TextWrapping = TextWrapping.WrapWholeWords,
             };
             dialog.PrimaryButtonText = buttonText;
         });
@@ -51,11 +46,11 @@ public static class WindowExExtensions
     /// Generic implementation for creating and displaying a message dialog on
     /// a window.
     ///
-    /// This extension method overloads <see cref="WindowEx.ShowMessageDialogAsync"/>.
+    /// This extension method overloads <see cref="Window.ShowMessageDialogAsync"/>.
     /// </summary>
     /// <param name="window">Target window.</param>
     /// <param name="action">Action performed on the created dialog.</param>
-    private static async Task ShowMessageDialogAsync(this WindowEx window, Action<ContentDialog> action)
+    private static async Task ShowMessageDialogAsync(this Window window, Action<ContentDialog> action)
     {
         var dialog = new ContentDialog()
         {
@@ -70,7 +65,7 @@ public static class WindowExExtensions
     /// </summary>
     /// <param name="window">Target window</param>
     /// <param name="theme">New theme.</param>
-    public static void SetRequestedTheme(this WindowEx window, ElementTheme theme)
+    public static void SetRequestedTheme(this Window window, ElementTheme theme)
     {
         if (window.Content is FrameworkElement rootElement)
         {
@@ -80,95 +75,35 @@ public static class WindowExExtensions
     }
 
     /// <summary>
-    /// Open file picker
+    /// Gets the native HWND pointer handle for the window
     /// </summary>
-    /// <param name="window">Target window</param>
-    /// <param name="filters">List of type filters (e.g. *.yaml, *.txt), or empty/<c>null</c> to allow all file types</param>
-    /// <returns>Storage file or <c>null</c> if no file was selected</returns>
-    public static async Task<StorageFile?> OpenFilePickerAsync(this WindowEx window, Logger? logger, params (string Type, string Name)[] filters)
+    /// <param name="window">The window to return the handle for</param>
+    /// <returns>HWND handle</returns>
+    public static IntPtr GetWindowHandle(this Microsoft.UI.Xaml.Window window)
+        => window is null ? throw new ArgumentNullException(nameof(window)) : WinRT.Interop.WindowNative.GetWindowHandle(window);
+
+    /// <summary>
+    /// Centers the window on the current monitor
+    /// </summary>
+    /// <param name="window">The window to center</param>
+    /// <param name="width">Width of the window in device independent pixels, or <c>null</c> if keeping the current size</param>
+    /// <param name="height">Height of the window in device independent pixels, or <c>null</c> if keeping the current size</param>
+    public static void CenterOnScreen(this Microsoft.UI.Xaml.Window window, double? width = null, double? height = null)
     {
-        try
-        {
-            if (filters.Length == 0)
-            {
-                throw new ArgumentException("Input filters cannot be empty");
-            }
-
-            string fileName;
-
-            // File picker fails when running the application as admin.
-            // To workaround this issue, we instead use the Win32 picking APIs
-            // as suggested in the documentation for the FileSavePicker:
-            // >> Original code reference: https://learn.microsoft.com/uwp/api/windows.storage.pickers.filesavepicker?view=winrt-22621#in-a-desktop-app-that-requires-elevation
-            // >> Github issue: https://github.com/microsoft/WindowsAppSDK/issues/2504
-            // "In a desktop app (which includes WinUI 3 apps), you can use
-            // FileSavePicker (and other types from Windows.Storage.Pickers).
-            // But if the desktop app requires elevation to run, then you'll
-            // need a different approach (that's because these APIs aren't
-            // designed to be used in an elevated app). The code snippet below
-            // illustrates how you can use the C#/Win32 P/Invoke Source
-            // Generator (CsWin32) to call the Win32 picking APIs instead."
-            unsafe
-            {
-                var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-
-                var hr = PInvoke.CoCreateInstance<IFileOpenDialog>(
-                    typeof(FileOpenDialog).GUID,
-                    null,
-                    CLSCTX.CLSCTX_INPROC_SERVER,
-                    out var fsd);
-                Marshal.ThrowExceptionForHR(hr);
-
-                IShellItem ppsi;
-                var extensions = new List<COMDLG_FILTERSPEC>();
-
-                try
-                {
-                    // Set filters (e.g. "*.yaml", "*.yml", etc...)
-                    foreach (var filter in filters)
-                    {
-                        COMDLG_FILTERSPEC extension;
-                        extension.pszName = (char*)Marshal.StringToHGlobalUni(filter.Name);
-                        extension.pszSpec = (char*)Marshal.StringToHGlobalUni(filter.Type);
-                        extensions.Add(extension);
-                    }
-
-                    fsd.SetFileTypes(CollectionsMarshal.AsSpan(extensions));
-
-                    fsd.Show(new HWND(hWnd));
-                    fsd.GetResult(out ppsi);
-                }
-                finally
-                {
-                    // Free all filter names and specs
-                    foreach (var extension in extensions)
-                    {
-                        Marshal.FreeHGlobal((IntPtr)extension.pszName.Value);
-                        Marshal.FreeHGlobal((IntPtr)extension.pszSpec.Value);
-                    }
-                }
-
-                // Get the display name and then manually free it after creating the string.
-                // See https://learn.microsoft.com/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitem-getdisplayname:
-                // "It is the responsibility of the caller to free the string pointed to by ppszName
-                // when it is no longer needed. Call CoTaskMemFree on *ppszName to free the memory."
-                PWSTR pFileName;
-                ppsi.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, &pFileName);
-                fileName = new string(pFileName);
-                Marshal.FreeCoTaskMem((IntPtr)pFileName.Value);
-            }
-
-            return await StorageFile.GetFileFromPathAsync(fileName);
-        }
-        catch (COMException e) when (e.ErrorCode == FilePickerCanceledErrorCode)
-        {
-            // No-op: Operation was canceled by the user
-            return null;
-        }
-        catch (Exception e)
-        {
-            logger?.ReportError("File picker failed. Returning null.", e);
-            return null;
-        }
+        var hwnd = window.GetWindowHandle();
+        var hwndDesktop = PInvoke.MonitorFromWindow((HWND)hwnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+        var info = default(MONITORINFO);
+        info.cbSize = (uint)Marshal.SizeOf(info);
+        PInvoke.GetMonitorInfo(hwndDesktop, ref info);
+        var dpi = PInvoke.GetDpiForWindow((HWND)hwnd);
+        PInvoke.GetWindowRect((HWND)hwnd, out RECT windowRect);
+        var scalingFactor = dpi / 96d;
+        var w = width.HasValue ? (int)(width * scalingFactor) : windowRect.right - windowRect.left;
+        var h = height.HasValue ? (int)(height * scalingFactor) : windowRect.bottom - windowRect.top;
+        var cx = (info.rcMonitor.left + info.rcMonitor.right) / 2;
+        var cy = (info.rcMonitor.bottom + info.rcMonitor.top) / 2;
+        var left = cx - (w / 2);
+        var top = cy - (h / 2);
+        PInvoke.SetWindowPos((HWND)hwnd, (HWND)IntPtr.Zero, left, top, w, h, SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
     }
 }

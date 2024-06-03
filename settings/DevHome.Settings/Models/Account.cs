@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Settings.ViewModels;
@@ -21,7 +21,7 @@ public partial class Account : ObservableObject
         _devId = devId;
     }
 
-    public string LoginId => _devId.LoginId();
+    public string LoginId => _devId.LoginId;
 
-    public void RemoveAccount() => _accountsProvider.RemoveAccount(_devId.LoginId());
+    public void RemoveAccount() => _accountsProvider.RemoveAccount(_devId.LoginId);
 }

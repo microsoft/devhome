@@ -1,8 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using DevHome.SetupFlow.ViewModels;
+using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -19,6 +20,8 @@ public class SetupFlowViewSelector : DataTemplateSelector
 
     public DataTemplate RepoConfigTemplate { get; set; }
 
+    public DataTemplate SetupTargetTemplate { get; set; }
+
     public DataTemplate AppManagementTemplate { get; set; }
 
     public DataTemplate ReviewTemplate { get; set; }
@@ -28,6 +31,12 @@ public class SetupFlowViewSelector : DataTemplateSelector
     public DataTemplate SummaryTemplate { get; set; }
 
     public DataTemplate ConfigurationFileTemplate { get; set; }
+
+    public DataTemplate SelectEnvironmentsProviderTemplate { get; set; }
+
+    public DataTemplate EnvironmentCreationOptionsTemplate { get; set; }
+
+    public DataTemplate QuickstartPlaygroundTemplate { get; set; }
 
     protected override DataTemplate SelectTemplateCore(object item)
     {
@@ -56,6 +65,10 @@ public class SetupFlowViewSelector : DataTemplateSelector
             LoadingViewModel => LoadingTemplate,
             SummaryViewModel => SummaryTemplate,
             ConfigurationFileViewModel => ConfigurationFileTemplate,
+            SetupTargetViewModel => SetupTargetTemplate,
+            SelectEnvironmentProviderViewModel => SelectEnvironmentsProviderTemplate,
+            EnvironmentCreationOptionsViewModel => EnvironmentCreationOptionsTemplate,
+            QuickstartPlaygroundViewModel => QuickstartPlaygroundTemplate,
             _ => defaultDataTemplate(),
         };
     }

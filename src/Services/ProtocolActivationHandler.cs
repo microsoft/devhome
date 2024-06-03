@@ -1,17 +1,13 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DevHome.Activation;
 using DevHome.Common.Services;
 using DevHome.Settings.ViewModels;
 using Windows.ApplicationModel.Activation;
 
 namespace DevHome.Services;
+
 public class ProtocolActivationHandler : ActivationHandler<ProtocolActivatedEventArgs>
 {
     private const string SettingsAccountsUri = "settings/accounts";
@@ -23,14 +19,14 @@ public class ProtocolActivationHandler : ActivationHandler<ProtocolActivatedEven
         this._navigationService = navigationService;
     }
 
+    protected override bool CanHandleInternal(ProtocolActivatedEventArgs args)
+    {
+        return args.Uri != null && args.Uri.AbsolutePath.Equals(SettingsAccountsUri, StringComparison.OrdinalIgnoreCase);
+    }
+
     protected override Task HandleInternalAsync(ProtocolActivatedEventArgs args)
     {
-        if (args.Uri.AbsolutePath == SettingsAccountsUri)
-        {
-            _navigationService.DefaultPage = typeof(AccountsViewModel).FullName!;
-            _navigationService.NavigateTo(_navigationService.DefaultPage);
-        }
-
+        _navigationService.NavigateTo(typeof(AccountsViewModel).FullName!);
         return Task.CompletedTask;
     }
 }

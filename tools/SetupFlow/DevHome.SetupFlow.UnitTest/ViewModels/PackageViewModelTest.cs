@@ -1,7 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.UnitTest.Helpers;
 using DevHome.SetupFlow.ViewModels;
@@ -28,7 +29,7 @@ public class PackageViewModelTest : BaseSetupFlowTest
         for (var i = 0; i < expectedPackages.Count; ++i)
         {
             Assert.AreEqual(expectedPackages[i].Name, packages[i].Name);
-            Assert.AreEqual(expectedPackages[i].Version, packages[i].Version);
+            Assert.AreEqual(expectedPackages[i].InstalledVersion, packages[i].InstalledVersion);
         }
     }
 
@@ -39,9 +40,8 @@ public class PackageViewModelTest : BaseSetupFlowTest
     public void LearnMore_PackageFromWinGetOrCustomCatalog_ReturnsExpectedUri(string packageUrl, string publisherUrl, string expectedUrl)
     {
         // Arrange
-        WindowsPackageManager!.Setup(wpm => wpm.MsStoreId).Returns("mockMsStoreId");
+        WindowsPackageManager!.Setup(wpm => wpm.IsMsStorePackage(It.IsAny<IWinGetPackage>())).Returns(false);
         var package = PackageHelper.CreatePackage("mockId");
-        package.Setup(p => p.CatalogId).Returns("mockWinGetCatalogId");
         package.Setup<Uri?>(p => p.PackageUrl).Returns(string.IsNullOrEmpty(packageUrl) ? null : new Uri(packageUrl));
         package.Setup<Uri?>(p => p.PublisherUrl).Returns(string.IsNullOrEmpty(publisherUrl) ? null : new Uri(publisherUrl));
 
@@ -59,9 +59,8 @@ public class PackageViewModelTest : BaseSetupFlowTest
     public void LearnMore_PackageFromMsStoreCatalog_ReturnsExpectedUri(string packageUrl, string publisherUrl, string expectedUrl)
     {
         // Arrange
-        WindowsPackageManager!.Setup(wpm => wpm.MsStoreId).Returns("mockMsStoreId");
+        WindowsPackageManager!.Setup(wpm => wpm.IsMsStorePackage(It.IsAny<IWinGetPackage>())).Returns(true);
         var package = PackageHelper.CreatePackage("mockId");
-        package.Setup(p => p.CatalogId).Returns(WindowsPackageManager!.Object.MsStoreId);
         package.Setup<Uri?>(p => p.PackageUrl).Returns(string.IsNullOrEmpty(packageUrl) ? null : new Uri(packageUrl));
         package.Setup<Uri?>(p => p.PublisherUrl).Returns(string.IsNullOrEmpty(publisherUrl) ? null : new Uri(publisherUrl));
 
@@ -84,12 +83,13 @@ public class PackageViewModelTest : BaseSetupFlowTest
         string expectedDescription)
     {
         // Arrange
-        WindowsPackageManager.Setup(wpm => wpm.MsStoreId).Returns("mockMsStore");
+        WindowsPackageManager.Setup(wpm => wpm.IsMsStorePackage(It.IsAny<IWinGetPackage>())).Returns(source == "mockMsStore");
         var package = PackageHelper.CreatePackage("mockId");
         package.Setup(p => p.CatalogId).Returns(source);
         package.Setup(p => p.CatalogName).Returns(source);
         package.Setup(p => p.PublisherName).Returns(publisher);
-        package.Setup(p => p.Version).Returns(version);
+        package.Setup(p => p.IsInstalled).Returns(true);
+        package.Setup(p => p.InstalledVersion).Returns(version);
         StringResource
             .Setup(sr => sr.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, It.IsAny<object[]>()))
             .Returns((string key, object[] args) => $"{args[0]} | {args[1]} | {args[2]}");
@@ -101,6 +101,6 @@ public class PackageViewModelTest : BaseSetupFlowTest
         var packageViewModel = TestHost.CreateInstance<PackageViewModel>(package.Object);
 
         // Assert
-        Assert.AreEqual(expectedDescription, packageViewModel.PackageDescription);
+        Assert.AreEqual(expectedDescription, packageViewModel.PackageFullDescription);
     }
 }

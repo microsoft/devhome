@@ -1,22 +1,22 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace DevHome.SetupFlow.TaskGroups;
 
 public class DevDriveTaskGroup : ISetupTaskGroup
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DevDriveTaskGroup));
     private readonly IHost _host;
     private readonly Lazy<DevDriveReviewViewModel> _devDriveReviewViewModel;
     private readonly ISetupFlowStringResource _stringResource;
@@ -25,11 +25,8 @@ public class DevDriveTaskGroup : ISetupTaskGroup
     {
         _host = host;
 
-        // TODO Remove `this` argument from CreateInstance since this task
-        // group is a registered type. This requires updating dependent classes
-        // correspondingly.
-        // https://github.com/microsoft/devhome/issues/631
-        _devDriveReviewViewModel = new (() => _host.CreateInstance<DevDriveReviewViewModel>(this));
+        // TODO https://github.com/microsoft/devhome/issues/631
+        _devDriveReviewViewModel = new(() => new DevDriveReviewViewModel(host, stringResource, this));
         _stringResource = stringResource;
     }
 
@@ -42,15 +39,15 @@ public class DevDriveTaskGroup : ISetupTaskGroup
     /// </param>
     public void AddDevDriveTask(IDevDrive devDrive)
     {
-        if (_devDriveTasks.Any())
+        if (_devDriveTasks.Count != 0)
         {
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Overwriting existing dev drive task");
+            _log.Information($"Overwriting existing dev drive task");
             _devDriveTasks[0].DevDrive = devDrive;
         }
         else
         {
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Adding new dev drive task");
-            _devDriveTasks.Add(new CreateDevDriveTask(devDrive, _host, _stringResource));
+            _log.Information("Adding new dev drive task");
+            _devDriveTasks.Add(new CreateDevDriveTask(devDrive, _host, _host.GetService<SetupFlowOrchestrator>().ActivityId, _stringResource));
         }
     }
 
@@ -60,11 +57,13 @@ public class DevDriveTaskGroup : ISetupTaskGroup
     /// </summary>
     public void RemoveDevDriveTasks()
     {
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Clearing all dev drive tasks");
+        _log.Information("Clearing all dev drive tasks");
         _devDriveTasks.Clear();
     }
 
-    private readonly IList<CreateDevDriveTask> _devDriveTasks = new List<CreateDevDriveTask>();
+    private readonly List<CreateDevDriveTask> _devDriveTasks =
+        [
+        ];
 
     public IEnumerable<ISetupTask> SetupTasks
     {
@@ -78,6 +77,8 @@ public class DevDriveTaskGroup : ISetupTaskGroup
             return _devDriveTasks;
         }
     }
+
+    public IEnumerable<ISetupTask> DSCTasks => SetupTasks;
 
     public SetupPageViewModelBase GetSetupPageViewModel() => null;
 

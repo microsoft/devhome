@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -7,12 +7,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.TelemetryEvents;
-using DevHome.SetupFlow.Common.Helpers;
+using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
+using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
+
 public partial class SearchViewModel : ObservableObject
 {
     public enum SearchResultStatus
@@ -33,9 +36,11 @@ public partial class SearchViewModel : ObservableObject
         ExceptionThrown,
     }
 
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SearchViewModel));
     private readonly IWindowsPackageManager _wpm;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly PackageProvider _packageProvider;
+    private readonly IScreenReaderService _screenReaderService;
     private const int SearchResultLimit = 20;
 
     /// <summary>
@@ -50,23 +55,24 @@ public partial class SearchViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SearchCountText))]
     [NotifyPropertyChangedFor(nameof(NoSearchResultsText))]
-    private List<PackageViewModel> _resultPackages = new ();
+    private List<PackageViewModel> _resultPackages = new();
 
     /// <summary>
     /// Gets the localized string for <see cref="StringResourceKey.ResultCount"/>
     /// </summary>
-    public string SearchCountText => _stringResource.GetLocalized(StringResourceKey.ResultCount, ResultPackages.Count);
+    public string SearchCountText => ResultPackages.Count == 1 ? _stringResource.GetLocalized(StringResourceKey.ResultCountSingular, ResultPackages.Count, SearchText) : _stringResource.GetLocalized(StringResourceKey.ResultCountPlural, ResultPackages.Count, SearchText);
 
     /// <summary>
     /// Gets the localized string for <see cref="StringResourceKey.NoSearchResultsFoundTitle"/>
     /// </summary>
     public string NoSearchResultsText => _stringResource.GetLocalized(StringResourceKey.NoSearchResultsFoundTitle, SearchText);
 
-    public SearchViewModel(IWindowsPackageManager wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider)
+    public SearchViewModel(IWindowsPackageManager wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider, IScreenReaderService screenReaderService)
     {
         _wpm = wpm;
         _stringResource = stringResource;
         _packageProvider = packageProvider;
+        _screenReaderService = screenReaderService;
     }
 
     /// <summary>
@@ -83,18 +89,11 @@ public partial class SearchViewModel : ObservableObject
             return (SearchResultStatus.EmptySearchQuery, null);
         }
 
-        // Connect is required before searching
-        if (!_wpm.AllCatalogs.IsConnected)
-        {
-            return (SearchResultStatus.CatalogNotConnect, null);
-        }
-
         try
         {
             // Run the search on a separate (non-UI) thread to prevent lagging the UI.
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Running package search for query [{text}]");
-            TelemetryFactory.Get<ITelemetry>().LogMeasure("Search_SerchingForApplication_Event");
-            var matches = await Task.Run(async () => await _wpm.AllCatalogs.SearchAsync(text, SearchResultLimit), cancellationToken);
+            _log.Information($"Running package search for query [{text}]");
+            var matches = await Task.Run(async () => await _wpm.SearchAsync(text, SearchResultLimit), cancellationToken);
 
             // Don't update the UI if the operation was canceled
             if (cancellationToken.IsCancellationRequested)
@@ -105,7 +104,24 @@ public partial class SearchViewModel : ObservableObject
             // Update the UI only if the operation was successful
             SearchText = text;
             ResultPackages = await Task.Run(() => matches.Select(m => _packageProvider.CreateOrGet(m)).ToList());
+
+            // Announce the results.
+            if (ResultPackages.Count != 0)
+            {
+                TelemetryFactory.Get<ITelemetry>().Log("Search_SearchingForApplication_Found_Event", LogLevel.Critical, new SearchEvent());
+                _screenReaderService.Announce(SearchCountText);
+            }
+            else
+            {
+                TelemetryFactory.Get<ITelemetry>().Log("Search_SearchingForApplication_NotFound_Event", LogLevel.Critical, new SearchEvent());
+                _screenReaderService.Announce(NoSearchResultsText);
+            }
+
             return (SearchResultStatus.Ok, ResultPackages);
+        }
+        catch (WindowsPackageManagerRecoveryException)
+        {
+            return (SearchResultStatus.CatalogNotConnect, null);
         }
         catch (OperationCanceledException)
         {
@@ -113,7 +129,7 @@ public partial class SearchViewModel : ObservableObject
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Search error.", e);
+            _log.Error(e, $"Search error.");
             return (SearchResultStatus.ExceptionThrown, null);
         }
     }

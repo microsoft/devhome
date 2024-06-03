@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 <UserControl
     x:Class="DevHome.SetupFlow.Views.RepoConfigView"
@@ -6,9 +6,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:setupControls="using:DevHome.SetupFlow.Controls"
     xmlns:models="using:DevHome.SetupFlow.Models"
+    xmlns:views="using:DevHome.Common.Views"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -32,19 +33,34 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <setupControls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_RepoConfig"
-                               Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
-        <setupControls:SetupShell.HeaderTemplate>
-            <ControlTemplate>
-                <Button x:Name="AddRepositoriesButton" Click="AddRepoButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"/>
-            </ControlTemplate>
-        </setupControls:SetupShell.HeaderTemplate>
+    <setupControls:SetupShell
+            Description="{x:Bind ViewModel.PageSubTitle, Mode=OneWay}"
+            Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+            Foreground="{ThemeResource TextFillColorSecondary}">
+        <setupControls:SetupShell.Header>
+            <views:AddCreateButton
+                AutomationProperties.AutomationId="AddRepositoriesButton"
+                x:Uid="MainPage_RepoReview_AddRepository"
+                Command="{x:Bind AddRepoCommand}" />
+        </setupControls:SetupShell.Header>
         <Grid x:Name="RepoConfigGrid" RowSpacing="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!---Warning info bar if we're in the setup target flow, warning users only public Git repositories are allow. -->
+            <InfoBar
+                Visibility="{x:Bind ViewModel.Orchestrator.IsSettingUpATargetMachine}"
+                IsOpen="True"
+                Severity="Warning"
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupTargetCloneRepositoryInfoBar"
+                Grid.Row="0"/>
             <ListView ScrollViewer.VerticalScrollBarVisibility="Auto" 
                       ScrollViewer.VerticalScrollMode="Auto" 
                       ItemsSource="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay}"
                       SelectionMode="None"
-                      ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}">
+                      ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}"
+                      Grid.Row="1">
                 <ListView.Header>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -52,12 +68,12 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="4*" />
                             <ColumnDefinition Width="40" />
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 1" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}">
-                            <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryTypeHeader" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalTextAlignment="Left"/>
+                            <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryTypeHeader" Padding="10, 0, 10, 0" VerticalAlignment="Center" HorizontalTextAlignment="Left"/>
                         </Border>
                         <Border Grid.Column="1" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 1" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}">
                             <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryNameHeader" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalTextAlignment="Left"/>
@@ -68,7 +84,7 @@
 
                         <!-- Remove borders when the user has selected a repository because the items have top borders -->
                         <Border Grid.Column="0" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 0" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionHideWhenEmpty}}">
-                            <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryTypeHeader" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalTextAlignment="Left"/>
+                            <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryTypeHeader" Padding="10, 0, 10, 0" VerticalAlignment="Center" HorizontalTextAlignment="Left"/>
                         </Border>
                         <Border Grid.Column="1" Style="{StaticResource BorderStyle}" BorderThickness="0, 0, 1, 0" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionHideWhenEmpty}}">
                             <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryNameHeader" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalTextAlignment="Left"/>
@@ -79,13 +95,10 @@
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:CloningInformation">
                         <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="45"/>
-                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="2*" />
-                                <ColumnDefinition Width="4*" />
                                 <ColumnDefinition Width="40" />
                             </Grid.ColumnDefinitions>
                             <Border Style="{StaticResource BorderStyle}" Grid.Column="0" BorderThickness="0, 1, 1, 0">
@@ -94,11 +107,12 @@
                                         <ColumnDefinition Width="0.2*"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <ImageIcon
+                                    <Image
                                         Grid.Column="0"
                                         Width="16"
                                         Height="16"
-                                        Source="{x:Bind RepositoryTypeIcon, Mode=OneWay}"/>
+                                        Source="{x:Bind RepositoryTypeIcon, Mode=OneWay}">
+                                    </Image>
                                     <TextBlock Text="{x:Bind ProviderName}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
                             </Border>
@@ -108,8 +122,8 @@
                                         <ColumnDefinition Width="0.1*"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <FontIcon Grid.Column="0" Width="20" Height="20" FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind RepositoryOwnerAndName}" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
+                                    <FontIcon Grid.Column="0" FontSize="16" FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind RepositoryOwnerAndName}" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
                             </Border>
                             <Border Style="{StaticResource BorderStyle}"  Grid.Column="2" BorderThickness="0, 1, 0, 0">
@@ -122,25 +136,37 @@
                                             Text="{x:Bind CloneLocationAlias, Mode=OneWay}" 
                                             IsEnabled="False"
                                             Visibility="{x:Bind CloneToDevDrive, Mode=OneWay}"
-                                            MinWidth="300"
-                                            MaxWidth="300"
-                                            Margin="10, 5, 0, 5"/>
+                                            Margin="10, 5, 0, 5"
+                                            VerticalAlignment="Center"/>
                                     <TextBox 
                                             Text="{x:Bind ClonePath}" 
                                             IsEnabled="False"
                                             Visibility="{x:Bind CloneToDevDrive, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                                             Margin="10, 5, 0, 5"
-                                            Grid.Column="0"/>
+                                            Grid.Column="0"
+                                            VerticalAlignment="Center"/>
                                     <!-- Need to use view methods here because DataType is CloningInformation-->
                                     <!-- Each button needs a unique name for screen readers. -->
-                                    <Button Click="EditClonePathButton_Click" DataContext="{x:Bind}" AutomationProperties.Name="{x:Bind EditClonePathAutomationName}" Grid.Column="1" >
+                                    <Button
+                                        Click="EditClonePathButton_Click"
+                                        DataContext="{x:Bind}"
+                                        AutomationProperties.Name="{x:Bind EditClonePathAutomationName}"
+                                        Grid.Column="1"
+                                        ToolTipService.ToolTip="{x:Bind EditClonePathAutomationName}">
                                         <Button.Content>
                                             <SymbolIcon Symbol="Edit"/>
                                         </Button.Content>
                                     </Button>
                                 </Grid>
                             </Border>
-                            <Button Click="RemoveCloningInformationButton_Click" DataContext="{x:Bind}" Grid.Column="3" Style="{ThemeResource AlternateCloseButtonStyle}" AutomationProperties.Name="{x:Bind RemoveFromCloningAutomationName}">
+                            <Button 
+                                Click="RemoveCloningInformationButton_Click"
+                                DataContext="{x:Bind}"
+                                Grid.Column="3"
+                                Style="{ThemeResource AlternateCloseButtonStyle}"
+                                AutomationProperties.Name="{x:Bind RemoveFromCloningAutomationName}"
+                                VerticalAlignment="Center"
+                                ToolTipService.ToolTip="{x:Bind RemoveFromCloningAutomationName}">
                                 <Button.Content>
                                     <SymbolIcon Symbol="Cancel"/>
                                 </Button.Content>
@@ -149,13 +175,23 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Grid x:Name="NoRepositoryStackPanel" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid
+                Grid.Row="1"
+                x:Name="NoRepositoryGrid"
+                Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
-                <HyperlinkButton Grid.Row="1" Click="AddRepoButton_Click" HorizontalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
+                <TextBlock Grid.Row="0" x:Uid="RepoReview_NoReposSelected" />
+                <views:AddCreateHyperlinkButton
+                    Grid.Row="1"
+                    AutomationProperties.AutomationId="AddRepoHyperlinkButton"
+                    HorizontalAlignment="Center"
+                    Command="{x:Bind AddRepoCommand}"
+                    x:Uid="RepoReview_NoReposSelectedLink" />
             </Grid>
         </Grid>
     </setupControls:SetupShell>

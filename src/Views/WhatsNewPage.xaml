@@ -4,12 +4,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:animations="using:CommunityToolkit.WinUI.UI.Animations"
+    xmlns:animations="using:CommunityToolkit.WinUI.Animations"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls" 
     xmlns:models="using:DevHome.Models"
-    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:behaviors="using:DevHome.Common.Behaviors" 
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="OnLoaded"
+    SizeChanged="OnSizeChanged"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -17,102 +19,206 @@
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/LightTheme/Background.png</x:String>
-                    <Color x:Key="ButtonAccentBackground">#6659CA</Color>
-                    <Color x:Key="ButtonAccentForeground">#FFFFFF</Color>
                     <Color x:Key="LearnMoreForeground">#005FB8</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
-                    <Color x:Key="ButtonAccentBackground">#47E1DA</Color>
-                    <Color x:Key="ButtonAccentForeground">#000000</Color>
+                    <Color x:Key="LearnMoreForeground">#60CDFF</Color>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast">
+                    <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
                     <Color x:Key="LearnMoreForeground">#60CDFF</Color>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Page.Resources>
 
-    <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" MaxWidth="{ThemeResource MaxPageBackgroundWidth}">
-        <RelativePanel>
-            <Grid CornerRadius="8">
-                <Image Source="{ThemeResource Background}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="UniformToFill" />
+    <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto">
+        <RelativePanel MaxWidth="{ThemeResource MaxPageBackgroundWidth}">
+            <Grid>
+                <Image Source="{ThemeResource Background}"
+                       MinWidth="{ThemeResource MaxPageBackgroundWidth}"
+                       VerticalAlignment="Top"
+                       HorizontalAlignment="Center"
+                       Stretch="UniformToFill" />
             </Grid>
             <Grid x:Name="ContentArea" Padding="35 0 35 30" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="330" />
+                    <RowDefinition MinHeight="325" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Padding="32 0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="100" />
-                        <RowDefinition Height="55" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-
+                <!-- Header area -->
+                <StackPanel
+                    Grid.Row="0"
+                    Padding="32 12 32 0"
+                    VerticalAlignment="Center">
                     <TextBlock
-                        Grid.Row="0"
                         x:Uid="WhatsNewPage_Header"
-                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                        VerticalAlignment="Bottom" />
-                    
+                        Style="{ThemeResource SubtitleTextBlockStyle}" />
                     <TextBlock
-                        Grid.Row="1"
                         x:Uid="WhatsNewPage_Title"
-                        Style="{ThemeResource TitleLargeTextBlockStyle}"
-                        VerticalAlignment="Bottom" />
+                        Style="{ThemeResource TitleLargeTextBlockStyle}" />
+                    <TextBlock
+                        x:Uid="WhatsNewPage_Description"
+                        Margin="0 12 0 0"
+                        MaxWidth="400"
+                        HorizontalAlignment="Left"
+                        TextWrapping="WrapWholeWords" />
+                    <Button
+                        x:Uid="WhatsNewPage_GetStartedButton"
+                        AutomationProperties.AutomationId="WhatsNewPage_GetStartedButton"
+                        Margin="0 16"
+                        MinWidth="248"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Click="MachineConfigButton_Click" />
+                </StackPanel>
 
-                    <StackPanel Grid.Row="2">
-                        
-                        <TextBlock
-                            Margin="0 12 0 0"
-                            x:Uid="WhatsNewPage_Description"
-                            Width="400"
-                            HorizontalAlignment="Left"
-                            TextWrapping="Wrap"
-                            Text="{StaticResource SplitViewPaneAnimationOpenDuration}" />
-
-                        <Button
-                            Margin="0 16"
-                            MinWidth="258"
-                            Style="{ThemeResource AccentButtonStyle}"
-                            Click="MachineConfigButton_Click"
-                            x:Uid="WhatsNewPage_GetStartedButton" />
-                        
-                    </StackPanel>
-                </Grid>
-
+                <!-- Big Cards -->
                 <muxc:ItemsRepeater
-                    Name="FeaturesContainer"
+                    Name="BigFeaturesContainer"
                     Grid.Row="1"
-                    Margin="35, 45, 45, 45"
+                    Margin="35, 5, 45, 10"
                     animations:Connected.ListItemElementName="itemThumbnail"
                     animations:Connected.ListItemKey="animationKeyContentGrid"
-                    ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}">
+                    ItemsSource="{x:Bind ViewModel.BigSource,Mode=OneWay}">
+
+                    <muxc:ItemsRepeater.Resources>
+                        <!-- This repeater is responsible for the big cards. To add another here, make sure to assign IsBig as true -->
+                        <models:WhatsNewCard 
+                            x:Uid="WhatsNewPage_ExtensionsCard"
+                            x:Key="WhatsNewPage_ExtensionsCard"
+                            AutomationId="WhatsNewPage_ExtensionsButton"
+                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/Extensions.png"
+                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/Extensions.png"
+                            DarkThemeImageBig="ms-appx:///Assets/WhatsNewPage/DarkTheme/ExtensionsBig.png"
+                            LightThemeImageBig="ms-appx:///Assets/WhatsNewPage/LightTheme/ExtensionsBig.png"
+                            PageKey="DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel"
+                            IsBig="True"
+                            Priority="0" />
+                    </muxc:ItemsRepeater.Resources>
+
+                    <muxc:ItemsRepeater.Layout>
+                        <muxc:StackLayout 
+                            x:Name="BigCardGrid"
+                            Spacing="12"
+                            Orientation="Vertical" >
+                        </muxc:StackLayout>
+                    </muxc:ItemsRepeater.Layout>
+
+                    <muxc:ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="models:WhatsNewCard">
+                            <Grid
+                                HorizontalAlignment="Stretch"
+                                Padding="15 15"
+                                CornerRadius="{ThemeResource ControlCornerRadius}"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="{ThemeResource ExpanderBorderThickness}">
+                                <Grid.Resources>
+                                    <ResourceDictionary>
+                                        <ResourceDictionary.ThemeDictionaries>
+                                            <ResourceDictionary x:Key="Light">
+                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind LightThemeImageBig}" />
+                                            </ResourceDictionary>
+                                            <ResourceDictionary x:Key="Dark">
+                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind DarkThemeImageBig}" />
+                                            </ResourceDictionary>
+                                        </ResourceDictionary.ThemeDictionaries>
+                                    </ResourceDictionary>
+                                </Grid.Resources>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Image
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Source="{ThemeResource ItemImage}"
+                                    MaxHeight="188"
+                                    MaxWidth="376"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"/>
+
+                                <StackPanel Grid.Column="1" Padding="25 10 15 0">
+                                    <TextBlock
+                                        HorizontalAlignment="Left"
+                                        Style="{ThemeResource BodyTextStyle}"
+                                        Text="{x:Bind Title}" />
+
+                                    <TextBlock
+                                        Margin="0 8 0 10"
+                                        TextWrapping="Wrap"
+                                        HorizontalAlignment="Left"
+                                        Text="{x:Bind Description}"/>
+
+                                    <HyperlinkButton
+                                        Content="{x:Bind Link}"
+                                        Foreground="{ThemeResource LearnMoreForeground}"
+                                        NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
+                                        Padding="0"
+                                        Margin="0"
+                                        Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
+
+                                    <Button 
+                                        Margin="0 0 0 10"
+                                        Padding="50 5 50 5"
+                                        DataContext="{x:Bind PageKey}"
+                                        AutomationProperties.AutomationId="{x:Bind AutomationId}"
+                                        Click="Button_ClickAsync"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Bottom"
+                                        Content="{x:Bind Button}" />
+
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </muxc:ItemsRepeater.ItemTemplate>
+                </muxc:ItemsRepeater>
+
+                <!-- Small Cards -->
+                <muxc:ItemsRepeater
+                    Name="FeaturesContainer"
+                    Grid.Row="2"
+                    Margin="35, 5, 45, 45"
+                    animations:Connected.ListItemElementName="itemThumbnail"
+                    animations:Connected.ListItemKey="animationKeyContentGrid"
+                    ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}">
 
                     <muxc:ItemsRepeater.Resources>
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDashCard"
                             x:Key="WhatsNewPage_DevDashCard"
+                            AutomationId="WhatsNewPage_DevDashButton"
                             DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DashboardHero.png"
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DashboardHero.png"
                             PageKey="DevHome.Dashboard.ViewModels.DashboardViewModel"
-                            Priority="0" />
+                            Priority="1" />
 
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevIdCard"
                             x:Key="WhatsNewPage_DevIdCard"
+                            AutomationId="WhatsNewPage_DevIdButton"
                             DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DevIdHero.png"
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevIdHero.png"
                             PageKey="DevHome.Settings.ViewModels.AccountsViewModel"
-                            Priority="1" />
+                            Priority="2" />
 
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDriveCard"
                             x:Key="WhatsNewPage_DevDriveCard"
+                            AutomationId="WhatsNewPage_DevDrive"
                             DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DevDriveHero.png"
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevDriveHero.png"
                             PageKey="ms-settings:disksandvolumes"
-                            Priority="2" />
+                            Priority="3" />
                     </muxc:ItemsRepeater.Resources>
 
                     <muxc:ItemsRepeater.Layout>
@@ -152,13 +258,10 @@
                                     </ResourceDictionary>
                                 </Grid.Resources>
 
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <Image
@@ -167,35 +270,53 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Top"/>
 
-                                <StackPanel Grid.Row="1" Padding="15 10 15 0" >
-                                    <TextBlock
-                                        HorizontalAlignment="Left"
-                                        Style="{ThemeResource BodyTextStyle}"
-                                        Text="{x:Bind Title}" />
+                                <ScrollViewer Grid.Row="1" Padding="15 10 15 0">
+                                    <StackPanel>
+                                        <TextBlock
+                                            HorizontalAlignment="Left"
+                                            Style="{ThemeResource BodyTextStyle}"
+                                            Text="{x:Bind Title}" />
 
-                                    <TextBlock
-                                        Margin="0 16 0 25"
-                                        TextWrapping="Wrap"
-                                        Text="{x:Bind Description}"/>
+                                        <StackPanel Margin="0 16 0 20">
+                                            <TextBlock
+                                                Margin="0 0 0 5"
+                                                TextWrapping="Wrap"
+                                                VerticalAlignment="Top"
+                                                TextTrimming="WordEllipsis"
+                                                Text="{x:Bind Description}"/>
 
-                                    <HyperlinkButton
-                                        Content="{x:Bind Link}"
-                                        Foreground="{ThemeResource LearnMoreForeground}"
-                                        NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
-                                        Padding="0"
-                                        Margin="0"
-                                        Visibility="{x:Bind ShouldShowLink}"/>
-                                </StackPanel>
+                                            <HyperlinkButton
+                                                Content="{x:Bind Link}"
+                                                Foreground="{ThemeResource LearnMoreForeground}"
+                                                NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
+                                                VerticalAlignment="Top"
+                                                Padding="0"
+                                                Margin="0"
+                                                Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </ScrollViewer>
 
-                                <Button 
-                                    Grid.Row="1"
+                                <Button
+                                    Grid.Row="2"
                                     Margin="15 0 15 10"
+                                    AutomationProperties.AutomationId="{x:Bind AutomationId}"
                                     DataContext="{x:Bind PageKey}"
                                     Click="Button_ClickAsync"
                                     HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Bottom"
-                                    Content="{x:Bind Button}" />
-
+                                    AutomationProperties.Name="{x:Bind Button}"
+                                    VerticalAlignment="Bottom">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{x:Bind Button}" Margin="0 0 5 0" />
+                                            <!-- The open new window icon -->
+                                            <FontIcon 
+                                                Glyph="&#xE8A7;" 
+                                                Visibility="{x:Bind ShouldShowIcon}" 
+                                                FontSize="12"/>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
                             </Grid>
                         </DataTemplate>
                     </muxc:ItemsRepeater.ItemTemplate>

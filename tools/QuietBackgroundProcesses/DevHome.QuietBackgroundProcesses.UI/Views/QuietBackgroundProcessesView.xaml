@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.QuietBackgroundProcesses.UI.Views.QuietBackgroundProcessesView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
+    Loaded="UserControl_Loaded">
+
+    <StackPanel Orientation="Vertical"
+                Visibility="{x:Bind ViewModel.IsFeaturePresent, Mode=OneWay}">
+        <ctControls:SettingsExpander x:Uid="QuietBackgroundProcesses" IsExpanded="False" Margin="{ThemeResource SettingsCardMargin}">
+
+            <!-- Header icon -->
+            <ctControls:SettingsExpander.HeaderIcon>
+                <FontIcon FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="&#xefff;"/>
+            </ctControls:SettingsExpander.HeaderIcon>
+
+            <!-- Description / error message slot -->
+            <ctControls:SettingsExpander.Description>
+                <TextBlock Text="{x:Bind ViewModel.SessionStateText, Mode=OneWay}" Foreground="{x:Bind ViewModel.SessionStateTextColor, Mode=TwoWay}" />
+            </ctControls:SettingsExpander.Description>
+
+            <!-- Quiet session setting area -->
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Text="{x:Bind ViewModel.CountdownTimer, Mode=OneWay}"
+                    Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"
+                    Margin="{StaticResource MediumLeftRightMargin}"
+                    VerticalAlignment="Center"
+                    TextTrimming="CharacterEllipsis" />
+
+                <!-- Start/Stop button -->
+                <ToggleButton
+                    Content="{x:Bind ViewModel.QuietButtonText, Mode=OneWay}"
+                    IsEnabled="{x:Bind ViewModel.QuietButtonEnabled, Mode=OneWay}"
+                    IsChecked="{x:Bind ViewModel.QuietButtonChecked, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.QuietButtonClickedCommand}" />
+            </StackPanel>
+
+            <!-- Expander -->
+            <ctControls:SettingsExpander.Items>
+                <ctControls:SettingsCard x:Uid="QuietBackgroundProcessesExplanation" HorizontalContentAlignment="Left" ContentAlignment="Vertical">
+
+                    <!-- Analytic Summary button -->
+                    <Button
+                        x:Uid="AnalyticSummaryButton"
+                        x:Name="analyticSummaryButton"
+                        IsEnabled="{x:Bind ViewModel.IsAnalyticSummaryAvailable, Mode=OneWay}"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Click="ShowAnalyticSummaryButton_Click" />
+
+                </ctControls:SettingsCard>
+            </ctControls:SettingsExpander.Items>
+
+        </ctControls:SettingsExpander>
+
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="NavigationPane.Content" xml:space="preserve">
+    <value>Extensions</value>
+    <comment>Navigation pane content</comment>
+  </data>
+  <data name="InstalledTextBlock.Text" xml:space="preserve">
+    <value>Installed</value>
+    <comment>Header for the list of packages currently installed on the user's computer</comment>
+  </data>
+  <data name="GetUpdatesButton.Content" xml:space="preserve">
+    <value>Get updates</value>
+    <comment>Button that allows the user to check if the store has updates for current packages</comment>
+  </data>
+  <data name="LastUpdated" xml:space="preserve">
+    <value>Last updated</value>
+    <comment>Text that precedes the date and time a specific package was last updated on the user's computer</comment>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+    <comment>Text that precedes the version number of a specific package</comment>
+  </data>
+  <data name="UninstallItem.Text" xml:space="preserve">
+    <value>Uninstall</value>
+    <comment>Button to uninstall the extension</comment>
+  </data>
+  <data name="ManageExtensionCard.Header" xml:space="preserve">
+    <value>Manage extension</value>
+    <comment>Label for the link to that extension's settings</comment>
+  </data>
+  <data name="NoExtensionsAdded.Text" xml:space="preserve">
+    <value>No extensions are installed.</value>
+    <comment>Message shown when the user does not have any Dev Home extensions installed</comment>
+  </data>
+  <data name="AvailableFromStoreTextBlock.Text" xml:space="preserve">
+    <value>Available in the Microsoft Store</value>
+    <comment>Header for the list of packages available for download from the store</comment>
+  </data>
+  <data name="GetButton.Content" xml:space="preserve">
+    <value>Get</value>
+    <comment>Text on button that allows user to get the package from the store</comment>
+  </data>
+  <data name="NoAvailableExtensions.Text" xml:space="preserve">
+    <value>No more extensions are available.</value>
+    <comment>Message shown when there are no extensions left to install</comment>
+  </data>
+  <data name="StoreErrorMessage.Text" xml:space="preserve">
+    <value>Couldn't get extensions right now. Try again later.</value>
+    <comment>Message shown when there was an issue getting information about extensions available in the Microsoft Store</comment>
+  </data>
+  <data name="SendFeedback.Content" xml:space="preserve">
+    <value>Send feedback</value>
+    <comment>A link to a page where the user can submit feedback about a bug</comment>
+  </data>
+  <data name="ExtensionsBanner.Title" xml:space="preserve">
+    <value>Do more with Dev Home extensions</value>
+    <comment>Title text on an instruction banner on the Extensions page</comment>
+  </data>
+  <data name="ExtensionsBanner.Description" xml:space="preserve">
+    <value>Extensions help you work more quickly and get more out of Dev Home. </value>
+    <comment>Description text on an instruction banner on the Extensions page</comment>
+  </data>
+  <data name="ExtensionsBanner.ButtonText" xml:space="preserve">
+    <value>Learn more</value>
+    <comment>Button text for learning more about extensions</comment>
+  </data>
+  <data name="ExtensionsBanner.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Extensions Banner</value>
+    <comment>Name of the Extensions banner for automation</comment>
+  </data>
+  <data name="MoreOptionsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>More options</value>
+    <comment>Name of the button that brings up the "More options" menu</comment>
+  </data>
+</root>

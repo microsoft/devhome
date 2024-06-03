@@ -1,0 +1,22 @@
+<windows:SecondaryWindow
+    x:Class="DevHome.SetupFlow.Windows.InstallationNotesWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:windows="using:DevHome.Common.Windows"
+    IsTopLevel="True"
+    MinHeight="385"
+    Height="385"
+    MinWidth="501"
+    Width="501"
+    mc:Ignorable="d">
+    <windows:SecondaryWindow.WindowTitleBar>
+        <windows:WindowTitleBar Title="{x:Bind PackageTitle}" />
+    </windows:SecondaryWindow.WindowTitleBar>
+
+    <StackPanel Padding="24,0">
+        <TextBlock Padding="0,8" Style="{ThemeResource SubtitleTextBlockStyle}" Text="{x:Bind PackageTitle}"/>
+        <TextBlock Grid.Row="1" IsTextSelectionEnabled="True" Text="{x:Bind InstallationNotes}" TextWrapping="WrapWholeWords"/>
+    </StackPanel>
+</windows:SecondaryWindow>

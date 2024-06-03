@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <CppPlatformTarget>$(Platform)</CppPlatformTarget>
+    <CppPlatformTarget Condition="'$(Platform)' == 'Win32'">x86</CppPlatformTarget>
+    <CppBaseOutDir>$(SolutionDir)tools\bin\$(CppPlatformTarget)\$(Configuration)\</CppBaseOutDir>
+    <CppOutDir>$(CppBaseOutDir)$(MSBuildProjectName)\</CppOutDir>
+  </PropertyGroup>
+</Project>

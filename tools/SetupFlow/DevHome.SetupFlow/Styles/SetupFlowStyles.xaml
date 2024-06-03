@@ -2,17 +2,13 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style x:Key="CardGridStyle" TargetType="Grid">
-        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefault}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="10" />
         <Setter Property="CornerRadius" Value="7" />
     </Style>
 
-    <Style x:Key="CardGridPrimaryStyle" TargetType="Grid" BasedOn="{StaticResource CardGridStyle}">
-        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefault}" />
-    </Style>
-
     <Style x:Key="CardGridSecondaryStyle" TargetType="Grid" BasedOn="{StaticResource CardGridStyle}">
-        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorSecondary}" />
+        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorSecondaryBrush}" />
     </Style>
 </ResourceDictionary>

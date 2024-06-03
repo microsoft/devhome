@@ -1,11 +1,11 @@
 ﻿{
   "spacing": {
-    "small": 3,
+    "small": 4,
     "default": 8,
     "medium": 20,
     "large": 30,
     "extraLarge": 40,
-    "padding": 10
+    "padding": 8
   },
   "separator": {
     "lineThickness": 0,
@@ -19,7 +19,7 @@
         "small": 12,
         "default": 12,
         "medium": 14,
-        "large": 18,
+        "large": 20,
         "extraLarge": 26
       },
       "fontWeights": {
@@ -46,8 +46,8 @@
   },
   "containerStyles": {
     "default": {
-      "backgroundColor": "#06FFFFFF",
-      "borderColor": "#06FFFFFF",
+      "backgroundColor": "#00000000",
+      "borderColor": "#00000000",
       "foregroundColors": {
         "default": {
           "default": "#FFFFFF",
@@ -58,8 +58,8 @@
           "subtle": "#880063B1"
         },
         "attention": {
-          "default": "#FF0000",
-          "subtle": "#DDFF0000"
+          "default": "#FF5555",
+          "subtle": "#DDFF5555"
         },
         "good": {
           "default": "#54a254",
@@ -84,8 +84,8 @@
           "subtle": "#882E89FC"
         },
         "attention": {
-          "default": "#FF0000",
-          "subtle": "#DDFF0000"
+          "default": "#FF5555",
+          "subtle": "#DDFF5555"
         },
         "good": {
           "default": "#54a254",

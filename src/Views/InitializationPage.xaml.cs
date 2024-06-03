@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using DevHome.ViewModels;
@@ -23,8 +23,8 @@ public sealed partial class InitializationPage : Page
         ViewModel = initializationViewModel;
     }
 
-    private async void Page_Loaded(object sender, RoutedEventArgs e)
+    private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        await ViewModel.OnPageLoadedAsync();
+        ViewModel.OnPageLoaded();
     }
 }

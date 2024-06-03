@@ -4,92 +4,123 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
         <converters:BoolToObjectConverter x:Key="StepperBoolToGlyphBrushConverter" TrueValue="{ThemeResource AccentFillColorDisabledBrush}" FalseValue="{ThemeResource AccentFillColorDefaultBrush}" />
         <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
-        <!-- If no custom header template was provided, display a TextBlock -->
-        <ControlTemplate x:Name="defaultHeaderTemplate">
-            <ContentPresenter />
-        </ControlTemplate>
     </UserControl.Resources>
-    <Grid RowSpacing="6">
+    <Grid x:Name="ShellContent">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <!-- Title -->
-        <StackPanel Grid.Row="0">
-            <TextBlock
-                Style="{ThemeResource TitleTextBlockStyle}"
-                TextWrapping="WrapWholeWords"
-                Visibility="{x:Bind UseOrchestratorTitle, Mode=OneWay}"
-                Text="{x:Bind Orchestrator.FlowTitle}" />
-            <TextBlock
-                Style="{ThemeResource TitleTextBlockStyle}"
-                TextWrapping="WrapWholeWords"
-                Visibility="{x:Bind Title, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
-                Text="{x:Bind Title, Mode=OneWay}" />
-        </StackPanel>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <!-- Stepper showing the progress within the flow -->
-            <StackPanel Margin="0, 20, 0, 0" Visibility="{x:Bind Orchestrator.CurrentPageViewModel.IsStepPage, Mode=OneWay}">
-                <ItemsRepeater ItemsSource="{x:Bind Orchestrator.SetupStepPages, Mode=OneWay}">
-                    <ItemsRepeater.Layout>
-                        <StackLayout Orientation="Horizontal" Spacing="5"/>
-                    </ItemsRepeater.Layout>
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:SetupPageViewModelBase">
-                            <StackPanel Spacing="8" Orientation="Horizontal"
-                                Visibility="{x:Bind IsStepPage}">
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                          FontSize="16"
-                                          Glyph="&#xEA3B;"
-                                          Foreground="{x:Bind IsUpcomingPage, Converter={StaticResource StepperBoolToGlyphBrushConverter}}" />
-                                <TextBlock VerticalAlignment="Center" Text="{x:Bind PageTitle}" />
-                                <StackPanel VerticalAlignment="Center" Visibility="{x:Bind IsLastStepPage, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
-                                    <ProgressBar Width="20" Value="100"
-                                                 Visibility="{x:Bind IsPastPage}"
-                                                 Background="{ThemeResource AccentFillColorDisabledBrush}" />
-                                    <ProgressBar Width="20" Value="50"
-                                                 Visibility="{x:Bind IsCurrentPage}"
-                                                 Background="{ThemeResource AccentFillColorDisabledBrush}" />
-                                    <ProgressBar Width="20" Value="0"
-                                                 Visibility="{x:Bind IsUpcomingPage}"
-                                                 Background="{ThemeResource AccentFillColorDisabledBrush}" />
-                                </StackPanel>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
-            </StackPanel>
 
-            <!-- Allow customizing the header (e.g. add buttons, etc... ) -->
-            <ContentControl
-                Grid.Column="1"
-                HorizontalAlignment="Right"
-                Template="{x:Bind HeaderTemplate, Mode=OneWay}" />
-        </Grid>
-        <!-- Description -->
-        <TextBlock
-            Grid.Row="2"
-            Padding="0 0 0 25"
-            TextWrapping="WrapWholeWords"
-            Visibility="{x:Bind Description, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
-            Text="{x:Bind Description, Mode=OneWay}" />
+        <StackPanel Spacing="6" Visibility="{x:Bind HeaderVisibility, Mode=OneWay}"
+                    MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <!-- Title -->
+            <TextBlock
+                Style="{ThemeResource SubtitleTextBlockStyle}"
+                TextWrapping="WrapWholeWords"
+                Text="{x:Bind Title, Mode=OneWay}">
+                <i:Interaction.Behaviors>
+                    <behaviors:TextBlockAutomationBehavior RaiseLiveRegionChangedEvent="True" LiveSetting="Assertive" />
+                </i:Interaction.Behaviors>
+            </TextBlock>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!--
+                    TODO: https://github.com/microsoft/devhome/issues/1621
+                    Promote stepper to a separate control
+                -->
+                <!-- Stepper showing the progress within the flow -->
+                <StackPanel Margin="0, 20, 0, 0" Visibility="{x:Bind Orchestrator.CurrentPageViewModel.IsStepPage, Mode=OneWay}">
+                    <ItemsRepeater ItemsSource="{x:Bind Orchestrator.SetupStepPages, Mode=OneWay}">
+                        <ItemsRepeater.Layout>
+                            <StackLayout Orientation="Horizontal" Spacing="5"/>
+                        </ItemsRepeater.Layout>
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:SetupPageViewModelBase">
+                                <StackPanel Spacing="8" Orientation="Horizontal"
+                                    Visibility="{x:Bind IsStepPage}">
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                              FontSize="16"
+                                              Glyph="&#xEA3B;"
+                                              Foreground="{x:Bind IsUpcomingPage, Converter={StaticResource StepperBoolToGlyphBrushConverter}}" 
+                                              Margin="0, 4, 0, 0"/>
+                                    <TextBlock VerticalAlignment="Center" Text="{x:Bind PageTitle}" Margin="0, 3, 0, 0"/>
+                                    <StackPanel VerticalAlignment="Center" Visibility="{x:Bind IsLastStepPage, Converter={StaticResource NegatedBoolToVisibilityConverter}}" Margin="0, 5, 0, 0">
+                                        <ProgressBar Width="20" Value="100"
+                                                     AutomationProperties.Name="{x:Bind PageTitle}"
+                                                     Visibility="{x:Bind IsPastPage}"
+                                                     Background="{ThemeResource AccentFillColorDisabledBrush}" />
+                                        <ProgressBar Width="20" Value="50"
+                                                     AutomationProperties.Name="{x:Bind PageTitle}"
+                                                     Visibility="{x:Bind IsCurrentPage}"
+                                                     Background="{ThemeResource AccentFillColorDisabledBrush}" />
+                                        <ProgressBar Width="20" Value="0"
+                                                     AutomationProperties.Name="{x:Bind PageTitle}"
+                                                     Visibility="{x:Bind IsUpcomingPage}"
+                                                     Background="{ThemeResource AccentFillColorDisabledBrush}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+                </StackPanel>
+
+                <!-- Allow customizing the header (e.g. add buttons, etc... ) -->
+                <ContentControl
+                    Grid.Column="1"
+                    IsTabStop="False"
+                    HorizontalAlignment="Right"
+                    Content="{x:Bind Header, Mode=OneWay}" />
+            </Grid>
+            <!-- Description -->
+            <TextBlock
+                Margin="0,0,0,25"
+                TextWrapping="WrapWholeWords"
+                Visibility="{x:Bind Description, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
+                Text="{x:Bind Description, Mode=OneWay}" />
+        </StackPanel>
+
         <!-- Content -->
-        <ContentControl Grid.Row="3" Grid.ColumnSpan="2"
-                        HorizontalContentAlignment="Stretch"
-                        VerticalContentAlignment="Stretch"
-                        Content="{x:Bind SetupShellContent, Mode=OneWay}" />
+        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind ContentVisibility}">
+            <ContentControl IsTabStop="False"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Content="{x:Bind SetupShellContent, Mode=OneWay}" >
+                <ContentControl.Template>
+                    <ControlTemplate TargetType="ContentControl">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}"/>
+                    </ControlTemplate>
+                </ContentControl.Template>
+            </ContentControl>
+        </ScrollViewer>
+
+        <!-- Notification -->
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind SetupShellNotificationVisibility}">
+            <ContentControl 
+                IsTabStop="False"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Content="{x:Bind SetupShellNotification, Mode=OneWay}">
+                <ContentControl.Template>
+                    <ControlTemplate TargetType="ContentControl">
+                        <ContentPresenter 
+                            Content="{TemplateBinding Content}"
+                            MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}"/>
+                    </ControlTemplate>
+                </ContentControl.Template>
+            </ContentControl>
+        </Grid>
     </Grid>
 </UserControl>

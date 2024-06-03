@@ -1,7 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 namespace DevHome.SetupFlow.Models;
+
 public class InstallPackageResult
 {
     /// <summary>
@@ -10,7 +11,7 @@ public class InstallPackageResult
     /// </summary>
     public bool RebootRequired
     {
-        init; get;
+        get; init;
     }
 
     /// <summary>
@@ -21,6 +22,6 @@ public class InstallPackageResult
     /// </remarks>
     public int ExtendedErrorCode
     {
-        init; get;
+        get; init;
     }
 }

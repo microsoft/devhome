@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+﻿<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <UserControl
@@ -7,12 +7,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:selectors="using:DevHome.SetupFlow.Selectors"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:environmentViews="using:DevHome.SetupFlow.Views.Environments"
     xmlns:views="using:DevHome.SetupFlow.Views"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -40,20 +41,55 @@
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
 
-    <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
-                         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
+    <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+        <Grid Background="Transparent" ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+            <Button
+                Command="{x:Bind ViewModel.SetUpCommand, Mode=OneWay}"
+                Style="{StaticResource AccentButtonStyle}"
+                MinWidth="120" Margin="4,0"
+                Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
+        </Grid>
+    </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+
+    <controls:SetupShell
+        Title="{x:Bind ViewModel.PageTitle, Mode=OneWay}"
+        Description="{x:Bind ViewModel.ReviewPageDescription}"
+        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
+        Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+        Foreground="{ThemeResource TextFillColorSecondary}">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <!-- TODO: We should use the labs:SettingsExpander to get some of the styling for
-                           free, but it crashes when the content is not a SettingsCard, and
-                           SettingsCards are hard to style to use the full width. 
-                           https://github.com/microsoft/devhome/issues/626-->
                 <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           IsExpanded="true"
-                          MinHeight="64" CornerRadius="3" Padding="47,0,47,7" >
+                          MinHeight="64" CornerRadius="{ThemeResource ControlCornerRadius}" Padding="24,0,24,7"
+                          AutomationProperties.Name="{x:Bind ViewModel.ReviewPageExpanderDescription, Mode=OneWay}">
                     <Expander.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
-                                   x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_SetUpDetails" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock VerticalAlignment="Center"
+                                       Style="{StaticResource BodyStrongTextBlockStyle}" 
+                                       Text="{x:Bind ViewModel.ReviewPageExpanderDescription, Mode=OneWay}" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" Visibility="{x:Bind ViewModel.ShouldShowGenerateConfigurationFile}">
+                                <Button Command="{x:Bind ViewModel.DownloadConfigurationCommand}"
+                                        x:Uid="Review_GenerateConfigurationFileButton"/>
+                                <!-- Info icon -->
+                                <TextBlock Text="&#xE946;"
+                                           FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                           VerticalAlignment="Center">
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip>
+                                            <TextBlock TextWrapping="WrapWholeWords"
+                                                       x:Uid="Review_DownloadFileTooltip"/>
+                                        </ToolTip>
+                                    </ToolTipService.ToolTip>
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
                     </Expander.Header>
                     <Expander.Content>
                         <Grid MinHeight="266">
@@ -63,6 +99,7 @@
 
                             <NavigationView x:Name="ReviewNavigationView"
                                             Visibility="{x:Bind ViewModel.ReviewTabs, Converter={StaticResource EmptyCollectionToVisibilityConverter}}"
+                                            Loaded="ReviewNavigationView_Loaded"
                                             HorizontalAlignment="Stretch"
                                             Padding="0" Margin="0"
                                             PaneDisplayMode="Top"
@@ -70,6 +107,7 @@
                                             IsBackButtonVisible="Collapsed"
                                             IsSettingsVisible="False"
                                             MenuItemsSource="{x:Bind ViewModel.ReviewTabs, Mode=OneWay}"
+                                            AutomationProperties.AccessibilityView="Raw"
                                             SelectedItem="{x:Bind ViewModel.SelectedReviewTab, Mode=TwoWay}">
                                 <NavigationView.Resources>
                                     <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
@@ -81,10 +119,16 @@
                                 </NavigationView.MenuItemTemplate>
                                 <Frame MinHeight="100" Padding="12" HorizontalAlignment="Stretch">
                                     <ContentControl Content="{x:Bind ViewModel.SelectedReviewTab, Mode=OneWay}"
+                                                    IsTabStop="False"
                                                     HorizontalContentAlignment="Stretch"
                                                     VerticalContentAlignment="Stretch" >
                                         <ContentControl.ContentTemplateSelector>
                                             <selectors:ReviewTabViewSelector>
+                                                <selectors:ReviewTabViewSelector.SetupTargetTabTemplate>
+                                                    <DataTemplate>
+                                                        <views:SetupTargetReviewView />
+                                                    </DataTemplate>
+                                                </selectors:ReviewTabViewSelector.SetupTargetTabTemplate>
                                                 <selectors:ReviewTabViewSelector.DevDriveTabTemplate>
                                                     <DataTemplate>
                                                         <views:DevDriveReviewView />
@@ -100,6 +144,11 @@
                                                         <views:AppManagementReviewView />
                                                     </DataTemplate>
                                                 </selectors:ReviewTabViewSelector.AppManagementTabTemplate>
+                                                <selectors:ReviewTabViewSelector.CreateEnvironmentTabTemplate>
+                                                    <DataTemplate>
+                                                        <environmentViews:CreateEnvironmentReviewView />
+                                                    </DataTemplate>
+                                                </selectors:ReviewTabViewSelector.CreateEnvironmentTabTemplate>
                                             </selectors:ReviewTabViewSelector>
                                         </ContentControl.ContentTemplateSelector>
                                     </ContentControl>

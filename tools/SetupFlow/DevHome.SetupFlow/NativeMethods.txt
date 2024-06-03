@@ -9,3 +9,7 @@ StrFormatByteSizeEx
 LocalFree
 FormatMessage
 S_OK
+IsApiSetImplemented
+FILE_ACCESS_RIGHTS
+ShellExecuteEx
+SHOW_WINDOW_CMD

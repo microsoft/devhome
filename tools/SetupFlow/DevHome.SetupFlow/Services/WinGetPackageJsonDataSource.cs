@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -8,8 +8,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
+using Serilog;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
@@ -20,21 +20,33 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WinGetPackageJsonDataSource));
+
     /// <summary>
     /// Class for deserializing a JSON winget package
     /// </summary>
-    private class JsonWinGetPackage
+    private sealed class JsonWinGetPackage
     {
-        public string Id { get; set; }
+        public Uri Uri { get; set; }
 
         public string Icon { get; set; }
+
+        public WinGetPackageUri GetPackageUri()
+        {
+            if (WinGetPackageUri.TryCreate(Uri, out var packageUri))
+            {
+                return packageUri;
+            }
+
+            return null;
+        }
     }
 
     /// <summary>
     /// Class for deserializing a JSON package catalog with package ids from
     /// winget
     /// </summary>
-    private class JsonWinGetPackageCatalog
+    private sealed class JsonWinGetPackageCatalog
     {
         public string NameResourceKey { get; set; }
 
@@ -45,6 +57,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 
     private readonly ISetupFlowStringResource _stringResource;
     private readonly string _fileName;
+    private readonly JsonSerializerOptions jsonSerializerOptions = new() { ReadCommentHandling = JsonCommentHandling.Skip };
     private IList<JsonWinGetPackageCatalog> _jsonCatalogs = new List<JsonWinGetPackageCatalog>();
 
     public override int CatalogCount => _jsonCatalogs.Count;
@@ -62,10 +75,10 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     public async override Task InitializeAsync()
     {
         // Open and deserialize JSON file
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Reading package list from JSON file {_fileName}");
+        _log.Information($"Reading package list from JSON file {_fileName}");
         using var fileStream = File.OpenRead(_fileName);
-        var options = new JsonSerializerOptions() { ReadCommentHandling = JsonCommentHandling.Skip };
-        _jsonCatalogs = await JsonSerializer.DeserializeAsync<IList<JsonWinGetPackageCatalog>>(fileStream, options);
+
+        _jsonCatalogs = await JsonSerializer.DeserializeAsync<IList<JsonWinGetPackageCatalog>>(fileStream, jsonSerializerOptions);
     }
 
     public async override Task<IList<PackageCatalog>> LoadCatalogsAsync()
@@ -83,6 +96,25 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         return result;
     }
 
+    private List<WinGetPackageUri> GetPackageUris(IList<JsonWinGetPackage> jsonPackages)
+    {
+        var result = new List<WinGetPackageUri>();
+        foreach (var jsonPackage in jsonPackages)
+        {
+            var packageUri = jsonPackage.GetPackageUri();
+            if (packageUri != null)
+            {
+                result.Add(packageUri);
+            }
+            else
+            {
+                _log.Warning($"Skipping {jsonPackage.Uri} because it is not a valid winget package uri");
+            }
+        }
+
+        return result;
+    }
+
     /// <summary>
     /// Load a package catalog with the list of winget packages sorted based on
     /// the input JSON catalog
@@ -92,20 +124,25 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     private async Task<PackageCatalog> LoadCatalogAsync(JsonWinGetPackageCatalog jsonCatalog)
     {
         var catalogName = _stringResource.GetLocalized(jsonCatalog.NameResourceKey);
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to read JSON package catalog {catalogName}");
+        _log.Information($"Attempting to read JSON package catalog {catalogName}");
 
         try
         {
-            var packages = await GetPackagesAsync(
-                jsonCatalog.WinGetPackages,
-                package => package.Id,
-                async (package, appInfo) =>
+            var packageUris = GetPackageUris(jsonCatalog.WinGetPackages);
+            var packages = await GetPackagesAsync(packageUris);
+            _log.Information($"Obtaining icon information for JSON packages: [{string.Join(", ", packages.Select(p => $"({p.Name}, {p.CatalogName})"))}]");
+            foreach (var package in packages)
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for JSON package {package.Id}");
-                var icon = await GetJsonApplicationIconAsync(appInfo);
-                package.LightThemeIcon = icon;
-                package.DarkThemeIcon = icon;
-            });
+                var packageUri = WindowsPackageManager.CreatePackageUri(package);
+                var jsonPackage = jsonCatalog.WinGetPackages.FirstOrDefault(p => packageUri.Equals(p.GetPackageUri(), WinGetPackageUriParameters.None));
+                if (jsonPackage != null)
+                {
+                    var icon = await GetJsonApplicationIconAsync(jsonPackage);
+                    package.LightThemeIcon = icon;
+                    package.DarkThemeIcon = icon;
+                }
+            }
+
             if (packages.Any())
             {
                 return new PackageCatalog()
@@ -117,12 +154,12 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
             }
             else
             {
-                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"JSON package catalog [{catalogName}] is empty");
+                _log.Warning($"JSON package catalog [{catalogName}] is empty");
             }
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget catalog.", e);
+            _log.Error(e, $"Error loading packages from winget catalog.");
         }
 
         return null;
@@ -147,10 +184,10 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get icon for JSON package {package.Id}.", e);
+            _log.Error(e, $"Failed to get icon for JSON package {package.Uri}.");
         }
 
-        Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No icon found for JSON package {package.Id}. A default one will be provided.");
+        _log.Warning($"No icon found for JSON package {package.Uri}. A default one will be provided.");
         return null;
     }
 }

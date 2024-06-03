@@ -1,125 +1,150 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <Page
     x:Class="DevHome.Settings.Views.FeedbackPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-    xmlns:behaviors="using:DevHome.Common.Behaviors" 
-    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
-    mc:Ignorable="d">
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
+    Loaded="Page_Loaded">
 
-    <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{StaticResource ContentPageMargin}">
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
         <Grid>
-        <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
-            <ContentDialog x:Name="reportBugDialog" x:Uid="Settings_Feedback_ReportBug_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
-                <Grid>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel Margin="{StaticResource FeedbackScrollViewerContentMargin}">
-                            <TextBox x:Name="ReportBugIssueTitle" x:Uid="Settings_Feedback_ReportBug_IssueTitle" AcceptsReturn="True"/>
-                            <TextBox x:Name="ReportBugReproSteps" x:Uid="Settings_Feedback_ReportBug_ReproSteps" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
-                            <TextBox x:Name="ReportBugExpectedBehavior" x:Uid="Settings_Feedback_ReportBug_ExpectedBehavior" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
-                            <TextBox x:Name="ReportBugActualBehavior" x:Uid="Settings_Feedback_ReportBug_ActualBehavior" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
-                            <Expander x:Name="ReportBugSysInfoExpander" Expanding="ShowSysInfoExpander_Expanding" Margin="{StaticResource SmallTopMargin}" Width="{StaticResource FeedbackExpanderWidth}">
-                                <Expander.Header>
-                                    <CheckBox x:Name="ReportBugIncludeSystemInfo" x:Uid="Settings_Feedback_ReportBug_IncludeSystemInfo" IsChecked="True"/>
-                                </Expander.Header>
-                                <Expander.Content>
-                                    <StackPanel>
-                                        <TextBlock x:Name="CpuID"/>
-                                        <TextBlock x:Name="PhysicalMemory"/>
-                                        <TextBlock x:Name="ProcessorArchitecture"/>
-                                    </StackPanel>
-                                </Expander.Content>
-                            </Expander>
-                            <Expander x:Name="ReportBugPluginsExpander" Expanding="ShowPluginsInfoExpander_Expanding" Width="{StaticResource FeedbackExpanderWidth}">
-                                <Expander.Header>
-                                    <CheckBox x:Name="ReportBugIncludePlugins" x:Uid="Settings_Feedback_ReportBug_IncludePlugins" IsChecked="True"/>
-                                </Expander.Header>
-                                <Expander.Content>
-                                    <StackPanel>
-                                        <TextBlock x:Name="ReportBugIncludePluginsList" />
-                                    </StackPanel>
-                                </Expander.Content>
-                            </Expander>
-                            <Expander x:Name="ReportBugExperimentInfoExpander" Width="{StaticResource FeedbackExpanderWidth}">
-                                <Expander.Header>
-                                    <CheckBox x:Name="ReportBugIncludeExperimentInfo" x:Uid="Settings_Feedback_ReportBug_IncludeExperimentInfo" IsChecked="True"/>
-                                </Expander.Header>
-                            </Expander>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
-            </ContentDialog>
-            <ContentDialog x:Name="LocalizationIssueDialog" x:Uid="Settings_Feedback_LocalizationIssue_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
-                <Grid>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{StaticResource FeedbackScrollViewerMargin}">
-                        <StackPanel Margin="{StaticResource FeedbackScrollViewerContentMargin}">
-                            <TextBox x:Name="LocalizationIssueTitle" x:Uid="Settings_Feedback_LocalizationIssue_IssueTitle" AcceptsReturn="True"/>
-                            <TextBox x:Name="LocalizationIssueLanguageAffected" x:Uid="Settings_Feedback_LocalizationIssue_LanguageAffected" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
-            </ContentDialog>
-            <ContentDialog x:Name="suggestFeatureDialog" x:Uid="Settings_Feedback_SuggestFeature_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
-                <Grid>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{StaticResource FeedbackScrollViewerMargin}">
-                        <StackPanel Margin="{StaticResource FeedbackScrollViewerContentMargin}">
-                            <TextBox x:Name="SuggestFeatureTitle" x:Uid="Settings_Feedback_SuggestFeature_IssueTitle" AcceptsReturn="True"/>
-                            <TextBox x:Name="SuggestFeatureDescription" x:Uid="Settings_Feedback_SuggestFeature_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
-                            <TextBox x:Name="SuggestFeatureScenario" x:Uid="Settings_Feedback_SuggestFeature_Scenario" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
-                            <TextBox x:Name="SuggestFeatureSupportingInfo" x:Uid="Settings_Feedback_SuggestFeature_SupportingInfo" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
-            </ContentDialog>
-            <StackPanel Orientation="Vertical"
-                    x:Name="ContentArea" Margin="{StaticResource MediumTopBottomMargin}">
-                <TextBlock Margin="{StaticResource MediumTopBottomMargin}">
-                <Run x:Uid="Settings_Feedback_OpenSource"/>
-                <Hyperlink x:Uid="Settings_Feedback_OpenSource_Link" TextDecorations="None">
-                    <Run x:Uid="Settings_Feedback_OpenSource_LinkText"></Run>
-                </Hyperlink>
+            <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+                <ContentDialog x:Name="reportBugDialog" x:Uid="Settings_Feedback_ReportBug_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
+                    <Grid>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBox x:Name="ReportBugIssueTitle" x:Uid="Settings_Feedback_ReportBug_IssueTitle" AcceptsReturn="True" />
+                                <TextBox x:Name="ReportBugReproSteps" x:Uid="Settings_Feedback_ReportBug_ReproSteps" TextWrapping="Wrap" MinHeight="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
+                                <TextBox x:Name="ReportBugExpectedBehavior" x:Uid="Settings_Feedback_ReportBug_ExpectedBehavior" TextWrapping="Wrap" MinHeight="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
+                                <TextBox x:Name="ReportBugActualBehavior" x:Uid="Settings_Feedback_ReportBug_ActualBehavior" TextWrapping="Wrap" MinHeight="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
+                                <Expander x:Name="ReportBugSysInfoExpander" Expanding="ShowSysInfoExpander_Expanding" Margin="{StaticResource SmallTopMargin}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinWidth="{StaticResource FeedbackExpanderWidth}">
+                                    <Expander.Header>
+                                        <CheckBox x:Name="ReportBugIncludeSystemInfo" x:Uid="Settings_Feedback_ReportBug_IncludeSystemInfo" IsChecked="True"/>
+                                    </Expander.Header>
+                                    <Expander.Content>
+                                        <StackPanel>
+                                            <TextBlock x:Name="CpuID" TextWrapping="Wrap"/>
+                                            <TextBlock x:Name="PhysicalMemory" TextWrapping="Wrap"/>
+                                            <TextBlock x:Name="ProcessorArchitecture" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Expander.Content>
+                                </Expander>
+                                <Expander x:Name="ReportBugExtensionsExpander" Expanding="ShowExtensionsInfoExpander_Expanding" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinWidth="{StaticResource FeedbackExpanderWidth}">
+                                    <Expander.Header>
+                                        <CheckBox x:Name="ReportBugIncludeExtensions" x:Uid="Settings_Feedback_ReportBug_IncludeExtensions" IsChecked="True"/>
+                                    </Expander.Header>
+                                    <Expander.Content>
+                                        <StackPanel>
+                                            <TextBlock x:Name="ReportBugIncludeExtensionsList" TextWrapping="Wrap"/>
+                                            <TextBlock x:Name="WidgetServiceInfo" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Expander.Content>
+                                </Expander>
+                                <Expander x:Name="ReportBugExperimentInfoExpander" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinWidth="{StaticResource FeedbackExpanderWidth}">
+                                    <Expander.Header>
+                                        <CheckBox x:Name="ReportBugIncludeExperimentInfo" x:Uid="Settings_Feedback_ReportBug_IncludeExperimentInfo" IsChecked="True"/>
+                                    </Expander.Header>
+                                </Expander>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </ContentDialog>
+                <ContentDialog x:Name="LocalizationIssueDialog" x:Uid="Settings_Feedback_LocalizationIssue_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
+                    <Grid>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBox x:Name="LocalizationIssueTitle" x:Uid="Settings_Feedback_LocalizationIssue_IssueTitle" AcceptsReturn="True"/>
+                                <TextBox x:Name="LocalizationIssueLanguageAffected" x:Uid="Settings_Feedback_LocalizationIssue_LanguageAffected" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </ContentDialog>
+                <ContentDialog x:Name="suggestFeatureDialog" x:Uid="Settings_Feedback_SuggestFeature_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
+                    <Grid>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBox x:Name="SuggestFeatureTitle" x:Uid="Settings_Feedback_SuggestFeature_IssueTitle" AcceptsReturn="True"/>
+                                <TextBox x:Name="SuggestFeatureDescription" x:Uid="Settings_Feedback_SuggestFeature_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" MinHeight="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                                <TextBox x:Name="SuggestFeatureScenario" x:Uid="Settings_Feedback_SuggestFeature_Scenario" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" MinHeight="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                                <TextBox x:Name="SuggestFeatureSupportingInfo" x:Uid="Settings_Feedback_SuggestFeature_SupportingInfo" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" MinHeight="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </ContentDialog>
+                <ContentDialog x:Name="DocumentationIssueDialog" x:Uid="Settings_Feedback_DocumentationIssue_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
+                    <Grid>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBox x:Name="DocumentationIssueTitle" x:Uid="Settings_Feedback_DocumentationIssue_IssueTitle" AcceptsReturn="True"/>
+                                <TextBox x:Name="DocumentationIssueDescription" x:Uid="Settings_Feedback_DocumentationIssue_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" MinHeight="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </ContentDialog>
+                <TextBlock Margin="{StaticResource MediumBottomMargin}" TextWrapping="WrapWholeWords">
+                    <Run x:Uid="Settings_Feedback_OpenSource"/>
+                    <Hyperlink x:Uid="Settings_Feedback_OpenSource_Link" TextDecorations="None">
+                        <Run x:Uid="Settings_Feedback_OpenSource_LinkText" />
+                    </Hyperlink>
                 </TextBlock>
                 <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                    <labs:SettingsCard x:Uid="Settings_Feedback_ReportBug">
-                        <labs:SettingsCard.HeaderIcon>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_ReportBug">
+                        <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xebe8;"/>
-                        </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Settings_Feedback_ReportBug_Button" Click="DisplayReportBugDialog"/>
-                    </labs:SettingsCard>
-                    <labs:SettingsCard x:Uid="Settings_Feedback_FeatureImprovement">
-                        <labs:SettingsCard.HeaderIcon>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_ReportBug_Button" Click="DisplayReportBugDialog" MinWidth="150" />
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_FeatureImprovement">
+                        <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea80;"/>
-                        </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Settings_Feedback_FeatureImprovement_Button" Click="DisplaySuggestFeature"/>
-                    </labs:SettingsCard>
-                    <labs:SettingsCard x:Uid="Settings_Feedback_LocalizationIssue">
-                        <labs:SettingsCard.HeaderIcon>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_FeatureImprovement_Button" Click="DisplaySuggestFeature" MinWidth="150" />
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_LocalizationIssue">
+                        <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xE909;"/>
-                        </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Settings_Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog"/>
-                    </labs:SettingsCard>
-                    <labs:SettingsCard x:Uid="Settings_Feedback_BuildExtension">
-                        <labs:SettingsCard.HeaderIcon>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog" MinWidth="150" />
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_DocumentationIssue">
+                        <ctControls:SettingsCard.HeaderIcon>
+                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                Glyph="&#xe736;"/>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_DocumentationIssue_Button" Click="DisplayDocumentationIssueDialog" MinWidth="150" />
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_BuildExtension">
+                        <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea86;"/>
-                        </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Settings_Feedback_BuildExtension_Button" Click="BuildExtensionButtonClicked"/>
-                    </labs:SettingsCard>
-                    <labs:SettingsCard x:Uid="Settings_Feedback_ReportSecurity">
-                        <labs:SettingsCard.HeaderIcon>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_BuildExtension_Button" Click="BuildExtensionButtonClicked" MinWidth="150">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock x:Uid="Settings_Feedback_BuildExtension_TextBlock" />
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE8A7;" FontSize="12" />
+                            </StackPanel>
+                        </Button>
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_ReportSecurity">
+                        <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xf552;"/>
-                        </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Settings_Feedback_ReportSecurity_Button" Click="ReportSecurityButtonClicked"/>
-                    </labs:SettingsCard>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_ReportSecurity_Button" Click="ReportSecurityButtonClicked" MinWidth="150">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock x:Uid="Settings_Feedback_ReportSecurity_TextBlock" />
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE8A7;" FontSize="12" />
+                            </StackPanel>
+                        </Button>
+                    </ctControls:SettingsCard>
                 </StackPanel>
             </StackPanel>
         </Grid>

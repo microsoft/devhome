@@ -1,9 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
 using DevHome.Common.Services;
-using DevHome.Contracts.Services;
 using DevHome.Contracts.ViewModels;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Helpers;
@@ -20,6 +19,8 @@ public class NavigationService : INavigationService
     private object? _lastParameterUsed;
     private Frame? _frame;
     private string? _defaultPage;
+
+    public object? LastParameterUsed => _lastParameterUsed;
 
     public event NavigatedEventHandler? Navigated;
 
@@ -53,6 +54,9 @@ public class NavigationService : INavigationService
     [MemberNotNullWhen(true, nameof(Frame), nameof(_frame))]
     public bool CanGoBack => Frame != null && Frame.CanGoBack;
 
+    [MemberNotNullWhen(true, nameof(Frame), nameof(_frame))]
+    public bool CanGoForward => Frame != null && Frame.CanGoForward;
+
     public NavigationService(IPageService pageService)
     {
         _pageService = pageService;
@@ -80,6 +84,23 @@ public class NavigationService : INavigationService
         {
             var vmBeforeNavigation = _frame.GetPageViewModel();
             _frame.GoBack();
+            if (vmBeforeNavigation is INavigationAware navigationAware)
+            {
+                navigationAware.OnNavigatedFrom();
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool GoForward()
+    {
+        if (CanGoForward)
+        {
+            var vmBeforeNavigation = _frame.GetPageViewModel();
+            _frame.GoForward();
             if (vmBeforeNavigation is INavigationAware navigationAware)
             {
                 navigationAware.OnNavigatedFrom();

@@ -1,15 +1,17 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.Generic;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
-using CommunityToolkit.WinUI.UI.Controls;
+using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
+using Windows.UI;
 
 namespace DevHome.Common.Renderers;
+
 public class LabelGroup : IAdaptiveCardElement
 {
     public LabelGroup()
@@ -93,6 +95,8 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
         {
             Name = LabelGroup.CustomTypeString,
             Orientation = Orientation.Horizontal,
+            HorizontalSpacing = 4,
+            VerticalSpacing = 4,
         };
 
         if (element is LabelGroup labelGroup)
@@ -106,7 +110,6 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
                 {
                     Background = GetBrushFromColor(label.Item2, 0.4),
                     Padding = new Thickness(7, 2, 7, 2),
-                    Margin = new Thickness(0, 0, 10, 0),
                 };
                 if (labelGroup.RoundedCorners)
                 {
@@ -141,7 +144,7 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
             var g = (byte)System.Convert.ToUInt32(colorString.Substring(2, 2), 16);
             var b = (byte)System.Convert.ToUInt32(colorString.Substring(4, 2), 16);
 
-            return new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(a, r, g, b));
+            return new Microsoft.UI.Xaml.Media.SolidColorBrush(Color.FromArgb(a, r, g, b));
         }
 
         return new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.Settings.Extensions;
+
 public static class ServiceExtensions
 {
     public static IServiceCollection AddSettings(this IServiceCollection services, HostBuilderContext context)
@@ -20,10 +21,9 @@ public static class ServiceExtensions
         services.AddTransient<AboutPage>();
         services.AddTransient<AccountsViewModel>();
         services.AddTransient<AccountsPage>();
-        services.AddTransient<ExtensionsViewModel>();
-        services.AddTransient<ExtensionsPage>();
         services.AddTransient<PreferencesViewModel>();
         services.AddTransient<PreferencesPage>();
+        services.AddSingleton<ExperimentalFeaturesViewModel>();
 
         return services;
     }

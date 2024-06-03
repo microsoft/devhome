@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Diagnostics.Tracing;
@@ -11,7 +11,7 @@ using Microsoft.Diagnostics.Telemetry.Internal;
 namespace DevHome.SetupFlow.Common.TelemetryEvents;
 
 [EventData]
-internal class DevDriveTriggeredEvent : EventBase
+internal sealed class DevDriveTriggeredEvent : EventBase
 {
     public DevDriveTriggeredEvent(IDevDrive devDrive, long duration, int hr)
     {
@@ -37,5 +37,5 @@ internal class DevDriveTriggeredEvent : EventBase
     public uint diskMediaType => (uint)_devDrive.DriveMediaType;
 #pragma warning restore SA1300 // Element should begin with upper-case letter
 
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 }

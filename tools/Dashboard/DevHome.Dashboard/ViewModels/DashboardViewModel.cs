@@ -1,50 +1,42 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using System;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Windows.Storage;
-using Windows.System;
+using DevHome.Dashboard.Services;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.Dashboard.ViewModels;
 
 public partial class DashboardViewModel : ObservableObject
 {
-    private const string _hideDashboardBannerKey = "HideDashboardBanner";
+    public IWidgetServiceService WidgetServiceService { get; }
+
+    public IWidgetHostingService WidgetHostingService { get; }
+
+    public IWidgetIconService WidgetIconService { get; }
+
+    public IWidgetScreenshotService WidgetScreenshotService { get; }
 
     [ObservableProperty]
-    private bool _showDashboardBanner;
+    private bool _isLoading;
 
-    public DashboardViewModel()
+    [ObservableProperty]
+    private bool _hasWidgetService;
+
+    public DashboardViewModel(
+        IWidgetServiceService widgetServiceService,
+        IWidgetHostingService widgetHostingService,
+        IWidgetIconService widgetIconService,
+        IWidgetScreenshotService widgetScreenshotService)
     {
-        ShowDashboardBanner = ShouldShowDashboardBanner();
+        WidgetServiceService = widgetServiceService;
+        WidgetHostingService = widgetHostingService;
+        WidgetIconService = widgetIconService;
+        WidgetScreenshotService = widgetScreenshotService;
     }
 
-    [RelayCommand]
-    private async Task DashboardBannerButtonAsync()
+    public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
     {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2234395"));
-    }
-
-    [RelayCommand]
-    private void HideDashboardBannerButton()
-    {
-        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        roamingProperties[_hideDashboardBannerKey] = bool.TrueString;
-        ShowDashboardBanner = false;
-    }
-
-    private bool ShouldShowDashboardBanner()
-    {
-        var show = true;
-        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        if (roamingProperties.ContainsKey(_hideDashboardBannerKey))
-        {
-            show = false;
-        }
-
-        return show;
+        return (widgetCount == 0 && !isLoading && HasWidgetService) ? Visibility.Visible : Visibility.Collapsed;
     }
 }

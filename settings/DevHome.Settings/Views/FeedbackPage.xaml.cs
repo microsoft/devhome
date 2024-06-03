@@ -1,9 +1,8 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -11,7 +10,6 @@ using System.Threading.Tasks;
 using System.Web;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
 using Microsoft.Management.Infrastructure;
 using Microsoft.UI.Xaml;
@@ -31,36 +29,12 @@ public sealed partial class FeedbackPage : Page
     private static readonly double ByteSizeGB = 1024 * 1024 * 1024;
     private static string wmiCPUInfo = string.Empty;
 
-    public FeedbackViewModel ViewModel
-    {
-        get;
-    }
-
-    public ObservableCollection<Breadcrumb> Breadcrumbs
-    {
-        get;
-    }
+    public FeedbackViewModel ViewModel { get; }
 
     public FeedbackPage()
     {
         ViewModel = Application.Current.GetService<FeedbackViewModel>();
         InitializeComponent();
-
-        var stringResource = new StringResource("DevHome.Settings/Resources");
-        Breadcrumbs = new ObservableCollection<Breadcrumb>
-        {
-            new Breadcrumb(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
-            new Breadcrumb(stringResource.GetLocalized("Settings_Feedback_Header"), typeof(ExtensionsViewModel).FullName!),
-        };
-    }
-
-    private void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
-    {
-        if (args.Index < Breadcrumbs.Count - 1)
-        {
-            var crumb = (Breadcrumb)args.Item;
-            crumb.NavigateTo();
-        }
     }
 
     private async void DisplaySuggestFeature(object sender, RoutedEventArgs e)
@@ -73,7 +47,10 @@ public sealed partial class FeedbackPage : Page
             var description = HttpUtility.UrlEncode(SuggestFeatureDescription.Text);
             var scenario = HttpUtility.UrlEncode(SuggestFeatureScenario.Text);
             var supportingInfo = HttpUtility.UrlEncode(SuggestFeatureSupportingInfo.Text);
-            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle + "&labels=Issue-Feature&template=Feature_Request.yml&description=" + description + "&scenario=" + scenario + "&supportinginfo=" + supportingInfo;
+            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle +
+                "&labels=Issue-Feature&template=Feature_Request.yml&description=" + description +
+                "&scenario=" + scenario +
+                "&supportinginfo=" + supportingInfo;
 
             // Make sure any changes are consistent with the feature request issue template on GitHub
             await Windows.System.Launcher.LaunchUriAsync(new Uri(gitHubURL));
@@ -94,11 +71,13 @@ public sealed partial class FeedbackPage : Page
             var version = HttpUtility.UrlEncode(GetAppVersion());
             var issueTitle = HttpUtility.UrlEncode(LocalizationIssueTitle.Text);
             var languageAffected = HttpUtility.UrlEncode(LocalizationIssueLanguageAffected.Text);
-            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle + "&labels=Issue-Translation&template=Translation_Issue.yml&version=" + version + "&languageaffected=" + languageAffected;
+            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle +
+                "&labels=Issue-Translation&template=Translation_Issue.yml&version=" + version +
+                "&languageaffected=" + languageAffected;
 
             ReportBugExpectedBehavior.Text = ReportBugActualBehavior.Text = string.Empty;
 
-            // Make sure any changes are consistent with the translation issue template on GitHuba
+            // Make sure any changes are consistent with the translation issue template on GitHub
             await Windows.System.Launcher.LaunchUriAsync(new Uri(gitHubURL));
         }
         else
@@ -128,16 +107,24 @@ public sealed partial class FeedbackPage : Page
                 sysInfo = HttpUtility.UrlEncode(wmiCPUInfo + "\n" + GetPhysicalMemory() + "\n" + GetProcessorArchitecture());
             }
 
-            var pluginsInfo = string.Empty;
-            if (ReportBugIncludePlugins.IsChecked.GetValueOrDefault())
+            var extensionsInfo = string.Empty;
+            if (ReportBugIncludeExtensions.IsChecked.GetValueOrDefault())
             {
-                pluginsInfo = HttpUtility.UrlEncode(GetPlugins());
+                extensionsInfo = HttpUtility.UrlEncode(GetExtensions() + "\n" + GetWidgetService());
             }
 
             var otherSoftwareText = "OS Build Version: " + GetOSVersion() + "\n.NET Version: " + GetDotNetVersion();
             var otherSoftware = HttpUtility.UrlEncode(otherSoftwareText);
 
-            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle + "&labels=Issue-Bug&template=Bug_Report.yml&version=" + version + "&windowsversion=" + windowsversion + "&repro=" + reproSteps + "&expectedbehavior=" + expectedBehavior + "&actualbehavior=" + actualBehavior + "&includedsysinfo=" + sysInfo + "&includedextensionsinfo=" + pluginsInfo + "&othersoftware=" + otherSoftware;
+            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle +
+                "&labels=Issue-Bug&template=Bug_Report.yml&version=" + version +
+                "&windowsversion=" + windowsversion +
+                "&repro=" + reproSteps +
+                "&expectedbehavior=" + expectedBehavior +
+                "&actualbehavior=" + actualBehavior +
+                "&includedsysinfo=" + sysInfo +
+                "&includedextensionsinfo=" + extensionsInfo +
+                "&othersoftware=" + otherSoftware;
 
             // Make sure any changes are consistent with the report bug issue template on GitHub
             await Windows.System.Launcher.LaunchUriAsync(new Uri(gitHubURL));
@@ -147,9 +134,30 @@ public sealed partial class FeedbackPage : Page
             reportBugDialog.Hide();
         }
 
-        ReportBugIncludeSystemInfo.IsChecked = ReportBugIncludePlugins.IsChecked = ReportBugIncludeExperimentInfo.IsChecked = true;
-        ReportBugSysInfoExpander.IsExpanded = ReportBugPluginsExpander.IsExpanded = ReportBugExperimentInfoExpander.IsExpanded = false;
+        ReportBugIncludeSystemInfo.IsChecked = ReportBugIncludeExtensions.IsChecked = ReportBugIncludeExperimentInfo.IsChecked = true;
+        ReportBugSysInfoExpander.IsExpanded = ReportBugExtensionsExpander.IsExpanded = ReportBugExperimentInfoExpander.IsExpanded = false;
         ReportBugIssueTitle.Text = ReportBugReproSteps.Text = ReportBugExpectedBehavior.Text = ReportBugActualBehavior.Text = string.Empty;
+    }
+
+    private async void DisplayDocumentationIssueDialog(object sender, RoutedEventArgs e)
+    {
+        var result = await DocumentationIssueDialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            var issueTitle = HttpUtility.UrlEncode(DocumentationIssueTitle.Text);
+            var issueDescription = HttpUtility.UrlEncode(DocumentationIssueDescription.Text);
+            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle +
+                "&labels=Issue-Docs&projects=&template=Documentation_Issue.yml&description=" + issueDescription;
+
+            // Make sure any changes are consistent with the documentation issue template on GitHub
+            await Windows.System.Launcher.LaunchUriAsync(new Uri(gitHubURL));
+        }
+        else
+        {
+            DocumentationIssueDialog.Hide();
+        }
+
+        DocumentationIssueTitle.Text = DocumentationIssueDescription.Text = string.Empty;
     }
 
     private void ShowSysInfoExpander_Expanding(Expander sender, ExpanderExpandingEventArgs args)
@@ -159,9 +167,10 @@ public sealed partial class FeedbackPage : Page
         CpuID.Text = wmiCPUInfo;
     }
 
-    private void ShowPluginsInfoExpander_Expanding(Expander sender, ExpanderExpandingEventArgs args)
+    private void ShowExtensionsInfoExpander_Expanding(Expander sender, ExpanderExpandingEventArgs args)
     {
-        ReportBugIncludePluginsList.Text = GetPlugins();
+        ReportBugIncludeExtensionsList.Text = GetExtensions();
+        WidgetServiceInfo.Text = GetWidgetService();
     }
 
     private async void Reload()
@@ -190,7 +199,7 @@ public sealed partial class FeedbackPage : Page
     private string GetAppVersion()
     {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-        IAppInfoService appInfoService = Application.Current.GetService<IAppInfoService>();
+        var appInfoService = Application.Current.GetService<IAppInfoService>();
         var version = appInfoService.GetAppVersion();
 
         return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
@@ -234,23 +243,25 @@ public sealed partial class FeedbackPage : Page
 
     private string GetPhysicalMemory()
     {
-        CultureInfo cultures = new CultureInfo("en-US");
+        var cultures = new CultureInfo("en-US");
 
-        MEMORYSTATUSEX memStatus = default(MEMORYSTATUSEX);
+        MEMORYSTATUSEX memStatus = default;
         memStatus.dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX));
         PInvoke.GlobalMemoryStatusEx(out memStatus);
 
         var availMemKbToGb = Math.Round(memStatus.ullAvailPhys / ByteSizeGB, 2);
         var totalMemKbToGb = Math.Round(memStatus.ullTotalPhys / ByteSizeGB, 2);
 
-        return "Physical Memory: " + totalMemKbToGb.ToString(cultures) + "GB (" + availMemKbToGb.ToString(cultures) + "GB free)";
+        var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
+        return stringResource.GetLocalized("Settings_Feedback_PhysicalMemory") + ": " + totalMemKbToGb.ToString(cultures) + "GB (" + availMemKbToGb.ToString(cultures) + "GB free)";
     }
 
     private string GetProcessorArchitecture()
     {
         SYSTEM_INFO sysInfo;
         PInvoke.GetSystemInfo(out sysInfo);
-        return "Processor Architecture: " + DetermineArchitecture((int)sysInfo.Anonymous.Anonymous.wProcessorArchitecture);
+        var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
+        return stringResource.GetLocalized("Settings_Feedback_ProcessorArchitecture") + ": " + DetermineArchitecture((int)sysInfo.Anonymous.Anonymous.wProcessorArchitecture);
     }
 
     private string DetermineArchitecture(int value)
@@ -278,26 +289,51 @@ public sealed partial class FeedbackPage : Page
         return arch;
     }
 
-    private string GetPlugins()
+    private string GetExtensions()
     {
-        var pluginService = Application.Current.GetService<IPluginService>();
-        var plugins = pluginService.GetInstalledPluginsAsync(true).Result;
-        var pluginsStr = "Extensions: \n";
-        foreach (var plugin in plugins)
+        var extensionService = Application.Current.GetService<IExtensionService>();
+        var extensions = extensionService.GetInstalledExtensionsAsync(true).Result;
+        var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
+        var extensionsStr = stringResource.GetLocalized("Settings_Feedback_Extensions") + ": \n";
+        foreach (var extension in extensions)
         {
-            pluginsStr += plugin.PackageFullName + "\n";
+            extensionsStr += extension.PackageFullName + " (" + extension.ExtensionDisplayName + ")\n";
         }
 
-        return pluginsStr;
+        return extensionsStr;
+    }
+
+    private string GetWidgetService()
+    {
+        var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
+        var widgetServiceString = stringResource.GetLocalized("Settings_Feedback_WidgetService") + ": \n";
+        var packageDeploymentService = Application.Current.GetService<IPackageDeploymentService>();
+
+        // Only one package is expected in total from these two queries, but print anything just in case.
+        const string webExperienceFamilyName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
+        var webPackages = packageDeploymentService.FindPackagesForCurrentUser(webExperienceFamilyName);
+        foreach (var package in webPackages)
+        {
+            widgetServiceString += package.Id.FullName + "\n";
+        }
+
+        const string widgetServiceFamilyName = "Microsoft.WidgetsPlatformRuntime_8wekyb3d8bbwe";
+        var widgetPackages = packageDeploymentService.FindPackagesForCurrentUser(widgetServiceFamilyName);
+        foreach (var package in widgetPackages)
+        {
+            widgetServiceString += package.Id.FullName + "\n";
+        }
+
+        return widgetServiceString;
     }
 
     private async void BuildExtensionButtonClicked(object sender, RoutedEventArgs e)
     {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2234795"));
+        await Launcher.LaunchUriAsync(new("https://go.microsoft.com/fwlink/?linkid=2234795"));
     }
 
     private async void ReportSecurityButtonClicked(object sender, RoutedEventArgs e)
     {
-        await Launcher.LaunchUriAsync(new ("https://github.com/microsoft/devhome/security/policy"));
+        await Launcher.LaunchUriAsync(new("https://github.com/microsoft/devhome/security/policy"));
     }
 }

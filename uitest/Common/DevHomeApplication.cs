@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics;
 using DevHome.UITest.Configurations;
@@ -16,7 +16,7 @@ namespace DevHome.UITest.Common;
 /// </summary>
 public sealed class DevHomeApplication
 {
-    private static readonly Lazy<DevHomeApplication> _instance = new (() => new ());
+    private static readonly Lazy<DevHomeApplication> _instance = new(() => new());
     private DevHomeSession _devHomeSession;
 
     /// <summary>
@@ -33,6 +33,12 @@ public sealed class DevHomeApplication
     private WindowsElement DashboardNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("DevHome.Dashboard");
 
     private WindowsElement MachineConfigurationNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("DevHome.SetupFlow");
+
+    private WindowsElement IntroducingDevHomeNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("WhatsNew");
+
+    private WindowsElement SettingsNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("SettingsItem");
+
+    private WindowsElement ExtensionsNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("Extensions");
 
     private DevHomeApplication()
     {
@@ -51,7 +57,12 @@ public sealed class DevHomeApplication
             .Build()
             .Get<AppConfiguration>();
 
-        _devHomeSession = new (Configuration.WindowsApplicationDriverUrl, $"{Configuration.PackageFamilyName}!App");
+        _devHomeSession = new(Configuration.WindowsApplicationDriverUrl, $"{Configuration.PackageFamilyName}!App");
+    }
+
+    public string GetMainPageId()
+    {
+        return _devHomeSession.Driver.FindElementByAccessibilityId("MainPage").Id;
     }
 
     public DashboardPage NavigateToDashboardPage()
@@ -67,7 +78,28 @@ public sealed class DevHomeApplication
     {
         Trace.WriteLine("Navigating to Machine Configuration");
         MachineConfigurationNavigationItem.Click();
-        return new (_devHomeSession.Driver);
+        return new(_devHomeSession.Driver);
+    }
+
+    public IntroducingDevHomePage NavigateToIntroducingDevHomePage()
+    {
+        Trace.WriteLine("Navigating to Introducing Dev Home");
+        IntroducingDevHomeNavigationItem.Click();
+        return new(_devHomeSession.Driver);
+    }
+
+    public SettingsPage NavigateToSettingsPage()
+    {
+        Trace.WriteLine("Navigating to Settings");
+        SettingsNavigationItem.Click();
+        return new(_devHomeSession.Driver);
+    }
+
+    public ExtensionsPage NavigateToExtensionsPage()
+    {
+        Trace.WriteLine("Navigating to Extensions");
+        ExtensionsNavigationItem.Click();
+        return new(_devHomeSession.Driver);
     }
 
     /// <summary>

@@ -1,7 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
+using DevHome.SetupFlow.Utilities;
 
 namespace DevHome.Common.Models;
 
@@ -12,6 +13,7 @@ namespace DevHome.Common.Models;
 /// 2. DriveSizeInBytes
 /// 3. DriveLocation
 /// 4. DriveLabel
+/// 5. DriveSizeRemainingInBytes
 /// </summary>
 public enum DevDriveState
 {
@@ -77,6 +79,14 @@ public interface IDevDrive
     }
 
     /// <summary>
+    /// Gets the size remaining for the Dev Drive.
+    /// </summary>
+    public ulong DriveSizeRemainingInBytes
+    {
+        get;
+    }
+
+    /// <summary>
     /// Gets the file system location of the Dev Drive. This should be a fully qualified folder path.
     /// </summary>
     public string DriveLocation
@@ -106,6 +116,16 @@ public interface IDevDrive
     /// Gets the drive media type.
     /// </summary>
     public DiskMediaType DriveMediaType
+    {
+        get;
+    }
+
+    ByteUnit DriveUnitOfMeasure { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether gets if the dev drive is trusted or not.
+    /// </summary>
+    public bool IsDevDriveTrusted
     {
         get;
     }

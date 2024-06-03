@@ -1,10 +1,8 @@
 <Button
     x:Class="DevHome.Common.Views.CloseButton"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
+    x:Uid="CloseButton"
     Style="{StaticResource DefaultButtonStyle}"
     HorizontalAlignment="Right"
     VerticalAlignment="Top"
@@ -12,7 +10,8 @@
     Background="Transparent"
     Padding="10">
 
-    <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}" 
-                FontSize="{ThemeResource BodyTextBlockFontSize}" 
-                Text="&#xE711;" />
+    <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}"
+               FontSize="{ThemeResource BodyTextBlockFontSize}"
+               AutomationProperties.AccessibilityView="Raw"
+               Text="&#xE711;" />
 </Button>

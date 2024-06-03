@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Reflection;
 using System.Security.Principal;
@@ -9,24 +9,17 @@ using DevHome.Helpers;
 using Windows.ApplicationModel;
 
 namespace DevHome.Services;
+
 public class AppInfoService : IAppInfoService
 {
-    private static bool RunningAsAdmin
-    {
-        get
-        {
-            using var identity = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-    }
+    public string IconPath { get; } = Path.Combine(AppContext.BaseDirectory, "Assets/DevHome.ico");
 
     public string GetAppNameLocalized()
     {
 #if CANARY_BUILD
         return RunningAsAdmin ? "AppDisplayNameCanaryAdministrator".GetLocalized() : "AppDisplayNameCanary".GetLocalized();
 #elif STABLE_BUILD
-        return RunningAsAdmin ? "AppDisplayNameStableAdministrator".GetLocalized() :  "AppDisplayNameStable".GetLocalized();
+        return RunningAsAdmin ? "AppDisplayNameStableAdministrator".GetLocalized() : "AppDisplayNameStable".GetLocalized();
 #else
         return RunningAsAdmin ? "AppDisplayNameDevAdministrator".GetLocalized() : "AppDisplayNameDev".GetLocalized();
 #endif
@@ -37,11 +30,21 @@ public class AppInfoService : IAppInfoService
         if (RuntimeHelper.IsMSIX)
         {
             var packageVersion = Package.Current.Id.Version;
-            return new (packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
+            return new(packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
         }
         else
         {
             return Assembly.GetExecutingAssembly().GetName().Version!;
+        }
+    }
+
+    private static bool RunningAsAdmin
+    {
+        get
+        {
+            using var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
     }
 }

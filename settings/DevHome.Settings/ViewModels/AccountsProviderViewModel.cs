@@ -1,23 +1,24 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Logging;
 using DevHome.Settings.Models;
-using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.Settings.ViewModels;
+
 public partial class AccountsProviderViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AccountsProviderViewModel));
+
     public IDeveloperIdProvider DeveloperIdProvider { get; }
 
-    public string ProviderName => DeveloperIdProvider.GetName();
+    public string ProviderName => DeveloperIdProvider.DisplayName;
 
-    public ObservableCollection<Account> LoggedInAccounts { get; } = new ();
+    public ObservableCollection<Account> LoggedInAccounts { get; } = new();
 
     public AccountsProviderViewModel(IDeveloperIdProvider devIdProvider)
     {
@@ -28,7 +29,14 @@ public partial class AccountsProviderViewModel : ObservableObject
     public void RefreshLoggedInAccounts()
     {
         LoggedInAccounts.Clear();
-        DeveloperIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
+        var developerIdsResult = DeveloperIdProvider.GetLoggedInDeveloperIds();
+        if (developerIdsResult.Result.Status == ProviderOperationStatus.Failure)
+        {
+            _log.Error($"{developerIdsResult.Result.DisplayMessage} - {developerIdsResult.Result.DiagnosticText}");
+            return;
+        }
+
+        developerIdsResult.DeveloperIds.ToList().ForEach((devId) =>
         {
             LoggedInAccounts.Add(new Account(this, devId));
         });
@@ -39,14 +47,11 @@ public partial class AccountsProviderViewModel : ObservableObject
         var accountToRemove = LoggedInAccounts.FirstOrDefault(x => x.LoginId == loginId);
         if (accountToRemove != null)
         {
-            try
+            var providerOperationResult = DeveloperIdProvider.LogoutDeveloperId(accountToRemove.GetDevId());
+            if (providerOperationResult.Status == ProviderOperationStatus.Failure)
             {
-                DeveloperIdProvider.LogoutDeveloperId(accountToRemove.GetDevId());
-            }
-            catch (Exception ex)
-            {
-                GlobalLog.Logger?.ReportError($"RemoveAccount() failed - developerId: {loginId}.", ex);
-                throw;
+                _log.Error($"{providerOperationResult.DisplayMessage} - {providerOperationResult.DiagnosticText}");
+                return;
             }
         }
 

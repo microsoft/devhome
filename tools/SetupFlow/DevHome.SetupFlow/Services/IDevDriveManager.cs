@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -106,7 +106,7 @@ public interface IDevDriveManager
     public void RequestToCloseDevDriveWindow(IDevDrive devDrive);
 
     /// <summary>
-    /// Event that the Dev Drive view model can subscribe to, to know if a requester wants them to close the window, without the user explicity
+    /// Event that the Dev Drive view model can subscribe to, to know if a requester wants them to close the window, without the user explicitly
     /// closing the window themselves, through actions like clicking the close button.
     /// </summary>
     public event EventHandler<IDevDrive> RequestToCloseViewModelWindow;

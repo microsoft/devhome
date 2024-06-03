@@ -78,7 +78,7 @@ configuration:
       if:
       - payloadType: Issue_Comment
       - commentContains:
-          pattern: '\/logs)'
+          pattern: '\/logs'
           isRegex: True
       - or:
         - activitySenderHasAssociation:
@@ -90,17 +90,15 @@ configuration:
           reply: >-
               Hi @${issueAuthor}. It would be helpful for us if you could share your Dev Home logs. 
               These logs can be found at 
-              `%LOCALAPPDATA%\Packages\Microsoft.Windows.DevHome_8wekyb3d8bbwe\TempState` and 
-              `%LOCALAPPDATA%\Packages\Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe\TempState`. 
+              `%LOCALAPPDATA%\Packages\Microsoft.Windows.DevHome_8wekyb3d8bbwe\TempState`, 
+              `%LOCALAPPDATA%\Packages\Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe\TempState`, and
+              `%LOCALAPPDATA%\Packages\Microsoft.Windows.DevHomeAzureExtension_8wekyb3d8bbwe\TempState`. 
               You can share these folders via a OneDrive link or zip them and attach them to a 
               comment here. If you share this way, you may want to look through the logs in case 
               there are any details included that you would like to remove (for example, private 
               repo names). Alternatively, you can open a Feedback Hub issue and attach them there. 
               If you use Feedback Hub, please paste the URL at the bottom of the report here so we 
               can easily find it. 
-      - closeIssue
-      - removeLabel:
-          label: Needs-Triage
       - removeLabel:
           label: Needs-Team-Response
     #
@@ -119,8 +117,6 @@ configuration:
         - activitySenderHasAssociation:
             association: Member
       then:
-      - removeLabel:
-          label: Needs-Triage
       - removeLabel:
           label: Needs-Team-Response
       - addLabel:

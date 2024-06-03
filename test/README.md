@@ -6,7 +6,7 @@
 
 ## Testing UI Controls
 
-Unit tests that exercise UI controls must run on the WinUI UI thread or they will throw an exception. To run a test on the WinUI UI thread, mark the test method with `[UITestMethod]` instead of `[TestMethod]`. During test execution, the test host will launch the app and dispatch the test to the app's UI thread.
+Unit tests that exercise UI controls must run on the WinUI UI thread or they will throw an exception. To run a test on the WinUI UI thread, mark the test method with `[UITestMethod]` instead of `[TestMethod]`. During test execution, the test host will launch Dev Home and dispatch the test to Dev Home's UI thread.
 
 The below example creates a `new Grid()` and then validates that its `ActualWidth` is `0`.
 

@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
@@ -13,7 +13,6 @@ using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace DevHome.SetupFlow.Views;
 
@@ -23,6 +22,8 @@ namespace DevHome.SetupFlow.Views;
 public sealed partial class EditClonePathDialog
 {
     private readonly ISetupFlowStringResource _stringResource;
+
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
 
     /// <summary>
     /// Gets or sets the view model to handle clone paths.
@@ -67,9 +68,10 @@ public sealed partial class EditClonePathDialog
     public EditClonePathDialog(IDevDriveManager devDriveManager, CloningInformation cloningInfo, ISetupFlowStringResource stringResource)
     {
         this.InitializeComponent();
+        _setupFlowOrchestrator = Application.Current.GetService<SetupFlowOrchestrator>();
         EditClonePathViewModel = new EditClonePathViewModel();
-        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
-        FolderPickerViewModel = new FolderPickerViewModel(stringResource);
+        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager, _setupFlowOrchestrator);
+        FolderPickerViewModel = new FolderPickerViewModel(stringResource, _setupFlowOrchestrator);
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {
             FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
@@ -289,7 +291,7 @@ public sealed partial class EditClonePathDialog
     /// </summary>
     public void ShowCheckboxIfPathNotAnExistingDevDrive()
     {
-        if (!DevDriveUtil.IsDevDriveFeatureEnabled)
+        if (!DevDriveUtil.IsDevDriveFeatureEnabled || _setupFlowOrchestrator.IsSettingUpATargetMachine)
         {
             EditDevDriveViewModel.HideDevDriveUI();
             return;
@@ -308,6 +310,6 @@ public sealed partial class EditClonePathDialog
             }
         }
 
-        EditDevDriveViewModel.ShowDevDriveInformation = Visibility.Visible;
+        EditDevDriveViewModel.ShowDevDriveInformation = true;
     }
 }

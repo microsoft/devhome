@@ -39,5 +39,11 @@ configuration:
       - payloadType: Issue_Comment
       then:
       - cleanEmailReply
+    - description: Add In-PR when an issue has a linked PR that will close it
+      if:
+      - payloadType: Pull_Request
+      then:
+      - inPrLabel:
+          label: In-PR
 onFailure: 
 onSuccess: 

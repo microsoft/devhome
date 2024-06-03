@@ -1,8 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 namespace DevHome.SetupFlow.Models;
-internal class Common
+
+internal sealed class Common
 {
     /// <summary>
     /// Used to keep track of what page the user is on.
@@ -13,5 +14,6 @@ internal class Common
         AddViaUrl,
         AddViaAccount,
         Repositories,
+        SearchFields,
     }
 }

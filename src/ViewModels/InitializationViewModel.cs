@@ -1,19 +1,27 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using System.Management.Automation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.Logging;
+using DevHome.Dashboard.Services;
+using DevHome.Services;
 using DevHome.Views;
 using Microsoft.UI.Xaml;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
+using Serilog;
 
 namespace DevHome.ViewModels;
+
 public class InitializationViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(InitializationViewModel));
+
+    private readonly IThemeSelectorService _themeSelector;
+    private readonly IWidgetServiceService _widgetServiceService;
+    private readonly IAppInstallManagerService _appInstallManagerService;
+    private readonly IPackageDeploymentService _packageDeploymentService;
+
 #if CANARY_BUILD
     private const string GitHubExtensionStorePackageId = "9N806ZKPW85R";
     private const string GitHubExtensionPackageFamilyName = "Microsoft.Windows.DevHomeGitHubExtension.Canary_8wekyb3d8bbwe";
@@ -25,44 +33,57 @@ public class InitializationViewModel : ObservableObject
     private const string GitHubExtensionPackageFamilyName = "";
 #endif
 
-    private const int StoreInstallTimeout = 60_000;
-
-    private readonly IThemeSelectorService _themeSelector;
-    private readonly IPluginService _pluginService;
-
-    public InitializationViewModel(IThemeSelectorService themeSelector, IPluginService pluginService)
+    public InitializationViewModel(
+        IThemeSelectorService themeSelector,
+        IWidgetServiceService widgetServiceService,
+        IAppInstallManagerService appInstallManagerService,
+        IPackageDeploymentService packageDeploymentService)
     {
         _themeSelector = themeSelector;
-        _pluginService = pluginService;
+        _widgetServiceService = widgetServiceService;
+        _appInstallManagerService = appInstallManagerService;
+        _packageDeploymentService = packageDeploymentService;
     }
 
-    public async Task OnPageLoadedAsync()
+    public async void OnPageLoaded()
     {
+        // Install the widget service if we're on Windows 10 and it's not already installed.
         try
         {
-            if (!string.IsNullOrEmpty(GitHubExtensionStorePackageId) &&
-                !(await _pluginService.GetInstalledAppExtensionsAsync())
-                .Any(extension => extension.AppInfo.PackageFamilyName.Equals(GitHubExtensionPackageFamilyName, StringComparison.OrdinalIgnoreCase)))
+            if (_widgetServiceService.CheckForWidgetServiceAsync())
             {
-                var appInstallTask = InstallStorePackageAsync(GitHubExtensionStorePackageId);
-
-                // wait for a maximum of StoreInstallTimeout milliseconds
-                var completedTask = await Task.WhenAny(appInstallTask, Task.Delay(StoreInstallTimeout));
-
-                if (completedTask.Exception is not null)
+                _log.Information("Skipping installing WidgetService, already installed.");
+            }
+            else
+            {
+                if (_widgetServiceService.GetWidgetServiceState() == WidgetServiceService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion)
                 {
-                    throw completedTask.Exception;
-                }
-
-                if (completedTask != appInstallTask)
-                {
-                    throw new TimeoutException("Store Install task did not finish in time.");
+                    // We're on Windows 10 and don't have the widget service, try to install it.
+                    await _widgetServiceService.TryInstallingWidgetService();
                 }
             }
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportError("GitHubExtension Hydration Failed", ex);
+            _log.Information(ex, "Installing WidgetService failed: ");
+        }
+
+        // Install the DevHomeGitHubExtension, unless it's already installed or a dev build is running.
+        if (string.IsNullOrEmpty(GitHubExtensionStorePackageId) || HasDevHomeGitHubExtensionInstalled())
+        {
+            _log.Information("Skipping installing DevHomeGitHubExtension.");
+        }
+        else
+        {
+            try
+            {
+                _log.Information("Installing DevHomeGitHubExtension...");
+                await _appInstallManagerService.TryInstallPackageAsync(GitHubExtensionStorePackageId);
+            }
+            catch (Exception ex)
+            {
+                _log.Information(ex, "Installing DevHomeGitHubExtension failed: ");
+            }
         }
 
         App.MainWindow.Content = Application.Current.GetService<ShellPage>();
@@ -70,45 +91,9 @@ public class InitializationViewModel : ObservableObject
         _themeSelector.SetRequestedTheme();
     }
 
-    private async Task InstallStorePackageAsync(string packageId)
+    private bool HasDevHomeGitHubExtensionInstalled()
     {
-        await Task.Run(() =>
-        {
-            var tcs = new TaskCompletionSource<bool>();
-
-            AppInstallItem installItem;
-
-            try
-            {
-                GlobalLog.Logger?.ReportInfo("Initialization Page: Starting extension app install");
-                installItem = new AppInstallManager().StartAppInstallAsync(packageId, null, true, false).GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                GlobalLog.Logger?.ReportInfo("Initialization Page: Extension app install success");
-                tcs.SetException(ex);
-                return tcs.Task;
-            }
-
-            installItem.Completed += (sender, args) =>
-            {
-                tcs.SetResult(true);
-            };
-
-            installItem.StatusChanged += (sender, args) =>
-            {
-                if (installItem.GetCurrentStatus().InstallState == AppInstallState.Canceled
-                    || installItem.GetCurrentStatus().InstallState == AppInstallState.Error)
-                {
-                    tcs.TrySetException(new JobFailedException(installItem.GetCurrentStatus().ErrorCode.ToString()));
-                }
-                else if (installItem.GetCurrentStatus().InstallState == AppInstallState.Completed)
-                {
-                    tcs.SetResult(true);
-                }
-            };
-
-            return tcs.Task;
-        });
+        var packages = _packageDeploymentService.FindPackagesForCurrentUser(GitHubExtensionPackageFamilyName);
+        return packages.Any();
     }
 }

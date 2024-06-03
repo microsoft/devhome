@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Activation;
 using DevHome.Common.Contracts;
@@ -42,6 +42,8 @@ public class ActivationService : IActivationService
             await InitializeAsync();
 
             // Set the MainWindow Content.
+            // We can skip the initialization page if it's not our first run.
+            // If it is the first run, we may have to install an extension or the widget service.
             App.MainWindow.Content = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun)
                 ? Application.Current.GetService<ShellPage>()
                 : Application.Current.GetService<InitializationPage>();
@@ -64,6 +66,11 @@ public class ActivationService : IActivationService
         if (activationHandler != null)
         {
             await activationHandler.HandleAsync(activationArgs);
+        }
+
+        if (_defaultHandler.CanHandle(activationArgs))
+        {
+            await _defaultHandler.HandleAsync(activationArgs);
         }
     }
 

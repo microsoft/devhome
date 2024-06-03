@@ -1,9 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Services;
-using DevHome.Contracts.Services;
-using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.Activation;

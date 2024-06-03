@@ -1,0 +1,112 @@
+{
+  "navMenu": {
+    "groups": [
+      {
+        "identity": "main",
+        "tools": [
+          {
+            "identity": "DevHome.Dashboard",
+            "assembly": "DevHome.Dashboard",
+            "viewFullName": "DevHome.Dashboard.Views.DashboardView",
+            "viewModelFullName": "DevHome.Dashboard.ViewModels.DashboardViewModel",
+            "icon": "f246"
+          },
+          {
+            "identity": "DevHome.SetupFlow",
+            "assembly": "DevHome.SetupFlow",
+            "viewFullName": "DevHome.SetupFlow.Views.SetupFlowPage",
+            "viewModelFullName": "DevHome.SetupFlow.ViewModels.SetupFlowViewModel",
+            "icon": "f156"
+          },
+          {
+            "experimentalFeatureIdentity": "EnvironmentsManagementPage",
+            "identity": "DevHome.Environments",
+            "assembly": "DevHome.Environments",
+            "viewFullName": "DevHome.Environments.Views.LandingPage",
+            "viewModelFullName": "DevHome.Environments.ViewModels.LandingPageViewModel",
+            "icon": "E83B"
+          },
+          {
+            "identity": "DevHome.Customization",
+            "assembly": "DevHome.Customization",
+            "viewFullName": "DevHome.Customization.Views.MainPage",
+            "viewModelFullName": "DevHome.Customization.ViewModels.MainPageViewModel",
+            "icon": "e9f5"
+          },
+          {
+            "identity": "DevHome.Utilities",
+            "assembly": "DevHome.Utilities",
+            "viewFullName": "DevHome.Utilities.Views.UtilitiesMainPageView",
+            "viewModelFullName": "DevHome.Utilities.ViewModels.UtilitiesMainPageViewModel",
+            "icon": "ED35"
+          }
+        ]
+      }
+    ]
+  },
+  "experimentalFeatures": [
+    {
+      "identity": "QuietBackgroundProcessesExperiment",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "identity": "QuickstartPlayground",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": false,
+          "visible": true
+        },
+        {
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "identity": "ProjectIronsidesExperiment",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": true
+        }
+      ]
+    }
+  ]
+}

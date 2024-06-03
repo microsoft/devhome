@@ -1,39 +1,129 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
+using DevHome.Common.Extensions;
+using DevHome.Common.Services;
+using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Dashboard.Views;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Widgets;
-using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
+using Windows.UI.ViewManagement;
 
 namespace DevHome.Dashboard.Controls;
+
+[ObservableObject]
 public sealed partial class WidgetControl : UserControl
 {
-    private MenuFlyoutItem _currentSelectedSize;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetControl));
 
-    public WidgetControl()
-    {
-        this.InitializeComponent();
-        ActualThemeChanged += OnActualThemeChanged;
-    }
+    private readonly UISettings _uiSettings = new();
+
+    private readonly StringResource _stringResource;
+
+    // Each widget has a 16px margin around it and a 48px Attribution area in which content cannot be placed.
+    // https://learn.microsoft.com/en-us/windows/apps/design/widgets/widgets-design-fundamentals
+    // Adaptive cards render with 8px padding on each side, so we subtract that from the header height,
+    // as well as 1px for the border.
+    private const double _headerHeightUnscaled = 39;
+
+    private SelectableMenuFlyoutItem _currentSelectedSize;
+
+    [ObservableProperty]
+    private GridLength _headerHeight;
+
+    [ObservableProperty]
+    private double _widgetHeight;
+
+    [ObservableProperty]
+    private double _widgetWidth;
 
     public WidgetViewModel WidgetSource
     {
         get => (WidgetViewModel)GetValue(WidgetSourceProperty);
-        set => SetValue(WidgetSourceProperty, value);
+        set
+        {
+            SetValue(WidgetSourceProperty, value);
+            if (WidgetSource != null)
+            {
+                SetScaledWidthAndHeight(_uiSettings.TextScaleFactor);
+
+                // When the WidgetViewModel is updated, the widget icon must also be also updated.
+                // Since the icon update must happen asynchronously on the UI thread, it must be
+                // called in code rather than binding.
+                UpdateWidgetHeaderIconFillAsync();
+            }
+        }
     }
 
     public static readonly DependencyProperty WidgetSourceProperty = DependencyProperty.Register(
         nameof(WidgetSource), typeof(WidgetViewModel), typeof(WidgetControl), new PropertyMetadata(null));
 
-    private void OpenWidgetMenu(object sender, RoutedEventArgs e)
+    public WidgetControl()
+    {
+        this.InitializeComponent();
+        _stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+        ActualThemeChanged += OnActualThemeChanged;
+    }
+
+    [RelayCommand]
+    private void OnLoaded()
+    {
+        _uiSettings.TextScaleFactorChanged += HandleTextScaleFactorChangedAsync;
+    }
+
+    [RelayCommand]
+    private void OnUnloaded()
+    {
+        _uiSettings.TextScaleFactorChanged -= HandleTextScaleFactorChangedAsync;
+    }
+
+    private async void HandleTextScaleFactorChangedAsync(UISettings sender, object args)
+    {
+        await Application.Current.GetService<DispatcherQueue>().EnqueueAsync(() =>
+        {
+            if (WidgetSource == null)
+            {
+                return;
+            }
+
+            SetScaledWidthAndHeight(sender.TextScaleFactor);
+        });
+    }
+
+    private static double GetPixelHeightFromWidgetSize(WidgetSize size)
+    {
+        return size switch
+        {
+            WidgetSize.Small => WidgetHelpers.WidgetPxHeightSmall,
+            WidgetSize.Medium => WidgetHelpers.WidgetPxHeightMedium,
+            WidgetSize.Large => WidgetHelpers.WidgetPxHeightLarge,
+            _ => 0,
+        };
+    }
+
+    private void SetScaledWidthAndHeight(double textScale)
+    {
+        HeaderHeight = new GridLength(_headerHeightUnscaled * textScale);
+        WidgetHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize) * textScale;
+        WidgetWidth = WidgetHelpers.WidgetPxWidth * textScale;
+    }
+
+    private async void OpenWidgetMenuAsync(object sender, RoutedEventArgs e)
     {
         if (sender as Button is Button widgetMenuButton)
         {
@@ -44,20 +134,18 @@ public sealed partial class WidgetControl : UserControl
                 var widgetControl = widgetMenuButton.Tag as WidgetControl;
                 if (widgetControl != null && widgetControl.WidgetSource is WidgetViewModel widgetViewModel)
                 {
-                    var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-
-                    AddSizesToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                    await AddSizesToWidgetMenuAsync(widgetMenuFlyout, widgetViewModel);
                     widgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
-                    AddCustomizeToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
-                    AddRemoveToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                    AddCustomizeToWidgetMenu(widgetMenuFlyout, widgetViewModel);
+                    AddRemoveToWidgetMenu(widgetMenuFlyout, widgetViewModel);
                 }
             }
         }
     }
 
-    private void AddRemoveToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    private void AddRemoveToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel)
     {
-        var removeWidgetText = resourceLoader.GetString("RemoveWidgetMenuText");
+        var removeWidgetText = _stringResource.GetLocalized("RemoveWidgetMenuText");
         var icon = new FontIcon()
         {
             Glyph = "\xE77A",
@@ -86,75 +174,97 @@ public sealed partial class WidgetControl : UserControl
                 // have changed and the collection won't be able to find it to remove it.
                 var widgetIdToDelete = widgetViewModel.Widget.Id;
                 var widgetToDelete = widgetViewModel.Widget;
-                Log.Logger()?.ReportDebug("WidgetControl", $"User removed widget, delete widget {widgetIdToDelete}");
+                _log.Debug($"User removed widget, delete widget {widgetIdToDelete}");
+                var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+                Application.Current.GetService<IScreenReaderService>().Announce(stringResource.GetLocalized("WidgetRemoved"));
                 DashboardView.PinnedWidgets.Remove(widgetViewModel);
                 try
                 {
                     await widgetToDelete.DeleteAsync();
-                    Log.Logger()?.ReportInfo("WidgetControl", $"Deleted Widget {widgetIdToDelete}");
+                    _log.Information($"Deleted Widget {widgetIdToDelete}");
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger()?.ReportError("WidgetControl", $"Didn't delete Widget {widgetIdToDelete}", ex);
+                    _log.Error(ex, $"Didn't delete Widget {widgetIdToDelete}");
                 }
             }
         }
     }
 
-    private void AddSizesToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    private async Task AddSizesToWidgetMenuAsync(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel)
     {
-        var widgetDefinition = WidgetCatalog.GetDefault().GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
-        var capabilities = widgetDefinition.GetWidgetCapabilities();
-
-        // Add the three possible sizes. Each side should only be enabled if it is included in the widget's capabilities.
-        var menuItemSmall = new MenuFlyoutItem
+        var unsafeWidgetDefinition = await Application.Current.GetService<IWidgetHostingService>().GetWidgetDefinitionAsync(widgetViewModel.Widget.DefinitionId);
+        if (unsafeWidgetDefinition == null)
         {
-            Tag = WidgetSize.Small,
-            Text = resourceLoader.GetString("SmallWidgetMenuText"),
-            IsEnabled = capabilities.Any(cap => cap.Size == WidgetSize.Small),
-        };
-        menuItemSmall.Click += OnMenuItemSizeClick;
-        widgetMenuFlyout.Items.Add(menuItemSmall);
-
-        var menuItemMedium = new MenuFlyoutItem
-        {
-            Tag = WidgetSize.Medium,
-            Text = resourceLoader.GetString("MediumWidgetMenuText"),
-            IsEnabled = capabilities.Any(cap => cap.Size == WidgetSize.Medium),
-        };
-        menuItemMedium.Click += OnMenuItemSizeClick;
-        widgetMenuFlyout.Items.Add(menuItemMedium);
-
-        var menuItemLarge = new MenuFlyoutItem
-        {
-            Tag = WidgetSize.Large,
-            Text = resourceLoader.GetString("LargeWidgetMenuText"),
-            IsEnabled = capabilities.Any(cap => cap.Size == WidgetSize.Large),
-        };
-        menuItemLarge.Click += OnMenuItemSizeClick;
-        widgetMenuFlyout.Items.Add(menuItemLarge);
-
-        // Mark current widget size.
-        var size = widgetViewModel.WidgetSize;
-        switch (size)
-        {
-            case WidgetSize.Small:
-                _currentSelectedSize = menuItemSmall;
-                break;
-            case WidgetSize.Medium:
-                _currentSelectedSize = menuItemMedium;
-                break;
-            case WidgetSize.Large:
-                _currentSelectedSize = menuItemLarge;
-                break;
+            // If we can't get the widgetDefinition, bail and don't show sizes.
+            return;
         }
 
+        var widgetDefinitionId = await ComSafeWidgetDefinition.GetIdFromUnsafeWidgetDefinitionAsync(unsafeWidgetDefinition);
+        if (string.IsNullOrEmpty(widgetDefinitionId))
+        {
+            // If we can't get the widgetDefinitionId, bail and don't show sizes.
+            return;
+        }
+
+        var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
+        if (!await comSafeWidgetDefinition.PopulateAsync())
+        {
+            // If we can't populate the widgetDefinition, bail and don't show sizes.
+            return;
+        }
+
+        var capabilities = await comSafeWidgetDefinition.GetWidgetCapabilitiesAsync();
+        var sizeMenuItems = new List<SelectableMenuFlyoutItem>();
+
+        // Add the three possible sizes. Each side should only be enabled if it is included in the widget's capabilities.
+        if (capabilities.Any(cap => cap.Size == WidgetSize.Small))
+        {
+            var menuItemSmall = new SelectableMenuFlyoutItem
+            {
+                Tag = WidgetSize.Small,
+                Text = _stringResource.GetLocalized("SmallWidgetMenuText"),
+            };
+            menuItemSmall.Click += OnMenuItemSizeClick;
+            menuItemSmall.SetValue(AutomationProperties.AutomationIdProperty, "SmallWidgetButton");
+            widgetMenuFlyout.Items.Add(menuItemSmall);
+            sizeMenuItems.Add(menuItemSmall);
+        }
+
+        if (capabilities.Any(cap => cap.Size == WidgetSize.Medium))
+        {
+            var menuItemMedium = new SelectableMenuFlyoutItem
+            {
+                Tag = WidgetSize.Medium,
+                Text = _stringResource.GetLocalized("MediumWidgetMenuText"),
+            };
+            menuItemMedium.Click += OnMenuItemSizeClick;
+            menuItemMedium.SetValue(AutomationProperties.AutomationIdProperty, "MediumWidgetButton");
+            widgetMenuFlyout.Items.Add(menuItemMedium);
+            sizeMenuItems.Add(menuItemMedium);
+        }
+
+        if (capabilities.Any(cap => cap.Size == WidgetSize.Large))
+        {
+            var menuItemLarge = new SelectableMenuFlyoutItem
+            {
+                Tag = WidgetSize.Large,
+                Text = _stringResource.GetLocalized("LargeWidgetMenuText"),
+            };
+            menuItemLarge.Click += OnMenuItemSizeClick;
+            menuItemLarge.SetValue(AutomationProperties.AutomationIdProperty, "LargeWidgetButton");
+            widgetMenuFlyout.Items.Add(menuItemLarge);
+            sizeMenuItems.Add(menuItemLarge);
+        }
+
+        // Mark current widget size.
+        _currentSelectedSize = sizeMenuItems.FirstOrDefault(x => (WidgetSize)x.Tag == widgetViewModel.WidgetSize);
         MarkSize(_currentSelectedSize);
     }
 
     private async void OnMenuItemSizeClick(object sender, RoutedEventArgs e)
     {
-        if (sender is MenuFlyoutItem menuSizeItem)
+        if (sender is SelectableMenuFlyoutItem menuSizeItem)
         {
             if (menuSizeItem.DataContext is WidgetViewModel widgetViewModel)
             {
@@ -162,12 +272,15 @@ public sealed partial class WidgetControl : UserControl
                 if (_currentSelectedSize is not null)
                 {
                     _currentSelectedSize.Icon = null;
+                    var peer = FrameworkElementAutomationPeer.FromElement(_currentSelectedSize) as SelectableMenuFlyoutItemAutomationPeer;
+                    peer.RemoveFromSelection();
                 }
 
                 // Resize widget.
                 var size = (WidgetSize)menuSizeItem.Tag;
                 widgetViewModel.WidgetSize = size;
                 await widgetViewModel.Widget.SetSizeAsync(size);
+                SetScaledWidthAndHeight(_uiSettings.TextScaleFactor);
 
                 // Set mark on new size.
                 _currentSelectedSize = menuSizeItem;
@@ -176,45 +289,57 @@ public sealed partial class WidgetControl : UserControl
         }
     }
 
-    private void MarkSize(MenuFlyoutItem menuSizeItem)
+    private void MarkSize(SelectableMenuFlyoutItem menuSizeItem)
     {
         var fontIcon = new FontIcon
         {
             Glyph = "\xE915",
         };
         menuSizeItem.Icon = fontIcon;
+        var peer = FrameworkElementAutomationPeer.FromElement(menuSizeItem) as SelectableMenuFlyoutItemAutomationPeer;
+        peer.AddToSelection();
     }
 
-    private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel)
     {
-        var customizeWidgetText = resourceLoader.GetString("CustomizeWidgetMenuText");
-        var icon = new FontIcon()
+        if (widgetViewModel.IsCustomizable)
         {
-            Glyph = "\xE70F",
-        };
-        var menuItemCustomize = new MenuFlyoutItem
-        {
-            Tag = widgetViewModel,
-            Text = customizeWidgetText,
-            Icon = icon,
-        };
-        menuItemCustomize.Click += OnCustomizeWidgetClick;
-        widgetMenuFlyout.Items.Add(menuItemCustomize);
+            var customizeWidgetText = _stringResource.GetLocalized("CustomizeWidgetMenuText");
+            var icon = new FontIcon()
+            {
+                Glyph = "\xE70F",
+            };
+            var menuItemCustomize = new MenuFlyoutItem
+            {
+                Tag = widgetViewModel,
+                Text = customizeWidgetText,
+                Icon = icon,
+            };
+            menuItemCustomize.Click += OnCustomizeWidgetClick;
+            widgetMenuFlyout.Items.Add(menuItemCustomize);
+        }
     }
 
-    private void OnCustomizeWidgetClick(object sender, RoutedEventArgs e)
+    private async void OnCustomizeWidgetClick(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem customizeMenuItem)
         {
             if (customizeMenuItem?.Tag is WidgetViewModel widgetViewModel)
             {
-                widgetViewModel.IsInEditMode = true;
+                await widgetViewModel.Widget.NotifyCustomizationRequestedAsync();
             }
         }
     }
 
-    private void OnActualThemeChanged(FrameworkElement sender, object args)
+    private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        WidgetHeaderIcon.Fill = WidgetIconCache.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme);
+        WidgetHeaderIcon.Fill = await Application.Current.GetService<IWidgetIconService>()
+            .GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
+    }
+
+    private async void UpdateWidgetHeaderIconFillAsync()
+    {
+        WidgetHeaderIcon.Fill = await Application.Current.GetService<IWidgetIconService>()
+            .GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
     }
 }

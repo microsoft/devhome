@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -23,9 +23,9 @@ public class LocalSettingsService : ILocalSettingsService
 
     private readonly string _localApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
     private readonly string _applicationDataFolder;
-    private readonly string _localsettingsFile;
+    private readonly string _localSettingsFile;
 
-    private IDictionary<string, object> _settings;
+    private Dictionary<string, object> _settings;
 
     private bool _isInitialized;
 
@@ -35,7 +35,7 @@ public class LocalSettingsService : ILocalSettingsService
         _options = options.Value;
 
         _applicationDataFolder = Path.Combine(_localApplicationData, _options.ApplicationDataFolder ?? _defaultApplicationDataFolder);
-        _localsettingsFile = _options.LocalSettingsFile ?? _defaultLocalSettingsFile;
+        _localSettingsFile = _options.LocalSettingsFile ?? _defaultLocalSettingsFile;
 
         _settings = new Dictionary<string, object>();
     }
@@ -44,10 +44,29 @@ public class LocalSettingsService : ILocalSettingsService
     {
         if (!_isInitialized)
         {
-            _settings = await Task.Run(() => _fileService.Read<IDictionary<string, object>>(_applicationDataFolder, _localsettingsFile)) ?? new Dictionary<string, object>();
+            _settings = await Task.Run(() => _fileService.Read<Dictionary<string, object>>(_applicationDataFolder, _localSettingsFile)) ?? new Dictionary<string, object>();
 
             _isInitialized = true;
         }
+    }
+
+    public async Task<bool> HasSettingAsync(string key)
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return ApplicationData.Current.LocalSettings.Values.ContainsKey(key);
+        }
+        else
+        {
+            await InitializeAsync();
+
+            if (_settings != null)
+            {
+                return _settings.ContainsKey(key);
+            }
+        }
+
+        return false;
     }
 
     public async Task<T?> ReadSettingAsync<T>(string key)
@@ -84,7 +103,7 @@ public class LocalSettingsService : ILocalSettingsService
 
             _settings[key] = await Json.StringifyAsync(value!);
 
-            await Task.Run(() => _fileService.Save(_applicationDataFolder, _localsettingsFile, _settings));
+            await Task.Run(() => _fileService.Save(_applicationDataFolder, _localSettingsFile, _settings));
         }
     }
 }
