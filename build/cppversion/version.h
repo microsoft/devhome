@@ -33,9 +33,3 @@
 #define VER_FILEFLAGS               VER_VER_DEBUG
 #define VER_FILETYPE                VFT_APP
 
-
-
-
-
-
-

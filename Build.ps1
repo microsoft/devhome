@@ -49,6 +49,23 @@ $env:sdk_version = build\Scripts\CreateBuildInfo.ps1 -Version $VersionOfSDK -IsS
 
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 
+function Write-XmlDocumentToFile {
+  param (
+    [System.Xml.XmlDocument]$xmlDocument,
+    [string]$filePath
+  )
+
+  $settings = New-Object System.Xml.XmlWriterSettings
+  $settings.Indent = $true
+  $settings.CheckCharacters = $false
+  $settings.NewLineChars = "`n"
+
+  $writer = [System.Xml.XmlWriter]::Create($filePath, $settings)
+  $xmlDocument.WriteTo($writer)
+  $writer.Flush()
+  $writer.Close()
+}
+
 if ($IsAzurePipelineBuild) {
   Copy-Item (Join-Path $env:Build_RootDirectory "build\nuget.config.internal") -Destination (Join-Path $env:Build_RootDirectory "nuget.config")
 }
@@ -156,7 +173,7 @@ Try {
         }
       }
     }
-    $appxmanifest.Save($appxmanifestPath)
+    Write-XmlDocumentToFile -xmlDocument $appxmanifest -filePath $appxmanifestPath
 
     # This is needed for vcxproj
     & $nugetPath restore
@@ -191,7 +208,7 @@ Try {
         }
       }
     }
-    
+
     # reset version file back to original values
     $cppHeader = (Join-Path $env:Build_RootDirectory "build\cppversion\version.h")
     $updatebinverpath = (Join-Path $env:Build_RootDirectory "build\scripts\update-binver.ps1")
@@ -214,7 +231,7 @@ Try {
         }
       }
     }
-    $appxmanifest.Save($appxmanifestPath)
+    Write-XmlDocumentToFile -xmlDocument $appxmanifest -filePath $appxmanifestPath
   }
 
   if (($BuildStep -ieq "stubpackages")) {

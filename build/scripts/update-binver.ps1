@@ -50,7 +50,12 @@ if (![String]::IsNullOrEmpty($TargetFile))
             {
                 $Local:ResultContent += $Local:line;
             }
-            $Local:ResultContent += [System.Environment]::NewLine;
+
+            # Add a newline if the line does not already have one
+            if (!$Local:line.EndsWith("`n"))
+            {
+                $Local:ResultContent += "`n";
+            }
         }
         Set-Content -Path $Local:FullPath -Value $Local:ResultContent
     }
