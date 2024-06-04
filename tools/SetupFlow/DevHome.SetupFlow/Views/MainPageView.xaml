@@ -22,7 +22,8 @@
             <Style x:Key="ListViewItemStretchStyle" TargetType="ListViewItem">
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="Margin" Value="0, 0, 0, 4" />
-                <Setter Property="Padding" Value="0" />
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="IsTabStop" Value="False"/>
             </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
@@ -104,7 +105,7 @@
                                                IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}"
                                                ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
                                                AutomationProperties.AccessibilityView="Control"
-                                               ActionIcon="{x:Null}" >
+                                               ActionIcon="{x:Null}">
                                 <ctControls:SettingsCard.HeaderIcon>
                                     <ImageIcon
                                         Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}"
@@ -189,9 +190,9 @@
 
                     <StackPanel Spacing="{StaticResource SettingsCardSpacing}" AutomationProperties.Name="{x:Bind ViewModel.MainPageQuickStepsGroupName}">
                         <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
-
-                        <!-- settings card for creating an environment -->
-                        <ctControls:SettingsCard 
+                        <ListView ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}" SelectionMode="Single">
+                            <!-- settings card for creating an environment -->
+                            <ctControls:SettingsCard 
                            x:Uid="MainPageCreateEnvironment"
                            AutomationProperties.AutomationId="CreateEnvironment"
                            IsClickEnabled="True"
@@ -200,13 +201,13 @@
                            ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
                            AutomationProperties.AccessibilityView="Control"
                            ActionIcon="{x:Null}" >
-                            <ctControls:SettingsCard.HeaderIcon>
-                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/CreateVirtualEnvironment.png" />
-                            </ctControls:SettingsCard.HeaderIcon>
-                        </ctControls:SettingsCard>
+                                <ctControls:SettingsCard.HeaderIcon>
+                                    <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/CreateVirtualEnvironment.png" />
+                                </ctControls:SettingsCard.HeaderIcon>
+                            </ctControls:SettingsCard>
 
-                        <!-- settings card for cloning repositories -->
-                        <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos"
+                            <!-- settings card for cloning repositories -->
+                            <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos"
                                            AutomationProperties.AutomationId="CloneRepoButton"
                                            IsClickEnabled="True"
                                            Command="{x:Bind ViewModel.StartRepoConfigCommand}"
@@ -214,13 +215,13 @@
                                            ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
                                            AutomationProperties.AccessibilityView="Control"
                                            ActionIcon="{x:Null}" >
-                            <ctControls:SettingsCard.HeaderIcon>
-                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_RepoConfig.png" />
-                            </ctControls:SettingsCard.HeaderIcon>
-                        </ctControls:SettingsCard>
-                        <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
-                        <Grid Background="Transparent">
-                            <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
+                                <ctControls:SettingsCard.HeaderIcon>
+                                    <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_RepoConfig.png" />
+                                </ctControls:SettingsCard.HeaderIcon>
+                            </ctControls:SettingsCard>
+                            <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
+                            <Grid Background="Transparent">
+                                <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
                                                IsClickEnabled="True"
                                                AutomationProperties.AutomationId="InstallAppsButton"
                                                Command="{x:Bind ViewModel.StartAppManagementCommand}"
@@ -229,34 +230,35 @@
                                                ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
                                                AutomationProperties.AccessibilityView="Control"
                                                ActionIcon="{x:Null}" >
-                                <ctControls:SettingsCard.HeaderIcon>
-                                    <ImageIcon
+                                    <ctControls:SettingsCard.HeaderIcon>
+                                        <ImageIcon
                                         Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}"
                                         Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_AppManagement.png" />
-                                </ctControls:SettingsCard.HeaderIcon>
-                            </ctControls:SettingsCard>
+                                    </ctControls:SettingsCard.HeaderIcon>
+                                </ctControls:SettingsCard>
 
-                            <!-- Tooltip visible when the settings card is disabled -->
-                            <ToolTipService.ToolTip>
-                                <ToolTip
+                                <!-- Tooltip visible when the settings card is disabled -->
+                                <ToolTipService.ToolTip>
+                                    <ToolTip
                                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_MainPage_AppInstallerRequiredTooltip"
                                     IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" />
-                            </ToolTipService.ToolTip>
-                        </Grid>
-                        <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevDrive"
+                                </ToolTipService.ToolTip>
+                            </Grid>
+                            <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevDrive"
                                            AutomationProperties.AutomationId="DevDriveButton"
                                            IsClickEnabled="True" Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}" 
                                            ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
                                            AutomationProperties.AccessibilityView="Control"
                                            Visibility="{x:Bind ViewModel.ShowDevDriveItem, Mode=OneWay}" >
-                            <ctControls:SettingsCard.ActionIcon>
-                                <!-- The open new window icon -->
-                                <FontIcon Glyph="&#xE8A7;" />
-                            </ctControls:SettingsCard.ActionIcon>
-                            <ctControls:SettingsCard.HeaderIcon>
-                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_DevDrive.png" />
-                            </ctControls:SettingsCard.HeaderIcon>
-                        </ctControls:SettingsCard>
+                                <ctControls:SettingsCard.ActionIcon>
+                                    <!-- The open new window icon -->
+                                    <FontIcon Glyph="&#xE8A7;" />
+                                </ctControls:SettingsCard.ActionIcon>
+                                <ctControls:SettingsCard.HeaderIcon>
+                                    <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_DevDrive.png" />
+                                </ctControls:SettingsCard.HeaderIcon>
+                            </ctControls:SettingsCard>
+                        </ListView>
                     </StackPanel>
                 </StackPanel>
             </Grid>
