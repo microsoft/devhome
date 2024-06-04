@@ -597,6 +597,7 @@ public class WindowHelper
         ContentDialog = new ContentDialog
         {
             XamlRoot = frameworkElement.XamlRoot,
+            RequestedTheme = frameworkElement.ActualTheme,
             Content = message,
             CloseButtonText = closeButtonText,
         };

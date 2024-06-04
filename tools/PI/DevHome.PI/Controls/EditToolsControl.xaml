@@ -42,7 +42,11 @@
 
         <StackPanel x:Name="GridButtonPanel" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right" Margin="0,4,0,8">
             <Button 
-                x:Uid="UnregisterToolButton" x:Name="UnregisterToolButton" Width="120" Height="36" Margin="4,0,0,0" 
+                x:Uid="UnregisterToolButton" 
+                x:Name="UnregisterToolButton" 
+                Width="120" 
+                Height="36" 
+                Margin="4,0,0,0" 
                 Click="UnregisterToolButton_Click"/>
         </StackPanel>
     </Grid>
