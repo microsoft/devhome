@@ -43,6 +43,15 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool isETWLogsEnabled;
 
+    [ObservableProperty]
+    private bool isDebugOutputEnabled;
+
+    [ObservableProperty]
+    private bool isEventViewerEnabled = true;
+
+    [ObservableProperty]
+    private bool isWatsonEnabled = true;
+
     private Process? targetProcess;
     private WinLogsHelper? winLogsHelper;
 
