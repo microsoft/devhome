@@ -8,7 +8,8 @@
     xmlns:models="using:DevHome.PI.Models"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:local="using:DevHome.PI.Controls"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled">
 
     <Grid>
         <Grid.Resources>
@@ -41,7 +42,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Uid="IDTextBlock"/>
                 <TextBox Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.ProcessId, Mode=OneWay}" IsReadOnly="True"/>
-                
+
                 <!-- These fields can't be reported if we get an exception accessing them,
                 for example if the target app is running elevated but PI is not. -->
                 <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}">
@@ -89,14 +90,26 @@
                         </ItemsControl.ItemsPanel>
                     </ListView>
                 </Grid>
-                
-                <TextBlock Grid.Row="2" x:Uid="IsRunningAsSystemTextBlock"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsRunningAsSystem, Mode=OneWay}" IsReadOnly="True"/>
-                <TextBlock Grid.Row="3" x:Uid="IsRunningAsAdminTextBlock"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsRunningAsAdmin, Mode=OneWay}" IsReadOnly="True"/>
-                
+
+                <!-- These fields can't be reported if the target process has exited -->
+                <Grid Grid.Row="2" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.ProcessRunningParamsVisibility, Mode=OneWay}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="1" x:Uid="IsRunningAsSystemTextBlock"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsRunningAsSystem, Mode=OneWay}" IsReadOnly="True"/>
+                    <TextBlock Grid.Row="2" x:Uid="IsRunningAsAdminTextBlock"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsRunningAsAdmin, Mode=OneWay}" IsReadOnly="True"/>
+                </Grid>
+
                 <Button 
-                    Grid.Row="4" Grid.ColumnSpan="2" x:Uid="RunElevatedButton" Margin="0,8,0,0"
+                    Grid.Row="3" Grid.ColumnSpan="2" x:Uid="RunElevatedButton" Margin="0,8,0,0"
                     Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" 
                     Command="{x:Bind ViewModel.RunAsAdminCommand}"/>
             </Grid>

@@ -43,7 +43,7 @@
                         Style="{StaticResource HorizontalCardRootForSetupTargetFlow}"
                         IsTabStop="False">
                         <Grid
-                            RowSpacing="5">
+                            Padding="0 -13 0 -10">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />

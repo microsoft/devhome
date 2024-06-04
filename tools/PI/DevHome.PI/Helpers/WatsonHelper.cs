@@ -130,12 +130,13 @@ internal sealed class WatsonHelper : IDisposable
     {
         Dictionary<string, WatsonReport> reports = [];
         EventLog eventLog = new("Application");
+        var targetProcessName = targetProcess.ProcessName;
 
         foreach (EventLogEntry entry in eventLog.Entries)
         {
             if (entry.InstanceId == 1000
                 && entry.Source.Equals("Application Error", StringComparison.OrdinalIgnoreCase)
-                && entry.ReplacementStrings[10].Contains(targetProcess.ProcessName, StringComparison.OrdinalIgnoreCase))
+                && entry.ReplacementStrings[10].Contains(targetProcessName, StringComparison.OrdinalIgnoreCase))
             {
                 var timeGenerated = entry.TimeGenerated;
                 var moduleName = entry.ReplacementStrings[3];

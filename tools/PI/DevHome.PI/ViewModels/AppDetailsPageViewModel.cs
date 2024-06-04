@@ -24,6 +24,9 @@ public partial class AppDetailsPageViewModel : ObservableObject
     [ObservableProperty]
     private Visibility runAsAdminVisibility = Visibility.Collapsed;
 
+    [ObservableProperty]
+    private Visibility processRunningParamsVisibility = Visibility.Collapsed;
+
     private Process? targetProcess;
 
     public AppDetailsPageViewModel()
@@ -49,13 +52,19 @@ public partial class AppDetailsPageViewModel : ObservableObject
             try
             {
                 AppInfo.ProcessId = targetProcess.Id;
-                AppInfo.IsRunningAsSystem = TargetAppData.Instance.IsRunningAsSystem;
 
-                if (!process.HasExited)
+                if (process.HasExited)
                 {
-                    AppInfo.BasePriority = targetProcess.BasePriority;
-                    AppInfo.IsRunningAsAdmin = TargetAppData.Instance.IsRunningAsAdmin;
+                    AppInfo.Visibility = Visibility.Collapsed;
+                    ProcessRunningParamsVisibility = Visibility.Collapsed;
+                }
+                else
+                {
                     AppInfo.Visibility = Visibility.Visible;
+                    ProcessRunningParamsVisibility = Visibility.Visible;
+                    AppInfo.IsRunningAsSystem = TargetAppData.Instance.IsRunningAsSystem;
+                    AppInfo.IsRunningAsAdmin = TargetAppData.Instance.IsRunningAsAdmin;
+                    AppInfo.BasePriority = targetProcess.BasePriority;
                     AppInfo.PriorityClass = (int)targetProcess.PriorityClass;
 
                     if (targetProcess.MainModule != null)
