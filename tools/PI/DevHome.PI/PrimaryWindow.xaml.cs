@@ -60,7 +60,7 @@ public sealed partial class PrimaryWindow : WindowEx
 
         if (Settings.Default.IsClipboardMonitoringEnabled)
         {
-            ClipboardMonitor.Instance.Start((HWND)WindowNative.GetWindowHandle(this));
+            ClipboardMonitor.Instance.Start();
         }
 
         App.Log("DevHome.PI_MainWindows_Loaded", LogLevel.Measure);
@@ -111,7 +111,7 @@ public sealed partial class PrimaryWindow : WindowEx
         {
             if (Settings.Default.IsClipboardMonitoringEnabled)
             {
-                ClipboardMonitor.Instance.Start((HWND)WindowNative.GetWindowHandle(this));
+                ClipboardMonitor.Instance.Start();
             }
             else
             {
