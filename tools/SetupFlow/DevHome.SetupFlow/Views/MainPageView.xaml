@@ -23,6 +23,10 @@
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="Margin" Value="0, 0, 0, 4" />
                 <Setter Property="Padding" Value="0"/>
+                
+                <!-- Include a false tabstop because the buttons on each menu item is a tab stop.
+                This creates an odd behavior because each item can be tabbed into.
+                Remove the tab stop from the list item.-->
                 <Setter Property="IsTabStop" Value="False"/>
             </Style>
             <ResourceDictionary.MergedDictionaries>
