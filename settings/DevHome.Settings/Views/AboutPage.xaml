@@ -31,10 +31,10 @@
                         </StackPanel>
                     </ctControls:SettingsCard>
                     <ctControls:SettingsCard
-                        Visibility="Collapsed"
                         x:Name="ViewLogsSettingsCard"
                         x:Uid="ViewLogs"
                         IsClickEnabled="True"
+                        Command="{x:Bind OpenLogsLocationCommand}"
                         ActionIcon="{ui:FontIcon Glyph=&#xE8A7;}" />
                 </ctControls:SettingsExpander.Items>
             </ctControls:SettingsExpander>
