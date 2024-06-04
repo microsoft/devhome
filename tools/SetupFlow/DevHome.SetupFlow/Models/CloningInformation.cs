@@ -216,6 +216,9 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         get; set;
     }
 
+    /// <summary>
+    /// Gets or sets the string that the narrator should say when the repo is selected in the config screen.
+    /// </summary>
     public string RepoConfigAutomationName
     {
         get; set;
