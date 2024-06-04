@@ -1066,6 +1066,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.OwningAccount = developerId;
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, Path.Join(_selectedRepoProvider, repositoryToAdd.RepoDisplayName));
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, Path.Join(_selectedRepoProvider, repositoryToAdd.RepoDisplayName));
+            cloningInformation.RepoConfigAutomationName = Path.Join(_providers.DisplayName(_selectedRepoProvider), repositoryToAdd.RepoDisplayName);
             EverythingToClone.Add(cloningInformation);
         }
     }
