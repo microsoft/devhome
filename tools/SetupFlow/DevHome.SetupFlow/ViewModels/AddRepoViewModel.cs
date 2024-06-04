@@ -1028,6 +1028,10 @@ public partial class AddRepoViewModel : ObservableObject
         IsCancelling = false;
 
         // Store the close button text because it will change.
+        // The text of the secondary button of the content dialog changes to notify users
+        // to press the "X" button to cancel the login prompt.
+        // This is needed because the secondary button does not listen to events because
+        // the content dialog is in the middle of the Primary Button click event.
         var closeButtonText = _addRepoDialog.CloseButtonText;
         _addRepoDialog.CloseButtonText = _host.GetService<ISetupFlowStringResource>().GetLocalized(StringResourceKey.UrlCancelButtonText);
 
