@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
@@ -20,6 +21,7 @@ using DevHome.Telemetry;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
@@ -355,6 +357,11 @@ public partial class WidgetViewModel : ObservableObject
 
     private void AnnounceWarnings(AdaptiveCard card)
     {
+        if (!AutomationPeer.ListenerExists(AutomationEvents.AutomationFocusChanged))
+        {
+            return;
+        }
+
         foreach (var element in card.Body)
         {
             SearchForWarning(element, false);
