@@ -1,1 +1,2 @@
 S_OK
+CoCreateInstance

@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using DevHome.Services.Core.Contracts;
 using DevHome.Services.Core.Exceptions;
+using DevHome.Services.WindowsPackageManager.COM;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using Microsoft.Extensions.Logging;
 using Microsoft.Management.Configuration;

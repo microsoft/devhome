@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using DevHome.Services.Core.Extensions;
+using DevHome.Services.WindowsPackageManager.COM;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Exceptions;
 using DevHome.Services.WindowsPackageManager.Models;

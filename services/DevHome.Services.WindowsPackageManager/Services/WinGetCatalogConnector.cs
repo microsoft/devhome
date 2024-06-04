@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DevHome.Services.WindowsPackageManager.COM;
 using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Extensions;
 using DevHome.Services.WindowsPackageManager.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Management.Deployment;
@@ -288,7 +290,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
     /// </summary>
     /// <param name="catalogReferences">Catalog references</param>
     /// <returns>Connected catalog or null if an error occurred</returns>
-    private async Task<WinGetCatalog> CreateAndConnectCatalogInternalAsync(IReadOnlyList<PackageCatalogReference> catalogReferences)
+    private async Task<PackageCatalog> CreateAndConnectCatalogInternalAsync(IReadOnlyList<PackageCatalogReference> catalogReferences)
     {
         // Search in all catalogs including the local catalog which allows detecting if a package is installed
         var disconnectedCatalog = _wingetFactory.CreateCompositePackageCatalog(CompositeSearchBehavior.RemotePackagesFromAllCatalogs, catalogReferences);

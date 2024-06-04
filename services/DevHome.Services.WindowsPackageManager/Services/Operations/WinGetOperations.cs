@@ -7,7 +7,7 @@ using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Contracts.Operations;
 using DevHome.Services.WindowsPackageManager.Models;
 
-namespace DevHome.Services.WindowsPackageManager.Services;
+namespace DevHome.Services.WindowsPackageManager.Services.Operations;
 
 internal sealed class WinGetOperations : IWinGetOperations
 {

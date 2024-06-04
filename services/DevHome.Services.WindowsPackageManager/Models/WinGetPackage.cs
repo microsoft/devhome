@@ -19,7 +19,7 @@ public class WinGetPackage : IWinGetPackage
 {
     private readonly ILogger _logger;
 
-    public WinGetPackage(ILogger<WinGetPackage> logger, CatalogPackage package, bool requiresElevated)
+    public WinGetPackage(ILogger logger, CatalogPackage package, bool requiresElevated)
     {
         // WinGetPackage constructor copies all the required data from the
         // out-of-proc COM objects over to the current process. This ensures
