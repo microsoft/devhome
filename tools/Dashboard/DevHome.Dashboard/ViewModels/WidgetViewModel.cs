@@ -355,13 +355,24 @@ public partial class WidgetViewModel : ObservableObject
 
     private void AnnounceWarnings(AdaptiveCard card)
     {
+        // We are treating any text inside a container with the "Warning" style
+        // as an actual warning to be announced.
+        // For now, the only types of containers widgets use are Containers and Columns. In the future,
+        // we may add Caroussels, Tables and Facts to this list.
+        var containerTypes = new Dictionary<Type, string>
+        {
+            { typeof(AdaptiveContainer), "get_Items" },
+            { typeof(AdaptiveColumn), "get_Items" },
+            { typeof(AdaptiveColumnSet), "get_Columns" },
+        };
+
         foreach (var element in card.Body)
         {
-            SearchForWarning(element, false);
+            SearchForWarning(element, containerTypes, false);
         }
     }
 
-    private void SearchForWarning(IAdaptiveCardElement element, bool isInsideWarningContainer)
+    private void SearchForWarning(IAdaptiveCardElement element, Dictionary<Type, string> containerTypes, bool isInsideWarningContainer)
     {
         // We are only interested in plain texts. Buttons, Actions, Images
         // and textboxes are all ignored. Including ActionSets and ImageSets.
@@ -375,17 +386,6 @@ public partial class WidgetViewModel : ObservableObject
             return;
         }
 
-        // We are treating any text inside a container with the "Warning" style
-        // as an actual warning to be announced.
-        // For now, the only types of containers widgets use are Containers and Columns. In the future,
-        // we may add Caroussels, Tables and Facts to this list.
-        var containerTypes = new Dictionary<Type, string>
-        {
-            { typeof(AdaptiveContainer), "get_Items" },
-            { typeof(AdaptiveColumn), "get_Items" },
-            { typeof(AdaptiveColumnSet), "get_Columns" },
-        };
-
         if (element is IAdaptiveContainerBase containerElement)
         {
             foreach (var containerType in containerTypes)
@@ -396,7 +396,7 @@ public partial class WidgetViewModel : ObservableObject
 
                     foreach (var subelement in itemsMethod.Invoke(containerElement, null) as IEnumerable)
                     {
-                        SearchForWarning((IAdaptiveCardElement)subelement, isInsideWarningContainer || (containerElement.Style == ContainerStyle.Warning));
+                        SearchForWarning((IAdaptiveCardElement)subelement, containerTypes, isInsideWarningContainer || (containerElement.Style == ContainerStyle.Warning));
                     }
                 }
             }
