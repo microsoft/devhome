@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
@@ -362,10 +361,14 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
+    // We are only interested in plain texts. Buttons, Actions, Images
+    // and textboxes are all ignored. Including ActionSets and ImageSets.
     // We are treating any text inside a container with the "Warning" style
     // as an actual warning to be announced.
     // For now, the only types of containers widgets use are Containers and Columns. In the future,
     // we may add Caroussels, Tables and Facts to this list.
+    // We just need to add the other controls in this dictionary
+    // with the correct function to access its children.
     private static readonly Dictionary<Type, string> ContainerTypes = new()
     {
         { typeof(AdaptiveContainer), "get_Items" },
@@ -375,8 +378,6 @@ public partial class WidgetViewModel : ObservableObject
 
     private void SearchForWarning(IAdaptiveCardElement element, bool isInsideWarningContainer)
     {
-        // We are only interested in plain texts. Buttons, Actions, Images
-        // and textboxes are all ignored. Including ActionSets and ImageSets.
         if (element is AdaptiveTextBlock textBlock)
         {
             if (isInsideWarningContainer)
@@ -387,19 +388,20 @@ public partial class WidgetViewModel : ObservableObject
             return;
         }
 
-        if (element is IAdaptiveContainerBase containerElement)
+        if (element is not IAdaptiveContainerBase)
         {
-            foreach (var containerType in ContainerTypes)
-            {
-                if (containerElement.GetType() == containerType.Key)
-                {
-                    var itemsMethod = containerType.Key.GetMethod(containerType.Value, BindingFlags.Public | BindingFlags.Instance);
+            return;
+        }
 
-                    foreach (var subelement in itemsMethod.Invoke(containerElement, null) as IEnumerable)
-                    {
-                        SearchForWarning((IAdaptiveCardElement)subelement, isInsideWarningContainer || (containerElement.Style == ContainerStyle.Warning));
-                    }
-                }
+        var containerElement = element as IAdaptiveContainerBase;
+
+        foreach (var containerType in ContainerTypes.Where(containerType => containerType.Key == containerElement.GetType()))
+        {
+            var itemsMethod = containerType.Key.GetMethod(containerType.Value, BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var subelement in itemsMethod.Invoke(containerElement, null) as IEnumerable)
+            {
+                SearchForWarning((IAdaptiveCardElement)subelement, isInsideWarningContainer || (containerElement.Style == ContainerStyle.Warning));
             }
         }
     }
