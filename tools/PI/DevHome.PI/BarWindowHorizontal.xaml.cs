@@ -304,12 +304,12 @@ public partial class BarWindowHorizontal : WindowEx
             if (_selectedExternalTool.IsPinned)
             {
                 PinUnpinMenuItem.Text = _unpinMenuItemText;
-                PinUnpinMenuItem.Icon = new FontIcon { Glyph = "\uE77A" };
+                PinUnpinMenuItem.Icon = _unpinIcon;
             }
             else
             {
                 PinUnpinMenuItem.Text = _pinMenuItemText;
-                PinUnpinMenuItem.Icon = new FontIcon { Glyph = "\uE718" };
+                PinUnpinMenuItem.Icon = _pinIcon;
             }
         }
     }
