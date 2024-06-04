@@ -78,7 +78,7 @@
             <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" Click="{x:Bind _viewModel.SwitchLayoutCommand}" HorizontalAlignment="Center">
                 <TextBlock Text="&#xe8b4;"/>
             </Button>
-            <Button x:Name="LargeContentButton" x:Uid="LargeContentButton" Click="{x:Bind _viewModel.ShowBigWindowCommand}" HorizontalAlignment="Center">
+            <Button x:Uid="SwitchToLargeLayoutButton" Click="{x:Bind _viewModel.ShowBigWindowCommand}" HorizontalAlignment="Center">
                 <TextBlock Text="&#xe8a1;"/>
             </Button>
 

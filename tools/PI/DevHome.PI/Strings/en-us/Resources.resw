@@ -145,7 +145,7 @@
     <value>Dissociate so that PI is not tracking any app</value>
     <comment>The tooltip for a button which causes PI to no longer track any app</comment>
   </data>
-  <data name="LargeContentButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SwitchToLargeLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Expand or collapse the large content panel</value>
     <comment>The tooltip for a button which expands or collapses the large content panel.</comment>
   </data>
