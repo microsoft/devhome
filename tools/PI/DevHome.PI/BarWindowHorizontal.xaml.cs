@@ -110,6 +110,13 @@ public partial class BarWindowHorizontal : WindowEx
     {
         ThisHwnd = (HWND)WindowNative.GetWindowHandle(this);
 
+        _settings.PropertyChanged += Settings_PropertyChanged;
+
+        if (_settings.IsClipboardMonitoringEnabled)
+        {
+            ClipboardMonitor.Instance.Start();
+        }
+
         InitializeExternalTools();
 
         // Apply the user's chosen theme setting.
@@ -344,6 +351,8 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
+        ClipboardMonitor.Instance.Stop();
+
         if (LargeContentPanel is not null &&
             LargeContentPanel.Visibility == Visibility.Visible &&
             this.WindowState != WindowState.Maximized)
@@ -357,6 +366,21 @@ public partial class BarWindowHorizontal : WindowEx
             var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
             barWindow?.Close();
             isClosing = false;
+        }
+    }
+
+    private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Settings.IsClipboardMonitoringEnabled))
+        {
+            if (_settings.IsClipboardMonitoringEnabled)
+            {
+                ClipboardMonitor.Instance.Start();
+            }
+            else
+            {
+                ClipboardMonitor.Instance.Stop();
+            }
         }
     }
 

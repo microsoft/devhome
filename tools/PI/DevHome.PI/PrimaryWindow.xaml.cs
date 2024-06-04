@@ -31,8 +31,6 @@ public sealed partial class PrimaryWindow : WindowEx
     public PrimaryWindow()
     {
         InitializeComponent();
-
-        Settings.Default.PropertyChanged += Settings_PropertyChanged;
     }
 
     public void ShowBarWindow()
@@ -58,17 +56,11 @@ public sealed partial class PrimaryWindow : WindowEx
         hotKeyHelper = new(this, HandleHotKey);
         hotKeyHelper.RegisterHotKey(HotKey, KeyModifier);
 
-        if (Settings.Default.IsClipboardMonitoringEnabled)
-        {
-            ClipboardMonitor.Instance.Start();
-        }
-
         App.Log("DevHome.PI_MainWindows_Loaded", LogLevel.Measure);
     }
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
-        ClipboardMonitor.Instance.Stop();
         DBarWindow?.Close();
         hotKeyHelper?.UnregisterHotKey();
     }
@@ -103,20 +95,5 @@ public sealed partial class PrimaryWindow : WindowEx
         }
 
         DBarWindow ??= new();
-    }
-
-    private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(Settings.IsClipboardMonitoringEnabled))
-        {
-            if (Settings.Default.IsClipboardMonitoringEnabled)
-            {
-                ClipboardMonitor.Instance.Start();
-            }
-            else
-            {
-                ClipboardMonitor.Instance.Stop();
-            }
-        }
     }
 }
