@@ -57,7 +57,7 @@ if (![String]::IsNullOrEmpty($TargetFile))
                 $Local:ResultContent += "`n";
             }
         }
-        Set-Content -Path $Local:FullPath -Value $Local:ResultContent
+        Set-Content -Path $Local:FullPath -Value $Local:ResultContent -NoNewline
     }
     else
     {

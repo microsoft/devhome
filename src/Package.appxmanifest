@@ -66,13 +66,13 @@
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
-		<com:Extension Category="windows.comServer">
-		  <com:ComServer>
-			<com:ExeServer Executable="WindowsSandboxExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="WindowsSandboxExtension">
-		      <com:Class Id="6A52115B-083C-4FB1-85F4-BBE23289220E" DisplayName="WindowsSandboxExtension" />
-			</com:ExeServer>
-	      </com:ComServer>
-		</com:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="WindowsSandboxExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="WindowsSandboxExtension">
+              <com:Class Id="6A52115B-083C-4FB1-85F4-BBE23289220E" DisplayName="WindowsSandboxExtension" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="CoreWidgetProvider">
@@ -114,21 +114,21 @@
             </uap3:Properties>
           </uap3:AppExtension>
         </uap3:Extension>
-		<uap3:Extension Category="windows.appExtension">
-			<uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID3" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameWindowsSandboxExt" Description="ms-resource:AppDescriptionWindowsSandboxExt">
-				<uap3:Properties>
-					<DevHomeProvider>
-						<Activation>
-							<CreateInstance ClassId="6A52115B-083C-4FB1-85F4-BBE23289220E" />
-						</Activation>
-						<SupportedInterfaces>
-							<ComputeSystem />
-						</SupportedInterfaces>
-					</DevHomeProvider>
-				</uap3:Properties>
-			</uap3:AppExtension>
-		 </uap3:Extension>
-		<uap3:Extension Category="windows.appExtension">
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID3" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameWindowsSandboxExt" Description="ms-resource:AppDescriptionWindowsSandboxExt">
+            <uap3:Properties>
+              <DevHomeProvider>
+                <Activation>
+                  <CreateInstance ClassId="6A52115B-083C-4FB1-85F4-BBE23289220E" />
+                </Activation>
+                <SupportedInterfaces>
+                  <ComputeSystem />
+                </SupportedInterfaces>
+              </DevHomeProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="ms-resource:WidgetProviderDisplayNameDev" Id="CoreWidgetProvider" PublicFolder="Public">
             <uap3:Properties>
               <WidgetProvider>
