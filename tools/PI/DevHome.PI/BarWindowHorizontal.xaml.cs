@@ -227,6 +227,16 @@ public partial class BarWindowHorizontal : WindowEx
         ExpandedViewControl.NavigateToSettings(typeof(AdditionalToolsViewModel).FullName!);
     }
 
+    private void ExternalToolsMenu_Opening(object sender, object e)
+    {
+        // Cancel the opening of the menu if there are no items.
+        var flyout = sender as MenuFlyout;
+        if (flyout is not null && flyout.Items is not null && flyout.Items.Count == 0)
+        {
+            flyout.Hide();
+        }
+    }
+
     private void ExternalToolMenuItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
         var menuItem = sender as MenuFlyoutItem;
@@ -236,10 +246,12 @@ public partial class BarWindowHorizontal : WindowEx
             if (_selectedExternalTool.IsPinned)
             {
                 PinUnpinMenuItem.Text = _unpinMenuItemText;
+                PinUnpinMenuItem.Icon = new FontIcon { Glyph = "\uE77A" };
             }
             else
             {
                 PinUnpinMenuItem.Text = _pinMenuItemText;
+                PinUnpinMenuItem.Icon = new FontIcon { Glyph = "\uE718" };
             }
 
             ToolContextMenu.ShowAt(menuItem, e.GetPosition(menuItem));
@@ -291,10 +303,12 @@ public partial class BarWindowHorizontal : WindowEx
             if (_selectedExternalTool.IsPinned)
             {
                 PinUnpinMenuItem.Text = _unpinMenuItemText;
+                PinUnpinMenuItem.Icon = new FontIcon { Glyph = "\uE77A" };
             }
             else
             {
                 PinUnpinMenuItem.Text = _pinMenuItemText;
+                PinUnpinMenuItem.Icon = new FontIcon { Glyph = "\uE718" };
             }
         }
     }

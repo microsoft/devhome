@@ -12,16 +12,37 @@ public sealed partial class EditToolsControl : UserControl
     public EditToolsControl()
     {
         InitializeComponent();
-        ToolsDataGrid.ItemsSource = ExternalToolsHelper.Instance.AllExternalTools;
+        EnableUnregisterButton();
     }
 
-    private void DeleteToolButton_Click(object sender, RoutedEventArgs e)
+    private void UnregisterToolButton_Click(object sender, RoutedEventArgs e)
     {
-        var selectedItem = ToolsDataGrid.SelectedItem;
-
-        if (selectedItem is ExternalTool)
+        var selectedItems = ToolsDataGrid.SelectedItems;
+        for (var i = selectedItems.Count - 1; i >= 0; i--)
         {
-            ExternalToolsHelper.Instance.RemoveExternalTool((ExternalTool)selectedItem);
+            if (selectedItems[i] is ExternalTool tool)
+            {
+                ExternalToolsHelper.Instance.RemoveExternalTool(tool);
+            }
         }
+
+        EnableUnregisterButton();
+    }
+
+    private void EnableUnregisterButton()
+    {
+        if (ToolsDataGrid.SelectedItems is not null && ToolsDataGrid.SelectedItems.Count > 0)
+        {
+            UnregisterToolButton.IsEnabled = true;
+        }
+        else
+        {
+            UnregisterToolButton.IsEnabled = false;
+        }
+    }
+
+    private void ToolsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        EnableUnregisterButton();
     }
 }

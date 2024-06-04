@@ -41,7 +41,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Uid="IDTextBlock"/>
                 <TextBox Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.ProcessId, Mode=OneWay}" IsReadOnly="True"/>
-
+                
                 <!-- These fields can't be reported if we get an exception accessing them,
                 for example if the target app is running elevated but PI is not. -->
                 <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}">
@@ -71,7 +71,7 @@
                     <TextBlock Grid.Row="5" x:Uid="MicrosoftStoreAppTextBlock" />
                     <TextBox Grid.Row="5" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsStoreApp, Mode=OneWay}" IsReadOnly="True" />
 
-                    <TextBlock Grid.Row="6" x:Uid="FrameworkTypesTextBlock" />
+                    <TextBlock Grid.Row="6" x:Uid="FrameworkTypesTextBlock" TextWrapping="Wrap"/>
                     <ListView 
                         Grid.Row="6" Grid.Column="1" IsItemClickEnabled="False"
                         ItemsSource="{x:Bind ViewModel.AppInfo.FrameworkTypes, Mode=OneWay}">

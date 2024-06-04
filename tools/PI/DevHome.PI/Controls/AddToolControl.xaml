@@ -23,26 +23,22 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock 
-                        x:Uid="ToolPathHeaderTextBlock" 
-                        VerticalAlignment="Center" />
-                    <TextBox 
-                        x:Name="ToolPathTextBox" Grid.Column="1" MinWidth="800"
-                        TextChanged="UpdateSampleCommandline"/>
                     <Button 
-                        x:Uid="ToolBrowseButton" Name="BrowseButton" Grid.Column="2"
-                        Width="100" Margin="8,0,0,0" HorizontalAlignment="Left"
-                        Click="BrowseButton_Click"/>
+                        x:Name="ToolBrowseButton" x:Uid="ToolBrowseButton" 
+                        HorizontalAlignment="Left" MinWidth="100"
+                        Click="ToolBrowseButton_Click"/>
+                    <TextBox 
+                        x:Name="ToolPathTextBox" Grid.Column="1" MinWidth="800" Margin="8,0,0,0" 
+                        IsReadOnly="True"/>
                 </Grid>
                 <Grid Margin="0,6,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="200"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock x:Uid="ToolNameHeaderTextBlock" VerticalAlignment="Center"/>
-                    <TextBox x:Name="ToolNameTextBox" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <TextBlock x:Uid="ToolNameHeaderTextBlock" VerticalAlignment="Center" MinWidth="100"/>
+                    <TextBox x:Name="ToolNameTextBox" Grid.Column="1" HorizontalAlignment="Stretch" Margin="8,0,0,0" />
                 </Grid>
             </StackPanel>
         </Border>
@@ -58,7 +54,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <RadioButton 
@@ -75,7 +71,7 @@
                         x:Uid="PrefixTextBlock" Grid.Column="1" Margin="0,0,8,0"
                         VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     <TextBox 
-                        x:Name="PrefixTextBox" Grid.Column="2" Width="100" HorizontalAlignment="Right" 
+                        x:Name="PrefixTextBox" Grid.Column="2" MinWidth="150" HorizontalAlignment="Right" 
                         TextChanged="UpdateSampleCommandline"/>
                 </Grid>
             </Grid>
