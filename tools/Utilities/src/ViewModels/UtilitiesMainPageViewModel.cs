@@ -56,6 +56,6 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
             },
         };
 
-        TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesMainPageEvent", LogLevel.Critical, new UtilitiesMainPageViewModelEvent());
+        TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesMainPage", LogLevel.Critical, new UtilitiesMainPageViewModelEvent());
     }
 }
