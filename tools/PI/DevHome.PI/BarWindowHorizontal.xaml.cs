@@ -232,8 +232,7 @@ public partial class BarWindowHorizontal : WindowEx
     private void ExternalToolsMenu_Opening(object sender, object e)
     {
         // Cancel the opening of the menu if there are no items.
-        var flyout = sender as MenuFlyout;
-        if (flyout is not null && flyout.Items is not null && flyout.Items.Count == 0)
+        if (sender is MenuFlyout flyout && flyout?.Items?.Count == 0)
         {
             flyout.Hide();
         }
