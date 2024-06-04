@@ -117,7 +117,7 @@ public partial class BarWindowVertical : WindowEx
         }
     }
 
-    public void WindowEx_Closed(object sender, WindowEventArgs args)
+    private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
         if (_positionEventHook != IntPtr.Zero)
         {
