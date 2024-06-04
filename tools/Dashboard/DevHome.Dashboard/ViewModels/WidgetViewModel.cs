@@ -393,7 +393,7 @@ public partial class WidgetViewModel : ObservableObject
             {
                 if (containerElement.GetType() == containerType.Key)
                 {
-                    MethodInfo itemsMethod = containerType.Key.GetMethod(containerType.Value, BindingFlags.Public | BindingFlags.Instance);
+                    var itemsMethod = containerType.Key.GetMethod(containerType.Value, BindingFlags.Public | BindingFlags.Instance);
 
                     foreach (var subelement in itemsMethod.Invoke(containerElement, null) as IEnumerable)
                     {
