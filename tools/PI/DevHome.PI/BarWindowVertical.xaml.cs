@@ -38,6 +38,7 @@ public partial class BarWindowVertical : WindowEx
     private int _appWindowPosX; // = 0;
     private int _appWindowPosY; // = 0;
     private bool isWindowMoving; // = false;
+    private bool isClosing;
     private const int UnsnapGap = 9;
 
     private readonly WINEVENTPROC _winPositionEventDelegate;
@@ -129,6 +130,14 @@ public partial class BarWindowVertical : WindowEx
         {
             PInvoke.UnhookWinEvent(_focusEventHook);
             _focusEventHook = HWINEVENTHOOK.Null;
+        }
+
+        if (!isClosing)
+        {
+            isClosing = true;
+            var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+            barWindow?.Close();
+            isClosing = false;
         }
     }
 
