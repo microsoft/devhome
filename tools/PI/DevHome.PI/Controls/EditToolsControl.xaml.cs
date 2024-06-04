@@ -31,14 +31,7 @@ public sealed partial class EditToolsControl : UserControl
 
     private void EnableUnregisterButton()
     {
-        if (ToolsDataGrid.SelectedItems is not null && ToolsDataGrid.SelectedItems.Count > 0)
-        {
-            UnregisterToolButton.IsEnabled = true;
-        }
-        else
-        {
-            UnregisterToolButton.IsEnabled = false;
-        }
+        UnregisterToolButton.IsEnabled = ToolsDataGrid.SelectedItems?.Count > 0;
     }
 
     private void ToolsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
