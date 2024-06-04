@@ -12,13 +12,13 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Serilog;
 using Windows.Devices.Display;
 using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
@@ -30,6 +30,8 @@ namespace DevHome.PI.Helpers;
 
 public class WindowHelper
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WindowHelper));
+
     private static nint GetClassLongPtr(HWND hWnd, GET_CLASS_LONG_INDEX nIndex)
     {
         if (IntPtr.Size == 8)
@@ -553,7 +555,6 @@ public class WindowHelper
         return rect;
     }
 
-    // TODO Allow for the taskbar when returning screen size.
     internal static RECT GetMonitorRectForWindow(HWND hWnd)
     {
         var monitor = PInvoke.MonitorFromWindow(hWnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
@@ -579,6 +580,56 @@ public class WindowHelper
             {
                 process = Process.GetProcessById((int)processID);
             }
+        }
+    }
+
+    // Only one ContentDialog can be shown at a time, so we have to keep track of the current one.
+    private static ContentDialog? ContentDialog { get; set; }
+
+    internal static async void ShowTimedMessageDialog(FrameworkElement frameworkElement, string message, string closeButtonText)
+    {
+        if (ContentDialog is not null)
+        {
+            ContentDialog.Hide();
+            ContentDialog = null;
+        }
+
+        ContentDialog = new ContentDialog
+        {
+            XamlRoot = frameworkElement.XamlRoot,
+            RequestedTheme = frameworkElement.ActualTheme,
+            Content = message,
+            CloseButtonText = closeButtonText,
+        };
+
+        var timer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(3),
+        };
+        timer.Tick += (s, e) =>
+        {
+            timer.Stop();
+            if (ContentDialog is null)
+            {
+                return;
+            }
+
+            ContentDialog.Hide();
+            ContentDialog = null;
+        };
+
+        try
+        {
+            await ContentDialog.ShowAsync();
+            timer.Start();
+            ContentDialog.Closed += (s, e) =>
+            {
+                ContentDialog = null;
+            };
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error showing timed message dialog");
         }
     }
 }

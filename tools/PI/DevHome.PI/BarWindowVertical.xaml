@@ -85,7 +85,7 @@
                 x:Uid="ManageExternalToolsButton"
                 HorizontalAlignment="Center">
                 <Button.ContextFlyout>
-                    <MenuFlyout x:Name="ExternalToolsMenu">
+                    <MenuFlyout x:Name="ExternalToolsMenu" Opening="ExternalToolsMenu_Opening">
                         <!-- We can't databind to MenuFlyout, so we'll add a MenuFlyoutItem
                         for each external tool in codebehind here. -->
                     </MenuFlyout>
