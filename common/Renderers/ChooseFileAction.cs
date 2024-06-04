@@ -81,7 +81,7 @@ public class ChooseFileAction : IAdaptiveActionElement
         var filePicker = new FileOpenPicker();
         filePicker.FileTypeFilter.Add("*");
 
-        var mainWindow = Application.Current.GetService<WindowEx>();
+        var mainWindow = Application.Current.GetService<Window>();
         if (mainWindow != null)
         {
             var hwnd = WindowNative.GetWindowHandle(mainWindow);
