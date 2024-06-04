@@ -24,6 +24,10 @@ namespace Microsoft.Windows.DevHome.SDK
         [experimental]
         [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)]
         QuickStartProject = 5,
+
+        [experimental]
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 5)] 
+        SourceControlIntegration = 6,
     };
 
     // Definitions for exceptions.
