@@ -127,6 +127,11 @@ Try {
     $uapExtension = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10/3}Extension");
     $uapAppExtension = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10/3}AppExtension");
 
+    # Update C++ version resources and header
+    $cppHeader = (Join-Path $env:Build_RootDirectory "build\cppversion\version.h")
+    $updatebinverpath = (Join-Path $env:Build_RootDirectory "build\scripts\update-binver.ps1")
+    & $updatebinverpath -TargetFile $cppHeader -BuildVersion $env:msix_version
+
     # Update the appxmanifest
     $appxmanifestPath = (Join-Path $env:Build_RootDirectory "src\Package.appxmanifest")
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
@@ -164,6 +169,7 @@ Try {
             ("DevHome.sln"),
             ("/p:Platform="+$platform),
             ("/p:Configuration="+$configuration),
+            ("/p:Version="+$env:msix_version),
             ("/restore"),
             ("/binaryLogger:DevHome.$platform.$configuration.binlog"),
             ("/p:AppxPackageOutput=$appxPackageDir\DevHome-$platform.msix"),
@@ -185,6 +191,11 @@ Try {
         }
       }
     }
+    
+    # reset version file back to original values
+    $cppHeader = (Join-Path $env:Build_RootDirectory "build\cppversion\version.h")
+    $updatebinverpath = (Join-Path $env:Build_RootDirectory "build\scripts\update-binver.ps1")
+    & $updatebinverpath -TargetFile $cppHeader -BuildVersion "1.0.0.0"
 
     # Reset the appxmanifest to prevent unnecessary code changes
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
