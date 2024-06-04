@@ -153,7 +153,7 @@ public partial class BarWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void PerformSnap()
+    public void ToggleSnap()
     {
         if (IsSnapped)
         {
@@ -169,7 +169,7 @@ public partial class BarWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void ShowBigWindow()
+    public void ToggleExpandedContentVisibility()
     {
         if (!ShowingExpandedContent)
         {

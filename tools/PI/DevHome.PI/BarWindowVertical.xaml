@@ -32,7 +32,7 @@
                     Style="{StaticResource ChromeButton}"
                     HorizontalAlignment="Center"
                     IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
-                    Command="{x:Bind _viewModel.PerformSnapCommand}" >
+                    Command="{x:Bind _viewModel.ToggleSnapCommand}" >
                 <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
                 </Button>
                 <Button
@@ -75,7 +75,7 @@
             <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" Command="{x:Bind _viewModel.SwitchLayoutCommand}" HorizontalAlignment="Center">
                 <TextBlock Text="&#xe8b4;"/>
             </Button>
-            <Button x:Name="LargeContentButton" Command="{x:Bind _viewModel.ShowBigWindowCommand}" HorizontalAlignment="Center">
+            <Button x:Name="LargeContentButton" Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" HorizontalAlignment="Center">
                 <TextBlock Text="&#xe8a1;"/>
             </Button>
 

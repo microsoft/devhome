@@ -40,8 +40,8 @@ public class SnapHelper
 
     public void Snap()
     {
-        Debug.Assert(_positionEventHook == HWINEVENTHOOK.Null, "Hook should be cleared");
-        Debug.Assert(_focusEventHook == HWINEVENTHOOK.Null, "Hook should be cleared");
+        Debug.Assert(_positionEventHook == HWINEVENTHOOK.Null, "Hook should be null");
+        Debug.Assert(_focusEventHook == HWINEVENTHOOK.Null, "Hook should be null");
 
         _positionEventHook = WindowHelper.WatchWindowPositionEvents(_winPositionEventDelegate, (uint)TargetAppData.Instance.ProcessId);
         _focusEventHook = WindowHelper.WatchWindowFocusEvents(_winFocusEventDelegate, (uint)TargetAppData.Instance.ProcessId);
@@ -79,46 +79,53 @@ public class SnapHelper
             return;
         }
 
-        if (hwnd == TargetAppData.Instance.HWnd)
+        if (hwnd != TargetAppData.Instance.HWnd)
         {
-            if (eventType == PInvoke.EVENT_OBJECT_LOCATIONCHANGE)
+            return;
+        }
+
+        if (eventType == PInvoke.EVENT_OBJECT_LOCATIONCHANGE)
+        {
+            var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+            Debug.Assert(barWindow != null, "BarWindow should not be null.");
+            if (barWindow.IsBarSnappedToWindow())
             {
-                var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
-                Debug.Assert(barWindow != null, "BarWindow should not be null.");
-                if (barWindow.IsBarSnappedToWindow())
+                // If the window has been maximized, un-snap the bar window and free-float it.
+                if (PInvoke.IsZoomed(TargetAppData.Instance.HWnd))
                 {
-                    // If the window has been maximized, un-snap the bar window and free-float it.
-                    if (PInvoke.IsZoomed(TargetAppData.Instance.HWnd))
-                    {
-                        barWindow.UnsnapBarWindow();
-                    }
-                    else
-                    {
-                        // Reposition the window to match the moved/resized/minimized/restored target window.
-                        // If the target window was maximized and has now been restored, we want
-                        // to resnap to it, but not do all the other work we do when we resnap
-                        // to a new window.
-                        SnapToWindow();
-                    }
+                    barWindow.UnsnapBarWindow();
+                }
+                else
+                {
+                    // Reposition the window to match the moved/resized/minimized/restored target window.
+                    // If the target window was maximized and has now been restored, we want
+                    // to resnap to it, but not do all the other work we do when we resnap
+                    // to a new window.
+                    SnapToWindow();
                 }
             }
+        }
 
-            // If the window we're watching closes, we unsnap
-            if (eventType == PInvoke.EVENT_OBJECT_DESTROY)
-            {
-                Unsnap();
-            }
+        // If the window we're watching closes, we unsnap
+        if (eventType == PInvoke.EVENT_OBJECT_DESTROY)
+        {
+            Unsnap();
         }
     }
 
     private void WinFocusEventProc(HWINEVENTHOOK hWinEventHook, uint eventType, HWND hwnd, int idObject, int idChild, uint idEventThread, uint dwmsEventTime)
     {
+        if (hwnd != TargetAppData.Instance.HWnd)
+        {
+            return;
+        }
+
         // If we're snapped to a target window, and that window loses and then regains focus,
         // we need to bring our window to the front also, to be in-sync. Otherwise, we can
         // end up with the target in the foreground, but our window partially obscured.
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         Debug.Assert(barWindow != null, "BarWindow should not be null.");
-        if (hwnd == TargetAppData.Instance.HWnd && barWindow.IsBarSnappedToWindow())
+        if (barWindow.IsBarSnappedToWindow())
         {
             barWindow.ResetBarWindowOnTop();
             return;

@@ -73,7 +73,7 @@ public partial class BarWindowVertical : WindowEx
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(BarWindowViewModel.WindowPosition))
+        if (string.Equals(e.PropertyName, nameof(BarWindowViewModel.WindowPosition), StringComparison.OrdinalIgnoreCase))
         {
             this.Move(_viewModel.WindowPosition.X, _viewModel.WindowPosition.Y);
         }
