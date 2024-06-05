@@ -60,6 +60,10 @@
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="HorizontalAlignment" Value="Center"/>
                 </Style>
+                <Style TargetType="controls:ExternalToolsManagementButton">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                </Style>
                 <Style TargetType="controls:ProcessSelectionButton">
                     <Setter Property="BorderThickness" Value="0"/>
                     <Setter Property="Background" Value="Transparent"/>
