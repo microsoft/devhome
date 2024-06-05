@@ -9,4 +9,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="System.Management.Automation" Version="7.4.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
+  </ItemGroup>
 </Project>

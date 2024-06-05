@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
+using Microsoft.Management.Deployment;
 
 namespace DevHome.Services.WindowsPackageManager.Models;
 
@@ -28,7 +28,7 @@ internal sealed class WinGetCatalog
     /// <summary>
     /// Gets the catalog object.
     /// </summary>
-    public WPMPackageCatalog Catalog { get; }
+    public PackageCatalog Catalog { get; }
 
     /// <summary>
     /// Gets the type of the catalog.
@@ -43,7 +43,7 @@ internal sealed class WinGetCatalog
     /// </remarks>
     public string UnknownCatalogName { get; }
 
-    public WinGetCatalog(WPMPackageCatalog catalog, CatalogType type, string unknownCatalogName = null)
+    public WinGetCatalog(PackageCatalog catalog, CatalogType type, string unknownCatalogName = null)
     {
         Catalog = catalog;
         Type = type;
