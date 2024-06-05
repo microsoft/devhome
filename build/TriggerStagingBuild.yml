@@ -29,10 +29,10 @@ extends:
     customBuildTags:
     - ES365AIMigrationTooling
     stages:
-    - stage: Build_SDK
+    - stage: Trigger_Build
       dependsOn: []
       jobs:
-      - job: Trigger Build
+      - job: Trigger_Build
         steps:
         - script: echo Triggering ADO Build
           displayName: 'Triggering ADO Build'
