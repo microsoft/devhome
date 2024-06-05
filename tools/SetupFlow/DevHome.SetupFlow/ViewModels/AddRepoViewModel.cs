@@ -756,6 +756,52 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Handles logic when the primary button is clicked.  Actions change depending on the screen
+    /// then user is on.
+    /// </summary>
+    /// <param name="searchTerms">The search terms for repositories.</param>
+    /// <returns>True if the close should be canceled.  Otherwise false and the dialog will close.</returns>
+    public async Task<bool> PrimaryButtonClick(Dictionary<string, string> searchTerms)
+    {
+        if (CurrentPage == PageKind.AddViaUrl)
+        {
+            // Get the number of repos already selected to clone in a previous instance.
+            // Used to figure out if the repo was added after the user logged into an account.
+            var numberOfReposToCloneCount = EverythingToClone.Count;
+
+            await AddRepositoryViaUri(Url, FolderPickerViewModel.CloneLocation);
+
+            // If the repo was not added.
+            if (numberOfReposToCloneCount == EverythingToClone.Count)
+            {
+                ShouldEnablePrimaryButton = false;
+                return true;
+            }
+
+            return false;
+        }
+        else if (CurrentPage == PageKind.AddViaAccount)
+        {
+            if (!string.IsNullOrEmpty(_selectedRepoProvider))
+            {
+                await ChangeToRepoPageAsync();
+            }
+
+            return true;
+        }
+        else if (CurrentPage == PageKind.SearchFields)
+        {
+            // switching to the repo page causes repos to be queried.
+            await ChangeToRepoPageAsync();
+            SearchForRepos(searchTerms);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Toggles the clone button.  Make sure other view models have correct information.
     /// </summary>
     public void ToggleCloneButton()
@@ -1019,8 +1065,17 @@ public partial class AddRepoViewModel : ObservableObject
         ShouldShowLoginUi = true;
         IsCancelling = false;
 
+        // Store the close button text because it will change.
+        // The text of the secondary button of the content dialog changes to notify users
+        // to press the "X" button to cancel the login prompt.
+        // This is needed because the secondary button does not listen to events because
+        // the content dialog is in the middle of the Primary Button click event.
+        var closeButtonText = _addRepoDialog.CloseButtonText;
         _addRepoDialog.CloseButtonText = _host.GetService<ISetupFlowStringResource>().GetLocalized(StringResourceKey.UrlCancelButtonText);
+
         await InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), LoginUiContent);
+
+        _addRepoDialog.CloseButtonText = closeButtonText;
 
         ShouldShowLoginUi = false;
         IsLoggingIn = false;
