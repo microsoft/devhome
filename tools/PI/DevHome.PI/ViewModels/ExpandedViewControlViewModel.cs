@@ -52,6 +52,9 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     private string title = string.Empty;
 
     [ObservableProperty]
+    private string settingsHeader = string.Empty;
+
+    [ObservableProperty]
     private ObservableCollection<PageNavLink> links;
 
     [ObservableProperty]
@@ -90,6 +93,8 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         RamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormat", PerfCounters.Instance.RamUsageInMB);
         DiskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormat", PerfCounters.Instance.DiskUsage);
         NavigationService = Application.Current.GetService<INavigationService>();
+
+        SettingsHeader = CommonHelper.GetLocalizedString("SettingsToolHeaderTextBlock/Text");
     }
 
     private void PerfCounterHelper_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -233,5 +238,28 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     {
         var navigationService = Application.Current.GetService<INavigationService>();
         navigationService.NavigateTo(Links[SelectedNavLinkIndex]?.PageViewModel?.FullName!);
+    }
+
+    public void NavigateToSettings(string viewModelType)
+    {
+        // Because the Settings item isn't part of our NavLink list, when the user selects Settings,
+        // we need to move the list selection so that when they subsequently select an item from
+        // the NavLinks, we'll navigate to the correct page even if that was the previously-selected item.
+        if (SelectedNavLinkIndex == 0)
+        {
+            SelectedNavLinkIndex = Links.Count - 1;
+        }
+        else
+        {
+            SelectedNavLinkIndex = 0;
+        }
+
+        var navigationService = Application.Current.GetService<INavigationService>();
+        var mainSettingsPage = typeof(SettingsPageViewModel).FullName!;
+        navigationService.NavigateTo(mainSettingsPage);
+        if (!string.Equals(mainSettingsPage, viewModelType, StringComparison.OrdinalIgnoreCase))
+        {
+            navigationService.NavigateTo(viewModelType);
+        }
     }
 }

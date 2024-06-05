@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
@@ -48,6 +49,10 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     public string PackageFullName { get; set; }
 
     private readonly Func<ComputeSystemCardBase, bool> _removalAction;
+
+    [ObservableProperty]
+    private bool _shouldShowDotOperations;
+
     private bool _disposedValue;
 
     /// <summary>
@@ -122,23 +127,39 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         await _semaphoreSlimLock.WaitAsync();
         try
         {
+            ShouldShowDotOperations = false;
             RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _mainWindow), DataExtractor.FillLaunchButtonOperations(ComputeSystem));
 
-            foreach (var data in await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem))
+            _ = Task.Run(async () =>
             {
-                if ((!data.WasPinnedStatusSuccessful) || (data.ViewModel == null))
+                var start = DateTime.Now;
+                List<OperationsViewModel> validData = new();
+                foreach (var data in await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem))
                 {
-                    // TODO: pinned status for dev box for example fails often. So we'll log it and not show notifications so we don't overload the user with
-                    // failure notifications until the feature is fixed. We simply do not show the pinned icons in these cases since we don't know which ones
-                    // to show.
-                    _log.Error($"Pinned status check failed: for '{Name}': {data?.PinnedStatusDisplayMessage}. DiagnosticText: {data?.PinnedStatusDiagnosticText}");
-                    continue;
+                    if ((!data.WasPinnedStatusSuccessful) || (data.ViewModel == null))
+                    {
+                        _log.Error($"Pinned status check failed: for '{Name}': {data?.PinnedStatusDisplayMessage}. DiagnosticText: {data?.PinnedStatusDiagnosticText}");
+                        continue;
+                    }
+
+                    validData.Add(data.ViewModel);
+                    WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedMessage, OperationsViewModel>(this, data.ViewModel);
+                    WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedMessage, OperationsViewModel>(this, data.ViewModel);
                 }
 
-                DotOperations.Add(data.ViewModel);
-                WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedMessage, OperationsViewModel>(this, data.ViewModel);
-                WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedMessage, OperationsViewModel>(this, data.ViewModel);
-            }
+                _log.Information($"Registering pin operations for {Name} in background took {DateTime.Now - start}");
+
+                // Add valid data to the DotOperations collection
+                _mainWindow.DispatcherQueue.TryEnqueue(() =>
+                {
+                    foreach (var data in validData)
+                    {
+                        DotOperations.Add(data);
+                    }
+
+                    ShouldShowDotOperations = true;
+                });
+            });
 
             SetPropertiesAsync();
         }

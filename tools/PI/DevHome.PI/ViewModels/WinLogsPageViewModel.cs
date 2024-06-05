@@ -43,6 +43,15 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool isETWLogsEnabled;
 
+    [ObservableProperty]
+    private bool isDebugOutputEnabled;
+
+    [ObservableProperty]
+    private bool isEventViewerEnabled = true;
+
+    [ObservableProperty]
+    private bool isWatsonEnabled = true;
+
     private Process? targetProcess;
     private WinLogsHelper? winLogsHelper;
 
@@ -193,6 +202,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         {
             if (newInsight is not null)
             {
+                newInsight.IsExpanded = true;
                 var insightsPageViewModel = Application.Current.GetService<InsightsPageViewModel>();
                 insightsPageViewModel.AddInsight(newInsight);
                 InsightsButtonVisibility = Visibility.Visible;

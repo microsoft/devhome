@@ -45,6 +45,7 @@ public partial class App : Application, IApp
                 services.AddSingleton<IPageService, PIPageService>();
                 services.AddSingleton<INavigationService, PINavigationService>();
                 services.AddSingleton<TelemetryReporter>();
+                services.AddSingleton<PIAppInfoService>();
 
                 // Window
                 services.AddSingleton<PrimaryWindow>();
@@ -64,6 +65,18 @@ public partial class App : Application, IApp
                 services.AddSingleton<WatsonPageViewModel>();
                 services.AddSingleton<WinLogsPage>();
                 services.AddSingleton<WinLogsPageViewModel>();
+                services.AddSingleton<SettingsPage>();
+                services.AddSingleton<SettingsPageViewModel>();
+
+                // Settings sub-pages and viewmodels.
+                services.AddTransient<PreferencesViewModel>();
+                services.AddTransient<PreferencesPage>();
+                services.AddTransient<AdditionalToolsViewModel>();
+                services.AddTransient<AdditionalToolsPage>();
+                services.AddTransient<AdvancedSettingsViewModel>();
+                services.AddTransient<AdvancedSettingsPage>();
+                services.AddTransient<AboutViewModel>();
+                services.AddTransient<AboutPage>();
             }).Build();
     }
 

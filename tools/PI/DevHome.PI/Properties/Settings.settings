@@ -29,15 +29,6 @@
     <Setting Name="IsProcessFilterIncludeBgTaskHost" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="SettingsToolPosition" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
-&lt;ArrayOfString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
-  &lt;string&gt;50&lt;/string&gt;
-  &lt;string&gt;350&lt;/string&gt;
-  &lt;string&gt;964&lt;/string&gt;
-  &lt;string&gt;680&lt;/string&gt;
-&lt;/ArrayOfString&gt;</Value>
-    </Setting>
     <Setting Name="CurrentTheme" Type="System.String" Scope="User">
       <Value Profile="(Default)">Default</Value>
     </Setting>
@@ -46,15 +37,6 @@
     </Setting>
     <Setting Name="IsInsightsOnStartupEnabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="ErrorLookupToolPosition" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
-&lt;ArrayOfString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
-  &lt;string&gt;70&lt;/string&gt;
-  &lt;string&gt;942&lt;/string&gt;
-  &lt;string&gt;640&lt;/string&gt;
-  &lt;string&gt;222&lt;/string&gt;
-&lt;/ArrayOfString&gt;</Value>
     </Setting>
     <Setting Name="IsClipboardMonitoringEnabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

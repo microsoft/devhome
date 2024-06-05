@@ -11,7 +11,6 @@ using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
-using DevHome.PI.SettingsUi;
 using DevHome.PI.ViewModels;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
@@ -37,6 +36,8 @@ public partial class BarWindowHorizontal : WindowEx
     private readonly string _pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
     private readonly string _unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemText");
     private readonly BarWindowViewModel _viewModel;
+    private readonly FontIcon _pinIcon = new() { Glyph = "\uE718" };
+    private readonly FontIcon _unpinIcon = new() { Glyph = "\uE77A" };
 
     private ExternalTool? _selectedExternalTool;
     private INotifyCollectionChanged? _externalTools;
@@ -224,8 +225,17 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void ManageExternalToolsButton_Click(object sender, RoutedEventArgs e)
     {
-        SettingsToolWindow settingsTool = new(Settings.Default.SettingsToolPosition, SettingsPage.AdditionalTools);
-        settingsTool.Show();
+        ExpandLargeContentPanel();
+        ExpandedViewControl.NavigateToSettings(typeof(AdditionalToolsViewModel).FullName!);
+    }
+
+    private void ExternalToolsMenu_Opening(object sender, object e)
+    {
+        // Cancel the opening of the menu if there are no items.
+        if (sender is MenuFlyout flyout && flyout?.Items?.Count == 0)
+        {
+            flyout.Hide();
+        }
     }
 
     private void ExternalToolMenuItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
@@ -237,10 +247,12 @@ public partial class BarWindowHorizontal : WindowEx
             if (_selectedExternalTool.IsPinned)
             {
                 PinUnpinMenuItem.Text = _unpinMenuItemText;
+                PinUnpinMenuItem.Icon = _unpinIcon;
             }
             else
             {
                 PinUnpinMenuItem.Text = _pinMenuItemText;
+                PinUnpinMenuItem.Icon = _pinIcon;
             }
 
             ToolContextMenu.ShowAt(menuItem, e.GetPosition(menuItem));
@@ -292,10 +304,12 @@ public partial class BarWindowHorizontal : WindowEx
             if (_selectedExternalTool.IsPinned)
             {
                 PinUnpinMenuItem.Text = _unpinMenuItemText;
+                PinUnpinMenuItem.Icon = _unpinIcon;
             }
             else
             {
                 PinUnpinMenuItem.Text = _pinMenuItemText;
+                PinUnpinMenuItem.Icon = _pinIcon;
             }
         }
     }

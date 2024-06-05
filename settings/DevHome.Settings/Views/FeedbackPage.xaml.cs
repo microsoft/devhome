@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.Views;
 using DevHome.Settings.ViewModels;
 using Microsoft.Management.Infrastructure;
 using Microsoft.UI.Xaml;
@@ -24,7 +25,7 @@ namespace DevHome.Settings.Views;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class FeedbackPage : Page
+public sealed partial class FeedbackPage : DevHomePage
 {
     private static readonly double ByteSizeGB = 1024 * 1024 * 1024;
     private static string wmiCPUInfo = string.Empty;

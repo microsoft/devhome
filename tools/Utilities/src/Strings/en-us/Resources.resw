@@ -134,12 +134,15 @@
   <data name="LaunchButton.Text" xml:space="preserve">
     <value>Launch</value>
   </data>
+  <data name="LaunchButtonBase.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Launch</value>
+  </data>
   <data name="NavigationPane.Content" xml:space="preserve">
     <value>Utilities</value>
     <comment>Utilities</comment>
   </data>
   <data name="ProjectIronsidesDesc" xml:space="preserve">
-    <value>An application for gaining deeper insights into your applications</value>
+    <value>An application for gaining deeper insights into your applications.</value>
   </data>
   <data name="ProjectIronsidesTitle" xml:space="preserve">
     <value>Project Ironsides</value>

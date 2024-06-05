@@ -54,6 +54,9 @@ public partial class BarWindowViewModel : ObservableObject
     private Visibility _appBarVisibility = Visibility.Visible;
 
     [ObservableProperty]
+    private string _applicationName = string.Empty;
+
+    [ObservableProperty]
     private int _applicationPid;
 
     [ObservableProperty]
@@ -93,6 +96,7 @@ public partial class BarWindowViewModel : ObservableObject
 
         if (process != null)
         {
+            ApplicationName = process.ProcessName;
             ApplicationPid = process.Id;
             ApplicationIcon = TargetAppData.Instance.Icon;
         }
@@ -225,6 +229,7 @@ public partial class BarWindowViewModel : ObservableObject
                 if (process is not null)
                 {
                     ApplicationPid = process.Id;
+                    ApplicationName = process.ProcessName;
                 }
             });
         }

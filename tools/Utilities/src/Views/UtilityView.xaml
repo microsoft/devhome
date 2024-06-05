@@ -9,6 +9,7 @@
     d:DesignHeight="300" d:DesignWidth="300">
 
     <Grid
+        AutomationProperties.Name="{x:Bind ViewModel.Title}"
         HorizontalAlignment="Stretch"
         Padding="15 15"
         CornerRadius="{ThemeResource ControlCornerRadius}"
@@ -26,6 +27,7 @@
         </Grid.RowDefinitions>
 
         <Image
+            AutomationProperties.AccessibilityView="Raw"
             Grid.Row="0"
             Source="{x:Bind ViewModel.ImageSource}"
             HorizontalAlignment="Left"
@@ -68,6 +70,7 @@
             Margin="15 0 0 5"/>
 
         <Button
+            x:Uid="LaunchButtonBase"
             Grid.Row="3"
             Margin="15 5 0 0"
             Command="{x:Bind ViewModel.LaunchCommand}">

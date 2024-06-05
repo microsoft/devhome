@@ -129,14 +129,6 @@
     <value>Restore</value>
     <comment>Tooltip for the restore button in the BarWindow</comment>
   </data>
-  <data name="CloseAllMenuItem.Text" xml:space="preserve">
-    <value>End PI service</value>
-    <comment>The label for the close all menu item flyout. This will cause the program to terminate.</comment>
-  </data>
-  <data name="CloseAllMenuItem.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Close the PI window and the service</value>
-    <comment>The tooltip for the close all menu item flyout. This will cause the program to terminate.</comment>
-  </data>
   <data name="PinMenuItemText" xml:space="preserve">
     <value>Pin</value>
     <comment>A label for the menuitem to pin a tool on the bar.</comment>
@@ -153,7 +145,7 @@
     <value>Dissociate so that PI is not tracking any app</value>
     <comment>The tooltip for a button which causes PI to no longer track any app</comment>
   </data>
-  <data name="LargeContentButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SwitchToLargeLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Expand or collapse the large content panel</value>
     <comment>The tooltip for a button which expands or collapses the large content panel.</comment>
   </data>
@@ -405,17 +397,17 @@
     <value>Name</value>
     <comment>The name of a tool that could be edited.</comment>
   </data>
-  <data name="DeleteToolButton.Content" xml:space="preserve">
-    <value>Delete tool</value>
-    <comment>Content on a button to delete a tool.</comment>
+  <data name="UnregisterToolButton.Content" xml:space="preserve">
+    <value>Unregister</value>
+    <comment>Text on a button for unregistering a tool.</comment>
   </data>
   <data name="SettingsToolHeaderTextBlock.Text" xml:space="preserve">
     <value>Settings</value>
     <comment>The contents of a text block refering to settings.</comment>
   </data>
-  <data name="UserProfileTextBlock.Text" xml:space="preserve">
-    <value>User profile</value>
-    <comment>The contents of a text block refering to a user profile.</comment>
+  <data name="PreferencesTextBlock.Text" xml:space="preserve">
+    <value>Preferences</value>
+    <comment>The contents of a text block refering to a user's settings preferences.</comment>
   </data>
   <data name="ThemeSelectionTextBlock.Text" xml:space="preserve">
     <value>Theme selection</value>
@@ -430,7 +422,7 @@
     <comment>Refers to a color theme or scheme</comment>
   </data>
   <data name="ThemeDefaultComboItem.Content" xml:space="preserve">
-    <value>Default</value>
+    <value>Windows default</value>
     <comment>Refers to a color theme or scheme</comment>
   </data>
   <data name="AdditionalToolsTextBlock.Text" xml:space="preserve">
@@ -445,19 +437,19 @@
     <value>Edit the configuration for registered tools</value>
     <comment>Refers to tools a user could edit that are already registered to the bar UI.</comment>
   </data>
-  <data name="MonitorCpuSettingTextBlock.Text" xml:space="preserve">
+  <data name="MonitorCpuSettingCard.Header" xml:space="preserve">
     <value>Monitor CPU usage for the target app</value>
     <comment>Refers tracing central processing unit (CPU) usage of the app the user has selected.</comment>
   </data>
-  <data name="ShowInsightsTextBlock.Text" xml:space="preserve">
+  <data name="ShowInsightsCard.Header" xml:space="preserve">
     <value>Show Insights on start-up</value>
     <comment>Refers showing insightful suggestions to the user about the app on startup.</comment>
   </data>
-  <data name="EnableClipboardMonitoringTextBlock.Text" xml:space="preserve">
+  <data name="EnableClipboardMonitoringCard.Header" xml:space="preserve">
     <value>Enable Clipboard monitoring</value>
     <comment>Refers monitoring the user's clipboard for error messages.</comment>
   </data>
-  <data name="ExcludedProcessesTextBlock.Text" xml:space="preserve">
+  <data name="ExcludedProcessesCard.Header" xml:space="preserve">
     <value>Processes to exclude when finding the foreground window. Enter the process names here, comma-separated.</value>
     <comment>Refers application process names for example notepad.exe, winword.exe etc, in a comma-separated list.</comment>
   </data>
@@ -468,18 +460,6 @@
   <data name="AboutHeaderTextBlock.Text" xml:space="preserve">
     <value>About</value>
     <comment>A header for an about page.</comment>
-  </data>
-  <data name="PrivacyLinkLabel.Text" xml:space="preserve">
-    <value>Privacy Statement</value>
-    <comment>Refers to the microsoft privacy statement</comment>
-  </data>
-  <data name="DocumentationLinkLabel.Text" xml:space="preserve">
-    <value>Documentation</value>
-    <comment>Refers help for the product that can be found on a Microsoft docs website.</comment>
-  </data>
-  <data name="DevHomePIVersionTextBlock.Text" xml:space="preserve">
-    <value>© 2024 Microsoft. All rights reserved.</value>
-    <comment>This is the copyright notice for the product.</comment>
   </data>
   <data name="ExpandedViewHeaderTextBlock.Text" xml:space="preserve">
     <value>App Info</value>
@@ -629,9 +609,9 @@
     <value>Debug</value>
     <comment>Refers to a debug level message.</comment>
   </data>
-  <data name="UserProfileTabName" xml:space="preserve">
-    <value>User profile</value>
-    <comment>Refers to a users personal profile.</comment>
+  <data name="PreferencesTabName" xml:space="preserve">
+    <value>Preferences</value>
+    <comment>Refers to a user's settings preferences.</comment>
   </data>
   <data name="AdditionalToolsTabName" xml:space="preserve">
     <value>Additional tools</value>
@@ -733,10 +713,6 @@
     <value>Security issue</value>
     <comment>Describes an issue related to security.</comment>
   </data>
-  <data name="DevHomePISpecificationsTextBlock.Text" xml:space="preserve">
-    <value>Dev Home PI</value>
-    <comment>This is the name of the product.</comment>
-  </data>
   <data name="FaultingModuleColumn.Header" xml:space="preserve">
     <value>Faulting module</value>
     <comment>Refers to the module which caused the fault which generated the crash report</comment>
@@ -746,7 +722,7 @@
     <comment>Locked={"{0}", "{1}"} A description to help a user that is dealing with non-specific error situation. {0} is the error name. {1} is the error description.</comment>
   </data>
   <data name="FrameworkTypesTextBlock.Text" xml:space="preserve">
-    <value>Framework types</value>
+    <value>Framework types used in this app</value>
     <comment>This refers to the set of application frameworks this application uses.</comment>
   </data>
   <data name="BaseAddressTextBlock.Text" xml:space="preserve">
@@ -768,5 +744,173 @@
   <data name="UnpinMenuItemText" xml:space="preserve">
     <value>Unpin</value>
     <comment>A label for the menuitem to unpin a tool on the bar.</comment>
+  </data>
+  <data name="SettingsAboutHeader" xml:space="preserve">
+    <value>About</value>
+    <comment>Header for the Settings item for product information and privacy statement.</comment>
+  </data>
+  <data name="SettingsAboutSubHeader" xml:space="preserve">
+    <value>Info, Privacy Statement</value>
+    <comment>Sub-header for the Settings item for product information and privacy statement.</comment>
+  </data>
+  <data name="SettingsAdditionalToolsHeader" xml:space="preserve">
+    <value>Additional tools</value>
+    <comment>Header for the Settings item for configuring additional tools.</comment>
+  </data>
+  <data name="SettingsAdditionalToolsSubHeader" xml:space="preserve">
+    <value>Add or edit tool configurations</value>
+    <comment>Sub-header for the Settings item for configuring additional tools.</comment>
+  </data>
+  <data name="SettingsAdvancedSettingsHeader" xml:space="preserve">
+    <value>Advanced settings</value>
+    <comment>Header for the Settings item for configuring advanced features.</comment>
+  </data>
+  <data name="SettingsAdvancedSettingsSubHeader" xml:space="preserve">
+    <value>Configure advanced features</value>
+    <comment>Sub-header for the Settings item for configuring advanced features.</comment>
+  </data>
+  <data name="SettingsPreferencesHeader" xml:space="preserve">
+    <value>Preferences</value>
+    <comment>Header for the Settings item for user preferences.</comment>
+  </data>
+  <data name="SettingsPreferencesSubHeader" xml:space="preserve">
+    <value>Themes</value>
+    <comment>Sub-header for the Settings item for user preferences.</comment>
+  </data>
+  <data name="SettingsPageHeader" xml:space="preserve">
+    <value>Settings</value>
+    <comment>The title of the main Settings page.</comment>
+  </data>
+  <data name="SettingsThemeCard.Header" xml:space="preserve">
+    <value>Theme</value>
+    <comment>Title for the theme settings sub-page item.</comment>
+  </data>
+  <data name="SettingsThemeDark.Content" xml:space="preserve">
+    <value>Dark</value>
+    <comment>Refers to a color theme or scheme.</comment>
+  </data>
+  <data name="SettingsThemeDefault.Content" xml:space="preserve">
+    <value>Windows default</value>
+    <comment>Refers to a color theme or scheme.</comment>
+  </data>
+  <data name="SettingsThemeLight.Content" xml:space="preserve">
+    <value>Light</value>
+    <comment>Refers to a color theme or scheme.</comment>
+  </data>
+  <data name="SettingsAboutAppInfoCard.Header" xml:space="preserve">
+    <value>Dev Home PI</value>
+    <comment>This is the name of the product.</comment>
+  </data>
+  <data name="SettingsAboutAppInfoCard.Description" xml:space="preserve">
+    <value>© Microsoft. All rights reserved.</value>
+    <comment>This is the copyright notice for the product.</comment>
+  </data>
+  <data name="SettingsAboutRelatedLinks.Text" xml:space="preserve">
+    <value>Related links</value>
+    <comment>Header for a set of hyperlinks to information about the product.</comment>
+  </data>
+  <data name="SettingsDocumentationLink.Content" xml:space="preserve">
+    <value>Documentation</value>
+    <comment>Label for the link to the documentation for the product.</comment>
+  </data>
+  <data name="SettingsDocumentationLink.NavigateUri" xml:space="preserve">
+    <value>https://github.com/microsoft/devhome/issues/2796</value>
+    <comment>Link to the documentation for the product.</comment>
+  </data>
+  <data name="SettingsPrivacyPolicyLink.Content" xml:space="preserve">
+    <value>Privacy Statement</value>
+    <comment>Label for the link to the standard privacy policy statement.</comment>
+  </data>
+  <data name="SettingsPrivacyPolicyLink.NavigateUri" xml:space="preserve">
+    <value>https://go.microsoft.com/fwlink/?linkid=2234882</value>
+    <comment>Link to the standard privacy policy statement.</comment>
+  </data>
+  <data name="SettingsSourceCodeLink.Content" xml:space="preserve">
+    <value>Source code</value>
+    <comment>Label for the link to the source code for the product.</comment>
+  </data>
+  <data name="SettingsSourceCodeLink.NavigateUri" xml:space="preserve">
+    <value>https://go.microsoft.com/fwlink/?linkid=2234396</value>
+    <comment>Link to the source code for the product.</comment>
+  </data>
+  <data name="SettingsAddToolCard.Header" xml:space="preserve">
+    <value>Register an external tool with Dev Home PI</value>
+    <comment>Header for the settings item to add a tool to the product.</comment>
+  </data>
+  <data name="SettingsEditToolCard.Header" xml:space="preserve">
+    <value>Edit or unregister existing tools</value>
+    <comment>Header for the setting item to edit or unregister tools from the product.</comment>
+  </data>
+  <data name="BasePriorityTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The starting priority for threads created within this process</value>
+    <comment>Tooltip for the Base Priority field.</comment>
+  </data>
+  <data name="BinaryTypeTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The CPU architecture of the target process</value>
+    <comment>Tooltip for the Binary Type field.</comment>
+  </data>
+  <data name="FrameworkTypesTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The windowing or application frameworks used in this app</value>
+    <comment>Tooltip for the Framework Types field.</comment>
+  </data>
+  <data name="IDTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The process ID of the target process</value>
+    <comment>Tooltip for the PID field.</comment>
+  </data>
+  <data name="IsRunningAsAdminTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>True if the target process is running under an Administrator account</value>
+    <comment>Tooltip for the Running as Admin field.</comment>
+  </data>
+  <data name="IsRunningAsSystemTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>True if the target process is running as a System process, based on its Session ID</value>
+    <comment>Tooltip for the Running as System field.</comment>
+  </data>
+  <data name="MainModuleTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The executable used to start the process</value>
+    <comment>Tooltip for the Main Module field.</comment>
+  </data>
+  <data name="MicrosoftStoreAppTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>True if this app was deployed via the Microsoft Store</value>
+    <comment>Tooltip for the Microsoft Store field.</comment>
+  </data>
+  <data name="MSIXPackagedTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>True if this process is packaged with MSIX</value>
+    <comment>Tooltip for the MSIX Packaged field.</comment>
+  </data>
+  <data name="PriorityClassTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Threads with different priorities in the process run relative to the priority class of the process</value>
+    <comment>Tooltip for the Priority Class field.</comment>
+  </data>
+  <data name="MessageCloseText" xml:space="preserve">
+    <value>Close</value>
+    <comment>Text used on the Close button on a message dialog.</comment>
+  </data>
+  <data name="ToolRegisteredMessage" xml:space="preserve">
+    <value>External tool {0} registered</value>
+    <comment>Message shown to the user when an external tool is registered.</comment>
+  </data>
+  <data name="EditToolsExecutableColumn.Header" xml:space="preserve">
+    <value>Executable</value>
+    <comment>The executable path of an external tool.</comment>
+  </data>
+  <data name="InvalidToolInfoMessage" xml:space="preserve">
+    <value>Invalid tool path or name</value>
+    <comment>Text for the message to show to the user when the supplied path or name is not valid.</comment>
+  </data>
+  <data name="ProcessChooserButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Select a process to investigate</value>
+    <comment>Describes using a button in PI's UX to investigate another process running on the system</comment>
+  </data>
+  <data name="SnapButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Attach the diagnostic bar to the target application</value>
+    <comment>Describes using a button in PI's UX</comment>
+  </data>
+  <data name="Title.Text" xml:space="preserve">
+    <value>Dev Home PI</value>
+    <comment>The product name</comment>
+  </data>
+  <data name="VerticalCloseButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Close</value>
+    <comment>Describes a button that will close PI's window</comment>
   </data>
 </root>

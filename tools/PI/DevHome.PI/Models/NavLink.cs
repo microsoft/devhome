@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using DevHome.PI.SettingsUi;
 
 namespace DevHome.PI.Models;
 
@@ -27,16 +26,5 @@ public class PageNavLink : NavLink
         : base(icon, title)
     {
         PageViewModel = pageViewModel;
-    }
-}
-
-public class SettingsNavLink : NavLink
-{
-    public SettingsPage? SettingsPage { get; internal set; }
-
-    public SettingsNavLink(string icon, string title, SettingsPage? settingsPage)
-        : base(icon, title)
-    {
-        SettingsPage = settingsPage;
     }
 }
