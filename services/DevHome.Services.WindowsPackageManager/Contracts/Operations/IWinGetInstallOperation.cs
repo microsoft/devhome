@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Models;
 
-namespace DevHome.Services.WindowsPackageManager.Contracts.Operations;
+namespace DevHome.Services.WindowsPackageManager.Contracts;
 
 internal interface IWinGetInstallOperation
 {
