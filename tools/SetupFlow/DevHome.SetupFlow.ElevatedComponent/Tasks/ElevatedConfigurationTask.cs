@@ -1,8 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.SetupFlow.Common.Configuration;
+using DevHome.Services.WindowsPackageManager.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
+using Microsoft.Extensions.Logging;
 using Microsoft.Management.Configuration;
 using Serilog;
 using Windows.Foundation;
@@ -14,21 +15,21 @@ public sealed class ElevatedConfigurationTask
 {
     public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(string filePath, string content, Guid activityId)
     {
+        var logger = LoggerFactory.Create(lb => lb.AddSerilog(dispose: false)).CreateLogger<ElevatedConfigurationTask>();
         return Task.Run(async () =>
         {
             var taskResult = new ElevatedConfigureTaskResult();
-            var log = Log.ForContext("SourceContext", nameof(ElevatedConfigurationTask));
 
             try
             {
-                var configurationFileHelper = new ConfigurationFileHelper(activityId);
+                var configurationFileHelper = new ConfigurationFileHelper(logger, activityId);
 
-                log.Information($"Opening configuration set from file: {filePath}");
+                logger.LogInformation($"Opening configuration set from file: {filePath}");
                 await configurationFileHelper.OpenConfigurationSetAsync(filePath, content);
 
-                log.Information("Starting configuration set application");
+                logger.LogInformation("Starting configuration set application");
                 var result = await configurationFileHelper.ApplyConfigurationAsync();
-                log.Information("Configuration application finished");
+                logger.LogInformation("Configuration application finished");
 
                 taskResult.TaskAttempted = true;
                 taskResult.TaskSucceeded = result.Succeeded;
@@ -56,7 +57,7 @@ public sealed class ElevatedConfigurationTask
             }
             catch (Exception e)
             {
-                log.Error(e, $"Failed to apply configuration.");
+                logger.LogError(e, $"Failed to apply configuration.");
                 taskResult.TaskSucceeded = false;
             }
 

@@ -9,6 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Models;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -34,7 +36,7 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
     /// </remarks>
     private int _estimatedCatalogCount;
 
-    public WinGetFeaturedApplicationsDataSource(IWindowsPackageManager wpm, IExtensionService extensionService)
+    public WinGetFeaturedApplicationsDataSource(IWinGet wpm, IExtensionService extensionService)
         : base(wpm)
     {
         _extensionService = extensionService;

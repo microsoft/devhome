@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -37,7 +38,7 @@ public partial class SearchViewModel : ObservableObject
     }
 
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SearchViewModel));
-    private readonly IWindowsPackageManager _wpm;
+    private readonly IWinGet _wpm;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly PackageProvider _packageProvider;
     private readonly IScreenReaderService _screenReaderService;
@@ -67,7 +68,7 @@ public partial class SearchViewModel : ObservableObject
     /// </summary>
     public string NoSearchResultsText => _stringResource.GetLocalized(StringResourceKey.NoSearchResultsFoundTitle, SearchText);
 
-    public SearchViewModel(IWindowsPackageManager wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider, IScreenReaderService screenReaderService)
+    public SearchViewModel(IWinGet wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider, IScreenReaderService screenReaderService)
     {
         _wpm = wpm;
         _stringResource = stringResource;

@@ -7,6 +7,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Models;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
@@ -25,7 +27,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
 
     public WinGetPackageRestoreDataSource(
         ISetupFlowStringResource stringResource,
-        IWindowsPackageManager wpm,
+        IWinGet wpm,
         IRestoreInfo restoreInfo)
         : base(wpm)
     {

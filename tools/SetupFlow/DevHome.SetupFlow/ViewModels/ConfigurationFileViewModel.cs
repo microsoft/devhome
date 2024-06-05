@@ -10,20 +10,22 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Windows.FileDialog;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
-using Serilog;
 using Windows.Storage;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileViewModel));
+    private readonly ILogger _logger;
     private readonly IDesiredStateConfiguration _dsc;
     private readonly Window _mainWindow;
 
@@ -48,12 +50,14 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     private IList<DSCConfigurationUnitViewModel> _configurationUnits;
 
     public ConfigurationFileViewModel(
+        ILogger<ConfigurationFileViewModel> logger,
         ISetupFlowStringResource stringResource,
         IDesiredStateConfiguration dsc,
         Window mainWindow,
         SetupFlowOrchestrator orchestrator)
         : base(stringResource, orchestrator)
     {
+        _logger = logger;
         _dsc = dsc;
         _mainWindow = mainWindow;
 
@@ -64,7 +68,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
     partial void OnReadAndAgreeChanged(bool value)
     {
-        _log.Information($"Read and agree changed. Value: {value}");
+        _logger.LogInformation($"Read and agree changed. Value: {value}");
         CanGoToNextPage = value;
         Orchestrator.NotifyNavigationCanExecuteChanged();
     }
@@ -90,7 +94,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error(e, $"Failed to initialize elevated process.");
+            _logger.LogError(e, $"Failed to initialize elevated process.");
         }
     }
 
@@ -115,7 +119,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error(e, $"Failed to get configuration unit details.");
+            _logger.LogError(e, $"Failed to get configuration unit details.");
         }
     }
 
@@ -134,7 +138,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         try
         {
             // Create and configure file picker
-            _log.Information("Launching file picker to select configuration file");
+            _logger.LogInformation("Launching file picker to select configuration file");
             using var fileDialog = new WindowOpenFileDialog();
             fileDialog.AddFileType(StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML"), ".yaml", ".yml", ".winget");
             var file = await fileDialog.ShowAsync(_mainWindow);
@@ -142,7 +146,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error(e, $"Failed to open file picker.");
+            _logger.LogError(e, $"Failed to open file picker.");
             return false;
         }
     }
@@ -154,7 +158,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// <returns>True if the configuration file was loaded, false otherwise</returns>
     public async Task<bool> LoadFileAsync(StorageFile file)
     {
-        _log.Information("Loading a configuration file");
+        _logger.LogInformation("Loading a configuration file");
         if (!await _dsc.IsUnstubbedAsync())
         {
             await _mainWindow.ShowErrorMessageDialogAsync(
@@ -177,14 +181,14 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         // Check if a file was selected
         if (file == null)
         {
-            _log.Information("No configuration file selected");
+            _logger.LogInformation("No configuration file selected");
             return false;
         }
 
         try
         {
-            _log.Information($"Selected file: {file.Path}");
-            Configuration = new(file.Path);
+            _logger.LogInformation($"Selected file: {file.Path}");
+            Configuration = new(_logger, file.Path);
             Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
             await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
             TaskList.Add(new(StringResource, _dsc, file, Orchestrator.ActivityId));
@@ -192,7 +196,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (OpenConfigurationSetException e)
         {
-            _log.Error(e, $"Opening configuration set failed.");
+            _logger.LogError(e, $"Opening configuration set failed.");
             await _mainWindow.ShowErrorMessageDialogAsync(
                 StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
                 GetErrorMessage(e),
@@ -200,7 +204,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error(e, $"Unknown error while opening configuration set.");
+            _logger.LogError(e, $"Unknown error while opening configuration set.");
 
             await _mainWindow.ShowErrorMessageDialogAsync(
                 file.Name,

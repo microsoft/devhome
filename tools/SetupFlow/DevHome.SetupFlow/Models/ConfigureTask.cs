@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;

@@ -6,6 +6,8 @@ extern alias Projection;
 using System;
 using System.Threading.Tasks;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Exceptions;
@@ -25,7 +27,7 @@ public class InstallPackageTask : ISetupTask
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(InstallPackageTask));
     private static readonly string MSStoreCatalogId = "StoreEdgeFD";
 
-    private readonly IWindowsPackageManager _wpm;
+    private readonly IWinGet _wpm;
     private readonly WinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly Guid _activityId;
@@ -72,7 +74,7 @@ public class InstallPackageTask : ISetupTask
 #pragma warning restore 67
 
     public InstallPackageTask(
-        IWindowsPackageManager wpm,
+        IWinGet wpm,
         ISetupFlowStringResource stringResource,
         WinGetPackage package,
         string installVersion,

@@ -15,6 +15,7 @@ using DevHome.Dashboard.Extensions;
 using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
 using DevHome.Services;
+using DevHome.Services.WindowsPackageManager.Extensions;
 using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Services;
@@ -115,6 +116,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IExperimentationService, ExperimentationService>();
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
             services.AddTransient<INavigationViewService, NavigationViewService>();
+            services.AddWinGet();
 
             services.AddSingleton<IActivationService, ActivationService>();
             services.AddSingleton<IExtensionService, ExtensionService>();

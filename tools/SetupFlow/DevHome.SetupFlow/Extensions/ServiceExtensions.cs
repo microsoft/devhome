@@ -6,8 +6,6 @@ using System.IO;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
-using DevHome.SetupFlow.Services.WinGet;
-using DevHome.SetupFlow.Services.WinGet.Operations;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.ViewModels.Environments;
@@ -50,23 +48,6 @@ public static class ServiceExtensions
         return services;
     }
 
-    private static IServiceCollection AddWinGet(this IServiceCollection services)
-    {
-        services.AddSingleton<IWinGetCatalogConnector, WinGetCatalogConnector>();
-        services.AddSingleton<IWinGetPackageFinder, WinGetPackageFinder>();
-        services.AddSingleton<IWinGetPackageInstaller, WinGetPackageInstaller>();
-        services.AddSingleton<IWinGetProtocolParser, WinGetProtocolParser>();
-        services.AddSingleton<IWinGetDeployment, WinGetDeployment>();
-        services.AddSingleton<IWinGetRecovery, WinGetRecovery>();
-        services.AddSingleton<IWinGetPackageCache, WinGetPackageCache>();
-        services.AddSingleton<IWinGetOperations, WinGetOperations>();
-        services.AddSingleton<IWinGetGetPackageOperation, WinGetGetPackageOperation>();
-        services.AddSingleton<IWinGetSearchOperation, WinGetSearchOperation>();
-        services.AddSingleton<IWinGetInstallOperation, WinGetInstallOperation>();
-        services.AddSingleton<IDesiredStateConfiguration, DesiredStateConfiguration>();
-        return services;
-    }
-
     private static IServiceCollection AddAppManagement(this IServiceCollection services)
     {
         // View models
@@ -77,14 +58,12 @@ public static class ServiceExtensions
         services.AddTransient<AppManagementReviewViewModel>();
 
         // Services
-        services.AddSingleton<IWindowsPackageManager, WindowsPackageManager>();
         services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory(ClsidContext.Prod));
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();
         services.AddSingleton<ICatalogDataSourceLoader, CatalogDataSourceLoader>();
         services.AddSingleton<IAppManagementInitializer, AppManagementInitializer>();
-        services.AddWinGet();
 
         services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
         services.AddSingleton<WinGetPackageDataSource,  WinGetPackageJsonDataSource>(sp =>

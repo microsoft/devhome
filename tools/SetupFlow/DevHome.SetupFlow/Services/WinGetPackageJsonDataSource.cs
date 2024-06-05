@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Models;
 using Serilog;
 using Windows.Storage;
@@ -64,7 +66,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 
     public WinGetPackageJsonDataSource(
         ISetupFlowStringResource stringResource,
-        IWindowsPackageManager wpm,
+        IWinGet wpm,
         string fileName)
         : base(wpm)
     {

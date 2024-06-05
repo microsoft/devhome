@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
@@ -39,7 +40,7 @@ public partial class PackageViewModel : ObservableObject
 
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IWinGetPackage _package;
-    private readonly IWindowsPackageManager _wpm;
+    private readonly IWinGet _wpm;
     private readonly IThemeSelectorService _themeSelector;
     private readonly IScreenReaderService _screenReaderService;
     private readonly SetupFlowOrchestrator _orchestrator;
@@ -71,7 +72,7 @@ public partial class PackageViewModel : ObservableObject
 
     public PackageViewModel(
         ISetupFlowStringResource stringResource,
-        IWindowsPackageManager wpm,
+        IWinGet wpm,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
         IScreenReaderService screenReaderService,
