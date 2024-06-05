@@ -3,23 +3,18 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
-using DevHome.PI.Properties;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Graphics;
 using Windows.Win32.Foundation;
-using WinUIEx;
 
 namespace DevHome.PI.ViewModels;
 
