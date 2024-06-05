@@ -915,7 +915,7 @@
   </data>
   <data name="CpuArchitecture_ProcessOnMachine" xml:space="preserve">
     <value>{0} process running on {1} machine</value>
-    <comment>Locked={"{0}"}. Locked={"{1}"} Message text when the process is the specified CPU architecture running on the specified CPU machine. {0} is the process architecture, {1} is the machine architecture.</comment>
+    <comment>Locked={"{0}", "{1}"} Message text when the process is the specified CPU architecture running on the specified CPU machine. {0} is the process architecture, {1} is the machine architecture.</comment>
   </data>
   <data name="CpuArchitecture_Unknown" xml:space="preserve">
     <value>Unknown</value>

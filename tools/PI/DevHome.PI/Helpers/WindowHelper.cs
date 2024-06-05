@@ -653,56 +653,64 @@ public class WindowHelper
     internal static string GetAppArchitecture(SafeProcessHandle handle, string moduleName)
     {
         var cpuArchitecture = CommonHelper.GetLocalizedString("CpuArchitecture_Unknown");
-        unsafe
-        {
-            IMAGE_FILE_MACHINE processInfo;
-            IMAGE_FILE_MACHINE machineInfo;
-            var isWow64Result = PInvoke.IsWow64Process2(handle, out processInfo, &machineInfo);
-            if (isWow64Result)
-            {
-                var processArchitecture = GetTargetArchitecture(processInfo);
-                var machineArchitecture = GetTargetArchitecture(machineInfo);
 
-                // "Unknown" means this is not a WOW64 process.
-                if (processArchitecture == CpuArchitecture.Unknown)
+        try
+        {
+            unsafe
+            {
+                IMAGE_FILE_MACHINE processInfo;
+                IMAGE_FILE_MACHINE machineInfo;
+                var isWow64Result = PInvoke.IsWow64Process2(handle, out processInfo, &machineInfo);
+                if (isWow64Result)
                 {
-                    if (machineArchitecture == CpuArchitecture.X64)
+                    var processArchitecture = GetTargetArchitecture(processInfo);
+                    var machineArchitecture = GetTargetArchitecture(machineInfo);
+
+                    // "Unknown" means this is not a WOW64 process.
+                    if (processArchitecture == CpuArchitecture.Unknown)
                     {
-                        // If this is an x64 machine and it's not a WOW64 process, it's an x64 process.
-                        cpuArchitecture = CommonHelper.GetLocalizedString("CpuArchitecture_X64onX64");
-                    }
-                    else
-                    {
-                        // If this is not an x64 machine, we need to get the process architecture from the process itself.
-                        var processMachineInfo = default(PROCESS_MACHINE_INFORMATION);
-                        var getProcInfoResult
-                            = PInvoke.GetProcessInformation(
-                            handle,
-                            PROCESS_INFORMATION_CLASS.ProcessMachineTypeInfo,
-                            &processMachineInfo,
-                            (uint)Marshal.SizeOf<PROCESS_MACHINE_INFORMATION>());
-                        if (getProcInfoResult)
+                        if (machineArchitecture == CpuArchitecture.X64)
                         {
-                            // Report the process architecture and the machine architecture.
-                            processArchitecture = GetTargetArchitecture(processMachineInfo.ProcessMachine);
-                            cpuArchitecture = CommonHelper.GetLocalizedString(
-                                "CpuArchitecture_ProcessOnMachine", processArchitecture, machineArchitecture);
+                            // If this is an x64 machine and it's not a WOW64 process, it's an x64 process.
+                            cpuArchitecture = CommonHelper.GetLocalizedString("CpuArchitecture_X64onX64");
                         }
                         else
                         {
-                            // If we can't get the process architecture, just report the machine architecture.
-                            cpuArchitecture = CommonHelper.GetLocalizedString(
-                                "CpuArchitecture_UnknownOnMachine", machineArchitecture);
+                            // If this is not an x64 machine, we need to get the process architecture from the process itself.
+                            var processMachineInfo = default(PROCESS_MACHINE_INFORMATION);
+                            var getProcInfoResult
+                                = PInvoke.GetProcessInformation(
+                                handle,
+                                PROCESS_INFORMATION_CLASS.ProcessMachineTypeInfo,
+                                &processMachineInfo,
+                                (uint)Marshal.SizeOf<PROCESS_MACHINE_INFORMATION>());
+                            if (getProcInfoResult)
+                            {
+                                // Report the process architecture and the machine architecture.
+                                processArchitecture = GetTargetArchitecture(processMachineInfo.ProcessMachine);
+                                cpuArchitecture = CommonHelper.GetLocalizedString(
+                                    "CpuArchitecture_ProcessOnMachine", processArchitecture, machineArchitecture);
+                            }
+                            else
+                            {
+                                // If we can't get the process architecture, just report the machine architecture.
+                                cpuArchitecture = CommonHelper.GetLocalizedString(
+                                    "CpuArchitecture_UnknownOnMachine", machineArchitecture);
+                            }
                         }
                     }
-                }
-                else
-                {
-                    // This is a WOW64 process, so report the process architecture and the machine architecture.
-                    cpuArchitecture = CommonHelper.GetLocalizedString(
-                        "CpuArchitecture_ProcessOnMachine", processArchitecture, machineArchitecture);
+                    else
+                    {
+                        // This is a WOW64 process, so report the process architecture and the machine architecture.
+                        cpuArchitecture = CommonHelper.GetLocalizedString(
+                            "CpuArchitecture_ProcessOnMachine", processArchitecture, machineArchitecture);
+                    }
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error getting app architecture");
         }
 
         return cpuArchitecture;
