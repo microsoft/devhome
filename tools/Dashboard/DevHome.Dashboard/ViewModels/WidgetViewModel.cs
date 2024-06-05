@@ -149,9 +149,11 @@ public partial class WidgetViewModel : ObservableObject
                 // Use custom parser.
                 var elementParser = new AdaptiveElementParserRegistration();
                 elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
+                var actionParser = new AdaptiveActionParserRegistration();
+                actionParser.Set(ChooseFileAction.CustomTypeString, new ChooseFileParser());
 
                 // Create adaptive card.
-                card = AdaptiveCard.FromJsonString(json, elementParser, new AdaptiveActionParserRegistration());
+                card = AdaptiveCard.FromJsonString(json, elementParser, actionParser);
             }
             catch (Exception ex)
             {
@@ -318,6 +320,32 @@ public partial class WidgetViewModel : ObservableObject
 
             _log.Information($"Verb = {executeAction.Verb}, Data = {dataToSend}");
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
+        }
+        else if (args.Action is ChooseFileAction filePickerAction)
+        {
+            var dataToSend = string.Empty;
+            if (!filePickerAction.LaunchFilePicker())
+            {
+                // Don't send data if the user canceled the file picker.
+                return;
+            }
+
+            var dataType = filePickerAction.ToJson().ValueType;
+            if (dataType != Windows.Data.Json.JsonValueType.Null)
+            {
+                dataToSend = filePickerAction.ToJson().Stringify();
+            }
+            else
+            {
+                var inputType = args.Inputs.AsJson().ValueType;
+                if (inputType != Windows.Data.Json.JsonValueType.Null)
+                {
+                    dataToSend = args.Inputs.AsJson().Stringify();
+                }
+            }
+
+            _log.Information($"Verb = {filePickerAction.Verb}, Data = {dataToSend}");
+            await Widget.NotifyActionInvokedAsync(filePickerAction.Verb, dataToSend);
         }
 
         TelemetryFactory.Get<ITelemetry>().Log(
