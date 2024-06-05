@@ -58,7 +58,7 @@ function Write-XmlDocumentToFile {
   $settings = New-Object System.Xml.XmlWriterSettings
   $settings.Indent = $true
   $settings.CheckCharacters = $false
-  $settings.NewLineChars = "`n"
+  $settings.NewLineChars = "`r`n"
 
   $writer = [System.Xml.XmlWriter]::Create($filePath, $settings)
   $xmlDocument.WriteTo($writer)
