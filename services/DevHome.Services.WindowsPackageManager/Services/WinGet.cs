@@ -12,7 +12,7 @@ namespace DevHome.Services.WindowsPackageManager.Services;
 /// <summary>
 /// Windows package manager class is an entry point for using the WinGet COM API.
 /// </summary>
-internal sealed class WindowsPackageManager : IWindowsPackageManager
+internal sealed class WinGet : IWinGet
 {
     // WinGet services
     private readonly IWinGetCatalogConnector _catalogConnector;
@@ -24,7 +24,7 @@ internal sealed class WindowsPackageManager : IWindowsPackageManager
 
     public static int AppInstallerErrorFacility => WinGetDeployment.AppInstallerErrorFacility;
 
-    public WindowsPackageManager(
+    public WinGet(
         IWinGetCatalogConnector catalogConnector,
         IWinGetDeployment deployment,
         IWinGetOperations operations,

@@ -11,7 +11,7 @@ namespace DevHome.Services.WindowsPackageManager.Contracts;
 /// Interface for interacting with the WinGet package manager.
 /// More details: https://github.com/microsoft/winget-cli/blob/master/src/Microsoft.Management.Deployment/PackageManager.idl
 /// </summary>
-public interface IWindowsPackageManager
+public interface IWinGet
 {
     /// <summary>
     /// Initialize the winget package manager.
