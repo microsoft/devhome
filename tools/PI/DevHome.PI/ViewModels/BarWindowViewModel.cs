@@ -149,7 +149,7 @@ public partial class BarWindowViewModel : ObservableObject
     {
         if (!ShowingExpandedContent)
         {
-            // First need to be in a horizontal layout
+            // First need to be in a horizontal layout to show expanded content
             BarOrientation = Orientation.Horizontal;
             ShowingExpandedContent = true;
         }
@@ -162,27 +162,20 @@ public partial class BarWindowViewModel : ObservableObject
     [RelayCommand]
     public void ProcessChooserCommand()
     {
-        // Need to be in a horizontal layout
-        BarOrientation = Orientation.Horizontal;
-
-        // And show expanded content
-        ShowingExpandedContent = true;
+        ShowBigWindowCommand();
 
         // And navigate to the appropriate page
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         barWindow?.NavigateTo(typeof(ProcessListPageViewModel));
     }
 
-    public void ManageExternalToolsButton_Click(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    public void ManageExternalToolsButton()
     {
-        // Need to be in a horizontal layout
-        BarOrientation = Orientation.Horizontal;
-
-        // And show expanded content
-        ShowingExpandedContent = true;
+        ShowBigWindowCommand();
 
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
-        barWindow?.NavigateToSettings(typeof(AdditionalToolsViewModel).FullName!);
+        barWindow?.NavigateToPiSettings(typeof(AdditionalToolsViewModel).FullName!);
     }
 
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -270,9 +263,9 @@ public partial class BarWindowViewModel : ObservableObject
         InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
     }
 
-    private void InvokeTool(ExternalTool tool, int? id, HWND hWnd)
+    private void InvokeTool(ExternalTool tool, int? pid, HWND hWnd)
     {
-        var process = tool.Invoke(id, hWnd);
+        var process = tool.Invoke(pid, hWnd);
         if (process is null)
         {
             // A ContentDialog only renders in the space its parent occupies. Since the parent is a narrow

@@ -263,7 +263,7 @@ public partial class BarWindowHorizontal : WindowEx
         ExpandedViewControl.NavigateTo(viewModelType);
     }
 
-    internal void NavigateToSettings(string settingsPage)
+    internal void NavigateToPiSettings(string settingsPage)
     {
         _viewModel.ShowingExpandedContent = true;
         ExpandedViewControl.NavigateToSettings(settingsPage);

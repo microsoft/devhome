@@ -76,7 +76,7 @@ public partial class BarWindow
 
     public void NavigateTo(Type viewModelType) => _horizontalWindow.NavigateTo(viewModelType);
 
-    public void NavigateToSettings(string settingsPage) => _horizontalWindow.NavigateToSettings(settingsPage);
+    public void NavigateToPiSettings(string settingsPage) => _horizontalWindow.NavigateToPiSettings(settingsPage);
 
     public BarWindow()
     {

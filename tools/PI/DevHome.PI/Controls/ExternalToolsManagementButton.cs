@@ -105,14 +105,11 @@ internal sealed class ExternalToolsManagementButton : Button
 
     private void RemoveExternalToolFromContextMenu(MenuFlyout menuFlyout, ExternalTool tool)
     {
-        foreach (var menuItem in menuFlyout.Items)
+        foreach (var menuItem in menuFlyout.Items.Where(x => x.Tag == tool))
         {
-            if (menuItem.Tag == tool)
-            {
-                tool.PropertyChanged -= ExternalToolItem_PropertyChanged;
-                menuFlyout.Items.Remove(menuItem);
-                break;
-            }
+            tool.PropertyChanged -= ExternalToolItem_PropertyChanged;
+            menuFlyout.Items.Remove(menuItem);
+            break;
         }
     }
 
@@ -181,57 +178,50 @@ internal sealed class ExternalToolsManagementButton : Button
     {
         if (sender is not ExternalTool tool)
         {
-            Debug.Assert(false, "What is this?");
+            Debug.Assert(false, "Why are we getting notified of a tool property change without a tool?");
             return;
         }
 
         _dispatcher.TryEnqueue(() =>
         {
             MenuFlyout? flyout = this.ContextFlyout as MenuFlyout;
-            Debug.Assert(flyout is not null, "Why does this button not have a menu flyout?");
+            Debug.Assert(flyout is not null, "Why does this button not have a menu flyout?. It should have been populated in CreateContextMenuItemForTool");
 
             // Update the submenu item for this tool
-            foreach (MenuFlyoutItem menuItem in flyout.Items)
+            foreach (MenuFlyoutItem menuItem in flyout.Items.Where(x => x.Tag == tool))
             {
-                if (menuItem.Tag == tool)
+                // Update the name if it's changed
+                menuItem.Text = tool.Name;
+
+                var imageIcon = new ImageIcon
                 {
-                    // Update the name if it's changed
-                    menuItem.Text = tool.Name;
+                    Source = tool.ToolIcon,
+                };
 
-                    var imageIcon = new ImageIcon
-                    {
-                        Source = tool.ToolIcon,
-                    };
+                menuItem.Icon = imageIcon;
 
-                    menuItem.Icon = imageIcon;
+                var menuSubItemFlyout = menuItem.ContextFlyout as MenuFlyout;
+                Debug.Assert(menuSubItemFlyout != null, "It's expected this menuItem has a sub flyout. See CreateContextMenuItemForTool");
 
-                    var menuSubItemFlyout = menuItem.ContextFlyout as MenuFlyout;
-                    Debug.Assert(menuSubItemFlyout != null, "Why is this null?");
+                var pinSubItemItem = menuSubItemFlyout.Items[0] as MenuFlyoutItem;
+                Debug.Assert(pinSubItemItem != null, "The subflyout should have 2 items. The first is to pin the tool. See CreateContextMenuItemForTool");
 
-                    var pinSubItemItem = menuSubItemFlyout.Items[0] as MenuFlyoutItem;
-                    Debug.Assert(pinSubItemItem != null, "Why is this null?");
+                var unPinSubItemItem = menuSubItemFlyout.Items[1] as MenuFlyoutItem;
+                Debug.Assert(unPinSubItemItem != null, "The second flyout should be to unpin the tool. See CreateContextMenuItemForTool");
 
-                    var unPinSubItemItem = menuSubItemFlyout.Items[1] as MenuFlyoutItem;
-                    Debug.Assert(unPinSubItemItem != null, "Why is this null?");
-
-                    pinSubItemItem.Visibility = tool.IsPinned ? Visibility.Collapsed : Visibility.Visible;
-                    unPinSubItemItem.Visibility = tool.IsPinned ? Visibility.Visible : Visibility.Collapsed;
-                    break;
-                }
+                // Toggle the visibily of the pin and unpin menu items based on the pinned state of the tool
+                pinSubItemItem.Visibility = tool.IsPinned ? Visibility.Collapsed : Visibility.Visible;
+                unPinSubItemItem.Visibility = tool.IsPinned ? Visibility.Visible : Visibility.Collapsed;
+                break;
             }
         });
     }
 
     public void ExternalToolMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is MenuFlyoutItem clickedMenuItem)
+        if (sender is MenuFlyoutItem clickedMenuItem && clickedMenuItem.Tag is ExternalTool tool)
         {
-            if (clickedMenuItem.Tag is ExternalTool tool)
-            {
-                ExternalToolLaunchRequest?.Invoke(this, tool);
-
-                // InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
-            }
+            ExternalToolLaunchRequest?.Invoke(this, tool);
         }
     }
 
@@ -253,20 +243,17 @@ internal sealed class ExternalToolsManagementButton : Button
     private ExternalTool GetToolFromSender(object sender)
     {
         MenuFlyoutItem? clickedMenuItem = sender as MenuFlyoutItem;
-        Debug.Assert(clickedMenuItem != null, "Why is this null?");
+        Debug.Assert(clickedMenuItem != null, "Why is this null? This should be a MenuFlyoutItem");
 
         ExternalTool? tool = clickedMenuItem.Tag as ExternalTool;
-        Debug.Assert(tool != null, "Why is this null?");
+        Debug.Assert(tool != null, "The menuflyout items should have external tools as their tag. See CreateContextMenuItemForTool");
 
         return tool;
     }
 
     private void HideFlyout(object sender)
     {
-        if (this.ContextFlyout is MenuFlyout flyout)
-        {
-            flyout.Hide();
-        }
+        this.ContextFlyout.Hide();
     }
 
     private FontIcon GetFontIcon(string s)

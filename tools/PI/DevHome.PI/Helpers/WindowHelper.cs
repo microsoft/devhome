@@ -337,7 +337,7 @@ public class WindowHelper
         return softwareBitmap;
     }
 
-    public static async Task<SoftwareBitmapSource> GetSoftwareBitmapSourceFromSoftwareBitmap(SoftwareBitmap softwareBitmap)
+    public static async Task<SoftwareBitmapSource> GetSoftwareBitmapSourceFromSoftwareBitmapAsync(SoftwareBitmap softwareBitmap)
     {
         var softwareBitmapSource = new SoftwareBitmapSource();
         await softwareBitmapSource.SetBitmapAsync(softwareBitmap);

@@ -84,7 +84,7 @@
                 x:Name="ManageExternalToolsButton"
                 x:Uid="ManageExternalToolsButton"
                 HorizontalAlignment="Center"
-                Click="{x:Bind _viewModel.ManageExternalToolsButton_Click}"
+                Command="{x:Bind _viewModel.ManageExternalToolsButtonCommand}"
                 ExternalToolLaunchRequest="{x:Bind _viewModel.ManageExternalToolsButton_ExternalToolLaunchRequest}">
                 <TextBlock Text="&#xEC7A;"/>
             </controls:ExternalToolsManagementButton>

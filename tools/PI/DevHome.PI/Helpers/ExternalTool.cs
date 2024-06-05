@@ -100,7 +100,7 @@ public partial class ExternalTool : ObservableObject
             _softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
             if (_softwareBitmap is not null)
             {
-                ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmap(_softwareBitmap);
+                ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmapAsync(_softwareBitmap);
             }
 
             MenuIcon = new ImageIcon
