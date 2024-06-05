@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
-using DevHome.Common.Helpers;
 using DevHome.Common.Models;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -37,7 +37,7 @@ public class ExtensionAdaptiveCardPanel : StackPanel
             throw new ArgumentException("The ExtensionUI element must be bound to an empty container.");
         }
 
-        var uiDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        var uiDispatcher = DispatcherQueue.GetForCurrentThread();
         var extensionUI = new ExtensionAdaptiveCard();
 
         extensionUI.UiUpdate += (object? sender, AdaptiveCard adaptiveCard) =>
@@ -120,7 +120,7 @@ public class ExtensionAdaptiveCardPanel : StackPanel
         }
         catch (Exception e)
         {
-            Log.Logger()?.ReportError("WidgetViewModel", e.Message);
+            Log.Error("WidgetViewModel", e.Message);
         }
 
         return pathOnTree;
