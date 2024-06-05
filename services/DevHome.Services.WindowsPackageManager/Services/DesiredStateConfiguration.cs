@@ -39,7 +39,7 @@ internal sealed class DesiredStateConfiguration : IDesiredStateConfiguration
     }
 
     /// <inheritdoc />
-    public async Task<IReadOnlyList<DSCConfigurationUnit>> GetConfigurationUnitDetailsAsync(Configuration configuration, Guid activityId)
+    public async Task<IReadOnlyList<DSCConfigurationUnit>> GetConfigurationUnitDetailsAsync(DSCConfiguration configuration, Guid activityId)
     {
         var configFile = await OpenConfigurationSetAsync(configuration.Path, configuration.Content, activityId);
         await configFile.ResolveConfigurationUnitDetails();

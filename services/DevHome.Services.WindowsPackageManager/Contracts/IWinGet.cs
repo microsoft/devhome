@@ -23,7 +23,7 @@ public interface IWinGet
     public Task InitializeAsync();
 
     /// <inheritdoc cref="IWinGetOperations.InstallPackageAsync"/>
-    public Task<InstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri);
+    public Task<WinGetInstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri);
 
     /// <inheritdoc cref="IWinGetOperations.GetPackagesAsync"/>
     public Task<IList<IWinGetPackage>> GetPackagesAsync(IList<WinGetPackageUri> packageUris);

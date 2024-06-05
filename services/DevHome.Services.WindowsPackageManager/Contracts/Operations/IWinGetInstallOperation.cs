@@ -13,5 +13,5 @@ internal interface IWinGetInstallOperation
     /// </summary>
     /// <param name="packageUri">Uri of the package to install.</param>
     /// <returns>Result of the installation.</returns>
-    public Task<InstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri);
+    public Task<WinGetInstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri);
 }

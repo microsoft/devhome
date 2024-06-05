@@ -3,7 +3,7 @@
 
 namespace DevHome.Services.WindowsPackageManager.Models;
 
-public class InstallPackageResult
+public class WinGetInstallPackageResult
 {
     /// <summary>
     /// Gets a value indicating whether a restart is required to complete the

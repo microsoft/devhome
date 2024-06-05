@@ -34,7 +34,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
     }
 
     /// <inheritdoc />
-    public async Task<InstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version = null)
+    public async Task<WinGetInstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version = null)
     {
         if (catalog == null)
         {
@@ -63,7 +63,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
         }
 
         _logger.LogInformation($"Completed package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
-        return new InstallPackageResult()
+        return new WinGetInstallPackageResult()
         {
             ExtendedErrorCode = extendedErrorCode,
             RebootRequired = installResult.RebootRequired,

@@ -30,7 +30,7 @@ public interface IDesiredStateConfiguration
     /// <param name="configuration">Configuration</param>
     /// <param name="activityId">Activity ID.</param>
     /// <returns>List of configuration units</returns>
-    public Task<IReadOnlyList<DSCConfigurationUnit>> GetConfigurationUnitDetailsAsync(Configuration configuration, Guid activityId);
+    public Task<IReadOnlyList<DSCConfigurationUnit>> GetConfigurationUnitDetailsAsync(DSCConfiguration configuration, Guid activityId);
 
     /// <summary>
     /// Applies the provided configuration file.

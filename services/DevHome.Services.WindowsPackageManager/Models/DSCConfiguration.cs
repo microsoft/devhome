@@ -10,13 +10,13 @@ namespace DevHome.Services.WindowsPackageManager.Models;
 /// <summary>
 /// Model class for a YAML configuration file
 /// </summary>
-public class Configuration
+public class DSCConfiguration
 {
     private readonly ILogger _logger;
     private readonly FileInfo _fileInfo;
     private readonly Lazy<string> _lazyContent;
 
-    public Configuration(ILogger logger, string filePath)
+    public DSCConfiguration(ILogger logger, string filePath)
     {
         _logger = logger;
         _fileInfo = new FileInfo(filePath);

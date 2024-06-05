@@ -10,7 +10,7 @@ namespace DevHome.Services.WindowsPackageManager.Contracts.Operations;
 internal interface IWinGetOperations
 {
     /// <inheritdoc cref="IWinGetInstallOperation.InstallPackageAsync"/>"
-    public Task<InstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri);
+    public Task<WinGetInstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri);
 
     /// <inheritdoc cref="IWinGetGetPackageOperation.GetPackagesAsync"/>"
     public Task<IList<IWinGetPackage>> GetPackagesAsync(IList<WinGetPackageUri> packageUris);

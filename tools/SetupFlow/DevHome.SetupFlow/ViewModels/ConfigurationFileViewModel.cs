@@ -36,7 +36,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Content))]
-    private Configuration _configuration;
+    private DSCConfiguration _configuration;
 
     /// <summary>
     /// Store the value for whether the agreements are read.
