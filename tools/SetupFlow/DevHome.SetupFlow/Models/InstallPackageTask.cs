@@ -7,6 +7,7 @@ using System;
 using System.Threading.Tasks;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Exceptions;
 using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;

@@ -1,9 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Services.Core.Extensions;
+using DevHome.Services.WindowsPackageManager.Extensions;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Windows.Foundation;
@@ -16,6 +20,8 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 public sealed class ElevatedComponentOperation : IElevatedComponentOperation
 {
     private readonly Microsoft.Extensions.Logging.ILogger _logger;
+
+    internal static IHost Host { get; } = BuildHost();
 
     /// <summary>
     /// Tasks arguments are passed to the elevated process as input at launch-time.
@@ -268,5 +274,26 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         /// Gets or sets a value indicating whether this operation is currently in progress.
         /// </summary>
         public bool InProgress { get; set; }
+    }
+
+    private static IHost BuildHost()
+    {
+        return Microsoft.Extensions.Hosting.Host
+            .CreateDefaultBuilder()
+            .UseContentRoot(AppContext.BaseDirectory)
+            .UseDefaultServiceProvider((context, options) =>
+            {
+                options.ValidateOnBuild = true;
+            })
+            .ConfigureServices((context, services) =>
+            {
+                // Add Serilog logging for ILogger.
+                services.AddLogging(lb => lb.AddSerilog(dispose: true));
+
+                // Service projects
+                services.AddCore();
+                services.AddWinGetElevated();
+            })
+            .Build();
     }
 }
