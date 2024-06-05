@@ -38,6 +38,7 @@ public partial class BarWindowVertical : WindowEx
     private int _appWindowPosX; // = 0;
     private int _appWindowPosY; // = 0;
     private bool isWindowMoving; // = false;
+    private bool isClosing;
 
     private Button? _selectedExternalToolButton;
 
@@ -108,6 +109,17 @@ public partial class BarWindowVertical : WindowEx
                         MESSAGEBOX_STYLE.MB_ICONERROR);
                 }
             }
+        }
+    }
+
+    private void WindowEx_Closed(object sender, WindowEventArgs args)
+    {
+        if (!isClosing)
+        {
+            isClosing = true;
+            var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+            barWindow?.Close();
+            isClosing = false;
         }
     }
 
