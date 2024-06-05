@@ -217,6 +217,14 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     }
 
     /// <summary>
+    /// Gets or sets the string that the narrator should say when the repo is selected in the config screen.
+    /// </summary>
+    public string RepoConfigAutomationName
+    {
+        get; set;
+    }
+
+    /// <summary>
     /// Gets or sets the name of the button that allows a user to remove the repository from being cloned.
     /// This name can't be static because each button name needs to be unique.  Because each name needs to be unique
     /// the name is stored here so it can be set at the time when a unique name can be made.

@@ -17,6 +17,7 @@ using DevHome.PI.Properties;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Graphics;
 using Windows.Win32.Foundation;
 using WinUIEx;
 
@@ -34,6 +35,7 @@ public partial class BarWindowViewModel : ObservableObject
     private readonly List<Button> _externalToolButtons = [];
 
     private readonly ObservableCollection<Button> _externalTools = [];
+    private readonly SnapHelper _snapHelper;
 
     [ObservableProperty]
     private string _systemCpuUsage = string.Empty;
@@ -74,6 +76,12 @@ public partial class BarWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _showingExpandedContent;
 
+    [ObservableProperty]
+    private bool _isAlwaysOnTop = true;
+
+    [ObservableProperty]
+    private PointInt32 _windowPosition;
+
     public BarWindowViewModel()
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
@@ -99,6 +107,8 @@ public partial class BarWindowViewModel : ObservableObject
         }
 
         CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
+
+        _snapHelper = new();
     }
 
     partial void OnIsSnappedChanged(bool value)
@@ -120,8 +130,20 @@ public partial class BarWindowViewModel : ObservableObject
         }
     }
 
+    public void ResetBarWindowOnTop()
+    {
+        // If we're snapped to a target window, and that window loses and then regains focus,
+        // we need to bring our window to the front also, to be in-sync. Otherwise, we can
+        // end up with the target in the foreground, but our window partially obscured.
+        // We set IsAlwaysOnTop to true to get it in foreground and then set to false,
+        // this ensures we don't steal focus from target window and at the same time
+        // bar window is not partially obscured.
+        IsAlwaysOnTop = true;
+        IsAlwaysOnTop = false;
+    }
+
     [RelayCommand]
-    public void SwitchLayoutCommand()
+    public void SwitchLayout()
     {
         if (BarOrientation == Orientation.Horizontal)
         {
@@ -133,23 +155,30 @@ public partial class BarWindowViewModel : ObservableObject
         }
     }
 
+    public void UnsnapBarWindow()
+    {
+        _snapHelper.Unsnap();
+        IsSnapped = false;
+    }
+
     [RelayCommand]
-    public void PerformSnapCommand()
+    public void ToggleSnap()
     {
         if (IsSnapped)
         {
-            IsSnapped = false;
+            UnsnapBarWindow();
         }
         else
         {
             // First need to be in a Vertical layout
             BarOrientation = Orientation.Vertical;
+            _snapHelper.Snap();
             IsSnapped = true;
         }
     }
 
     [RelayCommand]
-    public void ShowBigWindowCommand()
+    public void ToggleExpandedContentVisibility()
     {
         if (!ShowingExpandedContent)
         {
@@ -164,9 +193,9 @@ public partial class BarWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void ProcessChooserCommand()
+    public void ProcessChooser()
     {
-        ShowBigWindowCommand();
+        ToggleExpandedContentVisibility();
 
         // And navigate to the appropriate page
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
@@ -176,7 +205,7 @@ public partial class BarWindowViewModel : ObservableObject
     [RelayCommand]
     public void ManageExternalToolsButton()
     {
-        ShowBigWindowCommand();
+        ToggleExpandedContentVisibility();
 
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         barWindow?.NavigateToPiSettings(typeof(AdditionalToolsViewModel).FullName!);
@@ -186,7 +215,17 @@ public partial class BarWindowViewModel : ObservableObject
     {
         if (e.PropertyName == nameof(TargetAppData.HWnd))
         {
-            IsSnappingEnabled = TargetAppData.Instance.HWnd != HWND.Null;
+            _dispatcher.TryEnqueue(() =>
+            {
+                IsSnappingEnabled = TargetAppData.Instance.HWnd != HWND.Null;
+
+                // If snapped, retarget to the new window
+                if (IsSnapped)
+                {
+                    _snapHelper.Unsnap();
+                    _snapHelper.Snap();
+                }
+            });
         }
         else if (e.PropertyName == nameof(TargetAppData.TargetProcess))
         {
