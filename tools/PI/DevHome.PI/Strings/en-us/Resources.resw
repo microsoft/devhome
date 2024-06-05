@@ -129,14 +129,6 @@
     <value>Restore</value>
     <comment>Tooltip for the restore button in the BarWindow</comment>
   </data>
-  <data name="CloseAllMenuItem.Text" xml:space="preserve">
-    <value>End PI service</value>
-    <comment>The label for the close all menu item flyout. This will cause the program to terminate.</comment>
-  </data>
-  <data name="CloseAllMenuItem.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Close the PI window and the service</value>
-    <comment>The tooltip for the close all menu item flyout. This will cause the program to terminate.</comment>
-  </data>
   <data name="PinMenuItemText" xml:space="preserve">
     <value>Pin</value>
     <comment>A label for the menuitem to pin a tool on the bar.</comment>
@@ -153,7 +145,7 @@
     <value>Dissociate so that PI is not tracking any app</value>
     <comment>The tooltip for a button which causes PI to no longer track any app</comment>
   </data>
-  <data name="LargeContentButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SwitchToLargeLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Expand or collapse the large content panel</value>
     <comment>The tooltip for a button which expands or collapses the large content panel.</comment>
   </data>
@@ -405,9 +397,9 @@
     <value>Name</value>
     <comment>The name of a tool that could be edited.</comment>
   </data>
-  <data name="DeleteToolButton.Content" xml:space="preserve">
-    <value>Delete tool</value>
-    <comment>Content on a button to delete a tool.</comment>
+  <data name="UnregisterToolButton.Content" xml:space="preserve">
+    <value>Unregister</value>
+    <comment>Text on a button for unregistering a tool.</comment>
   </data>
   <data name="SettingsToolHeaderTextBlock.Text" xml:space="preserve">
     <value>Settings</value>
@@ -730,7 +722,7 @@
     <comment>Locked={"{0}", "{1}"} A description to help a user that is dealing with non-specific error situation. {0} is the error name. {1} is the error description.</comment>
   </data>
   <data name="FrameworkTypesTextBlock.Text" xml:space="preserve">
-    <value>Framework types</value>
+    <value>Framework types used in this app</value>
     <comment>This refers to the set of application frameworks this application uses.</comment>
   </data>
   <data name="BaseAddressTextBlock.Text" xml:space="preserve">
@@ -854,7 +846,79 @@
     <comment>Header for the settings item to add a tool to the product.</comment>
   </data>
   <data name="SettingsEditToolCard.Header" xml:space="preserve">
-    <value>Edit or delete existing tools</value>
-    <comment>Header for the setting item to edit or delete tools from the product.</comment>
+    <value>Edit or unregister existing tools</value>
+    <comment>Header for the setting item to edit or unregister tools from the product.</comment>
+  </data>
+  <data name="BasePriorityTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The starting priority for threads created within this process</value>
+    <comment>Tooltip for the Base Priority field.</comment>
+  </data>
+  <data name="BinaryTypeTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The CPU architecture of the target process</value>
+    <comment>Tooltip for the Binary Type field.</comment>
+  </data>
+  <data name="FrameworkTypesTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The windowing or application frameworks used in this app</value>
+    <comment>Tooltip for the Framework Types field.</comment>
+  </data>
+  <data name="IDTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The process ID of the target process</value>
+    <comment>Tooltip for the PID field.</comment>
+  </data>
+  <data name="IsRunningAsAdminTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>True if the target process is running under an Administrator account</value>
+    <comment>Tooltip for the Running as Admin field.</comment>
+  </data>
+  <data name="IsRunningAsSystemTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>True if the target process is running as a System process, based on its Session ID</value>
+    <comment>Tooltip for the Running as System field.</comment>
+  </data>
+  <data name="MainModuleTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The executable used to start the process</value>
+    <comment>Tooltip for the Main Module field.</comment>
+  </data>
+  <data name="MicrosoftStoreAppTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>True if this app was deployed via the Microsoft Store</value>
+    <comment>Tooltip for the Microsoft Store field.</comment>
+  </data>
+  <data name="MSIXPackagedTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>True if this process is packaged with MSIX</value>
+    <comment>Tooltip for the MSIX Packaged field.</comment>
+  </data>
+  <data name="PriorityClassTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Threads with different priorities in the process run relative to the priority class of the process</value>
+    <comment>Tooltip for the Priority Class field.</comment>
+  </data>
+  <data name="MessageCloseText" xml:space="preserve">
+    <value>Close</value>
+    <comment>Text used on the Close button on a message dialog.</comment>
+  </data>
+  <data name="ToolRegisteredMessage" xml:space="preserve">
+    <value>External tool {0} registered</value>
+    <comment>Message shown to the user when an external tool is registered.</comment>
+  </data>
+  <data name="EditToolsExecutableColumn.Header" xml:space="preserve">
+    <value>Executable</value>
+    <comment>The executable path of an external tool.</comment>
+  </data>
+  <data name="InvalidToolInfoMessage" xml:space="preserve">
+    <value>Invalid tool path or name</value>
+    <comment>Text for the message to show to the user when the supplied path or name is not valid.</comment>
+  </data>
+  <data name="ProcessChooserButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Select a process to investigate</value>
+    <comment>Describes using a button in PI's UX to investigate another process running on the system</comment>
+  </data>
+  <data name="SnapButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Attach the diagnostic bar to the target application</value>
+    <comment>Describes using a button in PI's UX</comment>
+  </data>
+  <data name="Title.Text" xml:space="preserve">
+    <value>Dev Home PI</value>
+    <comment>The product name</comment>
+  </data>
+  <data name="VerticalCloseButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Close</value>
+    <comment>Describes a button that will close PI's window</comment>
   </data>
 </root>

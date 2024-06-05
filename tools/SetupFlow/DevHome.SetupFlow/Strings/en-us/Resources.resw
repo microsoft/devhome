@@ -137,6 +137,10 @@
     <value>Select packages to restore from your backup, clone from repository, or search with Windows Package Manager.</value>
     <comment>Description for Add packages page</comment>
   </data>
+  <data name="AppInstallActivationTitle" xml:space="preserve">
+    <value>Configuration in progress</value>
+    <comment>Title displayed to the user when they attempt to activate the app through a URI but the machine configuration flow is currently in progress.</comment>
+  </data>
   <data name="AppListBackupBanner.Title" xml:space="preserve">
     <value>Transfer developer machine settings</value>
     <comment>Title text of an instruction banner section for transferring settings from a developer machine</comment>
@@ -546,7 +550,7 @@
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_QuickstartPlayground.Description" xml:space="preserve">
-    <value>[Experimental] Use natural language and AI to set up a new devcontainer-based programming environment</value>
+    <value>[Experimental] Use natural language and AI to set up a new devcontainer-based programming environment.</value>
     <comment>Body text description for a card than when clicked takes the user to a flow for creating a devcontainer environment for their project idea</comment>
   </data>
   <data name="MainPage_QuickstartPlayground.Header" xml:space="preserve">
@@ -1199,6 +1203,10 @@
     <value>Enter the full path and folder name</value>
     <comment>Error message to tell the user to fully qualify their clone path</comment>
   </data>
+  <data name="URIActivationFailedBusy" xml:space="preserve">
+    <value>The URI activation flow cannot be initiated while machine configuration is in progress. Please complete or cancel your current configuration tasks and then try again.</value>
+    <comment>Message displayed to the user when they attempt to activate the app through a URI but the machine configuration flow is currently in progress.</comment>
+  </data>
   <data name="UrlValidationBadUrl" xml:space="preserve">
     <value>Enter a repository name beginning with https://</value>
     <comment>Error string to show the user if the url is not an absolute URL</comment>
@@ -1793,7 +1801,7 @@
     <comment>Header for a card that when clicked takes the user to a multi-step flow for creating an environment</comment>
   </data>
   <data name="MainPageCreateEnvironment.Description" xml:space="preserve">
-    <value>Create a local or cloud environment</value>
+    <value>Create a local or cloud environment.</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for creating an environment</comment>
   </data>
   <data name="SelectEnvironmentPage.Description" xml:space="preserve">

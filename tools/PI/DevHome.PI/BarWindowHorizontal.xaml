@@ -33,7 +33,7 @@
                 <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock x:Name="TitleTextBlock" Text="DevHome PI" FontSize="10" Margin="10,0,0,0" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center"/>
+            <TextBlock x:Uid="Title" FontSize="10" Margin="10,0,0,0" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center"/>
             <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0, 0, 10, 0"  Background="Transparent" Grid.Column="1">
                 <Button
                       x:Uid="SnapButton"
@@ -65,7 +65,7 @@
             </controls:ProcessSelectionButton>
 
             <!-- Per App controls -->
-            <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" Margin="5" Height="20" Width="20" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
+            <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
             <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
             <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
 
@@ -73,7 +73,7 @@
             <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" HorizontalAlignment="Center" Click="{x:Bind _viewModel.SwitchLayoutCommand}">
                 <TextBlock Text="&#xe8b4;"/>
             </Button>
-            <Button x:Name="LargeContentButton" Click="{x:Bind _viewModel.ShowBigWindowCommand}" HorizontalAlignment="Center">
+            <Button x:Uid="SwitchToLargeLayoutButton" Click="{x:Bind _viewModel.ShowBigWindowCommand}" HorizontalAlignment="Center">
                 <TextBlock Text="&#xe8a1;"/>
             </Button>
 

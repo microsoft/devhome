@@ -178,7 +178,7 @@
     <comment>Dev drive is not trusted</comment>
   </data>
   <data name="FileExplorerCard.Description" xml:space="preserve">
-    <value>Adjust these settings for a more developer-friendly experience using File Explorer</value>
+    <value>Adjust these settings for a more developer-friendly experience using File Explorer.</value>
     <comment>The description for the File Explorer settings card</comment>
   </data>
   <data name="FileExplorerCard.Header" xml:space="preserve">
@@ -294,7 +294,7 @@
     <comment>The action tool tip for the Windows developer settings card</comment>
   </data>
   <data name="WindowsDeveloperCard.Description" xml:space="preserve">
-    <value>Windows Settings intended for development use only</value>
+    <value>Windows Settings intended for development use only.</value>
     <comment>The description for the Windows developer settings card</comment>
   </data>
   <data name="WindowsDeveloperCard.Header" xml:space="preserve">

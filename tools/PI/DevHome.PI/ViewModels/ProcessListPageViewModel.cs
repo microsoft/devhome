@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -12,7 +13,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
+using DevHome.PI.Telemetry;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.PI.ViewModels;
 
@@ -41,6 +44,22 @@ public partial class ProcessListPageViewModel : ObservableObject
         filteredProcesses = new();
         filterProcessText = string.Empty;
         GetFilteredProcessList();
+
+        TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
+    }
+
+    public void ResetPage()
+    {
+        FilterProcessText = string.Empty;
+        GetFilteredProcessList();
+    }
+
+    private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if ((e.PropertyName == nameof(TargetAppData.TargetProcess)) || (e.PropertyName == nameof(TargetAppData.HasExited)))
+        {
+            GetFilteredProcessList();
+        }
     }
 
     private void GetFilteredProcessList()
