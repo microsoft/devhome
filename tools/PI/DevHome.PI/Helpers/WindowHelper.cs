@@ -12,6 +12,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Win32.SafeHandles;
 using Serilog;
 using Windows.Devices.Display;
 using Windows.Devices.Enumeration;
@@ -23,6 +24,8 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.System.SystemInformation;
+using Windows.Win32.System.Threading;
 using Windows.Win32.UI.Accessibility;
 using Windows.Win32.UI.WindowsAndMessaging;
 
@@ -226,20 +229,13 @@ public class WindowHelper
         return rectangle;
     }
 
-    public static Windows.Graphics.RectInt32 GetRect(Rect bounds, double scale)
+    public static RectInt32 GetRect(Rect bounds, double scale)
     {
-        return new Windows.Graphics.RectInt32(
+        return new RectInt32(
             _X: (int)Math.Round(bounds.X * scale),
             _Y: (int)Math.Round(bounds.Y * scale),
             _Width: (int)Math.Round(bounds.Width * scale),
             _Height: (int)Math.Round(bounds.Height * scale));
-    }
-
-    public enum BinaryType : int
-    {
-        Unknown = -1,
-        X32 = 0,
-        X64 = 6,
     }
 
     internal static unsafe string GetWindowTitle(HWND hWnd)
@@ -605,5 +601,92 @@ public class WindowHelper
         {
             _log.Error(ex, "Error showing timed message dialog");
         }
+    }
+
+    internal enum CpuArchitecture
+    {
+        X86,
+        X64,
+        ARM,
+        ARM64,
+        Unknown,
+    }
+
+    internal static CpuArchitecture GetTargetArchitecture(IMAGE_FILE_MACHINE target)
+    {
+        return target switch
+        {
+            IMAGE_FILE_MACHINE.IMAGE_FILE_MACHINE_I386 => CpuArchitecture.X86,
+            IMAGE_FILE_MACHINE.IMAGE_FILE_MACHINE_AMD64 => CpuArchitecture.X64,
+            IMAGE_FILE_MACHINE.IMAGE_FILE_MACHINE_ARM => CpuArchitecture.ARM,
+            IMAGE_FILE_MACHINE.IMAGE_FILE_MACHINE_ARM64 => CpuArchitecture.ARM64,
+            _ => CpuArchitecture.Unknown,
+        };
+    }
+
+    internal static string GetAppArchitecture(SafeProcessHandle handle, string moduleName)
+    {
+        var cpuArchitecture = CommonHelper.GetLocalizedString("CpuArchitecture_Unknown");
+
+        try
+        {
+            unsafe
+            {
+                IMAGE_FILE_MACHINE processInfo;
+                IMAGE_FILE_MACHINE machineInfo;
+                var isWow64Result = PInvoke.IsWow64Process2(handle, out processInfo, &machineInfo);
+                if (isWow64Result)
+                {
+                    var processArchitecture = GetTargetArchitecture(processInfo);
+                    var machineArchitecture = GetTargetArchitecture(machineInfo);
+
+                    // "Unknown" means this is not a WOW64 process.
+                    if (processArchitecture == CpuArchitecture.Unknown)
+                    {
+                        if (machineArchitecture == CpuArchitecture.X64)
+                        {
+                            // If this is an x64 machine and it's not a WOW64 process, it's an x64 process.
+                            cpuArchitecture = CommonHelper.GetLocalizedString("CpuArchitecture_X64onX64");
+                        }
+                        else
+                        {
+                            // If this is not an x64 machine, we need to get the process architecture from the process itself.
+                            var processMachineInfo = default(PROCESS_MACHINE_INFORMATION);
+                            var getProcInfoResult
+                                = PInvoke.GetProcessInformation(
+                                handle,
+                                PROCESS_INFORMATION_CLASS.ProcessMachineTypeInfo,
+                                &processMachineInfo,
+                                (uint)Marshal.SizeOf<PROCESS_MACHINE_INFORMATION>());
+                            if (getProcInfoResult)
+                            {
+                                // Report the process architecture and the machine architecture.
+                                processArchitecture = GetTargetArchitecture(processMachineInfo.ProcessMachine);
+                                cpuArchitecture = CommonHelper.GetLocalizedString(
+                                    "CpuArchitecture_ProcessOnMachine", processArchitecture, machineArchitecture);
+                            }
+                            else
+                            {
+                                // If we can't get the process architecture, just report the machine architecture.
+                                cpuArchitecture = CommonHelper.GetLocalizedString(
+                                    "CpuArchitecture_UnknownOnMachine", machineArchitecture);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // This is a WOW64 process, so report the process architecture and the machine architecture.
+                        cpuArchitecture = CommonHelper.GetLocalizedString(
+                            "CpuArchitecture_ProcessOnMachine", processArchitecture, machineArchitecture);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error getting app architecture");
+        }
+
+        return cpuArchitecture;
     }
 }
