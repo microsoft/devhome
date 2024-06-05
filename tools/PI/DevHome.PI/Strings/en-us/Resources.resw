@@ -129,14 +129,6 @@
     <value>Restore</value>
     <comment>Tooltip for the restore button in the BarWindow</comment>
   </data>
-  <data name="CloseAllMenuItem.Text" xml:space="preserve">
-    <value>End PI service</value>
-    <comment>The label for the close all menu item flyout. This will cause the program to terminate.</comment>
-  </data>
-  <data name="CloseAllMenuItem.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Close the PI window and the service</value>
-    <comment>The tooltip for the close all menu item flyout. This will cause the program to terminate.</comment>
-  </data>
   <data name="PinMenuItemText" xml:space="preserve">
     <value>Pin</value>
     <comment>A label for the menuitem to pin a tool on the bar.</comment>
@@ -153,7 +145,7 @@
     <value>Dissociate so that PI is not tracking any app</value>
     <comment>The tooltip for a button which causes PI to no longer track any app</comment>
   </data>
-  <data name="LargeContentButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SwitchToLargeLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Expand or collapse the large content panel</value>
     <comment>The tooltip for a button which expands or collapses the large content panel.</comment>
   </data>
@@ -904,5 +896,21 @@
   <data name="InvalidToolInfoMessage" xml:space="preserve">
     <value>Invalid tool path or name</value>
     <comment>Text for the message to show to the user when the supplied path or name is not valid.</comment>
+  </data>
+  <data name="ProcessChooserButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Select a process to investigate</value>
+    <comment>Describes using a button in PI's UX to investigate another process running on the system</comment>
+  </data>
+  <data name="SnapButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Attach the diagnostic bar to the target application</value>
+    <comment>Describes using a button in PI's UX</comment>
+  </data>
+  <data name="Title.Text" xml:space="preserve">
+    <value>Dev Home PI</value>
+    <comment>The product name</comment>
+  </data>
+  <data name="VerticalCloseButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Close</value>
+    <comment>Describes a button that will close PI's window</comment>
   </data>
 </root>
