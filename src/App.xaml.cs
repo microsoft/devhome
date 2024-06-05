@@ -15,6 +15,7 @@ using DevHome.Dashboard.Extensions;
 using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
 using DevHome.Services;
+using DevHome.Services.Core.Extensions;
 using DevHome.Services.WindowsPackageManager.Extensions;
 using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
@@ -116,6 +117,9 @@ public partial class App : Application, IApp
             services.AddSingleton<IExperimentationService, ExperimentationService>();
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
             services.AddTransient<INavigationViewService, NavigationViewService>();
+
+            // Service projects
+            services.AddCore();
             services.AddWinGet();
 
             services.AddSingleton<IActivationService, ActivationService>();
@@ -127,8 +131,6 @@ public partial class App : Application, IApp
             services.AddSingleton<IAppInfoService, AppInfoService>();
             services.AddSingleton<ITelemetry>(TelemetryFactory.Get<ITelemetry>());
             services.AddSingleton<IStringResource, StringResource>();
-            services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
-            services.AddSingleton<IPackageDeploymentService, PackageDeploymentService>();
             services.AddSingleton<IScreenReaderService, ScreenReaderService>();
             services.AddSingleton<IComputeSystemService, ComputeSystemService>();
             services.AddSingleton<IComputeSystemManager, ComputeSystemManager>();

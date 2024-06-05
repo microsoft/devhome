@@ -26,4 +26,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
 </Project>
