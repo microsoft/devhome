@@ -335,27 +335,11 @@ public class WindowHelper
         return softwareBitmap;
     }
 
-    public static async Task<SoftwareBitmapSource> GetSoftwareBitmapSourceFromSoftwareBitmap(SoftwareBitmap softwareBitmap)
+    public static async Task<SoftwareBitmapSource> GetSoftwareBitmapSourceFromSoftwareBitmapAsync(SoftwareBitmap softwareBitmap)
     {
         var softwareBitmapSource = new SoftwareBitmapSource();
         await softwareBitmapSource.SetBitmapAsync(softwareBitmap);
         return softwareBitmapSource;
-    }
-
-    public static async Task<Uri> SaveSoftwareBitmapToTempFile(SoftwareBitmap softwareBitmap)
-    {
-        var tempFolder = ApplicationData.Current.TemporaryFolder;
-        var tempFile = await tempFolder.CreateFileAsync(
-            Guid.NewGuid().ToString() + ".png", CreationCollisionOption.ReplaceExisting);
-
-        using (var stream = await tempFile.OpenAsync(FileAccessMode.ReadWrite))
-        {
-            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
-            encoder.SetSoftwareBitmap(softwareBitmap);
-            await encoder.FlushAsync();
-        }
-
-        return new Uri(tempFile.Path);
     }
 
     internal static unsafe uint GetProcessIdFromWindow(HWND hWnd)

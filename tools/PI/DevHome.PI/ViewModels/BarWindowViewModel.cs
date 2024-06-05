@@ -1,19 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
-using Microsoft.Diagnostics.Tracing.StackSources;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -27,7 +23,11 @@ public partial class BarWindowViewModel : ObservableObject
     private const string _UnsnapButtonText = "\ue89f";
     private const string _SnapButtonText = "\ue8a0";
 
+    private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
+    private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
+
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly List<Button> _externalToolButtons = [];
 
     private readonly ObservableCollection<Button> _externalTools = [];
     private readonly SnapHelper _snapHelper;
@@ -177,7 +177,7 @@ public partial class BarWindowViewModel : ObservableObject
     {
         if (!ShowingExpandedContent)
         {
-            // First need to be in a horizontal layout
+            // First need to be in a horizontal layout to show expanded content
             BarOrientation = Orientation.Horizontal;
             ShowingExpandedContent = true;
         }
@@ -190,15 +190,20 @@ public partial class BarWindowViewModel : ObservableObject
     [RelayCommand]
     public void ProcessChooser()
     {
-        // Need to be in a horizontal layout
-        BarOrientation = Orientation.Horizontal;
-
-        // And show expanded content
-        ShowingExpandedContent = true;
+        ToggleExpandedContentVisibility();
 
         // And navigate to the appropriate page
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         barWindow?.NavigateTo(typeof(ProcessListPageViewModel));
+    }
+
+    [RelayCommand]
+    public void ManageExternalToolsButton()
+    {
+        ToggleExpandedContentVisibility();
+
+        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+        barWindow?.NavigateToPiSettings(typeof(AdditionalToolsViewModel).FullName!);
     }
 
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -278,6 +283,37 @@ public partial class BarWindowViewModel : ObservableObject
             {
                 AppCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.CpuUsage);
             });
+        }
+    }
+
+    public void ExternalToolButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button clickedButton)
+        {
+            if (clickedButton.Tag is ExternalTool tool)
+            {
+                InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
+            }
+        }
+    }
+
+    public void ManageExternalToolsButton_ExternalToolLaunchRequest(object sender, ExternalTool tool)
+    {
+        InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
+    }
+
+    private void InvokeTool(ExternalTool tool, int? pid, HWND hWnd)
+    {
+        var process = tool.Invoke(pid, hWnd);
+        if (process is null)
+        {
+            // A ContentDialog only renders in the space its parent occupies. Since the parent is a narrow
+            // bar, the dialog doesn't have enough space to render. So, we'll use MessageBox to display errors.
+            Windows.Win32.PInvoke.MessageBox(
+                HWND.Null, // ThisHwnd,
+                string.Format(CultureInfo.CurrentCulture, _errorMessageText, tool.Executable),
+                _errorTitleText,
+                Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_STYLE.MB_ICONERROR);
         }
     }
 }
