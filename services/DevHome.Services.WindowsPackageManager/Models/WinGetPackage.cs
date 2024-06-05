@@ -15,7 +15,7 @@ namespace DevHome.Services.WindowsPackageManager.Models;
 /// <summary>
 /// Model class for a Windows Package Manager package.
 /// </summary>
-public class WinGetPackage : IWinGetPackage
+internal sealed class WinGetPackage : IWinGetPackage
 {
     private readonly ILogger _logger;
 
@@ -75,7 +75,11 @@ public class WinGetPackage : IWinGetPackage
 
     public bool IsElevationRequired { get; }
 
-    public WinGetPackageUri GetUri(string installVersion) => new(CatalogName, Id, new(installVersion));
+    public WinGetPackageUri GetUri(string installVersion = null)
+    {
+        var uriOptions = string.IsNullOrEmpty(installVersion) ? null : new WinGetPackageUriOptions(installVersion);
+        return new(CatalogName, Id, uriOptions);
+    }
 
     /// <summary>
     /// Gets the package metadata from the current culture name (e.g. 'en-US')

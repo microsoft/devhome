@@ -229,7 +229,7 @@ public partial class PackageViewModel : ObservableObject
 
     private InstallPackageTask CreateInstallTask()
     {
-        return _package.CreateInstallTask(_wpm, _stringResource, SelectedVersion, _orchestrator.ActivityId);
+        return new InstallPackageTask(_wpm, _stringResource, null, SelectedVersion, _orchestrator.ActivityId);
     }
 
     private string GetPackageShortDescription()

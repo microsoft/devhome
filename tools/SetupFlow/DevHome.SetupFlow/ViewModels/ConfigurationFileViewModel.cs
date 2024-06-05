@@ -11,8 +11,8 @@ using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Windows.FileDialog;
 using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Exceptions;
 using DevHome.Services.WindowsPackageManager.Models;
-using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -86,7 +86,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             task.RequiresAdmin = true;
         }
 
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", LogLevel.Critical, new ConfigureCommandEvent(true), Orchestrator.ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", Telemetry.LogLevel.Critical, new ConfigureCommandEvent(true), Orchestrator.ActivityId);
         try
         {
             await Orchestrator.InitializeElevatedServerAsync();
@@ -101,14 +101,14 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     [RelayCommand(CanExecute = nameof(ReadAndAgree))]
     private async Task ConfigureAsNonAdminAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", LogLevel.Critical, new ConfigureCommandEvent(false), Orchestrator.ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", Telemetry.LogLevel.Critical, new ConfigureCommandEvent(false), Orchestrator.ActivityId);
         await Orchestrator.GoToNextPage();
     }
 
     [RelayCommand]
     private async Task OnLoadedAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Loaded", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance), Orchestrator.ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Loaded", Telemetry.LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance), Orchestrator.ActivityId);
         try
         {
             if (Configuration != null && ConfigurationUnits == null)
@@ -126,7 +126,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void OnViewSelectionChanged(string newViewMode)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_ViewSelectionChanged", LogLevel.Critical, new ConfigureModeCommandEvent(newViewMode), Orchestrator.ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_ViewSelectionChanged", Telemetry.LogLevel.Critical, new ConfigureModeCommandEvent(newViewMode), Orchestrator.ActivityId);
     }
 
     /// <summary>

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using DevHome.Services.WindowsPackageManager.Models;
 using Windows.Storage.Streams;
 
 namespace DevHome.Services.WindowsPackageManager.Contracts;
@@ -134,6 +135,21 @@ public interface IWinGetPackage
     {
         get;
     }
+
+    /// <summary>
+    /// Gets a value indicating whether the package requires elevation
+    /// </summary>
+    public bool IsElevationRequired
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the package uri of this package
+    /// </summary>
+    /// <param name="installVersion">The version to install</param>
+    /// <returns>The package uri</returns>
+    public WinGetPackageUri GetUri(string installVersion = null);
 }
 
 /// <summary>

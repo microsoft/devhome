@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.SetupFlow.Common.Exceptions;
+using DevHome.Services.WindowsPackageManager.Exceptions;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Management.Configuration;

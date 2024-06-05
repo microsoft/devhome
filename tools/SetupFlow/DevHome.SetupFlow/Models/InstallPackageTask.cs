@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Exceptions;
-using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
@@ -29,7 +27,7 @@ public class InstallPackageTask : ISetupTask
     private static readonly string MSStoreCatalogId = "StoreEdgeFD";
 
     private readonly IWinGet _wpm;
-    private readonly WinGetPackage _package;
+    private readonly IWinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly Guid _activityId;
     private readonly string _installVersion;
@@ -77,7 +75,7 @@ public class InstallPackageTask : ISetupTask
     public InstallPackageTask(
         IWinGet wpm,
         ISetupFlowStringResource stringResource,
-        WinGetPackage package,
+        IWinGetPackage package,
         string installVersion,
         Guid activityId)
     {
@@ -233,7 +231,7 @@ public class InstallPackageTask : ISetupTask
     /// <remarks>https://learn.microsoft.com/windows/win32/api/winerror/nf-winerror-hresult_facility</remarks>
     private int HResultFacility(int hr) => (hr >> 16) & 0x1FFF;
 
-    public bool IsAppInstallerErrorFacility(int hr) => HResultFacility(hr) == WindowsPackageManager.AppInstallerErrorFacility;
+    public bool IsAppInstallerErrorFacility(int hr) => HResultFacility(hr) == IWinGet.AppInstallerErrorFacility;
 
     private string GetExtendedErrorCodeMessage()
     {

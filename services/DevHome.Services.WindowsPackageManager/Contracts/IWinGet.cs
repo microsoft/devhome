@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Models;
+using DevHome.Services.WindowsPackageManager.Services;
 
 namespace DevHome.Services.WindowsPackageManager.Contracts;
 
@@ -13,6 +14,9 @@ namespace DevHome.Services.WindowsPackageManager.Contracts;
 /// </summary>
 public interface IWinGet
 {
+    public const string AppInstallerProductId = WinGetDeployment.AppInstallerProductId;
+    public const int AppInstallerErrorFacility = WinGetDeployment.AppInstallerErrorFacility;
+
     /// <summary>
     /// Initialize the winget package manager.
     /// </summary>

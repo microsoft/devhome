@@ -314,7 +314,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     {
         HideAppInstallerUpdateNotification();
         _log.Information("Opening AppInstaller in the Store app");
-        await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?productid={WindowsPackageManager.AppInstallerProductId}"));
+        await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?productid={IWinGet.AppInstallerProductId}"));
     }
 
     [RelayCommand]

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using DevHome.SetupFlow.Models;
+using DevHome.Services.WindowsPackageManager.Models;
 
 namespace DevHome.SetupFlow.ViewModels;
 

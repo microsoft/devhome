@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.ViewModels;
@@ -58,7 +57,6 @@ public static class ServiceExtensions
         services.AddTransient<AppManagementReviewViewModel>();
 
         // Services
-        services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory(ClsidContext.Prod));
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();
