@@ -4,7 +4,6 @@
 using System;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.PI.Helpers;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.PI.Models;
@@ -24,7 +23,7 @@ public partial class AppRuntimeInfo : ObservableObject
     private string mainModuleFileName = string.Empty;
 
     [ObservableProperty]
-    private WindowHelper.BinaryType binaryType = WindowHelper.BinaryType.Unknown;
+    private string cpuArchitecture = string.Empty;
 
     [ObservableProperty]
     private bool isPackaged = false;

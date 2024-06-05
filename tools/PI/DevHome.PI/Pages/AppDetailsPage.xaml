@@ -65,8 +65,8 @@
                     <TextBox Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PriorityClass, Mode=OneWay}" IsReadOnly="True" />
                     <TextBlock Grid.Row="2" x:Uid="MainModuleTextBlock" />
                     <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.MainModuleFileName, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" />
-                    <TextBlock Grid.Row="3" x:Uid="BinaryTypeTextBlock" />
-                    <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.BinaryType, Mode=OneWay}" IsReadOnly="True" />
+                    <TextBlock Grid.Row="3" x:Uid="CpuArchitectureTextBlock" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.CpuArchitecture, Mode=OneWay}" IsReadOnly="True" />
                     <TextBlock Grid.Row="4" x:Uid="MSIXPackagedTextBlock" />
                     <TextBox Grid.Row="4" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsPackaged, Mode=OneWay}" IsReadOnly="True" />
                     <TextBlock Grid.Row="5" x:Uid="MicrosoftStoreAppTextBlock" />
