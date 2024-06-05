@@ -39,15 +39,8 @@ public partial class BarWindowVertical : WindowEx
     private int _appWindowPosY; // = 0;
     private bool isWindowMoving; // = false;
     private bool isClosing;
-    private const int UnsnapGap = 9;
-
-    private readonly WINEVENTPROC _winPositionEventDelegate;
-    private readonly WINEVENTPROC _winFocusEventDelegate;
 
     private Button? _selectedExternalToolButton;
-
-    private HWINEVENTHOOK _positionEventHook;
-    private HWINEVENTHOOK _focusEventHook;
 
     internal HWND ThisHwnd { get; private set; }
 
@@ -65,23 +58,6 @@ public partial class BarWindowVertical : WindowEx
 
         InitializeComponent();
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
-        _winPositionEventDelegate = new(WinPositionEventProc);
-        _winFocusEventDelegate = new(WinFocusEventProc);
-    }
-
-    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(BarWindowViewModel.IsSnapped))
-        {
-            if (_viewModel.IsSnapped)
-            {
-                Snap();
-            }
-            else
-            {
-                Unsnap();
-            }
-        }
     }
 
     private void MainPanel_Loaded(object sender, RoutedEventArgs e)
@@ -94,6 +70,14 @@ public partial class BarWindowVertical : WindowEx
 
         // Regardless of what is set in the XAML, our initial window width is too big. Setting this to 70 (same as the XAML file)
         Width = 70;
+    }
+
+    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (string.Equals(e.PropertyName, nameof(BarWindowViewModel.WindowPosition), StringComparison.OrdinalIgnoreCase))
+        {
+            this.Move(_viewModel.WindowPosition.X, _viewModel.WindowPosition.Y);
+        }
     }
 
     private void ExternalToolsMenu_Opening(object sender, object e)
@@ -130,18 +114,6 @@ public partial class BarWindowVertical : WindowEx
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
-        if (_positionEventHook != IntPtr.Zero)
-        {
-            PInvoke.UnhookWinEvent(_positionEventHook);
-            _positionEventHook = HWINEVENTHOOK.Null;
-        }
-
-        if (_focusEventHook != HWINEVENTHOOK.Null)
-        {
-            PInvoke.UnhookWinEvent(_focusEventHook);
-            _focusEventHook = HWINEVENTHOOK.Null;
-        }
-
         if (!isClosing)
         {
             isClosing = true;
@@ -178,100 +150,6 @@ public partial class BarWindowVertical : WindowEx
         {
             rootElement.RequestedTheme = theme;
         }
-    }
-
-    private void WinPositionEventProc(HWINEVENTHOOK hWinEventHook, uint eventType, HWND hwnd, int idObject, int idChild, uint idEventThread, uint dwmsEventTime)
-    {
-        // Filter out events for non-main windows.
-        if (idObject != 0 || idChild != 0)
-        {
-            return;
-        }
-
-        if (hwnd == TargetAppData.Instance.HWnd)
-        {
-            if (eventType == PInvoke.EVENT_OBJECT_LOCATIONCHANGE)
-            {
-                if (_viewModel.IsSnapped)
-                {
-                    // If the window has been maximized, un-snap the bar window and free-float it.
-                    if (PInvoke.IsZoomed(TargetAppData.Instance.HWnd))
-                    {
-                        _viewModel.IsSnapped = false;
-                    }
-                    else
-                    {
-                        // Reposition the window to match the moved/resized/minimized/restored target window.
-                        // If the target window was maximized and has now been restored, we want
-                        // to resnap to it, but not do all the other work we do when we resnap
-                        // to a new window.
-                        SnapToWindow();
-                    }
-                }
-            }
-
-            // If the window we're watching closes, we unsnap
-            if (eventType == PInvoke.EVENT_OBJECT_DESTROY)
-            {
-                Unsnap();
-            }
-        }
-    }
-
-    private void WinFocusEventProc(HWINEVENTHOOK hWinEventHook, uint eventType, HWND hwnd, int idObject, int idChild, uint idEventThread, uint dwmsEventTime)
-    {
-        // If we're snapped to a target window, and that window loses and then regains focus,
-        // we need to bring our window to the front also, to be in-sync. Otherwise, we can
-        // end up with the target in the foreground, but our window partially obscured.
-        if (hwnd == TargetAppData.Instance.HWnd && _viewModel.IsSnapped)
-        {
-            this.SetIsAlwaysOnTop(true);
-            this.SetIsAlwaysOnTop(false);
-            return;
-        }
-    }
-
-    private void Snap()
-    {
-        Debug.Assert(_positionEventHook == HWINEVENTHOOK.Null, "Hook should be cleared");
-        Debug.Assert(_focusEventHook == HWINEVENTHOOK.Null, "Hook should be cleared");
-
-        _positionEventHook = WatchWindowPositionEvents(_winPositionEventDelegate, (uint)TargetAppData.Instance.ProcessId);
-        _focusEventHook = WatchWindowFocusEvents(_winFocusEventDelegate, (uint)TargetAppData.Instance.ProcessId);
-
-        SnapToWindow();
-    }
-
-    private void Unsnap()
-    {
-        // Set a gap from the associated app window to provide positive feedback.
-        this.MoveAndResize(
-            AppWindow.Position.X + UnsnapGap,
-            AppWindow.Position.Y,
-            AppWindow.Size.Width,
-            AppWindow.Size.Height);
-
-        if (_positionEventHook != HWINEVENTHOOK.Null)
-        {
-            PInvoke.UnhookWinEvent(_positionEventHook);
-            _positionEventHook = HWINEVENTHOOK.Null;
-        }
-
-        if (_focusEventHook != HWINEVENTHOOK.Null)
-        {
-            PInvoke.UnhookWinEvent(_focusEventHook);
-            _focusEventHook = HWINEVENTHOOK.Null;
-        }
-    }
-
-    private void SnapToWindow()
-    {
-        Debug.Assert(_viewModel.IsSnapped, "We're not snapped!");
-
-        WindowHelper.SnapToWindow(TargetAppData.Instance.HWnd, ThisHwnd, AppWindow.Size);
-
-        this.SetIsAlwaysOnTop(true);
-        this.SetIsAlwaysOnTop(false);
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e)

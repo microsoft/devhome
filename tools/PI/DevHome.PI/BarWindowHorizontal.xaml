@@ -34,11 +34,11 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock x:Uid="Title" FontSize="10" Margin="10,0,0,0" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center"/>
-            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0, 0, 10, 0"  Background="Transparent" Grid.Column="1">
+            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0, 0, 10, 0"  Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}">
                 <Button
-                      x:Uid="SnapButton"
+                      x:Uid="SnapButton" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"
                       x:Name="SnapButton" Style="{StaticResource ChromeButton}" FontSize="11"
-                      Click="{x:Bind _viewModel.PerformSnapCommand}" HorizontalAlignment="Left" IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}">
+                      Command="{x:Bind _viewModel.ToggleSnapCommand}" HorizontalAlignment="Left" IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}">
                     <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
                 </Button>
             </StackPanel>
@@ -60,7 +60,7 @@
                 </Style>
             </StackPanel.Resources>
             
-            <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Click="{x:Bind _viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Margin="0">
+            <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Margin="0">
                 <TextBlock Text="&#xecaa;" Margin="0"  />
             </controls:ProcessSelectionButton>
 
@@ -70,10 +70,10 @@
             <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
 
             <!-- Per System controls -->
-            <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" HorizontalAlignment="Center" Click="{x:Bind _viewModel.SwitchLayoutCommand}">
+            <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" HorizontalAlignment="Center" Command="{x:Bind _viewModel.SwitchLayoutCommand}">
                 <TextBlock Text="&#xe8b4;"/>
             </Button>
-            <Button x:Uid="SwitchToLargeLayoutButton" Click="{x:Bind _viewModel.ShowBigWindowCommand}" HorizontalAlignment="Center">
+            <Button x:Uid="SwitchToLargeLayoutButton" Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" HorizontalAlignment="Center">
                 <TextBlock Text="&#xe8a1;"/>
             </Button>
 
