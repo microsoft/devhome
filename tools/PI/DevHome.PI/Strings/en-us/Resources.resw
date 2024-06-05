@@ -538,8 +538,8 @@
     <comment>Description of the error code</comment>
   </data>
   <data name="TargetAppPidTextFormat" xml:space="preserve">
-    <value>pid: {0:0.0}</value>
-    <comment>Locked={"{0:0.0}"} Showing a process identifier. {0} is a percentage 0-100</comment>
+    <value>pid: {0}</value>
+    <comment>Locked={"{0}"} Showing a process identifier. {0} is an integer</comment>
   </data>
   <data name="CpuPerfTextFormat" xml:space="preserve">
     <value>cpu: {0:0.0}%</value>
