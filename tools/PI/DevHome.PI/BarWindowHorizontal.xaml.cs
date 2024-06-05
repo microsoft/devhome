@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
@@ -41,6 +42,7 @@ public partial class BarWindowHorizontal : WindowEx
 
     private ExternalTool? _selectedExternalTool;
     private INotifyCollectionChanged? _externalTools;
+    private bool isClosing;
 
     // Constants that control window sizes
     private const int _WindowPositionOffsetY = 30;
@@ -114,7 +116,7 @@ public partial class BarWindowHorizontal : WindowEx
 
         if (_settings.IsClipboardMonitoringEnabled)
         {
-            ClipboardMonitor.Instance.Start(ThisHwnd);
+            ClipboardMonitor.Instance.Start();
         }
 
         InitializeExternalTools();
@@ -372,6 +374,14 @@ public partial class BarWindowHorizontal : WindowEx
         {
             CacheRestoreState();
         }
+
+        if (!isClosing)
+        {
+            isClosing = true;
+            var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+            barWindow?.Close();
+            isClosing = false;
+        }
     }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -380,7 +390,7 @@ public partial class BarWindowHorizontal : WindowEx
         {
             if (_settings.IsClipboardMonitoringEnabled)
             {
-                ClipboardMonitor.Instance.Start(ThisHwnd);
+                ClipboardMonitor.Instance.Start();
             }
             else
             {
