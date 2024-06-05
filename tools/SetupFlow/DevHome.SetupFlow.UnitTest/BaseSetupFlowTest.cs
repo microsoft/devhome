@@ -4,7 +4,7 @@
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Services;
-using DevHome.SetupFlow.Common.WindowsPackageManager;
+using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +20,7 @@ namespace DevHome.SetupFlow.UnitTest;
 public class BaseSetupFlowTest
 {
 #pragma warning disable CS8618 // Non-nullable properties initialized in [TestInitialize]
-    protected Mock<IWindowsPackageManager> WindowsPackageManager { get; private set; }
+    protected Mock<IWinGet> WindowsPackageManager { get; private set; }
 
     protected Mock<IThemeSelectorService> ThemeSelectorService { get; private set; }
 
@@ -34,7 +34,7 @@ public class BaseSetupFlowTest
     [TestInitialize]
     public void TestInitialize()
     {
-        WindowsPackageManager = new Mock<IWindowsPackageManager>();
+        WindowsPackageManager = new Mock<IWinGet>();
         ThemeSelectorService = new Mock<IThemeSelectorService>();
         RestoreInfo = new Mock<IRestoreInfo>();
         StringResource = new Mock<ISetupFlowStringResource>();
@@ -69,12 +69,11 @@ public class BaseSetupFlowTest
                 services.AddTransient<IDevDriveManager, DevDriveManager>();
 
                 // App-management services
-                services.AddSingleton<IWindowsPackageManager>(WindowsPackageManager.Object);
+                services.AddSingleton<IWinGet>(WindowsPackageManager.Object);
                 services.AddTransient<WinGetPackageJsonDataSource>();
                 services.AddTransient<WinGetPackageRestoreDataSource>();
                 services.AddSingleton<IRestoreInfo>(RestoreInfo.Object);
                 services.AddSingleton<PackageProvider>();
-                services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory());
                 services.AddSingleton<IAppManagementInitializer, AppManagementInitializer>();
                 services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
                 services.AddSingleton<ICatalogDataSourceLoader, CatalogDataSourceLoader>();

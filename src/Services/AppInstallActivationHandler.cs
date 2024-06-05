@@ -6,6 +6,7 @@ using System.Web;
 using DevHome.Activation;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -25,7 +26,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
     private const string AppSearchUri = "add-apps-to-cart";
     private readonly INavigationService _navigationService;
     private readonly SetupFlowViewModel _setupFlowViewModel;
-    private readonly IWindowsPackageManager _windowsPackageManager;
+    private readonly IWinGet _winget;
     private readonly PackageProvider _packageProvider;
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
     private static readonly char[] Separator = [','];
@@ -34,13 +35,13 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
         INavigationService navigationService,
         SetupFlowViewModel setupFlowViewModel,
         PackageProvider packageProvider,
-        IWindowsPackageManager wpm,
+        IWinGet winget,
         SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _navigationService = navigationService;
         _setupFlowViewModel = setupFlowViewModel;
         _packageProvider = packageProvider;
-        _windowsPackageManager = wpm;
+        _winget = winget;
         _setupFlowOrchestrator = setupFlowOrchestrator;
     }
 
@@ -100,7 +101,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
             return;
         }
 
-        var searchResults = await _windowsPackageManager.SearchAsync(firstSearchTerm, 1);
+        var searchResults = await _winget.SearchAsync(firstSearchTerm, 1);
         if (searchResults.Count == 0)
         {
             _log.Warning("No results found for the search term: {SearchTerm}", firstSearchTerm);

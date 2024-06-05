@@ -2,8 +2,9 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Exceptions;
-using DevHome.SetupFlow.Models;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Exceptions;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.UnitTest.Helpers;
 using Microsoft.Management.Deployment;
