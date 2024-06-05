@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
@@ -36,9 +37,12 @@ public partial class BarWindowHorizontal : WindowEx
     private readonly string _pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
     private readonly string _unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemText");
     private readonly BarWindowViewModel _viewModel;
+    private readonly FontIcon _pinIcon = new() { Glyph = "\uE718" };
+    private readonly FontIcon _unpinIcon = new() { Glyph = "\uE77A" };
 
     private ExternalTool? _selectedExternalTool;
     private INotifyCollectionChanged? _externalTools;
+    private bool isClosing;
 
     // Constants that control window sizes
     private const int _WindowPositionOffsetY = 30;
@@ -112,7 +116,7 @@ public partial class BarWindowHorizontal : WindowEx
 
         if (_settings.IsClipboardMonitoringEnabled)
         {
-            ClipboardMonitor.Instance.Start(ThisHwnd);
+            ClipboardMonitor.Instance.Start();
         }
 
         InitializeExternalTools();
@@ -227,6 +231,15 @@ public partial class BarWindowHorizontal : WindowEx
         ExpandedViewControl.NavigateToSettings(typeof(AdditionalToolsViewModel).FullName!);
     }
 
+    private void ExternalToolsMenu_Opening(object sender, object e)
+    {
+        // Cancel the opening of the menu if there are no items.
+        if (sender is MenuFlyout flyout && flyout?.Items?.Count == 0)
+        {
+            flyout.Hide();
+        }
+    }
+
     private void ExternalToolMenuItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
     {
         var menuItem = sender as MenuFlyoutItem;
@@ -236,10 +249,12 @@ public partial class BarWindowHorizontal : WindowEx
             if (_selectedExternalTool.IsPinned)
             {
                 PinUnpinMenuItem.Text = _unpinMenuItemText;
+                PinUnpinMenuItem.Icon = _unpinIcon;
             }
             else
             {
                 PinUnpinMenuItem.Text = _pinMenuItemText;
+                PinUnpinMenuItem.Icon = _pinIcon;
             }
 
             ToolContextMenu.ShowAt(menuItem, e.GetPosition(menuItem));
@@ -291,10 +306,12 @@ public partial class BarWindowHorizontal : WindowEx
             if (_selectedExternalTool.IsPinned)
             {
                 PinUnpinMenuItem.Text = _unpinMenuItemText;
+                PinUnpinMenuItem.Icon = _unpinIcon;
             }
             else
             {
                 PinUnpinMenuItem.Text = _pinMenuItemText;
+                PinUnpinMenuItem.Icon = _pinIcon;
             }
         }
     }
@@ -357,6 +374,14 @@ public partial class BarWindowHorizontal : WindowEx
         {
             CacheRestoreState();
         }
+
+        if (!isClosing)
+        {
+            isClosing = true;
+            var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+            barWindow?.Close();
+            isClosing = false;
+        }
     }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -365,7 +390,7 @@ public partial class BarWindowHorizontal : WindowEx
         {
             if (_settings.IsClipboardMonitoringEnabled)
             {
-                ClipboardMonitor.Instance.Start(ThisHwnd);
+                ClipboardMonitor.Instance.Start();
             }
             else
             {

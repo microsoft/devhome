@@ -445,6 +445,44 @@ public partial class AddRepoViewModel : ObservableObject
         _selectedRepoProvider = repositoryProviderName;
     }
 
+    /// <summary>
+    /// Adds or removes the default dev drive.  This dev drive will be made at the loading screen.
+    /// </summary>
+    [RelayCommand]
+    private void MakeNewDevDrive(bool isCheckBoxChecked)
+    {
+        // Getting here means
+        // 1. The user does not have any existing dev drives
+        // 2. The user wants to clone to a new dev drive.
+        // 3. The user un-checked this and does not want a new dev drive.
+        if (isCheckBoxChecked)
+        {
+            UpdateDevDriveInfo();
+        }
+        else
+        {
+            FolderPickerViewModel.CloneLocationAlias = string.Empty;
+            FolderPickerViewModel.InDevDriveScenario = false;
+            EditDevDriveViewModel.RemoveNewDevDrive();
+            FolderPickerViewModel.EnableBrowseButton();
+            FolderPickerViewModel.CloneLocation = _addRepoDialog.OldCloneLocation;
+        }
+    }
+
+    /// <summary>
+    /// Update dialog to show Dev Drive information.
+    /// </summary>
+    public void UpdateDevDriveInfo()
+    {
+        EditDevDriveViewModel.MakeDefaultDevDrive();
+        FolderPickerViewModel.DisableBrowseButton();
+        _addRepoDialog.OldCloneLocation = FolderPickerViewModel.CloneLocation;
+        FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
+        FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+        FolderPickerViewModel.InDevDriveScenario = true;
+        EditDevDriveViewModel.IsDevDriveCheckboxChecked = true;
+    }
+
     [RelayCommand]
     private void CancelButtonPressed()
     {
@@ -1121,6 +1159,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.OwningAccount = developerId;
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, Path.Join(_selectedRepoProvider, repositoryToAdd.RepoDisplayName));
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, Path.Join(_selectedRepoProvider, repositoryToAdd.RepoDisplayName));
+            cloningInformation.RepoConfigAutomationName = Path.Join(_providers.DisplayName(_selectedRepoProvider), repositoryToAdd.RepoDisplayName);
             EverythingToClone.Add(cloningInformation);
         }
     }

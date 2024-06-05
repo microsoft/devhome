@@ -44,9 +44,9 @@ public partial class AddRepoDialog : ContentDialog
     public SetupFlowOrchestrator Orchestrator { get; set; }
 
     /// <summary>
-    /// Hold the clone location in case the user decides not to add a dev drive.
+    /// Gets or sets the clone location in case the user decides not to add a dev drive.
     /// </summary>
-    private string _oldCloneLocation;
+    public string OldCloneLocation { get; set; }
 
     public AddRepoDialog(
         SetupFlowOrchestrator setupFlowOrchestrator,
@@ -178,30 +178,6 @@ public partial class AddRepoDialog : ContentDialog
     }
 
     /// <summary>
-    /// Adds or removes the default dev drive.  This dev drive will be made at the loading screen.
-    /// </summary>
-    private void MakeNewDevDriveCheckBox_Click(object sender, RoutedEventArgs e)
-    {
-        // Getting here means
-        // 1. The user does not have any existing dev drives
-        // 2. The user wants to clone to a new dev drive.
-        // 3. The user un-checked this and does not want a new dev drive.
-        var isChecked = (sender as CheckBox).IsChecked;
-        if (isChecked.Value)
-        {
-            UpdateDevDriveInfo();
-        }
-        else
-        {
-            AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = string.Empty;
-            AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario = false;
-            AddRepoViewModel.EditDevDriveViewModel.RemoveNewDevDrive();
-            AddRepoViewModel.FolderPickerViewModel.EnableBrowseButton();
-            AddRepoViewModel.FolderPickerViewModel.CloneLocation = _oldCloneLocation;
-        }
-    }
-
-    /// <summary>
     /// Putting the event in the view so SelectRange can be called.
     /// SelectRange needs a reference to the ListView.
     /// </summary>
@@ -215,20 +191,6 @@ public partial class AddRepoDialog : ContentDialog
             AddRepoViewModel.FilterRepositories(FilterTextBox.Text);
             SelectRepositories(AddRepoViewModel.EverythingToClone);
         }
-    }
-
-    /// <summary>
-    /// Update dialog to show Dev Drive information.
-    /// </summary>
-    public void UpdateDevDriveInfo()
-    {
-        AddRepoViewModel.EditDevDriveViewModel.MakeDefaultDevDrive();
-        AddRepoViewModel.FolderPickerViewModel.DisableBrowseButton();
-        _oldCloneLocation = AddRepoViewModel.FolderPickerViewModel.CloneLocation;
-        AddRepoViewModel.FolderPickerViewModel.CloneLocation = AddRepoViewModel.EditDevDriveViewModel.GetDriveDisplayName();
-        AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = AddRepoViewModel.EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-        AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario = true;
-        AddRepoViewModel.EditDevDriveViewModel.IsDevDriveCheckboxChecked = true;
     }
 
     private void FilterSuggestions(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
