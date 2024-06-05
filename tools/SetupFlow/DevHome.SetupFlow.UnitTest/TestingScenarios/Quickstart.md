@@ -28,7 +28,9 @@ Please make sure to verify all of these scenarios. These apply to both Windows 1
 1. Launch the project in Visual Studio Code. 
     1. Visual Studio Code will prompt you to confirm if you trust the folder, which you can click on- and then from there the remote containers extension will ask you if you would like to re-open the project in the container
     1. If you don't have Docker already running, Visual Studio Code will start it as part of opening the project, and you can click on 'Show logs' in the notification to see what Docker is doing. 
-1. Try building and running the project once Visual Studio Code has finished opening it in the container. 
-1. If you like the project, you can save it from Dev Home. Try using the Like / Dislike buttons to send feedback about the generated project.
- 
-
+    1. Try building and running the project once Visual Studio Code has finished opening it in the container. 
+1. Verify that you can locally save the project from Dev Home.
+1. Verify that you can submit feedback on the project using the Like / Dislike buttons in Dev Home.
+1. Verify that clicking on the 'Generated based on example' link in Dev Home opens Explorer to the location of the project that was used a reference.
+1. Navigate to the settings for the Dev Home Azure Extension and click on the button to reset the API key.
+    1. Verify that navigating back to the Quickstart Playground page prompts for the key to be re-entered.
