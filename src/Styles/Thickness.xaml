@@ -28,6 +28,8 @@
     <Thickness x:Key="NavigationViewHeaderMargin">0,0,0,22</Thickness>
 
     <Thickness x:Key="ContentPageMargin">40,0,40,0</Thickness>
+    <!-- HeaderMargin combines ContentPageMargin with NavigationViewHeaderMargin-->
+    <Thickness x:Key="HeaderMargin">40,0,40,22</Thickness>
 
     <Thickness x:Key="MenuBarContentMargin">36,24,36,0</Thickness>
 

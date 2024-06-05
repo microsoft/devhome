@@ -2,13 +2,14 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
+using DevHome.Common.Views;
 using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Settings.Views;
 
-public sealed partial class PreferencesPage : Page
+public sealed partial class PreferencesPage : DevHomePage
 {
     public PreferencesViewModel ViewModel { get; }
 

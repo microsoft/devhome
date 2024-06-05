@@ -13,8 +13,6 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
 {
     private static Dictionary<string, string> Templates { get; set; } = new();
 
-    private static readonly new string Name = nameof(SystemGPUUsageWidget);
-
     private readonly DataManager dataManager;
 
     private readonly string gpuActiveEngType = "3D";
@@ -39,7 +37,7 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
 
     public override void LoadContentData()
     {
-        Log.Logger()?.ReportDebug(Name, ShortId, "Getting GPU Data");
+        Log.Debug("Getting GPU Data");
 
         try
         {
@@ -60,7 +58,7 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
         }
         catch (Exception e)
         {
-            Log.Logger()?.ReportError(Name, ShortId, "Error retrieving data.", e);
+            Log.Error(e, "Error retrieving data.");
             var content = new JsonObject
             {
                 { "errorMessage", e.Message },
@@ -108,7 +106,7 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
     public override void OnActionInvoked(WidgetActionInvokedArgs actionInvokedArgs)
     {
         var verb = GetWidgetActionForVerb(actionInvokedArgs.Verb);
-        Log.Logger()?.ReportDebug(Name, ShortId, $"ActionInvoked: {verb}");
+        Log.Debug($"ActionInvoked: {verb}");
 
         switch (verb)
         {
@@ -121,7 +119,7 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
                 break;
 
             case WidgetAction.Unknown:
-                Log.Logger()?.ReportError(Name, ShortId, $"Unknown verb: {actionInvokedArgs.Verb}");
+                Log.Error($"Unknown verb: {actionInvokedArgs.Verb}");
                 break;
         }
     }

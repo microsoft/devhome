@@ -4,13 +4,15 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Exceptions;
+using Serilog;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
 internal sealed class WinGetRecovery : IWinGetRecovery
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WinGetRecovery));
+
     // Recovery configuration
     private const int MaxAttempts = 5;
     private const int DelayMs = 2_000;
@@ -43,17 +45,17 @@ internal sealed class WinGetRecovery : IWinGetRecovery
                 }
                 catch (CatalogNotInitializedException e)
                 {
-                    Log.Logger?.ReportError(Log.Component.AppManagement, $"Catalog used by the action is not initialized", e);
+                    _log.Error(e, $"Catalog used by the action is not initialized");
                     await RecoveryAsync(attempt);
                 }
                 catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed || e.HResult == PackageUpdating)
                 {
-                    Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}", e);
+                    _log.Error(e, $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}");
                     await RecoveryAsync(attempt);
                 }
             }
 
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Unable to recover windows package manager after {MaxAttempts} attempts");
+            _log.Error($"Unable to recover windows package manager after {MaxAttempts} attempts");
             throw new WindowsPackageManagerRecoveryException();
         });
     }
@@ -68,15 +70,15 @@ internal sealed class WinGetRecovery : IWinGetRecovery
         {
             // Retry with exponential backoff
             var backoffMs = DelayMs * (int)Math.Pow(2, attempt);
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Attempting to recover attempt number {attempt} in {backoffMs} ms");
+            _log.Error($"Attempting to recover attempt number {attempt} in {backoffMs} ms");
 
             // Wait for the backoff period
             await Task.Delay(TimeSpan.FromMilliseconds(backoffMs));
 
             // Recover catalogs
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting recovery ...");
+            _log.Information($"Starting recovery ...");
             await _catalogConnector.RecoverDisconnectedCatalogsAsync();
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Recovery complete");
+            _log.Information($"Recovery complete");
         }
     }
 }

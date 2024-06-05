@@ -11,7 +11,8 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
     }
     RepositoryResult::RepositoryResult(winrt::hresult const& e, hstring const& diagnosticText)
     {
-        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), winrt::to_hstring("Something went wrong"), diagnosticText);
+        _Repository = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::IRepository>();
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), diagnosticText, diagnosticText);
     }
     winrt::Microsoft::Windows::DevHome::SDK::IRepository RepositoryResult::Repository()
     {

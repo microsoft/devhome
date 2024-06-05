@@ -9,9 +9,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Contracts;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
+using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
 
@@ -19,6 +20,7 @@ namespace DevHome.SetupFlow.Models;
 
 public class ConfigureTask : ISetupTask
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigureTask));
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IDesiredStateConfiguration _dsc;
     private readonly StorageFile _file;
@@ -26,11 +28,20 @@ public class ConfigureTask : ISetupTask
 
     public event ISetupTask.ChangeMessageHandler AddMessage;
 
+#pragma warning disable 67
+    public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
+#pragma warning restore 67
+
     // Configuration files can run as either admin or as a regular user
     // depending on the user, make this settable.
     public bool RequiresAdmin { get; set; }
 
     public bool RequiresReboot { get; private set; }
+
+    /// <summary>
+    /// Gets target device name. Inherited via ISetupTask but unused.
+    /// </summary>
+    public string TargetName => string.Empty;
 
     public bool DependsOnDevDriveToBeInstalled => false;
 
@@ -38,6 +49,8 @@ public class ConfigureTask : ISetupTask
     {
         get; private set;
     }
+
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
 
     public ConfigureTask(
         ISetupFlowStringResource stringResource,
@@ -84,7 +97,7 @@ public class ConfigureTask : ISetupTask
         {
             try
             {
-                AddMessage(_stringResource.GetLocalized(StringResourceKey.ApplyingConfigurationMessage));
+                AddMessage(_stringResource.GetLocalized(StringResourceKey.ApplyingConfigurationMessage), MessageSeverityKind.Info);
                 var result = await _dsc.ApplyConfigurationAsync(_file.Path, _activityId);
                 RequiresReboot = result.RequiresReboot;
                 UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
@@ -99,7 +112,7 @@ public class ConfigureTask : ISetupTask
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration.", e);
+                _log.Error(e, $"Failed to apply configuration.");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -111,7 +124,7 @@ public class ConfigureTask : ISetupTask
     {
         return Task.Run(async () =>
         {
-            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file {_file.Path}");
+            _log.Information($"Starting elevated application of configuration file {_file.Path}");
             var elevatedResult = await elevatedComponentOperation.ApplyConfigurationAsync(_activityId);
             RequiresReboot = elevatedResult.RebootRequired;
             UnitResults = new List<ConfigurationUnitResult>();

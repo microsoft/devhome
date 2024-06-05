@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.SetupFlow.Views.Environments.CreateEnvironmentReviewView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Unloaded="ViewUnloaded"
+    Loaded="ViewLoaded"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters">
+    <UserControl.Resources>
+        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+    </UserControl.Resources>
+
+    <!-- Xaml for create environment view tab in the create environment flow-->
+    <Grid>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+            <StackPanel Spacing="10">
+                <Grid x:Name="AdaptiveCardGrid" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

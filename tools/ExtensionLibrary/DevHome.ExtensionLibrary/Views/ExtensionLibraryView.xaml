@@ -5,16 +5,13 @@
     x:Class="DevHome.ExtensionLibrary.Views.ExtensionLibraryView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pg="using:DevHome.Common"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:viewmodels="using:DevHome.ExtensionLibrary.ViewModels"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:commonviews="using:DevHome.Common.Views"
-    mc:Ignorable="d">
+    xmlns:commonviews="using:DevHome.Common.Views">
     <i:Interaction.Behaviors>
         <ic:EventTriggerBehavior EventName="Loaded">
             <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
@@ -38,9 +35,9 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+    <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel>
+            <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <commonviews:Banner x:Uid="ExtensionsBanner"
                                     TextWidth="350"
                                     Visibility="{x:Bind BannerViewModel.ShowExtensionsBanner,Mode=OneWay}"
@@ -57,6 +54,7 @@
                                Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                                VerticalAlignment="Center"/>
                     <Button x:Uid="GetUpdatesButton"
+                            AutomationProperties.AutomationId="GetUpdatesButton"
                             HorizontalAlignment="Right"
                             Style="{ThemeResource AccentButtonStyle}"
                             Visibility="{x:Bind ViewModel.InstalledPackagesList.Count, Converter={StaticResource InverseCountToVisibilityConverter}, Mode=OneWay}"
@@ -65,7 +63,7 @@
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.InstalledPackagesList, Mode=OneWay}">
                     <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:InstalledPackageViewModel">
-                            <ctControls:SettingsExpander Header="{x:Bind Title}"
+                            <ctControls:SettingsExpander Header="{x:Bind DisplayName}"
                                                    Description="{x:Bind GeneratePackageDetails(Version,Publisher , InstalledDate), Mode=OneWay}"
                                                    Margin="{ThemeResource SettingsCardMargin}"
                                                    ItemsSource="{x:Bind InstalledExtensionsList}"
@@ -73,25 +71,28 @@
                                 <ctControls:SettingsExpander.HeaderIcon>
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
                                 </ctControls:SettingsExpander.HeaderIcon>
-                                <Button x:Uid="MoreOptionsButton"
-                                        Content="&#xe712;"
-                                        Height="36" Width="36"
-                                        FontFamily="{StaticResource SymbolThemeFontFamily}" 
-                                        Background="Transparent"
-                                        BorderThickness="0">
-                                    <Button.Flyout>
-                                        <MenuFlyout>
-                                            <MenuFlyoutItem
-                                                x:Uid="UninstallItem"
-                                                HorizontalAlignment="Center"
-                                                Command="{x:Bind UninstallButtonCommand}">
-                                            </MenuFlyoutItem>
-                                        </MenuFlyout>
-                                    </Button.Flyout>
-                                </Button>
+                                <StackPanel>
+                                    <!-- This StackPanel is a workaround for the bug https://github.com/CommunityToolkit/Windows/issues/396 -->
+                                    <Button x:Uid="MoreOptionsButton"
+                                            AutomationProperties.AutomationId="{x:Bind AutomationMoreOptionsPfn}"
+                                            Content="&#xe712;"
+                                            Height="36" MinWidth="36"
+                                            FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                            Background="Transparent"
+                                            BorderThickness="0">
+                                        <Button.Flyout>
+                                            <MenuFlyout>
+                                                <MenuFlyoutItem
+                                                    x:Uid="UninstallItem"
+                                                    Command="{x:Bind UninstallButtonCommand}">
+                                                </MenuFlyoutItem>
+                                            </MenuFlyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </StackPanel>
                                 <ctControls:SettingsExpander.ItemTemplate>
                                     <DataTemplate x:DataType="viewmodels:InstalledExtensionViewModel">
-                                        <ctControls:SettingsCard x:Uid="ManageExtensionCard"
+                                        <ctControls:SettingsCard Header="{x:Bind DisplayName}"
                                                            CornerRadius="0,0,3,3"
                                                            IsClickEnabled="{x:Bind HasSettingsProvider}"
                                                            Command="{x:Bind NavigateSettingsCommand}">
@@ -120,11 +121,13 @@
                                                Description="{x:Bind Publisher}"
                                                Margin="{ThemeResource SettingsCardMargin}"
                                                CornerRadius="3"
+                                               AutomationProperties.Name="{x:Bind Title}"
                                                IsClickEnabled="False">
                                 <ctControls:SettingsCard.HeaderIcon>
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
                                 </ctControls:SettingsCard.HeaderIcon>
                                 <Button x:Uid="GetButton"
+                                        AutomationProperties.AutomationId="{x:Bind AutomationInstallPfn}"
                                         Padding="25 4 25 6"
                                         MinWidth="118"
                                         Command="{x:Bind LaunchStoreButtonCommand}"

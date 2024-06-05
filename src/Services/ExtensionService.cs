@@ -25,6 +25,9 @@ public class ExtensionService : IExtensionService, IDisposable
     private readonly SemaphoreSlim _getInstalledWidgetsLock = new(1, 1);
     private bool _disposedValue;
 
+    private const string CreateInstanceProperty = "CreateInstance";
+    private const string ClassIdProperty = "@ClassId";
+
 #pragma warning disable IDE0044 // Add readonly modifier
     private static List<IExtensionWrapper> _installedExtensions = new();
     private static List<IExtensionWrapper> _enabledExtensions = new();
@@ -107,45 +110,42 @@ public class ExtensionService : IExtensionService, IDisposable
         var extensions = await AppExtensionCatalog.Open("com.microsoft.devhome").FindAllAsync();
         foreach (var extension in extensions)
         {
-            if (package.Id.FullName == extension.Package.Id.FullName)
+            if (package.Id?.FullName == extension.Package?.Id?.FullName)
             {
                 var (devHomeProvider, classId) = await GetDevHomeExtensionPropertiesAsync(extension);
-                return devHomeProvider != null && classId != null;
+                return devHomeProvider != null && classId.Count != 0;
             }
         }
 
         return false;
     }
 
-    private async Task<(IPropertySet?, string?)> GetDevHomeExtensionPropertiesAsync(AppExtension extension)
+    private async Task<(IPropertySet?, List<string>)> GetDevHomeExtensionPropertiesAsync(AppExtension extension)
     {
+        var classIds = new List<string>();
         var properties = await extension.GetExtensionPropertiesAsync();
+
+        if (properties is null)
+        {
+            return (null, classIds);
+        }
 
         var devHomeProvider = GetSubPropertySet(properties, "DevHomeProvider");
         if (devHomeProvider is null)
         {
-            return (null, null);
+            return (null, classIds);
         }
 
         var activation = GetSubPropertySet(devHomeProvider, "Activation");
         if (activation is null)
         {
-            return (devHomeProvider, null);
+            return (devHomeProvider, classIds);
         }
 
-        var comActivation = GetSubPropertySet(activation, "CreateInstance");
-        if (comActivation is null)
-        {
-            return (devHomeProvider, null);
-        }
+        // Handle case where extension creates multiple instances.
+        classIds.AddRange(GetCreateInstanceList(activation));
 
-        var classId = GetProperty(comActivation, "@ClassId");
-        if (classId is null)
-        {
-            return (devHomeProvider, null);
-        }
-
-        return (devHomeProvider, classId);
+        return (devHomeProvider, classIds);
     }
 
     public async Task<IEnumerable<AppExtension>> GetInstalledAppExtensionsAsync()
@@ -163,46 +163,49 @@ public class ExtensionService : IExtensionService, IDisposable
                 var extensions = await GetInstalledAppExtensionsAsync();
                 foreach (var extension in extensions)
                 {
-                    var (devHomeProvider, classId) = await GetDevHomeExtensionPropertiesAsync(extension);
-                    if (devHomeProvider == null || classId == null)
+                    var (devHomeProvider, classIds) = await GetDevHomeExtensionPropertiesAsync(extension);
+                    if (devHomeProvider == null || classIds.Count == 0)
                     {
                         continue;
                     }
 
-                    var extensionWrapper = new ExtensionWrapper(extension, classId);
-
-                    var supportedInterfaces = GetSubPropertySet(devHomeProvider, "SupportedInterfaces");
-                    if (supportedInterfaces is not null)
+                    foreach (var classId in classIds)
                     {
-                        foreach (var supportedInterface in supportedInterfaces)
+                        var extensionWrapper = new ExtensionWrapper(extension, classId);
+
+                        var supportedInterfaces = GetSubPropertySet(devHomeProvider, "SupportedInterfaces");
+                        if (supportedInterfaces is not null)
                         {
-                            ProviderType pt;
-                            if (Enum.TryParse<ProviderType>(supportedInterface.Key, out pt))
+                            foreach (var supportedInterface in supportedInterfaces)
                             {
-                                extensionWrapper.AddProviderType(pt);
-                            }
-                            else
-                            {
-                                // TODO: throw warning or fire notification that extension declared unsupported extension interface
-                                // https://github.com/microsoft/devhome/issues/617
+                                ProviderType pt;
+                                if (Enum.TryParse<ProviderType>(supportedInterface.Key, out pt))
+                                {
+                                    extensionWrapper.AddProviderType(pt);
+                                }
+                                else
+                                {
+                                    // TODO: throw warning or fire notification that extension declared unsupported extension interface
+                                    // https://github.com/microsoft/devhome/issues/617
+                                }
                             }
                         }
+
+                        var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
+                        var extensionUniqueId = extension.AppInfo.AppUserModelId + "!" + extension.Id;
+                        var isExtensionDisabled = await localSettingsService.ReadSettingAsync<bool>(extensionUniqueId + "-ExtensionDisabled");
+
+                        _installedExtensions.Add(extensionWrapper);
+                        if (!isExtensionDisabled)
+                        {
+                            _enabledExtensions.Add(extensionWrapper);
+                        }
+
+                        TelemetryFactory.Get<ITelemetry>().Log(
+                            "Extension_ReportInstalled",
+                            LogLevel.Critical,
+                            new ReportInstalledExtensionEvent(extensionUniqueId, isEnabled: !isExtensionDisabled));
                     }
-
-                    var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                    var extensionUniqueId = extension.AppInfo.AppUserModelId + "!" + extension.Id;
-                    var isExtensionDisabled = await localSettingsService.ReadSettingAsync<bool>(extensionUniqueId + "-ExtensionDisabled");
-
-                    _installedExtensions.Add(extensionWrapper);
-                    if (!isExtensionDisabled)
-                    {
-                        _enabledExtensions.Add(extensionWrapper);
-                    }
-
-                    TelemetryFactory.Get<ITelemetry>().Log(
-                        "Extension_ReportInstalled",
-                        LogLevel.Critical,
-                        new ReportInstalledExtensionEvent(extensionUniqueId, isEnabled: !isExtensionDisabled));
                 }
             }
 
@@ -310,7 +313,55 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private IPropertySet? GetSubPropertySet(IPropertySet propSet, string name)
     {
-        return propSet[name] as IPropertySet;
+        return propSet.TryGetValue(name, out var value) ? value as IPropertySet : null;
+    }
+
+    private object[]? GetSubPropertySetArray(IPropertySet propSet, string name)
+    {
+        return propSet.TryGetValue(name, out var value) ? value as object[] : null;
+    }
+
+    /// <summary>
+    /// There are cases where the extension creates multiple COM instances.
+    /// </summary>
+    /// <param name="activationPropSet">Activation property set object</param>
+    /// <returns>List of ClassId strings associated with the activation property</returns>
+    private List<string> GetCreateInstanceList(IPropertySet activationPropSet)
+    {
+        var propSetList = new List<string>();
+        var singlePropertySet = GetSubPropertySet(activationPropSet, CreateInstanceProperty);
+        if (singlePropertySet != null)
+        {
+            var classId = GetProperty(singlePropertySet, ClassIdProperty);
+
+            // If the instance has a classId as a single string, then it's only supporting a single instance.
+            if (classId != null)
+            {
+                propSetList.Add(classId);
+            }
+        }
+        else
+        {
+            var propertySetArray = GetSubPropertySetArray(activationPropSet, CreateInstanceProperty);
+            if (propertySetArray != null)
+            {
+                foreach (var prop in propertySetArray)
+                {
+                    if (prop is not IPropertySet propertySet)
+                    {
+                        continue;
+                    }
+
+                    var classId = GetProperty(propertySet, ClassIdProperty);
+                    if (classId != null)
+                    {
+                        propSetList.Add(classId);
+                    }
+                }
+            }
+        }
+
+        return propSetList;
     }
 
     private string? GetProperty(IPropertySet propSet, string name)

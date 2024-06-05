@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DevHome.PI.Pages.WinLogsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:local="using:DevHome.PI.Controls"
+    xmlns:models="using:DevHome.PI.Models"
+    xmlns:helpers="using:DevHome.PI.Helpers"
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Uid="WinLogsHeaderTextBlock" FontSize="20" Margin="0,0,0,8" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}"/>
+        <Button Grid.Row="1" x:Uid="RunElevatedButton" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}"/>
+        <StackPanel x:Name="WinLogsOptions" Grid.Row="2" Orientation="Horizontal" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
+            <CheckBox
+                x:Uid="EtwCheckbox" x:Name="EtwCheckbox" IsChecked="{x:Bind ViewModel.IsETWLogsEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.ETWLogs}"
+                Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
+                Content="{x:Bind helpers:WinLogsHelper.EtwLogsName}"/>
+            <CheckBox
+                x:Uid="DebugOutputCheckbox" x:Name="DebugOutputCheckbox" IsChecked="{x:Bind ViewModel.IsDebugOutputEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.DebugOutput}"
+                Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
+                Content="{x:Bind helpers:WinLogsHelper.DebugOutputLogsName}"/>
+            <CheckBox
+                x:Uid="EventViewerCheckbox" x:Name="EventViewerCheckbox" IsChecked="{x:Bind ViewModel.IsEventViewerEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.EventViewer}"
+                Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
+                Content="{x:Bind helpers:WinLogsHelper.EventViewerName}"/>
+            <CheckBox
+                x:Uid="WatsonCheckbox" x:Name="WatsonCheckbox" IsChecked="{x:Bind ViewModel.IsWatsonEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.Watson}"
+                Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
+                Content="{x:Bind helpers:WinLogsHelper.WatsonName}"/>
+            <Button
+                x:Uid="ClearWinLogsButton" x:Name="ClearWinLogsButton"
+                BorderThickness="0" Command="{x:Bind ViewModel.ClearWinLogsCommand}">
+                <TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="20"/>
+            </Button>
+            <local:GlowButton 
+                x:Uid="InsightsButton" x:Name="InsightsButton" Margin="6,0,0,0"
+                BorderThickness="0"              
+                Text="&#xE946;" FontFamily="Segoe Fluent Icons" FontSize="20" Foreground="#0089FF"
+                Command="{x:Bind ViewModel.ShowInsightsPageCommand}" 
+                Visibility="{x:Bind ViewModel.InsightsButtonVisibility, Mode=OneWay}">
+            </local:GlowButton>
+
+        </StackPanel>
+        <controls:DataGrid
+            x:Name="WinLogsDataGrid" Grid.Row="3" Margin="0,6,0,0"
+            VerticalScrollBarVisibility="Visible"
+            AlternatingRowBackground="Transparent"
+            AlternatingRowForeground="Gray"
+            AreRowDetailsFrozen="False"
+            AreRowGroupHeadersFrozen="True"
+            AutoGenerateColumns="False"
+            CanUserSortColumns="False"
+            CanUserReorderColumns="True"
+            CanUserResizeColumns="True"
+            ColumnHeaderHeight="32"
+            FrozenColumnCount="0"
+            GridLinesVisibility="None"
+            HeadersVisibility="Column"
+            CopyingRowClipboardContent="ViewModel.UpdateClipboardContent"
+            ItemsSource="{x:Bind ViewModel.WinLogEntries, Mode=OneWay}"
+            Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
+        <controls:DataGrid.Columns>
+            <controls:DataGridTextColumn x:Uid="TimeGeneratedColumn" Binding="{Binding TimeGenerated}" Width="180"/>
+            <controls:DataGridTextColumn x:Uid="LogCategoryColumn" Binding="{Binding Category}" Width="110"/>
+            <controls:DataGridTextColumn x:Uid="LogToolColumn" Binding="{Binding Tool}" Width="100"/>
+            <controls:DataGridTemplateColumn x:Uid="LogMessageColumn" Width="*" ClipboardContentBinding="{Binding Message}">
+                <controls:DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" TextWrapping="Wrap" Foreground="{Binding RowColor}" IsReadOnly="True"/>
+                    </DataTemplate>
+                </controls:DataGridTemplateColumn.CellTemplate>
+            </controls:DataGridTemplateColumn>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+    </Grid>
+</Page>

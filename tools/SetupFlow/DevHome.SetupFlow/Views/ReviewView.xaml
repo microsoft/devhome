@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation.. -->
+﻿<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <UserControl
@@ -13,6 +13,7 @@
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:selectors="using:DevHome.SetupFlow.Selectors"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:environmentViews="using:DevHome.SetupFlow.Views.Environments"
     xmlns:views="using:DevHome.SetupFlow.Views"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -51,17 +52,46 @@
         </Grid>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
 
-    <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
-                         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
-                         Foreground="{ThemeResource TextFillColorSecondary}">
+    <controls:SetupShell
+        Title="{x:Bind ViewModel.PageTitle, Mode=OneWay}"
+        Description="{x:Bind ViewModel.ReviewPageDescription}"
+        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
+        Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+        Foreground="{ThemeResource TextFillColorSecondary}">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           IsExpanded="true"
-                          MinHeight="64" CornerRadius="4" Padding="24,0,24,7" >
+                          MinHeight="64" CornerRadius="{ThemeResource ControlCornerRadius}" Padding="24,0,24,7"
+                          AutomationProperties.Name="{x:Bind ViewModel.ReviewPageExpanderDescription, Mode=OneWay}">
                     <Expander.Header>
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
-                                   x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_SetUpDetails" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock VerticalAlignment="Center"
+                                       Style="{StaticResource BodyStrongTextBlockStyle}" 
+                                       Text="{x:Bind ViewModel.ReviewPageExpanderDescription, Mode=OneWay}" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" Visibility="{x:Bind ViewModel.ShouldShowGenerateConfigurationFile}">
+                                <Button Command="{x:Bind ViewModel.DownloadConfigurationCommand}"
+                                        x:Uid="Review_GenerateConfigurationFileButton"/>
+                                <!-- Info icon -->
+                                <Button Style="{ThemeResource AlternateCloseButtonStyle}"
+                                        x:Name="GenerateConfigInfoButton"
+                                        PointerEntered="GenerateConfigInfoButton_PointerEntered"
+                                        Click="GenerateConfigInfoButton_Click">
+                                    <TextBlock Text="&#xE946;"
+                                               FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                               VerticalAlignment="Center"/>
+                                </Button>
+                                <TeachingTip x:Name="GenerateConfigInfoTeachingTip"
+                                             x:Uid="Review_DownloadFileTooltip"
+                                             Target="{x:Bind GenerateConfigInfoButton}"
+                                             IsLightDismissEnabled="True"/>
+                            </StackPanel>
+                        </Grid>
                     </Expander.Header>
                     <Expander.Content>
                         <Grid MinHeight="266">
@@ -96,6 +126,11 @@
                                                     VerticalContentAlignment="Stretch" >
                                         <ContentControl.ContentTemplateSelector>
                                             <selectors:ReviewTabViewSelector>
+                                                <selectors:ReviewTabViewSelector.SetupTargetTabTemplate>
+                                                    <DataTemplate>
+                                                        <views:SetupTargetReviewView />
+                                                    </DataTemplate>
+                                                </selectors:ReviewTabViewSelector.SetupTargetTabTemplate>
                                                 <selectors:ReviewTabViewSelector.DevDriveTabTemplate>
                                                     <DataTemplate>
                                                         <views:DevDriveReviewView />
@@ -111,6 +146,11 @@
                                                         <views:AppManagementReviewView />
                                                     </DataTemplate>
                                                 </selectors:ReviewTabViewSelector.AppManagementTabTemplate>
+                                                <selectors:ReviewTabViewSelector.CreateEnvironmentTabTemplate>
+                                                    <DataTemplate>
+                                                        <environmentViews:CreateEnvironmentReviewView />
+                                                    </DataTemplate>
+                                                </selectors:ReviewTabViewSelector.CreateEnvironmentTabTemplate>
                                             </selectors:ReviewTabViewSelector>
                                         </ContentControl.ContentTemplateSelector>
                                     </ContentControl>

@@ -37,3 +37,16 @@ public interface INavigationService
 
     bool GoForward();
 }
+
+// Expose known page keys so that a project doesn't need to include a ProjectReference to another project
+// just to navigate to another page.
+public static class KnownPageKeys
+{
+    public static readonly string Dashboard = "DevHome.Dashboard.ViewModels.DashboardViewModel";
+    public static readonly string Extensions = "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel";
+    public static readonly string WhatsNew = "DevHome.ViewModels.WhatsNewViewModel";
+    public static readonly string Settings = "DevHome.Settings.ViewModels.SettingsViewModel";
+    public static readonly string Feedback = "DevHome.Settings.ViewModels.FeedbackViewModel";
+    public static readonly string Environments = "DevHome.Environments.ViewModels.LandingPageViewModel";
+    public static readonly string SetupFlow = "DevHome.SetupFlow.ViewModels.SetupFlowViewModel";
+}

@@ -20,7 +20,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Spacing="6" Visibility="{x:Bind HeaderVisibility, Mode=OneWay}">
+        <StackPanel Spacing="6" Visibility="{x:Bind HeaderVisibility, Mode=OneWay}"
+                    MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <!-- Title -->
             <TextBlock
                 Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -91,10 +92,35 @@
         </StackPanel>
 
         <!-- Content -->
-        <ContentControl Grid.Row="3" Grid.ColumnSpan="2"
-                        IsTabStop="False"
-                        HorizontalContentAlignment="Stretch"
-                        VerticalContentAlignment="Stretch"
-                        Content="{x:Bind SetupShellContent, Mode=OneWay}" />
+        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind ContentVisibility}">
+            <ContentControl IsTabStop="False"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Content="{x:Bind SetupShellContent, Mode=OneWay}" >
+                <ContentControl.Template>
+                    <ControlTemplate TargetType="ContentControl">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}"/>
+                    </ControlTemplate>
+                </ContentControl.Template>
+            </ContentControl>
+        </ScrollViewer>
+
+        <!-- Notification -->
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind SetupShellNotificationVisibility}">
+            <ContentControl 
+                IsTabStop="False"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Content="{x:Bind SetupShellNotification, Mode=OneWay}">
+                <ContentControl.Template>
+                    <ControlTemplate TargetType="ContentControl">
+                        <ContentPresenter 
+                            Content="{TemplateBinding Content}"
+                            MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}"/>
+                    </ControlTemplate>
+                </ContentControl.Template>
+            </ContentControl>
+        </Grid>
     </Grid>
 </UserControl>

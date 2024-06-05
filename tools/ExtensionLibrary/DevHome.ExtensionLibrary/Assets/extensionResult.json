@@ -1,5 +1,5 @@
 {
-  "ProductIds": [ "9NB9M5KZ8SLX", "9MV8F79FGXTR", "9NZCC27PR6N6" ],
+  "ProductIds": [ "9NB9M5KZ8SLX", "9NZ845RW19RW", "9MV8F79FGXTR", "9NZCC27PR6N6" ],
   "Products": [
     {
       "LocalizedProperties": [
@@ -11,6 +11,18 @@
       "ProductId": "9NB9M5KZ8SLX",
       "Properties": {
         "PackageFamilyName": "9932MartCliment.WingetUIWidgets_g91dtg5srk15g"
+      }
+    },
+    {
+      "LocalizedProperties": [
+        {
+          "PublisherName": "Microsoft Corporation",
+          "ProductTitle": "Microsoft Game Dev Extension (Preview)"
+        }
+      ],
+      "ProductId": "9NZ845RW19RW",
+      "Properties": {
+        "PackageFamilyName": "Microsoft.DevHomeMicrosoftGameDevExtension_8wekyb3d8bbwe"
       }
     },
     {
@@ -38,5 +50,5 @@
       }
     }
   ],
-  "TotalResultCount": 3
+  "TotalResultCount": 4
 }

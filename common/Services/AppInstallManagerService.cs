@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using DevHome.Common.Helpers;
+using Serilog;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.Foundation;
 
@@ -15,6 +15,8 @@ namespace DevHome.Services;
 /// </summary>
 public class AppInstallManagerService : IAppInstallManagerService
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AppInstallManagerService));
+
     private readonly AppInstallManager _appInstallManager;
 
     private static readonly TimeSpan StoreInstallTimeout = new(0, 0, 60);
@@ -95,7 +97,7 @@ public class AppInstallManagerService : IAppInstallManagerService
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError("Package installation Failed", ex);
+            _log.Error(ex, "Package installation Failed");
         }
 
         return false;
@@ -109,19 +111,26 @@ public class AppInstallManagerService : IAppInstallManagerService
             AppInstallItem installItem;
             try
             {
-                Log.Logger()?.ReportInfo("WidgetHostingService", $"Starting {packageId} install");
+                _log.Information($"Starting {packageId} install");
                 installItem = _appInstallManager.StartAppInstallAsync(packageId, null, true, false).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportInfo("WidgetHostingService", $"{packageId} install failure");
+                _log.Error($"{packageId} install failure");
                 tcs.SetException(ex);
                 return tcs.Task;
             }
 
             installItem.Completed += (sender, args) =>
             {
-                tcs.SetResult(true);
+                if (!tcs.TrySetResult(true))
+                {
+                    _log.Information("WidgetHostingService", $"{packageId} In Completed handler, RanToCompleted already set.");
+                }
+                else
+                {
+                    _log.Information("WidgetHostingService", $"{packageId} In Completed handler, RanToCompleted set.");
+                }
             };
 
             installItem.StatusChanged += (sender, args) =>
@@ -133,7 +142,14 @@ public class AppInstallManagerService : IAppInstallManagerService
                 }
                 else if (installItem.GetCurrentStatus().InstallState == AppInstallState.Completed)
                 {
-                    tcs.SetResult(true);
+                    if (!tcs.TrySetResult(true))
+                    {
+                        _log.Information("WidgetHostingService", $"{packageId} In StatusChanged handler, RanToCompleted already set.");
+                    }
+                    else
+                    {
+                        _log.Information("WidgetHostingService", $"{packageId} In StatusChanged handler, RanToCompleted set.");
+                    }
                 }
             };
             return tcs.Task;

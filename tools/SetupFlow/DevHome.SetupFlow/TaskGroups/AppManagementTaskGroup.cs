@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -25,9 +26,19 @@ public class AppManagementTaskGroup : ISetupTaskGroup
         _appManagementReviewViewModel = appManagementReviewViewModel;
     }
 
-    public IEnumerable<ISetupTask> SetupTasks => _packageProvider.SelectedPackages.Select(sp => sp.InstallPackageTask);
+    public IEnumerable<ISetupTask> SetupTasks => _packageProvider.SelectedPackages
+        .Where(sp => sp.CanInstall)
+        .Select(sp => sp.InstallPackageTask);
+
+    public IEnumerable<ISetupTask> DSCTasks => _packageProvider.SelectedPackages
+        .Select(sp => sp.InstallPackageTask);
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _appManagementViewModel;
 
     public ReviewTabViewModelBase GetReviewTabViewModel() => _appManagementReviewViewModel;
+
+    public void HandleSearchQuery(string query)
+    {
+        _appManagementViewModel.PerformSearch(query);
+    }
 }

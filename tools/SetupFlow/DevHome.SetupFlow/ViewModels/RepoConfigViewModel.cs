@@ -11,7 +11,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow.RepoTool;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -19,6 +18,7 @@ using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -27,6 +27,8 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class RepoConfigViewModel : SetupPageViewModelBase
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepoConfigViewModel));
+
     /// <summary>
     /// All the tasks that need to be ran during the loading page.
     /// </summary>
@@ -74,7 +76,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
             }
             catch (Exception ex)
             {
-                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Unable to check if Dev Drive checkbox should be auto checked: {ex.Message}");
+                _log.Information($"Unable to check if Dev Drive checkbox should be auto checked: {ex.Message}");
                 _shouldAutoCheckDevDriveCheckbox = false;
             }
 
@@ -83,6 +85,9 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
         set => _shouldAutoCheckDevDriveCheckbox = value;
     }
+
+    [ObservableProperty]
+    private string _pageSubTitle;
 
     /// <summary>
     /// All repositories the user wants to clone.
@@ -109,21 +114,18 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         _themeSelectorService = host.GetService<IThemeSelectorService>();
         _themeSelectorService.ThemeChanged += OnThemeChanged;
         Host = host;
+
+        PageSubTitle = Orchestrator.IsSettingUpLocalMachine
+            ? stringResource.GetLocalized(StringResourceKey.SetupShellRepoConfigLocalMachine)
+            : stringResource.GetLocalized(StringResourceKey.SetupShellRepoConfigTargetMachine);
     }
 
-    private void OnThemeChanged(object sender, ElementTheme e)
+    private void OnThemeChanged(object sender, ElementTheme newRequestedTheme)
     {
-        var themeToSwitchTo = e;
-
-        if (themeToSwitchTo == ElementTheme.Default)
-        {
-            themeToSwitchTo = _themeSelectorService.GetActualTheme();
-        }
-
         // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
         foreach (var cloneInformation in RepoReviewItems)
         {
-            cloneInformation.SetIcon(themeToSwitchTo);
+            cloneInformation.SetIcon(_themeSelectorService.GetActualTheme());
         }
     }
 
@@ -181,7 +183,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// <param name="cloningInformation">The cloning information to remove.</param>
     public void RemoveCloningInformation(CloningInformation cloningInformation)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {cloningInformation.RepositoryId} from repos to clone");
+        _log.Information($"Removing repository {cloningInformation.RepositoryId} from repos to clone");
         RepoReviewItems.Remove(cloningInformation);
 
         // force collection to be empty(?) converter won't fire otherwise.
@@ -211,12 +213,12 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// <param name="cloningInfo">Cloning info that has a new path for the Dev Drive</param>
     public void UpdateCollectionWithDevDriveInfo(CloningInformation cloningInfo)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Updating dev drive location on repos to clone after change to dev drive");
+        _log.Information("Updating dev drive location on repos to clone after change to dev drive");
         foreach (var item in RepoReviewItems)
         {
             if (item.CloneToDevDrive && item.CloningLocation != cloningInfo.CloningLocation)
             {
-                Log.Logger?.ReportDebug(Log.Component.RepoConfig, $"Updating {item.RepositoryId}");
+                _log.Debug($"Updating {item.RepositoryId}");
                 item.CloningLocation = new System.IO.DirectoryInfo(cloningInfo.CloningLocation.FullName);
                 item.CloneLocationAlias = cloningInfo.CloneLocationAlias;
             }
@@ -237,7 +239,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
     public void ReportDialogCancellation()
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repo add/edit dialog cancelled");
+        _log.Information("Repo add/edit dialog cancelled");
         RepoDialogCancelled();
     }
 }

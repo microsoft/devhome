@@ -2,9 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Configuration;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services.WinGet;
 using Windows.Storage;
 
@@ -33,6 +36,16 @@ internal sealed class DesiredStateConfiguration : IDesiredStateConfiguration
     }
 
     /// <inheritdoc />
+    public async Task<IReadOnlyList<DSCConfigurationUnit>> GetConfigurationUnitDetailsAsync(Configuration configuration, Guid activityId)
+    {
+        var configFile = await OpenConfigurationSetAsync(configuration.Path, configuration.Content, activityId);
+        await configFile.ResolveConfigurationUnitDetails();
+        var configUnitsOutOfProc = configFile.Units;
+        var configUnitsInProc = configUnitsOutOfProc.Select(unit => new DSCConfigurationUnit(unit));
+        return configUnitsInProc.ToList();
+    }
+
+    /// <inheritdoc />
     public async Task<ConfigurationFileHelper.ApplicationResult> ApplyConfigurationAsync(string filePath, Guid activityId)
     {
         // Apply the configuration file after opening it.
@@ -48,10 +61,15 @@ internal sealed class DesiredStateConfiguration : IDesiredStateConfiguration
     /// <returns>Configuration file helper</returns>
     private async Task<ConfigurationFileHelper> OpenConfigurationSetAsync(string filePath, Guid activityId)
     {
-        var configFile = new ConfigurationFileHelper(activityId);
         var file = await StorageFile.GetFileFromPathAsync(filePath);
         var content = File.ReadAllText(file.Path);
-        await configFile.OpenConfigurationSetAsync(file.Path, content);
+        return await OpenConfigurationSetAsync(file.Path, content, activityId);
+    }
+
+    private async Task<ConfigurationFileHelper> OpenConfigurationSetAsync(string filePath, string content, Guid activityId)
+    {
+        var configFile = new ConfigurationFileHelper(activityId);
+        await configFile.OpenConfigurationSetAsync(filePath, content);
         return configFile;
     }
 }

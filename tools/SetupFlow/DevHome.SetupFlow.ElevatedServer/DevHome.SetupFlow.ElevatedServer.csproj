@@ -5,11 +5,13 @@
   <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
+    <ApplicationIcon Condition="'$(BuildRing)'=='Dev'">$(SolutionDir)\src\Assets\Dev\DevHome_Dev.ico</ApplicationIcon>
     <ApplicationIcon Condition="'$(BuildRing)'=='Canary'">$(SolutionDir)\src\Assets\Canary\DevHome_Canary.ico</ApplicationIcon>
-    <ApplicationIcon Condition="'$(BuildRing)'!='Canary'">$(SolutionDir)\src\Assets\Preview\DevHome_Preview.ico</ApplicationIcon>
+    <ApplicationIcon Condition="'$(BuildRing)'=='Stable'">$(SolutionDir)\src\Assets\Preview\DevHome_Preview.ico</ApplicationIcon>
     <Platforms>x86;x64;arm64</Platforms>
-    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
-    <PublishProfileFullPath Condition="'$(BuildingInsideVisualStudio)' != 'True'">$(SolutionDir)\src\Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfileFullPath>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <PublishProfileFullPath Condition="'$(BuildingInsideVisualStudio)' != 'True'">$(SolutionDir)\src\Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfileFullPath>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <StartupObject>DevHome.SetupFlow.ElevatedServer.Program</StartupObject>
@@ -20,7 +22,7 @@
     <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent\DevHome.SetupFlow.ElevatedComponent.csproj" />
   </ItemGroup>
 
-  <!-- The server .exe requires the .winmd to be located next to it. The project reference 
+  <!-- The server .exe requires the .winmd to be located next to it. The project reference
         is not enough to have it automatically placed there. Manually include it in the outputs. -->
   <ItemGroup>
     <Content Include="..\DevHome.SetupFlow.ElevatedComponent\bin\$(Platform)\$(Configuration)\$(TargetFramework)\DevHome.SetupFlow.ElevatedComponent.winmd">

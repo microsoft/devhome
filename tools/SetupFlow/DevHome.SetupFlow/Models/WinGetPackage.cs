@@ -8,6 +8,7 @@ using System.Threading;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.Management.Deployment;
+using Serilog;
 using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.Models;
@@ -17,6 +18,8 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public class WinGetPackage : IWinGetPackage
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WinGetPackage));
+
     public WinGetPackage(CatalogPackage package, bool requiresElevated)
     {
         // WinGetPackage constructor copies all the required data from the
@@ -98,7 +101,7 @@ public class WinGetPackage : IWinGetPackage
         }
         catch
         {
-            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package metadata [{metadataFieldName}] for package {package.Id}; defaulting to {defaultValue}");
+            _log.Warning($"Failed to get package metadata [{metadataFieldName}] for package {package.Id}; defaulting to {defaultValue}");
             return defaultValue;
         }
     }
@@ -130,7 +133,7 @@ public class WinGetPackage : IWinGetPackage
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Unable to validate if the version {versionInfo.Version} is in the list of available versions", e);
+            _log.Error(e, $"Unable to validate if the version {versionInfo.Version} is in the list of available versions");
         }
 
         return versionInfo.Version;

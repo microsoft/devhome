@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.Utilities.Views.UtilityView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    mc:Ignorable="d" 
+    d:DesignHeight="300" d:DesignWidth="300">
+
+    <Grid
+        AutomationProperties.Name="{x:Bind ViewModel.Title}"
+        HorizontalAlignment="Stretch"
+        Padding="15 15"
+        CornerRadius="{ThemeResource ControlCornerRadius}"
+        Margin="0"
+        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+        BorderThickness="{ThemeResource ExpanderBorderThickness}"
+        Visibility="{x:Bind ViewModel.Visible}">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Image
+            AutomationProperties.AccessibilityView="Raw"
+            Grid.Row="0"
+            Source="{x:Bind ViewModel.ImageSource}"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Margin="15 5 0 0"
+            Width="64"
+            Height="64"/>
+
+        <ScrollViewer
+            Grid.Row="1"
+            Padding="15 10 15 8">
+
+            <StackPanel>
+                <TextBlock
+                    HorizontalAlignment="Left"
+                    Style="{ThemeResource BodyTextStyle}"
+                    Text="{x:Bind ViewModel.Title}" />
+
+                <TextBlock
+                    Margin="0 16 0 5"
+                    TextWrapping="Wrap"
+                    VerticalAlignment="Top"
+                    TextTrimming="WordEllipsis"
+                    Text="{x:Bind ViewModel.Description}"/>
+
+                <HyperlinkButton
+                    Content="Learn More"
+                    NavigateUri="{x:Bind ViewModel.NavigateUri}"
+                    VerticalAlignment="Top"
+                    Padding="0 0 0 0"
+                    HorizontalAlignment="Left"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <ToggleSwitch
+            x:Uid="SupportsLaunchAsAdmin"
+            Grid.Row="2"
+            IsOn="{x:Bind ViewModel.LaunchAsAdmin, Mode=TwoWay}"
+            Visibility="{x:Bind ViewModel.SupportsLaunchAsAdmin, Mode=OneWay}"
+            Margin="15 0 0 5"/>
+
+        <Button
+            x:Uid="LaunchButtonBase"
+            Grid.Row="3"
+            Margin="15 5 0 0"
+            Command="{x:Bind ViewModel.LaunchCommand}">
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Uid="LaunchButton" />
+            </StackPanel>
+        </Button>
+
+    </Grid>
+</UserControl>

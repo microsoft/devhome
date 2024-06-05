@@ -6,17 +6,19 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Dashboard.Services;
-using DevHome.Logging;
 using DevHome.Services;
 using DevHome.Views;
 using Microsoft.UI.Xaml;
+using Serilog;
 
 namespace DevHome.ViewModels;
 
 public class InitializationViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(InitializationViewModel));
+
     private readonly IThemeSelectorService _themeSelector;
-    private readonly IWidgetHostingService _widgetHostingService;
+    private readonly IWidgetServiceService _widgetServiceService;
     private readonly IAppInstallManagerService _appInstallManagerService;
     private readonly IPackageDeploymentService _packageDeploymentService;
 
@@ -33,12 +35,12 @@ public class InitializationViewModel : ObservableObject
 
     public InitializationViewModel(
         IThemeSelectorService themeSelector,
-        IWidgetHostingService widgetHostingService,
+        IWidgetServiceService widgetServiceService,
         IAppInstallManagerService appInstallManagerService,
         IPackageDeploymentService packageDeploymentService)
     {
         _themeSelector = themeSelector;
-        _widgetHostingService = widgetHostingService;
+        _widgetServiceService = widgetServiceService;
         _appInstallManagerService = appInstallManagerService;
         _packageDeploymentService = packageDeploymentService;
     }
@@ -48,39 +50,39 @@ public class InitializationViewModel : ObservableObject
         // Install the widget service if we're on Windows 10 and it's not already installed.
         try
         {
-            if (_widgetHostingService.CheckForWidgetServiceAsync())
+            if (_widgetServiceService.CheckForWidgetServiceAsync())
             {
-                GlobalLog.Logger?.ReportInfo("InitializationViewModel", "Skipping installing WidgetService, already installed.");
+                _log.Information("Skipping installing WidgetService, already installed.");
             }
             else
             {
-                if (_widgetHostingService.GetWidgetServiceState() == WidgetHostingService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion)
+                if (_widgetServiceService.GetWidgetServiceState() == WidgetServiceService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion)
                 {
                     // We're on Windows 10 and don't have the widget service, try to install it.
-                    await _widgetHostingService.TryInstallingWidgetService();
+                    await _widgetServiceService.TryInstallingWidgetService();
                 }
             }
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportInfo("InitializationViewModel", "Installing WidgetService failed: ", ex);
+            _log.Information(ex, "Installing WidgetService failed: ");
         }
 
         // Install the DevHomeGitHubExtension, unless it's already installed or a dev build is running.
         if (string.IsNullOrEmpty(GitHubExtensionStorePackageId) || HasDevHomeGitHubExtensionInstalled())
         {
-            GlobalLog.Logger?.ReportInfo("InitializationViewModel", "Skipping installing DevHomeGitHubExtension.");
+            _log.Information("Skipping installing DevHomeGitHubExtension.");
         }
         else
         {
             try
             {
-                GlobalLog.Logger?.ReportInfo("InitializationViewModel", "Installing DevHomeGitHubExtension...");
+                _log.Information("Installing DevHomeGitHubExtension...");
                 await _appInstallManagerService.TryInstallPackageAsync(GitHubExtensionStorePackageId);
             }
             catch (Exception ex)
             {
-                GlobalLog.Logger?.ReportInfo("InitializationViewModel", "Installing DevHomeGitHubExtension failed: ", ex);
+                _log.Information(ex, "Installing DevHomeGitHubExtension failed: ");
             }
         }
 

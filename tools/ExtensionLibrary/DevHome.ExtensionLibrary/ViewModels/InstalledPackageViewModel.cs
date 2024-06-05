@@ -9,7 +9,6 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel;
 using Windows.System;
@@ -88,7 +87,7 @@ public partial class InstalledExtensionViewModel : ObservableObject
 public partial class InstalledPackageViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string _title;
+    private string _displayName;
 
     [ObservableProperty]
     private string _publisher;
@@ -102,15 +101,19 @@ public partial class InstalledPackageViewModel : ObservableObject
     [ObservableProperty]
     private PackageVersion _version;
 
+    [ObservableProperty]
+    private string _automationMoreOptionsPfn;
+
     public ObservableCollection<InstalledExtensionViewModel> InstalledExtensionsList { get; set; }
 
-    public InstalledPackageViewModel(string title, string publisher, string packageFamilyName, DateTimeOffset installedDate, PackageVersion version)
+    public InstalledPackageViewModel(string displayName, string publisher, string packageFamilyName, DateTimeOffset installedDate, PackageVersion version)
     {
-        _title = title;
+        _displayName = displayName;
         _publisher = publisher;
         _packageFamilyName = packageFamilyName;
         _installedDate = installedDate;
         _version = version;
+        _automationMoreOptionsPfn = $"MoreOptions_{packageFamilyName}";
         InstalledExtensionsList = new();
     }
 
@@ -129,9 +132,9 @@ public partial class InstalledPackageViewModel : ObservableObject
 
     public string GeneratePackageDetails(PackageVersion version, string publisher, DateTimeOffset installedDate)
     {
-        var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.ExtensionLibrary.pri", "DevHome.ExtensionLibrary/Resources");
-        var versionLabel = resourceLoader.GetString("Version");
-        var lastUpdatedLabel = resourceLoader.GetString("LastUpdated");
+        var stringResource = new StringResource("DevHome.ExtensionLibrary.pri", "DevHome.ExtensionLibrary/Resources");
+        var versionLabel = stringResource.GetLocalized("Version");
+        var lastUpdatedLabel = stringResource.GetLocalized("LastUpdated");
 
         var versionString = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 

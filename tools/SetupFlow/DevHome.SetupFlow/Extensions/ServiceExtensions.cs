@@ -10,6 +10,7 @@ using DevHome.SetupFlow.Services.WinGet;
 using DevHome.SetupFlow.Services.WinGet.Operations;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.ViewModels;
+using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -23,6 +24,7 @@ public static class ServiceExtensions
     public static IServiceCollection AddSetupFlow(this IServiceCollection services, HostBuilderContext context)
     {
         // Project services
+        services.AddSetupTarget();
         services.AddAppManagement();
         services.AddConfigurationFile();
         services.AddDevDrive();
@@ -31,6 +33,9 @@ public static class ServiceExtensions
         services.AddRepoConfig();
         services.AddReview();
         services.AddSummary();
+        services.AddQuickstart();
+        services.AddSummaryInformation();
+        services.AddCreateEnvironment();
 
         // View-models
         services.AddSingleton<SetupFlowViewModel>();
@@ -107,6 +112,17 @@ public static class ServiceExtensions
         // Services
         services.AddTransient<ConfigurationFileTaskGroup>();
 
+        // Builder
+        services.AddSingleton<ConfigurationFileBuilder>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddSummaryInformation(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<CloneRepoSummaryInformationViewModel>();
+
         return services;
     }
 
@@ -129,6 +145,7 @@ public static class ServiceExtensions
     {
         // View models
         services.AddTransient<LoadingViewModel>();
+        services.AddTransient<LoadingMessageViewModel>();
 
         return services;
     }
@@ -166,6 +183,43 @@ public static class ServiceExtensions
     {
         // View models
         services.AddTransient<SummaryViewModel>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddSetupTarget(this IServiceCollection services)
+    {
+        // View models
+        services.AddSingleton<ComputeSystemViewModelFactory>();
+        services.AddTransient<SetupTargetViewModel>();
+        services.AddTransient<SetupTargetReviewViewModel>();
+        services.AddTransient<SetupTargetTaskGroup>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddQuickstart(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<QuickstartPlaygroundViewModel>();
+
+        // Services
+        services.AddTransient<DeveloperQuickstartTaskGroup>();
+        services.AddSingleton<IQuickStartProjectService, QuickStartProjectService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCreateEnvironment(this IServiceCollection services)
+    {
+        // Task groups
+        services.AddTransient<EnvironmentCreationOptionsTaskGroup>();
+        services.AddTransient<SelectEnvironmentProviderTaskGroup>();
+
+        // View models
+        services.AddTransient<CreateEnvironmentReviewViewModel>();
+        services.AddTransient<EnvironmentCreationOptionsViewModel>();
+        services.AddTransient<SelectEnvironmentProviderViewModel>();
 
         return services;
     }

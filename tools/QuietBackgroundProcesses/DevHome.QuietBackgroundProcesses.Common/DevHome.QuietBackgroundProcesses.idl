@@ -1,0 +1,79 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+import "inspectable.idl";
+import "windows.foundation.idl";
+
+namespace DevHome.QuietBackgroundProcesses
+{
+    // Performance Engine types
+    enum ProcessCategory
+    {
+        Unknown,
+        User,
+        System,
+        Developer,
+        Background,
+    };
+
+    [default_interface]
+    runtimeclass ProcessRow
+    {
+        UInt32 Pid { get; };
+        String Name { get; };
+        String ServiceName { get; };
+        String PackageFullName { get; };
+        String Aumid { get; };
+        String Path { get; };
+        ProcessCategory Category { get; };
+        Windows.Foundation.DateTime CreateTime { get; };
+        Windows.Foundation.DateTime ExitTime { get; };
+
+        UInt64 SampleCount { get; };
+        Double PercentCumulative { get; };
+        Double VarianceCumulative { get; };
+        Double Sigma4Cumulative { get; };
+        Double MaxPercent { get; };
+        UInt32 SamplesAboveThreshold { get; };
+
+        UInt64 TotalCpuTimeInMicroseconds { get; };
+    }
+
+    [default_interface]
+    runtimeclass ProcessPerformanceTable
+    {
+        ProcessRow[] Rows { get; };
+    }
+
+    [default_interface]
+    runtimeclass PerformanceRecorderEngine
+    {
+        static ProcessPerformanceTable TryGetLastPerformanceRecording();
+
+        PerformanceRecorderEngine();
+        void Start(Windows.Foundation.TimeSpan periodInMs);
+        ProcessPerformanceTable Stop();
+    }
+
+    // Quiet background process types
+    [default_interface]
+    runtimeclass QuietBackgroundProcessesSession
+    {
+        static QuietBackgroundProcessesSession GetSingleton();
+
+        Int64 Start();
+        ProcessPerformanceTable Stop();
+        Boolean IsActive { get; };
+        Int64 TimeLeftInSeconds { get; };
+    }
+
+    [default_interface]
+    runtimeclass QuietBackgroundProcessesSessionManager {
+        QuietBackgroundProcessesSessionManager();
+        static Boolean IsFeaturePresent();
+        static QuietBackgroundProcessesSession GetSession();
+        static QuietBackgroundProcessesSession TryGetSession();
+        static Boolean HasLastPerformanceRecording();
+        static ProcessPerformanceTable TryGetLastPerformanceRecording();
+    }
+}

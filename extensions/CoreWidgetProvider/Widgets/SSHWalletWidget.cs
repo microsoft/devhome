@@ -21,8 +21,6 @@ internal sealed class SSHWalletWidget : CoreWidget
 
     private FileSystemWatcher? FileWatcher { get; set; }
 
-    private static readonly new string Name = nameof(SSHWalletWidget);
-
     private string ConfigFile
     {
         get => State();
@@ -53,7 +51,7 @@ internal sealed class SSHWalletWidget : CoreWidget
             return;
         }
 
-        Log.Logger()?.ReportDebug(Name, ShortId, "Getting SSH Hosts");
+        Log.Debug("Getting SSH Hosts");
 
         // Read host entries from SSH config file and fill ContentData.
         // Widget will show host entries declared in ConfigFile.
@@ -85,7 +83,7 @@ internal sealed class SSHWalletWidget : CoreWidget
         }
         catch (Exception e)
         {
-            Log.Logger()?.ReportError(Name, ShortId, "Error retrieving data.", e);
+            Log.Error(e, "Error retrieving data.");
             var content = new JsonObject
             {
                 { "errorMessage", e.Message },
@@ -107,7 +105,7 @@ internal sealed class SSHWalletWidget : CoreWidget
     public override void OnActionInvoked(WidgetActionInvokedArgs actionInvokedArgs)
     {
         var verb = GetWidgetActionForVerb(actionInvokedArgs.Verb);
-        Log.Logger()?.ReportDebug(Name, ShortId, $"ActionInvoked: {verb}");
+        Log.Debug($"ActionInvoked: {verb}");
 
         switch (verb)
         {
@@ -120,7 +118,7 @@ internal sealed class SSHWalletWidget : CoreWidget
                 break;
 
             case WidgetAction.Unknown:
-                Log.Logger()?.ReportError(Name, ShortId, $"Unknown verb: {actionInvokedArgs.Verb}");
+                Log.Error($"Unknown verb: {actionInvokedArgs.Verb}");
                 break;
 
             case WidgetAction.Save:
@@ -306,14 +304,14 @@ internal sealed class SSHWalletWidget : CoreWidget
                 }
                 else
                 {
-                    configurationData = FillConfigurationData(false, data, 0, Resources.GetResource(@"SSH_Widget_Template/ConfigFileNotFound", Logger()));
+                    configurationData = FillConfigurationData(false, data, 0, Resources.GetResource(@"SSH_Widget_Template/ConfigFileNotFound", Log));
                 }
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError(Name, ShortId, $"Failed getting configuration information for input config file path: {data}", ex);
+                Log.Error(ex, $"Failed getting configuration information for input config file path: {data}");
 
-                configurationData = FillConfigurationData(false, data, 0, Resources.GetResource(@"SSH_Widget_Template/ErrorProcessingConfigFile", Logger()));
+                configurationData = FillConfigurationData(false, data, 0, Resources.GetResource(@"SSH_Widget_Template/ErrorProcessingConfigFile", Log));
 
                 return configurationData.ToString();
             }
@@ -348,7 +346,7 @@ internal sealed class SSHWalletWidget : CoreWidget
             CustomState = ConfigFile,
         };
 
-        Log.Logger()?.ReportDebug(Name, ShortId, $"Updating widget for {Page}");
+        Log.Debug($"Updating widget for {Page}");
         WidgetManager.GetDefault().UpdateWidget(updateOptions);
     }
 

@@ -24,10 +24,11 @@ public static class ServiceExtensions
                 ActivatorUtilities.CreateInstance<WidgetViewModel>(sp, widget, widgetSize, widgetDefinition));
 
         // Services
+        services.AddSingleton<IWidgetServiceService, WidgetServiceService>();
         services.AddSingleton<IWidgetHostingService, WidgetHostingService>();
         services.AddSingleton<IWidgetIconService, WidgetIconService>();
         services.AddSingleton<IWidgetScreenshotService, WidgetScreenshotService>();
-        services.AddSingleton<IAdaptiveCardRenderingService, AdaptiveCardRenderingService>();
+        services.AddSingleton<WidgetAdaptiveCardRenderingService>();
 
         return services;
     }

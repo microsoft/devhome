@@ -37,5 +37,5 @@ internal sealed class DevDriveTriggeredEvent : EventBase
     public uint diskMediaType => (uint)_devDrive.DriveMediaType;
 #pragma warning restore SA1300 // Element should begin with upper-case letter
 
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 }

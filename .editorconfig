@@ -206,3 +206,9 @@ dotnet_style_prefer_simplified_interpolation = true:suggestion
 # Spelling
 
 spelling_exclusion_path = .\exclusion.dic
+
+# Diagnostic configuration
+
+# CS8305: Type is for evaluation purposes only and is subject to change or removal in future updates.
+dotnet_diagnostic.CS8305.severity = suggestion
+

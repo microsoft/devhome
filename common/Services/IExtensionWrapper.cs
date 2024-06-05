@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel;
@@ -11,68 +12,49 @@ namespace DevHome.Common.Services;
 public interface IExtensionWrapper
 {
     /// <summary>
-    /// Gets name of the extension as mentioned in the manifest
+    /// Gets the DisplayName of the package as mentioned in the manifest
     /// </summary>
-    string Name
-    {
-        get;
-    }
+    string PackageDisplayName { get; }
+
+    /// <summary>
+    /// Gets DisplayName of the extension as mentioned in the manifest
+    /// </summary>
+    string ExtensionDisplayName { get; }
 
     /// <summary>
     /// Gets PackageFullName of the extension
     /// </summary>
-    string PackageFullName
-    {
-        get;
-    }
+    string PackageFullName { get; }
 
     /// <summary>
     /// Gets PackageFamilyName of the extension
     /// </summary>
-    string PackageFamilyName
-    {
-        get;
-    }
+    string PackageFamilyName { get; }
 
     /// <summary>
     /// Gets Publisher of the extension
     /// </summary>
-    string Publisher
-    {
-        get;
-    }
+    string Publisher { get; }
 
     /// <summary>
     /// Gets class id (GUID) of the extension class (which implements IExtension) as mentioned in the manifest
     /// </summary>
-    string ExtensionClassId
-    {
-        get;
-    }
+    string ExtensionClassId { get; }
 
     /// <summary>
     /// Gets the date on which the application package was installed or last updated.
     /// </summary>
-    DateTimeOffset InstalledDate
-    {
-        get;
-    }
+    DateTimeOffset InstalledDate { get; }
 
     /// <summary>
     /// Gets the PackageVersion of the extension
     /// </summary>
-    PackageVersion Version
-    {
-        get;
-    }
+    PackageVersion Version { get; }
 
     /// <summary>
     /// Gets the Unique Id for the extension
     /// </summary>
-    public string ExtensionUniqueId
-    {
-        get;
-    }
+    public string ExtensionUniqueId { get; }
 
     /// <summary>
     /// Checks whether we have a reference to the extension process and we are able to call methods on the interface.
@@ -117,5 +99,14 @@ public interface IExtensionWrapper
     /// <typeparam name="T">The type of provider</typeparam>
     /// <returns>Nullable instance of the provider</returns>
     Task<T?> GetProviderAsync<T>()
+        where T : class;
+
+    /// <summary>
+    /// Starts the extension if not running and gets a list of providers of type T from the underlying IExtension object.
+    /// If no providers are found, returns an empty list.
+    /// </summary>
+    /// <typeparam name="T">The type of provider</typeparam>
+    /// <returns>Nullable instance of the provider</returns>
+    Task<IEnumerable<T>> GetListOfProvidersAsync<T>()
         where T : class;
 }

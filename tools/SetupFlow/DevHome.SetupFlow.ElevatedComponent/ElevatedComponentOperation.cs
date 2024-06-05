@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using DevHome.SetupFlow.Common.Contracts;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Tasks;
+using Serilog;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.ElevatedComponent;
@@ -14,6 +14,8 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 /// </summary>
 public sealed class ElevatedComponentOperation : IElevatedComponentOperation
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ElevatedComponentOperation));
+
     /// <summary>
     /// Tasks arguments are passed to the elevated process as input at launch-time.
     /// </summary>
@@ -41,7 +43,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.Elevated, $"Failed to parse tasks arguments", e);
+            _log.Error(e, $"Failed to parse tasks arguments");
             throw;
         }
     }
@@ -58,7 +60,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
             taskArguments,
             async () =>
             {
-                Log.Logger?.ReportInfo(Log.Component.Elevated, $"Installing package elevated: '{packageId}' from '{catalogName}'");
+                _log.Information($"Installing package elevated: '{packageId}' from '{catalogName}'");
                 var task = new ElevatedInstallTask();
                 return await task.InstallPackage(taskArguments.PackageId, taskArguments.CatalogName, version);
             },
@@ -75,7 +77,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
             taskArguments,
             async () =>
             {
-                Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Dev Drive storage operator");
+                _log.Information("Creating elevated Dev Drive storage operator");
                 var task = new DevDriveStorageOperator();
                 var result = task.CreateDevDrive(taskArguments.VirtDiskPath, taskArguments.SizeInBytes, taskArguments.NewDriveLetter, taskArguments.DriveLabel);
                 return await Task.FromResult(result);
@@ -90,7 +92,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
             taskArguments,
             async () =>
             {
-                Log.Logger?.ReportInfo(Log.Component.Elevated, "Applying DSC configuration elevated");
+                _log.Information("Applying DSC configuration elevated");
                 var task = new ElevatedConfigurationTask();
                 return await task.ApplyConfiguration(taskArguments.FilePath, taskArguments.Content, activityId);
             },
@@ -105,7 +107,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         var allTasksArguments = _tasksArguments.GetAllTasksArguments();
         if (allTasksArguments.Count == _operationsState.Count)
         {
-            Log.Logger?.ReportInfo($"All operations for the tasks arguments provided to the elevated process were executed.");
+            _log.Information($"All operations for the tasks arguments provided to the elevated process were executed.");
         }
         else
         {
@@ -114,7 +116,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
             {
                 if (!_operationsState.ContainsKey(taskArguments))
                 {
-                    Log.Logger?.ReportWarn($"Operation for task arguments {string.Join(' ', taskArguments.ToArgumentList())} was provided to the elevated process but was never executed.");
+                    _log.Warning($"Operation for task arguments {string.Join(' ', taskArguments.ToArgumentList())} was provided to the elevated process but was never executed.");
                 }
             }
         }
@@ -126,7 +128,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         var taskArguments = _tasksArguments.InstallPackages?.FirstOrDefault(def => def.PackageId == packageId && def.CatalogName == catalogName && def.Version == version);
         if (taskArguments == null)
         {
-            Log.Logger?.ReportError(Log.Component.Elevated, $"No match found for PackageId={packageId}, CatalogId={catalogName} and Version={version} in the process tasks arguments.");
+            _log.Error($"No match found for PackageId={packageId}, CatalogId={catalogName} and Version={version} in the process tasks arguments.");
             throw new ArgumentException($"Failed to install '{packageId}' ({version}) from '{catalogName}' because it was not in the pre-approved tasks arguments");
         }
 
@@ -138,7 +140,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         var taskArguments = _tasksArguments.Configure;
         if (taskArguments == null)
         {
-            Log.Logger?.ReportError(Log.Component.Elevated, $"No configuration task was found in the process tasks arguments ");
+            _log.Error($"No configuration task was found in the process tasks arguments ");
             throw new ArgumentException($"Failed to apply configuration because it was not in the pre-approved tasks arguments");
         }
 
@@ -150,7 +152,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         var taskArguments = _tasksArguments.CreateDevDrive;
         if (taskArguments == null)
         {
-            Log.Logger?.ReportError(Log.Component.Elevated, $"No 'create dev drive' task was found in the process tasks arguments ");
+            _log.Error($"No 'create dev drive' task was found in the process tasks arguments ");
             throw new ArgumentException($"Failed to create a dev drive because it was not in the pre-approved tasks arguments");
         }
 
@@ -180,7 +182,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.Elevated, $"Failed to validate or execute operation", e);
+            _log.Error(e, $"Failed to validate or execute operation");
             EndOperation(taskArguments, false);
             throw;
         }

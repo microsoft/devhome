@@ -9,6 +9,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:local="using:DevHome.SetupFlow.Views"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d">
     <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
@@ -16,40 +23,204 @@
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
     <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
-        <ToggleSplitButton
-            x:Name="SetUpButton"
-            IsEnabled="{x:Bind ViewModel.ReadAndAgree, Mode=OneWay}"
-            IsEnabledChanged="SetUpButton_IsEnabledChanged"
-            IsCheckedChanged="SetUpButton_IsCheckedChanged"
-            Command="{x:Bind ViewModel.ConfigureAsAdminCommand, Mode=OneWay}"
-            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsAdmin">
-            <SplitButton.Flyout>
-                <MenuFlyout>
-                    <MenuFlyoutItem
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsNonAdmin"
-                        Command="{x:Bind ViewModel.ConfigureAsNonAdminCommand}">
-                    </MenuFlyoutItem>
-                </MenuFlyout>
-            </SplitButton.Flyout>
-        </ToggleSplitButton>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                    <Setter Property="Margin" Value="6,0" />
+                </Style>
+            </StackPanel.Resources>
+            <Button x:Uid="SetUpAsNonAdmin" Command="{x:Bind ViewModel.ConfigureAsNonAdminCommand}"/>
+            <Button x:Uid="SetUpAsAdmin" Command="{x:Bind ViewModel.ConfigureAsAdminCommand}"/>
+        </StackPanel>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:StringVisibilityConverter x:Key="StringVisibilityConverter"/>
+            <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
+            <converters:CollectionVisibilityConverter x:Key="CollectionNegativeVisibilityConverter" EmptyValue="Visible"  NotEmptyValue="Collapsed"/>
+            <DataTemplate x:Key="KeyValueTemplate">
+                <StackPanel Spacing="2"
+                            Orientation="Horizontal"
+                            Visibility="{Binding Value, Converter={StaticResource StringVisibilityConverter}}">
+                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{Binding Key}" />
+                    <TextBlock Text=":" />
+                    <TextBlock IsTextSelectionEnabled="True" Text="{Binding Value}" TextWrapping="WrapWholeWords" />
+                </StackPanel>
+            </DataTemplate>
+            <Style TargetType="ListView" x:Key="KeyValueList">
+                <Setter Property="SelectionMode" Value="None" />
+                <Setter Property="Margin" Value="10,0" />
+                <Setter Property="ItemContainerStyle">
+                    <Setter.Value>
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="MinHeight" Value="0" />
+                            <Setter Property="MinWidth" Value="0" />
+                        </Style>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <x:Double x:Key="SectionSpacing">10</x:Double>
+            <Thickness x:Key="BlockThickness">0,0,0,5</Thickness>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+    
     <controls:SetupShell Orchestrator="{x:Bind ViewModel.Orchestrator}">
-        <Grid>
+        <Grid RowSpacing="{StaticResource SectionSpacing}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+
             <InfoBar
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ConfigurationFileWarning"
+                x:Uid="ConfigurationFileWarning"
                 IsOpen="True"
                 IsClosable="False"
                 Severity="Warning"/>
-            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
-                <TextBlock
-                    FontSize="{ThemeResource CaptionTextBlockFontSize}"
-                    Padding="15"
-                    FontFamily="{StaticResource CascadiaMonoFontFamily}"
-                    Text="{x:Bind ViewModel.Content, Mode=OneWay}"/>
+
+            <ctControls:Segmented Grid.Row="1" SelectedIndex="0" x:Name="SegmentedModeView">
+                <ctControls:SegmentedItem x:Name="SummaryView" x:Uid="ConfigurationFile_SummaryView" AutomationProperties.PositionInSet="1" AutomationProperties.SizeOfSet="2" />
+                <ctControls:SegmentedItem x:Name="CodeView" x:Uid="ConfigurationFile_CodeView" AutomationProperties.PositionInSet="2" AutomationProperties.SizeOfSet="2" />
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="SelectionChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.ViewSelectionChangedCommand}" CommandParameter="{Binding ElementName=SegmentedModeView, Path=SelectedValue.Name}" />
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </ctControls:Segmented>
+
+            <!-- Summary mode -->
+            <Grid Grid.Row="2" Visibility="{x:Bind SummaryView.IsSelected, Mode=OneWay}">
+                <!-- Shimmers -->
+                <StackPanel Spacing="{StaticResource SectionSpacing}"
+                            Visibility="{x:Bind ViewModel.ConfigurationUnits, Mode=OneWay, Converter={StaticResource CollectionNegativeVisibilityConverter}}">
+                    <StackPanel.Resources>
+                        <Style TargetType="labs:Shimmer">
+                            <Setter Property="Height" Value="50" />
+                        </Style>
+                    </StackPanel.Resources>
+                    <labs:Shimmer />
+                    <labs:Shimmer />
+                    <labs:Shimmer />
+                    <labs:Shimmer />
+                    <labs:Shimmer />
+                    <labs:Shimmer />
+                </StackPanel>
+
+                <!-- Summary view -->
+                <ListView ItemsSource="{x:Bind ViewModel.ConfigurationUnits, Mode=OneWay}"
+                          x:Name="ConfigurationUnitSections"
+                          Style="{StaticResource KeyValueList}">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="{StaticResource SectionSpacing}" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+                            <Setter Property="IsTabStop" Value="False" />
+                            <Setter Property="Padding" Value="0" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:DSCConfigurationUnitViewModel">
+                            <Expander IsExpanded="False"
+                                      Tag="{x:Bind Id}"
+                                      HorizontalContentAlignment="Left"
+                                      HorizontalAlignment="Stretch">
+
+                                <!-- Expander header -->
+                                <Expander.Header>
+                                    <TextBlock Text="{x:Bind Title}" TextTrimming="CharacterEllipsis" />
+                                </Expander.Header>
+                                
+                                <!-- Expander content -->
+                                <ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto">
+                                    <StackPanel>
+                                        <!-- Individual records -->
+                                        <ListView Margin="{StaticResource BlockThickness}" Style="{StaticResource KeyValueList}" ItemTemplate="{StaticResource KeyValueTemplate}">
+                                            <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Id" Value="{x:Bind Id}" />
+                                            <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Intent" Value="{x:Bind Intent}" />
+                                        </ListView>
+
+                                        <!-- Dependencies -->
+                                        <StackPanel Margin="{StaticResource BlockThickness}" Orientation="Horizontal" Visibility="{x:Bind Dependencies, Converter={StaticResource CollectionVisibilityConverter}}">
+                                            <TextBlock x:Uid="ConfigurationUnit_Dependencies" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                            <TextBlock Text=":" Margin="2,0" />
+                                            <ListView Style="{StaticResource KeyValueList}" ItemsSource="{x:Bind Dependencies}">
+                                                <ListView.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Spacing="2" Orientation="Horizontal" />
+                                                    </ItemsPanelTemplate>
+                                                </ListView.ItemsPanel>
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate x:DataType="x:String">
+                                                        <TextBlock Tag="{x:Bind}">
+                                                            <Hyperlink Click="Dependency_Click">
+                                                                <Run Text="{x:Bind}" />
+                                                            </Hyperlink>
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                            </ListView>
+                                        </StackPanel>
+
+                                        <!-- Metadata -->
+                                        <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Metadata, Converter={StaticResource CollectionVisibilityConverter}}">
+                                            <TextBlock x:Uid="ConfigurationUnit_ResourceMetadata" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                            <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{ThemeResource KeyValueTemplate}" ItemsSource="{x:Bind Metadata}"/>
+                                        </StackPanel>
+
+                                        <!-- Settings -->
+                                        <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
+                                            <TextBlock x:Uid="ConfigurationUnit_Settings" Style="{ThemeResource BodyStrongTextBlockStyle}" />
+                                            <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{ThemeResource KeyValueTemplate}" ItemsSource="{x:Bind Settings}"/>
+                                        </StackPanel>
+
+                                        <!-- Details -->
+                                        <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
+                                            <TextBlock x:Uid="ConfigurationUnit_Details" Style="{ThemeResource BodyStrongTextBlockStyle}" />
+                                            <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{StaticResource KeyValueTemplate}">
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitType" Value="{x:Bind UnitType}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitDescription" Value="{x:Bind UnitDescription}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitDocumentation" Value="{x:Bind UnitDocumentationUri}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleName" Value="{x:Bind ModuleName}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleSource" Value="{x:Bind ModuleSource}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleDescription" Value="{x:Bind ModuleDescription}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleDocumentationUri" Value="{x:Bind ModuleDocumentationUri}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_PublishedModuleUri" Value="{x:Bind PublishedModuleUri}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Version" Value="{x:Bind Version}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Author" Value="{x:Bind Author}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Publisher" Value="{x:Bind Publisher}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_IsLocal" Value="{x:Bind IsLocal}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_IsPublic" Value="{x:Bind IsPublic}" />
+                                            </ListView>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Expander>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+
+            <!-- Code mode -->
+            <ScrollViewer Grid.Row="2"
+                          Visibility="{x:Bind CodeView.IsSelected, Mode=OneWay}"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollMode="Disabled">
+                <TextBlock FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                           Padding="15"
+                           FontFamily="{StaticResource CascadiaMonoFontFamily}"
+                           Text="{x:Bind ViewModel.Content, Mode=OneWay}"/>
             </ScrollViewer>
         </Grid>
     </controls:SetupShell>

@@ -15,7 +15,6 @@
             </ResourceDictionary.MergedDictionaries>
             <!-- Show `RevToggleKey` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
             <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE845;" FalseValue="&#xE710;" />
-            <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
             <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
 
             <!--  Show "Learn more" or "Installed"-->
@@ -46,7 +45,6 @@
                         <VisualStateGroup x:Name="CommonStates">
                             <VisualState>
                                 <VisualState.StateTriggers>
-                                    <StateTrigger IsActive="{Binding CanSelect, Converter={StaticResource BoolNegationConverter}}" />
                                     <StateTrigger IsActive="{Binding IsSelected}" />
                                 </VisualState.StateTriggers>
                                 <VisualState.Setters>
@@ -70,13 +68,13 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- Package image -->
-                        <ImageIcon Name="Image" Width="24" VerticalAlignment="Center" Source="{Binding Icon}"/>
+                        <ImageIcon AutomationProperties.Name="{Binding PackageTitle}" Name="Image" Width="24" VerticalAlignment="Center" Source="{Binding Icon}"/>
 
                         <!-- Select button -->
                         <Button
-                            IsEnabled="{Binding CanSelect}"
                             Grid.Column="1"
-                            AutomationProperties.Name="{Binding ButtonAutomationName}"
+                            ToolTipService.ToolTip="{Binding ActionButtonDescription}"
+                            AutomationProperties.Name="{Binding ActionButtonDescription}"
                             Command="{Binding ToggleSelectionCommand}"
                             HorizontalAlignment="Right"
                             Padding="5">
@@ -106,6 +104,7 @@
 
                         <!-- Package version list -->
                         <ComboBox
+                            x:Uid="VersionComboBox"
                             Grid.Row="1"
                             Visibility="{Binding ShowVersionList}"
                             BorderThickness="0"

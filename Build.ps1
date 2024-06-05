@@ -26,7 +26,7 @@ Description:
 Options:
 
   -Platform <platform>
-      Only buil the selected platform(s)
+      Only build the selected platform(s)
       Example: -Platform x64
       Example: -Platform "x86,x64,arm64"
 
@@ -61,6 +61,22 @@ if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
   }
 }
 
+if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "DevSetupAgent") -Or ($BuildStep -ieq "fullMsix")) {
+  foreach ($configuration in $env:Build_Configuration.Split(",")) {
+    # We use x86 DevSetupAgent for x64 and x86 Dev Home build. Only need to build it once if we are building multiple platforms.
+    $builtX86 = $false
+    foreach ($platform in $env:Build_Platform.Split(",")) {
+      if ($platform -ieq "arm64") {
+        extensions\HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform $Platform -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+      }
+      elseif (-not $builtX86) {
+        extensions\HyperVExtension\BuildDevSetupAgentHelper.ps1 -Platform "x86" -Configuration $configuration -VersionOfSDK $env:sdk_version -SDKNugetSource $SDKNugetSource -AzureBuildingBranch $AzureBuildingBranch -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+        $builtX86 = $true
+      }
+    }
+  }
+}
+
 $msbuildPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
 if ($IsAzurePipelineBuild) {
   $nugetPath = "nuget.exe";
@@ -79,7 +95,7 @@ if (-not([string]::IsNullOrWhiteSpace($SDKNugetSource))) {
 . build\Scripts\CertSignAndInstall.ps1
 
 Try {
-  if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msix")) {
+  if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msix") -Or ($BuildStep -ieq "fullMsix")) {
     $buildRing = "Dev"
     $newPackageName = $null
     $newPackageDisplayName = $null
@@ -117,7 +133,7 @@ Try {
     $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = $env:msix_version
     if (-not ([string]::IsNullOrEmpty($newPackageName))) {
       $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = $newPackageName
-    } 
+    }
     if (-not ([string]::IsNullOrEmpty($newPackageDisplayName))) {
       $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = $newPackageDisplayName
     }
@@ -128,9 +144,6 @@ Try {
         if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
           $appExtension = $extension.Element($uapAppExtension)
           switch ($appExtension.Attribute("Name").Value) {
-            "com.microsoft.devhome" {
-              $appExtension.Attribute("DisplayName").Value = $newAppDisplayNameResource
-            }
             "com.microsoft.windows.widgets" {
               $appExtension.Attribute("DisplayName").Value = $newWidgetProviderDisplayName
             }
@@ -140,9 +153,13 @@ Try {
     }
     $appxmanifest.Save($appxmanifestPath)
 
+    # This is needed for vcxproj
+    & $nugetPath restore
+
     foreach ($platform in $env:Build_Platform.Split(",")) {
       foreach ($configuration in $env:Build_Configuration.Split(",")) {
         $appxPackageDir = (Join-Path $env:Build_RootDirectory "AppxPackages\$configuration")
+        Write-Host "Building DevHome for EnvPlatform: $env:Build_Platform Platform: $platform Configuration: $configuration BundlePlatforms: $appxBundlePlatform Dir: $appxPackageDir Ring: $buildRing"
         $msbuildArgs = @(
             ("DevHome.sln"),
             ("/p:Platform="+$platform),
@@ -157,8 +174,12 @@ Try {
         if (-not([string]::IsNullOrWhiteSpace($VersionOfSDK))) {
           $msbuildArgs += ("/p:DevHomeSDKVersion="+$env:sdk_version)
         }
+        if ($BuildStep -ieq "msix") {
+          $msbuildArgs += ("/p:IgnoreZipPackages=true")
+        }
 
         & $msbuildPath $msbuildArgs
+
         if (-not($IsAzurePipelineBuild) -And $isAdmin) {
           Invoke-SignPackage "$appxPackageDir\DevHome-$platform.msix"
         }
@@ -176,9 +197,6 @@ Try {
       if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
         $appExtension = $extension.Element($uapAppExtension)
         switch ($appExtension.Attribute("Name").Value) {
-          "com.microsoft.devhome" {
-            $appExtension.Attribute("DisplayName").Value = "ms-resource:AppDisplayNameDev"
-          }
           "com.microsoft.windows.widgets" {
             $appExtension.Attribute("DisplayName").Value = "ms-resource:WidgetProviderDisplayNameDev"
           }

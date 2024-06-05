@@ -12,5 +12,6 @@
 
     <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}"
                FontSize="{ThemeResource BodyTextBlockFontSize}"
+               AutomationProperties.AccessibilityView="Raw"
                Text="&#xE711;" />
 </Button>

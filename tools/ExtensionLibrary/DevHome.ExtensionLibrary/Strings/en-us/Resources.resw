@@ -79,8 +79,8 @@
     <comment>Text that precedes the version number of a specific package</comment>
   </data>
   <data name="UninstallItem.Text" xml:space="preserve">
-     <value>Uninstall</value>
-     <comment>Button to uninstall the extension</comment>
+    <value>Uninstall</value>
+    <comment>Button to uninstall the extension</comment>
   </data>
   <data name="ManageExtensionCard.Header" xml:space="preserve">
     <value>Manage extension</value>
@@ -129,5 +129,9 @@
   <data name="MoreOptionsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>More options</value>
     <comment>Name of the button that brings up the "More options" menu</comment>
+  </data>
+  <data name="MoreOptionsButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>More options</value>
+    <comment>ToolTip of the button that brings up the "More options" menu</comment>
   </data>
 </root>

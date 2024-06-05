@@ -16,6 +16,7 @@
     xmlns:views="using:DevHome.SetupFlow.Views"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:common="using:DevHome.Common.Controls"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -28,17 +29,23 @@
 
     <i:Interaction.Behaviors >
         <behaviors:AppManagementBehavior />
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
+        </ic:EventTriggerBehavior>
+        <ic:EventTriggerBehavior EventName="Unloaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.UnloadedCommand}" />
+        </ic:EventTriggerBehavior>
     </i:Interaction.Behaviors>
 
     <!-- Page split layout -->
-    <Grid ColumnSpacing="10">
+    <Grid ColumnSpacing="10" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*" MaxWidth="318"/>
         </Grid.ColumnDefinitions>
 
         <!-- Main/Center panel -->
-        <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_AppManagement"
+        <controls:SetupShell x:Uid="SetupShell_AppManagement"
                              x:Name="SetupShell"
                              Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
                              Foreground="{ThemeResource TextFillColorSecondary}">
@@ -49,19 +56,36 @@
                 </Grid.RowDefinitions>
 
                 <!-- Search bar -->
-                <AutoSuggestBox
-                    x:Name="SearchBox"
-                    QueryIcon="Find"
-                    HorizontalAlignment="Left"
-                    Width="400"
-                    Margin="0,0,0,20"
-                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SearchBox">
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="TextChanged">
-                            <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchTextChangedCommand}" CommandParameter="{Binding Text, ElementName=SearchBox}"/>
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </AutoSuggestBox>
+                <common:ExperimentControl ExperimentKey="AppManagement_SearchBoxPlaceholder" x:Name="SearchBox">
+                    <common:ExperimentControl.Resources>
+                        <Style TargetType="AutoSuggestBox" BasedOn="{StaticResource DefaultAutoSuggestBoxStyle}">
+                            <Setter Property="QueryIcon" Value="Find"/>
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <Setter Property="Width" Value="400"/>
+                            <Setter Property="Margin" Value="0,0,0,20"/>
+                        </Style>
+                    </common:ExperimentControl.Resources>
+
+                    <common:ExperimentControl.DefaultContent>
+                        <AutoSuggestBox x:Name="SearchBox_Default" x:Uid="SearchBox" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}">
+                            <i:Interaction.Behaviors>
+                                <ic:EventTriggerBehavior EventName="TextChanged">
+                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchTextChangedCommand}" CommandParameter="{x:Bind Path=SearchBox_Default.Text, Mode=OneWay}"/>
+                                </ic:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
+                        </AutoSuggestBox>
+                    </common:ExperimentControl.DefaultContent>
+
+                    <common:ExperimentControl.ExperimentContent>
+                        <AutoSuggestBox x:Name="SearchBox_Experiment" x:Uid="SearchBox_Experiment" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}">
+                            <i:Interaction.Behaviors>
+                                <ic:EventTriggerBehavior EventName="TextChanged">
+                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchTextChangedCommand}" CommandParameter="{x:Bind Path=SearchBox_Experiment.Text, Mode=OneWay}"/>
+                                </ic:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
+                        </AutoSuggestBox>
+                    </common:ExperimentControl.ExperimentContent>
+                </common:ExperimentControl>
 
                 <!-- Main content -->
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="MainContent" AutomationProperties.AccessibilityView="Raw">
@@ -99,43 +123,59 @@
         </controls:SetupShell>
 
         <!-- Right/Side panel -->
-        <Grid
-            AutomationProperties.Name="{x:Bind SidePanelTitle.Text, Mode=OneWay}"
-            Grid.Column="1" RowSpacing="20" Margin="0 0 0 4" Style="{ThemeResource CardGridSecondaryStyle}">
+        <Grid AutomationProperties.Name="{x:Bind SidePanelTitle.Text, Mode=OneWay}"
+              Grid.Column="1"
+              Margin="0,0,0,4"
+              Style="{ThemeResource CardGridSecondaryStyle}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0">
+            <!-- Header -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
                 <!-- Header text -->
                 <StackPanel Grid.Row="0" Padding="5 0" Orientation="Vertical" Spacing="4">
-                    <TextBlock x:Name="SidePanelTitle" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SelectedPackages" />
+                    <TextBlock x:Name="SidePanelTitle" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="SelectedPackages" />
                     <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind ViewModel.ApplicationsAddedText,Mode=OneWay}"/>
                 </StackPanel>
-                <!-- Remove all -->
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <!-- Header remove all button -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
                     <HyperlinkButton
                         AutomationProperties.AutomationControlType="Button"
                         Command="{x:Bind ViewModel.RemoveAllPackagesCommand}"
                         IsEnabled="{x:Bind ViewModel.EnableRemoveAll, Mode=OneWay}">
-                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RemoveAll" />
+                        <TextBlock x:Uid="RemoveAll" />
                     </HyperlinkButton>
                 </StackPanel>
             </Grid>
 
+            <!-- Package notification bar -->
+            <InfoBar Grid.Row="1" IsOpen="{x:Bind ViewModel.ShowInstalledPackageWarning, Mode=OneWay}"
+                     Severity="Informational"
+                     Margin="0,10"
+                     IsClosable="False">
+                <TextBlock x:Uid="AppAlreadyInstalledNotification"
+                           TextWrapping="WrapWholeWords"
+                           Padding="5"/>
+            </InfoBar>
+
             <!-- No package selected -->
-            <TextBlock
-                Grid.Row="1"
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NoApplicationsAdded"
-                Visibility="{x:Bind ViewModel.SelectedPackages.Count,Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}"
-                Style="{ThemeResource CaptionTextBlockStyle}"
-                Foreground="{ThemeResource TextFillColorSecondary}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="2"
+                       x:Uid="NoApplicationsAdded"
+                       Visibility="{x:Bind ViewModel.SelectedPackages.Count,Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}"
+                       Style="{ThemeResource CaptionTextBlockStyle}"
+                       Foreground="{ThemeResource TextFillColorSecondary}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
 
             <!-- Package list view -->
-            <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.SelectedPackages, Mode=OneWay}" SelectionMode="None">
+            <ListView Grid.Row="2" ItemsSource="{x:Bind ViewModel.SelectedPackages, Mode=OneWay}" SelectionMode="None">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:PackageViewModel">
                         <controls:PackageDetailsSettingsCard AutomationProperties.AccessibilityView="Raw" AutomationProperties.Name="{Binding PackageTitle}">
@@ -155,7 +195,8 @@
                                 <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE711;"/>
                             </ctControls:SettingsCard.ActionIcon>
                             <Button
-                                AutomationProperties.Name="{x:Bind ButtonAutomationName, Mode=OneWay}"
+                                AutomationProperties.Name="{x:Bind ActionButtonDescription, Mode=OneWay}"
+                                AutomationProperties.AutomationId="{x:Bind ButtonAutomationId}"
                                 Command="{x:Bind ToggleSelectionCommand, Mode=OneWay}"
                                 FontSize="{ThemeResource CaptionTextBlockFontSize}"
                                 Style="{ThemeResource AlternateCloseButtonStyle}">

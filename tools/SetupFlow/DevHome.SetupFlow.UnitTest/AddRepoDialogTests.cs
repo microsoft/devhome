@@ -6,7 +6,6 @@ using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.UI.Xaml;
 
 namespace DevHome.SetupFlow.UnitTest;
 
@@ -30,7 +29,10 @@ public class AddRepoDialogTests : BaseSetupFlowTest
     [Ignore("Making a new frame throws a COM exception.  Running this as UITestMethod does not help")]
     public void SwitchToUrlScreenTest()
     {
-        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), null, TestHost.GetService<IDevDriveManager>());
+        var orchestrator = TestHost.GetService<SetupFlowOrchestrator>();
+        var stringResource = TestHost.GetService<ISetupFlowStringResource>();
+        var devDriveManager = TestHost.GetService<IDevDriveManager>();
+        var addRepoViewModel = new AddRepoViewModel(orchestrator, stringResource, new List<CloningInformation>(), TestHost, Guid.NewGuid(), null, devDriveManager);
         addRepoViewModel.ChangeToUrlPage();
         Assert.AreEqual(true, addRepoViewModel.ShowUrlPage);
         Assert.AreEqual(false, addRepoViewModel.ShowAccountPage);
@@ -44,7 +46,10 @@ public class AddRepoDialogTests : BaseSetupFlowTest
     [Ignore("IextensionService uses Application.Current and tests break when Application.Current is used.  Ignore until fixed.")]
     public async Task SwitchToAccountScreenTest()
     {
-        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), null, TestHost.GetService<IDevDriveManager>());
+        var orchestrator = TestHost.GetService<SetupFlowOrchestrator>();
+        var stringResource = TestHost.GetService<ISetupFlowStringResource>();
+        var devDriveManager = TestHost.GetService<IDevDriveManager>();
+        var addRepoViewModel = new AddRepoViewModel(orchestrator, stringResource, new List<CloningInformation>(), TestHost, Guid.NewGuid(), null, devDriveManager);
         await addRepoViewModel.ChangeToAccountPageAsync();
         Assert.AreEqual(false, addRepoViewModel.ShowUrlPage);
         Assert.AreEqual(true, addRepoViewModel.ShowAccountPage);

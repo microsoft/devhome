@@ -2,119 +2,80 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.ComSafeWidgetObjects;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 using Windows.Storage.Streams;
-using WinUIEx;
 
 namespace DevHome.Dashboard.Services;
 
 public class WidgetIconService : IWidgetIconService
 {
-    private readonly WindowEx _windowEx;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetIconService));
 
-    private readonly IWidgetHostingService _widgetHostingService;
+    private readonly DispatcherQueue _dispatcherQueue;
 
-    private readonly Dictionary<string, BitmapImage> _widgetLightIconCache;
-    private readonly Dictionary<string, BitmapImage> _widgetDarkIconCache;
+    private readonly ConcurrentDictionary<string, BitmapImage> _widgetLightIconCache;
+    private readonly ConcurrentDictionary<string, BitmapImage> _widgetDarkIconCache;
 
-    public WidgetIconService(WindowEx windowEx, IWidgetHostingService widgetHostingService)
+    public WidgetIconService(DispatcherQueue dispatcherQueue)
     {
-        _windowEx = windowEx;
-        _widgetHostingService = widgetHostingService;
+        _dispatcherQueue = dispatcherQueue;
 
-        _widgetLightIconCache = new Dictionary<string, BitmapImage>();
-        _widgetDarkIconCache = new Dictionary<string, BitmapImage>();
-    }
-
-    /// <summary>
-    /// Caches icons for all widgets in the WidgetCatalog that are included in Dev Home.
-    /// </summary>
-    public async Task CacheAllWidgetIconsAsync()
-    {
-        var cacheTasks = new List<Task>();
-        var widgetCatalog = await _widgetHostingService.GetWidgetCatalogAsync();
-        var widgetDefinitions = await Task.Run(() => widgetCatalog?.GetWidgetDefinitions());
-        foreach (var widgetDef in widgetDefinitions ?? Array.Empty<WidgetDefinition>())
-        {
-            var task = AddIconsToCacheAsync(widgetDef);
-            cacheTasks.Add(task);
-        }
-
-        await Task.WhenAll(cacheTasks);
-    }
-
-    /// <summary>
-    /// Caches two icons for each widget, one for light theme and one for dark theme.
-    /// </summary>
-    public async Task AddIconsToCacheAsync(WidgetDefinition widgetDef)
-    {
-        // Only cache icons for providers that we're including.
-        if (await WidgetHelpers.IsIncludedWidgetProviderAsync(widgetDef.ProviderDefinition))
-        {
-            var widgetDefId = widgetDef.Id;
-            try
-            {
-                Log.Logger()?.ReportDebug("WidgetIconCache", $"Cache widget icons for {widgetDefId}");
-                var itemLightImage = await WidgetIconToBitmapImageAsync(widgetDef.GetThemeResource(WidgetTheme.Light).Icon);
-                var itemDarkImage = await WidgetIconToBitmapImageAsync(widgetDef.GetThemeResource(WidgetTheme.Dark).Icon);
-
-                // There is a widget bug where Definition update events are being raised as added events.
-                // If we already have an icon for this key, just remove and add again in case the icons changed.
-                _widgetLightIconCache.Remove(widgetDefId);
-                _widgetDarkIconCache.Remove(widgetDefId);
-
-                _widgetLightIconCache.Add(widgetDefId, itemLightImage);
-                _widgetDarkIconCache.Add(widgetDefId, itemDarkImage);
-            }
-            catch (Exception ex)
-            {
-                Log.Logger()?.ReportError("WidgetIconCache", $"Exception in AddIconsToCacheAsync:", ex);
-                _widgetLightIconCache.Add(widgetDefId, null);
-                _widgetDarkIconCache.Add(widgetDefId, null);
-            }
-        }
+        _widgetLightIconCache = new ConcurrentDictionary<string, BitmapImage>();
+        _widgetDarkIconCache = new ConcurrentDictionary<string, BitmapImage>();
     }
 
     public void RemoveIconsFromCache(string definitionId)
     {
-        _widgetLightIconCache.Remove(definitionId);
-        _widgetDarkIconCache.Remove(definitionId);
+        _widgetLightIconCache.TryRemove(definitionId, out _);
+        _widgetDarkIconCache.TryRemove(definitionId, out _);
     }
 
-    public async Task<BitmapImage> GetWidgetIconForThemeAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
+    public async Task<BitmapImage> GetIconFromCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme theme)
     {
-        // Return the WidgetDefinition Id via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
-        // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
-        var completionSource = new TaskCompletionSource<string>();
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
-        {
-            completionSource.TrySetResult(widgetDefinition.Id);
-        });
+        var widgetDefinitionId = widgetDefinition.Id;
+        BitmapImage bitmapImage;
 
-        var widgetDefinitionId = await completionSource.Task;
-
-        BitmapImage image;
-        if (theme == ElementTheme.Light)
+        // First, check the cache to see if the icon is already there.
+        if (theme == ElementTheme.Dark)
         {
-            _widgetLightIconCache.TryGetValue(widgetDefinitionId, out image);
+            _widgetDarkIconCache.TryGetValue(widgetDefinitionId, out bitmapImage);
         }
         else
         {
-            _widgetDarkIconCache.TryGetValue(widgetDefinitionId, out image);
+            _widgetLightIconCache.TryGetValue(widgetDefinitionId, out bitmapImage);
         }
 
-        return image;
+        if (bitmapImage != null)
+        {
+            return bitmapImage;
+        }
+
+        // If the icon wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
+        if (theme == ElementTheme.Dark)
+        {
+            bitmapImage = await WidgetIconToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Dark)).Icon);
+            _widgetDarkIconCache.TryAdd(widgetDefinitionId, bitmapImage);
+        }
+        else
+        {
+            bitmapImage = await WidgetIconToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Light)).Icon);
+            _widgetLightIconCache.TryAdd(widgetDefinitionId, bitmapImage);
+        }
+
+        return bitmapImage;
     }
 
-    public async Task<Brush> GetBrushForWidgetIconAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
+    public async Task<Brush> GetBrushForWidgetIconAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme theme)
     {
-        var image = await GetWidgetIconForThemeAsync(widgetDefinition, theme);
+        var image = await GetIconFromCacheAsync(widgetDefinition, theme);
 
         var brush = new ImageBrush
         {
@@ -129,7 +90,7 @@ public class WidgetIconService : IWidgetIconService
         // Return the bitmap image via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
         // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
         var completionSource = new TaskCompletionSource<BitmapImage>();
-        _windowEx.DispatcherQueue.TryEnqueue(async () =>
+        _dispatcherQueue.TryEnqueue(async () =>
         {
             using var bitmapStream = await iconStreamRef.OpenReadAsync();
             var itemImage = new BitmapImage();

@@ -7,9 +7,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -25,6 +25,7 @@ public delegate PackageCatalogViewModel PackageCatalogViewModelFactory(PackageCa
 /// </summary>
 public partial class PackageCatalogViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(PackageCatalogViewModel));
     private readonly IScreenReaderService _screenReaderService;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly PackageCatalog _packageCatalog;
@@ -53,7 +54,7 @@ public partial class PackageCatalogViewModel : ObservableObject
     [RelayCommand]
     private void AddAllPackages()
     {
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Adding all packages from catalog {Name} to selection");
+        _log.Information($"Adding all packages from catalog {Name} to selection");
         foreach (var package in Packages)
         {
             // Select all non-installed packages

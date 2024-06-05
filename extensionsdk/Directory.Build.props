@@ -7,7 +7,7 @@
     <AssemblyProduct>Dev Home SDK</AssemblyProduct>
     <Company>Microsoft Corporation</Company>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <Platforms>x64;x86;ARM64;AnyCPU</Platforms>
+    <Platforms>x64;x86;ARM64</Platforms>
     <PackageTags>DevHome</PackageTags>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisMode>Recommended</AnalysisMode>
@@ -15,8 +15,15 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <VersionNumber Condition="'$(VersionNumber)'==''">0.0.0.0</VersionNumber>
     <_PropertySheetDisplayName>DevHome.Root.Props</_PropertySheetDisplayName>
     <ForceImportBeforeCppProps>$(MsbuildThisFileDirectory)\Cpp.Build.props</ForceImportBeforeCppProps>
   </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ResourceCompile>
+      <PreprocessorDefinitions>VERSION_NUMBER=\"$(VersionNumber)\";VERSION_COMMAS=$(VersionNumber.Replace('.', ','));%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
 
 </Project>

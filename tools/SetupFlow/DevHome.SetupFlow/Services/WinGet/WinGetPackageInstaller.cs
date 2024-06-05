@@ -4,11 +4,11 @@
 using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Extensions;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
+using Serilog;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.Services.WinGet;
@@ -18,6 +18,7 @@ namespace DevHome.SetupFlow.Services.WinGet;
 /// </summary>
 internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WinGetPackageInstaller));
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IWinGetPackageFinder _packageFinder;
 
@@ -39,24 +40,24 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
         var package = await _packageFinder.GetPackageAsync(catalog, packageId);
         if (package == null)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Install aborted for package {packageId} because it was not found in the provided catalog {catalog.GetDescriptiveName()}");
+            _log.Error($"Install aborted for package {packageId} because it was not found in the provided catalog {catalog.GetDescriptiveName()}");
             throw new FindPackagesException(FindPackagesResultStatus.CatalogError);
         }
 
         // 2. Install package
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
+        _log.Information($"Starting package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
         var installResult = await InstallPackageInternalAsync(package, version);
         var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
         var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK); // WPM API V4
 
         // 3. Report install result
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
+        _log.Information($"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
         if (installResult.Status != InstallResultStatus.Ok)
         {
             throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
         }
 
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
+        _log.Information($"Completed package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
         return new InstallPackageResult()
         {
             ExtendedErrorCode = extendedErrorCode,
@@ -79,7 +80,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
         }
         else
         {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Install version not specified. Falling back to default install version {package.DefaultInstallVersion.Version}");
+            _log.Information($"Install version not specified. Falling back to default install version {package.DefaultInstallVersion.Version}");
         }
 
         var packageManager = _wingetFactory.CreatePackageManager();
@@ -104,7 +105,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
             }
         }
 
-        Log.Logger?.ReportError(Log.Component.AppManagement, $"Specified install version was not found {version}.");
+        _log.Error($"Specified install version was not found {version}.");
         throw new InstallPackageException(InstallResultStatus.InvalidOptions, InstallPackageException.InstallErrorInvalidParameter, HRESULT.S_OK);
     }
 }

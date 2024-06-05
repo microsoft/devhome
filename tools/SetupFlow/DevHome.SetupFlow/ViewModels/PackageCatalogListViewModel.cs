@@ -12,18 +12,20 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Behaviors;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
+using DevHome.Telemetry;
 using Microsoft.UI.Dispatching;
+using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(PackageCatalogListViewModel));
     private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
     private readonly IExtensionService _extensionService;
     private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
-    private readonly DispatcherQueue _dispatcher;
+    private readonly DispatcherQueue _dispatcherQueue;
     private readonly SemaphoreSlim _loadCatalogsSemaphore = new(1, 1);
 
     [ObservableProperty]
@@ -40,21 +42,24 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
     /// <summary>
     /// Gets a list of package catalogs to display
     /// </summary>
-    public ObservableCollection<PackageCatalogViewModel> PackageCatalogs { get; } = new();
+    [ObservableProperty]
+    private ObservableCollection<PackageCatalogViewModel> _packageCatalogs;
 
     /// <summary>
     /// Gets a list of shimmer indices.
     /// This list is used to repeat the shimmer control {Count} times
     /// </summary>
-    public ObservableCollection<int> PackageCatalogShimmers { get; } = new();
+    [ObservableProperty]
+    private ObservableCollection<int> _packageCatalogShimmers;
 
     public PackageCatalogListViewModel(
         IExtensionService extensionService,
         ICatalogDataSourceLoader catalogDataSourceLoader,
-        PackageCatalogViewModelFactory packageCatalogViewModelFactory)
+        PackageCatalogViewModelFactory packageCatalogViewModelFactory,
+        DispatcherQueue dispatcherQueue)
     {
         _extensionService = extensionService;
-        _dispatcher = DispatcherQueue.GetForCurrentThread();
+        _dispatcherQueue = dispatcherQueue;
         _catalogDataSourceLoader = catalogDataSourceLoader;
         _packageCatalogViewModelFactory = packageCatalogViewModelFactory;
     }
@@ -68,7 +73,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
         await _loadCatalogsSemaphore.WaitAsync();
         try
         {
-            PackageCatalogs.Clear();
+            ResetCatalogs();
             AddShimmers(_catalogDataSourceLoader.CatalogCount);
             await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
             {
@@ -88,12 +93,25 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to load catalogs.", e);
+            _log.Error(e, $"Failed to load catalogs.");
         }
         finally
         {
             _loadCatalogsSemaphore.Release();
         }
+    }
+
+    /// <summary>
+    /// Reset package catalogs
+    /// </summary>
+    private void ResetCatalogs()
+    {
+        // Note: Create new observable collections instead of clearing existing
+        // ones to ensure that the collections are not modified while binding
+        // notification event handlers are being processed which can cause
+        // "unspecified exception".
+        PackageCatalogs = [];
+        PackageCatalogShimmers = [];
     }
 
     /// <summary>
@@ -123,6 +141,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void ViewAllPackages(PackageCatalogViewModel catalog)
     {
+        TelemetryFactory.Get<ITelemetry>().LogCritical("Apps_ViewAll_Event");
         AppManagementBehavior.SetHeaderVisibility(false);
         ViewAllCatalog = catalog;
     }
@@ -153,7 +172,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
 
     private async void OnExtensionChangedAsync(object sender, EventArgs e)
     {
-        await _dispatcher.EnqueueAsync(() => LoadCatalogsAsync());
+        await _dispatcherQueue.EnqueueAsync(() => LoadCatalogsAsync());
     }
 
     private void Dispose(bool disposing)

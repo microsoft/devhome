@@ -3,29 +3,22 @@
   <PropertyGroup>
     <RootNamespace>DevHome.SetupFlow</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>
-    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Labs.WinUI.Shimmer" Version="0.1.230830" />
-    <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.0.240109" />
-    <PackageReference Include="CommunityToolkit.WinUI.Collections" Version="8.0.240109" />
-    <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.0.240109" />
-    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="YamlDotNet" Version="15.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\..\..\settings\DevHome.Settings\DevHome.Settings.csproj" />
-    <ProjectReference Include="..\..\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Projection\DevHome.SetupFlow.ElevatedComponent.Projection.csproj">
       <Aliases>Projection</Aliases>
@@ -39,6 +32,21 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Styles\QuickstartStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\CloneRepoSummaryInformationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\SetupTargetReviewView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\SetupTargetView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\QuickstartPlaygroundView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Styles\AppManagement_ThemeResources.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
@@ -71,18 +79,22 @@
     <None Remove="SetupFlowPage.xaml" />
     <None Remove="Controls\SetupShell.xaml" />
     <None Remove="Styles\AppManagement_ThemeResources.xaml" />
+    <None Remove="Styles\QuickstartStyles.xaml" />
     <None Remove="Styles\SetupFlowStyles.xaml" />
     <None Remove="Styles\SetupFlow_ThemeResources.xaml" />
-    <None Remove="Styles\SetupToolStyles.xaml" />
     <None Remove="Views\AddRepoDialog.xaml" />
+    <None Remove="Views\CloneRepoSummaryInformationView.xaml" />
     <None Remove="Views\DevDriveReviewView.xaml" />
     <None Remove="Views\DevDriveView.xaml" />
     <None Remove="Views\EditClonePathDialog.xaml" />
     <None Remove="Views\LoadingView.xaml" />
     <None Remove="Views\MainPageView.xaml" />
+    <None Remove="Views\QuickstartPlaygroundView.xaml" />
     <None Remove="Views\RepoConfigReviewView.xaml" />
     <None Remove="Views\RepoConfigView.xaml" />
     <None Remove="Views\ReviewView.xaml" />
+    <None Remove="Views\SetupTargetReviewView.xaml" />
+    <None Remove="Views\SetupTargetView.xaml" />
     <None Remove="Views\SummaryView.xaml" />
     <None Remove="Windows\DevDriveWindow.xaml" />
     <None Remove="Windows\InstallationNotesWindow.xaml" />
@@ -109,11 +121,6 @@
     </Page>
     <Page Update="SetupFlowPage.xaml">
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Styles\SetupToolStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\AddRepoDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -226,6 +233,9 @@
     <Content Update="Assets\Setup_EndToEnd.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+	<Content Update="Assets\Setup_QuickstartPlayground.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
     <Content Update="Assets\Setup_RepoConfig.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

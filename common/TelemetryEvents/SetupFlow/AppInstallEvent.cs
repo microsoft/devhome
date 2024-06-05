@@ -16,7 +16,7 @@ public class AppInstallEvent : EventBase
 
     public string SourceId { get; }
 
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public AppInstallEvent(string packageId, string sourceId)
     {

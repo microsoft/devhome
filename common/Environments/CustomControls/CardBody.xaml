@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.Common.Environments.CustomControls.CardBody"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:devEnvConverters="using:DevHome.Common.Environments.Converters"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <devEnvConverters:CardStateColorToBrushConverter x:Key="CardStateColorToBrushConverter"/>
+        <devEnvConverters:CardStateToLocalizedTextConverter x:Key="CardStateToLocalizedTextConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        <converters:EmptyStringToObjectConverter x:Key="EmptyStringToVisibleConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+        <converters:EmptyStringToObjectConverter x:Key="EmptyStringToCollapsedConverter" NotEmptyValue="Collapsed" EmptyValue="Visible"/>
+    </UserControl.Resources>
+
+        <Grid
+            Style="{StaticResource CardBodyContainerStyle}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <!-- 64x64 image for the compute system. -->
+            <Viewbox
+                Grid.Column="0"
+                Style="{StaticResource ComputeSystemImageStyle}">
+                <Grid>
+                <!-- Image for card body. -->
+                    <Border Style="{StaticResource ComputeSystemImageBorderStyle}">
+                        <Image
+                            Source="{x:Bind ComputeSystemImage, Mode=OneWay}"
+                            Width="{StaticResource ComputeSystemImage64px}"
+                            Height="{StaticResource ComputeSystemImage64px}"
+                            Stretch="Uniform"/>
+                    </Border>
+                </Grid>
+            </Viewbox>
+            <!--
+                Stackpanel containing name of compute system, dot indicating status of compute system, state of compute system in text  and a list of
+                the compute system properties.
+            -->
+            <StackPanel
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                Style="{StaticResource CardBodyStackPanelStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
+                        Text="{x:Bind ComputeSystemTitle, Mode=OneWay}"
+                        IsTextSelectionEnabled="True"/>
+                    <TextBlock
+                        Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                        Text="{x:Bind ComputeSystemAlternativeTitle, Mode=OneWay}"
+                        IsTextSelectionEnabled="True"/>
+                </StackPanel>
+                <Grid
+                    ColumnSpacing="{StaticResource ContainerElementSpacing}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <!-- Colored dot that indicates the visual state of the compute system. -->
+                    <Ellipse
+                        Grid.Column="0"
+                        Fill="{x:Bind StateColor, Converter={StaticResource CardStateColorToBrushConverter}, Mode=OneWay}"
+                        Style="{StaticResource CardBodyElipsisStyle}"/>
+                    <!-- String that indicates the internal state of the compute system. -->
+                    <TextBlock
+                        Grid.Column="1"
+                        Visibility="{x:Bind ComputeSystemOperationStatus, Mode=OneWay, Converter={StaticResource EmptyStringToCollapsedConverter}}"
+                        Text="{x:Bind CardState, Converter={StaticResource CardStateToLocalizedTextConverter}, Mode=OneWay}"
+                        Style="{StaticResource CardBodyStateTextBlockStyle}"
+                        TextWrapping="WrapWholeWords"
+                        IsTextSelectionEnabled="True"/>
+                    <TextBlock
+                        Grid.Column="1"
+                        Visibility="{x:Bind ComputeSystemOperationStatus, Mode=OneWay, Converter={StaticResource EmptyStringToVisibleConverter}}"
+                        Text="{x:Bind ComputeSystemOperationStatus, Mode=OneWay}"
+                        Style="{StaticResource CardBodyStateTextBlockStyle}"
+                        TextWrapping="Wrap"
+                        TextTrimming="CharacterEllipsis"
+                        IsTextSelectionEnabled="True"/>
+            </Grid>
+                <!-- Wrap panel from community toolkit that will display properties of variable length. -->
+                <ItemsRepeater 
+                    Visibility="{x:Bind ShouldShowInDefiniteProgress, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
+                    ItemsSource="{x:Bind ComputeSystemProperties, Mode=OneWay}" 
+                    ItemTemplate="{x:Bind ComputeSystemPropertyTemplate, Mode=OneWay}">
+                    <ItemsRepeater.Layout>
+                        <controls:WrapLayout 
+                            Orientation="Horizontal"  
+                            HorizontalSpacing="15"/>
+                    </ItemsRepeater.Layout>
+                </ItemsRepeater>
+                <ProgressBar
+                    Margin="0 5 0 0"
+                    Visibility="{x:Bind ShouldShowInDefiniteProgress, Mode=OneWay}"
+                    IsIndeterminate="True"/>
+            </StackPanel>
+            <!--
+                For an action control, like a splitbutton or checkbox. Pass a Datatemplate to the CardBody's ActionControlTemplate in xaml.
+            -->
+            <ContentControl
+                Grid.Column="2"
+                IsTabStop="False"
+                HorizontalContentAlignment="Right"
+                VerticalContentAlignment="Stretch"
+                ContentTemplate="{x:Bind ActionControlTemplate, Mode=OneWay}"/>
+        </Grid>
+</UserControl>

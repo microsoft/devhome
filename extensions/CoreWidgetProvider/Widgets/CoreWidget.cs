@@ -6,14 +6,13 @@ using System.Text.Json.Nodes;
 using CoreWidgetProvider.Helpers;
 using CoreWidgetProvider.Widgets.Enums;
 using Microsoft.Windows.Widgets.Providers;
+using Windows.ApplicationModel;
 
 namespace CoreWidgetProvider.Widgets;
 
 internal abstract class CoreWidget : WidgetImpl
 {
     protected static readonly string EmptyJson = new JsonObject().ToJsonString();
-
-    protected static readonly string Name = nameof(CoreWidget);
 
     protected WidgetActivityState ActivityState { get; set; } = WidgetActivityState.Unknown;
 
@@ -82,7 +81,7 @@ internal abstract class CoreWidget : WidgetImpl
         catch (Exception)
         {
             // Invalid verb.
-            Log.Logger()?.ReportError($"Unknown WidgetAction verb: {verb}");
+            Log.Error($"Unknown WidgetAction verb: {verb}");
             return WidgetAction.Unknown;
         }
     }
@@ -109,7 +108,7 @@ internal abstract class CoreWidget : WidgetImpl
             CustomState = State(),
         };
 
-        Log.Logger()?.ReportDebug(Name, ShortId, $"Updating widget for {Page}");
+        Log.Debug($"Updating widget for {Page}");
         WidgetManager.GetDefault().UpdateWidget(updateOptions);
     }
 
@@ -127,22 +126,22 @@ internal abstract class CoreWidget : WidgetImpl
     {
         if (Template.TryGetValue(page, out var value))
         {
-            Log.Logger()?.ReportDebug(Name, ShortId, $"Using cached template for {page}");
+            Log.Debug($"Using cached template for {page}");
             return value;
         }
 
         try
         {
-            var path = Path.Combine(AppContext.BaseDirectory, GetTemplatePath(page));
+            var path = Path.Combine(Package.Current.EffectivePath, GetTemplatePath(page));
             var template = File.ReadAllText(path, Encoding.Default) ?? throw new FileNotFoundException(path);
-            template = Resources.ReplaceIdentifers(template, Resources.GetWidgetResourceIdentifiers(), Log.Logger());
-            Log.Logger()?.ReportDebug(Name, ShortId, $"Caching template for {page}");
+            template = Resources.ReplaceIdentifers(template, Resources.GetWidgetResourceIdentifiers(), Log);
+            Log.Debug($"Caching template for {page}");
             Template[page] = template;
             return template;
         }
         catch (Exception e)
         {
-            Log.Logger()?.ReportError(Name, ShortId, "Error getting template.", e);
+            Log.Error(e, "Error getting template.");
             return string.Empty;
         }
     }
@@ -154,7 +153,7 @@ internal abstract class CoreWidget : WidgetImpl
 
     protected void LogCurrentState()
     {
-        Log.Logger()?.ReportDebug(Name, ShortId, GetCurrentState());
+        Log.Debug(GetCurrentState());
     }
 
     protected virtual void SetActive()

@@ -5,12 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
+using Serilog;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
@@ -19,6 +19,7 @@ namespace DevHome.SetupFlow.Services.WinGet;
 /// </summary>
 internal sealed class WinGetPackageFinder : IWinGetPackageFinder
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WinGetPackageFinder));
     private readonly WindowsPackageManagerFactory _wingetFactory;
 
     public WinGetPackageFinder(WindowsPackageManagerFactory wingetFactory)
@@ -35,7 +36,7 @@ internal sealed class WinGetPackageFinder : IWinGetPackageFinder
         }
 
         // Use default filter criteria for searching ('winget search {query}')
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Searching for '{query}'. Result limit: {limit}");
+        _log.Information($"Searching for '{query}'. Result limit: {limit}");
         var filter = _wingetFactory.CreatePackageMatchFilter(PackageMatchField.CatalogDefault, PackageFieldMatchOption.ContainsCaseInsensitive, query);
         var options = _wingetFactory.CreateFindPackagesOptions();
         options.Selectors.Add(filter);
@@ -63,12 +64,12 @@ internal sealed class WinGetPackageFinder : IWinGetPackageFinder
             throw new CatalogNotInitializedException();
         }
 
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages: [{string.Join(", ", packageIds)}] from {catalog.GetDescriptiveName()}");
+        _log.Information($"Getting packages: [{string.Join(", ", packageIds)}] from {catalog.GetDescriptiveName()}");
 
         // Skip search if set is empty
         if (!packageIds.Any())
         {
-            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"{nameof(GetPackagesAsync)} received an empty set of package id. Skipping operation.");
+            _log.Warning($"{nameof(GetPackagesAsync)} received an empty set of package id. Skipping operation.");
             return new List<CatalogPackage>();
         }
 
@@ -83,22 +84,22 @@ internal sealed class WinGetPackageFinder : IWinGetPackageFinder
         var packageId = package.Id;
         try
         {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting applicable installer info for package {packageId}");
+            _log.Information($"Getting applicable installer info for package {packageId}");
             var installOptions = _wingetFactory.CreateInstallOptions();
             installOptions.PackageInstallScope = PackageInstallScope.Any;
             var applicableInstaller = package.DefaultInstallVersion.GetApplicableInstaller(installOptions);
             if (applicableInstaller != null)
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Elevation requirement = {applicableInstaller.ElevationRequirement} for package {packageId}");
+                _log.Information($"Elevation requirement = {applicableInstaller.ElevationRequirement} for package {packageId}");
                 return applicableInstaller.ElevationRequirement == ElevationRequirement.ElevationRequired || applicableInstaller.ElevationRequirement == ElevationRequirement.ElevatesSelf;
             }
 
-            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No applicable installer info found for package {packageId}; defaulting to not requiring elevation");
+            _log.Warning($"No applicable installer info found for package {packageId}; defaulting to not requiring elevation");
             return false;
         }
         catch
         {
-            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get elevation requirement for package {packageId}; defaulting to not requiring elevation");
+            _log.Warning($"Failed to get elevation requirement for package {packageId}; defaulting to not requiring elevation");
             return false;
         }
     }
@@ -150,11 +151,11 @@ internal sealed class WinGetPackageFinder : IWinGetPackageFinder
     /// <returns>List of packages</returns>
     private async Task<IList<CatalogPackage>> GetPackagesInternalAsync(WinGetCatalog catalog, FindPackagesOptions options)
     {
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Performing search on catalog {catalog.GetDescriptiveName()}");
+        _log.Information($"Performing search on catalog {catalog.GetDescriptiveName()}");
         var findResult = await catalog.Catalog.FindPackagesAsync(options);
         if (findResult.Status != FindPackagesResultStatus.Ok)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to find packages with status {findResult.Status}");
+            _log.Error($"Failed to find packages with status {findResult.Status}");
             throw new FindPackagesException(findResult.Status);
         }
 
@@ -166,7 +167,7 @@ internal sealed class WinGetPackageFinder : IWinGetPackageFinder
             result.Add(findResult.Matches[i].CatalogPackage);
         }
 
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found {result.Count} results from catalog {catalog.GetDescriptiveName()} [{string.Join(", ", result.Select(p => p.Id))}]");
+        _log.Information($"Found {result.Count} results from catalog {catalog.GetDescriptiveName()} [{string.Join(", ", result.Select(p => p.Id))}]");
 
         return result;
     }

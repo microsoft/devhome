@@ -6,6 +6,8 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Platforms>x86;x64;arm64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <!-- CsWinRT properties -->
@@ -23,13 +25,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
-    <!-- 
-    The ExcludeAssets=runtime is needed to prevent build errors from System.Management.dll being produced in 2 different locations.
-    DevHome.SetupFlow.Common.csproj, uses System.Management instead, to prevent the reference from escaping into here
-    and producing a separate dll that will break the build, this package reference overwrites the one inherited from the comInterop the project.
-    The ComInterop project was used since this The ElevatedComponent already depends on it. But a better solution is needed once we figure out 
-    why 2 separate dlls get produced.
-    -->
   </ItemGroup>
 
   <ItemGroup>

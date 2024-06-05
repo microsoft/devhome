@@ -11,7 +11,7 @@
     <!-- Package title style -->
     <Style x:Key="AppManagementPackageTitleTextBlock" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-        <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimary}" />
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="MaxLines" Value="1" />
     </Style>
 
@@ -40,7 +40,6 @@
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Installed"/>
                         </converters:BoolToObjectConverter.TrueValue>
                     </converters:BoolToObjectConverter>
-                    <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
                     <converters:BoolToObjectConverter x:Name="SelectButtonGlyphConverter" TrueValue="&#xE845;" FalseValue="&#xE710;" />
                 </ResourceDictionary>
             </Grid.Resources>
@@ -50,7 +49,6 @@
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState>
                         <VisualState.StateTriggers>
-                            <StateTrigger IsActive="{Binding CanSelect, Converter={StaticResource BoolNegationConverter}}" />
                             <StateTrigger IsActive="{Binding IsSelected}" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
@@ -79,10 +77,11 @@
                     </StackPanel>
                 </controls:PackageDetailsSettingsCard.Description>
                 <controls:PackageDetailsSettingsCard.HeaderIcon>
-                    <ImageIcon Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
+                    <ImageIcon AutomationProperties.Name="{Binding PackageTitle}" Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
                 </controls:PackageDetailsSettingsCard.HeaderIcon>
                 <StackPanel Orientation="Horizontal" Spacing="10">
                     <ComboBox
+                        x:Uid="VersionComboBox"
                         Visibility="{Binding ShowVersionList}"
                         BorderThickness="0"
                         FontSize="{ThemeResource CaptionTextBlockFontSize}"
@@ -93,8 +92,9 @@
                         SelectedItem="{Binding SelectedVersion, Mode=TwoWay}"
                         ItemsSource="{Binding AvailableVersions}" />
                     <Button
-                        IsEnabled="{Binding CanSelect}"
-                        AutomationProperties.Name="{Binding ButtonAutomationName}"
+                        ToolTipService.ToolTip="{Binding ActionButtonDescription}"
+                        AutomationProperties.Name="{Binding ActionButtonDescription}"
+                        AutomationProperties.AutomationId="{Binding ButtonAutomationId}"
                         Padding="5"
                         Command="{Binding ToggleSelectionCommand,Mode=OneWay}">
                         <FontIcon

@@ -14,6 +14,7 @@ public static class StringResourceKey
     public static readonly string AddAllApplications = nameof(AddAllApplications);
     public static readonly string AddApplication = nameof(AddApplication);
     public static readonly string AddedApplication = nameof(AddedApplication);
+    public static readonly string AppInstallActivationTitle = nameof(AppInstallActivationTitle);
     public static readonly string ApplicationsAddedPlural = nameof(ApplicationsAddedPlural);
     public static readonly string ApplicationsAddedSingular = nameof(ApplicationsAddedSingular);
     public static readonly string Applications = nameof(Applications);
@@ -33,6 +34,8 @@ public static class StringResourceKey
     public static readonly string ConfigurationUnitSummaryNoId = nameof(ConfigurationUnitSummaryNoId);
     public static readonly string ConfigurationUnitStats = nameof(ConfigurationUnitStats);
     public static readonly string ConfigurationViewTitle = nameof(ConfigurationViewTitle);
+    public static readonly string ConfigurationActivationFailedDisabled = nameof(ConfigurationActivationFailedDisabled);
+    public static readonly string ConfigurationActivationFailedBusy = nameof(ConfigurationActivationFailedBusy);
     public static readonly string DevDriveReviewTitle = nameof(DevDriveReviewTitle);
     public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
     public static readonly string DevDriveDefaultFolderName = nameof(DevDriveDefaultFolderName);
@@ -52,11 +55,14 @@ public static class StringResourceKey
     public static readonly string EditClonePathDialog = nameof(EditClonePathDialog);
     public static readonly string EditClonePathDialogUncheckCheckMark = nameof(EditClonePathDialogUncheckCheckMark);
     public static readonly string FilePickerFileTypeOption = nameof(FilePickerFileTypeOption);
+    public static readonly string FilePickerSingleFileTypeOption = nameof(FilePickerSingleFileTypeOption);
     public static readonly string FileTypeNotSupported = nameof(FileTypeNotSupported);
     public static readonly string InstalledPackage = nameof(InstalledPackage);
     public static readonly string InstalledPackageReboot = nameof(InstalledPackageReboot);
     public static readonly string InstallingPackage = nameof(InstallingPackage);
     public static readonly string InstallationNotesTitle = nameof(InstallationNotesTitle);
+    public static readonly string MainPageEnvironmentSetupGroup = nameof(MainPageEnvironmentSetupGroup);
+    public static readonly string MainPageQuickConfigurationGroup = nameof(MainPageQuickConfigurationGroup);
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
     public static readonly string PackagesCount = nameof(PackagesCount);
@@ -80,7 +86,14 @@ public static class StringResourceKey
     public static readonly string SelectedPackagesCount = nameof(SelectedPackagesCount);
     public static readonly string SetUpButton = nameof(SetUpButton);
     public static readonly string SizeWithColon = nameof(SizeWithColon);
+    public static readonly string URIActivationFailedBusy = nameof(URIActivationFailedBusy);
+    public static readonly string LoadingPageHeaderLocalText = nameof(LoadingPageHeaderLocalText);
+    public static readonly string LoadingPageHeaderTargetText = nameof(LoadingPageHeaderTargetText);
+    public static readonly string LoadingPageSetupTargetText = nameof(LoadingPageSetupTargetText);
+    public static readonly string LoadingTasksTitleText = nameof(LoadingTasksTitleText);
+    public static readonly string LoadingLogsTitleText = nameof(LoadingLogsTitleText);
     public static readonly string LoadingExecutingProgress = nameof(LoadingExecutingProgress);
+    public static readonly string LoadingExecutingProgressForTarget = nameof(LoadingExecutingProgressForTarget);
     public static readonly string ActionCenterDisplay = nameof(ActionCenterDisplay);
     public static readonly string NeedsRebootMessage = nameof(NeedsRebootMessage);
     public static readonly string ApplicationsPageTitle = nameof(ApplicationsPageTitle);
@@ -90,6 +103,8 @@ public static class StringResourceKey
     public static readonly string SummaryPageOneRepositoryCloned = nameof(SummaryPageOneRepositoryCloned);
     public static readonly string SummaryPageAppsDownloadedCount = nameof(SummaryPageAppsDownloadedCount);
     public static readonly string SummaryPageReposClonedCount = nameof(SummaryPageReposClonedCount);
+    public static readonly string SummaryConfigurationErrorsCountText = nameof(SummaryConfigurationErrorsCountText);
+    public static readonly string SummaryPageTargetMachineFailedTaskText = nameof(SummaryPageTargetMachineFailedTaskText);
     public static readonly string SSHConnectionStringNotAllowed = nameof(SSHConnectionStringNotAllowed);
 
     // Repository loading screen messages
@@ -98,6 +113,12 @@ public static class StringResourceKey
     public static readonly string CloneRepoError = nameof(CloneRepoError);
     public static readonly string CloneRepoErrorForActionCenter = nameof(CloneRepoErrorForActionCenter);
     public static readonly string CloneRepoRestart = nameof(CloneRepoRestart);
+
+    // Repository Next Steps messages
+    public static readonly string CloneRepoNextStepsView = nameof(CloneRepoNextStepsView);
+    public static readonly string CloneRepoNextStepsRun = nameof(CloneRepoNextStepsRun);
+    public static readonly string CloneRepoNextStepsFileFound = nameof(CloneRepoNextStepsFileFound);
+    public static readonly string CloneRepoNextStepsDescription = nameof(CloneRepoNextStepsDescription);
 
     // Configure task loading screen messages
     public static readonly string ApplyingConfigurationMessage = nameof(ApplyingConfigurationMessage);
@@ -127,6 +148,7 @@ public static class StringResourceKey
 
     // Repo tool
     public static readonly string RepoToolNextButtonTooltip = nameof(RepoToolNextButtonTooltip);
+    public static readonly string RepoToolNoRepositoriesMessage = nameof(RepoToolNoRepositoriesMessage);
     public static readonly string RepoAccountPagePrimaryButtonText = nameof(RepoAccountPagePrimaryButtonText);
     public static readonly string RepoEverythingElsePrimaryButtonText = nameof(RepoEverythingElsePrimaryButtonText);
     public static readonly string RepoPageEditClonePathAutomationProperties = nameof(RepoPageEditClonePathAutomationProperties);
@@ -135,6 +157,8 @@ public static class StringResourceKey
     public static readonly string ClonePathNotFolder = nameof(ClonePathNotFolder);
     public static readonly string ClonePathDriveDoesNotExist = nameof(ClonePathDriveDoesNotExist);
     public static readonly string RepoToolAddAnotherAccount = nameof(RepoToolAddAnotherAccount);
+    public static readonly string SetupShellRepoConfigLocalMachine = nameof(SetupShellRepoConfigLocalMachine);
+    public static readonly string SetupShellRepoConfigTargetMachine = nameof(SetupShellRepoConfigTargetMachine);
 
     // Url Validation
     public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);
@@ -201,4 +225,84 @@ public static class StringResourceKey
     public static readonly string ConfigurationUnitFailedSystemState = nameof(ConfigurationUnitFailedSystemState);
     public static readonly string ConfigurationUnitFailedUnitProcessing = nameof(ConfigurationUnitFailedUnitProcessing);
     public static readonly string ConfigurationUnitNotRunDueToFailedAssert = nameof(ConfigurationUnitNotRunDueToFailedAssert);
+
+    // Setup target flow
+    public static readonly string SetupTargetPageTitle = nameof(SetupTargetPageTitle);
+    public static readonly string SetupTargetAllComboBoxOption = nameof(SetupTargetAllComboBoxOption);
+    public static readonly string SetupTargetConfigurationUnknown = nameof(SetupTargetConfigurationUnknown);
+    public static readonly string SetupTargetConfigurationPending = nameof(SetupTargetConfigurationPending);
+    public static readonly string SetupTargetConfigurationInProgress = nameof(SetupTargetConfigurationInProgress);
+    public static readonly string SetupTargetConfigurationCompleted = nameof(SetupTargetConfigurationCompleted);
+    public static readonly string SetupTargetConfigurationShuttingDownDevice = nameof(SetupTargetConfigurationShuttingDownDevice);
+    public static readonly string SetupTargetConfigurationStartingDevice = nameof(SetupTargetConfigurationStartingDevice);
+    public static readonly string SetupTargetConfigurationRestartingDevice = nameof(SetupTargetConfigurationRestartingDevice);
+    public static readonly string SetupTargetConfigurationProvisioningDevice = nameof(SetupTargetConfigurationProvisioningDevice);
+    public static readonly string SetupTargetConfigurationWaitingForAdminUserLogon = nameof(SetupTargetConfigurationWaitingForAdminUserLogon);
+    public static readonly string SetupTargetConfigurationWaitingForUserLogon = nameof(SetupTargetConfigurationWaitingForUserLogon);
+    public static readonly string SetupTargetConfigurationSkipped = nameof(SetupTargetConfigurationSkipped);
+    public static readonly string SetupTargetConfigurationOpenConfigFailed = nameof(SetupTargetConfigurationOpenConfigFailed);
+    public static readonly string SetupTargetConfigurationUnitProgressMessage = nameof(SetupTargetConfigurationUnitProgressMessage);
+    public static readonly string SetupTargetConfigurationSetProgressMessage = nameof(SetupTargetConfigurationSetProgressMessage);
+    public static readonly string SetupTargetConfigurationUnitProgressError = nameof(SetupTargetConfigurationUnitProgressError);
+    public static readonly string ConfigureTargetApplyConfigurationStopped = nameof(ConfigureTargetApplyConfigurationStopped);
+    public static readonly string ConfigureTargetApplyConfigurationStoppedWithNoEndingMessage = nameof(ConfigureTargetApplyConfigurationStoppedWithNoEndingMessage);
+    public static readonly string ConfigureTargetApplyConfigurationActionNeeded = nameof(ConfigureTargetApplyConfigurationActionNeeded);
+    public static readonly string SetupTargetExtensionApplyingConfiguration = nameof(SetupTargetExtensionApplyingConfiguration);
+    public static readonly string SetupTargetExtensionApplyingConfigurationActionRequired = nameof(SetupTargetExtensionApplyingConfigurationActionRequired);
+    public static readonly string SetupTargetExtensionApplyConfigurationError = nameof(SetupTargetExtensionApplyConfigurationError);
+    public static readonly string SetupTargetExtensionApplyConfigurationSuccess = nameof(SetupTargetExtensionApplyConfigurationSuccess);
+    public static readonly string SetupTargetExtensionApplyConfigurationRebootRequired = nameof(SetupTargetExtensionApplyConfigurationRebootRequired);
+    public static readonly string SetupTargetMachineName = nameof(SetupTargetMachineName);
+    public static readonly string ConfigureTargetApplyConfigurationActionFailureRetry = nameof(ConfigureTargetApplyConfigurationActionFailureRetry);
+    public static readonly string ConfigureTargetApplyConfigurationActionFailureEnd = nameof(ConfigureTargetApplyConfigurationActionFailureEnd);
+    public static readonly string ConfigureTargetApplyConfigurationActionSuccess = nameof(ConfigureTargetApplyConfigurationActionSuccess);
+    public static readonly string SetupTargetReviewPageDefaultInfoBarTitle = nameof(SetupTargetReviewPageDefaultInfoBarTitle);
+    public static readonly string SetupTargetReviewPageDefaultInfoBarMessage = nameof(SetupTargetReviewPageDefaultInfoBarMessage);
+    public static readonly string SetupTargetReviewPageHyperVInfoBarMessage = nameof(SetupTargetReviewPageHyperVInfoBarMessage);
+    public static readonly string SetupTargetReviewTabTitle = nameof(SetupTargetReviewTabTitle);
+    public static readonly string SetupTargetUnknownStatus = nameof(SetupTargetUnknownStatus);
+    public static readonly string SetupTargetSortAToZLabel = nameof(SetupTargetSortAToZLabel);
+    public static readonly string SetupTargetSortZToALabel = nameof(SetupTargetSortZToALabel);
+    public static readonly string SetupTargetPageSyncButton = nameof(SetupTargetPageSyncButton);
+    public static readonly string SetupTargetConfigurationUnitCompleted = nameof(SetupTargetConfigurationUnitCompleted);
+    public static readonly string SetupTargetConfigurationUnitInProgress = nameof(SetupTargetConfigurationUnitInProgress);
+    public static readonly string SetupTargetConfigurationUnitPending = nameof(SetupTargetConfigurationUnitPending);
+    public static readonly string SetupTargetConfigurationUnitSkipped = nameof(SetupTargetConfigurationUnitSkipped);
+    public static readonly string SetupTargetConfigurationSetCurrentState = nameof(SetupTargetConfigurationSetCurrentState);
+    public static readonly string SetupTargetConfigurationUnitCurrentState = nameof(SetupTargetConfigurationUnitCurrentState);
+    public static readonly string SetupTargetConfigurationProgressUpdate = nameof(SetupTargetConfigurationProgressUpdate);
+    public static readonly string SetupTargetConfigurationUnitProgressErrorWithMsg = nameof(SetupTargetConfigurationUnitProgressErrorWithMsg);
+    public static readonly string SetupTargetConfigurationUnitUnknown = nameof(SetupTargetConfigurationUnitUnknown);
+    public static readonly string NoEnvironmentsButExtensionsInstalledButton = nameof(NoEnvironmentsButExtensionsInstalledButton);
+    public static readonly string NoEnvironmentsButExtensionsInstalledCallToAction = nameof(NoEnvironmentsButExtensionsInstalledCallToAction);
+    public static readonly string NoEnvironmentsAndExtensionsNotInstalledCallToAction = nameof(NoEnvironmentsAndExtensionsNotInstalledCallToAction);
+    public static readonly string NoEnvironmentsAndExtensionsNotInstalledButton = nameof(NoEnvironmentsAndExtensionsNotInstalledButton);
+
+    // Quickstart Playground
+    public static readonly string QuickstartPlaygroundLaunchButton = nameof(QuickstartPlaygroundLaunchButton);
+
+    // Create Environment flow
+    public static readonly string SelectEnvironmentPageTitle = nameof(SelectEnvironmentPageTitle);
+    public static readonly string ConfigureEnvironmentPageTitle = nameof(ConfigureEnvironmentPageTitle);
+    public static readonly string EnvironmentCreationReviewPageTitle = nameof(EnvironmentCreationReviewPageTitle);
+    public static readonly string EnvironmentCreationReviewTabTitle = nameof(EnvironmentCreationReviewTabTitle);
+    public static readonly string EnvironmentCreationError = nameof(EnvironmentCreationError);
+    public static readonly string StartingEnvironmentCreation = nameof(StartingEnvironmentCreation);
+    public static readonly string EnvironmentCreationOperationInitializationFinished = nameof(EnvironmentCreationOperationInitializationFinished);
+    public static readonly string EnvironmentCreationForProviderStarted = nameof(EnvironmentCreationForProviderStarted);
+    public static readonly string EnvironmentCreationFailedToGetProviderInformation = nameof(EnvironmentCreationFailedToGetProviderInformation);
+    public static readonly string EnvironmentCreationReviewExpanderDescription = nameof(EnvironmentCreationReviewExpanderDescription);
+    public static readonly string CreateEnvironmentButtonText = nameof(CreateEnvironmentButtonText);
+    public static readonly string SetupShellReviewPageDescriptionForEnvironmentCreation = nameof(SetupShellReviewPageDescriptionForEnvironmentCreation);
+    public static readonly string EnvironmentCreationAdaptiveCardLoadingMessage = nameof(EnvironmentCreationAdaptiveCardLoadingMessage);
+
+    // Summary page
+    public static readonly string SummaryPageOpenDashboard = nameof(SummaryPageOpenDashboard);
+    public static readonly string SummaryPageRedirectToEnvironmentPageButton = nameof(SummaryPageRedirectToEnvironmentPageButton);
+    public static readonly string SummaryPageHeader = nameof(SummaryPageHeader);
+    public static readonly string SummaryPageHeaderForEnvironmentCreationText = nameof(SummaryPageHeaderForEnvironmentCreationText);
+
+    // Review page
+    public static readonly string ReviewExpanderDescription = nameof(ReviewExpanderDescription);
+    public static readonly string SetupShellReviewPageDescription = nameof(SetupShellReviewPageDescription);
 }
