@@ -154,6 +154,10 @@
     <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
+
   <!-- Third party notice file -->
   <ItemGroup>
     <Content Include="$(SolutionDir)NOTICE.txt">

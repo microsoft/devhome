@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
+using DevHome.Telemetry;
+using DevHome.Utilities.TelemetryEvents;
 using Windows.ApplicationModel;
 
 namespace DevHome.Utilities.ViewModels;
@@ -53,5 +55,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "PI.ico"),
             },
         };
+
+        TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesMainPage", LogLevel.Critical, new UtilitiesMainPageViewModelEvent());
     }
 }

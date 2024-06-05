@@ -72,7 +72,7 @@
                     <TextBlock Grid.Row="5" x:Uid="MicrosoftStoreAppTextBlock" />
                     <TextBox Grid.Row="5" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsStoreApp, Mode=OneWay}" IsReadOnly="True" />
 
-                    <TextBlock Grid.Row="6" x:Uid="FrameworkTypesTextBlock" />
+                    <TextBlock Grid.Row="6" x:Uid="FrameworkTypesTextBlock" TextWrapping="Wrap"/>
                     <ListView 
                         Grid.Row="6" Grid.Column="1" IsItemClickEnabled="False"
                         ItemsSource="{x:Bind ViewModel.AppInfo.FrameworkTypes, Mode=OneWay}">

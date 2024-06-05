@@ -241,46 +241,45 @@ extends:
 
                   $(Build.SourcesDirectory)\**\obj\**\*.r2r.ni.pdb
 
-            - task: EsrpCodeSigning@2
-              inputs:
-                ConnectedServiceName: 'Xlang Code Signing'
-                FolderPath: '$(appxPackageDir)\${{ configuration }}'
-                Pattern: '*.msix'
-                signConfigType: 'inlineSignParams'
-                inlineOperation: |
-                  [
-                    {
-                      "keycode": "CP-230012",
-                      "operationSetCode": "SigntoolvNextSign",
-                      "parameters": [
-                        {
-                          "parameterName": "OpusName",
-                          "parameterValue": "Microsoft"
-                        },
-                        {
-                          "parameterName": "OpusInfo",
-                          "parameterValue": "http://www.microsoft.com"
-                        },
-                        {
-                          "parameterName": "PageHash",
-                          "parameterValue": "/NPH"
-                        },
-                        {
-                          "parameterName": "FileDigest",
-                          "parameterValue": "/fd sha256"
-                        },
-                        {
-                          "parameterName": "TimeStamp",
-                          "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-                        }
-                      ],
-                      "toolName": "signtool.exe",
-                      "toolVersion": "6.2.9304.0"
-                    }
-                  ]
-                SessionTimeout: '60'
-                MaxConcurrency: '50'
-                MaxRetryAttempts: '5'
+            - template: ./build/templates/EsrpSigning-Steps.yml@self
+              parameters:
+                displayName: Submit *.msix to ESRP for code signing
+                inputs:
+                  FolderPath: '$(appxPackageDir)\${{ configuration }}'
+                  Pattern: '*.msix'
+                  UseMinimatch: true
+                  signConfigType: inlineSignParams
+                  inlineOperation: >-
+                    [
+                      {
+                        "keycode": "CP-230012",
+                        "operationSetCode": "SigntoolvNextSign",
+                        "parameters": [
+                          {
+                            "parameterName": "OpusName",
+                            "parameterValue": "Microsoft"
+                          },
+                          {
+                            "parameterName": "OpusInfo",
+                            "parameterValue": "http://www.microsoft.com"
+                          },
+                          {
+                            "parameterName": "PageHash",
+                            "parameterValue": "/NPH"
+                          },
+                          {
+                            "parameterName": "FileDigest",
+                            "parameterValue": "/fd sha256"
+                          },
+                          {
+                            "parameterName": "TimeStamp",
+                            "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+                          }
+                        ],
+                        "toolName": "signtool.exe",
+                        "toolVersion": "6.2.9304.0"
+                      }
+                    ]
 
             # Commented out until our implementation is fixed
             # - task: AzureKeyVault@1
@@ -394,47 +393,46 @@ extends:
               filePath: 'build/scripts/UnbundleStubPackage.ps1'
               arguments: -InputPath $(appxPackageDir)\Staging -OutputLocation $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub
 
-          - task: EsrpCodeSigning@2
-            condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
-            inputs:
-              ConnectedServiceName: 'Xlang Code Signing'
-              FolderPath: '$(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub'
-              Pattern: '*.msix'
-              signConfigType: 'inlineSignParams'
-              inlineOperation: |
-                [
-                  {
-                    "keycode": "CP-230012",
-                    "operationSetCode": "SigntoolvNextSign",
-                    "parameters": [
+          - ${{ if and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release')) }}:
+            - template: ./build/templates/EsrpSigning-Steps.yml@self
+              parameters:
+                displayName: Submit *.msix to ESRP for code signing
+                inputs:
+                  FolderPath: '$(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub'
+                  Pattern: '*.msix'
+                  UseMinimatch: true
+                  signConfigType: inlineSignParams
+                  inlineOperation: |
+                    [
                       {
-                        "parameterName": "OpusName",
-                        "parameterValue": "Microsoft"
-                      },
-                      {
-                        "parameterName": "OpusInfo",
-                        "parameterValue": "http://www.microsoft.com"
-                      },
-                      {
-                        "parameterName": "PageHash",
-                        "parameterValue": "/NPH"
-                      },
-                      {
-                        "parameterName": "FileDigest",
-                        "parameterValue": "/fd sha256"
-                      },
-                      {
-                        "parameterName": "TimeStamp",
-                        "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+                        "keycode": "CP-230012",
+                        "operationSetCode": "SigntoolvNextSign",
+                        "parameters": [
+                          {
+                            "parameterName": "OpusName",
+                            "parameterValue": "Microsoft"
+                          },
+                          {
+                            "parameterName": "OpusInfo",
+                            "parameterValue": "http://www.microsoft.com"
+                          },
+                          {
+                            "parameterName": "PageHash",
+                            "parameterValue": "/NPH"
+                          },
+                          {
+                            "parameterName": "FileDigest",
+                            "parameterValue": "/fd sha256"
+                          },
+                          {
+                            "parameterName": "TimeStamp",
+                            "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+                          }
+                        ],
+                        "toolName": "signtool.exe",
+                        "toolVersion": "6.2.9304.0"
                       }
-                    ],
-                    "toolName": "signtool.exe",
-                    "toolVersion": "6.2.9304.0"
-                  }
-                ]
-              SessionTimeout: '60'
-              MaxConcurrency: '50'
-              MaxRetryAttempts: '5'
+                    ]
 
           - task: PowerShell@2
             displayName: Build MsixBundle
@@ -442,46 +440,45 @@ extends:
               filePath: 'Build.ps1'
               arguments: -Configuration "${{ configuration }}" -Version $(MSIXVersion) -BuildStep "msixbundle" -IsAzurePipelineBuild
 
-          - task: EsrpCodeSigning@2
-            inputs:
-              ConnectedServiceName: 'Xlang Code Signing'
-              FolderPath: 'AppxBundles\${{ configuration }}'
-              Pattern: '*.msixbundle'
-              signConfigType: 'inlineSignParams'
-              inlineOperation: |
-                [
-                  {
-                    "keycode": "CP-230012",
-                    "operationSetCode": "SigntoolvNextSign",
-                    "parameters": [
-                      {
-                        "parameterName": "OpusName",
-                        "parameterValue": "Microsoft"
-                      },
-                      {
-                        "parameterName": "OpusInfo",
-                        "parameterValue": "http://www.microsoft.com"
-                      },
-                      {
-                        "parameterName": "PageHash",
-                        "parameterValue": "/NPH"
-                      },
-                      {
-                        "parameterName": "FileDigest",
-                        "parameterValue": "/fd sha256"
-                      },
-                      {
-                        "parameterName": "TimeStamp",
-                        "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-                      }
-                    ],
-                    "toolName": "signtool.exe",
-                    "toolVersion": "6.2.9304.0"
-                  }
-                ]
-              SessionTimeout: '60'
-              MaxConcurrency: '50'
-              MaxRetryAttempts: '5'
+          - template: ./build/templates/EsrpSigning-Steps.yml@self
+            parameters:
+              displayName: Submit *.msixbundle to ESRP for code signing
+              inputs:
+                FolderPath: 'AppxBundles\${{ configuration }}'
+                Pattern: '*.msixbundle'
+                UseMinimatch: true
+                signConfigType: inlineSignParams
+                inlineOperation: |
+                  [
+                    {
+                      "keycode": "CP-230012",
+                      "operationSetCode": "SigntoolvNextSign",
+                      "parameters": [
+                        {
+                          "parameterName": "OpusName",
+                          "parameterValue": "Microsoft"
+                        },
+                        {
+                          "parameterName": "OpusInfo",
+                          "parameterValue": "http://www.microsoft.com"
+                        },
+                        {
+                          "parameterName": "PageHash",
+                          "parameterValue": "/NPH"
+                        },
+                        {
+                          "parameterName": "FileDigest",
+                          "parameterValue": "/fd sha256"
+                        },
+                        {
+                          "parameterName": "TimeStamp",
+                          "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+                        }
+                      ],
+                      "toolName": "signtool.exe",
+                      "toolVersion": "6.2.9304.0"
+                    }
+                  ]
 
         templateContext:
           outputs:
