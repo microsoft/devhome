@@ -2,13 +2,13 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
+using DevHome.Common.Views;
 using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Settings.Views;
 
-public sealed partial class ExperimentalFeaturesPage : Page
+public sealed partial class ExperimentalFeaturesPage : DevHomePage
 {
     public ExperimentalFeaturesViewModel ViewModel { get; }
 

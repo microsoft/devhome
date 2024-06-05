@@ -12,6 +12,7 @@ using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
@@ -20,7 +21,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
 
@@ -36,7 +36,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private readonly IWidgetHostingService _hostingService;
     private readonly IWidgetIconService _widgetIconService;
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     public AddWidgetDialog()
     {
@@ -46,7 +46,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         this.InitializeComponent();
 
-        _windowEx = Application.Current.GetService<WindowEx>();
+        _dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
 
         RequestedTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
     }
@@ -108,7 +108,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 {
                     IsExpanded = true,
                     Tag = providerDef,
-                    Content = providerDef.DisplayName,
+                    Content = new TextBlock { Text = providerDef.DisplayName, TextWrapping = TextWrapping.Wrap },
                 };
 
                 navItem.SetValue(ToolTipService.ToolTipProperty, providerDef.DisplayName);
@@ -148,17 +148,21 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
-    private async Task<StackPanel> BuildWidgetNavItem(ComSafeWidgetDefinition widgetDefinition)
+    private async Task<Grid> BuildWidgetNavItem(ComSafeWidgetDefinition widgetDefinition)
     {
         var image = await _widgetIconService.GetIconFromCacheAsync(widgetDefinition, ActualTheme);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
     }
 
-    private StackPanel BuildNavItem(BitmapImage image, string text)
+    private Grid BuildNavItem(BitmapImage image, string text)
     {
-        var itemContent = new StackPanel
+        var itemContent = new Grid
         {
-            Orientation = Orientation.Horizontal,
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = GridLength.Auto },
+                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+            },
         };
 
         if (image is not null)
@@ -167,13 +171,14 @@ public sealed partial class AddWidgetDialog : ContentDialog
             {
                 Width = 16,
                 Height = 16,
-                Margin = new Thickness(0, 0, 10, 0),
+                Margin = new Thickness(0, 0, 8, 0),
                 Fill = new ImageBrush
                 {
                     ImageSource = image,
                     Stretch = Stretch.Uniform,
                 },
             };
+            Grid.SetColumn(itemSquare, 0);
 
             itemContent.Children.Add(itemSquare);
         }
@@ -181,7 +186,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
         var itemText = new TextBlock()
         {
             Text = text,
+            TextWrapping = TextWrapping.Wrap,
+            VerticalAlignment = VerticalAlignment.Center,
         };
+        Grid.SetColumn(itemText, 1);
+
         itemContent.Children.Add(itemText);
 
         return itemContent;
@@ -311,7 +320,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         var deletedDefinitionId = args.DefinitionId;
 
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _dispatcherQueue.TryEnqueue(() =>
         {
             // If we currently have the deleted widget open, un-select it.
             if (_selectedWidget is not null &&

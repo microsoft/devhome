@@ -4,10 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using Antlr4.Runtime.Misc;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -15,18 +13,15 @@ using CommunityToolkit.WinUI;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.Environments;
 using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Environments.Helpers;
 using DevHome.Environments.Models;
 using DevHome.Telemetry;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using Windows.Foundation;
-using WinUIEx;
-using WinUIEx.Messaging;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -38,7 +33,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
     private readonly StringResource _stringResource;
-    private readonly WindowEx _windowEx;
+    private readonly Window _mainWindow;
     private readonly IComputeSystemManager _computeSystemManager;
     private readonly ComputeSystemProvider _provider;
 
@@ -54,6 +49,10 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     public string PackageFullName { get; set; }
 
     private readonly Func<ComputeSystemCardBase, bool> _removalAction;
+
+    [ObservableProperty]
+    private bool _shouldShowDotOperations;
+
     private bool _disposedValue;
 
     /// <summary>
@@ -72,11 +71,11 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         ComputeSystemProvider provider,
         Func<ComputeSystemCardBase, bool> removalAction,
         string packageFullName,
-        WindowEx windowEx)
+        Window window)
     {
-        _windowEx = windowEx;
         _computeSystemManager = manager;
         _provider = provider;
+        _mainWindow = window;
 
         ComputeSystem = new(system);
         PackageFullName = packageFullName;
@@ -128,23 +127,39 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         await _semaphoreSlimLock.WaitAsync();
         try
         {
-            RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _windowEx), DataExtractor.FillLaunchButtonOperations(ComputeSystem));
+            ShouldShowDotOperations = false;
+            RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _mainWindow), DataExtractor.FillLaunchButtonOperations(ComputeSystem));
 
-            foreach (var data in await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem))
+            _ = Task.Run(async () =>
             {
-                if ((!data.WasPinnedStatusSuccessful) || (data.ViewModel == null))
+                var start = DateTime.Now;
+                List<OperationsViewModel> validData = new();
+                foreach (var data in await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem))
                 {
-                    // TODO: pinned status for dev box for example fails often. So we'll log it and not show notifications so we don't overload the user with
-                    // failure notifications until the feature is fixed. We simply do not show the pinned icons in these cases since we don't know which ones
-                    // to show.
-                    _log.Error($"Pinned status check failed: for '{Name}': {data?.PinnedStatusDisplayMessage}. DiagnosticText: {data?.PinnedStatusDiagnosticText}");
-                    continue;
+                    if ((!data.WasPinnedStatusSuccessful) || (data.ViewModel == null))
+                    {
+                        _log.Error($"Pinned status check failed: for '{Name}': {data?.PinnedStatusDisplayMessage}. DiagnosticText: {data?.PinnedStatusDiagnosticText}");
+                        continue;
+                    }
+
+                    validData.Add(data.ViewModel);
+                    WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedMessage, OperationsViewModel>(this, data.ViewModel);
+                    WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedMessage, OperationsViewModel>(this, data.ViewModel);
                 }
 
-                DotOperations.Add(data.ViewModel);
-                WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedMessage, OperationsViewModel>(this, data.ViewModel);
-                WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedMessage, OperationsViewModel>(this, data.ViewModel);
-            }
+                _log.Information($"Registering pin operations for {Name} in background took {DateTime.Now - start}");
+
+                // Add valid data to the DotOperations collection
+                _mainWindow.DispatcherQueue.TryEnqueue(() =>
+                {
+                    foreach (var data in validData)
+                    {
+                        DotOperations.Add(data);
+                    }
+
+                    ShouldShowDotOperations = true;
+                });
+            });
 
             SetPropertiesAsync();
         }
@@ -201,7 +216,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState newState)
     {
-        _windowEx.DispatcherQueue.EnqueueAsync(async () =>
+        _mainWindow.DispatcherQueue.EnqueueAsync(async () =>
         {
             if (sender.Id == ComputeSystem.Id.Value &&
                 sender.AssociatedProviderId.Equals(ComputeSystem.AssociatedProviderId.Value, StringComparison.OrdinalIgnoreCase))
@@ -236,7 +251,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         // We'll need to disable the card UI while the operation is in progress and handle failures.
         Task.Run(async () =>
         {
-            _windowEx.DispatcherQueue.TryEnqueue(() =>
+            _mainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 UiMessageToDisplay = _stringResource.GetLocalized("LaunchingEnvironmentText");
                 IsOperationInProgress = true;
@@ -263,7 +278,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                 LogLevel.Critical,
                 new EnvironmentLaunchUserEvent(ComputeSystem.AssociatedProviderId.Value, completionStatus));
 
-            _windowEx.DispatcherQueue.TryEnqueue(() =>
+            _mainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 IsOperationInProgress = false;
                 UiMessageToDisplay = string.Empty;
@@ -273,7 +288,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
     private void RemoveComputeSystem()
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _mainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             _log.Information($"Removing Compute system with Name: {ComputeSystem.DisplayName} from UI");
             _removalAction(this);
@@ -306,7 +321,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     /// <param name="message">The object that holds the data needed to capture the operationInvoked telemetry data</param>
     public void Receive(ComputeSystemOperationStartedMessage message)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _mainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             var data = message.Value;
             IsOperationInProgress = true;
@@ -327,7 +342,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     /// <param name="message">The object that holds the data needed to capture the operationInvoked telemetry data</param>
     public void Receive(ComputeSystemOperationCompletedMessage message)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _mainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             var data = message.Value;
             _log.Information($"operation '{data.ComputeSystemOperation}' completed for Compute System: {Name}");

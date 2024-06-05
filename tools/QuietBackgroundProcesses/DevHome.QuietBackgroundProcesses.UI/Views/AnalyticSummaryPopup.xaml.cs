@@ -6,13 +6,12 @@ using DevHome.Common.Windows.FileDialog;
 using DevHome.QuietBackgroundProcesses.UI.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using WinUIEx;
 
 namespace DevHome.QuietBackgroundProcesses.UI.Views;
 
 public sealed partial class AnalyticSummaryPopup : ContentDialog
 {
-    private readonly WindowEx _mainWindow;
+    private readonly Window _mainWindow;
 
     public AnalyticSummaryPopupViewModel ViewModel
     {
@@ -21,7 +20,7 @@ public sealed partial class AnalyticSummaryPopup : ContentDialog
 
     public AnalyticSummaryPopup(QuietBackgroundProcesses.ProcessPerformanceTable? performanceTable)
     {
-        _mainWindow = Application.Current.GetService<WindowEx>();
+        _mainWindow = Application.Current.GetService<Window>();
 
         ViewModel = new AnalyticSummaryPopupViewModel(performanceTable);
 

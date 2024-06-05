@@ -48,7 +48,12 @@ public class StringResource : IStringResource
         try
         {
             value = _resourceLoader.GetString(key);
-            value = string.Format(CultureInfo.CurrentCulture, value, args);
+
+            // only replace the placeholders if args is not empty
+            if (args.Length > 0)
+            {
+                value = string.Format(CultureInfo.CurrentCulture, value, args);
+            }
         }
         catch
         {

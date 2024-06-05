@@ -3,16 +3,13 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
-using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -25,7 +22,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
 
     private readonly IComputeSystemManager _computeSystemManager;
 
-    private readonly WindowEx _windowEx;
+    private readonly Window _mainWindow;
 
     private readonly StringResource _stringResource;
 
@@ -53,18 +50,19 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
     public CreateComputeSystemOperationViewModel(
         IComputeSystemManager computeSystemManager,
         StringResource stringResource,
-        WindowEx windowsEx,
+        Window mainWindow,
         Func<ComputeSystemCardBase, bool> removalAction,
         Action<ComputeSystemViewModel> addComputeSystemAction,
         CreateComputeSystemOperation operation)
     {
         IsOperationInProgress = true;
-        _windowEx = windowsEx;
+        _mainWindow = mainWindow;
         _removalAction = removalAction;
         _addComputeSystemAction = addComputeSystemAction;
         _stringResource = stringResource;
         _computeSystemManager = computeSystemManager;
         Operation = operation;
+        Name = Operation.EnvironmentName;
 
         var providerDetails = Operation.ProviderDetails;
         ProviderDisplayName = providerDetails.ComputeSystemProvider.DisplayName;
@@ -99,7 +97,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
 
     private void UpdateStatusIfCompleted(CreateComputeSystemResult createComputeSystemResult)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _mainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             // Update the creation status
             IsOperationInProgress = false;
@@ -132,7 +130,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
 
     private void UpdateUiMessage(string operationStatus, uint percentage = 0)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _mainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             if (operationStatus == null)
             {
@@ -146,7 +144,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
 
     private void RemoveViewModelFromUI()
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _mainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             _removalAction(this);
             RemoveEventHandlers();
@@ -163,11 +161,11 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
             Operation.ProviderDetails.ComputeSystemProvider,
             _removalAction,
             Operation.ProviderDetails.ExtensionWrapper.PackageFullName,
-            _windowEx);
+            _mainWindow);
 
         await newComputeSystemViewModel.InitializeCardDataAsync();
 
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _mainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             newComputeSystemViewModel.InitializeUXData();
             _addComputeSystemAction(newComputeSystemViewModel);

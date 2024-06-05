@@ -1,4 +1,4 @@
-<Page
+<views:DevHomePage
     x:Class="DevHome.Settings.Views.AccountsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,6 +7,7 @@
     xmlns:models="using:DevHome.Settings.Models"
     xmlns:viewmodels="using:DevHome.Settings.ViewModels"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:views="using:DevHome.Common.Views"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
@@ -14,9 +15,7 @@
         <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible"/>
 
         <DataTemplate x:Key="AccountsProviderButtonTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
-            <StackPanel>
-                <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Stretch" Click="AddDeveloperId_Click" Tag="{x:Bind}" />
-            </StackPanel>
+            <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Stretch" Click="AddDeveloperId_Click" Tag="{x:Bind}"/>
         </DataTemplate>
 
         <DataTemplate x:Key="AccountsProviderViewTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
@@ -41,12 +40,19 @@
                     <ctControls:SettingsCard.HeaderIcon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8fa;"/>
                     </ctControls:SettingsCard.HeaderIcon>
-                    <Button x:Uid="Settings_Accounts_AddAccountButton" AutomationProperties.AutomationId="AddAccountsButton" HorizontalAlignment="Right" Click="AddAccountButton_Click">
+                    <Button
+                        x:Uid="Settings_Accounts_AddAccountButton"
+                        AutomationProperties.AutomationId="AddAccountsButton"
+                        HorizontalAlignment="Right"
+                        Click="AddAccountButton_Click">
                         <Button.Resources>
                             <Flyout x:Name="AccountsProvidersFlyout" Placement="Bottom">
                                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}"
                                                ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
                                                HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                    <ItemsRepeater.Layout>
+                                        <StackLayout Orientation="Vertical" Spacing="8" />
+                                    </ItemsRepeater.Layout>
                                 </ItemsRepeater>
                                 <Flyout.FlyoutPresenterStyle>
                                     <Style TargetType="FlyoutPresenter">
@@ -67,4 +73,4 @@
             </StackPanel>
         </Grid>
     </ScrollViewer>
-</Page>
+</views:DevHomePage>

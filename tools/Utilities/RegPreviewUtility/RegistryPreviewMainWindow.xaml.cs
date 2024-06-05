@@ -10,11 +10,10 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using RegistryPreviewUILib;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.RegistryPreview;
 
-public sealed partial class RegistryPreviewMainWindow : WindowEx
+public sealed partial class RegistryPreviewMainWindow : WinUIEx.WindowEx
 {
     private string AppName { get; set; }
 

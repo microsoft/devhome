@@ -49,6 +49,23 @@ $env:sdk_version = build\Scripts\CreateBuildInfo.ps1 -Version $VersionOfSDK -IsS
 
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 
+function Write-XmlDocumentToFile {
+  param (
+    [System.Xml.XmlDocument]$xmlDocument,
+    [string]$filePath
+  )
+
+  $settings = New-Object System.Xml.XmlWriterSettings
+  $settings.Indent = $true
+  $settings.CheckCharacters = $false
+  $settings.NewLineChars = "`r`n"
+
+  $writer = [System.Xml.XmlWriter]::Create($filePath, $settings)
+  $xmlDocument.WriteTo($writer)
+  $writer.Flush()
+  $writer.Close()
+}
+
 if ($IsAzurePipelineBuild) {
   Copy-Item (Join-Path $env:Build_RootDirectory "build\nuget.config.internal") -Destination (Join-Path $env:Build_RootDirectory "nuget.config")
 }
@@ -127,6 +144,11 @@ Try {
     $uapExtension = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10/3}Extension");
     $uapAppExtension = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10/3}AppExtension");
 
+    # Update C++ version resources and header
+    $cppHeader = (Join-Path $env:Build_RootDirectory "build\cppversion\version.h")
+    $updatebinverpath = (Join-Path $env:Build_RootDirectory "build\scripts\update-binver.ps1")
+    & $updatebinverpath -TargetFile $cppHeader -BuildVersion $env:msix_version
+
     # Update the appxmanifest
     $appxmanifestPath = (Join-Path $env:Build_RootDirectory "src\Package.appxmanifest")
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
@@ -151,7 +173,7 @@ Try {
         }
       }
     }
-    $appxmanifest.Save($appxmanifestPath)
+    Write-XmlDocumentToFile -xmlDocument $appxmanifest -filePath $appxmanifestPath
 
     # This is needed for vcxproj
     & $nugetPath restore
@@ -164,6 +186,7 @@ Try {
             ("DevHome.sln"),
             ("/p:Platform="+$platform),
             ("/p:Configuration="+$configuration),
+            ("/p:Version="+$env:msix_version),
             ("/restore"),
             ("/binaryLogger:DevHome.$platform.$configuration.binlog"),
             ("/p:AppxPackageOutput=$appxPackageDir\DevHome-$platform.msix"),
@@ -186,6 +209,11 @@ Try {
       }
     }
 
+    # reset version file back to original values
+    $cppHeader = (Join-Path $env:Build_RootDirectory "build\cppversion\version.h")
+    $updatebinverpath = (Join-Path $env:Build_RootDirectory "build\scripts\update-binver.ps1")
+    & $updatebinverpath -TargetFile $cppHeader -BuildVersion "1.0.0.0"
+
     # Reset the appxmanifest to prevent unnecessary code changes
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
     $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = "0.0.0.0"
@@ -203,7 +231,7 @@ Try {
         }
       }
     }
-    $appxmanifest.Save($appxmanifestPath)
+    Write-XmlDocumentToFile -xmlDocument $appxmanifest -filePath $appxmanifestPath
   }
 
   if (($BuildStep -ieq "stubpackages")) {

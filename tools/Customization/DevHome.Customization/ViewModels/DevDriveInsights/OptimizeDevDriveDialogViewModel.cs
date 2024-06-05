@@ -13,9 +13,9 @@ using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Customization.Models;
 using DevHome.Telemetry;
+using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.Storage.Pickers;
-using WinUIEx;
 
 namespace DevHome.Customization.ViewModels.DevDriveInsights;
 
@@ -94,7 +94,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         };
 
         folderPicker.FileTypeFilter.Add("*");
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Microsoft.UI.Xaml.Application.Current.GetService<WindowEx>().GetWindowHandle());
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Microsoft.UI.Xaml.Application.Current.GetService<Window>().GetWindowHandle());
         var folder = await folderPicker.PickSingleFolderAsync();
 
         if (folder != null)

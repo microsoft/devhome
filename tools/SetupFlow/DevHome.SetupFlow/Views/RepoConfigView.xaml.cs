@@ -72,7 +72,7 @@ public sealed partial class RepoConfigView : UserControl
 
         if (_addRepoDialog.AddRepoViewModel.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
         {
-            _addRepoDialog.UpdateDevDriveInfo();
+            _addRepoDialog.AddRepoViewModel.UpdateDevDriveInfo();
         }
 
         _addRepoDialog.IsSecondaryButtonEnabled = true;
