@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Exceptions;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.Services.WindowsPackageManager.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Logging;
@@ -21,25 +21,6 @@ namespace DevHome.Services.WindowsPackageManager.Helpers;
 /// </summary>
 public class ConfigurationFileHelper
 {
-    public class ApplicationResult
-    {
-        public ApplyConfigurationSetResult Result
-        {
-            get;
-        }
-
-        public bool Succeeded => Result.ResultCode == null;
-
-        public bool RequiresReboot => Result.UnitResults.Any(result => result.RebootRequired);
-
-        public Exception ResultException => Result.ResultCode;
-
-        public ApplicationResult(ApplyConfigurationSetResult result)
-        {
-            Result = result;
-        }
-    }
-
     private readonly ILogger _logger;
     private const string PowerShellHandlerIdentifier = "pwsh";
     private readonly Guid _activityId;
@@ -102,7 +83,7 @@ public class ConfigurationFileHelper
         return configSet;
     }
 
-    public async Task<ApplicationResult> ApplyConfigurationAsync()
+    public async Task<DSCApplicationResult> ApplyConfigurationAsync()
     {
         if (_processor == null || _configSet == null)
         {
@@ -120,7 +101,7 @@ public class ConfigurationFileHelper
         TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Result", Telemetry.LogLevel.Critical, new ConfigurationSetResultEvent(_configSet, result), _activityId);
 
         _logger.LogInformation($"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
-        return new ApplicationResult(result);
+        return new(result);
     }
 
     /// <summary>
