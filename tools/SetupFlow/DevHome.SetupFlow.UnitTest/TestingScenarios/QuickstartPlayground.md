@@ -39,6 +39,7 @@ Please make sure to verify all of these scenarios. These apply to both Windows 1
     1. Click the Save button in the Dev Home UI to validate that you can save a project to a location on the file system.
 1. User can submit feedback on a Quickstart Playground project using the Like / Dislike buttons
 1. User can click on the 'Generated based on example' link to view the project that was used a reference by Quickstart Playground.
+1. User can click on and view the Privacy policy and Terms of Use for the Quickstart extension they've selected. 
 1. User can clear their API key
     1. Navigate to the settings for the Dev Home Azure Extension and click on the button to reset the API key.
     1. Verify that navigating back to the Quickstart Playground page prompts for the key to be re-entered.
