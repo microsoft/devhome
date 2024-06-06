@@ -134,7 +134,7 @@ public partial class BarWindowViewModel : ObservableObject
         if (value == Orientation.Horizontal)
         {
             // If we were snapped, unsnap
-            IsSnapped = false;
+            UnsnapBarWindow();
         }
         else
         {
@@ -168,6 +168,14 @@ public partial class BarWindowViewModel : ObservableObject
         }
     }
 
+    public void SnapBarWindow()
+    {
+        // First need to be in a Vertical layout
+        BarOrientation = Orientation.Vertical;
+        _snapHelper.Snap();
+        IsSnapped = true;
+    }
+
     public void UnsnapBarWindow()
     {
         _snapHelper.Unsnap();
@@ -183,10 +191,7 @@ public partial class BarWindowViewModel : ObservableObject
         }
         else
         {
-            // First need to be in a Vertical layout
-            BarOrientation = Orientation.Vertical;
-            _snapHelper.Snap();
-            IsSnapped = true;
+            SnapBarWindow();
         }
     }
 
