@@ -137,10 +137,11 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void SetDefaultPosition()
     {
-        _monitorRect = GetMonitorRectForWindow(ThisHwnd);
+        // If attached to an app it should show up on the monitor that the app is on
+        _monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? ThisHwnd);
         var screenWidth = _monitorRect.right - _monitorRect.left;
         this.Move(
-            (int)(((screenWidth - Width) / 2) * _dpiScale),
+            (int)(((screenWidth - Width) / 2) * _dpiScale) + _monitorRect.left,
             (int)(_WindowPositionOffsetY * _dpiScale));
 
         // Get the saved settings for the ExpandedView size. On first run, this will be
