@@ -16,6 +16,42 @@
       "value": "${$root.configuration.currentOrDefaultConfigFile}"
     },
     {
+      "type": "ColumnSet",
+      "spacing": "Medium",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch"
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            {
+              "type": "Container",
+              "items": [
+                {
+                  "type": "ActionSet",
+                  "actions": [
+                    {
+                      "type": "Action.Execute",
+                      "title": "%Widget_Template_Button/Preview%",
+                      "verb": "CheckPath",
+                      "associatedInputs": "Auto"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch"
+        }
+      ]
+    },
+    {
       "type": "Container",
       "items": [
         {
@@ -33,21 +69,6 @@
     {
       "type": "Container",
       "items": [
-        {
-          "type": "TextBlock",
-          "text": "%SSH_Widget_Template/ConfigFilePath%",
-          "wrap": true,
-          "spacing": "Medium",
-          "size": "Small",
-          "isSubtle": true
-        },
-        {
-          "type": "TextBlock",
-          "text": "${configFile}",
-          "wrap": true,
-          "size": "medium",
-          "spacing": "None"
-        },
         {
           "type": "TextBlock",
           "text": "%SSH_Widget_Template/NumOfHosts%",
@@ -71,7 +92,7 @@
     },
     {
       "type": "ColumnSet",
-      "spacing": "ExtraLarge",
+      "spacing": "Large",
       "columns": [
         {
           "type": "Column",

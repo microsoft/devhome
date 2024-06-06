@@ -166,29 +166,32 @@ internal sealed class SSHWalletWidget : CoreWidget
         Page = WidgetPageState.Loading;
         UpdateWidget();
 
-        // This is the action when the user clicks the submit button after entering a path while in
-        // the Configure state.
         Page = WidgetPageState.Configure;
         var data = args.Data;
         var dataObject = JsonSerializer.Deserialize(data, SourceGenerationContext.Default.DataPayload);
-        if (dataObject != null && dataObject.ConfigFile != null)
-        {
-            var updateRequestOptions = new WidgetUpdateRequestOptions(Id)
-            {
-                Data = GetConfiguration(dataObject.ConfigFile),
-                CustomState = ConfigFile,
-                Template = GetTemplateForPage(Page),
-            };
 
-            WidgetManager.GetDefault().UpdateWidget(updateRequestOptions);
+        var chosenPath = string.Empty;
+
+        if (dataObject == null)
+        {
+            return;
+        }
+        else if (dataObject.ConfigFile != null)
+        {
+            // This is the action when the user clicks the Preview button in the Configure state.
+            chosenPath = dataObject.ConfigFile;
+        }
+        else if (dataObject.FilePath != null)
+        {
+            // This is the action when the user uses the File Picker to select a file "filePath" in the Configure state.
+            chosenPath = dataObject.FilePath;
         }
 
-        // This is the action when the user uses the File Picker to select a file "filePath" in the Configure state.
-        if (dataObject != null && dataObject.FilePath != null)
+        if (!string.IsNullOrEmpty(chosenPath))
         {
             var updateRequestOptions = new WidgetUpdateRequestOptions(Id)
             {
-                Data = GetConfiguration(dataObject.FilePath),
+                Data = GetConfiguration(chosenPath),
                 CustomState = ConfigFile,
                 Template = GetTemplateForPage(Page),
             };
