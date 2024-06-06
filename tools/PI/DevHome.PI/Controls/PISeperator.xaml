@@ -9,11 +9,19 @@
     mc:Ignorable="d">
 
     <Grid>
-        <Rectangle x:Name="SeparatorRectangle"
+        <Rectangle x:Name="SeparatorRectangleVertical"
                             RadiusX="{ThemeResource AppBarSeparatorCornerRadius}"
                             RadiusY="{ThemeResource AppBarSeparatorCornerRadius}"
                             Width="{ThemeResource AppBarSeparatorWidth}"
                             Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}"
-                            Margin="4"/>
+                            Margin="4" />
+        <Rectangle x:Name="SeparatorRectangleHorizontal"
+                            Visibility="Collapsed"
+                            RadiusX="{ThemeResource AppBarSeparatorCornerRadius}"
+                            RadiusY="{ThemeResource AppBarSeparatorCornerRadius}"
+                            Height="{ThemeResource AppBarSeparatorWidth}"
+                            Width="22"
+                            Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}"
+                            Margin="4" />
     </Grid>
 </UserControl>

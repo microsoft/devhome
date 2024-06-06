@@ -51,6 +51,9 @@ public partial class BarWindowVertical : WindowEx
         // The main constructor is used in all cases, including when there's no target window.
         TheDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
+        ExtendsContentIntoTitleBar = true;
+        AppWindow.TitleBar.IconShowOptions = IconShowOptions.HideIconAndSystemMenu;
+
         InitializeComponent();
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
     }

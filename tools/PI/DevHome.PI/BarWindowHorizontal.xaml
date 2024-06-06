@@ -116,7 +116,7 @@
                     </Button>
                 </DataTemplate>
             </ItemsRepeater>
-            <controls:PISeperator />
+            <controls:PISeperator Visibility="{x:Bind _viewModel.ExternalToolSeperatorVisibility, Mode=OneWay}"/>
         </StackPanel>
 
         <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1">
