@@ -15,6 +15,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Graphics;
 using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Gdi;
 
 namespace DevHome.PI.ViewModels;
 
@@ -77,6 +78,8 @@ public partial class BarWindowViewModel : ObservableObject
     [ObservableProperty]
     private PointInt32 _windowPosition;
 
+    internal HWND? ApplicationHwnd { get; private set; }
+
     public BarWindowViewModel()
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
@@ -99,6 +102,7 @@ public partial class BarWindowViewModel : ObservableObject
             ApplicationName = process.ProcessName;
             ApplicationPid = process.Id;
             ApplicationIcon = TargetAppData.Instance.Icon;
+            ApplicationHwnd = TargetAppData.Instance.HWnd;
         }
 
         CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
