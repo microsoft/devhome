@@ -16,7 +16,7 @@ using Microsoft.UI.Xaml.Input;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.UI.Accessibility;
+using Windows.Win32.UI.WindowsAndMessaging;
 using WinRT.Interop;
 using WinUIEx;
 using static DevHome.PI.Helpers.WindowHelper;
@@ -51,9 +51,6 @@ public partial class BarWindowVertical : WindowEx
         // The main constructor is used in all cases, including when there's no target window.
         TheDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
-        ExtendsContentIntoTitleBar = true;
-        AppWindow.TitleBar.IconShowOptions = IconShowOptions.HideIconAndSystemMenu;
-
         InitializeComponent();
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
     }
@@ -66,8 +63,22 @@ public partial class BarWindowVertical : WindowEx
         ThemeName t = ThemeName.Themes.First(t => t.Name == _settings.CurrentTheme);
         SetRequestedTheme(t.Theme);
 
+        // RemoveThickFrameAttribute();
+
         // Regardless of what is set in the XAML, our initial window width is too big. Setting this to 70 (same as the XAML file)
         Width = 70;
+    }
+
+    private void RemoveThickFrameAttribute()
+    {
+        // This is a workaround for this issue
+        // https://github.com/microsoft/microsoft-ui-xaml/issues/8947
+        //
+        // This prevents a white strip to be at the top of our window (visible in dark mode). Unfortunately this workaround removes the rounded corners from the bar.
+        var style = PInvoke.GetWindowLong(ThisHwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
+        style &= ~(int)WINDOW_STYLE.WS_THICKFRAME;
+        _ = PInvoke.SetWindowLong(ThisHwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, style);
+        PInvoke.SetWindowPos(ThisHwnd, HWND.Null, 0, 0, 0, 0, Windows.Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER);
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
