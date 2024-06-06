@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
+using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation.Collections;
@@ -14,7 +15,9 @@ namespace FileExplorerSourceControlIntegration;
 #nullable enable
 [ComVisible(true)]
 [Guid("40FE4D6E-C9A0-48B4-A83E-AAA1D002C0D5")]
-public class SourceControlProvider : Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IPerFolderRootSelector
+public class SourceControlProvider :
+    Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IExtraFolderPropertiesHandler,
+    Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IPerFolderRootSelector
 {
     private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(SourceControlProvider));
 
@@ -65,6 +68,20 @@ public class SourceControlProvider : Microsoft.Internal.Windows.DevHome.Helpers.
 
         Log.Information("GetLocalProvider succeeded");
         return provider;
+    }
+
+    IDictionary<string, object> IExtraFolderPropertiesHandler.GetProperties(string[] propertyStrings, string rootFolderPath, string relativePath)
+    {
+        var localProvider = GetLocalProvider(rootFolderPath);
+        var localProviderResult = localProvider.GetRepository(rootFolderPath);
+        if (localProviderResult.Result.Status == ProviderOperationStatus.Failure)
+        {
+            log.Information("Could not open local repository.");
+            log.Information(localProviderResult.Result.DisplayMessage);
+            throw new ArgumentOutOfRangeException(nameof(rootFolderPath), rootFolderPath, localProviderResult.Result.DisplayMessage);
+        }
+
+        return localProviderResult.Repository.GetProperties(propertyStrings, relativePath);
     }
 }
 
