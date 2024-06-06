@@ -76,7 +76,6 @@
             </controls:ProcessSelectionButton>
 
             <controls:PISeperator Orientation="Horizontal"/>
-            
             <!-- Per App controls -->
             <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
             <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" HorizontalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
@@ -101,7 +100,6 @@
             </controls:ExternalToolsManagementButton>
 
             <controls:PISeperator Orientation="Horizontal"/>
-            
             <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsVerticalLayout}">
                 <DataTemplate x:DataType="helpers:ExternalTool">
                     <Button Click="_viewModel.ExternalToolButton_Click" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" Tag="{x:Bind}">

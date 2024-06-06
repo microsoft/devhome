@@ -54,7 +54,6 @@
        XAML know where the main application object is defined-->
   <ItemGroup>
     <Page Remove="PIApp.xaml" />
-    <Page Remove="Themes\Generic.xaml" />
     <ApplicationDefinition Include="PIApp.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
@@ -108,6 +107,7 @@
   -->
   <ItemGroup>
     <Folder Include="Adapters\" />
+    <Folder Include="Themes\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
@@ -160,9 +160,6 @@
     <Page Update="Controls\PISeperator.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <None Update="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
     <Page Update="Pages\AboutPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
