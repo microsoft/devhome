@@ -17,6 +17,7 @@ namespace DevHome.Elevation
     {
         ElevationZoneA,
         ElevationZoneB,
+        VirtualMachineManagement,
     };
 
     // Elevation levels
@@ -69,5 +70,17 @@ namespace DevHome.Elevation.Zones
     runtimeclass ElevationZoneA
     {
         UInt32 DoSomethingElevated();
+    }
+
+    enum ModifyFeaturesStatus
+    {
+        Success,
+        NoChange,
+        Failure,
+    };
+
+    runtimeclass VirtualMachineManagement
+    {
+        ModifyFeaturesStatus ModifyFeatures(String[] featureStrings);
     }
 }

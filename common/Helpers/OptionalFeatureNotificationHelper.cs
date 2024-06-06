@@ -8,6 +8,7 @@ using CommunityToolkit.WinUI.Behaviors;
 using DevHome.Common.Extensions;
 using DevHome.Common.Scripts;
 using DevHome.Common.Services;
+using DevHome.Elevation.Zones;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using static DevHome.Common.Scripts.ModifyWindowsOptionalFeatures;
@@ -29,22 +30,22 @@ public partial class OptionalFeatureNotificationHelper
         _log = log;
     }
 
-    public void HandleModifyFeatureResult(ModifyWindowsOptionalFeatures.ExitCode exitCode)
+    public void HandleModifyFeatureResult(ModifyFeaturesStatus status)
     {
         _notificationsHelper?.ClearWithWindowExtension();
-        _log.Information($"Script exited with code: '{exitCode}'");
+        _log.Information($"Script exited with code: '{status}'");
 
-        switch (exitCode)
+        switch (status)
         {
-            case ExitCode.Success:
+            case ModifyFeaturesStatus.Success:
                 // The script successfully modified all features
                 ShowRestartNotification();
                 return;
-            case ExitCode.NoChange:
+            case ModifyFeaturesStatus.NoChange:
                 // The script found that nothing needed to be done. The features will be reloaded
                 // to show the correct state.
                 return;
-            case ExitCode.Failure:
+            case ModifyFeaturesStatus.Failure:
             default:
                 // Script failed to modify features.
                 ShowFailedToApplyAllNotification();

@@ -140,6 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ElevationZone.ElevationZoneA.cpp" />
+    <ClCompile Include="ElevationZone.VirtualMachineManagement.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

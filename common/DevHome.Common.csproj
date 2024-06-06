@@ -60,6 +60,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
+    <ProjectReference Include="..\tools\Elevation\DevHome.Elevation.Projection\DevHome.Elevation.Projection.csproj" />
   </ItemGroup>
 
   <ItemGroup>

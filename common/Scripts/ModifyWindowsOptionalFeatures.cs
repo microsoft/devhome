@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using Serilog;
+using WinRT;
 
 namespace DevHome.Common.Scripts;
 
@@ -24,21 +25,23 @@ public static class ModifyWindowsOptionalFeatures
             return;
         }
 
-        var featuresString = string.Empty;
+        var featureStrings = new List<string>();
 
         foreach (var featureState in features)
         {
             if (featureState.HasChanged)
             {
-                featuresString += $"{featureState.Feature.FeatureName}={featureState.IsEnabled}`n";
+                featureStrings.Add($"{featureState.Feature.FeatureName}={featureState.IsEnabled}");
             }
         }
+
+        var featureStringsArray = featureStrings.ToArray();
 
         var startInfo = new ProcessStartInfo();
 
         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-        startInfo.FileName = $"powershell.exe";
-        startInfo.Arguments = $"-ExecutionPolicy Bypass -Command \"{Script.Replace("$args[0]", $"\"{featuresString}\"")}\"";
+        startInfo.FileName = $"DevHome.Elevation.ZoneLaunchPad.exe";
+        startInfo.Arguments = $"-ElevationZone VirtualMachineManagement -VoucherName vmmInstance";
         startInfo.UseShellExecute = true;
         startInfo.Verb = "runas";
 
@@ -49,23 +52,32 @@ public static class ModifyWindowsOptionalFeatures
             // Since a UAC prompt will be shown, we need to wait for the process to exit
             // This can also be cancelled by the user which will result in an exception,
             // which is handled as a failure.
-            var exitCode = ExitCode.Failure;
-
             try
             {
                 process.Start();
                 process.WaitForExit();
 
-                exitCode = FromExitCode(process.ExitCode);
-                notificationsHelper?.HandleModifyFeatureResult(exitCode);
+                if (process.ExitCode != 0)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                // Acquire elevation voucher and redeem for the 'elevation zone'
+                var elevationVoucher = DevHome.Elevation.ElevationVoucherManager.ClaimVoucher("vmmInstance");
+                var zoneInterface = elevationVoucher.Redeem();
+                var zone = zoneInterface.As<DevHome.Elevation.Zones.VirtualMachineManagement>();
+
+                // Set the Windows Optional Features
+                var status = zone.ModifyFeatures(featureStringsArray);
+
+                // TODO: Get status object from zone and handle the result
+                notificationsHelper?.HandleModifyFeatureResult(status);
             }
             catch (Exception ex)
             {
                 // This is most likely a case where the user cancelled the UAC prompt.
                 log?.Error(ex, "Script failed");
             }
-
-            notificationsHelper?.HandleModifyFeatureResult(exitCode);
 
             return Task.CompletedTask;
         });

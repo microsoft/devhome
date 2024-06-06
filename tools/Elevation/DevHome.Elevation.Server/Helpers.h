@@ -25,6 +25,7 @@ HRESULT MakeAndInitializeToInterface(_COM_Outptr_ I** result) noexcept try
 CATCH_RETURN()
 
 HRESULT MakeElevationZone_ElevationZoneA(_COM_Outptr_ ABI::DevHome::Elevation::IElevationZone** result) noexcept;
+HRESULT MakeElevationZone_VirtualMachineManagement(_COM_Outptr_ ABI::DevHome::Elevation::IElevationZone** result) noexcept;
 
 inline HRESULT MakeElevationZone(ABI::DevHome::Elevation::ElevationZone elevationZone, _COM_Outptr_ ABI::DevHome::Elevation::IElevationZone** result) noexcept
 {
@@ -36,6 +37,10 @@ inline HRESULT MakeElevationZone(ABI::DevHome::Elevation::ElevationZone elevatio
     else if (elevationZone == ElevationZone::ElevationZoneB)
     {
         return E_NOTIMPL;
+    }
+    else if (elevationZone == ElevationZone::VirtualMachineManagement)
+    {
+        return MakeElevationZone_VirtualMachineManagement(result);
     }
     return E_NOTIMPL;
 }
