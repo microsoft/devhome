@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
@@ -13,13 +12,11 @@ using DevHome.PI.Properties;
 using DevHome.PI.ViewModels;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
-using Windows.Win32.UI.WindowsAndMessaging;
 using WinRT.Interop;
 using WinUIEx;
 using static DevHome.PI.Helpers.WindowHelper;
@@ -39,8 +36,6 @@ public partial class BarWindowVertical : WindowEx
     private int _appWindowPosY; // = 0;
     private bool isWindowMoving; // = false;
     private bool isClosing;
-
-    private Button? _selectedExternalToolButton;
 
     internal HWND ThisHwnd { get; private set; }
 
@@ -80,38 +75,6 @@ public partial class BarWindowVertical : WindowEx
         }
     }
 
-    private void ExternalToolsMenu_Opening(object sender, object e)
-    {
-        // Cancel the opening of the menu if there are no items.
-        var flyout = sender as MenuFlyout;
-        if (flyout is not null && flyout.Items is not null && flyout.Items.Count == 0)
-        {
-            flyout.Hide();
-        }
-    }
-
-    private void ExternalToolButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button clickedButton)
-        {
-            if (clickedButton.Tag is ExternalTool tool)
-            {
-                var process = tool.Invoke(TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
-
-                if (process == null)
-                {
-                    // It appears ContentDialogs only render in the space it's parent occupies. Since the parent is a narrow
-                    // bar, the dialog doesn't have enough space to render. So, we'll use MessageBox to display errors.
-                    PInvoke.MessageBox(
-                        ThisHwnd,
-                        string.Format(CultureInfo.CurrentCulture, _errorMessageText, tool.Executable),
-                        _errorTitleText,
-                        MESSAGEBOX_STYLE.MB_ICONERROR);
-                }
-            }
-        }
-    }
-
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
         if (!isClosing)
@@ -120,27 +83,6 @@ public partial class BarWindowVertical : WindowEx
             var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
             barWindow?.Close();
             isClosing = false;
-        }
-    }
-
-    private void ExternalToolButton_PointerPressed(object sender, PointerRoutedEventArgs e)
-    {
-        _selectedExternalToolButton = (Button)sender;
-    }
-
-    private void UnPinMenuItem_Click(object sender, RoutedEventArgs e)
-    {
-        // TODO Implement unpinning a tool from the bar, assuming we continue with the pinning feature.
-    }
-
-    private void UnregisterMenuItem_Click(object sender, RoutedEventArgs e)
-    {
-        if (_selectedExternalToolButton is not null)
-        {
-            if (_selectedExternalToolButton.Tag is ExternalTool tool)
-            {
-                ExternalToolsHelper.Instance.RemoveExternalTool(tool);
-            }
         }
     }
 

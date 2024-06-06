@@ -30,6 +30,7 @@ public sealed partial class PrimaryWindow : WindowEx
     public PrimaryWindow()
     {
         InitializeComponent();
+        ExternalToolsHelper.Instance.Init();
     }
 
     public void ShowBarWindow()

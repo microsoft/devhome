@@ -236,8 +236,11 @@ public partial class ExpandedViewControlViewModel : ObservableObject
 
     public void Navigate()
     {
-        var navigationService = Application.Current.GetService<INavigationService>();
-        navigationService.NavigateTo(Links[SelectedNavLinkIndex]?.PageViewModel?.FullName!);
+        if (SelectedNavLinkIndex != -1)
+        {
+            var navigationService = Application.Current.GetService<INavigationService>();
+            navigationService.NavigateTo(Links[SelectedNavLinkIndex]?.PageViewModel?.FullName!);
+        }
     }
 
     public void NavigateToSettings(string viewModelType)
@@ -245,14 +248,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         // Because the Settings item isn't part of our NavLink list, when the user selects Settings,
         // we need to move the list selection so that when they subsequently select an item from
         // the NavLinks, we'll navigate to the correct page even if that was the previously-selected item.
-        if (SelectedNavLinkIndex == 0)
-        {
-            SelectedNavLinkIndex = Links.Count - 1;
-        }
-        else
-        {
-            SelectedNavLinkIndex = 0;
-        }
+        SelectedNavLinkIndex = -1;
 
         var navigationService = Application.Current.GetService<INavigationService>();
         var mainSettingsPage = typeof(SettingsPageViewModel).FullName!;

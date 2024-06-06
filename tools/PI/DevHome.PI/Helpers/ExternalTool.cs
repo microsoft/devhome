@@ -47,6 +47,9 @@ public partial class ExternalTool : ObservableObject
     }
 
     [ObservableProperty]
+    private string _pinGlyph;
+
+    [ObservableProperty]
     private bool _isPinned;
 
     // Note the additional "property:" syntax to ensure the JsonIgnore is propagated to the generated property.
@@ -56,7 +59,7 @@ public partial class ExternalTool : ObservableObject
 
     [ObservableProperty]
     [property: JsonIgnore]
-    private BitmapIcon? _menuIcon;
+    private ImageIcon? _menuIcon;
 
     [JsonIgnore]
     private SoftwareBitmap? _softwareBitmap;
@@ -75,50 +78,39 @@ public partial class ExternalTool : ObservableObject
         ArgPrefix = argprefix;
         OtherArgs = otherArgs;
         IsPinned = isPinned;
+        PinGlyph = IsPinned ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
 
         ID = Guid.NewGuid().ToString();
 
         if (!string.IsNullOrEmpty(executable))
         {
-            GetToolImage();
-            GetMenuIcon();
+            GetIcons();
         }
     }
 
-    private async void GetToolImage()
+    partial void OnIsPinnedChanged(bool oldValue, bool newValue)
+    {
+        PinGlyph = newValue ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
+    }
+
+    private async void GetIcons()
     {
         try
         {
             _softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
             if (_softwareBitmap is not null)
             {
-                ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmap(_softwareBitmap);
+                ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmapAsync(_softwareBitmap);
             }
+
+            MenuIcon = new ImageIcon
+            {
+                Source = ToolIcon,
+            };
         }
         catch (Exception ex)
         {
             _log.Error(ex, "Failed to get tool image");
-        }
-    }
-
-    private async void GetMenuIcon()
-    {
-        try
-        {
-            _softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
-            if (_softwareBitmap is not null)
-            {
-                var bitmapUri = await SaveSoftwareBitmapToTempFile(_softwareBitmap);
-                MenuIcon = new BitmapIcon
-                {
-                    UriSource = bitmapUri,
-                    ShowAsMonochrome = false,
-                };
-            }
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "Failed to get menu icon");
         }
     }
 
@@ -160,5 +152,15 @@ public partial class ExternalTool : ObservableObject
             _log.Error(ex, "Tool launched failed");
             return null;
         }
+    }
+
+    public void TogglePinnedState()
+    {
+        IsPinned = !IsPinned;
+    }
+
+    public void UnregisterTool()
+    {
+        ExternalToolsHelper.Instance.RemoveExternalTool(this);
     }
 }

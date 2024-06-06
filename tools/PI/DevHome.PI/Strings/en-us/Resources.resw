@@ -193,9 +193,9 @@
     <value>Main module</value>
     <comment>This refers to the main module of an application like winword.exe or notepad.exe as an example.</comment>
   </data>
-  <data name="BinaryTypeTextBlock.Text" xml:space="preserve">
-    <value>Binary type</value>
-    <comment>This refers to the type of application binary, console/windows etc.</comment>
+  <data name="CpuArchitectureTextBlock.Text" xml:space="preserve">
+    <value>CPU architecture</value>
+    <comment>This refers to the CPU architecture of the target process and the host machine.</comment>
   </data>
   <data name="MSIXPackagedTextBlock.Text" xml:space="preserve">
     <value>MSIX packaged</value>
@@ -538,8 +538,8 @@
     <comment>Description of the error code</comment>
   </data>
   <data name="TargetAppPidTextFormat" xml:space="preserve">
-    <value>pid: {0:0.0}</value>
-    <comment>Locked={"{0:0.0}"} Showing a process identifier. {0} is a percentage 0-100</comment>
+    <value>pid: {0}</value>
+    <comment>Locked={"{0}"} Showing a process identifier. {0} is an integer</comment>
   </data>
   <data name="CpuPerfTextFormat" xml:space="preserve">
     <value>cpu: {0:0.0}%</value>
@@ -741,9 +741,17 @@
     <value>Not pinned</value>
     <comment>Text to show when the switch is turned off, to not pin the tool to the bar.</comment>
   </data>
-  <data name="UnpinMenuItemText" xml:space="preserve">
+  <data name="UnpinMenuItem.Text" xml:space="preserve">
     <value>Unpin</value>
     <comment>A label for the menuitem to unpin a tool on the bar.</comment>
+  </data>
+  <data name="UnpinMenuItemRawText" xml:space="preserve">
+    <value>Unpin</value>
+    <comment>Should be the same as UnpinMenuItem.Text</comment>
+  </data>
+  <data name="UnregisterMenuItemRawText" xml:space="preserve">
+    <value>Unregister</value>
+    <comment>Same as UnregisterMenuItem.Text</comment>
   </data>
   <data name="SettingsAboutHeader" xml:space="preserve">
     <value>About</value>
@@ -845,9 +853,9 @@
     <value>The starting priority for threads created within this process</value>
     <comment>Tooltip for the Base Priority field.</comment>
   </data>
-  <data name="BinaryTypeTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="CpuArchitectureTextBlock.ToolTipService.ToolTip" xml:space="preserve">
     <value>The CPU architecture of the target process</value>
-    <comment>Tooltip for the Binary Type field.</comment>
+    <comment>Tooltip for the CPU Architecture field.</comment>
   </data>
   <data name="FrameworkTypesTextBlock.ToolTipService.ToolTip" xml:space="preserve">
     <value>The windowing or application frameworks used in this app</value>
@@ -912,5 +920,21 @@
   <data name="VerticalCloseButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Close</value>
     <comment>Describes a button that will close PI's window</comment>
+  </data>
+  <data name="CpuArchitecture_ProcessOnMachine" xml:space="preserve">
+    <value>{0} process running on {1} machine</value>
+    <comment>Locked={"{0}", "{1}"} Message text when the process is the specified CPU architecture running on the specified CPU machine. {0} is the process architecture, {1} is the machine architecture.</comment>
+  </data>
+  <data name="CpuArchitecture_Unknown" xml:space="preserve">
+    <value>Unknown</value>
+    <comment>Message text when the CPU architecture of the process is unknown.</comment>
+  </data>
+  <data name="CpuArchitecture_UnknownOnMachine" xml:space="preserve">
+    <value>Unknown process type running on {0}</value>
+    <comment>Locked={"{0}"}. Message text when the process is unknown CPU architecture running on the specified CPU machine. {0} is the machine architecture.</comment>
+  </data>
+  <data name="CpuArchitecture_X64onX64" xml:space="preserve">
+    <value>X64 process running on X64 machine</value>
+    <comment>Message text when the process is x64 CPU architecture running on an X64 CPU machine.</comment>
   </data>
 </root>

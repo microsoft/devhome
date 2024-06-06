@@ -160,66 +160,21 @@ public partial class AddRepoDialog : ContentDialog
     /// </summary>
     private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
+        var deferral = args.GetDeferral();
+
+        // Collect search inputs.
+        Dictionary<string, string> searchInput = new();
+        foreach (var searchBox in ShowingSearchTermsGrid.Children)
         {
-            // Get the number of repos already selected to clone in a previous instance.
-            // Used to figure out if the repo was added after the user logged into an account.
-            var numberOfReposToCloneCount = AddRepoViewModel.EverythingToClone.Count;
-
-            // If the user is logging in, the close button text will change.
-            // Keep a copy of the original to revert when this button click is done.
-            var originalCloseButtonText = AddRepoContentDialog.CloseButtonText;
-
-            var deferral = args.GetDeferral();
-            await AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
-
-            AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
-
-            // If the repo was not added.
-            if (numberOfReposToCloneCount == AddRepoViewModel.EverythingToClone.Count)
+            if (searchBox is AutoSuggestBox suggestBox)
             {
-                AddRepoViewModel.ShouldEnablePrimaryButton = false;
-                args.Cancel = true;
-                deferral.Complete();
-                return;
-            }
-
-            deferral.Complete();
-        }
-        else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
-        {
-            args.Cancel = true;
-            var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
-            if (!string.IsNullOrEmpty(repositoryProviderName))
-            {
-                var originalCloseButtonText = AddRepoContentDialog.CloseButtonText;
-
-                var deferral = args.GetDeferral();
-                await AddRepoViewModel.ChangeToRepoPageAsync();
-
-                AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
-
-                deferral.Complete();
+                searchInput.Add(suggestBox.Header as string, suggestBox.Text);
             }
         }
-        else if (AddRepoViewModel.CurrentPage == PageKind.SearchFields)
-        {
-            args.Cancel = true;
-            Dictionary<string, string> searchInput = new();
-            foreach (var searchBox in ShowingSearchTermsGrid.Children)
-            {
-                if (searchBox is AutoSuggestBox suggestBox)
-                {
-                    searchInput.Add(suggestBox.Header as string, suggestBox.Text);
-                }
-            }
 
-            // switching to the repo page causes repos to be queried.
-            var deferral = args.GetDeferral();
-            await AddRepoViewModel.ChangeToRepoPageAsync();
-            AddRepoViewModel.SearchForRepos(searchInput);
-            deferral.Complete();
-        }
+        args.Cancel = await AddRepoViewModel.PrimaryButtonClick(searchInput);
+
+        deferral.Complete();
     }
 
     /// <summary>

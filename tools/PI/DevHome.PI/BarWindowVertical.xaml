@@ -60,6 +60,10 @@
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="HorizontalAlignment" Value="Center"/>
                 </Style>
+                <Style TargetType="controls:ExternalToolsManagementButton">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                </Style>
                 <Style TargetType="controls:ProcessSelectionButton">
                     <Setter Property="BorderThickness" Value="0"/>
                     <Setter Property="Background" Value="Transparent"/>
@@ -83,37 +87,33 @@
                 <TextBlock Text="&#xe8a1;"/>
             </Button>
 
-            <Button
+            <controls:ExternalToolsManagementButton
                 x:Name="ManageExternalToolsButton"
                 x:Uid="ManageExternalToolsButton"
-                HorizontalAlignment="Center">
-                <Button.ContextFlyout>
-                    <MenuFlyout x:Name="ExternalToolsMenu" Opening="ExternalToolsMenu_Opening">
-                        <!-- We can't databind to MenuFlyout, so we'll add a MenuFlyoutItem
-                        for each external tool in codebehind here. -->
-                    </MenuFlyout>
-                </Button.ContextFlyout>
+                HorizontalAlignment="Center"
+                Command="{x:Bind _viewModel.ManageExternalToolsButtonCommand}"
+                ExternalToolLaunchRequest="{x:Bind _viewModel.ManageExternalToolsButton_ExternalToolLaunchRequest}">
                 <TextBlock Text="&#xEC7A;"/>
-            </Button>
+            </controls:ExternalToolsManagementButton>
 
             <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsVerticalLayout}">
-                <ItemsRepeater.ContextFlyout>
-                    <MenuFlyout x:Name="ToolContextMenu">
-                        <MenuFlyoutItem x:Name="PinUnpinMenuItem">
-                            <MenuFlyoutItem.Icon>
-                                <FontIcon Glyph="&#xE77A;"/>
-                            </MenuFlyoutItem.Icon>
-                        </MenuFlyoutItem>
-                        <MenuFlyoutItem x:Uid="UnregisterMenuItem" x:Name="UnregisterMenuItem" Click="UnregisterMenuItem_Click">
-                            <MenuFlyoutItem.Icon>
-                                <FontIcon Glyph="&#xECC9;"/>
-                            </MenuFlyoutItem.Icon>
-                        </MenuFlyoutItem>
-                    </MenuFlyout>
-                </ItemsRepeater.ContextFlyout>
                 <DataTemplate x:DataType="helpers:ExternalTool">
-                    <Button Click="ExternalToolButton_Click" HorizontalAlignment="Center" Width="45" Height="45" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" Tag="{x:Bind}" PointerPressed="ExternalToolButton_PointerPressed">
-                        <Image Source="{x:Bind ToolIcon, Mode=OneWay}"/>
+                    <Button Click="_viewModel.ExternalToolButton_Click" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" Tag="{x:Bind}">
+                        <Image Source="{x:Bind ToolIcon, Mode=OneWay}" Width="22" Height="22" Stretch="Uniform"/>
+                        <Button.ContextFlyout>
+                            <MenuFlyout x:Name="ToolContextMenu">
+                                <MenuFlyoutItem x:Uid="UnpinMenuItem" Name="UnpinMenuItem" Click="{x:Bind TogglePinnedState}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE77A;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutItem x:Uid="UnregisterMenuItem" Name="UnregisterMenuItem" Click="{x:Bind UnregisterTool}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xECC9;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyout>
+                        </Button.ContextFlyout>
                     </Button>
                 </DataTemplate>
             </ItemsRepeater>
