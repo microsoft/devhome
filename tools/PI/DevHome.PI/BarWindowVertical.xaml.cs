@@ -63,7 +63,7 @@ public partial class BarWindowVertical : WindowEx
         ThemeName t = ThemeName.Themes.First(t => t.Name == _settings.CurrentTheme);
         SetRequestedTheme(t.Theme);
 
-        // RemoveThickFrameAttribute();
+        RemoveThickFrameAttribute();
 
         // Regardless of what is set in the XAML, our initial window width is too big. Setting this to 70 (same as the XAML file)
         Width = 70;
