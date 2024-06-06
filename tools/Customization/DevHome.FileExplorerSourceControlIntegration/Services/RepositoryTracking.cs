@@ -8,6 +8,7 @@ using Windows.Storage;
 
 namespace DevHome.FileExplorerSourceControlIntegration.Services;
 
+#nullable enable
 public class RepositoryTracking
 {
     public RepoStoreOptions RepoStoreOptions

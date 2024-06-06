@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace DevHome.FileExplorerSourceControlIntegration.Services;
 
+#nullable enable
 public partial class RepoStoreOptions
 {
     private const string RepoStoreFileNameDefault = "TrackedRepositoryStore.json";
