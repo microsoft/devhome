@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
@@ -14,6 +16,7 @@ using DevHome.Customization.TelemetryEvents;
 using DevHome.FileExplorerSourceControlIntegration.Services;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Customization.ViewModels;
 
@@ -27,6 +30,8 @@ public partial class FileExplorerViewModel : ObservableObject
 
     private RepositoryTracking RepoTracker { get; set; } = new(null);
 
+    public ObservableCollection<FileExplorerSourceControlIntegrationViewModel> LocalRepositoryProviders { get; } = new();
+
     public FileExplorerViewModel()
     {
         _shellSettings = new ShellSettings();
@@ -37,6 +42,19 @@ public partial class FileExplorerViewModel : ObservableObject
             new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
             new(stringResource.GetLocalized("FileExplorer_Header"), typeof(FileExplorerViewModel).FullName!)
         ];
+
+        var experimentationService = Application.Current.GetService<IExperimentationService>();
+        if (experimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
+        {
+            var extensionService = Application.Current.GetService<IExtensionService>();
+            var sourceControlExtensions = Task.Run(async () => await extensionService.GetInstalledExtensionsAsync(ProviderType.SourceControlIntegration)).Result.ToList();
+            sourceControlExtensions.Sort((a, b) => string.Compare(a.ExtensionDisplayName, b.ExtensionDisplayName, System.StringComparison.OrdinalIgnoreCase));
+            sourceControlExtensions.ForEach((sourceControlExtension) =>
+            {
+                LocalRepositoryProviders.Add(new FileExplorerSourceControlIntegrationViewModel(sourceControlExtension));
+            });
+        }
+
         RefreshTrackedRepositories();
     }
 

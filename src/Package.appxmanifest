@@ -95,7 +95,7 @@
           </com:ComServer>
         </com:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameCoreExt" Description="ms-resource:AppDescriptionCoreExt">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescriptionCoreExt">
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>
@@ -108,7 +108,7 @@
           </uap3:AppExtension>
         </uap3:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID2" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameHyperVExt" Description="ms-resource:AppDescriptionHyperVExt">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID2" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescriptionHyperVExt">
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>
@@ -121,6 +121,34 @@
             </uap3:Properties>
           </uap3:AppExtension>
         </uap3:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID4" PublicFolder="Public" DisplayName="Git" Description="ms-resource:AppDescriptionGitExt">
+            <uap3:Properties>
+              <DevHomeProvider>
+                <Activation>
+                  <CreateInstance ClassId="BDA76685-E749-4f09-8F13-C466D0802DA1" />
+                </Activation>
+                <SupportedInterfaces>
+                  <SourceControlIntegration />
+                </SupportedInterfaces>
+              </DevHomeProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+		  <uap3:Extension Category="windows.appExtension">
+			  <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID5" PublicFolder="Public" DisplayName="SVN" Description="ms-resource:AppDescriptionGitExt">
+				  <uap3:Properties>
+					  <DevHomeProvider>
+						  <Activation>
+							  <CreateInstance ClassId="F47DE62D-F5A4-4455-80BC-46D16C115BDC" />
+						  </Activation>
+						  <SupportedInterfaces>
+							  <SourceControlIntegration />
+						  </SupportedInterfaces>
+					  </DevHomeProvider>
+				  </uap3:Properties>
+			  </uap3:AppExtension>
+		  </uap3:Extension>
         <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="ms-resource:WidgetProviderDisplayNameDev" Id="CoreWidgetProvider" PublicFolder="Public">
             <uap3:Properties>
