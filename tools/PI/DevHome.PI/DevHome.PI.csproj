@@ -28,6 +28,7 @@
   <ItemGroup>
     <None Remove="Controls\ExpandedViewControl.xaml" />
     <None Remove="Controls\GlowButton.xaml" />
+    <None Remove="Controls\PISeperator.xaml" />
     <None Remove="errors.db" />
     <None Remove="Images\PI.ico" />
     <None Remove="Pages\AboutPage.xaml" />
@@ -156,6 +157,9 @@
     <None Update="appsettings_pi.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Controls\PISeperator.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Pages\AboutPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

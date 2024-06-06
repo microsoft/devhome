@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -53,6 +55,9 @@ public partial class BarWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private Visibility _appBarVisibility = Visibility.Visible;
+
+    [ObservableProperty]
+    private Visibility _externalToolSeperatorVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
     private string _applicationName = string.Empty;
@@ -108,6 +113,15 @@ public partial class BarWindowViewModel : ObservableObject
         CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
 
         _snapHelper = new();
+
+        ((INotifyCollectionChanged)ExternalToolsHelper.Instance.FilteredExternalTools).CollectionChanged += FilteredExternalTools_CollectionChanged;
+        FilteredExternalTools_CollectionChanged(null, null);
+    }
+
+    private void FilteredExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs? e)
+    {
+        // Only show the seperator if we're showing pinned tools
+        ExternalToolSeperatorVisibility = ExternalToolsHelper.Instance.FilteredExternalTools.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
     partial void OnIsSnappedChanged(bool value)
