@@ -52,7 +52,8 @@
             <DataTemplate x:Key="ThreeDotsButton" x:DataType="vm:ComputeSystemViewModel">
                 <Grid>
                     <Button
-                        Style="{StaticResource HorizontalThreeDotsStyle}">
+                        Style="{StaticResource HorizontalThreeDotsStyle}"
+                        AutomationProperties.Name="{x:Bind MoreOptionsButtonName}">
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}"/>
                         </Button.Flyout>
@@ -64,7 +65,8 @@
             <DataTemplate x:Key="ThreeDotsButtonForCreation" x:DataType="vm:CreateComputeSystemOperationViewModel">
                 <Grid>
                     <Button
-                        Style="{StaticResource HorizontalThreeDotsStyle}">
+                        Style="{StaticResource HorizontalThreeDotsStyle}"
+                        AutomationProperties.Name="{x:Bind MoreOptionsButtonName}">
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}" />
                         </Button.Flyout>
@@ -137,7 +139,8 @@
                         <commonCustomControls:CardHeader
                             HeaderCaption="{x:Bind ProviderDisplayName, Mode=OneWay}"
                             HeaderIcon="{x:Bind HeaderImage, Mode=OneWay}"
-                            ActionControlTemplate="{StaticResource ThreeDotsButton}" />
+                            ActionControlTemplate="{StaticResource ThreeDotsButton}"
+                            OperationsVisibility="{x:Bind ShouldShowDotOperations, Mode=OneWay}"/>
                     </Grid>
                     <!-- Card Body : Name, thumbnail, 'Launch' button -->
                     <Grid Grid.Row="1">
@@ -219,7 +222,7 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <!-- Search field -->
-            <AutoSuggestBox Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="250" HorizontalAlignment="Left">
+            <AutoSuggestBox Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="250" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="TextChanged">
                         <ic:InvokeCommandAction
@@ -264,7 +267,10 @@
                     </i:Interaction.Behaviors>
                 </ComboBox>
                 <!-- Sync button -->
-                <Button Command="{x:Bind ViewModel.SyncButtonCommand}" Margin="0 3 0 0">
+                <Button
+                    x:Uid="SyncEnvironmentsButton"
+                    Command="{x:Bind ViewModel.SyncButtonCommand}"
+                    Margin="0 3 0 0">
                     <StackPanel Orientation="Horizontal" Padding="20 0" Spacing="8">
                         <FontIcon FontSize="16" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
                         <TextBlock x:Uid="SyncButtonTextBlock" />

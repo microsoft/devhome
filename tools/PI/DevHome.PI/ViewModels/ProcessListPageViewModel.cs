@@ -4,14 +4,18 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
+using DevHome.PI.Telemetry;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.PI.ViewModels;
 
@@ -20,13 +24,42 @@ public partial class ProcessListPageViewModel : ObservableObject
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
 
     [ObservableProperty]
+    private string filterProcessText;
+
+    partial void OnFilterProcessTextChanged(string value)
+    {
+        FilterProcessList();
+    }
+
+    [ObservableProperty]
     private ObservableCollection<Process> processes;
+
+    [ObservableProperty]
+    private ObservableCollection<Process> filteredProcesses;
 
     public ProcessListPageViewModel()
     {
         dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         processes = new();
+        filteredProcesses = new();
+        filterProcessText = string.Empty;
         GetFilteredProcessList();
+
+        TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
+    }
+
+    public void ResetPage()
+    {
+        FilterProcessText = string.Empty;
+        GetFilteredProcessList();
+    }
+
+    private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if ((e.PropertyName == nameof(TargetAppData.TargetProcess)) || (e.PropertyName == nameof(TargetAppData.HasExited)))
+        {
+            GetFilteredProcessList();
+        }
     }
 
     private void GetFilteredProcessList()
@@ -116,6 +149,8 @@ public partial class ProcessListPageViewModel : ObservableObject
                     currentProcess.Dispose();
                 }
             }
+
+            FilterProcessList();
         });
     }
 
@@ -134,6 +169,16 @@ public partial class ProcessListPageViewModel : ObservableObject
     {
         Settings.Default.Save();
         GetFilteredProcessList();
+    }
+
+    private void FilterProcessList()
+    {
+        FilteredProcesses = new ObservableCollection<Process>(Processes.Where(
+            item =>
+            {
+                return item.ProcessName.Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase) ||
+                Convert.ToString(item.Id, CultureInfo.CurrentCulture).Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase);
+            }));
     }
 
     [RelayCommand]

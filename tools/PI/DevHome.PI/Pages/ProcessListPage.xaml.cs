@@ -24,6 +24,7 @@ public sealed partial class ProcessListPage : Page
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
+        ViewModel.ResetPage();
         Application.Current.GetService<TelemetryReporter>().SwitchTo(Feature.ProcessList);
     }
 }

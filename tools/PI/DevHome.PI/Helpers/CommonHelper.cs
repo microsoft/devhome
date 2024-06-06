@@ -14,6 +14,9 @@ namespace DevHome.PI.Helpers;
 
 internal sealed class CommonHelper
 {
+    public const string UnpinGlyph = "\uE77A";
+    public const string PinGlyph = "\uE718";
+
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(CommonHelper));
 
     internal static string GetLocalizedString(string stringName, params object[] args)

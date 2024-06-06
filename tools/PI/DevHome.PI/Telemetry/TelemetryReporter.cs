@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.PI;
 using DevHome.PI.Models;
-using DevHome.PI.SettingsUi;
 using DevHome.PI.Telemetry;
 using DevHome.PI.TelemetryEvents;
 using DevHome.Telemetry;
@@ -76,7 +75,7 @@ internal sealed class TelemetryReporter : IDisposable
                     if (FeatureState.IsExclusive(flag))
                     {
                         // First fire any events to stop the previous features telemetry.
-                        Debug.Assert(eventGenerator != null, "eventGenerator is null");
+                        // Debug.Assert(eventGenerator != null, "eventGenerator is null");
                         if (eventGenerator != null)
                         {
                             var eventArgs = new WindowEventGenerator.InteractiveUsageEventArgs(WindowEventGenerator.InteractiveUsageEventType.Stop);

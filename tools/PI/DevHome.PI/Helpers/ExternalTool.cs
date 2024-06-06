@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
@@ -22,7 +23,7 @@ public enum ExternalToolArgType
 }
 
 // ExternalTool represents an imported tool
-public class ExternalTool : INotifyPropertyChanged
+public partial class ExternalTool : ObservableObject
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalTool));
 
@@ -45,93 +46,71 @@ public class ExternalTool : INotifyPropertyChanged
         get; private set;
     }
 
-    [JsonIgnore]
+    [ObservableProperty]
+    private string _pinGlyph;
+
+    [ObservableProperty]
+    private bool _isPinned;
+
+    // Note the additional "property:" syntax to ensure the JsonIgnore is propagated to the generated property.
+    [ObservableProperty]
+    [property: JsonIgnore]
     private SoftwareBitmapSource? _toolIcon;
 
-    [JsonIgnore]
-    public SoftwareBitmapSource? ToolIcon
-    {
-        get => _toolIcon;
-        private set
-        {
-            _toolIcon = value;
-            OnPropertyChanged(nameof(ToolIcon));
-        }
-    }
+    [ObservableProperty]
+    [property: JsonIgnore]
+    private ImageIcon? _menuIcon;
 
     [JsonIgnore]
-    private BitmapIcon? _menuIcon;
-
-    [JsonIgnore]
-    public BitmapIcon? MenuIcon
-    {
-        get => _menuIcon;
-        private set
-        {
-            _menuIcon = value;
-            OnPropertyChanged(nameof(MenuIcon));
-        }
-    }
-
-    [JsonIgnore]
-    private SoftwareBitmap? softwareBitmap;
+    private SoftwareBitmap? _softwareBitmap;
 
     public ExternalTool(
         string name,
         string executable,
         ExternalToolArgType argtype,
         string argprefix = "",
-        string otherArgs = "")
+        string otherArgs = "",
+        bool isPinned = false)
     {
         Name = name;
         Executable = executable;
         ArgType = argtype;
         ArgPrefix = argprefix;
         OtherArgs = otherArgs;
+        IsPinned = isPinned;
+        PinGlyph = IsPinned ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
 
         ID = Guid.NewGuid().ToString();
 
         if (!string.IsNullOrEmpty(executable))
         {
-            GetToolImage();
-            GetMenuIcon();
+            GetIcons();
         }
     }
 
-    private async void GetToolImage()
+    partial void OnIsPinnedChanged(bool oldValue, bool newValue)
+    {
+        PinGlyph = newValue ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
+    }
+
+    private async void GetIcons()
     {
         try
         {
-            softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
-            if (softwareBitmap is not null)
+            _softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
+            if (_softwareBitmap is not null)
             {
-                ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmap(softwareBitmap);
+                ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmapAsync(_softwareBitmap);
             }
+
+            MenuIcon = new ImageIcon
+            {
+                Source = ToolIcon,
+            };
         }
         catch (Exception ex)
         {
             _log.Error(ex, "Failed to get tool image");
-        }
-    }
-
-    private async void GetMenuIcon()
-    {
-        try
-        {
-            softwareBitmap ??= GetSoftwareBitmapFromExecutable(Executable);
-            if (softwareBitmap is not null)
-            {
-                var bitmapUri = await SaveSoftwareBitmapToTempFile(softwareBitmap);
-                MenuIcon = new BitmapIcon
-                {
-                    UriSource = bitmapUri,
-                    ShowAsMonochrome = false,
-                };
-            }
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "Failed to get menu icon");
         }
     }
 
@@ -175,10 +154,13 @@ public class ExternalTool : INotifyPropertyChanged
         }
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected void OnPropertyChanged(string propertyName)
+    public void TogglePinnedState()
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        IsPinned = !IsPinned;
+    }
+
+    public void UnregisterTool()
+    {
+        ExternalToolsHelper.Instance.RemoveExternalTool(this);
     }
 }

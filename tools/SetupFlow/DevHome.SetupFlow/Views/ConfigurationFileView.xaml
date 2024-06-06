@@ -124,6 +124,12 @@
                             <StackPanel Spacing="{StaticResource SectionSpacing}" />
                         </ItemsPanelTemplate>
                     </ListView.ItemsPanel>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+                            <Setter Property="IsTabStop" Value="False" />
+                            <Setter Property="Padding" Value="0" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:DSCConfigurationUnitViewModel">
                             <Expander IsExpanded="False"

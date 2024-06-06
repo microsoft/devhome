@@ -23,8 +23,8 @@ public sealed partial class SummaryView : UserControl, IRecipient<NewAdaptiveCar
 
     private void ViewAllButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        // When installation notes' 'view all' hyperlink is clicked, open a new window with the full text
-        if (sender is HyperlinkButton hyperlinkButton && hyperlinkButton.Tag is PackageViewModel package)
+        // When installation notes' 'view all' button is clicked, open a new window with the full text
+        if (sender is Button viewAllButton && viewAllButton.Tag is PackageViewModel package)
         {
             var window = new InstallationNotesWindow(package.PackageTitle, package.InstallationNotes);
             window.CenterOnWindow();
@@ -34,8 +34,8 @@ public sealed partial class SummaryView : UserControl, IRecipient<NewAdaptiveCar
 
     private void InstallationNotes_IsTextTrimmedChanged(TextBlock sender, IsTextTrimmedChangedEventArgs args)
     {
-        // Show 'view all' hyperlink if installation notes text is trimmed, otherwise hide it.
-        if (sender?.Tag is HyperlinkButton viewAllButton)
+        // Show 'view all' button if installation notes text is trimmed, otherwise hide it.
+        if (sender?.Tag is Button viewAllButton)
         {
             viewAllButton.Visibility = sender.IsTextTrimmed ? Visibility.Visible : Visibility.Collapsed;
         }

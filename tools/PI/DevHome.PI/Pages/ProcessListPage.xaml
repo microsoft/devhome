@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:settings="using:DevHome.PI.Properties"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled">
 
     <Grid>
         <Grid.Resources>
@@ -29,8 +30,8 @@
                 <ComboBox
                     x:Uid="FilterDropDown"
                     x:Name="FilterDropDown" HorizontalAlignment="Stretch"
-                    MinHeight="36" Height="36"
-                    IsEditable="True"
+                    MinHeight="36" IsEditable="True"
+                    Text="{x:Bind ViewModel.FilterProcessText, Mode=TwoWay}"
                     DropDownClosed="{x:Bind ViewModel.FilterDropDownClosed}">
                     <CheckBox x:Uid="BgTaskHostCheckBox" x:Name="BgTaskHostCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeBgTaskHost, Mode=TwoWay}"/>
                     <CheckBox x:Uid="ConHostCheckBox" x:Name="ConHostCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeConHost, Mode=TwoWay}"/>
@@ -64,7 +65,7 @@
             GridLinesVisibility="None"
             HeadersVisibility="Column"
             SelectionChanged="{x:Bind ViewModel.ProcessDataGrid_SelectionChanged}"
-            ItemsSource="{x:Bind ViewModel.Processes, Mode=OneWay}">
+            ItemsSource="{x:Bind ViewModel.FilteredProcesses, Mode=OneWay}">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn x:Uid="PidColumn" Binding="{Binding Id}" Width="120"/>
                 <controls:DataGridTextColumn x:Uid="ExecutableColumn" Binding="{Binding ProcessName}" Width="450"/>

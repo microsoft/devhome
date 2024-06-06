@@ -62,7 +62,7 @@
   <ItemGroup>
     <!-- Temporarily duplicate the Adaptive Card from DevHome.Common -->
     <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="2.0.0-beta" GeneratePathProperty="true" />
-    <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="2.0.0-beta" GeneratePathProperty="true" />
+    <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="2.1.0-beta" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240311-x1907" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
@@ -83,6 +83,7 @@
   <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
+    <ProjectReference Include="..\extensions\WindowsSandboxExtension\WindowsSandboxExtension.csproj" />
     <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
     <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />

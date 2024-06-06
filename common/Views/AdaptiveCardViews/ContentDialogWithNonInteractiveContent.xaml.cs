@@ -29,8 +29,13 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
             var renderer = await rendererService.GetRendererAsync();
             renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
             var card = renderer.RenderAdaptiveCardFromJsonString(content.ContentDialogInternalAdaptiveCardJson?.Stringify() ?? string.Empty);
-            Content = card.FrameworkElement;
+            Content = new ScrollViewer
+            {
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                Content = card.FrameworkElement,
+            };
             SecondaryButtonText = content.SecondaryButtonText;
+            this.Focus(FocusState.Programmatic);
         });
     }
 }

@@ -3,6 +3,7 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Helpers;
@@ -11,6 +12,7 @@ using DevHome.PI.Models;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.Win32;
+using Windows.Win32.System.Threading;
 
 namespace DevHome.PI.ViewModels;
 
@@ -23,6 +25,9 @@ public partial class AppDetailsPageViewModel : ObservableObject
 
     [ObservableProperty]
     private Visibility runAsAdminVisibility = Visibility.Collapsed;
+
+    [ObservableProperty]
+    private Visibility processRunningParamsVisibility = Visibility.Collapsed;
 
     private Process? targetProcess;
 
@@ -49,23 +54,27 @@ public partial class AppDetailsPageViewModel : ObservableObject
             try
             {
                 AppInfo.ProcessId = targetProcess.Id;
-                AppInfo.IsRunningAsSystem = TargetAppData.Instance.IsRunningAsSystem;
 
-                if (!process.HasExited)
+                if (process.HasExited)
                 {
-                    AppInfo.BasePriority = targetProcess.BasePriority;
-                    AppInfo.IsRunningAsAdmin = TargetAppData.Instance.IsRunningAsAdmin;
+                    AppInfo.Visibility = Visibility.Collapsed;
+                    ProcessRunningParamsVisibility = Visibility.Collapsed;
+                }
+                else
+                {
                     AppInfo.Visibility = Visibility.Visible;
+                    ProcessRunningParamsVisibility = Visibility.Visible;
+                    AppInfo.IsRunningAsSystem = TargetAppData.Instance.IsRunningAsSystem;
+                    AppInfo.IsRunningAsAdmin = TargetAppData.Instance.IsRunningAsAdmin;
+                    AppInfo.BasePriority = targetProcess.BasePriority;
                     AppInfo.PriorityClass = (int)targetProcess.PriorityClass;
 
                     if (targetProcess.MainModule != null)
                     {
                         AppInfo.MainModuleFileName = targetProcess.MainModule.FileName;
-                        uint binaryTypeValue;
-
-                        // TODO GetBinaryType only distinguishes x86 from x64. It doesn't allow for ARM or ARM64.
-                        PInvoke.GetBinaryType(AppInfo.MainModuleFileName, out binaryTypeValue);
-                        AppInfo.BinaryType = (WindowHelper.BinaryType)binaryTypeValue;
+                        var cpuArchitecture = WindowHelper.GetAppArchitecture(
+                            targetProcess.SafeHandle, targetProcess.MainModule.FileName);
+                        AppInfo.CpuArchitecture = cpuArchitecture;
                     }
 
                     foreach (ProcessModule module in targetProcess.Modules)
@@ -79,7 +88,7 @@ public partial class AppDetailsPageViewModel : ObservableObject
             catch (Win32Exception ex)
             {
                 // This can throw if the process is running elevated and we are not.
-                _log.Error(ex, "Unable to contruct an AppInfo for target process.");
+                _log.Error(ex, "Unable to construct an AppInfo for target process.");
                 if (ex.NativeErrorCode == (int)Windows.Win32.Foundation.WIN32_ERROR.ERROR_ACCESS_DENIED)
                 {
                     // Hide properties that cannot be retrieved when the target app is elevated and PI is not.

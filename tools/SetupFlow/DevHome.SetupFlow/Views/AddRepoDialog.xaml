@@ -170,7 +170,13 @@
                 into the command.  I tried converting this to use a command on SelectionChanged and pass SelectedItems into the command.
                 I ran into issues because the viewmodel expects one repository at a time.  Not a list.
                 Another issue is .SelectRange() needs to be called to "select" repos when the dialog is opened more than once. -->
-                <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.RepositoriesToDisplay, Mode=OneWay}">
+                <ListView x:Name="RepositoriesListView"
+                          Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
+                          SelectionMode="Multiple"
+                          Height="300"
+                          HorizontalAlignment="Stretch"
+                          SelectionChanged="RepositoriesListView_SelectionChanged"
+                          ItemsSource="{x:Bind AddRepoViewModel.RepositoriesToDisplay, Mode=OneWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:RepoViewListItem">
                             <Grid ColumnSpacing="7" AutomationProperties.Name="{x:Bind RepoDisplayName}">
@@ -276,12 +282,18 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <CheckBox
-                        Click="MakeNewDevDriveCheckBox_Click" 
                         IsEnabled="{x:Bind AddRepoViewModel.EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" 
                         IsChecked="{x:Bind AddRepoViewModel.EditDevDriveViewModel.IsDevDriveCheckboxChecked, Mode=TwoWay}" 
                         Grid.Column="0" 
                         Grid.Row="0"
-                        x:Uid="NewDevDriveComboBox"/>
+                        x:Uid="NewDevDriveComboBox"
+                        x:Name="NewDevDriveComboBox">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="Click">
+                            <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.MakeNewDevDriveCommand}" CommandParameter="{x:Bind NewDevDriveComboBox.IsChecked, Mode=OneWay}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </CheckBox>
                 <HyperlinkButton 
                         x:Uid="CustomizeHyperLink"
                         Grid.Column="1" 
