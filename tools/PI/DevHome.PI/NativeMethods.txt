@@ -23,6 +23,7 @@ GetForegroundWindow
 GetMonitorInfo
 GetMonitorInfo
 GetOpenFileName
+GetProcessInformation
 GetTopWindow
 GetWindowInfo
 GetWindowLong
@@ -40,6 +41,7 @@ IsIconic
 IsImmersiveProcess
 IsWindow
 IsWindowVisible
+IsWow64Process2
 IsZoomed
 LoadIcon
 LoadImage
@@ -85,6 +87,8 @@ INVALID_HANDLE_VALUE
 LR_*
 MOD_*
 // MONITOR_DEFAULTTONEAREST
+PROCESS_INFORMATION_CLASS
+PROCESS_MACHINE_INFORMATION
 SECTION_FLAGS
 SW_*
 VIRTUAL_KEY

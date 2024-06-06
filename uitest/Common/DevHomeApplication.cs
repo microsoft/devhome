@@ -40,6 +40,8 @@ public sealed class DevHomeApplication
 
     private WindowsElement ExtensionsNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("Extensions");
 
+    private WindowsElement UtilitiesNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("DevHome.Utilities");
+
     private DevHomeApplication()
     {
     }
@@ -99,6 +101,13 @@ public sealed class DevHomeApplication
     {
         Trace.WriteLine("Navigating to Extensions");
         ExtensionsNavigationItem.Click();
+        return new(_devHomeSession.Driver);
+    }
+
+    public UtilitiesPage NavigateToUtilitiesPage()
+    {
+        Trace.WriteLine("Navigating to Utilities");
+        UtilitiesNavigationItem.Click();
         return new(_devHomeSession.Driver);
     }
 

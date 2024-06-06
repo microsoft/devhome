@@ -156,6 +156,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevHome.Services.WindowsPac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevHome.Services.Core", "services\DevHome.Services.Core\DevHome.Services.Core.csproj", "{8FB1EF90-B693-4A2A-A7F2-44ECA499D769}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{E768781A-D1F7-4C03-B46D-E76354FAB587}"
+	ProjectSection(SolutionItems) = preProject
+		tools\scripts\CaptureDevHomeLogs.ps1 = tools\scripts\CaptureDevHomeLogs.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -820,8 +825,13 @@ Global
 		{118E20E8-FD8A-40CF-83A5-F912B9187787} = {4ACF917D-B2CC-4CF2-8EE1-0EBBB52A69F0}
 		{DA5C4FC8-18AF-4446-807F-A2FFFE4DCF6C} = {E0A15760-487A-4CCB-8093-DE6FF3C4BC23}
 		{8FB1EF90-B693-4A2A-A7F2-44ECA499D769} = {E0A15760-487A-4CCB-8093-DE6FF3C4BC23}
+		{E768781A-D1F7-4C03-B46D-E76354FAB587} = {A972EC5B-FC61-4964-A6FF-F9633EB75DFD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {030B5641-B206-46BB-BF71-36FF009088FA}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		build\cppversion\version.vcxitems*{092ac740-da01-4872-8e93-b9557dad6be5}*SharedItemsImports = 5
+		build\cppversion\version.vcxitems*{60e0fd98-5396-436d-bab7-187a853a5dc6}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

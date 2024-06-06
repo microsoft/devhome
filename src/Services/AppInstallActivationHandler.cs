@@ -1,24 +1,22 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using System.Web;
 using DevHome.Activation;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Services.WindowsPackageManager.Contracts;
-using DevHome.Settings.ViewModels;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.ApplicationModel.Activation;
-using Windows.Storage;
 
 namespace DevHome.Services;
 
 /// <summary>
-/// Class that handles the activation of the application when an add-apps-to-cart URI protcol is used.
+/// Class that handles the activation of the application when an add-apps-to-cart URI protocol is used.
 /// </summary>
 public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEventArgs>
 {
@@ -29,20 +27,32 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
     private readonly IWinGet _winget;
     private readonly PackageProvider _packageProvider;
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+    private readonly Window _mainWindow;
+    private readonly ISetupFlowStringResource _setupFlowStringResource;
     private static readonly char[] Separator = [','];
+
+    public enum ActivationQueryType
+    {
+        Search,
+        WingetURIs,
+    }
 
     public AppInstallActivationHandler(
         INavigationService navigationService,
         SetupFlowViewModel setupFlowViewModel,
         PackageProvider packageProvider,
         IWinGet winget,
-        SetupFlowOrchestrator setupFlowOrchestrator)
+        SetupFlowOrchestrator setupFlowOrchestrator,
+        ISetupFlowStringResource setupFlowStringResource,
+        Window mainWindow)
     {
         _navigationService = navigationService;
         _setupFlowViewModel = setupFlowViewModel;
         _packageProvider = packageProvider;
         _winget = winget;
         _setupFlowOrchestrator = setupFlowOrchestrator;
+        _setupFlowStringResource = setupFlowStringResource;
+        _mainWindow = mainWindow;
     }
 
     protected override bool CanHandleInternal(ProtocolActivatedEventArgs args)
@@ -52,63 +62,114 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
 
     protected async override Task HandleInternalAsync(ProtocolActivatedEventArgs args)
     {
-        await AppActivationFlowAsync(args.Uri.Query);
+        var uri = args.Uri;
+        var parameters = HttpUtility.ParseQueryString(uri.Query);
+
+        if (parameters != null)
+        {
+            foreach (ActivationQueryType queryType in Enum.GetValues(typeof(ActivationQueryType)))
+            {
+                var query = parameters.Get(queryType.ToString());
+
+                if (!string.IsNullOrEmpty(query))
+                {
+                    await AppActivationFlowAsync(query, queryType);
+                    return; // Exit after handling the first non-null query
+                }
+            }
+        }
     }
 
-    private async Task AppActivationFlowAsync(string query)
+    private async Task AppActivationFlowAsync(string query, ActivationQueryType queryType)
+    {
+        if (_setupFlowOrchestrator.IsMachineConfigurationInProgress)
+        {
+            _log.Warning($"Cannot activate the {AppSearchUri} flow because the machine configuration is in progress");
+            await _mainWindow.ShowErrorMessageDialogAsync(
+                    _setupFlowStringResource.GetLocalized(StringResourceKey.AppInstallActivationTitle),
+                    _setupFlowStringResource.GetLocalized(StringResourceKey.URIActivationFailedBusy),
+                    _setupFlowStringResource.GetLocalized(StringResourceKey.Close));
+            return;
+        }
+
+        var identifiers = SplitAndTrimIdentifiers(query);
+        if (identifiers.Length == 0)
+        {
+            _log.Warning("No valid identifiers provided in the query.");
+            return;
+        }
+
+        _log.Information($"Starting {AppSearchUri} activation");
+        _navigationService.NavigateTo(typeof(SetupFlowViewModel).FullName!);
+        _setupFlowViewModel.StartAppManagementFlow(queryType == ActivationQueryType.Search ? identifiers[0] : null);
+        await HandleAppSelectionAsync(identifiers, queryType);
+    }
+
+    private string[] SplitAndTrimIdentifiers(string query)
+    {
+        return query.Split(Separator, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(id => id.Trim(' ', '"'))
+                    .ToArray();
+    }
+
+    private async Task HandleAppSelectionAsync(string[] identifiers, ActivationQueryType queryType)
     {
         try
         {
-            // Don't interrupt the user if the machine configuration is in progress
-            if (_setupFlowOrchestrator.IsMachineConfigurationInProgress)
+            switch (queryType)
             {
-                _log.Warning("Cannot activate the add-apps-to-cart flow because the machine configuration is in progress");
-                return;
-            }
-            else
-            {
-                _log.Information("Starting add-apps-to-cart activation");
-                _navigationService.NavigateTo(typeof(SetupFlowViewModel).FullName!);
-                _setupFlowViewModel.StartAppManagementFlow(query);
-                await SearchAndSelectAsync(query);
+                case ActivationQueryType.Search:
+                    await SearchAndSelectAsync(identifiers[0]);
+                    return;
+
+                case ActivationQueryType.WingetURIs:
+                    await PackageSearchAsync(identifiers);
+                    return;
             }
         }
         catch (Exception ex)
         {
-            _log.Error(ex, "Error executing the add-apps-to-cart activation flow");
+            _log.Error(ex, $"Error executing the {AppSearchUri} activation flow");
         }
     }
 
-    private async Task SearchAndSelectAsync(string query)
+    private async Task PackageSearchAsync(string[] identifiers)
     {
-        var parameters = HttpUtility.ParseQueryString(query);
-        var searchParameter = parameters["search"];
+        List<WinGetPackageUri> uris = [];
 
-        if (string.IsNullOrEmpty(searchParameter))
+        foreach (var identifier in identifiers)
         {
-            _log.Warning("Search parameter is missing or empty in the query.");
-            return;
+            uris.Add(new WinGetPackageUri(identifier));
         }
 
-        // Currently using the first search term only
-        var firstSearchTerm = searchParameter.Split(Separator, StringSplitOptions.RemoveEmptyEntries)
-                                             .Select(term => term.Trim(' ', '"'))
-                                             .FirstOrDefault();
-
-        if (string.IsNullOrEmpty(firstSearchTerm))
+        try
         {
-            _log.Warning("No valid search term was extracted from the query.");
-            return;
+            var list = await _winget.GetPackagesAsync(uris);
+            foreach (var item in list)
+            {
+                var package = _packageProvider.CreateOrGet(item);
+                package.IsSelected = true;
+                _log.Information($"Selected package: {item} for addition to cart.");
+            }
         }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Error occurred during package search for URIs: {uris}.");
+        }
+    }
 
-        var searchResults = await _winget.SearchAsync(firstSearchTerm, 1);
+    private async Task SearchAndSelectAsync(string identifier)
+    {
+        var searchResults = await _winget.SearchAsync(identifier, 1);
         if (searchResults.Count == 0)
         {
-            _log.Warning("No results found for the search term: {SearchTerm}", firstSearchTerm);
-            return;
+            _log.Warning($"No results found for the identifier: {identifier}");
         }
-
-        var firstResult = _packageProvider.CreateOrGet(searchResults[0]);
-        firstResult.IsSelected = true;
+        else
+        {
+            var package = _packageProvider.CreateOrGet(searchResults[0]);
+            package.IsSelected = true;
+            _log.Information($"Selected package: {package} for addition to cart.");
+        }
     }
 }

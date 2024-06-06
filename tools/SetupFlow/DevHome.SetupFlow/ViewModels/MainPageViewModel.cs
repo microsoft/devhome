@@ -146,11 +146,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
         }
     }
 
-    internal void StartAppManagementFlow(string query)
+    internal void StartAppManagementFlow(string query = null)
     {
-        _log.Information($"Launching app management flow for query:{query}");
+        _log.Information("Launching app management flow");
         var appManagementSetupFlow = _host.GetService<AppManagementTaskGroup>();
-        StartSetupFlowForTaskGroups(null, "App Search URI", appManagementSetupFlow);
+        StartSetupFlowForTaskGroups(null, "App Activation URI", appManagementSetupFlow);
         appManagementSetupFlow.HandleSearchQuery(query);
     }
 
