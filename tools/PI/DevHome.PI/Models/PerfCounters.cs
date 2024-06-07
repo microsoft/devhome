@@ -19,11 +19,11 @@ public partial class PerfCounters : ObservableObject, IDisposable
     public static readonly PerfCounters Instance = new();
 
     private const string ProcessCategory = "Process";
-    private const string ProcessorCategory = "Processor";
+    private const string ProcessorCategory = "Processor Information";
     private const string MemoryCategory = "Memory";
     private const string DiskCategory = "PhysicalDisk";
 
-    private const string CpuCounterName = "% Processor Time";
+    private const string CpuCounterName = "% Processor Utility";
     private const string RamCounterName = "Working Set - Private";
     private const string SystemRamCounterName = "Committed Bytes";
     private const string SystemDiskCounterName = "% Disk Time";
@@ -172,7 +172,7 @@ public partial class PerfCounters : ObservableObject, IDisposable
     {
         try
         {
-            CpuUsage = cpuCounter?.NextValue() / Environment.ProcessorCount ?? 0;
+            CpuUsage = (cpuCounter?.NextValue() ?? 0) / 100;
             GpuUsage = GetGpuUsage(gpuCounters);
 
             // Report app memory usage in MB
