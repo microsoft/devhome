@@ -16,7 +16,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
     <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-
   </PropertyGroup>
 
   <PropertyGroup>
@@ -99,16 +98,11 @@
     <None Remove="$(PkgMicrosoft_Diagnostics_Tracing_TraceEvent)\lib\netstandard2.0\Dia2Lib.dll" />
   </ItemGroup>
 
-
   <!--
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
     package has not yet been restored.
   -->
-  <ItemGroup>
-    <Folder Include="Adapters\" />
-    <Folder Include="Themes\" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\..\..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
