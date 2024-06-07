@@ -14,6 +14,7 @@ public enum EnvironmentsTelemetryStatus
     Started,
     Succeeded,
     Failed,
+    Unknown,
 }
 
 [EventData]

@@ -2,16 +2,21 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Behaviors;
+using DevHome.Common.Environments.Exceptions;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Scripts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.Environments;
+using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -155,6 +160,11 @@ public partial class EnvironmentsNotificationHelper
     [RelayCommand]
     private void RestartComputer()
     {
+        TelemetryFactory.Get<ITelemetry>().Log(
+           "Environment_RestartNotification_ButtonClick_Event",
+           LogLevel.Critical,
+           new EnvironmentRestartUserEvent());
+
         var startInfo = new ProcessStartInfo
         {
             WindowStyle = ProcessWindowStyle.Hidden,
@@ -196,6 +206,8 @@ public partial class EnvironmentsNotificationHelper
 
         var process = new Process();
         process.StartInfo = startInfo;
+        var telemetryEnablementMap = new Dictionary<FeatureEnablementKind, EnvironmentsTelemetryStatus>();
+
         Task.Run(() =>
         {
             // Since a UAC prompt will be shown, we need to wait for the process to exit
@@ -214,37 +226,64 @@ public partial class EnvironmentsNotificationHelper
                     case 0:
                         // The script successfully added the user to the Hyper-V Admin Group and enabled the Hyper-V Feature.
                         _shouldShowHyperVRebootButton = true;
+                        telemetryEnablementMap.Add(FeatureEnablementKind.HyperVFeature, EnvironmentsTelemetryStatus.Succeeded);
+                        telemetryEnablementMap.Add(FeatureEnablementKind.HyperVAdminGroup, EnvironmentsTelemetryStatus.Succeeded);
+                        LogEnablementTelemetry(telemetryEnablementMap);
                         ShowRestartNotification();
                         return;
                     case 2:
                         // Hyper-V Feature is already enabled and the script successfully added the user to the Hyper-V Admin group.
                         _shouldShowHyperVRebootButton = true;
+                        telemetryEnablementMap.Add(FeatureEnablementKind.HyperVAdminGroup, EnvironmentsTelemetryStatus.Succeeded);
+                        LogEnablementTelemetry(telemetryEnablementMap);
                         ShowRestartNotification();
                         return;
                     case 3:
                         // Hyper-V Feature is already enabled and the script failed to add the user to the Hyper-V Admin group.
+                        telemetryEnablementMap.Add(FeatureEnablementKind.HyperVAdminGroup, EnvironmentsTelemetryStatus.Failed);
+                        LogEnablementTelemetry(telemetryEnablementMap, "Failed to enable Hyper-V Feature: exit code 3");
                         ShowErrorWithRebootAfterExecutionMessage(_stringResource.GetLocalized("UserNotAddedToHyperVAdminGroupMessage"));
                         return;
                     case 4:
                         // The user is already in the Hyper-V Admin group and the script successfully enabled the Hyper-Feature.
+                        telemetryEnablementMap.Add(FeatureEnablementKind.HyperVFeature, EnvironmentsTelemetryStatus.Succeeded);
+                        LogEnablementTelemetry(telemetryEnablementMap);
                         _shouldShowHyperVRebootButton = true;
                         ShowRestartNotification();
                         return;
                     case 5:
                         // The user is already in the Hyper-V Admin group and the script failed to enable the Hyper-Feature.
+                        telemetryEnablementMap.Add(FeatureEnablementKind.HyperVFeature, EnvironmentsTelemetryStatus.Failed);
+                        LogEnablementTelemetry(telemetryEnablementMap, "Failed to enable Hyper-V Feature: exit code 5");
                         ShowErrorWithRebootAfterExecutionMessage(_stringResource.GetLocalized("UnableToEnableHyperVFeatureMessage"));
                         return;
                     case 6:
                         // Display nothing as there is no work to be done
+                        telemetryEnablementMap.Add(FeatureEnablementKind.HyperVFeature, EnvironmentsTelemetryStatus.Succeeded);
+                        telemetryEnablementMap.Add(FeatureEnablementKind.HyperVAdminGroup, EnvironmentsTelemetryStatus.Succeeded);
+                        LogEnablementTelemetry(telemetryEnablementMap);
                         return;
                 }
+
+                throw new EnvironmentNotificationScriptException($"HyperV Enablement Script failed with exit code: {process.ExitCode}");
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "Script failed, we may not have been able to add user to Hyper-V admin group or enable Hyper-V");
+                telemetryEnablementMap.Add(FeatureEnablementKind.HyperVFeature, EnvironmentsTelemetryStatus.Unknown);
+                telemetryEnablementMap.Add(FeatureEnablementKind.HyperVAdminGroup, EnvironmentsTelemetryStatus.Unknown);
+                LogEnablementTelemetry(telemetryEnablementMap, ex.Message);
             }
 
             ShowErrorWithRebootAfterExecutionMessage(_stringResource.GetLocalized("UnableToAddUserToHyperVAdminAndEnableHyperVMessage"));
         });
+    }
+
+    private void LogEnablementTelemetry(Dictionary<FeatureEnablementKind, EnvironmentsTelemetryStatus> features, string? failureMessage = null)
+    {
+        TelemetryFactory.Get<ITelemetry>().Log(
+            "Environment_FeatureEnablement_Event",
+            LogLevel.Critical,
+            new EnvironmentEnablementEvent(features, failureMessage));
     }
 }
