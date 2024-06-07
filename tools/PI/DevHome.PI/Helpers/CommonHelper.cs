@@ -10,6 +10,7 @@ using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.ApplicationModel;
+using Windows.Win32.Foundation;
 
 namespace DevHome.PI.Helpers;
 
@@ -58,12 +59,12 @@ internal sealed class CommonHelper
         catch (Win32Exception ex)
         {
             _log.Error(ex, "Could not run PI as admin");
-            if (ex.NativeErrorCode == (int)Windows.Win32.Foundation.WIN32_ERROR.ERROR_CANT_ACCESS_FILE)
+            if (ex.NativeErrorCode == (int)WIN32_ERROR.ERROR_CANT_ACCESS_FILE)
             {
                 var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
                 barWindow?.ShowDialogToEnableAppExecutionAlias();
             }
-            else if (ex.NativeErrorCode == (int)Windows.Win32.Foundation.WIN32_ERROR.ERROR_CANCELLED)
+            else if (ex.NativeErrorCode == (int)WIN32_ERROR.ERROR_CANCELLED)
             {
                 _log.Error(ex, "UAC to run PI as admin was denied");
             }

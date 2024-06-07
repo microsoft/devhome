@@ -942,11 +942,11 @@
     <comment>Content Dialog button text which on click opens the Advanced App settings page in Windows Settings app.</comment>
   </data>
   <data name="AliasDisabledDialogContent" xml:space="preserve">
-    <value>Go to Advanced app settings -&gt; App execution alias -&gt; Project Ironside -&gt; Enable the toggle and try to launch PI as admin again</value>
+    <value>Go to Advanced app settings -&gt; App execution alias -&gt; Project Ironsides -&gt; Enable the toggle and try to launch PI as admin again</value>
     <comment>Content Dialog content suggesting users steps to enable app execution alais from Windows Settings app</comment>
   </data>
   <data name="AliasDisabledDialogTitle" xml:space="preserve">
-    <value>Enable App Execution Alias for Project Ironside and try again</value>
-    <comment>Content Dialog title to enable app execution alais for Project Ironside</comment>
+    <value>Enable App Execution Alias for Project Ironsides and try again</value>
+    <comment>Content Dialog title to enable app execution alais for Project Ironsides</comment>
   </data>
 </root>
