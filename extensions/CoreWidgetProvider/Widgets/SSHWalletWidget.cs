@@ -178,12 +178,12 @@ internal sealed class SSHWalletWidget : CoreWidget
         }
         else if (dataObject.ConfigFile != null)
         {
-            // This is the action when the user clicks the Preview button in the Configure state.
+            // The user clicked the Preview button in the Configure state.
             chosenPath = dataObject.ConfigFile;
         }
         else if (dataObject.FilePath != null)
         {
-            // This is the action when the user uses the File Picker to select a file "filePath" in the Configure state.
+            // The user used the File Picker to select a file in the Configure state.
             chosenPath = dataObject.FilePath;
         }
 
