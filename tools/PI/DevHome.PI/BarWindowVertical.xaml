@@ -77,11 +77,22 @@
 
             <controls:PISeperator Orientation="Horizontal"/>
             <!-- Per App controls -->
-            <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
-            <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" HorizontalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
-            <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" HorizontalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
-            <controls:PISeperator Orientation="Horizontal" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
-
+            <StackPanel Orientation="Vertical" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}">
+                <StackPanel.ContextFlyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem x:Uid="DetachMenuItem" Command="{x:Bind _viewModel.DetachFromProcessCommand}">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xE894;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </StackPanel.ContextFlyout>
+                <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" />
+                <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" HorizontalAlignment="Center" />
+                <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" HorizontalAlignment="Center" />
+                <controls:PISeperator Orientation="Horizontal" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
+            </StackPanel>
+                        
             <!-- Per System controls -->
             <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" Command="{x:Bind _viewModel.SwitchLayoutCommand}" HorizontalAlignment="Center">
                 <TextBlock Text="&#xe8b4;"/>

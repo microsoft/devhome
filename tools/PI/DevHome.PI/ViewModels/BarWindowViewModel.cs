@@ -224,6 +224,12 @@ public partial class BarWindowViewModel : ObservableObject
         barWindow?.NavigateToPiSettings(typeof(AdditionalToolsViewModel).FullName!);
     }
 
+    [RelayCommand]
+    public void DetachFromProcess()
+    {
+        TargetAppData.Instance.ClearAppData();
+    }
+
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(TargetAppData.HWnd))
