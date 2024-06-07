@@ -68,13 +68,13 @@
                 <TextBlock Text="&#xecaa;" Margin="0"  />
             </controls:ProcessSelectionButton>
 
-            <controls:PISeperator />
+            <controls:PISeparator />
 
             <!-- Per App controls -->
             <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
             <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
             <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
-            <controls:PISeperator  Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
+            <controls:PISeparator  Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
 
             <!-- Per System controls -->
             <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" HorizontalAlignment="Center" Command="{x:Bind _viewModel.SwitchLayoutCommand}">
@@ -93,7 +93,7 @@
                 <TextBlock Text="&#xEC7A;"/>
             </controls:ExternalToolsManagementButton>
 
-            <controls:PISeperator />
+            <controls:PISeparator />
 
             <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsHorizontalLayout}">
                 <DataTemplate x:DataType="helpers:ExternalTool">
@@ -116,7 +116,7 @@
                     </Button>
                 </DataTemplate>
             </ItemsRepeater>
-            <controls:PISeperator Visibility="{x:Bind _viewModel.ExternalToolSeperatorVisibility, Mode=OneWay}"/>
+            <controls:PISeparator Visibility="{x:Bind _viewModel.ExternalToolSeparatorVisibility, Mode=OneWay}"/>
         </StackPanel>
 
         <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1">

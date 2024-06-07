@@ -75,12 +75,12 @@
                 <TextBlock Text="&#xecaa;" Margin="0" />
             </controls:ProcessSelectionButton>
 
-            <controls:PISeperator Orientation="Horizontal"/>
+            <controls:PISeparator Orientation="Horizontal"/>
             <!-- Per App controls -->
             <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
             <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" HorizontalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
             <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" HorizontalAlignment="Center" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
-            <controls:PISeperator Orientation="Horizontal" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
+            <controls:PISeparator Orientation="Horizontal" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
 
             <!-- Per System controls -->
             <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" Command="{x:Bind _viewModel.SwitchLayoutCommand}" HorizontalAlignment="Center">
@@ -99,7 +99,7 @@
                 <TextBlock Text="&#xEC7A;"/>
             </controls:ExternalToolsManagementButton>
 
-            <controls:PISeperator Orientation="Horizontal"/>
+            <controls:PISeparator Orientation="Horizontal"/>
             <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsVerticalLayout}">
                 <DataTemplate x:DataType="helpers:ExternalTool">
                     <Button Click="_viewModel.ExternalToolButton_Click" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" Tag="{x:Bind}">
@@ -121,7 +121,7 @@
                     </Button>
                 </DataTemplate>
             </ItemsRepeater>
-            <controls:PISeperator Orientation="Horizontal" Visibility="{x:Bind _viewModel.ExternalToolSeperatorVisibility, Mode=OneWay}"/>
+            <controls:PISeparator Orientation="Horizontal" Visibility="{x:Bind _viewModel.ExternalToolSeparatorVisibility, Mode=OneWay}"/>
         </StackPanel>
 
         <StackPanel x:Name="SystemResourceStackPanel" Orientation="Vertical" Grid.Row="2" Margin="0,0,0,5">
