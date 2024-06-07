@@ -23,8 +23,9 @@ public partial class PerfCounters : ObservableObject, IDisposable
     private const string MemoryCategory = "Memory";
     private const string DiskCategory = "PhysicalDisk";
 
-    private const string CpuCounterName = "% Processor Utility";
+    private const string CpuCounterName = "% Processor Time";
     private const string RamCounterName = "Working Set - Private";
+    private const string SystemCpuCounterName = "% Processor Utility";
     private const string SystemRamCounterName = "Committed Bytes";
     private const string SystemDiskCounterName = "% Disk Time";
 
@@ -76,7 +77,7 @@ public partial class PerfCounters : ObservableObject, IDisposable
 
         ThreadPool.QueueUserWorkItem((o) =>
         {
-            systemCpuCounter = new PerformanceCounter(ProcessorCategory, CpuCounterName, "_Total", true);
+            systemCpuCounter = new PerformanceCounter(ProcessorCategory, SystemCpuCounterName, "_Total", true);
             systemRamCounter = new PerformanceCounter(MemoryCategory, SystemRamCounterName, true);
             systemDiskCounter = new PerformanceCounter(DiskCategory, SystemDiskCounterName, "_Total", true);
             UpdateTargetProcess(TargetAppData.Instance.TargetProcess);
@@ -172,7 +173,7 @@ public partial class PerfCounters : ObservableObject, IDisposable
     {
         try
         {
-            CpuUsage = (cpuCounter?.NextValue() ?? 0) / 100;
+            CpuUsage = cpuCounter?.NextValue() / Environment.ProcessorCount ?? 0;
             GpuUsage = GetGpuUsage(gpuCounters);
 
             // Report app memory usage in MB
