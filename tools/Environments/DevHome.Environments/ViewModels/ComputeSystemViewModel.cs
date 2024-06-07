@@ -22,6 +22,7 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -260,23 +261,27 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             TelemetryFactory.Get<ITelemetry>().Log(
                 "Environment_Launch_Event",
                 LogLevel.Critical,
-                new EnvironmentLaunchUserEvent(ComputeSystem.AssociatedProviderId.Value, EnvironmentsTelemetryStatus.Started));
+                new EnvironmentLaunchEvent(ComputeSystem.AssociatedProviderId.Value, EnvironmentsTelemetryStatus.Started));
 
             var operationResult = await ComputeSystem.ConnectAsync(string.Empty);
 
-            var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
             var operationFailed = (operationResult == null) || (operationResult.Result.Status == ProviderOperationStatus.Failure);
 
             if (operationFailed)
             {
-                completionStatus = EnvironmentsTelemetryStatus.Failed;
-                LogFailure(operationResult);
+                var (displayMessage, diagnosticText) = LogFailure(operationResult);
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    "Environment_Launch_Event",
+                    LogLevel.Critical,
+                    new EnvironmentLaunchEvent(ComputeSystem.AssociatedProviderId.Value, EnvironmentsTelemetryStatus.Failed, displayMessage, diagnosticText));
             }
-
-            TelemetryFactory.Get<ITelemetry>().Log(
-                "Environment_Launch_Event",
-                LogLevel.Critical,
-                new EnvironmentLaunchUserEvent(ComputeSystem.AssociatedProviderId.Value, completionStatus));
+            else
+            {
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    "Environment_Launch_Event",
+                    LogLevel.Critical,
+                    new EnvironmentLaunchEvent(ComputeSystem.AssociatedProviderId.Value, EnvironmentsTelemetryStatus.Succeeded));
+            }
 
             _mainWindow.DispatcherQueue.TryEnqueue(() =>
             {
@@ -296,10 +301,11 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         });
     }
 
-    private void LogFailure(ComputeSystemOperationResult? operationResult)
+    private (string DisplayMessage, string DiagnosticText) LogFailure(ComputeSystemOperationResult? operationResult)
     {
         var messageWhenNull = _stringResource.GetLocalized("EnvironmentOperationFailedUnKnownReasonText");
         var errorMessage = (operationResult != null) ? operationResult.Result.DisplayMessage : messageWhenNull;
+        var diagnosticText = errorMessage;
 
         if (operationResult == null)
         {
@@ -308,10 +314,12 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         else
         {
             _log.Error(operationResult.Result.ExtendedError, $"Launch operation failed for {ComputeSystem} error: {operationResult.Result.DiagnosticText}");
+            diagnosticText = operationResult.Result.DiagnosticText;
         }
 
         // Show the error notification to tell the user the operation failed
         OnErrorReceived(errorMessage);
+        return (errorMessage, diagnosticText);
     }
 
     /// <summary>
@@ -326,12 +334,15 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             var data = message.Value;
             IsOperationInProgress = true;
             ShouldShowLaunchOperation = false;
+            var providerId = ComputeSystem.AssociatedProviderId.Value;
 
             _log.Information($"operation '{data.ComputeSystemOperation}' starting for Compute System: {Name}");
+
             TelemetryFactory.Get<ITelemetry>().Log(
                 "Environment_OperationInvoked_Event",
                 LogLevel.Measure,
-                new EnvironmentOperationUserEvent(data.TelemetryStatus, data.ComputeSystemOperation, ComputeSystem.AssociatedProviderId.Value, data.AdditionalContext, data.ActivityId));
+                new EnvironmentOperationEvent(EnvironmentsTelemetryStatus.Started, data.ComputeSystemOperation, providerId, data.AdditionalContext),
+                relatedActivityId: message.Value.ActivityId);
         });
     }
 
@@ -348,17 +359,26 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             _log.Information($"operation '{data.ComputeSystemOperation}' completed for Compute System: {Name}");
 
             var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
+            var providerId = ComputeSystem.AssociatedProviderId.Value;
 
             if ((data.OperationResult == null) || (data.OperationResult.Result.Status == ProviderOperationStatus.Failure))
             {
                 completionStatus = EnvironmentsTelemetryStatus.Failed;
-                LogFailure(data.OperationResult);
+                var (displayMessage, diagnosticText) = LogFailure(data.OperationResult);
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    "Environment_OperationInvoked_Event",
+                    LogLevel.Measure,
+                    new EnvironmentOperationEvent(completionStatus, data.ComputeSystemOperation, providerId, data.AdditionalContext, displayMessage, diagnosticText),
+                    relatedActivityId: message.Value.ActivityId);
             }
-
-            TelemetryFactory.Get<ITelemetry>().Log(
-                "Environment_OperationInvoked_Event",
-                LogLevel.Measure,
-                new EnvironmentOperationUserEvent(completionStatus, data.ComputeSystemOperation, ComputeSystem.AssociatedProviderId.Value, data.AdditionalContext, data.ActivityId));
+            else
+            {
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    "Environment_OperationInvoked_Event",
+                    LogLevel.Measure,
+                    new EnvironmentOperationEvent(completionStatus, data.ComputeSystemOperation, providerId, data.AdditionalContext),
+                    relatedActivityId: message.Value.ActivityId);
+            }
         });
     }
 

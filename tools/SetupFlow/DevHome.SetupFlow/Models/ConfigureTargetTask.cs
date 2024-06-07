@@ -278,6 +278,7 @@ public class ConfigureTargetTask : ISetupTask
         var resultStatus = applyConfigurationResult.Result.Status;
         var result = applyConfigurationResult.Result;
         var resultInformation = new string(result.DisplayMessage);
+        var errorDiagnosticText = applyConfigurationResult.Result.DiagnosticText;
 
         try
         {
@@ -285,8 +286,8 @@ public class ConfigureTargetTask : ISetupTask
 
             if (resultStatus == ProviderOperationStatus.Failure)
             {
-                _log.Error(result.ExtendedError, $"Extension failed to configure config file with exception. Diagnostic text: {result.DiagnosticText}");
-                throw new SDKApplyConfigurationSetResultException(applyConfigurationResult.Result.DiagnosticText);
+                _log.Error(result.ExtendedError, $"Extension failed to configure config file with exception. DisplayMessage: {resultInformation}, Diagnostic text: {errorDiagnosticText}");
+                throw new SDKApplyConfigurationSetResultException(errorDiagnosticText);
             }
 
             // Check if there were errors while opening the configuration set.
@@ -324,9 +325,19 @@ public class ConfigureTargetTask : ISetupTask
                 throw new SDKApplyConfigurationSetResultException("No configuration units were found. This is likely due to an error within the extension.");
             }
         }
+        catch (SDKApplyConfigurationSetResultException)
+        {
+            var telemetryMessage = !string.IsNullOrEmpty(resultInformation) ? resultInformation : "Provider did not return result information for configuration";
+            LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, telemetryMessage, errorDiagnosticText);
+        }
+        catch (OpenConfigurationSetException)
+        {
+            LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, Result.OpenResult.GetErrorMessage(), errorDiagnosticText);
+        }
         catch (Exception ex)
         {
             _log.Error(ex, $"Failed to apply configuration on target machine. '{ComputeSystemName}'");
+            LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, ex.Message, ex.Message);
         }
 
         var tempResultInfo = !string.IsNullOrEmpty(resultInformation) ? resultInformation : string.Empty;
@@ -367,6 +378,15 @@ public class ConfigureTargetTask : ISetupTask
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyingConfiguration, ComputeSystemName), MessageSeverityKind.Info);
                 WingetConfigFileString = _configurationFileBuilder.BuildConfigFileStringFromTaskGroups(_setupFlowOrchestrator.TaskGroups, ConfigurationFileKind.SetupTarget);
                 var computeSystem = _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup;
+
+                var providerId = computeSystem.AssociatedProviderId.Value;
+
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    "Environment_Configuration_Event",
+                    LogLevel.Critical,
+                    new EnvironmentOperationEvent(EnvironmentsTelemetryStatus.Started, ComputeSystemOperations.ApplyConfiguration, providerId),
+                    _setupFlowOrchestrator.ActivityId);
+
                 var applyConfigurationOperation = computeSystem.CreateApplyConfigurationOperation(WingetConfigFileString);
 
                 applyConfigurationOperation.ConfigurationSetStateChanged += OnApplyConfigurationOperationChanged;
@@ -378,11 +398,6 @@ public class ConfigureTargetTask : ISetupTask
                 // in the UI of Dev Home's Loading page.
                 var tokenSource = new CancellationTokenSource();
                 tokenSource.CancelAfter(TimeSpan.FromMinutes(10));
-
-                TelemetryFactory.Get<ITelemetry>().Log(
-                    "Environment_OperationInvoked_Event",
-                    LogLevel.Measure,
-                    new EnvironmentOperationUserEvent(EnvironmentsTelemetryStatus.Started, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId.Value, string.Empty, _setupFlowOrchestrator.ActivityId));
 
                 ApplyConfigurationAsyncOperation = applyConfigurationOperation.StartAsync();
                 var result = await ApplyConfigurationAsyncOperation.AsTask().WaitAsync(tokenSource.Token);
@@ -410,13 +425,12 @@ public class ConfigureTargetTask : ISetupTask
                     throw Result.ProviderResult.ExtendedError ?? throw new SDKApplyConfigurationSetResultException("Applying the configuration failed but we weren't able to check the ProviderOperation results extended error.");
                 }
 
-                LogCompletionTelemetry(TaskFinishedState.Success);
+                LogCompletionTelemetry(EnvironmentsTelemetryStatus.Succeeded);
                 return TaskFinishedState.Success;
             }
             catch (Exception e)
             {
                 _log.Error(e, $"Failed to apply configuration on target machine.");
-                LogCompletionTelemetry(TaskFinishedState.Failure);
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -511,14 +525,14 @@ public class ConfigureTargetTask : ISetupTask
         return (_stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, unit.Intent, unit.Type, packageId, unitDescription), packageName);
     }
 
-    private void LogCompletionTelemetry(TaskFinishedState taskFinishedState)
+    private void LogCompletionTelemetry(EnvironmentsTelemetryStatus status, string displayMessage = null, string diagnosticText = null)
     {
-        var status = taskFinishedState == TaskFinishedState.Success ? EnvironmentsTelemetryStatus.Succeeded : EnvironmentsTelemetryStatus.Failed;
         var computeSystem = _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup;
 
         TelemetryFactory.Get<ITelemetry>().Log(
-            "Environment_OperationInvoked_Event",
-            LogLevel.Measure,
-            new EnvironmentOperationUserEvent(status, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId.Value, string.Empty, _setupFlowOrchestrator.ActivityId));
+            "Environment_Configuration_Event",
+            LogLevel.Critical,
+            new EnvironmentOperationEvent(status, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId.Value, string.Empty, displayMessage, diagnosticText),
+            _setupFlowOrchestrator.ActivityId);
     }
 }

@@ -9,7 +9,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.Environments;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -123,9 +126,17 @@ public partial class SetupFlowViewModel : ObservableObject
         await _mainPageViewModel.StartConfigurationFileAsync(file);
     }
 
-    public void StartCreationFlowAsync()
+    public void StartCreationFlowAsync(string originPage)
     {
         Orchestrator.FlowPages = [_mainPageViewModel];
+
+        // this method is only called when the user clicks a button that redirects them to 'Create Environment' flow in the setup flow.
+        TelemetryFactory.Get<ITelemetry>().Log(
+            "Create_Environment_button_Clicked",
+            LogLevel.Critical,
+            new EnvironmentRedirectionUserEvent(navigationAction: _creationFlowNavigationParameter, originPage),
+            relatedActivityId: Orchestrator.ActivityId);
+
         _mainPageViewModel.StartCreateEnvironment(string.Empty);
     }
 
@@ -133,14 +144,14 @@ public partial class SetupFlowViewModel : ObservableObject
     {
         // The setup flow isn't setup to support using the navigation service to navigate to specific
         // pages. Instead we need to navigate to the main page and then start the creation flow template manually.
-        var parameter = args.Parameter?.ToString();
+        var parameters = $"{args.Parameter}".Split(';');
 
-        if ((!string.IsNullOrEmpty(parameter)) &&
-            _creationFlowNavigationParameter.Equals(parameter, StringComparison.OrdinalIgnoreCase) &&
+        if ((parameters.Length == 2) &&
+            _creationFlowNavigationParameter.Equals(parameters[0], StringComparison.OrdinalIgnoreCase) &&
             Orchestrator.CurrentSetupFlowKind != SetupFlowKind.CreateEnvironment)
         {
             Cancel();
-            StartCreationFlowAsync();
+            StartCreationFlowAsync(originPage: parameters[1]);
         }
     }
 
