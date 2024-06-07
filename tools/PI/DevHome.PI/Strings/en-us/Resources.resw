@@ -934,7 +934,7 @@
     <comment>Message text when the process is x64 CPU architecture running on an X64 CPU machine.</comment>
   </data>
   <data name="DetachAppButton.Content" xml:space="preserve">
-    <value>Release target app</value>
+    <value>Detach from target app</value>
     <comment>Button in the expanded view to detach from the target app</comment>
   </data>
   <data name="DetachAppButton.ToolTipService.ToolTip" xml:space="preserve">

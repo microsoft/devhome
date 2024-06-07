@@ -51,10 +51,10 @@
                         RadiusX="{ThemeResource AppBarSeparatorCornerRadius}"
                         RadiusY="{ThemeResource AppBarSeparatorCornerRadius}"
                         Height="{ThemeResource AppBarSeparatorWidth}"
-                        Width="100"
+                        Width="200"
                         Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}"
                         Margin="4" />
-                    <Button x:Uid="DetachAppButton" Visibility="{x:Bind viewModel.AppSettingsVisibility, Mode=OneWay}" Command="{x:Bind viewModel.DetachFromProcessCommand}"/>
+                    <Button Width="190" HorizontalAlignment="Center" x:Uid="DetachAppButton" Visibility="{x:Bind viewModel.AppSettingsVisibility, Mode=OneWay}" Command="{x:Bind viewModel.DetachFromProcessCommand}"/>
                 </StackPanel>
                 <Button
                     Grid.Row="1" x:Name="SettingsButton" Click="SettingsButton_Click"
