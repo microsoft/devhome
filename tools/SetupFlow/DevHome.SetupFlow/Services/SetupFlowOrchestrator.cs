@@ -13,6 +13,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
 using DevHome.Common.DevHomeAdaptiveCards.Parsers;
 using DevHome.Common.Renderers;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
@@ -42,6 +43,8 @@ public partial class SetupFlowOrchestrator : ObservableObject
     private readonly string _adaptiveCardPreviousButtonId = "DevHomeMachineConfigurationPreviousButton";
 
     private readonly List<SetupPageViewModelBase> _flowPages = new();
+
+    private readonly INavigationService _navigationService;
 
     /// <summary>
     /// Index for the current page in the <see cref="_flowPages"/>.
@@ -82,6 +85,11 @@ public partial class SetupFlowOrchestrator : ObservableObject
     public bool IsSettingUpLocalMachine => CurrentSetupFlowKind == SetupFlowKind.LocalMachine;
 
     public bool IsInCreateEnvironmentFlow => CurrentSetupFlowKind == SetupFlowKind.CreateEnvironment;
+
+    public SetupFlowOrchestrator(INavigationService navigationService)
+    {
+        _navigationService = navigationService;
+    }
 
     /// <summary>
     /// Occurs right before a page changes
@@ -309,5 +317,11 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
         _log.Warning($"Failed to invoke adaptive card action with Id: {buttonId} due to input validation failure");
         return false;
+    }
+
+    public void NavigateToOutsideFlow(string knownNavPageName, object parameter = null)
+    {
+        _log.Information($"Navigating to {knownNavPageName} with parameter: {parameter}");
+        _navigationService.NavigateTo(knownNavPageName, parameter);
     }
 }

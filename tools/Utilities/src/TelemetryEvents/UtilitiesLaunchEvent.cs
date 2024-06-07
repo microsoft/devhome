@@ -14,20 +14,30 @@ public class UtilitiesLaunchEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public string UtilityName
+    public enum Phase
     {
-        get;
+        Start,
+        Error,
+        Complete,
     }
 
-    public bool LaunchedAsAdmin
-    {
-        get;
-    }
+    public string ActivityId { get; }
 
-    public UtilitiesLaunchEvent(string utilityName, bool launchedAsAdmin)
+    public string UtilityName { get; }
+
+    public bool LaunchedAsAdmin { get; }
+
+    public Phase LaunchPhase { get; }
+
+    public string ErrorString { get; }
+
+    public UtilitiesLaunchEvent(Guid activityId, string utilityName, bool launchedAsAdmin, Phase phase, string errorString = "")
     {
+        ActivityId = activityId.ToString();
         UtilityName = utilityName;
         LaunchedAsAdmin = launchedAsAdmin;
+        LaunchPhase = phase;
+        ErrorString = errorString;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)

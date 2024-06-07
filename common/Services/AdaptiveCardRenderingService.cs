@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
 using DevHome.Contracts.Services;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.Storage;
-using WinUIEx;
 
 namespace DevHome.Common.Services;
 
@@ -20,7 +20,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
 
     public event EventHandler RendererUpdated = (_, _) => { };
 
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     private readonly IThemeSelectorService _themeSelectorService;
 
@@ -30,9 +30,9 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
 
     private bool _disposedValue;
 
-    public AdaptiveCardRenderingService(WindowEx windowEx, IThemeSelectorService themeSelectorService)
+    public AdaptiveCardRenderingService(DispatcherQueue dispatcherQueue, IThemeSelectorService themeSelectorService)
     {
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
         _themeSelectorService = themeSelectorService;
         _themeSelectorService.ThemeChanged += OnThemeChanged;
     }
@@ -87,6 +87,8 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
         // Add custom Adaptive Card renderer.
         _renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
         _renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
+        _renderer.ElementRenderers.Set("Input.Text", new TextInputRenderer());
+        _renderer.ActionRenderers.Set(ChooseFileAction.CustomTypeString, new ChooseFileActionRenderer());
 
         // A different host config is used to render widgets (adaptive cards) in light and dark themes.
         await UpdateHostConfig();
@@ -122,7 +124,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
                 _log.Error(ex, "Error retrieving HostConfig");
             }
 
-            _windowEx.DispatcherQueue.TryEnqueue(() =>
+            _dispatcherQueue.TryEnqueue(() =>
             {
                 if (!string.IsNullOrEmpty(hostConfigContents))
                 {

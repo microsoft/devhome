@@ -15,6 +15,7 @@ using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Dashboard.Views;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Automation.Peers;
@@ -22,7 +23,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Serilog;
 using Windows.UI.ViewManagement;
-using WinUIEx;
 
 namespace DevHome.Dashboard.Controls;
 
@@ -94,7 +94,7 @@ public sealed partial class WidgetControl : UserControl
 
     private async void HandleTextScaleFactorChangedAsync(UISettings sender, object args)
     {
-        await Application.Current.GetService<WindowEx>().DispatcherQueue.EnqueueAsync(() =>
+        await Application.Current.GetService<DispatcherQueue>().EnqueueAsync(() =>
         {
             if (WidgetSource == null)
             {

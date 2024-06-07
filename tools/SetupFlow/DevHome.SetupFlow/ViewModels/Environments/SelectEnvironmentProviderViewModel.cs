@@ -10,6 +10,7 @@ using CommunityToolkit.WinUI.Behaviors;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Microsoft.Windows.DevHome.SDK;
@@ -26,6 +27,14 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     public ComputeSystemProviderDetails SelectedProvider { get; private set; }
 
     private EnvironmentsNotificationHelper _notificationsHelper;
+
+    private bool _isFirstTimeLoading;
+
+    [ObservableProperty]
+    private string _callToActionText;
+
+    [ObservableProperty]
+    private string _callToActionHyperLinkButtonText;
 
     [ObservableProperty]
     private bool _areProvidersLoaded;
@@ -44,12 +53,16 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     {
         PageTitle = stringResource.GetLocalized(StringResourceKey.SelectEnvironmentPageTitle);
         _computeSystemService = computeSystemService;
+        _isFirstTimeLoading = true;
     }
 
     private async Task LoadProvidersAsync()
     {
+        CanGoToNextPage = false;
         AreProvidersLoaded = false;
         Orchestrator.NotifyNavigationCanExecuteChanged();
+        CallToActionText = null;
+        CallToActionHyperLinkButtonText = null;
 
         var providerDetails = await Task.Run(_computeSystemService.GetComputeSystemProvidersAsync);
         ProvidersViewModels = new();
@@ -64,12 +77,10 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         }
 
         AreProvidersLoaded = true;
-    }
 
-    protected async override Task OnFirstNavigateToAsync()
-    {
-        CanGoToNextPage = false;
-        await LoadProvidersAsync();
+        var callToActionData = ComputeSystemHelpers.UpdateCallToActionText(ProvidersViewModels.Count, true);
+        CallToActionText = callToActionData.CallToActionText;
+        CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
     }
 
     [RelayCommand]
@@ -97,8 +108,25 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         }
     }
 
-    public void Initialize(StackedNotificationsBehavior notificationQueue)
+    public async Task InitializeAsync(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = new(notificationQueue);
+
+        if (_isFirstTimeLoading || !string.IsNullOrEmpty(CallToActionText))
+        {
+            _isFirstTimeLoading = false;
+            CanGoToNextPage = false;
+            await LoadProvidersAsync();
+        }
+    }
+
+    /// <summary>
+    /// Navigates the user to the extensions page library
+    /// process.
+    /// </summary>
+    [RelayCommand]
+    public void CallToActionButton()
+    {
+        Orchestrator.NavigateToOutsideFlow(KnownPageKeys.Extensions);
     }
 }

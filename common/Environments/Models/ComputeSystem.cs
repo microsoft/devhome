@@ -14,6 +14,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation;
 using Windows.Win32;
+using WinRT;
 
 namespace DevHome.Common.Environments.Models;
 
@@ -33,45 +34,6 @@ public class ComputeSystem
     public string? Id { get; private set; } = string.Empty;
 
     public string DisplayName { get; private set; } = string.Empty;
-
-    // We need to give DevHomeAzureExtension the ability to SetForeground on the processes it creates. In some cases
-    // these processes need to show UI, in some cases they call APIs that only succeed if they are called from a
-    // foreground process. The proper way to do this is to call CoAllowSetForegroundWindow on the COM interface
-    // that we are about to use, which should automatically do all of this for us.  Unfortunately the proxy classes
-    // that we use in this file do not come with the necessary support (implementing IForegroundTransfer) by
-    // default, so we have to call AllowSetForegroundWindow ourselves.
-    // NOTE: This will only set the first process it finds named DevHomeAzureExtension. This workaround does
-    // not support multiple DevHomeAzureExtension (Preview, Canary, etc.) processes running at the same time
-    // NOTE: This is a temporary workaround.  A proper fix is being tracked via this
-    // P0 bug: https://github.com/microsoft/devhome/issues/2797
-    private bool SetAllowForegroundOnDevHomeAzureExtension()
-    {
-        foreach (Process process in Process.GetProcesses())
-        {
-            try
-            {
-                if (process.ProcessName == "DevHomeAzureExtension")
-                {
-                    var allowResult = PInvoke.AllowSetForegroundWindow((uint)process.Id);
-                    if (!allowResult)
-                    {
-                        throw new InvalidOperationException();
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _log.Error(ex, $"Unable to allow azure extension to set the foreground window for PID {process.Id}: {ex.Message}");
-                return false;
-            }
-        }
-
-        return false;
-    }
 
     public ComputeSystemOperations SupportedOperations
     {
@@ -317,10 +279,26 @@ public class ComputeSystem
         }
     }
 
+    // We need to give DevHomeAzureExtension the ability to SetForeground on the processes it creates. In some cases
+    // these processes need to show UI, in some cases they call APIs that only succeed if they are called from a
+    // foreground process. We call CoAllowSetForegroundWindow on the COM interface that we are about to use to allow
+    // the process to set foreground window.
+    // CoAllowSetForegroundWindow must be called on a raw COM interface, not a .NET CCW, in order to work correctly, since
+    // the underlying functionality is implemented by COM runtime and the object itself. CoAllowSetForegroundWindow wrapper
+    // below takes a WinRT object and extracts the raw COM interface pointer from it before calling native CoAllowSetForegroundWindow.
+    [DllImport("ole32.dll", ExactSpelling = true, PreserveSig = false)]
+    private static extern void CoAllowSetForegroundWindow(IntPtr pUnk, IntPtr lpvReserved);
+
+    private void CoAllowSetForegroundWindow(IComputeSystem computeSystem)
+    {
+        CoAllowSetForegroundWindow(((IWinRTObject)computeSystem).NativeObject.ThisPtr, 0);
+    }
+
     public async Task<ComputeSystemOperationResult> ConnectAsync(string options)
     {
         try
         {
+            CoAllowSetForegroundWindow(_computeSystem);
             return await _computeSystem.ConnectAsync(options);
         }
         catch (Exception ex)
@@ -336,11 +314,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
-                if (!SetAllowForegroundOnDevHomeAzureExtension())
-                {
-                    throw new InvalidOperationException();
-                }
-
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.PinToStartMenuAsync();
             }
 
@@ -359,11 +333,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
-                if (!SetAllowForegroundOnDevHomeAzureExtension())
-                {
-                    throw new InvalidOperationException();
-                }
-
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.UnpinFromStartMenuAsync();
             }
 
@@ -382,11 +352,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
-                if (!SetAllowForegroundOnDevHomeAzureExtension())
-                {
-                    throw new InvalidOperationException();
-                }
-
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.PinToTaskbarAsync();
             }
 
@@ -405,11 +371,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
-                if (!SetAllowForegroundOnDevHomeAzureExtension())
-                {
-                    throw new InvalidOperationException();
-                }
-
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.UnpinFromTaskbarAsync();
             }
 
@@ -428,11 +390,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
-                if (!SetAllowForegroundOnDevHomeAzureExtension())
-                {
-                    throw new InvalidOperationException();
-                }
-
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.GetIsPinnedToStartMenuAsync();
             }
 
@@ -451,11 +409,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
-                if (!SetAllowForegroundOnDevHomeAzureExtension())
-                {
-                    throw new InvalidOperationException();
-                }
-
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.GetIsPinnedToTaskbarAsync();
             }
 

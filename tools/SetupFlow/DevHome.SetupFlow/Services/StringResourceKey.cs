@@ -14,6 +14,7 @@ public static class StringResourceKey
     public static readonly string AddAllApplications = nameof(AddAllApplications);
     public static readonly string AddApplication = nameof(AddApplication);
     public static readonly string AddedApplication = nameof(AddedApplication);
+    public static readonly string AppInstallActivationTitle = nameof(AppInstallActivationTitle);
     public static readonly string ApplicationsAddedPlural = nameof(ApplicationsAddedPlural);
     public static readonly string ApplicationsAddedSingular = nameof(ApplicationsAddedSingular);
     public static readonly string Applications = nameof(Applications);
@@ -85,6 +86,7 @@ public static class StringResourceKey
     public static readonly string SelectedPackagesCount = nameof(SelectedPackagesCount);
     public static readonly string SetUpButton = nameof(SetUpButton);
     public static readonly string SizeWithColon = nameof(SizeWithColon);
+    public static readonly string URIActivationFailedBusy = nameof(URIActivationFailedBusy);
     public static readonly string LoadingPageHeaderLocalText = nameof(LoadingPageHeaderLocalText);
     public static readonly string LoadingPageHeaderTargetText = nameof(LoadingPageHeaderTargetText);
     public static readonly string LoadingPageSetupTargetText = nameof(LoadingPageSetupTargetText);
@@ -271,6 +273,13 @@ public static class StringResourceKey
     public static readonly string SetupTargetConfigurationProgressUpdate = nameof(SetupTargetConfigurationProgressUpdate);
     public static readonly string SetupTargetConfigurationUnitProgressErrorWithMsg = nameof(SetupTargetConfigurationUnitProgressErrorWithMsg);
     public static readonly string SetupTargetConfigurationUnitUnknown = nameof(SetupTargetConfigurationUnitUnknown);
+    public static readonly string NoEnvironmentsButExtensionsInstalledButton = nameof(NoEnvironmentsButExtensionsInstalledButton);
+    public static readonly string NoEnvironmentsButExtensionsInstalledCallToAction = nameof(NoEnvironmentsButExtensionsInstalledCallToAction);
+    public static readonly string NoEnvironmentsAndExtensionsNotInstalledCallToAction = nameof(NoEnvironmentsAndExtensionsNotInstalledCallToAction);
+    public static readonly string NoEnvironmentsAndExtensionsNotInstalledButton = nameof(NoEnvironmentsAndExtensionsNotInstalledButton);
+
+    // Quickstart Playground
+    public static readonly string QuickstartPlaygroundLaunchButton = nameof(QuickstartPlaygroundLaunchButton);
 
     // Create Environment flow
     public static readonly string SelectEnvironmentPageTitle = nameof(SelectEnvironmentPageTitle);

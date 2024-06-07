@@ -1,0 +1,940 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MinimizeButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Minimize</value>
+    <comment>Tooltip for the minimize button in the BarWindow</comment>
+  </data>
+  <data name="MaximizeButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximize</value>
+    <comment>Tooltip for the maximize button in the BarWindow</comment>
+  </data>
+  <data name="RestoreButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Restore</value>
+    <comment>Tooltip for the restore button in the BarWindow</comment>
+  </data>
+  <data name="PinMenuItemText" xml:space="preserve">
+    <value>Pin</value>
+    <comment>A label for the menuitem to pin a tool on the bar.</comment>
+  </data>
+  <data name="UnregisterMenuItem.Text" xml:space="preserve">
+    <value>Unregister</value>
+    <comment>The label for Unregister menu flyout for an icon in the toolbar. This will cause the program to no longer be registered with the bar.</comment>
+  </data>
+  <data name="SwitchLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Switch between horizontal and vertical layout</value>
+    <comment>The tooltip for a button which toggles the orientation of the bar between horizontal and vertical</comment>
+  </data>
+  <data name="DissociateButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Dissociate so that PI is not tracking any app</value>
+    <comment>The tooltip for a button which causes PI to no longer track any app</comment>
+  </data>
+  <data name="SwitchToLargeLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Expand or collapse the large content panel</value>
+    <comment>The tooltip for a button which expands or collapses the large content panel.</comment>
+  </data>
+  <data name="UnSnapButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Un-snap: make the bar free-floating</value>
+    <comment>The tooltip for a button that causes the bar to unsnap from the current window.</comment>
+  </data>
+  <data name="ReSnapButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Snap the bar to the current foreground window</value>
+    <comment>The tooltip for a button that causes the bar to snap to the current foreground window.</comment>
+  </data>
+  <data name="SettingsButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Settings</value>
+    <comment>The tooltip for a button that takes the user to the settings for PI.</comment>
+  </data>
+  <data name="ManageExternalToolsButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>External tools: add/remove, configure and launch</value>
+    <comment>The tooltip for a button that takes the user to the external tools section of PI.</comment>
+  </data>
+  <data name="ToolLaunchErrorTitle" xml:space="preserve">
+    <value>Error</value>
+    <comment>The title of an error message dialog when something goes wrong.</comment>
+  </data>
+  <data name="ToolLaunchErrorMessage" xml:space="preserve">
+    <value>Failed to launch: {0}</value>
+    <comment>Locked={"{0}"} Text for when there was an error launching an external tool. {0} is the name of an executable(.exe) file.</comment>
+  </data>
+  <data name="AppDetailsTextBlock.Text" xml:space="preserve">
+    <value>App details</value>
+    <comment>The contents of a text block refering to details about an application.</comment>
+  </data>
+  <data name="IDTextBlock.Text" xml:space="preserve">
+    <value>ID</value>
+    <comment>The contents of a text block refering to identity (ID) of an application.</comment>
+  </data>
+  <data name="BasePriorityTextBlock.Text" xml:space="preserve">
+    <value>Base priority</value>
+    <comment>The contents of a text block refering to base CPU priority of an application.</comment>
+  </data>
+  <data name="PriorityClassTextBlock.Text" xml:space="preserve">
+    <value>Priority class</value>
+    <comment>The contents of a text block refering to scheduling priority of an application.</comment>
+  </data>
+  <data name="MainModuleTextBlock.Text" xml:space="preserve">
+    <value>Main module</value>
+    <comment>This refers to the main module of an application like winword.exe or notepad.exe as an example.</comment>
+  </data>
+  <data name="CpuArchitectureTextBlock.Text" xml:space="preserve">
+    <value>CPU architecture</value>
+    <comment>This refers to the CPU architecture of the target process and the host machine.</comment>
+  </data>
+  <data name="MSIXPackagedTextBlock.Text" xml:space="preserve">
+    <value>MSIX packaged</value>
+    <comment>This refers to whether the application is using MSIX packaging technology.</comment>
+  </data>
+  <data name="MicrosoftStoreAppTextBlock.Text" xml:space="preserve">
+    <value>Microsoft Store app</value>
+    <comment>This refers to whether the application was acquired via the Microsoft Store.</comment>
+  </data>
+  <data name="ModulesHeaderTextBlock.Text" xml:space="preserve">
+    <value>Loaded modules</value>
+    <comment>The contents of a text block refering to loaded application modules.</comment>
+  </data>
+  <data name="FileVersionInfoTextBlock.Text" xml:space="preserve">
+    <value>File Version Info</value>
+    <comment>The contents of a text block refering to version of the module file loaded by an application.</comment>
+  </data>
+  <data name="MemorySizeTextBlock.Text" xml:space="preserve">
+    <value>Memory Size</value>
+    <comment>The contents of a text block refering to size in memory of the module.</comment>
+  </data>
+  <data name="FilterDropDown.Text" xml:space="preserve">
+    <value>Filter...</value>
+    <comment>The contents of a combo box that allows editing to filter out elements.</comment>
+  </data>
+  <data name="BgTaskHostCheckBox.Content" xml:space="preserve">
+    <value>BgTaskHost</value>
+    <comment>{Locked}The contents of a check box that refers to specific process names.</comment>
+  </data>
+  <data name="ConHostCheckBox.Content" xml:space="preserve">
+    <value>ConHost</value>
+    <comment>{Locked}The contents of a check box that refers to specific process names.</comment>
+  </data>
+  <data name="DllHostCheckBox.Content" xml:space="preserve">
+    <value>DllHost</value>
+    <comment>{Locked}The contents of a check box that refers to specific process names.</comment>
+  </data>
+  <data name="SvcHostCheckBox.Content" xml:space="preserve">
+    <value>SvcHost</value>
+    <comment>{Locked}The contents of a check box that refers to specific process names.</comment>
+  </data>
+  <data name="WebViewCheckBox.Content" xml:space="preserve">
+    <value>MsEdgeWebView2</value>
+    <comment>{Locked}The contents of a check box that refers to specific process names.</comment>
+  </data>
+  <data name="RtbCheckBox.Content" xml:space="preserve">
+    <value>RuntimeBroker</value>
+    <comment>{Locked}The contents of a check box that refers to specific process names.</comment>
+  </data>
+  <data name="WmiCheckBox.Content" xml:space="preserve">
+    <value>WmiPrvSe</value>
+    <comment>{Locked}The contents of a check box that refers to specific process names.</comment>
+  </data>
+  <data name="WudfCheckBox.Content" xml:space="preserve">
+    <value>WudfHost</value>
+    <comment>{Locked}The contents of a check box that refers to specific process names.</comment>
+  </data>
+  <data name="RefreshButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Refresh the process list</value>
+    <comment>The contents of a button tool tip that will refresh the contents of the list.</comment>
+  </data>
+  <data name="PidColumn.Header" xml:space="preserve">
+    <value>PID</value>
+    <comment>Process identifier.</comment>
+  </data>
+  <data name="ExecutableColumn.Header" xml:space="preserve">
+    <value>Executable</value>
+    <comment>The name of a process (winword.exe or notepad.exe for example).</comment>
+  </data>
+  <data name="ResourceUsageHeaderTextBlock.Text" xml:space="preserve">
+    <value>Resource usage</value>
+    <comment>The contents of a text block refering to process resource usage information.</comment>
+  </data>
+  <data name="IsRespondingTextblock.Text" xml:space="preserve">
+    <value>Is responding</value>
+    <comment>Refers to whether the application or process is responsive, or if it is stuck.</comment>
+  </data>
+  <data name="CpuUsageTextblock.Text" xml:space="preserve">
+    <value>CPU usage</value>
+    <comment>Refers to how much of the central processing unit (CPU) the process is utilizing.</comment>
+  </data>
+  <data name="GpuUsageTextBlock.Text" xml:space="preserve">
+    <value>GPU usage</value>
+    <comment>Refers to how much of the graphical processing unit (GPU) the process is utilizing.</comment>
+  </data>
+  <data name="MemoryUsageTextBlock.Text" xml:space="preserve">
+    <value>Memory usage</value>
+    <comment>Refers to how much random access memory (RAM) the process is utilizing.</comment>
+  </data>
+  <data name="DiskUsageTextBlock.Text" xml:space="preserve">
+    <value>Disk usage</value>
+    <comment>Refers to how much disk storage (hard drive/solid state drive) the process is utilizing.</comment>
+  </data>
+  <data name="WatsonsHeaderTextBlock.Text" xml:space="preserve">
+    <value>WER Reports</value>
+    <comment>The contents of a WER crash dumps.</comment>
+  </data>
+  <data name="TimeGeneratedColumn.Header" xml:space="preserve">
+    <value>Time generated</value>
+    <comment>The time at which the watson report was generated.</comment>
+  </data>
+  <data name="FaultingExecutableColumn.Header" xml:space="preserve">
+    <value>Faulting executable</value>
+    <comment>Refers to the process/application executable which caused the fault which generated the crash report</comment>
+  </data>
+  <data name="WatsonInfoTextBox.Text" xml:space="preserve">
+    <value>Info about the Watson crash</value>
+    <comment>Refers to the Watson diagnostic information about a process crash.</comment>
+  </data>
+  <data name="WinLogsHeaderTextBlock.Text" xml:space="preserve">
+    <value>Windows logs</value>
+    <comment>The contents of a text block refering to Windows logs.</comment>
+  </data>
+  <data name="EtwCheckbox.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Event Tracing for Windows (ETW) logs</value>
+    <comment>Whether to enable Event Trace for Windows (ETW) logs in the log view output.</comment>
+  </data>
+  <data name="DebugOutputCheckbox.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Debug output from the target app</value>
+    <comment>Tooltip for whether to enable debug output (from OutputDebugString API) in the log view output.</comment>
+  </data>
+  <data name="EventViewerCheckbox.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Entries from the event log for the target app</value>
+    <comment>Tooltip for whether to enable event viewer logs in the log view output.</comment>
+  </data>
+  <data name="WatsonCheckbox.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Entries from the event log for the target app</value>
+    <comment>Tooltip for whether to watson report logs in the log view output.</comment>
+  </data>
+  <data name="ClearWinLogsButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Clear the list</value>
+    <comment>Tooltip for a button that will clear the log list.</comment>
+  </data>
+  <data name="LogCategoryColumn.Header" xml:space="preserve">
+    <value>Category</value>
+    <comment>A header for what category the log entry belongs.</comment>
+  </data>
+  <data name="LogToolColumn.Header" xml:space="preserve">
+    <value>Tool</value>
+    <comment>A header for what tool generated the log entry.</comment>
+  </data>
+  <data name="LogMessageColumn.Header" xml:space="preserve">
+    <value>Message</value>
+    <comment>The contents of a log entry.</comment>
+  </data>
+  <data name="WinLogsAlreadyRunningErrorMessage" xml:space="preserve">
+    <value>Could not start OutputDebugString monitor since there is one already running.</value>
+    <comment>An error message indicating that the resource is mutually exclusive due to an instance already running.</comment>
+  </data>
+  <data name="ToolNameHeaderTextBlock.Text" xml:space="preserve">
+    <value>Tool Name</value>
+    <comment>The name the user can assign to the tool they are adding.</comment>
+  </data>
+  <data name="ToolPathHeaderTextBlock.Text" xml:space="preserve">
+    <value>Tool path</value>
+    <comment>The name the user can assign to the tool they are adding.</comment>
+  </data>
+  <data name="ToolBrowseButton.Content" xml:space="preserve">
+    <value>Browse</value>
+    <comment>A button to browse the filesystem.</comment>
+  </data>
+  <data name="BasicArgumentsTextBlock.Text" xml:space="preserve">
+    <value>Basic arguments</value>
+    <comment>Refers to arguments that can be passed to a process when it is created</comment>
+  </data>
+  <data name="NoneRadio.Content" xml:space="preserve">
+    <value>None</value>
+    <comment>Refers to the type of data being shown</comment>
+  </data>
+  <data name="HwndRadio.Content" xml:space="preserve">
+    <value>Hwnd</value>
+    <comment>Refers to a Windows operating system data type (HWND) a window handle</comment>
+  </data>
+  <data name="ProcessIdRadio.Content" xml:space="preserve">
+    <value>ProcessId</value>
+    <comment>Refers to a Windows operating system process identifier (PID)</comment>
+  </data>
+  <data name="PrefixTextBlock.Text" xml:space="preserve">
+    <value>Prefix (if any)</value>
+    <comment>Refers to arguments that can be passed to a process when it is created</comment>
+  </data>
+  <data name="OtherArgumentsTextBlock.Text" xml:space="preserve">
+    <value>Any other arguments</value>
+    <comment>Refers to arguments that can be passed to a process when it is created</comment>
+  </data>
+  <data name="SampleCommandLineTextBlock.Text" xml:space="preserve">
+    <value>Sample command line</value>
+    <comment>What the commandline to start the executable/application will look like</comment>
+  </data>
+  <data name="AddToolsOkButton.Content" xml:space="preserve">
+    <value>OK</value>
+    <comment>An affirmative value for a button</comment>
+  </data>
+  <data name="AddToolsCancelButton.Content" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Cancels the current operation the user is performing</comment>
+  </data>
+  <data name="EditToolsNameColumn.Header" xml:space="preserve">
+    <value>Name</value>
+    <comment>The name of a tool that could be edited.</comment>
+  </data>
+  <data name="UnregisterToolButton.Content" xml:space="preserve">
+    <value>Unregister</value>
+    <comment>Text on a button for unregistering a tool.</comment>
+  </data>
+  <data name="SettingsToolHeaderTextBlock.Text" xml:space="preserve">
+    <value>Settings</value>
+    <comment>The contents of a text block refering to settings.</comment>
+  </data>
+  <data name="PreferencesTextBlock.Text" xml:space="preserve">
+    <value>Preferences</value>
+    <comment>The contents of a text block refering to a user's settings preferences.</comment>
+  </data>
+  <data name="ThemeSelectionTextBlock.Text" xml:space="preserve">
+    <value>Theme selection</value>
+    <comment>The contents of a text block refering to an application's color theme.</comment>
+  </data>
+  <data name="ThemeLightComboItem.Content" xml:space="preserve">
+    <value>Light</value>
+    <comment>Refers to a color theme or scheme</comment>
+  </data>
+  <data name="ThemeDarkComboItem.Content" xml:space="preserve">
+    <value>Dark</value>
+    <comment>Refers to a color theme or scheme</comment>
+  </data>
+  <data name="ThemeDefaultComboItem.Content" xml:space="preserve">
+    <value>Windows default</value>
+    <comment>Refers to a color theme or scheme</comment>
+  </data>
+  <data name="AdditionalToolsTextBlock.Text" xml:space="preserve">
+    <value>Additional tools</value>
+    <comment>Refers to tools the user has added.</comment>
+  </data>
+  <data name="AddAToolToBarTextBlock.Text" xml:space="preserve">
+    <value>Add a tool to the bar</value>
+    <comment>Refers to tools a user could add to the bar UI.</comment>
+  </data>
+  <data name="EditToolConfigurationTextBlock.Text" xml:space="preserve">
+    <value>Edit the configuration for registered tools</value>
+    <comment>Refers to tools a user could edit that are already registered to the bar UI.</comment>
+  </data>
+  <data name="MonitorCpuSettingCard.Header" xml:space="preserve">
+    <value>Monitor CPU usage for the target app</value>
+    <comment>Refers tracing central processing unit (CPU) usage of the app the user has selected.</comment>
+  </data>
+  <data name="ShowInsightsCard.Header" xml:space="preserve">
+    <value>Show Insights on start-up</value>
+    <comment>Refers showing insightful suggestions to the user about the app on startup.</comment>
+  </data>
+  <data name="EnableClipboardMonitoringCard.Header" xml:space="preserve">
+    <value>Enable Clipboard monitoring</value>
+    <comment>Refers monitoring the user's clipboard for error messages.</comment>
+  </data>
+  <data name="ExcludedProcessesCard.Header" xml:space="preserve">
+    <value>Processes to exclude when finding the foreground window. Enter the process names here, comma-separated.</value>
+    <comment>Refers application process names for example notepad.exe, winword.exe etc, in a comma-separated list.</comment>
+  </data>
+  <data name="ExcludedProcessesButton.Content" xml:space="preserve">
+    <value>Save</value>
+    <comment>Saves the data that the user has input.</comment>
+  </data>
+  <data name="AboutHeaderTextBlock.Text" xml:space="preserve">
+    <value>About</value>
+    <comment>A header for an about page.</comment>
+  </data>
+  <data name="ExpandedViewHeaderTextBlock.Text" xml:space="preserve">
+    <value>App Info</value>
+    <comment>The contents of a text block refering to the main window title.</comment>
+  </data>
+  <data name="FileErrorHeaderTextBlock.Text" xml:space="preserve">
+    <value>File error</value>
+    <comment>The contents of a text block refering to the main window title.</comment>
+  </data>
+  <data name="EventLogLabel.Text" xml:space="preserve">
+    <value>The Event Log lists several entries where the app has tried to open a file at 'C:\\Temp\\Scratch\\Foo.jpg'. That folder path exists, and you do have permission to access it, but the file specified does not exist in that path. However, I can see that there is a file with that name at a different folder path: 'C:\\Temp\\Foo.jpg' - perhaps this is the one you're looking for.</value>
+    <comment>The contents of a text label.</comment>
+  </data>
+  <data name="EventsPageLink.Content" xml:space="preserve">
+    <value>See more</value>
+    <comment>The contents of a text label.</comment>
+  </data>
+  <data name="ResourceUsageTextBlock.Text" xml:space="preserve">
+    <value>Resource usage</value>
+    <comment>The contents of a text label for computer resource usage (CPU/GPU/Disk/Network etc).</comment>
+  </data>
+  <data name="ResourceLogLabel.Text" xml:space="preserve">
+    <value>Over the last 24 hours, this app has exceeded 30% of CPU usage on 247 separate occasions. If the app is doing compute-intensive operations, this might be reasonable, but you should examine your code and your tests to ensure that this is within expected parameters.</value>
+    <comment>The contents of a text label for computer resource usage (CPU/GPU/Disk/Network etc).</comment>
+  </data>
+  <data name="ResourcePageLink.Content" xml:space="preserve">
+    <value>See more</value>
+    <comment>The contents of a text label.</comment>
+  </data>
+  <data name="ClickboardErrorTextBlock.Text" xml:space="preserve">
+    <value>Error on clipboard</value>
+    <comment>This refers to error codes being detected on the clipboard (HRESULT/NTSTATUS failures etc)</comment>
+  </data>
+  <data name="HexLabelTextBlock.Text" xml:space="preserve">
+    <value>Hex</value>
+    <comment>This refers to a short hand for hexadecimal number notation.</comment>
+  </data>
+  <data name="DecLabelTextBlock.Text" xml:space="preserve">
+    <value>Dec</value>
+    <comment>This refers to a short hand for decimal number notation.</comment>
+  </data>
+  <data name="CodeLabelTextBlock.Text" xml:space="preserve">
+    <value>Code</value>
+    <comment>This refers to a short hand for an error code representation of the contents of the clipboard.</comment>
+  </data>
+  <data name="IsRunningAsAdminTextBlock.Text" xml:space="preserve">
+    <value>Is running as Admin</value>
+    <comment>This refers to whether the application is running as admin</comment>
+  </data>
+  <data name="IsRunningAsSystemTextBlock.Text" xml:space="preserve">
+    <value>Is running as System</value>
+    <comment>This refers to whether the application is running as System</comment>
+  </data>
+  <data name="RunElevatedButton.Content" xml:space="preserve">
+    <value>Run PI as Admin to get more data</value>
+    <comment>When the user clicks this button we relaunch PI as admin to get more app details</comment>
+  </data>
+  <data name="InsightsButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Go to the key insights</value>
+    <comment>The tooltip for a button that takes the user to the key insights page</comment>
+  </data>
+  <data name="ProcessListHeaderTextBlock.Text" xml:space="preserve">
+    <value>Process list</value>
+    <comment>The contents of a text block referring to Process list.</comment>
+  </data>
+  <data name="TerminatedText" xml:space="preserve">
+    <value>{0} (terminated)</value>
+    <comment>Locked={"{0}"} Text indicating that the process has terminated. {0} is the process name. </comment>
+  </data>
+  <data name="InsightsHeaderTextBlock.Text" xml:space="preserve">
+    <value>Insights</value>
+    <comment>The contents of a text block referring to Insights.</comment>
+  </data>
+  <data name="HelpLabelTextBlock.Text" xml:space="preserve">
+    <value>Help</value>
+    <comment>Description of the error code</comment>
+  </data>
+  <data name="TargetAppPidTextFormat" xml:space="preserve">
+    <value>pid: {0}</value>
+    <comment>Locked={"{0}"} Showing a process identifier. {0} is an integer</comment>
+  </data>
+  <data name="CpuPerfTextFormat" xml:space="preserve">
+    <value>cpu: {0:0.0}%</value>
+    <comment>Locked={"{0:0.0}"} Showing CPU utilization. {0} is a percentage 0-100</comment>
+  </data>
+  <data name="MemoryPerfTextFormat" xml:space="preserve">
+    <value>memory: {0:N2} MB</value>
+    <comment>Locked={"{0:N2}"} Showing RAM utilization. MB stands for megabytes. {0} is a number.</comment>
+  </data>
+  <data name="DiskPerfTextFormat" xml:space="preserve">
+    <value>dsk: {0:N0} MB/s</value>
+    <comment>Locked={"{0:N0}"} Showing disk utilization. MB/s stands for megabytes per second. {0} is a number.</comment>
+  </data>
+  <data name="CpuPerfNotAvailableText" xml:space="preserve">
+    <value>cpu: n/a %</value>
+    <comment>Showing CPU utilization which is not available/applicable.</comment>
+  </data>
+  <data name="MemoryPerfNotavailableText" xml:space="preserve">
+    <value>memory: n/a MB</value>
+    <comment>Showing RAM utilization which is not available/applicable. MB stands for megabytes.</comment>
+  </data>
+  <data name="DiskPerfNotAvailableText" xml:space="preserve">
+    <value>dsk: n/a MB/s</value>
+    <comment>Showing disk utilization which is not available/applicable. MB/s stands for megabytes per second.</comment>
+  </data>
+  <data name="CpuNotificationFormatText" xml:space="preserve">
+    <value>{0} CPU usage: {1:0.0}%</value>
+    <comment>Locked={"{0},{1:0.0}"} A notification for CPU usage. {0} is the name of a process (notepad.exe for example). {1} is a percentage</comment>
+  </data>
+  <data name="UnhandledTraceEventErrorMessage" xml:space="preserve">
+    <value>GOT UNHANDLED EVENT: {0}</value>
+    <comment>Locked={"{0}"} An error message when an unhandled trace event is encountered. {0} is a verbose version of the event</comment>
+  </data>
+  <data name="UnableToStartEventViewerErrorMessage" xml:space="preserve">
+    <value>Could not start EventViewer</value>
+    <comment>An error message when the program is unable to start the Windows Event Viewer</comment>
+  </data>
+  <data name="LockedFileInsightTitle" xml:space="preserve">
+    <value>Locked file</value>
+    <comment>Describes a computer file that is locked for exclusive access</comment>
+  </data>
+  <data name="LockedFileInsightSpecificDescription" xml:space="preserve">
+    <value>The app is trying to access the file '{0}', but this is locked by '{1}'. To fix this, close '{1}'</value>
+    <comment>Locked={"{0}", "{1}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name. {1} is the name of an executable(.exe) process.</comment>
+  </data>
+  <data name="LockedFileInsightUnknownDescription" xml:space="preserve">
+    <value>The app is trying to access the file '{0}', but this is locked by an unknown process</value>
+    <comment>Locked={"{0}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name.</comment>
+  </data>
+  <data name="WatsonStartErrorMessage" xml:space="preserve">
+    <value>Could not start Watson</value>
+    <comment>Refers to being unable to start monitoring the Watson error logs.</comment>
+  </data>
+  <data name="WinLogCategoryError" xml:space="preserve">
+    <value>Error</value>
+    <comment>Refers to an error level message.</comment>
+  </data>
+  <data name="WinLogCategoryWarning" xml:space="preserve">
+    <value>Warning</value>
+    <comment>Refers to a warning level message.</comment>
+  </data>
+  <data name="WinLogCategoryInformation" xml:space="preserve">
+    <value>Information</value>
+    <comment>Refers to an information level message.</comment>
+  </data>
+  <data name="WinLogCategoryDebug" xml:space="preserve">
+    <value>Debug</value>
+    <comment>Refers to a debug level message.</comment>
+  </data>
+  <data name="PreferencesTabName" xml:space="preserve">
+    <value>Preferences</value>
+    <comment>Refers to a user's settings preferences.</comment>
+  </data>
+  <data name="AdditionalToolsTabName" xml:space="preserve">
+    <value>Additional tools</value>
+    <comment>Refers to a additional executable tools the user can add to the product</comment>
+  </data>
+  <data name="AdvancedSettingsTabName" xml:space="preserve">
+    <value>Advanced settings</value>
+    <comment>Refers to a additional more complex settings.</comment>
+  </data>
+  <data name="AboutTabName" xml:space="preserve">
+    <value>About</value>
+    <comment>Refers to additional information about the product.</comment>
+  </data>
+  <data name="CpuPerfTextFormatNoLabel" xml:space="preserve">
+    <value>{0:0.0}%</value>
+    <comment>Locked={"{0:0.0}"} Showing CPU utilization. {0} is a percentage 0-100</comment>
+  </data>
+  <data name="DiskPerfTextFormatNoLabel" xml:space="preserve">
+    <value>{0:N0} MB/s</value>
+    <comment>Locked={"{0:N0}"} Showing disk utilization. MB/s stands for megabytes per second. {0} is a number.</comment>
+  </data>
+  <data name="GpuPerfTextFormatNoLabel" xml:space="preserve">
+    <value>{0:0.0}%</value>
+    <comment>Locked={"{0:0.0}"} Showing GPU utilization. {0} is a percentage 0-100</comment>
+  </data>
+  <data name="MemoryPerfTextFormatNoLabel" xml:space="preserve">
+    <value>{0:N2} MB</value>
+    <comment>Locked={"{0:N2}"} Showing RAM utilization. MB stands for megabytes. {0} is a number.</comment>
+  </data>
+  <data name="AppCPUUsage.ToolTipService.ToolTip" xml:space="preserve">
+    <value>CPU usage of the attached process.</value>
+    <comment>Refers to the amount of CPU a process is using, shown in the bar.</comment>
+  </data>
+  <data name="AppPID.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Process ID of the attached process.</value>
+    <comment>Refers to the app's PID in the bar</comment>
+  </data>
+  <data name="DiskPerfPercentUsageTextFormatNoLabel" xml:space="preserve">
+    <value>{0:0.0}%</value>
+    <comment>Locked={"{0:0.0}"} Showing Disk utilization. {0} is a percentage 0-100</comment>
+  </data>
+  <data name="ExpandedViewAppCpuPerf.ToolTipService.ToolTip" xml:space="preserve">
+    <value>CPU usage of the attached process.</value>
+    <comment>Refers to the amount of CPU a process is using, shown in the bottom bar.</comment>
+  </data>
+  <data name="ExpandedViewAppDiskPerf.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Disk usage of the attached process.</value>
+    <comment>Refers to the amount of disk usage a process is using, shown in the bottom bar.</comment>
+  </data>
+  <data name="ExpandedViewAppMemoryPerf.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Memory usage of the attached process.</value>
+    <comment>Refers to the amount of Memory a process is using, shown in the bottom bar.</comment>
+  </data>
+  <data name="ExpandedViewTargetAppPidTextBox.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Process ID of the attached process.</value>
+    <comment>Refers to the app's PID in the bottom bar</comment>
+  </data>
+  <data name="MemoryPerfTextFormatNoLabelGB" xml:space="preserve">
+    <value>{0:N2} GB</value>
+    <comment>Locked={"{0:N2}"} Showing RAM utilization. GB stands for gigabytes. {0} is a number.</comment>
+  </data>
+  <data name="SystemCPUUsage.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Amount of CPU used by the overall system.</value>
+    <comment>Tooltip for the system CPU usage box in the bar</comment>
+  </data>
+  <data name="SystemDiskUsage.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Amount of disk utilization by the overall system.</value>
+    <comment>Tooltip for the system disk usage box in the bar</comment>
+  </data>
+  <data name="SystemMemUsage.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Amount of committed memory used by the overall system.</value>
+    <comment>Tooltip for the system memory usage box in the bar</comment>
+  </data>
+  <data name="PIDisplayName" xml:space="preserve">
+    <value>Project Ironsides</value>
+    <comment>{Locked}The name of the PI application</comment>
+  </data>
+  <data name="PIAppDescription" xml:space="preserve">
+    <value>Dev Home Project Ironsides</value>
+    <comment>{Locked}The description of the PI application</comment>
+  </data>
+  <data name="PIStartupTaskDisplayName" xml:space="preserve">
+    <value>Hotkey for Dev Home PI</value>
+    <comment>The description of the startup task for Dev Home PI. This shows up in task manager/Windows Settings &gt; Startup Apps.</comment>
+  </data>
+  <data name="IsPythonTextBlock.Text" xml:space="preserve">
+    <value>Is Python</value>
+    <comment>This refers to whether the application is a Python app.</comment>
+  </data>
+  <data name="MemoryInsightTitle" xml:space="preserve">
+    <value>Memory violation</value>
+    <comment>Describes an issue related to a memory access violation.</comment>
+  </data>
+  <data name="PythonCtypesDescription" xml:space="preserve">
+    <value>This is a Python app that is using the ctypes foreign function library. This provides C-compatible data types, and allows calling functions in DLLs, and using raw pointers. A memory access violation can result if the code misuses pointers.</value>
+    <comment>Describes an issue with a specific Python memory access violation.</comment>
+  </data>
+  <data name="SecurityInsightTitle" xml:space="preserve">
+    <value>Security issue</value>
+    <comment>Describes an issue related to security.</comment>
+  </data>
+  <data name="FaultingModuleColumn.Header" xml:space="preserve">
+    <value>Faulting module</value>
+    <comment>Refers to the module which caused the fault which generated the crash report</comment>
+  </data>
+  <data name="GenericInsightDescription" xml:space="preserve">
+    <value>Error {0}: {1}</value>
+    <comment>Locked={"{0}", "{1}"} A description to help a user that is dealing with non-specific error situation. {0} is the error name. {1} is the error description.</comment>
+  </data>
+  <data name="FrameworkTypesTextBlock.Text" xml:space="preserve">
+    <value>Framework types used in this app</value>
+    <comment>This refers to the set of application frameworks this application uses.</comment>
+  </data>
+  <data name="BaseAddressTextBlock.Text" xml:space="preserve">
+    <value>Base address</value>
+    <comment>The contents of a text block referring to the base address of a loaded module.</comment>
+  </data>
+  <data name="EntrypointAddressTextBlock.Text" xml:space="preserve">
+    <value>Entrypoint address</value>
+    <comment>The contents of a text block referring to the entrypoint address of a loaded module.</comment>
+  </data>
+  <data name="IsPinnedToggleSwitch.OnContent" xml:space="preserve">
+    <value>Pinned</value>
+    <comment>Text to show when the switch is turned on, to pin the tool to the bar.</comment>
+  </data>
+  <data name="IsPinnedToggleSwitch.OffContent" xml:space="preserve">
+    <value>Not pinned</value>
+    <comment>Text to show when the switch is turned off, to not pin the tool to the bar.</comment>
+  </data>
+  <data name="UnpinMenuItem.Text" xml:space="preserve">
+    <value>Unpin</value>
+    <comment>A label for the menuitem to unpin a tool on the bar.</comment>
+  </data>
+  <data name="UnpinMenuItemRawText" xml:space="preserve">
+    <value>Unpin</value>
+    <comment>Should be the same as UnpinMenuItem.Text</comment>
+  </data>
+  <data name="UnregisterMenuItemRawText" xml:space="preserve">
+    <value>Unregister</value>
+    <comment>Same as UnregisterMenuItem.Text</comment>
+  </data>
+  <data name="SettingsAboutHeader" xml:space="preserve">
+    <value>About</value>
+    <comment>Header for the Settings item for product information and privacy statement.</comment>
+  </data>
+  <data name="SettingsAboutSubHeader" xml:space="preserve">
+    <value>Info, Privacy Statement</value>
+    <comment>Sub-header for the Settings item for product information and privacy statement.</comment>
+  </data>
+  <data name="SettingsAdditionalToolsHeader" xml:space="preserve">
+    <value>Additional tools</value>
+    <comment>Header for the Settings item for configuring additional tools.</comment>
+  </data>
+  <data name="SettingsAdditionalToolsSubHeader" xml:space="preserve">
+    <value>Add or edit tool configurations</value>
+    <comment>Sub-header for the Settings item for configuring additional tools.</comment>
+  </data>
+  <data name="SettingsAdvancedSettingsHeader" xml:space="preserve">
+    <value>Advanced settings</value>
+    <comment>Header for the Settings item for configuring advanced features.</comment>
+  </data>
+  <data name="SettingsAdvancedSettingsSubHeader" xml:space="preserve">
+    <value>Configure advanced features</value>
+    <comment>Sub-header for the Settings item for configuring advanced features.</comment>
+  </data>
+  <data name="SettingsPreferencesHeader" xml:space="preserve">
+    <value>Preferences</value>
+    <comment>Header for the Settings item for user preferences.</comment>
+  </data>
+  <data name="SettingsPreferencesSubHeader" xml:space="preserve">
+    <value>Themes</value>
+    <comment>Sub-header for the Settings item for user preferences.</comment>
+  </data>
+  <data name="SettingsPageHeader" xml:space="preserve">
+    <value>Settings</value>
+    <comment>The title of the main Settings page.</comment>
+  </data>
+  <data name="SettingsThemeCard.Header" xml:space="preserve">
+    <value>Theme</value>
+    <comment>Title for the theme settings sub-page item.</comment>
+  </data>
+  <data name="SettingsThemeDark.Content" xml:space="preserve">
+    <value>Dark</value>
+    <comment>Refers to a color theme or scheme.</comment>
+  </data>
+  <data name="SettingsThemeDefault.Content" xml:space="preserve">
+    <value>Windows default</value>
+    <comment>Refers to a color theme or scheme.</comment>
+  </data>
+  <data name="SettingsThemeLight.Content" xml:space="preserve">
+    <value>Light</value>
+    <comment>Refers to a color theme or scheme.</comment>
+  </data>
+  <data name="SettingsAboutAppInfoCard.Header" xml:space="preserve">
+    <value>Dev Home PI</value>
+    <comment>This is the name of the product.</comment>
+  </data>
+  <data name="SettingsAboutAppInfoCard.Description" xml:space="preserve">
+    <value>© Microsoft. All rights reserved.</value>
+    <comment>This is the copyright notice for the product.</comment>
+  </data>
+  <data name="SettingsAboutRelatedLinks.Text" xml:space="preserve">
+    <value>Related links</value>
+    <comment>Header for a set of hyperlinks to information about the product.</comment>
+  </data>
+  <data name="SettingsDocumentationLink.Content" xml:space="preserve">
+    <value>Documentation</value>
+    <comment>Label for the link to the documentation for the product.</comment>
+  </data>
+  <data name="SettingsDocumentationLink.NavigateUri" xml:space="preserve">
+    <value>https://github.com/microsoft/devhome/issues/2796</value>
+    <comment>Link to the documentation for the product.</comment>
+  </data>
+  <data name="SettingsPrivacyPolicyLink.Content" xml:space="preserve">
+    <value>Privacy Statement</value>
+    <comment>Label for the link to the standard privacy policy statement.</comment>
+  </data>
+  <data name="SettingsPrivacyPolicyLink.NavigateUri" xml:space="preserve">
+    <value>https://go.microsoft.com/fwlink/?linkid=2234882</value>
+    <comment>Link to the standard privacy policy statement.</comment>
+  </data>
+  <data name="SettingsSourceCodeLink.Content" xml:space="preserve">
+    <value>Source code</value>
+    <comment>Label for the link to the source code for the product.</comment>
+  </data>
+  <data name="SettingsSourceCodeLink.NavigateUri" xml:space="preserve">
+    <value>https://go.microsoft.com/fwlink/?linkid=2234396</value>
+    <comment>Link to the source code for the product.</comment>
+  </data>
+  <data name="SettingsAddToolCard.Header" xml:space="preserve">
+    <value>Register an external tool with Dev Home PI</value>
+    <comment>Header for the settings item to add a tool to the product.</comment>
+  </data>
+  <data name="SettingsEditToolCard.Header" xml:space="preserve">
+    <value>Edit or unregister existing tools</value>
+    <comment>Header for the setting item to edit or unregister tools from the product.</comment>
+  </data>
+  <data name="BasePriorityTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The starting priority for threads created within this process</value>
+    <comment>Tooltip for the Base Priority field.</comment>
+  </data>
+  <data name="CpuArchitectureTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The CPU architecture of the target process</value>
+    <comment>Tooltip for the CPU Architecture field.</comment>
+  </data>
+  <data name="FrameworkTypesTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The windowing or application frameworks used in this app</value>
+    <comment>Tooltip for the Framework Types field.</comment>
+  </data>
+  <data name="IDTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The process ID of the target process</value>
+    <comment>Tooltip for the PID field.</comment>
+  </data>
+  <data name="IsRunningAsAdminTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>True if the target process is running under an Administrator account</value>
+    <comment>Tooltip for the Running as Admin field.</comment>
+  </data>
+  <data name="IsRunningAsSystemTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>True if the target process is running as a System process, based on its Session ID</value>
+    <comment>Tooltip for the Running as System field.</comment>
+  </data>
+  <data name="MainModuleTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The executable used to start the process</value>
+    <comment>Tooltip for the Main Module field.</comment>
+  </data>
+  <data name="MicrosoftStoreAppTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>True if this app was deployed via the Microsoft Store</value>
+    <comment>Tooltip for the Microsoft Store field.</comment>
+  </data>
+  <data name="MSIXPackagedTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>True if this process is packaged with MSIX</value>
+    <comment>Tooltip for the MSIX Packaged field.</comment>
+  </data>
+  <data name="PriorityClassTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Threads with different priorities in the process run relative to the priority class of the process</value>
+    <comment>Tooltip for the Priority Class field.</comment>
+  </data>
+  <data name="MessageCloseText" xml:space="preserve">
+    <value>Close</value>
+    <comment>Text used on the Close button on a message dialog.</comment>
+  </data>
+  <data name="ToolRegisteredMessage" xml:space="preserve">
+    <value>External tool {0} registered</value>
+    <comment>Message shown to the user when an external tool is registered.</comment>
+  </data>
+  <data name="EditToolsExecutableColumn.Header" xml:space="preserve">
+    <value>Executable</value>
+    <comment>The executable path of an external tool.</comment>
+  </data>
+  <data name="InvalidToolInfoMessage" xml:space="preserve">
+    <value>Invalid tool path or name</value>
+    <comment>Text for the message to show to the user when the supplied path or name is not valid.</comment>
+  </data>
+  <data name="ProcessChooserButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Select a process to investigate</value>
+    <comment>Describes using a button in PI's UX to investigate another process running on the system</comment>
+  </data>
+  <data name="SnapButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Attach the diagnostic bar to the target application</value>
+    <comment>Describes using a button in PI's UX</comment>
+  </data>
+  <data name="Title.Text" xml:space="preserve">
+    <value>Dev Home PI</value>
+    <comment>The product name</comment>
+  </data>
+  <data name="VerticalCloseButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Close</value>
+    <comment>Describes a button that will close PI's window</comment>
+  </data>
+  <data name="CpuArchitecture_ProcessOnMachine" xml:space="preserve">
+    <value>{0} process running on {1} machine</value>
+    <comment>Locked={"{0}", "{1}"} Message text when the process is the specified CPU architecture running on the specified CPU machine. {0} is the process architecture, {1} is the machine architecture.</comment>
+  </data>
+  <data name="CpuArchitecture_Unknown" xml:space="preserve">
+    <value>Unknown</value>
+    <comment>Message text when the CPU architecture of the process is unknown.</comment>
+  </data>
+  <data name="CpuArchitecture_UnknownOnMachine" xml:space="preserve">
+    <value>Unknown process type running on {0}</value>
+    <comment>Locked={"{0}"}. Message text when the process is unknown CPU architecture running on the specified CPU machine. {0} is the machine architecture.</comment>
+  </data>
+  <data name="CpuArchitecture_X64onX64" xml:space="preserve">
+    <value>X64 process running on X64 machine</value>
+    <comment>Message text when the process is x64 CPU architecture running on an X64 CPU machine.</comment>
+  </data>
+</root>

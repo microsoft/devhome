@@ -36,6 +36,8 @@ public class SetupFlowViewSelector : DataTemplateSelector
 
     public DataTemplate EnvironmentCreationOptionsTemplate { get; set; }
 
+    public DataTemplate QuickstartPlaygroundTemplate { get; set; }
+
     protected override DataTemplate SelectTemplateCore(object item)
     {
         return ResolveDataTemplate(item, () => base.SelectTemplateCore(item));
@@ -66,6 +68,7 @@ public class SetupFlowViewSelector : DataTemplateSelector
             SetupTargetViewModel => SetupTargetTemplate,
             SelectEnvironmentProviderViewModel => SelectEnvironmentsProviderTemplate,
             EnvironmentCreationOptionsViewModel => EnvironmentCreationOptionsTemplate,
+            QuickstartPlaygroundViewModel => QuickstartPlaygroundTemplate,
             _ => defaultDataTemplate(),
         };
     }

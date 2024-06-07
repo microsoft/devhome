@@ -33,7 +33,7 @@ struct ProcessPerformanceSummary
 
 extern "C" __declspec(dllexport) HRESULT StartMonitoringProcessUtilization(uint32_t periodInMs, void** context) noexcept;
 extern "C" __declspec(dllexport) HRESULT StopMonitoringProcessUtilization(void* context) noexcept;
-extern "C" __declspec(dllexport) HRESULT GetMonitoringProcessUtilization(void* context, ProcessPerformanceSummary** ppSummaries, size_t* summaryCount) noexcept;
+extern "C" __declspec(dllexport) HRESULT GetMonitoringProcessUtilization(void* context, std::chrono::milliseconds* samplingPeriodInMs, ProcessPerformanceSummary** ppSummaries, size_t* summaryCount) noexcept;
 extern "C" __declspec(dllexport) HRESULT DeleteMonitoringProcessUtilization(void* context) noexcept;
 
 using unique_process_utilization_monitoring_thread = wil::unique_any<void*, decltype(&::DeleteMonitoringProcessUtilization), ::DeleteMonitoringProcessUtilization>;

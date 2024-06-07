@@ -60,7 +60,7 @@
                             </StackPanel>
                         </ctControls:SettingsCard.Description>
                         <ctControls:SettingsCard.HeaderIcon>
-                            <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
+                            <ImageIcon AutomationProperties.Name="{x:Bind PackageTitle, Mode=OneWay}" Source="{x:Bind Icon, Mode=OneWay}"/>
                         </ctControls:SettingsCard.HeaderIcon>
                     </controls:PackageDetailsSettingsCard>
                 </DataTemplate>

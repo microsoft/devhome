@@ -195,7 +195,7 @@
                                 <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE711;"/>
                             </ctControls:SettingsCard.ActionIcon>
                             <Button
-                                AutomationProperties.Name="{x:Bind ButtonAutomationName, Mode=OneWay}"
+                                AutomationProperties.Name="{x:Bind ActionButtonDescription, Mode=OneWay}"
                                 AutomationProperties.AutomationId="{x:Bind ButtonAutomationId}"
                                 Command="{x:Bind ToggleSelectionCommand, Mode=OneWay}"
                                 FontSize="{ThemeResource CaptionTextBlockFontSize}"

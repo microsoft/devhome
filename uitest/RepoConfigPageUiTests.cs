@@ -16,6 +16,6 @@ public class RepoConfigPageUiTests : DevHomeTestBase
         var repoConfigPage = machineConfigurationPage.GoToRepoPage();
 
         // This button will be displayed when no repos are selected.
-        Assert.IsTrue(repoConfigPage.AddRepoHyperLinkButton.Displayed);
+        Assert.IsTrue(repoConfigPage.AddRepoHyperlinkButton.Displayed);
     }
 }

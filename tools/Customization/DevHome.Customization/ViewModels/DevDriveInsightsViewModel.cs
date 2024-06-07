@@ -7,9 +7,12 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Common.Views;
 using DevHome.Customization.Helpers;
+using DevHome.Customization.Models;
 using DevHome.Customization.ViewModels.DevDriveInsights;
 using DevHome.Customization.Views;
 using Microsoft.Internal.Windows.DevHome.Helpers;
@@ -17,7 +20,7 @@ using Serilog;
 
 namespace DevHome.Customization.ViewModels;
 
-public partial class DevDriveInsightsViewModel : ObservableObject
+public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<DevDriveOptimizedMessage>, IRecipient<DevDriveTrustedMessage>
 {
     private readonly ShellSettings _shellSettings;
 
@@ -78,6 +81,12 @@ public partial class DevDriveInsightsViewModel : ObservableObject
 
         _optimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
         DevDriveManagerObj = devDriveManager;
+
+        // Register for the dev drive optimized message so we can refresh the UX
+        WeakReferenceMessenger.Default.Register<DevDriveOptimizedMessage>(this);
+
+        // Register for the dev drive trusted message so we can refresh the UX
+        WeakReferenceMessenger.Default.Register<DevDriveTrustedMessage>(this);
     }
 
     /// <summary>
@@ -403,5 +412,23 @@ public partial class DevDriveInsightsViewModel : ObservableObject
         }
 
         DevDriveOptimizedLoadingCompleted = true;
+    }
+
+    /// <summary>
+    /// Implements the Receive method from the IRecipient<DevDriveOptimizedMessage> interface. When this message
+    /// is received we reload the UX.
+    /// </summary>
+    public void Receive(DevDriveOptimizedMessage message)
+    {
+        OnFirstNavigateTo();
+    }
+
+    /// <summary>
+    /// Implements the Receive method from the IRecipient<DevDriveTrustedMessage> interface. When this message
+    /// is received we reload the UX.
+    /// </summary>
+    public void Receive(DevDriveTrustedMessage message)
+    {
+        OnFirstNavigateTo();
     }
 }

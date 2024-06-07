@@ -95,6 +95,8 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
         {
             Name = LabelGroup.CustomTypeString,
             Orientation = Orientation.Horizontal,
+            HorizontalSpacing = 4,
+            VerticalSpacing = 4,
         };
 
         if (element is LabelGroup labelGroup)
@@ -108,7 +110,6 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
                 {
                     Background = GetBrushFromColor(label.Item2, 0.4),
                     Padding = new Thickness(7, 2, 7, 2),
-                    Margin = new Thickness(0, 0, 10, 0),
                 };
                 if (labelGroup.RoundedCorners)
                 {

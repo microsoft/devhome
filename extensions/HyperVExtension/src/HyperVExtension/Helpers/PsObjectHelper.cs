@@ -13,6 +13,8 @@ namespace HyperVExtension.Helpers;
 /// </summary>
 public class PsObjectHelper
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(PsObjectHelper));
+
     private readonly PSObject _psObject;
 
     public PsObjectHelper(in PSObject pSObject)
@@ -40,11 +42,18 @@ public class PsObjectHelper
     /// </remarks>
     public T? MemberNameToValue<T>(string memberName)
     {
-        var potentialValue = _psObject.Members?[memberName]?.Value;
-
-        if (potentialValue is T memberValue)
+        try
         {
-            return memberValue;
+            var potentialValue = _psObject.Members?[memberName]?.Value;
+
+            if (potentialValue is T memberValue)
+            {
+                return memberValue;
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to get member value with name {memberName}");
         }
 
         return default(T);
@@ -70,8 +79,7 @@ public class PsObjectHelper
         }
         catch (Exception ex)
         {
-            var log = Log.ForContext("SourceContext", nameof(PsObjectHelper));
-            log.Error(ex, $"Failed to get property value with name {propertyName} from object with type {type}.");
+            _log.Error(ex, $"Failed to get property value with name {propertyName} from object with type {type}.");
         }
 
         return default(T);

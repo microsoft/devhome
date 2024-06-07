@@ -74,7 +74,7 @@
     <value>Last session length:</value>
     <comment>Length of the previously run quiet session</comment>
   </data>
-  <data name="QuietBackgroundProcesses.Description" xml:space="preserve">
+  <data name="QuietBackgroundProcesses_Description" xml:space="preserve">
     <value>Enhance resource management while developing for a maximum of 2 hours</value>
     <comment>Description of the Quiet background processes feature</comment>
   </data>
@@ -172,16 +172,24 @@
     <value>Feature not supported on this version of Windows</value>
     <comment>Indicates that this OS isn't new enough to support the feature</comment>
   </data>
-  <data name="QuietBackgroundProcesses_Status_SessionError" xml:space="preserve">
-    <value>Session Error</value>
+  <data name="QuietBackgroundProcesses_Status_SessionStartError" xml:space="preserve">
+    <value>There was an error that prevented the session from starting</value>
     <comment>Something went wrong when running the session</comment>
   </data>
-  <data name="QuietBackgroundProcesses_Status_SessionEnded" xml:space="preserve">
-    <value>Session ended</value>
-    <comment>The quiet session was cancelled or the time expired</comment>
+  <data name="QuietBackgroundProcesses_Status_UnableToFindActiveSession" xml:space="preserve">
+    <value>There was an error when retrieving the active quiet session</value>
+    <comment>Something went wrong when asking the server if a quiet session is ongoing</comment>
+  </data>
+  <data name="QuietBackgroundProcesses_Status_UnableToGetTimeLeft" xml:space="preserve">
+    <value>There was an error when getting the time remaning in the session</value>
+    <comment>Something went wrong when asking the server for time remaining</comment>
   </data>
   <data name="QuietBackgroundProcesses_Status_UnableToCancelSession" xml:space="preserve">
     <value>Unable to cancel session</value>
     <comment>Something went wrong when cancelling the session</comment>
+  </data>
+  <data name="QuietBackgroundProcesses_Status_UnableToGetAnalyticSummary" xml:space="preserve">
+    <value>There was an error retrieving the analytic summary</value>
+    <comment>Something went wrong getting the analytic summary</comment>
   </data>
 </root>

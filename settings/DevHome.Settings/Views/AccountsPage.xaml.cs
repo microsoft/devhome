@@ -16,11 +16,10 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.Settings.Views;
 
-public sealed partial class AccountsPage : Page
+public sealed partial class AccountsPage : DevHomePage
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AccountsPage));
 
@@ -173,7 +172,7 @@ public sealed partial class AccountsPage : Page
         }
         else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
         {
-            var windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
+            var windowHandle = Application.Current.GetService<Window>().GetWindowHandle();
             var windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
             try
             {

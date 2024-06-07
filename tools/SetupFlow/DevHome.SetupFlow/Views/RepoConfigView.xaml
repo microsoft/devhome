@@ -9,6 +9,7 @@
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:setupControls="using:DevHome.SetupFlow.Controls"
     xmlns:models="using:DevHome.SetupFlow.Models"
+    xmlns:views="using:DevHome.Common.Views"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -37,9 +38,9 @@
             Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
             Foreground="{ThemeResource TextFillColorSecondary}">
         <setupControls:SetupShell.Header>
-            <Button
+            <views:AddCreateButton
                 AutomationProperties.AutomationId="AddRepositoriesButton"
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"
+                x:Uid="MainPage_RepoReview_AddRepository"
                 Command="{x:Bind AddRepoCommand}" />
         </setupControls:SetupShell.Header>
         <Grid x:Name="RepoConfigGrid" RowSpacing="10">
@@ -93,7 +94,7 @@
                 </ListView.Header>
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:CloningInformation">
-                        <Grid>
+                        <Grid AutomationProperties.Name="{x:Bind RepoConfigAutomationName}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
@@ -176,18 +177,21 @@
             </ListView>
             <Grid
                 Grid.Row="1"
-                x:Name="NoRepositoryGrid" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                x:Name="NoRepositoryGrid"
+                Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
-                <HyperlinkButton
+                <TextBlock Grid.Row="0" x:Uid="RepoReview_NoReposSelected" />
+                <views:AddCreateHyperlinkButton
                     Grid.Row="1"
-                    AutomationProperties.AutomationId="AddRepoHyperLinkButton"
+                    AutomationProperties.AutomationId="AddRepoHyperlinkButton"
                     HorizontalAlignment="Center"
                     Command="{x:Bind AddRepoCommand}"
-                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
+                    x:Uid="RepoReview_NoReposSelectedLink" />
             </Grid>
         </Grid>
     </setupControls:SetupShell>

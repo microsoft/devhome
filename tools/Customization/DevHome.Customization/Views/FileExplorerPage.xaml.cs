@@ -2,13 +2,13 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
+using DevHome.Common.Views;
 using DevHome.Customization.ViewModels;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Customization.Views;
 
-public sealed partial class FileExplorerPage : Page
+public sealed partial class FileExplorerPage : DevHomePage
 {
     public FileExplorerViewModel ViewModel
     {

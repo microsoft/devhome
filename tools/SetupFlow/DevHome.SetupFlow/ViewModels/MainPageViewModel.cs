@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -28,9 +30,11 @@ namespace DevHome.SetupFlow.ViewModels;
 /// combinations of steps to perform. For example, only Configuration file,
 /// or a full flow with Dev Volume, Clone Repos, and App Management.
 /// </summary>
-public partial class MainPageViewModel : SetupPageViewModelBase
+public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(MainPageViewModel));
+
+    private const string QuickstartPlaygroundFlowFeatureName = "QuickstartPlayground";
 
     private readonly IHost _host;
     private readonly IWindowsPackageManager _wpm;
@@ -50,6 +54,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private bool _showAppInstallerUpdateNotification;
+
+    [ObservableProperty]
+    private bool _enableQuickstartPlayground;
+
+    private bool _disposedValue;
 
     public string MainPageEnvironmentSetupGroupName => StringResource.GetLocalized(StringResourceKey.MainPageEnvironmentSetupGroup);
 
@@ -82,6 +91,47 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
 
         BannerViewModel = bannerViewModel;
+
+        // If the feature is turned on, it doesn't show up in the configuration section (toggling it off and on again fixes it)
+        // It's because this is constructed after ExperimentalFeaturesViewModel, so the handler isn't added yet.
+        _host.GetService<IExperimentationService>().ExperimentalFeatures.FirstOrDefault(f => string.Equals(f.Id, QuickstartPlaygroundFlowFeatureName, StringComparison.Ordinal))!.PropertyChanged += ExperimentalFeaturesViewModel_PropertyChanged;
+
+        // Hack around this by setting the property explicitly based on the state of the feature.
+        EnableQuickstartPlayground = _host.GetService<IExperimentationService>().ExperimentalFeatures.FirstOrDefault(f => string.Equals(f.Id, QuickstartPlaygroundFlowFeatureName, StringComparison.Ordinal))!.IsEnabled;
+    }
+
+    // Create a PropertyChanged handler that we will add to the ExperimentalFeaturesViewModel
+    // to update the EnableQuickstartPlayground property when the feature is enabled/disabled.
+    private void ExperimentalFeaturesViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ExperimentalFeature.IsEnabled))
+        {
+            EnableQuickstartPlayground = _host.GetService<IExperimentationService>().ExperimentalFeatures.FirstOrDefault(f => string.Equals(f.Id, QuickstartPlaygroundFlowFeatureName, StringComparison.Ordinal))!.IsEnabled;
+        }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                var experimentationService = _host.GetService<IExperimentationService>();
+                if (experimentationService != null)
+                {
+                    experimentationService.ExperimentalFeatures.FirstOrDefault(f => string.Equals(f.Id, QuickstartPlaygroundFlowFeatureName, StringComparison.Ordinal))!.PropertyChanged -= ExperimentalFeaturesViewModel_PropertyChanged;
+                }
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    // Disconnect event handler when the view model is disposed.
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 
     public async Task StartConfigurationFileAsync(StorageFile file)
@@ -95,11 +145,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         }
     }
 
-    internal void StartAppManagementFlow(string query)
+    internal void StartAppManagementFlow(string query = null)
     {
-        _log.Information($"Launching app management flow for query:{query}");
+        _log.Information("Launching app management flow");
         var appManagementSetupFlow = _host.GetService<AppManagementTaskGroup>();
-        StartSetupFlowForTaskGroups(null, "App Search URI", appManagementSetupFlow);
+        StartSetupFlowForTaskGroups(null, "App Activation URI", appManagementSetupFlow);
         appManagementSetupFlow.HandleSearchQuery(query);
     }
 
@@ -186,6 +236,13 @@ public partial class MainPageViewModel : SetupPageViewModelBase
             "RepoConfig",
             _host.GetService<RepoConfigTaskGroup>(),
             _host.GetService<DevDriveTaskGroup>());
+    }
+
+    [RelayCommand]
+    private void StartQuickstart(string flowTitle)
+    {
+        _log.Information("Starting flow for developer quickstart playground");
+        StartSetupFlowForTaskGroups(flowTitle, "DeveloperQuickstartPlayground", _host.GetService<DeveloperQuickstartTaskGroup>());
     }
 
     /// <summary>

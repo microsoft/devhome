@@ -5,11 +5,10 @@ using System;
 using System.IO;
 using DevHome.Common.Services;
 using DevHome.HostsFileEditor.ViewModels;
-using WinUIEx;
 
 namespace DevHome.HostsFileEditor.Views;
 
-public sealed partial class HostsFileEditorSettingsWindow : WindowEx
+public sealed partial class HostsFileEditorSettingsWindow : WinUIEx.WindowEx
 {
     public HostsFileEditorSettingsViewModel ViewModel { get; }
 
@@ -22,7 +21,7 @@ public sealed partial class HostsFileEditorSettingsWindow : WindowEx
 
         ExtendsContentIntoTitleBar = true;
 
-        var stringResource = new StringResource(Path.Combine(AppContext.BaseDirectory, "..\\DevHome\\DevHome.HostsFileEditor.pri"), "Resources/Hosts_Settings_Title");
+        var stringResource = new StringResource(Path.Combine(AppContext.BaseDirectory, "DevHome.HostsFileEditor.pri"), "Resources/Hosts_Settings_Title");
         WindowTitle = stringResource.GetLocalized("Text");
         Title = WindowTitle;
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/HostsUILib/Hosts.ico"));

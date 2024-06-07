@@ -6,6 +6,9 @@ using System.Collections.ObjectModel;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
+using DevHome.Telemetry;
+using DevHome.Utilities.TelemetryEvents;
+using Windows.ApplicationModel;
 
 namespace DevHome.Utilities.ViewModels;
 
@@ -13,33 +16,50 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
 {
     public ObservableCollection<UtilityViewModel> Utilities { get; set; }
 
-    public UtilitiesMainPageViewModel()
+    public UtilitiesMainPageViewModel(IExperimentationService experimentationService)
     {
+        var appExAliasAbsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"Microsoft\\WindowsApps\\{Package.Current.Id.FamilyName}");
         var stringResource = new StringResource("DevHome.Utilities.pri", "DevHome.Utilities/Resources");
 
         Utilities = new ObservableCollection<UtilityViewModel>
         {
-            new("DevHome.HostsFileEditorApp.exe")
+            new(Path.Combine(appExAliasAbsFolderPath, "DevHome.HostsFileEditorApp.exe"))
             {
                 Title = stringResource.GetLocalized("HostsFileEditorUtilityTitle"),
                 Description = stringResource.GetLocalized("HostsFileEditorUtilityDesc"),
-                NavigateUri = "https://aka.ms/PowerToysOverview_HostsFileEditor",
-                ImageSource = Path.Combine(AppContext.BaseDirectory, "..\\DevHome.HostsFileEditor\\Assets\\HostsUILib", "Hosts.ico"),
+                NavigateUri = "https://go.microsoft.com/fwlink/?Linkid=2271355",
+                ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\HostsUILib", "Hosts.ico"),
+                SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Visible,
+                UtilityAutomationId = "DevHome.HostsFileEditor",
             },
-            new("DevHome.RegistryPreviewApp.exe")
+            new(Path.Combine(appExAliasAbsFolderPath, "DevHome.RegistryPreviewApp.exe"))
             {
                 Title = stringResource.GetLocalized("RegistryPreviewUtilityTitle"),
                 Description = stringResource.GetLocalized("RegistryPreviewUtilityDesc"),
-                NavigateUri = "https://aka.ms/PowerToysOverview_RegistryPreview",
-                ImageSource = Path.Combine(AppContext.BaseDirectory, "..\\DevHome.RegistryPreview\\Assets\\RegistryPreview", "RegistryPreview.ico"),
+                NavigateUri = "https://go.microsoft.com/fwlink/?Linkid=2270966",
+                ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\RegistryPreview", "RegistryPreview.ico"),
+                SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Collapsed,
+                UtilityAutomationId = "DevHome.RegistryPreview",
             },
-            new("DevHome.EnvironmentVariablesApp.exe")
+            new(Path.Combine(appExAliasAbsFolderPath, "DevHome.EnvironmentVariablesApp.exe"))
             {
                 Title = stringResource.GetLocalized("EnvVariablesEditorUtilityTitle"),
                 Description = stringResource.GetLocalized("EnvVariablesEditorUtilityDesc"),
-                NavigateUri = "https://aka.ms/PowerToysOverview_EnvironmentVariables",
-                ImageSource = Path.Combine(AppContext.BaseDirectory, "..\\DevHome.EnvironmentVariables\\Assets\\EnvironmentVariables", "EnvironmentVariables.ico"),
+                NavigateUri = "https://go.microsoft.com/fwlink/?Linkid=2270894",
+                ImageSource = Path.Combine(AppContext.BaseDirectory, "Assets\\EnvironmentVariables", "EnvironmentVariables.ico"),
+                SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Visible,
+                UtilityAutomationId = "DevHome.EnvironmentVariables",
+            },
+            new(Path.Combine(appExAliasAbsFolderPath, "devhome.pi.exe"), experimentationService, "ProjectIronsidesExperiment")
+            {
+                Title = stringResource.GetLocalized("ProjectIronsidesTitle"),
+                Description = stringResource.GetLocalized("ProjectIronsidesDesc"),
+                NavigateUri = "https://aka.ms/projectironsides",
+                ImageSource = Path.Combine(AppContext.BaseDirectory, "PI.ico"),
+                UtilityAutomationId = "DevHome.PI",
             },
         };
+
+        TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesMainPage", LogLevel.Critical, new UtilitiesMainPageViewModelEvent());
     }
 }

@@ -2,18 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Configuration.Provider;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.WinUI;
 using DevHome.Common.Services;
 using DevHome.Environments.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.Foundation;
-using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -51,23 +47,23 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
 
     private Action? DevHomeAction { get; }
 
-    private WinUIEx.WindowEx? _windowEx;
+    private readonly Window? _mainWindow;
 
-    private StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
+    private readonly StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
     public OperationsViewModel(
         string name,
         string icon,
         Func<string, Task<ComputeSystemOperationResult>> command,
         ComputeSystemOperations computeSystemOperation,
-        WinUIEx.WindowEx? windowEx = null)
+        Window? mainWindow = null)
     {
         _operationKind = OperationKind.ExtensionTask;
         Name = name;
         IconGlyph = icon;
         ExtensionTask = command;
-        _windowEx = windowEx;
         ComputeSystemOperation = computeSystemOperation;
+        _mainWindow = mainWindow;
     }
 
     public OperationsViewModel(
@@ -125,10 +121,10 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
                 Content = _stringResource.GetLocalized("DeleteEnviroment_Content"),
                 PrimaryButtonText = _stringResource.GetLocalized("DeleteEnviroment_ConfirmButton"),
                 SecondaryButtonText = _stringResource.GetLocalized("DeleteEnviroment_CancelButton"),
-                XamlRoot = _windowEx?.Content.XamlRoot,
+                XamlRoot = _mainWindow?.Content.XamlRoot,
             };
 
-            _windowEx?.DispatcherQueue.TryEnqueue(async () =>
+            _mainWindow?.DispatcherQueue?.TryEnqueue(async () =>
             {
                 var result = await noWifiDialog.ShowAsync();
 

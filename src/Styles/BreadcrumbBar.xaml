@@ -23,6 +23,29 @@
             <BreadcrumbBar
                     x:Name="BreadcrumbBar"
                     ItemsSource="{Binding Breadcrumbs}">
+                <BreadcrumbBar.Resources>
+                    <!-- Setting BreadcrumbBarNormalForegroundBrush outside of DataTemplate results in the value not being used inside the DataTemplate. -->
+                    <!-- In order for DataTemplate to use the correct brushes, they must be set this way. -->
+                    <ResourceDictionary>
+                        <ResourceDictionary.ThemeDictionaries>
+                            <ResourceDictionary x:Key="Light">
+                                <Color x:Key="TextFillColorSecondary">#9E000000</Color>
+                                <SolidColorBrush x:Key="TextFillColorSecondaryBrush" Color="{StaticResource TextFillColorSecondary}" />
+                                <StaticResource x:Key="BreadcrumbBarNormalForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
+                            </ResourceDictionary>
+                            <ResourceDictionary x:Key="Dark">
+                                <Color x:Key="TextFillColorSecondary">#C5FFFFFF</Color>
+                                <SolidColorBrush x:Key="TextFillColorSecondaryBrush" Color="{StaticResource TextFillColorSecondary}" />
+                                <StaticResource x:Key="BreadcrumbBarNormalForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
+                            </ResourceDictionary>
+                            <ResourceDictionary x:Key="HighContrast">
+                                <Color x:Key="TextFillColorSecondary">#FF0000</Color>
+                                <SolidColorBrush x:Key="TextFillColorSecondaryBrush" Color="{StaticResource TextFillColorSecondary}" />
+                                <StaticResource x:Key="BreadcrumbBarNormalForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
+                            </ResourceDictionary>
+                        </ResourceDictionary.ThemeDictionaries>
+                    </ResourceDictionary>
+                </BreadcrumbBar.Resources>
                 <i:Interaction.Behaviors>
                     <behaviors:BreadcrumbNavigationBehavior />
                 </i:Interaction.Behaviors>

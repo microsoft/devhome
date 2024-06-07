@@ -96,4 +96,9 @@ public static class HyperVStrings
     public const string RunningState = "Running";
     public const string PausedState = "Paused";
     public const string SavedState = "Saved";
+    public const string SavingState = "Saving";
+    public const string PausingState = "Pausing";
+    public const string StartingState = "Starting";
+    public const string StoppingState = "Stopping";
+    public const string ResumingState = "Resuming";
 }
