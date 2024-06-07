@@ -34,7 +34,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock x:Uid="Title" FontSize="10" Margin="10,0,0,0" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center"/>
-            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0, 0, 10, 0"  Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}">
+            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0, 0, 10, 0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}">
                 <Button
                       x:Uid="SnapButton" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"
                       x:Name="SnapButton" Style="{StaticResource ChromeButton}" FontSize="11"
