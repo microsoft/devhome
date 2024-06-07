@@ -251,7 +251,7 @@ public partial class BarWindowViewModel : ObservableObject
 
             _dispatcher.TryEnqueue(() =>
             {
-                // The App status bar is only visibile if we're attached to a process
+                // The App status bar is only visible if we're attached to a process
                 AppBarVisibility = process is null ? Visibility.Collapsed : Visibility.Visible;
 
                 if (process is not null)
