@@ -937,4 +937,16 @@
     <value>X64 process running on X64 machine</value>
     <comment>Message text when the process is x64 CPU architecture running on an X64 CPU machine.</comment>
   </data>
+  <data name="AliasDisabledDialogButtonText" xml:space="preserve">
+    <value>Go to Advanced app settings</value>
+    <comment>Content Dialog button text which on click opens the Advanced App settings page in Windows Settings app.</comment>
+  </data>
+  <data name="AliasDisabledDialogContent" xml:space="preserve">
+    <value>Go to Advanced app settings -&gt; App execution alias -&gt; Project Ironside -&gt; Enable the toggle and try to launch PI as admin again</value>
+    <comment>Content Dialog content suggesting users steps to enable app execution alais from Windows Settings app</comment>
+  </data>
+  <data name="AliasDisabledDialogTitle" xml:space="preserve">
+    <value>Enable App Execution Alias for Project Ironside and try again</value>
+    <comment>Content Dialog title to enable app execution alais for Project Ironside</comment>
+  </data>
 </root>
