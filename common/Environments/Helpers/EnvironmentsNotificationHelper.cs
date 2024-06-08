@@ -258,9 +258,9 @@ public partial class EnvironmentsNotificationHelper
                         ShowErrorWithRebootAfterExecutionMessage(_stringResource.GetLocalized("UnableToEnableHyperVFeatureMessage"));
                         return;
                     case 6:
-                        // Display nothing as there is no work to be done
-                        telemetryEnablementMap.Add(FeatureEnablementKind.HyperVFeature, EnvironmentsTelemetryStatus.Succeeded);
-                        telemetryEnablementMap.Add(FeatureEnablementKind.HyperVAdminGroup, EnvironmentsTelemetryStatus.Succeeded);
+                        // Display nothing as there is no work to be done, as the feature is enabled and user is in the group.
+                        telemetryEnablementMap.Add(FeatureEnablementKind.HyperVFeature, EnvironmentsTelemetryStatus.NoOperation);
+                        telemetryEnablementMap.Add(FeatureEnablementKind.HyperVAdminGroup, EnvironmentsTelemetryStatus.NoOperation);
                         LogEnablementTelemetry(telemetryEnablementMap);
                         return;
                 }

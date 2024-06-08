@@ -15,6 +15,7 @@ public enum EnvironmentsTelemetryStatus
     Succeeded,
     Failed,
     Unknown,
+    NoOperation, // Used when there is a no op kind of operation and no work was done.
 }
 
 [EventData]
