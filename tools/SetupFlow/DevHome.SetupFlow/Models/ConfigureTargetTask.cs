@@ -47,6 +47,8 @@ public class ConfigureTargetTask : ISetupTask
 
     private readonly AdaptiveCardRenderingService _adaptiveCardRenderingService;
 
+    private bool _isCompletionTelemetryLogged;
+
     // Inherited via ISetupTask but unused
     public bool RequiresAdmin => false;
 
@@ -374,6 +376,7 @@ public class ConfigureTargetTask : ISetupTask
             try
             {
                 _log.Information($"Starting configuration on {ComputeSystemName}");
+                _isCompletionTelemetryLogged = false;
                 UserNumberOfAttempts = 1;
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.SetupTargetExtensionApplyingConfiguration, ComputeSystemName), MessageSeverityKind.Info);
                 WingetConfigFileString = _configurationFileBuilder.BuildConfigFileStringFromTaskGroups(_setupFlowOrchestrator.TaskGroups, ConfigurationFileKind.SetupTarget);
@@ -431,6 +434,14 @@ public class ConfigureTargetTask : ISetupTask
             catch (Exception e)
             {
                 _log.Error(e, $"Failed to apply configuration on target machine.");
+
+                // Capture telemetry if an exception happens before the call to HandleCompletedOperation
+                // if an exception occurs, but don't capture it if we've already handled the failure in HandleCompletedOperation.
+                if (!_isCompletionTelemetryLogged)
+                {
+                    LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, e.Message, e.Message);
+                }
+
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -534,5 +545,10 @@ public class ConfigureTargetTask : ISetupTask
             LogLevel.Critical,
             new EnvironmentOperationEvent(status, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId.Value, string.Empty, displayMessage, diagnosticText),
             _setupFlowOrchestrator.ActivityId);
+
+        if (status != EnvironmentsTelemetryStatus.Started)
+        {
+            _isCompletionTelemetryLogged = true;
+        }
     }
 }
