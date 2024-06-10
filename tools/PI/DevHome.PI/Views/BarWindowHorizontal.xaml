@@ -36,7 +36,7 @@
             <TextBlock x:Uid="Title" FontSize="10" Margin="10,0,0,0" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center"/>
             <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0, 0, 10, 0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}">
                 <Button
-                      x:Uid="SnapButton" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"
+                      x:Uid="SnapButton" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
                       x:Name="SnapButton" Style="{StaticResource ChromeButton}" FontSize="11"
                       Command="{x:Bind _viewModel.ToggleSnapCommand}" HorizontalAlignment="Left" IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}">
                     <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
@@ -71,7 +71,7 @@
             <controls:PISeparator />
 
             <!-- Per App controls -->
-            <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}">
+            <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}">
                 <StackPanel.ContextFlyout>
                     <MenuFlyout>
                         <MenuFlyoutItem x:Uid="DetachMenuItem" Command="{x:Bind _viewModel.DetachFromProcessCommand}">
@@ -84,7 +84,7 @@
                 <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" />
                 <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" />
                 <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" />
-                <controls:PISeparator  Visibility="{x:Bind _viewModel.AppBarVisibility, Mode=OneWay}"/>
+                <controls:PISeparator />
             </StackPanel>
 
             <!-- Per System controls -->
