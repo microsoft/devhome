@@ -944,6 +944,7 @@
   <data name="AliasDisabledDialogTitle" xml:space="preserve">
     <value>Enable App Execution Alias for Project Ironsides and try again</value>
     <comment>Locked="{Ironsides}" Content Dialog title to enable app execution alias for Project Ironsides</comment>
+  </data>
   <data name="DetachAppButton.Content" xml:space="preserve">
     <value>Detach from target app</value>
     <comment>Button in the expanded view to detach from the target app</comment>
