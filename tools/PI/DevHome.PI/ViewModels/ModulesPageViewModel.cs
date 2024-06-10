@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -18,7 +17,7 @@ namespace DevHome.PI.ViewModels;
 public partial class ModulesPageViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<ProcessModule> moduleList;
+    private ObservableCollection<ProcessModuleInfo> moduleList;
 
     [ObservableProperty]
     private int selectedModuleIndex;
@@ -63,7 +62,7 @@ public partial class ModulesPageViewModel : ObservableObject
 
                     foreach (var module in moduleList)
                     {
-                        ModuleList.Add(module);
+                        ModuleList.Add(new ProcessModuleInfo(module));
                     }
 
                     if (ModuleList.Count > 0)

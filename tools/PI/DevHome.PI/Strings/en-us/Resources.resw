@@ -125,10 +125,6 @@
     <value>Maximize</value>
     <comment>Tooltip for the maximize button in the BarWindow</comment>
   </data>
-  <data name="RestoreButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Restore</value>
-    <comment>Tooltip for the restore button in the BarWindow</comment>
-  </data>
   <data name="PinMenuItemText" xml:space="preserve">
     <value>Pin</value>
     <comment>A label for the menuitem to pin a tool on the bar.</comment>
@@ -936,5 +932,17 @@
   <data name="CpuArchitecture_X64onX64" xml:space="preserve">
     <value>X64 process running on X64 machine</value>
     <comment>Message text when the process is x64 CPU architecture running on an X64 CPU machine.</comment>
+  </data>
+  <data name="DetachAppButton.Content" xml:space="preserve">
+    <value>Detach from target app</value>
+    <comment>Button in the expanded view to detach from the target app</comment>
+  </data>
+  <data name="DetachAppButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Detach from the currently targeted process</value>
+    <comment>Used to describe what the DetachAppButton does</comment>
+  </data>
+  <data name="DetachMenuItem.Text" xml:space="preserve">
+    <value>Detach</value>
+    <comment>Menu Item that allows the user to detach from the current process</comment>
   </data>
 </root>
