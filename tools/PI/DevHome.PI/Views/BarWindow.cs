@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using DevHome.Common.Extensions;
+using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
 using DevHome.PI.ViewModels;
