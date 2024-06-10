@@ -162,6 +162,10 @@
   <data name="CPUUsage_Widget_Template.End_Process" xml:space="preserve">
     <value>End process</value>
   </data>
+  <data name="Widget_Template_Button.Preview" xml:space="preserve">
+    <value>Preview</value>
+    <comment>Shown in Widget, Button text</comment>
+  </data>
   <data name="Widget_Template_Button.Save" xml:space="preserve">
     <value>Save</value>
     <comment>Shown in Widget, Button text</comment>
