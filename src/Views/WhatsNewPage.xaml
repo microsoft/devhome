@@ -132,12 +132,7 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-
                                 <Image
-                                    Grid.Row="0"
                                     Grid.Column="0"
                                     Source="{ThemeResource ItemImage}"
                                     MaxHeight="188"
@@ -155,7 +150,7 @@
                                         Margin="0 8 0 10"
                                         TextWrapping="Wrap"
                                         HorizontalAlignment="Left"
-                                        Text="{x:Bind Description, Mode=OneTime}"/>
+                                        Text="{x:Bind Description, Mode=OneTime}" />
 
                                     <HyperlinkButton
                                         Content="{x:Bind Link, Mode=OneTime}"
