@@ -87,12 +87,6 @@ public sealed partial class WhatsNewPage : Page
         MoveBigCardsIfNeeded(this.ActualWidth);
     }
 
-    private void MachineConfigButton_Click(object sender, RoutedEventArgs e)
-    {
-        var navigationService = Application.Current.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(SetupFlow.ViewModels.SetupFlowViewModel).FullName!);
-    }
-
     private async void Button_ClickAsync(object sender, RoutedEventArgs e)
     {
         var btn = sender as Button;

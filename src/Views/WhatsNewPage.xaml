@@ -7,7 +7,6 @@
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
     xmlns:models="using:DevHome.Models"
     xmlns:behaviors="using:DevHome.Common.Behaviors" 
-    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="OnLoaded"
     SizeChanged="OnSizeChanged"
@@ -71,7 +70,7 @@
                         Margin="0 16"
                         MinWidth="248"
                         Style="{ThemeResource AccentButtonStyle}"
-                        Click="MachineConfigButton_Click" />
+                        Command="{x:Bind ViewModel.NavigateToGetStartedCommand}" />
                 </StackPanel>
 
                 <!-- Big Cards -->
