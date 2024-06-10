@@ -49,7 +49,7 @@
                         RadiusX="{ThemeResource AppBarSeparatorCornerRadius}"
                         RadiusY="{ThemeResource AppBarSeparatorCornerRadius}"
                         Height="{ThemeResource AppBarSeparatorWidth}"
-                        Width="200"
+                        Width="{x:Bind NavLinksList.Width, Mode=OneWay}"
                         Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}"
                         Margin="4" />
                     <Button MinWidth="190" HorizontalAlignment="Center" x:Uid="DetachAppButton" Visibility="{x:Bind viewModel.AppSettingsVisibility, Mode=OneWay}" Command="{x:Bind viewModel.DetachFromProcessCommand}"/>
