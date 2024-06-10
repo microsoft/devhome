@@ -16,26 +16,15 @@ public static class ServiceExtensions
     {
         var context = useDev ? ClsidContext.Dev : ClsidContext.Prod;
         services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory(context));
-        services.AddCommon();
+        services.AddWinGetCommon();
         return services;
     }
 
     public static IServiceCollection AddWinGetElevated(this IServiceCollection services)
     {
         services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerManualActivationFactory());
-        services.AddCommon();
-        return services;
-    }
-
-    private static void AddCommon(this IServiceCollection services)
-    {
         services.AddWinGetCommon();
-        services.AddDSCCommon();
-    }
-
-    private static void AddDSCCommon(this IServiceCollection services)
-    {
-        services.AddSingleton<IDesiredStateConfiguration, DesiredStateConfiguration>();
+        return services;
     }
 
     private static void AddWinGetCommon(this IServiceCollection services)

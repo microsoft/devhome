@@ -4,14 +4,14 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using DevHome.Services.WindowsPackageManager.Exceptions;
-using DevHome.Services.WindowsPackageManager.TelemetryEvents;
+using DevHome.Services.DesiredStateConfiguration.Exceptions;
+using DevHome.Services.DesiredStateConfiguration.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Management.Configuration;
 using Windows.Storage.Streams;
 
-namespace DevHome.Services.WindowsPackageManager.Models;
+namespace DevHome.Services.DesiredStateConfiguration.Models;
 
 /// <summary>
 /// Model class for a YAML configuration file

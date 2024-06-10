@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Management.Configuration;
 
-namespace DevHome.Services.WindowsPackageManager.Models;
+namespace DevHome.Services.DesiredStateConfiguration.Models;
 
 public class DSCConfigurationUnit
 {

@@ -152,14 +152,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsSandboxExtension", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{E0A15760-487A-4CCB-8093-DE6FF3C4BC23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevHome.Services.WindowsPackageManager", "services\DevHome.Services.WindowsPackageManager\DevHome.Services.WindowsPackageManager.csproj", "{DA5C4FC8-18AF-4446-807F-A2FFFE4DCF6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Services.WindowsPackageManager", "services\DevHome.Services.WindowsPackageManager\DevHome.Services.WindowsPackageManager.csproj", "{DA5C4FC8-18AF-4446-807F-A2FFFE4DCF6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevHome.Services.Core", "services\DevHome.Services.Core\DevHome.Services.Core.csproj", "{8FB1EF90-B693-4A2A-A7F2-44ECA499D769}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Services.Core", "services\DevHome.Services.Core\DevHome.Services.Core.csproj", "{8FB1EF90-B693-4A2A-A7F2-44ECA499D769}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{E768781A-D1F7-4C03-B46D-E76354FAB587}"
 	ProjectSection(SolutionItems) = preProject
 		tools\scripts\CaptureDevHomeLogs.ps1 = tools\scripts\CaptureDevHomeLogs.ps1
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevHome.Services.DesiredStateConfiguration", "services\DevHome.Services.DesiredStateConfiguration\DevHome.Services.DesiredStateConfiguration.csproj", "{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -765,6 +767,18 @@ Global
 		{8FB1EF90-B693-4A2A-A7F2-44ECA499D769}.Release|x64.Build.0 = Release|x64
 		{8FB1EF90-B693-4A2A-A7F2-44ECA499D769}.Release|x86.ActiveCfg = Release|x86
 		{8FB1EF90-B693-4A2A-A7F2-44ECA499D769}.Release|x86.Build.0 = Release|x86
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}.Debug|arm64.ActiveCfg = Debug|ARM64
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}.Debug|arm64.Build.0 = Debug|ARM64
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}.Debug|x64.ActiveCfg = Debug|x64
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}.Debug|x64.Build.0 = Debug|x64
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}.Debug|x86.ActiveCfg = Debug|x86
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}.Debug|x86.Build.0 = Debug|x86
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}.Release|arm64.ActiveCfg = Release|ARM64
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}.Release|arm64.Build.0 = Release|ARM64
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}.Release|x64.ActiveCfg = Release|x64
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}.Release|x64.Build.0 = Release|x64
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}.Release|x86.ActiveCfg = Release|x86
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -826,6 +840,7 @@ Global
 		{DA5C4FC8-18AF-4446-807F-A2FFFE4DCF6C} = {E0A15760-487A-4CCB-8093-DE6FF3C4BC23}
 		{8FB1EF90-B693-4A2A-A7F2-44ECA499D769} = {E0A15760-487A-4CCB-8093-DE6FF3C4BC23}
 		{E768781A-D1F7-4C03-B46D-E76354FAB587} = {A972EC5B-FC61-4964-A6FF-F9633EB75DFD}
+		{D7A1C2CE-36B1-43A8-9BA6-1EE2CF24479F} = {E0A15760-487A-4CCB-8093-DE6FF3C4BC23}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {030B5641-B206-46BB-BF71-36FF009088FA}

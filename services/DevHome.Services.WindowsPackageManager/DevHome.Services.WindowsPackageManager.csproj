@@ -18,8 +18,6 @@
     <ItemGroup>
         <CsWinRTInputs Include="$(TargetDir)\Microsoft.Management.Deployment.winmd" />
         <Content Include="$(TargetDir)\Microsoft.Management.Deployment.winmd" Link="Microsoft.Management.Deployment.winmd" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="$(TargetDir)\Microsoft.Management.Configuration.dll" Link="Microsoft.Management.Configuration.dll" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="$(TargetDir)\Microsoft.Management.Configuration.winmd" Link="Microsoft.Management.Configuration.winmd" CopyToOutputDirectory="PreserveNewest" />
 
         <!-- This DLL from the winget COM interop package allows activating the winget server elevated -->
         <Content Include="$(TargetDir)\winrtact.dll" Link="winrtact.dll" CopyToOutputDirectory="PreserveNewest" />
@@ -32,7 +30,6 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
         <ProjectReference Include="..\DevHome.Services.Core\DevHome.Services.Core.csproj" />
-        <PackageReference Include="Microsoft.WindowsPackageManager.Configuration.OutOfProc" Version="1.7.10091-preview" GeneratePathProperty="True" />
         <!--
             Microsoft.WindowsPackageManager.ComInterop nuget targets .NET Framework:
             https://www.nuget.org/packages/Microsoft.WindowsPackageManager.ComInterop#readme-body-tab
@@ -53,7 +50,5 @@
     <Target Name="CopyWinmdToTargetDir" BeforeTargets="BeforeBuild">
         <Copy SourceFiles="$(PkgMicrosoft_WindowsPackageManager_ComInterop)\lib\Microsoft.Management.Deployment.winmd" DestinationFolder="$(TargetDir)" />
         <Copy SourceFiles="$(PkgMicrosoft_WindowsPackageManager_ComInterop)\runtimes\win10-$(Platform)\native\winrtact.dll" DestinationFolder="$(TargetDir)" />
-        <Copy SourceFiles="$(PkgMicrosoft_WindowsPackageManager_Configuration_OutOfProc)\runtimes\win10-$(Platform)\native\Microsoft.Management.Configuration.dll" DestinationFolder="$(TargetDir)" />
-        <Copy SourceFiles="$(PkgMicrosoft_WindowsPackageManager_Configuration_OutOfProc)\runtimes\win10-$(Platform)\native\Microsoft.Management.Configuration.winmd" DestinationFolder="$(TargetDir)" />
     </Target>
 </Project>

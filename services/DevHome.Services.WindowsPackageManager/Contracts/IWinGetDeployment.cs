@@ -25,16 +25,4 @@ internal interface IWinGetDeployment
     /// </summary>
     /// <returns>True if AppInstaller was registered, false otherwise.</returns>
     public Task<bool> RegisterAppInstallerAsync();
-
-    /// <summary>
-    /// Check if configuration is unstubbed
-    /// </summary>
-    /// <returns>True if configuration is unstubbed, false otherwise</returns>
-    public Task<bool> IsConfigurationUnstubbedAsync();
-
-    /// <summary>
-    /// Unstub configuration
-    /// </summary>
-    /// <returns>True if configuration was unstubbed, false otherwise</returns>
-    public Task<bool> UnstubConfigurationAsync();
 }

@@ -8,7 +8,6 @@ using DevHome.Services.Core.Exceptions;
 using DevHome.Services.WindowsPackageManager.COM;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using Microsoft.Extensions.Logging;
-using Microsoft.Management.Configuration;
 using Microsoft.Management.Deployment;
 
 namespace DevHome.Services.WindowsPackageManager.Services;
@@ -95,37 +94,6 @@ internal sealed class WinGetDeployment : IWinGetDeployment
         catch (Exception e)
         {
             _logger.LogError(e, "An unexpected error occurred when registering AppInstaller");
-            return false;
-        }
-    }
-
-    /// <inheritdoc />
-    public async Task<bool> IsConfigurationUnstubbedAsync()
-    {
-        try
-        {
-            return await Task.Run(() => new ConfigurationStaticFunctions().IsConfigurationAvailable);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "An unexpected error occurred when checking if configuration is unstubbed");
-            return false;
-        }
-    }
-
-    /// <inheritdoc />
-    public async Task<bool> UnstubConfigurationAsync()
-    {
-        try
-        {
-            _logger.LogInformation("Starting to unstub configuration ...");
-            await new ConfigurationStaticFunctions().EnsureConfigurationAvailableAsync();
-            _logger.LogInformation("Configuration unstubbed successfully");
-            return true;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "An unexpected error occurred when unstubbing configuration");
             return false;
         }
     }

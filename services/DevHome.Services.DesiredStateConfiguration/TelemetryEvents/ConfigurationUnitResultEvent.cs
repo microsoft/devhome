@@ -8,7 +8,7 @@ using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 using Microsoft.Management.Configuration;
 
-namespace DevHome.Services.WindowsPackageManager.TelemetryEvents;
+namespace DevHome.Services.DesiredStateConfiguration.TelemetryEvents;
 
 [EventData]
 internal sealed class ConfigurationUnitResultEvent : EventBase

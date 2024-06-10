@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Management.Configuration;
 
-namespace DevHome.Services.WindowsPackageManager.Exceptions;
+namespace DevHome.Services.DesiredStateConfiguration.Exceptions;
 
 public class OpenConfigurationSetException : WinGetConfigurationException
 {
