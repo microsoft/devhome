@@ -7,6 +7,7 @@ using System.Diagnostics;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
+using DevHome.PI.Views;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.System;

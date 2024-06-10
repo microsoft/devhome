@@ -41,5 +41,5 @@ public sealed partial class CardHeader : UserControl
     private static readonly DependencyProperty ActionControlTemplateProperty = DependencyProperty.Register(nameof(ActionControlTemplate), typeof(DataTemplate), typeof(CardHeader), new PropertyMetadata(null));
     private static readonly DependencyProperty HeaderCaptionProperty = DependencyProperty.Register(nameof(HeaderCaption), typeof(string), typeof(CardHeader), new PropertyMetadata(null));
     private static readonly DependencyProperty HeaderIconProperty = DependencyProperty.Register(nameof(HeaderIcon), typeof(BitmapImage), typeof(CardHeader), new PropertyMetadata(null));
-    private static readonly DependencyProperty OperationsVisibilityProperty = DependencyProperty.Register(nameof(HeaderCaption), typeof(bool), typeof(CardHeader), new PropertyMetadata(false));
+    private static readonly DependencyProperty OperationsVisibilityProperty = DependencyProperty.Register(nameof(HeaderCaption), typeof(bool), typeof(CardHeader), new PropertyMetadata(true));
 }
