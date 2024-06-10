@@ -22,7 +22,6 @@ public sealed partial class WhatsNewPage : Page
     private readonly Uri _devDrivePageKeyUri = new("ms-settings:disksandvolumes");
     private readonly Uri _devDriveLearnMoreLinkUri = new("https://go.microsoft.com/fwlink/?linkid=2236041");
     private const string _devDriveLinkResourceKey = "WhatsNewPage_DevDriveCard/Link";
-    private const string _accountsPageNavigationLink = "DevHome.Settings.ViewModels.AccountsViewModel";
 
     public WhatsNewViewModel ViewModel
     {
@@ -91,7 +90,7 @@ public sealed partial class WhatsNewPage : Page
     private void MachineConfigButton_Click(object sender, RoutedEventArgs e)
     {
         var navigationService = Application.Current.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(DevHome.SetupFlow.ViewModels.SetupFlowViewModel).FullName!);
+        navigationService.NavigateTo(typeof(SetupFlow.ViewModels.SetupFlowViewModel).FullName!);
     }
 
     private async void Button_ClickAsync(object sender, RoutedEventArgs e)
@@ -116,12 +115,12 @@ public sealed partial class WhatsNewPage : Page
         }
         else
         {
-            if (pageKey.Equals(_accountsPageNavigationLink, StringComparison.OrdinalIgnoreCase))
+            if (pageKey.Equals(typeof(Settings.ViewModels.AccountsViewModel).FullName, StringComparison.OrdinalIgnoreCase))
             {
                 TelemetryFactory.Get<ITelemetry>().Log(
-                                                        "EntryPoint_DevId_Event",
-                                                        LogLevel.Critical,
-                                                        new EntryPointEvent(EntryPointEvent.EntryPoint.WhatsNewPage));
+                    "EntryPoint_DevId_Event",
+                    LogLevel.Critical,
+                    new EntryPointEvent(EntryPointEvent.EntryPoint.WhatsNewPage));
             }
 
             var navigationService = Application.Current.GetService<INavigationService>();
@@ -146,14 +145,6 @@ public sealed partial class WhatsNewPage : Page
         else
         {
             ViewModel.SwitchToLargerView();
-        }
-    }
-
-    public static class MyHelpers
-    {
-        public static Type GetType(object ele)
-        {
-            return ele.GetType();
         }
     }
 }
