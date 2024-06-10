@@ -55,7 +55,7 @@ public sealed partial class WhatsNewPage : Page
             {
                 if (!DevDriveUtil.IsDevDriveFeatureEnabled)
                 {
-                    card.Button = Application.Current.GetService<IStringResource>().GetLocalized(_devDriveLinkResourceKey);
+                    card.ButtonText = Application.Current.GetService<IStringResource>().GetLocalized(_devDriveLinkResourceKey);
                     card.ShouldShowLink = false;
                 }
             }

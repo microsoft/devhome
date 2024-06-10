@@ -173,7 +173,7 @@
                                         Click="Button_ClickAsync"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Bottom"
-                                        Content="{x:Bind Button, Mode=OneTime}" />
+                                        Content="{x:Bind ButtonText, Mode=OneTime}" />
 
                                 </StackPanel>
                             </Grid>
@@ -302,11 +302,11 @@
                                     DataContext="{x:Bind PageKey}"
                                     Click="Button_ClickAsync"
                                     HorizontalAlignment="Stretch"
-                                    AutomationProperties.Name="{x:Bind Button, Mode=OneTime}"
+                                    AutomationProperties.Name="{x:Bind ButtonText, Mode=OneTime}"
                                     VerticalAlignment="Bottom">
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{x:Bind Button, Mode=OneTime}" Margin="0 0 5 0" />
+                                            <TextBlock Text="{x:Bind ButtonText, Mode=OneTime}" Margin="0 0 5 0" />
                                             <!-- The open new window icon -->
                                             <FontIcon 
                                                 Glyph="&#xE8A7;" 
