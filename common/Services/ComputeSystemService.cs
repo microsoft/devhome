@@ -67,7 +67,7 @@ public class ComputeSystemService : IComputeSystemService
                 if (ShouldDisabledExtensionIfFeatureAbsent(extension.ExtensionUniqueId))
                 {
                     _log.Information($"User machine does not have the {CommonConstants.ExtensionToFeatureNameMap[extension.ExtensionUniqueId]} feature present." +
-                        $" Disabling the Windows Sandbox extension");
+                        $" Disabling the extension with class Id: {extension.ExtensionUniqueId}");
                     _extensionService.DisableExtension(extension.ExtensionUniqueId);
                     continue;
                 }

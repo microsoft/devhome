@@ -162,10 +162,10 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                     }
 
                     // Only show dot operations when there are items in the list.
-                    if (LaunchOperations.Count > 0)
-                    {
-                        ShouldShowSplitButton = true;
-                    }
+                    ShouldShowDotOperations = DotOperations.Count > 0;
+
+                    // Only show Launch split button with operations when there are items in the list.
+                    ShouldShowSplitButton = LaunchOperations.Count > 0;
                 });
             });
 
