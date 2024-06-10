@@ -17,7 +17,7 @@ internal sealed class SSHWalletWidget : CoreWidget
 {
     private static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
 
-    private static readonly Regex HostRegex = new(@"^Host\s+(\S*)\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+    private static readonly Regex HostRegex = new(@"^Host\s+(?:(\S*) ?)*?\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
     private FileSystemWatcher? FileWatcher { get; set; }
 
