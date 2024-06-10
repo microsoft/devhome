@@ -23,10 +23,7 @@ public sealed partial class WhatsNewPage : Page
     private readonly Uri _devDriveLearnMoreLinkUri = new("https://go.microsoft.com/fwlink/?linkid=2236041");
     private const string _devDriveLinkResourceKey = "WhatsNewPage_DevDriveCard/Link";
 
-    public WhatsNewViewModel ViewModel
-    {
-        get;
-    }
+    public WhatsNewViewModel ViewModel { get; }
 
     public WhatsNewPage()
     {
@@ -124,7 +121,7 @@ public sealed partial class WhatsNewPage : Page
 
     public void OnSizeChanged(object sender, SizeChangedEventArgs args)
     {
-        if ((Page)sender == this)
+        if (sender as Page == this)
         {
             MoveBigCardsIfNeeded(args.NewSize.Width);
         }

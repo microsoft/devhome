@@ -70,7 +70,7 @@
                         Margin="0 16"
                         MinWidth="248"
                         Style="{ThemeResource AccentButtonStyle}"
-                        Command="{x:Bind ViewModel.NavigateToGetStartedCommand}" />
+                        Command="{x:Bind ViewModel.HeaderButtonNavigateCommand}" />
                 </StackPanel>
 
                 <!-- Big Cards -->

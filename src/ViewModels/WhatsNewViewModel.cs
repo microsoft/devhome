@@ -112,7 +112,7 @@ public partial class WhatsNewViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void NavigateToGetStarted()
+    private void HeaderButtonNavigate()
     {
         _navigationService.NavigateTo(typeof(SetupFlow.ViewModels.SetupFlowViewModel).FullName!);
     }
