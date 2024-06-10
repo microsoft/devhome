@@ -140,7 +140,7 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
                 return new ComputeSystemOperationResult(
                     ex,
                     Resources.GetResource("WindowsSandboxFailedToStart", _log, ex.Message),
-                    "Failed to start Windows Sandbox");
+                    ex.Message);
             }
         }).AsAsyncOperation();
     }
@@ -192,7 +192,7 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
                 return new ComputeSystemOperationResult(
                     ex,
                     Resources.GetResource("FailedToTerminateWindowsSandbox", _log, ex.Message),
-                    "Failed to terminate Windows Sandbox");
+                    ex.Message);
             }
         }).AsAsyncOperation();
     }
