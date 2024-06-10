@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ internal sealed class Resources
 {
     private static ResourceLoader? _resourceLoader;
 
-    public static string GetResource(string identifier, ILogger? log = null)
+    public static string GetResource(string identifier, ILogger? log = null, params object[] args)
     {
         try
         {
@@ -25,7 +26,8 @@ internal sealed class Resources
                 _resourceLoader = new ResourceLoader(path);
             }
 
-            return _resourceLoader.GetString(identifier);
+            var resourceStr = _resourceLoader.GetString(identifier);
+            return string.Format(CultureInfo.CurrentCulture, resourceStr, args);
         }
         catch (Exception ex)
         {

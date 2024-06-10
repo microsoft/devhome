@@ -45,4 +45,11 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
+
+	<PropertyGroup>
+		<BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
+		<DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
+		<DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
+	</PropertyGroup>
+
 </Project>

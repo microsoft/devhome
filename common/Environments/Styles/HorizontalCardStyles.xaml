@@ -238,4 +238,14 @@
         <Setter Property="Padding" Value="20,8,15,8" />
     </Style>
 
+    <Style
+        x:Key="CardBodyLaunchButtonStyle"
+        
+        TargetType="Button">
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Padding" Value="34,7,34,7" />
+        <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
+    </Style>
+
 </ResourceDictionary>

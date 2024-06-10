@@ -36,6 +36,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     private readonly HashSet<string> _internalClassIdsToBeShownInExtensionsPage = new()
     {
         CommonConstants.HyperVExtensionClassId,
+        CommonConstants.WindowsSandBoxExtensionClassId,
     };
 
     public ObservableCollection<StorePackageViewModel> StorePackagesList { get; set; }

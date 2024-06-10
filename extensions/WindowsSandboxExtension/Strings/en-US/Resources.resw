@@ -118,8 +118,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="FailedToTerminateWindowsSandbox" xml:space="preserve">
-    <value>Failed to terminate Windows Sandbox</value>
-	<comment>{Locked="Windows Sandbox"} Failed to terminate display message.</comment>
+    <value>Failed to terminate Windows Sandbox due to error: {0}</value>
+    <comment>{Locked="{Windows Sandbox}", "{0}"}  Failed to terminate display message. {0} is the internal error message.</comment>
   </data>
   <data name="NotImplemented" xml:space="preserve">
     <value>This operation is not yet implemented for Windows Sandbox</value>
@@ -129,7 +129,7 @@
     <comment>{Locked="Windows Sandbox"} The diplay name used for the default Windows Sandbox compute system.</comment>
   </data>
   <data name="WindowsSandboxFailedToStart" xml:space="preserve">
-    <value>Failed to start Windows Sandbox</value>
-	<comment>{Locked="Windows Sandbox"} Failed to start display message.</comment>
+    <value>Failed to start Windows Sandbox due to error: {0}</value>
+    <comment>{Locked="{Windows Sandbox}", "{0}"} Failed to start display message. {0} is the internal error message.</comment>
   </data>
 </root>

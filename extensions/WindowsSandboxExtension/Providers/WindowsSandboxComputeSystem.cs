@@ -139,7 +139,7 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
 
                 return new ComputeSystemOperationResult(
                     ex,
-                    Resources.GetResource("WindowsSandboxFailedToStart", _log),
+                    Resources.GetResource("WindowsSandboxFailedToStart", _log, ex.Message),
                     "Failed to start Windows Sandbox");
             }
         }).AsAsyncOperation();
@@ -171,15 +171,15 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
         {
             try
             {
-                if (_windowsSandboxExeProcess == null || _windowsSandboxExeProcess.HasExited)
+                State = ComputeSystemState.Stopping;
+
+                if (_windowsSandboxExeProcess != null || _windowsSandboxExeProcess?.HasExited != true)
                 {
-                    State = ComputeSystemState.Stopped;
-                    return new ComputeSystemOperationResult();
+                    GetWindowsSandboxClientProcess()?.Kill();
+                    _windowsSandboxExeProcess?.Kill();
                 }
 
-                GetWindowsSandboxClientProcess()?.Kill();
-                _windowsSandboxExeProcess.Kill();
-
+                State = ComputeSystemState.Stopped;
                 return new ComputeSystemOperationResult();
             }
             catch (Exception ex)
@@ -191,7 +191,7 @@ public class WindowsSandboxComputeSystem : IComputeSystem, IDisposable
 
                 return new ComputeSystemOperationResult(
                     ex,
-                    Resources.GetResource("FailedToTerminateWindowsSandbox", _log),
+                    Resources.GetResource("FailedToTerminateWindowsSandbox", _log, ex.Message),
                     "Failed to terminate Windows Sandbox");
             }
         }).AsAsyncOperation();

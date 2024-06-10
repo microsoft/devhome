@@ -14,7 +14,7 @@ internal sealed class Constants
     public const string WindowsSandboxExe = "WindowsSandbox.exe";
     public const string ProviderDisplayName = "Windows Sandbox";
     public const string ProviderId = "Microsoft.WindowsSandbox";
-    public const string Thumbnail = "ms-appx:///Assets/windows-sandbox-thumbnail.jpg";
+    public const string Thumbnail = "ms-appx:///Assets/windows-sandbox-thumbnail.png";
 
     // We use different icon locations for different builds. Note these are ms-resource URIs, but are used by Dev Home to load the providers icon.
     // from the extension package. Extensions that implement the IComputeSystemProvider interface must provide a provider icon in this format.
