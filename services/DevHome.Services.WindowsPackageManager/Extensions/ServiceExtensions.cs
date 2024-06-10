@@ -16,18 +16,29 @@ public static class ServiceExtensions
     {
         var context = useDev ? ClsidContext.Dev : ClsidContext.Prod;
         services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory(context));
-        services.AddWinGetCommon();
+        services.AddCommon();
         return services;
     }
 
     public static IServiceCollection AddWinGetElevated(this IServiceCollection services)
     {
         services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerManualActivationFactory());
-        services.AddWinGetCommon();
+        services.AddCommon();
         return services;
     }
 
-    private static IServiceCollection AddWinGetCommon(this IServiceCollection services)
+    private static void AddCommon(this IServiceCollection services)
+    {
+        services.AddWinGetCommon();
+        services.AddDSCCommon();
+    }
+
+    private static void AddDSCCommon(this IServiceCollection services)
+    {
+        services.AddSingleton<IDesiredStateConfiguration, DesiredStateConfiguration>();
+    }
+
+    private static void AddWinGetCommon(this IServiceCollection services)
     {
         services.AddSingleton<IWinGet, WinGet>();
         services.AddSingleton<IWinGetCatalogConnector, WinGetCatalogConnector>();
@@ -41,7 +52,5 @@ public static class ServiceExtensions
         services.AddSingleton<IWinGetGetPackageOperation, WinGetGetPackageOperation>();
         services.AddSingleton<IWinGetSearchOperation, WinGetSearchOperation>();
         services.AddSingleton<IWinGetInstallOperation, WinGetInstallOperation>();
-        services.AddSingleton<IDesiredStateConfiguration, DesiredStateConfiguration>();
-        return services;
     }
 }

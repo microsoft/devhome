@@ -8,14 +8,8 @@ using DevHome.Services.WindowsPackageManager.Models;
 
 namespace DevHome.Services.WindowsPackageManager.Contracts;
 
-public interface IDesiredStateConfiguration
+public interface IDSCOperations
 {
-    /// <inheritdoc cref="IWinGetDeployment.IsConfigurationUnstubbedAsync" />"
-    public Task<bool> IsUnstubbedAsync();
-
-    /// <inheritdoc cref="IWinGetDeployment.UnstubConfigurationAsync" />"
-    public Task<bool> UnstubAsync();
-
     /// <summary>
     /// Validates the provided configuration file.
     /// </summary>
