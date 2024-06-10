@@ -11,13 +11,15 @@ using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
 using DevHome.PI.ViewModels;
+using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation;
-using Windows.UI.WindowManagement;
 using Windows.Win32;
+using Windows.UI.ViewManagement;
+using Windows.UI.WindowManagement;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.Shell.Common;
@@ -31,6 +33,8 @@ public partial class BarWindowHorizontal : WindowEx
 {
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowViewModel _viewModel;
+    private readonly UISettings _uiSettings = new();
+
     private bool isClosing;
 
     // Constants that control window sizes
@@ -80,6 +84,14 @@ public partial class BarWindowHorizontal : WindowEx
         var settingSize = Settings.Default.ExpandedLargeSize;
         _restoreState.Height = settingSize.Height;
         _restoreState.Width = settingSize.Width;
+
+        _uiSettings.ColorValuesChanged += (sender, args) =>
+        {
+            TheDispatcher.TryEnqueue(() =>
+            {
+                ApplySystemThemeToCaptionButtons();
+            });
+        };
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -211,6 +223,19 @@ public partial class BarWindowHorizontal : WindowEx
         if (Content is FrameworkElement rootElement)
         {
             rootElement.RequestedTheme = theme;
+
+            if (theme == ElementTheme.Dark)
+            {
+                SetCaptionButtonColors(Colors.White);
+            }
+            else if (theme == ElementTheme.Light)
+            {
+                SetCaptionButtonColors(Colors.Black);
+            }
+            else
+            {
+                ApplySystemThemeToCaptionButtons();
+            }
         }
     }
 
@@ -293,5 +318,34 @@ public partial class BarWindowHorizontal : WindowEx
     private void MainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         SetRegionsForTitleBar();
+    }
+
+    // workaround as Appwindow titlebar doesn't update caption button colors correctly when changed while app is running
+    // https://task.ms/44172495
+    public void ApplySystemThemeToCaptionButtons()
+    {
+        if (Content is FrameworkElement rootElement)
+        {
+            Windows.UI.Color color;
+            if (rootElement.ActualTheme == ElementTheme.Dark)
+            {
+                color = Colors.White;
+            }
+            else
+            {
+                color = Colors.Black;
+            }
+
+            SetCaptionButtonColors(color);
+        }
+
+        return;
+    }
+
+    public void SetCaptionButtonColors(Windows.UI.Color color)
+    {
+        var res = Application.Current.Resources;
+        res["WindowCaptionForeground"] = color;
+        AppWindow.TitleBar.ButtonForegroundColor = color;
     }
 }

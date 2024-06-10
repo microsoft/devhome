@@ -125,10 +125,6 @@
     <value>Maximize</value>
     <comment>Tooltip for the maximize button in the BarWindow</comment>
   </data>
-  <data name="RestoreButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Restore</value>
-    <comment>Tooltip for the restore button in the BarWindow</comment>
-  </data>
   <data name="PinMenuItemText" xml:space="preserve">
     <value>Pin</value>
     <comment>A label for the menuitem to pin a tool on the bar.</comment>
@@ -142,8 +138,8 @@
     <comment>The tooltip for a button which toggles the orientation of the bar between horizontal and vertical</comment>
   </data>
   <data name="DissociateButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Dissociate so that PI is not tracking any app</value>
-    <comment>The tooltip for a button which causes PI to no longer track any app</comment>
+    <value>Dissociate so that Project Ironsides is not tracking any app</value>
+    <comment>Locked="{Ironsides}" The tooltip for a button which causes Project Ironsides to no longer track any app</comment>
   </data>
   <data name="SwitchToLargeLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Expand or collapse the large content panel</value>
@@ -159,11 +155,11 @@
   </data>
   <data name="SettingsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Settings</value>
-    <comment>The tooltip for a button that takes the user to the settings for PI.</comment>
+    <comment>The tooltip for a button that takes the user to the settings for Project Ironsides.</comment>
   </data>
   <data name="ManageExternalToolsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>External tools: add/remove, configure and launch</value>
-    <comment>The tooltip for a button that takes the user to the external tools section of PI.</comment>
+    <comment>The tooltip for a button that takes the user to the external tools section of Project Ironsides.</comment>
   </data>
   <data name="ToolLaunchErrorTitle" xml:space="preserve">
     <value>Error</value>
@@ -514,8 +510,8 @@
     <comment>This refers to whether the application is running as System</comment>
   </data>
   <data name="RunElevatedButton.Content" xml:space="preserve">
-    <value>Run PI as Admin to get more data</value>
-    <comment>When the user clicks this button we relaunch PI as admin to get more app details</comment>
+    <value>Run Project Ironsides as Admin to get more data</value>
+    <comment>Locked="{Ironsides}" When the user clicks this button we relaunch Project Ironsides as admin to get more app details</comment>
   </data>
   <data name="InsightsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Go to the key insights</value>
@@ -687,15 +683,15 @@
   </data>
   <data name="PIDisplayName" xml:space="preserve">
     <value>Project Ironsides</value>
-    <comment>{Locked}The name of the PI application</comment>
+    <comment>{Locked}The name of the Project Ironsides application</comment>
   </data>
   <data name="PIAppDescription" xml:space="preserve">
     <value>Dev Home Project Ironsides</value>
-    <comment>{Locked}The description of the PI application</comment>
+    <comment>{Locked}The description of the Project Ironsides application</comment>
   </data>
   <data name="PIStartupTaskDisplayName" xml:space="preserve">
-    <value>Hotkey for Dev Home PI</value>
-    <comment>The description of the startup task for Dev Home PI. This shows up in task manager/Windows Settings &gt; Startup Apps.</comment>
+    <value>Hotkey for Dev Home Project Ironsides</value>
+    <comment>Locked="{Ironsides}" The description of the startup task for Dev Home Project Ironsides. This shows up in task manager/Windows Settings &gt; Startup Apps.</comment>
   </data>
   <data name="IsPythonTextBlock.Text" xml:space="preserve">
     <value>Is Python</value>
@@ -806,8 +802,8 @@
     <comment>Refers to a color theme or scheme.</comment>
   </data>
   <data name="SettingsAboutAppInfoCard.Header" xml:space="preserve">
-    <value>Dev Home PI</value>
-    <comment>This is the name of the product.</comment>
+    <value>Dev Home Project Ironsides</value>
+    <comment>{Locked} This is the name of the product.</comment>
   </data>
   <data name="SettingsAboutAppInfoCard.Description" xml:space="preserve">
     <value>© Microsoft. All rights reserved.</value>
@@ -842,8 +838,8 @@
     <comment>Link to the source code for the product.</comment>
   </data>
   <data name="SettingsAddToolCard.Header" xml:space="preserve">
-    <value>Register an external tool with Dev Home PI</value>
-    <comment>Header for the settings item to add a tool to the product.</comment>
+    <value>Register an external tool with Dev Home Project Ironsides</value>
+    <comment>Locked="{Ironsides}" Header for the settings item to add a tool to the product.</comment>
   </data>
   <data name="SettingsEditToolCard.Header" xml:space="preserve">
     <value>Edit or unregister existing tools</value>
@@ -907,19 +903,19 @@
   </data>
   <data name="ProcessChooserButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Select a process to investigate</value>
-    <comment>Describes using a button in PI's UX to investigate another process running on the system</comment>
+    <comment>Describes using a button in Project Ironsides's UX to investigate another process running on the system</comment>
   </data>
   <data name="SnapButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Attach the diagnostic bar to the target application</value>
-    <comment>Describes using a button in PI's UX</comment>
+    <comment>Describes using a button in Project Ironsides's UX</comment>
   </data>
   <data name="Title.Text" xml:space="preserve">
-    <value>Dev Home PI</value>
-    <comment>The product name</comment>
+    <value>Dev Home Project Ironsides</value>
+    <comment>{Locked} The product name</comment>
   </data>
   <data name="VerticalCloseButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Close</value>
-    <comment>Describes a button that will close PI's window</comment>
+    <comment>Describes a button that will close Project Ironsides's window</comment>
   </data>
   <data name="CpuArchitecture_ProcessOnMachine" xml:space="preserve">
     <value>{0} process running on {1} machine</value>
@@ -936,5 +932,17 @@
   <data name="CpuArchitecture_X64onX64" xml:space="preserve">
     <value>X64 process running on X64 machine</value>
     <comment>Message text when the process is x64 CPU architecture running on an X64 CPU machine.</comment>
+  </data>
+  <data name="DetachAppButton.Content" xml:space="preserve">
+    <value>Detach from target app</value>
+    <comment>Button in the expanded view to detach from the target app</comment>
+  </data>
+  <data name="DetachAppButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Detach from the currently targeted process</value>
+    <comment>Used to describe what the DetachAppButton does</comment>
+  </data>
+  <data name="DetachMenuItem.Text" xml:space="preserve">
+    <value>Detach</value>
+    <comment>Menu Item that allows the user to detach from the current process</comment>
   </data>
 </root>

@@ -88,6 +88,7 @@ public static class Resources
             "CPUUsage_Widget_Template/CPU_Speed",
             "CPUUsage_Widget_Template/Processes",
             "CPUUsage_Widget_Template/End_Process",
+            "Widget_Template_Button/Preview",
             "Widget_Template_Button/Save",
             "Widget_Template_Button/Cancel",
         ];
