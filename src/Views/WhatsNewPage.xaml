@@ -151,31 +151,31 @@
                                     <TextBlock
                                         HorizontalAlignment="Left"
                                         Style="{ThemeResource BodyTextStyle}"
-                                        Text="{x:Bind Title}" />
+                                        Text="{x:Bind Title, Mode=OneTime}" />
 
                                     <TextBlock
                                         Margin="0 8 0 10"
                                         TextWrapping="Wrap"
                                         HorizontalAlignment="Left"
-                                        Text="{x:Bind Description}"/>
+                                        Text="{x:Bind Description, Mode=OneTime}"/>
 
                                     <HyperlinkButton
-                                        Content="{x:Bind Link}"
+                                        Content="{x:Bind Link, Mode=OneTime}"
                                         Foreground="{ThemeResource LearnMoreForeground}"
                                         NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
                                         Padding="0"
                                         Margin="0"
-                                        Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
+                                        Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneTime}" />
 
                                     <Button 
                                         Margin="0 0 0 10"
                                         Padding="50 5 50 5"
                                         DataContext="{x:Bind PageKey}"
-                                        AutomationProperties.AutomationId="{x:Bind AutomationId}"
+                                        AutomationProperties.AutomationId="{x:Bind AutomationId, Mode=OneTime}"
                                         Click="Button_ClickAsync"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Bottom"
-                                        Content="{x:Bind Button}" />
+                                        Content="{x:Bind Button, Mode=OneTime}" />
 
                                 </StackPanel>
                             </Grid>
@@ -275,7 +275,7 @@
                                         <TextBlock
                                             HorizontalAlignment="Left"
                                             Style="{ThemeResource BodyTextStyle}"
-                                            Text="{x:Bind Title}" />
+                                            Text="{x:Bind Title, Mode=OneTime}" />
 
                                         <StackPanel Margin="0 16 0 20">
                                             <TextBlock
@@ -283,7 +283,7 @@
                                                 TextWrapping="Wrap"
                                                 VerticalAlignment="Top"
                                                 TextTrimming="WordEllipsis"
-                                                Text="{x:Bind Description}"/>
+                                                Text="{x:Bind Description, Mode=OneTime}" />
 
                                             <HyperlinkButton
                                                 Content="{x:Bind Link}"
@@ -292,7 +292,7 @@
                                                 VerticalAlignment="Top"
                                                 Padding="0"
                                                 Margin="0"
-                                                Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
+                                                Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneTime}" />
                                         </StackPanel>
                                     </StackPanel>
                                 </ScrollViewer>
@@ -300,19 +300,19 @@
                                 <Button
                                     Grid.Row="2"
                                     Margin="15 0 15 10"
-                                    AutomationProperties.AutomationId="{x:Bind AutomationId}"
+                                    AutomationProperties.AutomationId="{x:Bind AutomationId, Mode=OneTime}"
                                     DataContext="{x:Bind PageKey}"
                                     Click="Button_ClickAsync"
                                     HorizontalAlignment="Stretch"
-                                    AutomationProperties.Name="{x:Bind Button}"
+                                    AutomationProperties.Name="{x:Bind Button, Mode=OneTime}"
                                     VerticalAlignment="Bottom">
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{x:Bind Button}" Margin="0 0 5 0" />
+                                            <TextBlock Text="{x:Bind Button, Mode=OneTime}" Margin="0 0 5 0" />
                                             <!-- The open new window icon -->
                                             <FontIcon 
                                                 Glyph="&#xE8A7;" 
-                                                Visibility="{x:Bind ShouldShowIcon}" 
+                                                Visibility="{x:Bind ShouldShowIcon, Mode=OneTime}"
                                                 FontSize="12"/>
                                         </StackPanel>
                                     </Button.Content>
