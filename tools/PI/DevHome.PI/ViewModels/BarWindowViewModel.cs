@@ -57,7 +57,7 @@ public partial class BarWindowViewModel : ObservableObject
     private Visibility _appBarVisibility = Visibility.Visible;
 
     [ObservableProperty]
-    private Visibility _externalToolSeperatorVisibility = Visibility.Collapsed;
+    private Visibility _externalToolSeparatorVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
     private string _applicationName = string.Empty;
@@ -120,8 +120,8 @@ public partial class BarWindowViewModel : ObservableObject
 
     private void FilteredExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs? e)
     {
-        // Only show the seperator if we're showing pinned tools
-        ExternalToolSeperatorVisibility = ExternalToolsHelper.Instance.FilteredExternalTools.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        // Only show the separator if we're showing pinned tools
+        ExternalToolSeparatorVisibility = ExternalToolsHelper.Instance.FilteredExternalTools.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
     partial void OnIsSnappedChanged(bool value)
@@ -251,7 +251,7 @@ public partial class BarWindowViewModel : ObservableObject
 
             _dispatcher.TryEnqueue(() =>
             {
-                // The App status bar is only visibile if we're attached to a process
+                // The App status bar is only visible if we're attached to a process
                 AppBarVisibility = process is null ? Visibility.Collapsed : Visibility.Visible;
 
                 if (process is not null)
