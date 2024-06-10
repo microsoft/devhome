@@ -108,9 +108,10 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
             }
             else
             {
-                // Reset text in UI card and show the error notification info bar to tell the user the operation failed
-                UpdateUiMessage(string.Empty);
-                OnErrorReceived(_stringResource.GetLocalized("FailureMessageForCreateComputeSystem", createComputeSystemResult.Result.DisplayMessage));
+                // Reset text in UI card to show error and show the error notification info bar to tell the user the operation failed
+                var errorMsg = _stringResource.GetLocalized("FailureMessageForCreateComputeSystem", createComputeSystemResult.Result.DisplayMessage);
+                UpdateUiMessage(errorMsg);
+                OnErrorReceived(errorMsg);
                 State = ComputeSystemState.Unknown;
                 StateColor = CardStateColor.Failure;
             }

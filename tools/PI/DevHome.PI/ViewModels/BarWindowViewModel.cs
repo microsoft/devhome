@@ -54,10 +54,10 @@ public partial class BarWindowViewModel : ObservableObject
     private string _appCpuUsage = string.Empty;
 
     [ObservableProperty]
-    private Visibility _appBarVisibility = Visibility.Visible;
+    private bool _isAppBarVisible = true;
 
     [ObservableProperty]
-    private Visibility _externalToolSeperatorVisibility = Visibility.Collapsed;
+    private Visibility _externalToolSeparatorVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
     private string _applicationName = string.Empty;
@@ -100,7 +100,7 @@ public partial class BarWindowViewModel : ObservableObject
 
         var process = TargetAppData.Instance.TargetProcess;
 
-        AppBarVisibility = process is null ? Visibility.Collapsed : Visibility.Visible;
+        IsAppBarVisible = process is not null;
 
         if (process != null)
         {
@@ -120,8 +120,8 @@ public partial class BarWindowViewModel : ObservableObject
 
     private void FilteredExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs? e)
     {
-        // Only show the seperator if we're showing pinned tools
-        ExternalToolSeperatorVisibility = ExternalToolsHelper.Instance.FilteredExternalTools.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        // Only show the separator if we're showing pinned tools
+        ExternalToolSeparatorVisibility = ExternalToolsHelper.Instance.FilteredExternalTools.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
     partial void OnIsSnappedChanged(bool value)
@@ -134,7 +134,7 @@ public partial class BarWindowViewModel : ObservableObject
         if (value == Orientation.Horizontal)
         {
             // If we were snapped, unsnap
-            IsSnapped = false;
+            UnsnapBarWindow();
         }
         else
         {
@@ -168,6 +168,14 @@ public partial class BarWindowViewModel : ObservableObject
         }
     }
 
+    public void SnapBarWindow()
+    {
+        // First need to be in a Vertical layout
+        BarOrientation = Orientation.Vertical;
+        _snapHelper.Snap();
+        IsSnapped = true;
+    }
+
     public void UnsnapBarWindow()
     {
         _snapHelper.Unsnap();
@@ -183,10 +191,7 @@ public partial class BarWindowViewModel : ObservableObject
         }
         else
         {
-            // First need to be in a Vertical layout
-            BarOrientation = Orientation.Vertical;
-            _snapHelper.Snap();
-            IsSnapped = true;
+            SnapBarWindow();
         }
     }
 
@@ -224,6 +229,12 @@ public partial class BarWindowViewModel : ObservableObject
         barWindow?.NavigateToPiSettings(typeof(AdditionalToolsViewModel).FullName!);
     }
 
+    [RelayCommand]
+    public void DetachFromProcess()
+    {
+        TargetAppData.Instance.ClearAppData();
+    }
+
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(TargetAppData.HWnd))
@@ -246,8 +257,8 @@ public partial class BarWindowViewModel : ObservableObject
 
             _dispatcher.TryEnqueue(() =>
             {
-                // The App status bar is only visibile if we're attached to a process
-                AppBarVisibility = process is null ? Visibility.Collapsed : Visibility.Visible;
+                // The App status bar is only visible if we're attached to a process
+                IsAppBarVisible = process is not null;
 
                 if (process is not null)
                 {

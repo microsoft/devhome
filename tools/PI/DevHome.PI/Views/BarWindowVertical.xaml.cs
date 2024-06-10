@@ -125,7 +125,7 @@ public partial class BarWindowVertical : WindowEx
         {
             if (DoesWindow1CoverTheRightSideOfWindow2(ThisHwnd, TargetAppData.Instance.HWnd))
             {
-                _viewModel.IsSnapped = true;
+                _viewModel.SnapBarWindow();
             }
         }
     }
@@ -138,7 +138,7 @@ public partial class BarWindowVertical : WindowEx
             // Moving the window causes it to unsnap
             if (_viewModel.IsSnapped)
             {
-                _viewModel.IsSnapped = false;
+                _viewModel.UnsnapBarWindow();
             }
 
             isWindowMoving = true;
