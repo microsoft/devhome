@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
-    xmlns:muxc="using:Microsoft.UI.Xaml.Controls" 
     xmlns:models="using:DevHome.Models"
     xmlns:behaviors="using:DevHome.Common.Behaviors" 
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
@@ -76,7 +75,7 @@
                 </StackPanel>
 
                 <!-- Big Cards -->
-                <muxc:ItemsRepeater
+                <ItemsRepeater
                     Name="BigFeaturesContainer"
                     Grid.Row="1"
                     Margin="35, 5, 45, 10"
@@ -84,7 +83,7 @@
                     animations:Connected.ListItemKey="animationKeyContentGrid"
                     ItemsSource="{x:Bind ViewModel.BigSource,Mode=OneWay}">
 
-                    <muxc:ItemsRepeater.Resources>
+                    <ItemsRepeater.Resources>
                         <!-- This repeater is responsible for the big cards. To add another here, make sure to assign IsBig as true -->
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_ExtensionsCard"
@@ -97,17 +96,17 @@
                             PageKey="DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel"
                             IsBig="True"
                             Priority="0" />
-                    </muxc:ItemsRepeater.Resources>
+                    </ItemsRepeater.Resources>
 
-                    <muxc:ItemsRepeater.Layout>
-                        <muxc:StackLayout 
+                    <ItemsRepeater.Layout>
+                        <StackLayout 
                             x:Name="BigCardGrid"
                             Spacing="12"
                             Orientation="Vertical" >
-                        </muxc:StackLayout>
-                    </muxc:ItemsRepeater.Layout>
+                        </StackLayout>
+                    </ItemsRepeater.Layout>
 
-                    <muxc:ItemsRepeater.ItemTemplate>
+                    <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="models:WhatsNewCard">
                             <Grid
                                 HorizontalAlignment="Stretch"
@@ -180,11 +179,11 @@
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>
-                    </muxc:ItemsRepeater.ItemTemplate>
-                </muxc:ItemsRepeater>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
 
                 <!-- Small Cards -->
-                <muxc:ItemsRepeater
+                <ItemsRepeater
                     Name="FeaturesContainer"
                     Grid.Row="2"
                     Margin="35, 5, 45, 45"
@@ -192,7 +191,7 @@
                     animations:Connected.ListItemKey="animationKeyContentGrid"
                     ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}">
 
-                    <muxc:ItemsRepeater.Resources>
+                    <ItemsRepeater.Resources>
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDashCard"
                             x:Key="WhatsNewPage_DevDashCard"
@@ -219,10 +218,10 @@
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevDriveHero.png"
                             PageKey="ms-settings:disksandvolumes"
                             Priority="3" />
-                    </muxc:ItemsRepeater.Resources>
+                    </ItemsRepeater.Resources>
 
-                    <muxc:ItemsRepeater.Layout>
-                        <muxc:UniformGridLayout 
+                    <ItemsRepeater.Layout>
+                        <UniformGridLayout 
                             x:Name="CardGrid"
                             Orientation="Horizontal" 
                             MinItemWidth="200"
@@ -232,9 +231,9 @@
                             ItemsStretch="Fill"
                             MaximumRowsOrColumns="3"
                             ItemsJustification="Center" />
-                    </muxc:ItemsRepeater.Layout>
+                    </ItemsRepeater.Layout>
 
-                    <muxc:ItemsRepeater.ItemTemplate>
+                    <ItemsRepeater.ItemTemplate>
                         <DataTemplate 
                             x:DataType="models:WhatsNewCard">
                             <Grid
@@ -319,8 +318,8 @@
                                 </Button>
                             </Grid>
                         </DataTemplate>
-                    </muxc:ItemsRepeater.ItemTemplate>
-                </muxc:ItemsRepeater>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
             </Grid>
         </RelativePanel>
     </ScrollViewer>
