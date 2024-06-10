@@ -943,10 +943,10 @@
   </data>
   <data name="AliasDisabledDialogContent" xml:space="preserve">
     <value>Go to Windows Settings &gt; Apps &gt; Advanced app settings &gt; App execution alias &gt; Project Ironsides &gt; Enable the toggle and try to launch PI as admin again.</value>
-    <comment>Locked="{Project Ironsides}" Content Dialog content suggesting users steps to enable app execution alias from Windows Settings app</comment>
+    <comment>Locked="{Ironsides}" Content Dialog content suggesting users steps to enable app execution alias from Windows Settings app</comment>
   </data>
   <data name="AliasDisabledDialogTitle" xml:space="preserve">
     <value>Enable App Execution Alias for Project Ironsides and try again</value>
-    <comment>Locked="{Project Ironsides}" Content Dialog title to enable app execution alias for Project Ironsides</comment>
+    <comment>Locked="{Ironsides}" Content Dialog title to enable app execution alias for Project Ironsides</comment>
   </data>
 </root>
