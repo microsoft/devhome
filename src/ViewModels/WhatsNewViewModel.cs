@@ -111,16 +111,6 @@ public partial class WhatsNewViewModel : ObservableObject
         }
     }
 
-    public void OnNavigatedTo(object parameter)
-    {
-        Source.Clear();
-        BigSource.Clear();
-    }
-
-    public void OnNavigatedFrom()
-    {
-    }
-
     [RelayCommand]
     private void NavigateToGetStarted()
     {
