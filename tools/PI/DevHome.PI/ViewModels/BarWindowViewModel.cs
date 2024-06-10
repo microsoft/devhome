@@ -55,7 +55,7 @@ public partial class BarWindowViewModel : ObservableObject
     private string _appCpuUsage = string.Empty;
 
     [ObservableProperty]
-    private Visibility _appBarVisibility = Visibility.Visible;
+    private bool _isAppBarVisible = true;
 
     [ObservableProperty]
     private Visibility _externalToolSeparatorVisibility = Visibility.Collapsed;
@@ -101,7 +101,7 @@ public partial class BarWindowViewModel : ObservableObject
 
         var process = TargetAppData.Instance.TargetProcess;
 
-        AppBarVisibility = process is null ? Visibility.Collapsed : Visibility.Visible;
+        IsAppBarVisible = process is not null;
 
         if (process != null)
         {
@@ -230,6 +230,12 @@ public partial class BarWindowViewModel : ObservableObject
         barWindow?.NavigateToPiSettings(typeof(AdditionalToolsViewModel).FullName!);
     }
 
+    [RelayCommand]
+    public void DetachFromProcess()
+    {
+        TargetAppData.Instance.ClearAppData();
+    }
+
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(TargetAppData.HWnd))
@@ -253,7 +259,7 @@ public partial class BarWindowViewModel : ObservableObject
             _dispatcher.TryEnqueue(() =>
             {
                 // The App status bar is only visible if we're attached to a process
-                AppBarVisibility = process is null ? Visibility.Collapsed : Visibility.Visible;
+                IsAppBarVisible = process is not null;
 
                 if (process is not null)
                 {

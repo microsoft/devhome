@@ -125,10 +125,6 @@
     <value>Maximize</value>
     <comment>Tooltip for the maximize button in the BarWindow</comment>
   </data>
-  <data name="RestoreButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Restore</value>
-    <comment>Tooltip for the restore button in the BarWindow</comment>
-  </data>
   <data name="PinMenuItemText" xml:space="preserve">
     <value>Pin</value>
     <comment>A label for the menuitem to pin a tool on the bar.</comment>
@@ -948,5 +944,16 @@
   <data name="AliasDisabledDialogTitle" xml:space="preserve">
     <value>Enable App Execution Alias for Project Ironsides and try again</value>
     <comment>Locked="{Ironsides}" Content Dialog title to enable app execution alias for Project Ironsides</comment>
+  <data name="DetachAppButton.Content" xml:space="preserve">
+    <value>Detach from target app</value>
+    <comment>Button in the expanded view to detach from the target app</comment>
+  </data>
+  <data name="DetachAppButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Detach from the currently targeted process</value>
+    <comment>Used to describe what the DetachAppButton does</comment>
+  </data>
+  <data name="DetachMenuItem.Text" xml:space="preserve">
+    <value>Detach</value>
+    <comment>Menu Item that allows the user to detach from the current process</comment>
   </data>
 </root>
