@@ -13,7 +13,7 @@
             <Style x:Key="ChromeButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="Foreground" Value="#A0A0A0"/>
-                <Setter Property="FontFamily" Value="Segoe Fluent Icons"/>
+                <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
                 <Setter Property="FontSize" Value="10"/>
                 <Setter Property="Template">
                     <Setter.Value>

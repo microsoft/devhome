@@ -42,12 +42,12 @@
             <Button
                 x:Uid="ClearWinLogsButton" x:Name="ClearWinLogsButton"
                 BorderThickness="0" Command="{x:Bind ViewModel.ClearWinLogsCommand}">
-                <TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons" FontSize="20"/>
+                <TextBlock Text="&#xE74D;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20"/>
             </Button>
             <local:GlowButton 
                 x:Uid="InsightsButton" x:Name="InsightsButton" Margin="6,0,0,0"
                 BorderThickness="0"              
-                Text="&#xE946;" FontFamily="Segoe Fluent Icons" FontSize="20" Foreground="#0089FF"
+                Text="&#xE946;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Foreground="#0089FF"
                 Command="{x:Bind ViewModel.ShowInsightsPageCommand}" 
                 Visibility="{x:Bind ViewModel.InsightsButtonVisibility, Mode=OneWay}">
             </local:GlowButton>

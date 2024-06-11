@@ -39,7 +39,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="12">
                                     <TextBlock Text="{Binding IconText}" Style="{x:Null}"
-                                        FontFamily="Segoe Fluent Icons" FontSize="12"
+                                        FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="12"
                                         HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding ContentText}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                 </StackPanel>
@@ -71,7 +71,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock 
-                            Text="&#xe713;" FontFamily="Segoe Fluent Icons" FontSize="12"
+                            Text="&#xe713;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="12"
                             HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock 
                             Grid.Column="1" Text="{x:Bind viewModel.SettingsHeader, Mode=OneWay}"
