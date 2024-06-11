@@ -12,6 +12,7 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
@@ -39,7 +40,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
 
     private readonly IHost _host;
     private readonly IWinGet _wpm;
-    private readonly IDesiredStateConfiguration _dsc;
+    private readonly IDSC _dsc;
     private readonly IExperimentationService _experimentationService;
 
     public MainPageBannerViewModel BannerViewModel { get; }
@@ -76,7 +77,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         IWinGet wpm,
-        IDesiredStateConfiguration dsc,
+        IDSC dsc,
         IHost host,
         MainPageBannerViewModel bannerViewModel,
         IExperimentationService experimentationService)

@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using Serilog;
 
@@ -17,11 +18,11 @@ public class AppManagementInitializer : IAppManagementInitializer
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AppManagementInitializer));
     private readonly IWinGet _wpm;
     private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
-    private readonly IDesiredStateConfiguration _dsc;
+    private readonly IDSC _dsc;
 
     public AppManagementInitializer(
         IWinGet wpm,
-        IDesiredStateConfiguration dsc,
+        IDSC dsc,
         ICatalogDataSourceLoader catalogDataSourceLoader)
     {
         _wpm = wpm;

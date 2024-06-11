@@ -16,6 +16,7 @@ using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
 using DevHome.Services;
 using DevHome.Services.Core.Extensions;
+using DevHome.Services.DesiredStateConfiguration.Extensions;
 using DevHome.Services.WindowsPackageManager.Extensions;
 using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
@@ -112,15 +113,16 @@ public partial class App : Application, IApp
             services.AddTransient<IActivationHandler, DSCFileActivationHandler>();
             services.AddTransient<IActivationHandler, AppInstallActivationHandler>();
 
+            // Service projects
+            services.AddCore();
+            services.AddWinGet();
+            services.AddDSC();
+
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
             services.AddSingleton<IExperimentationService, ExperimentationService>();
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
             services.AddTransient<INavigationViewService, NavigationViewService>();
-
-            // Service projects
-            services.AddCore();
-            services.AddWinGet();
 
             services.AddSingleton<IActivationService, ActivationService>();
             services.AddSingleton<IExtensionService, ExtensionService>();

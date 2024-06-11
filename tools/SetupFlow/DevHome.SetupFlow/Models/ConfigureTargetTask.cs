@@ -15,6 +15,7 @@ using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.Environments;
 using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Common.Views;
+using DevHome.Services.DesiredStateConfiguration.Exceptions;
 using DevHome.Services.WindowsPackageManager.Exceptions;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.WingetConfigure;

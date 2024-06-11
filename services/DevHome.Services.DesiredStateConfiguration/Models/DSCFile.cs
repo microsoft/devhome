@@ -11,7 +11,7 @@ namespace DevHome.Services.DesiredStateConfiguration.Models;
 /// <summary>
 /// Model class for a YAML configuration file
 /// </summary>
-internal sealed class DSCFile : IDSCFile
+public sealed class DSCFile : IDSCFile
 {
     private readonly FileInfo _fileInfo;
 

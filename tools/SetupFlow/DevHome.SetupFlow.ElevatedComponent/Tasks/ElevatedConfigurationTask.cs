@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Services.WindowsPackageManager.Helpers;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
+using DevHome.Services.DesiredStateConfiguration.Models;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Management.Configuration;
 using Serilog;
@@ -22,14 +24,9 @@ public sealed class ElevatedConfigurationTask
 
             try
             {
-                var configurationFileHelper = new ConfigurationFileHelper(logger, activityId);
-
-                logger.LogInformation($"Opening configuration set from file: {filePath}");
-                await configurationFileHelper.OpenConfigurationSetAsync(filePath, content);
-
-                logger.LogInformation("Starting configuration set application");
-                var result = await configurationFileHelper.ApplyConfigurationAsync();
-                logger.LogInformation("Configuration application finished");
+                var dsc = ElevatedComponentOperation.Host.Services.GetRequiredService<IDSC>();
+                var file = DSCFile.CreateVirtual(filePath, content);
+                var result = await dsc.ApplyConfigurationAsync(file, activityId);
 
                 taskResult.TaskAttempted = true;
                 taskResult.TaskSucceeded = result.Succeeded;

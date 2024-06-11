@@ -10,9 +10,9 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Windows.FileDialog;
-using DevHome.Services.WindowsPackageManager.Contracts;
-using DevHome.Services.WindowsPackageManager.Exceptions;
-using DevHome.Services.WindowsPackageManager.Models;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
+using DevHome.Services.DesiredStateConfiguration.Exceptions;
+using DevHome.Services.DesiredStateConfiguration.Models;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -26,7 +26,7 @@ namespace DevHome.SetupFlow.ViewModels;
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _logger;
-    private readonly IDesiredStateConfiguration _dsc;
+    private readonly IDSC _dsc;
     private readonly Window _mainWindow;
 
     public List<ConfigureTask> TaskList { get; } = new List<ConfigureTask>();
@@ -36,7 +36,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Content))]
-    private DSCConfiguration _configuration;
+    private IDSCFile _configuration;
 
     /// <summary>
     /// Store the value for whether the agreements are read.
@@ -52,7 +52,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     public ConfigurationFileViewModel(
         ILogger<ConfigurationFileViewModel> logger,
         ISetupFlowStringResource stringResource,
-        IDesiredStateConfiguration dsc,
+        IDSC dsc,
         Window mainWindow,
         SetupFlowOrchestrator orchestrator)
         : base(stringResource, orchestrator)
@@ -113,7 +113,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         {
             if (Configuration != null && ConfigurationUnits == null)
             {
-                var configUnits = await _dsc.GetConfigurationUnitDetailsAsync(Configuration, Orchestrator.ActivityId);
+                var configUnits = await _dsc.GetConfigurationUnitDetailsAsync(Configuration);
                 ConfigurationUnits = configUnits.Select(u => new DSCConfigurationUnitViewModel(u)).ToList();
             }
         }
@@ -188,10 +188,10 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         try
         {
             _logger.LogInformation($"Selected file: {file.Path}");
-            Configuration = new(_logger, file.Path);
+            Configuration = await DSCFile.LoadAsync(file.Path);
             Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
-            await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
-            TaskList.Add(new(StringResource, _dsc, file, Orchestrator.ActivityId));
+            await _dsc.ValidateConfigurationAsync(Configuration);
+            TaskList.Add(new(StringResource, _dsc, Configuration, Orchestrator.ActivityId));
             return true;
         }
         catch (OpenConfigurationSetException e)

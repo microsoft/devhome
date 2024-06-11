@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.Services.Core.Extensions;
+using DevHome.Services.DesiredStateConfiguration.Extensions;
 using DevHome.Services.WindowsPackageManager.Extensions;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
@@ -293,6 +294,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
                 // Service projects
                 services.AddCore();
                 services.AddWinGetElevated();
+                services.AddDSC();
             })
             .Build();
     }
