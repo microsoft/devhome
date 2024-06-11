@@ -131,25 +131,23 @@ public partial class SetupFlowViewModel : ObservableObject
         Orchestrator.FlowPages = [_mainPageViewModel];
 
         // This method is only called when the user clicks a button that redirects them to 'Create Environment' flow in the setup flow.
-        TelemetryFactory.Get<ITelemetry>().Log(
-            "Create_Environment_button_Clicked",
-            LogLevel.Critical,
-            new EnvironmentRedirectionUserEvent(navigationAction: _creationFlowNavigationParameter, originPage),
-            relatedActivityId: Orchestrator.ActivityId);
-
-        _mainPageViewModel.StartCreateEnvironment(string.Empty);
+        _mainPageViewModel.StartCreateEnvironmentWithTelemetry(string.Empty, _creationFlowNavigationParameter, originPage);
     }
 
     public void OnNavigatedTo(NavigationEventArgs args)
     {
         // The setup flow isn't setup to support using the navigation service to navigate to specific
         // pages. Instead we need to navigate to the main page and then start the creation flow template manually.
-        var parameters = $"{args.Parameter}".Split(';');
+        var parameter = args.Parameter?.ToString();
 
-        if ((parameters.Length == 2) &&
-            _creationFlowNavigationParameter.Equals(parameters[0], StringComparison.OrdinalIgnoreCase) &&
+        if ((!string.IsNullOrEmpty(parameter)) &&
+            parameter.Contains(_creationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase) &&
             Orchestrator.CurrentSetupFlowKind != SetupFlowKind.CreateEnvironment)
         {
+            // We expect that when navigating from anywhere in Dev Home to the create environment page
+            // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartCreationFlow'
+            // and the second value being the page name that redirection came from for telemetry purposes.
+            var parameters = parameter.Split(';');
             Cancel();
             StartCreationFlowAsync(originPage: parameters[1]);
         }
