@@ -32,6 +32,24 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\Summary\SummaryAppsDownloadedReposCloned.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Summary\SummaryFailedTasks.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Summary\SummaryConfigurationFileResults.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Summary\SummaryIntoViaNonConfigurationFlow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Summary\SummaryIntroViaConfiguration.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Summary\SummaryNeedsRestart.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Styles\QuickstartStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -96,6 +114,12 @@
     <None Remove="Views\SetupTargetReviewView.xaml" />
     <None Remove="Views\SetupTargetView.xaml" />
     <None Remove="Views\SummaryView.xaml" />
+    <None Remove="Views\Summary\SummaryAppsDownloadedReposCloned.xaml" />
+    <None Remove="Views\Summary\SummaryConfigurationFileResults.xaml" />
+    <None Remove="Views\Summary\SummaryFailedTasks.xaml" />
+    <None Remove="Views\Summary\SummaryIntoViaNonConfigurationFlow.xaml" />
+    <None Remove="Views\Summary\SummaryIntroViaConfiguration.xaml" />
+    <None Remove="Views\Summary\SummaryNeedsRestart.xaml" />
     <None Remove="Windows\DevDriveWindow.xaml" />
     <None Remove="Windows\InstallationNotesWindow.xaml" />
   </ItemGroup>
