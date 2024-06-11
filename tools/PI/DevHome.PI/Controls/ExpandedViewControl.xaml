@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:DevHome.PI.Controls"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
 
     <Grid Margin="16">
@@ -20,7 +21,8 @@
 
         <Grid Grid.Row="1" Margin="0,8,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -52,7 +54,12 @@
                         Width="{x:Bind NavLinksList.Width, Mode=OneWay}"
                         Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}"
                         Margin="4" />
-                    <Button MinWidth="190" HorizontalAlignment="Center" x:Uid="DetachAppButton" Visibility="{x:Bind viewModel.AppSettingsVisibility, Mode=OneWay}" Command="{x:Bind viewModel.DetachFromProcessCommand}"/>
+                    <Button 
+                        MinWidth="200" 
+                        HorizontalAlignment="Stretch" 
+                        x:Uid="DetachAppButton" 
+                        Visibility="{x:Bind viewModel.AppSettingsVisibility, Mode=OneWay}" 
+                        Command="{x:Bind viewModel.DetachFromProcessCommand}"/>
                 </StackPanel>
                 <Button
                     Grid.Row="1" x:Name="SettingsButton" Click="SettingsButton_Click"
@@ -73,7 +80,10 @@
                 </Button>
             </Grid>
 
-            <Grid Grid.Column="1" Margin="16,0,0,0">
+            <toolkit:GridSplitter 
+                Grid.Column="1" ResizeBehavior="BasedOnAlignment" ResizeDirection="Auto" PointerPressed="GridSplitter_PointerPressed"/>
+
+            <Grid Grid.Column="2" Margin="16,0,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
