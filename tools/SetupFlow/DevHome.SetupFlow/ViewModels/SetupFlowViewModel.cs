@@ -130,7 +130,7 @@ public partial class SetupFlowViewModel : ObservableObject
     {
         Orchestrator.FlowPages = [_mainPageViewModel];
 
-        // this method is only called when the user clicks a button that redirects them to 'Create Environment' flow in the setup flow.
+        // This method is only called when the user clicks a button that redirects them to 'Create Environment' flow in the setup flow.
         TelemetryFactory.Get<ITelemetry>().Log(
             "Create_Environment_button_Clicked",
             LogLevel.Critical,

@@ -161,7 +161,7 @@ public partial class EnvironmentsNotificationHelper
     private void RestartComputer()
     {
         TelemetryFactory.Get<ITelemetry>().Log(
-           "Environment_RestartNotification_ButtonClick_Event",
+           "Environment_RestartComputer_Event",
            LogLevel.Critical,
            new EnvironmentRestartUserEvent());
 

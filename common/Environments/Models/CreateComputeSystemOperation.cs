@@ -127,24 +127,12 @@ public class CreateComputeSystemOperation : IDisposable
                 Completed?.Invoke(this, CreateComputeSystemResult);
             }
 
-            if ((CreateComputeSystemResult == null) || (CreateComputeSystemResult.Result.Status == ProviderOperationStatus.Failure))
-            {
-                var completionStatus = EnvironmentsTelemetryStatus.Failed;
-                var (displayMessage, diagnosticText) = LogFailure(CreateComputeSystemResult);
-                TelemetryFactory.Get<ITelemetry>().Log(
-                    "Environment_Creation_Event",
-                    LogLevel.Critical,
-                    new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, completionStatus, displayMessage, diagnosticText),
-                    _activityId);
-            }
-            else
-            {
-                TelemetryFactory.Get<ITelemetry>().Log(
-                    "Environment_Creation_Event",
-                    LogLevel.Critical,
-                    new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, EnvironmentsTelemetryStatus.Succeeded),
-                    _activityId);
-            }
+            var (displayMessage, diagnosticText, telemetryStatus) = ComputeSystemHelpers.LogResult(CreateComputeSystemResult?.Result, _log);
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_Creation_Event",
+                LogLevel.Critical,
+                new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, telemetryStatus, displayMessage, diagnosticText),
+                _activityId);
 
             RemoveEventHandlers();
         });
@@ -208,20 +196,5 @@ public class CreateComputeSystemOperation : IDisposable
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
-    }
-
-    private (string DisplayMessage, string DiagnosticText) LogFailure(CreateComputeSystemResult? createComputeSystemResult)
-    {
-        if (createComputeSystemResult == null)
-        {
-            var logErrorMsg = $"The CreateComputeSystemResult object sent by {ProviderDetails.ComputeSystemProvider.Id} was null";
-            _log.Error(logErrorMsg);
-            return (logErrorMsg, logErrorMsg);
-        }
-        else
-        {
-            _log.Error(createComputeSystemResult.Result.ExtendedError, $"Creation failed for {EnvironmentName} with error:{createComputeSystemResult.Result.DiagnosticText}");
-            return (createComputeSystemResult.Result.DisplayMessage, createComputeSystemResult.Result.DiagnosticText);
-        }
     }
 }

@@ -265,22 +265,16 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
             var operationResult = await ComputeSystem.ConnectAsync(string.Empty);
 
-            var operationFailed = (operationResult == null) || (operationResult.Result.Status == ProviderOperationStatus.Failure);
+            var (displayMessage, diagnosticText, telemetryStatus) = ComputeSystemHelpers.LogResult(operationResult?.Result, _log);
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_Launch_Event",
+                LogLevel.Critical,
+                new EnvironmentLaunchEvent(ComputeSystem.AssociatedProviderId.Value, telemetryStatus, displayMessage, diagnosticText));
 
-            if (operationFailed)
+            if (telemetryStatus == EnvironmentsTelemetryStatus.Failed)
             {
-                var (displayMessage, diagnosticText) = LogFailure(operationResult);
-                TelemetryFactory.Get<ITelemetry>().Log(
-                    "Environment_Launch_Event",
-                    LogLevel.Critical,
-                    new EnvironmentLaunchEvent(ComputeSystem.AssociatedProviderId.Value, EnvironmentsTelemetryStatus.Failed, displayMessage, diagnosticText));
-            }
-            else
-            {
-                TelemetryFactory.Get<ITelemetry>().Log(
-                    "Environment_Launch_Event",
-                    LogLevel.Critical,
-                    new EnvironmentLaunchEvent(ComputeSystem.AssociatedProviderId.Value, EnvironmentsTelemetryStatus.Succeeded));
+                // Show the error notification to tell the user the operation failed
+                OnErrorReceived(displayMessage);
             }
 
             _mainWindow.DispatcherQueue.TryEnqueue(() =>
@@ -299,27 +293,6 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             _removalAction(this);
             RemoveStateChangedHandler();
         });
-    }
-
-    private (string DisplayMessage, string DiagnosticText) LogFailure(ComputeSystemOperationResult? operationResult)
-    {
-        var messageWhenNull = _stringResource.GetLocalized("EnvironmentOperationFailedUnKnownReasonText");
-        var errorMessage = (operationResult != null) ? operationResult.Result.DisplayMessage : messageWhenNull;
-        var diagnosticText = errorMessage;
-
-        if (operationResult == null)
-        {
-            _log.Error($"Launch operation failed for {ComputeSystem}. The ComputeSystemOperationResult was null");
-        }
-        else
-        {
-            _log.Error(operationResult.Result.ExtendedError, $"Launch operation failed for {ComputeSystem} error: {operationResult.Result.DiagnosticText}");
-            diagnosticText = operationResult.Result.DiagnosticText;
-        }
-
-        // Show the error notification to tell the user the operation failed
-        OnErrorReceived(errorMessage);
-        return (errorMessage, diagnosticText);
     }
 
     /// <summary>
@@ -358,27 +331,13 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             var data = message.Value;
             _log.Information($"operation '{data.ComputeSystemOperation}' completed for Compute System: {Name}");
 
-            var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
             var providerId = ComputeSystem.AssociatedProviderId.Value;
-
-            if ((data.OperationResult == null) || (data.OperationResult.Result.Status == ProviderOperationStatus.Failure))
-            {
-                completionStatus = EnvironmentsTelemetryStatus.Failed;
-                var (displayMessage, diagnosticText) = LogFailure(data.OperationResult);
-                TelemetryFactory.Get<ITelemetry>().Log(
-                    "Environment_OperationInvoked_Event",
-                    LogLevel.Measure,
-                    new EnvironmentOperationEvent(completionStatus, data.ComputeSystemOperation, providerId, data.AdditionalContext, displayMessage, diagnosticText),
-                    relatedActivityId: message.Value.ActivityId);
-            }
-            else
-            {
-                TelemetryFactory.Get<ITelemetry>().Log(
-                    "Environment_OperationInvoked_Event",
-                    LogLevel.Measure,
-                    new EnvironmentOperationEvent(completionStatus, data.ComputeSystemOperation, providerId, data.AdditionalContext),
-                    relatedActivityId: message.Value.ActivityId);
-            }
+            var (displayMessage, diagnosticText, telemetryStatus) = ComputeSystemHelpers.LogResult(data.OperationResult.Result, _log);
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_OperationInvoked_Event",
+                LogLevel.Measure,
+                new EnvironmentOperationEvent(telemetryStatus, data.ComputeSystemOperation, providerId, data.AdditionalContext, displayMessage, diagnosticText),
+                relatedActivityId: message.Value.ActivityId);
         });
     }
 

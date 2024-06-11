@@ -47,6 +47,17 @@ public class ConfigureTargetTask : ISetupTask
 
     private readonly AdaptiveCardRenderingService _adaptiveCardRenderingService;
 
+    // Inside the execute method there are two points where there failures.
+    // 1. When we call the extensions CreateApplyConfigurationOperation method
+    //    and attach the event handlers to its OnActionRequired and OnApplyConfigurationOperationChanged
+    //    events. (This could be a COM exception). The execute() method catches these and logs
+    //    the telemetry in its try/catch.
+    // 2. Next when the StartAsync method from the extension completes and we call our HandleCompletedOperation method.
+    //    This will capture the failure returned from the extension by WinGet itself or any other
+    //    exception failure. HandleCompletedOperation will log the failure with a telemetry event.
+    // The _isCompletionTelemetryLogged is used to make sure we don't re-capture the same failure
+    // that was already captured in the HandleCompletedOperation method because once HandleCompletedOperation
+    // finishes, we throw an exception based on the result of the StartAsync method.
     private bool _isCompletionTelemetryLogged;
 
     // Inherited via ISetupTask but unused
@@ -288,7 +299,6 @@ public class ConfigureTargetTask : ISetupTask
 
             if (resultStatus == ProviderOperationStatus.Failure)
             {
-                _log.Error(result.ExtendedError, $"Extension failed to configure config file with exception. DisplayMessage: {resultInformation}, Diagnostic text: {errorDiagnosticText}");
                 throw new SDKApplyConfigurationSetResultException(errorDiagnosticText);
             }
 
@@ -329,11 +339,13 @@ public class ConfigureTargetTask : ISetupTask
         }
         catch (SDKApplyConfigurationSetResultException)
         {
+            _log.Error(result.ExtendedError, $"Extension failed to configure config file with exception. DisplayMessage: {resultInformation}, Diagnostic text: {errorDiagnosticText}");
             var telemetryMessage = !string.IsNullOrEmpty(resultInformation) ? resultInformation : "Provider did not return result information for configuration";
             LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, telemetryMessage, errorDiagnosticText);
         }
-        catch (OpenConfigurationSetException)
+        catch (OpenConfigurationSetException openConfigEx)
         {
+            _log.Error(openConfigEx, $"Failed to open configuration file on target machine. '{ComputeSystemName}'");
             LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, Result.OpenResult.GetErrorMessage(), errorDiagnosticText);
         }
         catch (Exception ex)

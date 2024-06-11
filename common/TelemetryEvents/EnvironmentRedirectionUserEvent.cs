@@ -18,17 +18,17 @@ public class EnvironmentRedirectionUserEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public string OriginPage { get; }
-
     public string NavigationAction { get; }
+
+    public string OriginPage { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EnvironmentRedirectionUserEvent"/> class.
     /// </summary>
     public EnvironmentRedirectionUserEvent(string navigationAction, string originPage)
     {
-        OriginPage = originPage;
         NavigationAction = navigationAction;
+        OriginPage = originPage;
     }
 
     // Inherited but unused.
