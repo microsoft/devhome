@@ -6,16 +6,14 @@
     xmlns:local="using:DevHome.SetupFlow.Views.Summary"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
-    xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
-                    <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
                     <Style x:Key="ListViewItemStretchStyle" TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Setter Property="Margin" Value="0" />
@@ -27,7 +25,7 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="70"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="132"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -41,42 +39,32 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <TextBlock x:Uid="SummaryPage_ErrorLogs" Grid.Row="0" Grid.Column="0" Margin="0, 5, 0, 0"/>
-            <TextBlock Text="{Binding TargetFailedCountText}" Grid.Row="1" Grid.Column="0" Margin="0, 5, 0, 0" Foreground="{ThemeResource TextFillColorSecondary}"/>
+            <StackPanel Orientation="Horizontal" Spacing="5" Grid.Row="1" Grid.Column="0">
+                <TextBlock Text="{Binding FailedTasks.Count}" Foreground="{ThemeResource TextFillColorSecondary}"/>
+                <TextBlock x:Uid="SummaryPage_InstallationErrors" Foreground="{ThemeResource TextFillColorSecondary}"/>
+            </StackPanel>
         </Grid>
         <HyperlinkButton x:Uid="SummaryPage_ViewLogs" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding ShowLogFilesCommand, Mode=OneWay}"/>
-        <ListView Grid.Row="1" Grid.ColumnSpan="2" SelectionMode="None" ItemsSource="{Binding TargetFailedResults, Mode=OneWay}" ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}">
+        <ListView Grid.Row="1" Grid.ColumnSpan="2" SelectionMode="None" ItemsSource="{Binding FailedTasks, Mode=OneWay}" ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}">
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
+                <DataTemplate x:DataType="viewModels:SummaryErrorMessageViewModel">
                     <Grid ColumnSpacing="5" Margin="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="18"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <ImageIcon
-                             Source="{x:Bind StatusSymbolIcon, Mode=OneWay}" Grid.Column="0" VerticalAlignment="Top"/>
-                        <StackPanel Grid.Column="1">
-                            <TextBlock Text="{x:Bind Title}"/>
-                            <StackPanel>
-                                <TextBlock Text="{x:Bind ApplyResult}">
-                                    <i:Interaction.Behaviors>
-                                        <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
-                                            <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}"/>
-                                        </ic:DataTriggerBehavior>
-                                        <ic:DataTriggerBehavior Binding="{x:Bind IsSkipped}" Value="True">
-                                            <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCautionBrush}"/>
-                                        </ic:DataTriggerBehavior>
-                                    </i:Interaction.Behaviors>
-                                </TextBlock>
-                                <TextBlock
-                                    Text="{x:Bind ErrorDescription}"
-                                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                    Visibility="{x:Bind ErrorDescription, Converter={StaticResource StringVisibilityConverter}}">
-                                    <ToolTipService.ToolTip>
-                                        <ToolTip Content="{x:Bind ErrorDescription}"/>
-                                    </ToolTipService.ToolTip>
-                                </TextBlock>
-                            </StackPanel>
-                        </StackPanel>
+                             Source="{x:Bind StatusSymbolIcon, Mode=OneWay}" Grid.Column="0"/>
+                        <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Grid.Column="1" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource SystemErrorTextColor}">
+                            <ToolTipService.ToolTip>
+                                <ToolTip IsEnabled="{x:Bind IsMessageTrimmed, Mode=OneWay}" Content="{x:Bind MessageToShow}"/>
+                            </ToolTipService.ToolTip>
+                            <i:Interaction.Behaviors>
+                                <ic:EventTriggerBehavior EventName="IsTextTrimmedChanged">
+                                    <ic:InvokeCommandAction Command="{x:Bind TextTrimmedCommand}"/>
+                                </ic:EventTriggerBehavior>
+                             </i:Interaction.Behaviors>
+                        </TextBlock>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

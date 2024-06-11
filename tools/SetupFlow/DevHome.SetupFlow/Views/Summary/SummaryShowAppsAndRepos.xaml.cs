@@ -18,9 +18,9 @@ using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.SetupFlow.Views.Summary
 {
-    public sealed partial class SummaryFailedTasks : UserControl
+    public sealed partial class SummaryShowAppsAndRepos : UserControl
     {
-        public SummaryFailedTasks()
+        public SummaryShowAppsAndRepos()
         {
             this.InitializeComponent();
         }

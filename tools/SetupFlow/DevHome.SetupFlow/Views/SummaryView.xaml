@@ -79,26 +79,18 @@
                 </Grid.RowDefinitions>
 
                 <!-- Display if the user has tasks need the machine to restart.-->
-                <Grid Visibility="{x:Bind ViewModel.ShowRestartNeeded}" Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10">
-                    <summaryViews:SummaryNeedsRestart DataContext="{x:Bind ViewModel}"/>
-                </Grid>
+                <summaryViews:SummaryNeedsRestart  Visibility="{x:Bind ViewModel.ShowRestartNeeded}" Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10" DataContext="{x:Bind ViewModel}"/>
 
                 <!-- Introduction to the summary page via configuration results-->
-                <Grid Grid.Row="1" Padding="0,20,0,40" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}">
-                    <summaryViews:SummaryIntroViaConfiguration DataContext="{x:Bind ViewModel}"/>
-                </Grid>
+                <summaryViews:SummaryIntroViaConfiguration  Grid.Row="1" Padding="0,20,0,40" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}" DataContext="{x:Bind ViewModel}"/>
 
                 <!-- Introduction to the summary page via non-configuration flow -->
-                <Grid Grid.Row="1" Padding="0,20,0,40" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
-                    <summaryViews:SummaryIntoViaNonConfigurationFlow DataContext="{x:Bind ViewModel}"/>
-                </Grid>
+                <summaryViews:SummaryIntoViaNonConfigurationFlow Grid.Row="1" Padding="0,20,0,40" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" DataContext="{x:Bind ViewModel}"/>
 
                 <!-- Setup using configuration file results -->
-                <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay}"  BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopLeftQuadrantThickness}" >
-                    <summaryViews:SummaryConfigurationFileResults DataContext="{x:Bind ViewModel}"/>
-                </Grid>
+                <summaryViews:SummaryConfigurationFileResults  Grid.Row="2" Visibility="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay}"  BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopLeftQuadrantThickness}"  DataContext="{x:Bind ViewModel}"/>
 
-                <!-- Target setup results -->
+                <!-- Show results from the setup target machine flow -->
                 <Grid Grid.Row="2" ColumnSpacing="50" Visibility="{x:Bind ViewModel.ShowTargetMachineSetupResults, Mode=OneWay}">
                     <Grid.ColumnDefinitions>
                         <!-- repos cloned/apps downloaded and next steps column -->
@@ -117,114 +109,33 @@
                         </Grid.RowDefinitions>
 
                         <!-- Show any failed tasks if the loading screen has any failed tasks-->
-                        <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay}"
+                        <summaryViews:SummaryTargetMachineWithErrors
+                            Grid.Row="0" 
+                            Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay}"
                             HorizontalAlignment="Stretch" 
                             Padding="0,15,0,30"
                             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}">
-                            <summaryViews:SummaryFailedTasks DataContext="{x:Bind ViewModel}"/>
-                        </Grid>
-                        
-                        
+                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}" DataContext="{x:Bind ViewModel}"/>
+
+
                         <!-- Number of apps and repos cloned. Show if not failed tasks-->
-                        <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
+                        <summaryViews:SummaryTargetMachineAppsDownloadedReposCloned 
+                            Grid.Row="0" 
+                            Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                             HorizontalAlignment="Stretch" 
                             Padding="0,15,0,30"
                             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}">
-                            <summaryViews:SummaryAppsDownloadedReposCloned DataContext="{x:Bind ViewModel}"/>
-                        </Grid>
+                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}" DataContext="{x:Bind ViewModel}"/>
+
                         <!-- Next steps section -->
-                        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.NextSteps, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
-                            <ListView ItemsSource="{x:Bind ViewModel.NextSteps, Mode=OneWay}" SelectionMode="None" ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="UserControl">
-                                        <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0, 0, 0, 1">
-                                            <ContentControl Content="{x:Bind}"/>
-                                        </Border>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </Grid>
-                        <ContentControl Grid.Row="2" IsTabStop="False" Template="{ThemeResource LinksTemplate}" />
+                        <summaryViews:SummaryNextSteps Grid.Row="1" DataContext="{x:Bind ViewModel}"/>
                     </Grid>
 
                     <!-- Displays the repos cloned and apps downloaded -->
-                    <StackPanel Grid.Column="1" Orientation="Vertical" x:Name="TargetTasksSections">
-                        <StackPanel.Resources>
-                            <Thickness x:Key="ExpanderHeaderBorderThickness">0</Thickness>
-                            <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="Transparent" />
-                            <SolidColorBrush x:Key="ExpanderContentBackground" Color="Transparent" />
-                            <SolidColorBrush x:Key="ExpanderContentBorderBrush" Color="Transparent" />
-                            <Style TargetType="Expander">
-                                <Setter Property="IsExpanded" Value="True"/>
-                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            </Style>
-                        </StackPanel.Resources>
-
-                        <!-- Repos cloned -->
-                        <Grid Padding="0,13" Visibility="{x:Bind ViewModel.TargetCloneResults, Converter={StaticResource CollectionVisibilityConverter}}"
-                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
-                            HorizontalAlignment="Stretch">
-                            <Expander MaxHeight="200">
-                                <Expander.Header>
-                                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                </Expander.Header>
-                                <ListView ItemsSource="{x:Bind ViewModel.TargetCloneResults, Mode=OneWay}" SelectionMode="None">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
-                                            <Grid Margin="0, 10, 0, 0" ColumnSpacing="5">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <FontIcon Grid.Column="0" FontSize="16"  FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivateRepo, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
-                                                <TextBlock 
-                                                    Grid.Column="1"
-                                                    Text="{x:Bind Name}"
-                                                    Margin="5 0 0 0"
-                                                    TextWrapping="Wrap"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </Expander>
-                        </Grid>
-
-                        <!-- Apps installed -->
-                        <Grid 
-                            Padding="0,12"
-                            Visibility="{x:Bind ViewModel.TargetInstallResults, Converter={StaticResource CollectionVisibilityConverter}}"
-                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
-                            <Expander>
-                                <Expander.Header>
-                                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0,12"/>
-                                </Expander.Header>
-                                <GridView ItemsSource="{x:Bind ViewModel.TargetInstallResults, Mode=OneWay}" SelectionMode="None">
-                                    <GridView.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
-                                        </ItemsPanelTemplate>
-                                    </GridView.ItemsPanel>
-                                    <GridView.ItemTemplate>
-                                        <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
-                                            <controls:PackageDetailsSettingsCard Width="250" Padding="5">
-                                                <controls:PackageDetailsSettingsCard.Header>
-                                                    <TextBlock Style="{ThemeResource AppManagementPackageTitleTextBlock}" Text="{x:Bind Name}" />
-                                                </controls:PackageDetailsSettingsCard.Header>
-                                            </controls:PackageDetailsSettingsCard>
-                                        </DataTemplate>
-                                    </GridView.ItemTemplate>
-                                </GridView>
-                            </Expander>
-                        </Grid>
-                    </StackPanel>
+                    <summaryViews:SummaryTargetMachineShowAppsAndRepos Grid.Column="1" DataContext="{x:Bind ViewModel}"/>
                 </Grid>
 
-                <!-- Results/NextSteps/List of repos/List of apps -->
+                <!-- Show result from non target machine setup flow -->
                 <Grid
                     Grid.Row="2"
                     Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
@@ -242,298 +153,30 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="auto" />
-                            <RowDefinition />
                         </Grid.RowDefinitions>
 
                         <!-- Show any failed tasks if the loading screen has any failed tasks-->
-                        <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
+                        <summaryViews:SummaryFailedTasks Grid.Row="0" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
                             HorizontalAlignment="Stretch" 
                             Padding="0,15,0,30"
                             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="50"/>
-                                    <RowDefinition Height="132"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <!-- message with how many errors-->
-                                <Grid Grid.Row="0" Grid.Column="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <TextBlock x:Uid="SummaryPage_ErrorLogs" Grid.Row="0" Grid.Column="0" Margin="0, 5, 0, 0"/>
-                                    <StackPanel Orientation="Horizontal" Spacing="5" Grid.Row="1" Grid.Column="0">
-                                        <TextBlock Text="{x:Bind ViewModel.FailedTasks.Count}" Foreground="{ThemeResource TextFillColorSecondary}"/>
-                                        <TextBlock x:Uid="SummaryPage_InstallationErrors" Foreground="{ThemeResource TextFillColorSecondary}"/>
-                                    </StackPanel>
-                                </Grid>
-                                <HyperlinkButton x:Uid="SummaryPage_ViewLogs" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{x:Bind ViewModel.ShowLogFilesCommand, Mode=OneWay}"/>
-                                <ListView Grid.Row="1" Grid.ColumnSpan="2" SelectionMode="None" ItemsSource="{x:Bind ViewModel.FailedTasks, Mode=OneWay}" ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate x:DataType="viewModels:SummaryErrorMessageViewModel">
-                                            <Grid ColumnSpacing="5" Margin="0">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="18"/>
-                                                    <ColumnDefinition/>
-                                                </Grid.ColumnDefinitions>
-                                                <ImageIcon
-                                                     Source="{x:Bind StatusSymbolIcon, Mode=OneWay}" Grid.Column="0"/>
-                                                <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Grid.Column="1" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource SystemErrorTextColor}">
-                                                    <ToolTipService.ToolTip>
-                                                        <ToolTip IsEnabled="{x:Bind IsMessageTrimmed, Mode=OneWay}" Content="{x:Bind MessageToShow}"/>
-                                                    </ToolTipService.ToolTip>
-                                                    <i:Interaction.Behaviors>
-                                                        <ic:EventTriggerBehavior EventName="IsTextTrimmedChanged">
-                                                            <ic:InvokeCommandAction Command="{x:Bind TextTrimmedCommand}"/>
-                                                        </ic:EventTriggerBehavior>
-                                                     </i:Interaction.Behaviors>
-                                                </TextBlock>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </Grid>
-                        </Grid>
+                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}"
+                            DataContext="{x:Bind ViewModel}"/>
+                        
                         <!-- Number of apps and repos cloned. Show if not failed tasks-->
-                        <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
+                        <summaryViews:SummaryAppsDownloadedReposCloned Grid.Row="0" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
                             HorizontalAlignment="Stretch" 
                             Padding="0,15,0,30"
                             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
-                                <ColumnDefinition Width="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <Grid
-                                Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}"
-                                Grid.Column="0"
-                                HorizontalAlignment="Center">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <TextBlock 
-                                    Grid.Row="0" Text="{x:Bind ViewModel.AppsDownloaded.Count}" 
-                                    FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
-                                    FontWeight="{StaticResource InfoBarTitleFontWeight}" 
-                                    HorizontalAlignment="center"/>
-                                <TextBlock 
-                                    Grid.Row="1" 
-                                    Text="{x:Bind ViewModel.ApplicationsClonedText}"
-                                    HorizontalAlignment="center"
-                                    Foreground="{ThemeResource TextFillColorSecondary}"/>
-                            </Grid>
-                            <Grid
-                            Grid.Column="1"
-                            Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <TextBlock 
-                                    Grid.Row="0" 
-                                    Text="{x:Bind ViewModel.RepositoriesCloned.Count}" 
-                                    FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
-                                    FontWeight="{StaticResource InfoBarTitleFontWeight}"
-                                    HorizontalAlignment="Center"/>
-                                <TextBlock 
-                                    Grid.Row="1" 
-                                    HorizontalAlignment="Center"
-                                    Text="{x:Bind ViewModel.RepositoriesClonedText}"
-                                    Foreground="{ThemeResource TextFillColorSecondary}"/>
-                            </Grid>
-                            <Grid
-                                Grid.Column="2"
-                                Visibility="{x:Bind ViewModel.WasCreateEnvironmentOperationStarted, Mode=OneWay}">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <!--- There will only ever be 1 environment created in the flow  at a time. -->
-                                <TextBlock 
-                                    Grid.Row="0" 
-                                    Text="1" 
-                                    FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
-                                    FontWeight="{StaticResource InfoBarTitleFontWeight}"
-                                    HorizontalAlignment="Center"/>
-                                <TextBlock 
-                                    Grid.Row="1" 
-                                    HorizontalAlignment="Center"
-                                    x:Uid="SummaryPageEnvironmentCreating"
-                                    Foreground="{ThemeResource TextFillColorSecondary}"/>
-                            </Grid>
-                            <Button Grid.Row="1" Grid.ColumnSpan="3" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
-                                Content="{x:Bind ViewModel.PageRedirectButtonText}"
-                                HorizontalAlignment="Center" 
-                                Command="{x:Bind ViewModel.RedirectToNextPageCommand, Mode=OneWay}" 
-                                Style="{StaticResource AccentButtonStyle}"
-                                Margin="0, 50, 0, 0"/>
-                        </Grid>
+                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}"
+                            DataContext="{x:Bind ViewModel}"/>
+                        
                         <!-- Next steps section -->
-                        <Grid Grid.Row="1" Visibility="{x:Bind ViewModel.NextSteps, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
-                            <ListView ItemsSource="{x:Bind ViewModel.NextSteps, Mode=OneWay}" SelectionMode="None" ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="UserControl">
-                                        <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0, 0, 0, 1">
-                                            <ContentControl Content="{x:Bind}"/>
-                                        </Border>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </Grid>
-                        <ContentControl Grid.Row="2" IsTabStop="False" Template="{ThemeResource LinksTemplate}" />
+                        <summaryViews:SummaryNextSteps Grid.Row="1" DataContext="{x:Bind ViewModel}"/>
                     </Grid>
 
                     <!-- Displays the repos cloned and apps downloaded -->
-                    <StackPanel Grid.Column="1" Orientation="Vertical" x:Name="TaskGroupSections">
-                        <StackPanel.Resources>
-                            <Thickness x:Key="ExpanderHeaderBorderThickness">0</Thickness>
-                            <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="Transparent" />
-                            <SolidColorBrush x:Key="ExpanderContentBackground" Color="Transparent" />
-                            <SolidColorBrush x:Key="ExpanderContentBorderBrush" Color="Transparent" />
-                            <Style TargetType="Expander">
-                                <Setter Property="IsExpanded" Value="True"/>
-                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            </Style>
-                        </StackPanel.Resources>
-
-                        <!-- Repos cloned -->
-                        <Grid Padding="0,13" Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}"
-                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
-                            <Expander MaxHeight="200">
-                                <Expander.Header>
-                                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                </Expander.Header>
-                                <ListView ItemsSource="{x:Bind ViewModel.RepositoriesCloned, Mode=OneWay}" SelectionMode="None">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate x:DataType="models:RepoViewListItem">
-                                            <Grid Margin="0, 10, 0, 0" ColumnSpacing="5">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <FontIcon Grid.Column="0" FontSize="16"  FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
-                                                <TextBlock 
-                                                    Grid.Column="1"
-                                                    Text="{x:Bind RepoName}"
-                                                    Margin="5 0 0 0"
-                                                    TextWrapping="Wrap"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </Expander>
-                        </Grid>
-
-                        <!-- Create environment details expander -->
-                        <Grid Padding="0,13" Visibility="{x:Bind ViewModel.WasCreateEnvironmentOperationStarted}"
-                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
-                            <Expander>
-                                <Expander.Header>
-                                    <TextBlock x:Uid="SummaryPageHeadingForCreateEnvironmentFlow" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                </Expander.Header>
-                                <Grid x:Name="AdaptiveCardGrid" />
-                            </Expander>
-                        </Grid>
-
-                        <!-- Apps downloaded -->
-                        <Grid 
-                            Padding="0,12"
-                            Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}"
-                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
-                            <Expander>
-                                <Expander.Header>
-                                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0,12"/>
-                                </Expander.Header>
-                                <GridView ItemsSource="{x:Bind ViewModel.AppsDownloaded, Mode=OneWay}" SelectionMode="None">
-                                    <GridView.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
-                                        </ItemsPanelTemplate>
-                                    </GridView.ItemsPanel>
-                                    <GridView.ItemTemplate>
-                                        <DataTemplate x:DataType="viewModels:PackageViewModel">
-                                            <controls:PackageDetailsSettingsCard AutomationProperties.Name="{x:Bind PackageTitle}" Width="250" Padding="5">
-                                                <ToolTipService.ToolTip>
-                                                    <controls:PackageDetailsTooltip Package="{x:Bind}" />
-                                                </ToolTipService.ToolTip>
-                                                <controls:PackageDetailsSettingsCard.Header>
-                                                    <TextBlock Style="{ThemeResource AppManagementPackageTitleTextBlock}" Text="{x:Bind PackageTitle}" />
-                                                </controls:PackageDetailsSettingsCard.Header>
-                                                <controls:PackageDetailsSettingsCard.Description>
-                                                    <TextBlock Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{x:Bind PackageFullDescription}" />
-                                                </controls:PackageDetailsSettingsCard.Description>
-                                                <controls:PackageDetailsSettingsCard.HeaderIcon>
-                                                    <ImageIcon AutomationProperties.Name="{x:Bind PackageTitle}" Source="{x:Bind Icon}"/>
-                                                </controls:PackageDetailsSettingsCard.HeaderIcon>
-                                            </controls:PackageDetailsSettingsCard>
-                                        </DataTemplate>
-                                    </GridView.ItemTemplate>
-                                </GridView>
-                            </Expander>
-                        </Grid>
-
-                        <!-- Installation notes -->
-                        <Grid 
-                            Padding="0,12"
-                            Visibility="{x:Bind ViewModel.AppsDownloadedInstallationNotes, Converter={StaticResource CollectionVisibilityConverter}}"
-                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
-                            <Expander>
-                                <Expander.Header>
-                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0,12">Installation Notes</TextBlock>
-                                </Expander.Header>
-                                <ListView SelectionMode="None" ItemsSource="{x:Bind ViewModel.AppsDownloadedInstallationNotes}">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate x:DataType="viewModels:PackageViewModel">
-                                            <Grid AutomationProperties.Name="{x:Bind PackageTitle}" ColumnSpacing="12" Margin="0,0,0,4" CornerRadius="8" Padding="18,20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="auto" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <ImageIcon Width="24" VerticalAlignment="Top" Source="{x:Bind Icon}"/>
-                                                <StackPanel Grid.Column="1">
-                                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind PackageTitle}"/>
-                                                    <TextBlock
-                                                        MaxLines="2"
-                                                        IsTextSelectionEnabled="True"
-                                                        TextWrapping="WrapWholeWords"
-                                                        TextTrimming="WordEllipsis"
-                                                        IsTextTrimmedChanged="InstallationNotes_IsTextTrimmedChanged"
-                                                        Tag="{Binding ElementName=ViewAllButton}"
-                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                        Text="{x:Bind InstallationNotes}"/>
-                                                    <Button
-                                                        Name="ViewAllButton"
-                                                        Visibility="Collapsed"
-                                                        Padding="0,5,0,6"
-                                                        Click="ViewAllButton_Click"
-                                                        Style="{ThemeResource TextBlockButtonStyle}"
-                                                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ViewAll"
-                                                        Tag="{x:Bind}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </Expander>
-                        </Grid>
-                    </StackPanel>
+                    <summaryViews:SummaryShowAppsAndRepos Grid.Column="1" DataContext="{x:Bind ViewModel}"/>
                 </Grid>
             </Grid>
         </StackPanel>

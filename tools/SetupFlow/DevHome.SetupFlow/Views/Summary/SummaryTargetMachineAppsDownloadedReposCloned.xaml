@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <UserControl
-    x:Class="DevHome.SetupFlow.Views.Summary.SummaryAppsDownloadedReposCloned"
+    x:Class="DevHome.SetupFlow.Views.Summary.SummaryTargetMachineAppsDownloadedReposCloned"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:DevHome.SetupFlow.Views.Summary"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
-                    <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionWillNotSpanColumnsConverter" EmptyValue="0" NotEmptyValue="*"/>
-                    <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
+                    <converters:DoubleToVisibilityConverter x:Key="ZeroCountWillNotSpanColumnsConverter" GreaterThan="0" FalseValue="0" TrueValue="*"/>
+                    <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible" />
                     <converters:CollectionVisibilityConverter x:Key="NegatedCollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
+                    <Style x:Key="ListViewItemStretchStyle" TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Margin" Value="0" />
+                        <Setter Property="Padding" Value="0" />
+                    </Style>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="{Binding AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
-            <ColumnDefinition Width="{Binding RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
-            <ColumnDefinition />
+            <ColumnDefinition Width="{Binding TargetInstallResults.Count, Converter={StaticResource ZeroCountWillNotSpanColumnsConverter}}"/>
+            <ColumnDefinition Width="{Binding TargetCloneResults.Count, Converter={StaticResource ZeroCountWillNotSpanColumnsConverter}}"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -31,7 +35,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid
-        Visibility="{Binding AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}"
+        Visibility="{Binding TargetInstallResults.Count, Converter={StaticResource CountToVisibilityConverter}}"
         Grid.Column="0"
         HorizontalAlignment="Center">
             <Grid.RowDefinitions>
@@ -39,7 +43,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <TextBlock 
-            Grid.Row="0" Text="{Binding AppsDownloaded.Count}" 
+            Grid.Row="0" Text="{Binding TargetInstallResults.Count}" 
             FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
             FontWeight="{StaticResource InfoBarTitleFontWeight}" 
             HorizontalAlignment="center"/>
@@ -51,14 +55,14 @@
         </Grid>
         <Grid
     Grid.Column="1"
-    Visibility="{Binding RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}">
+    Visibility="{Binding TargetCloneResults.Count, Converter={StaticResource CountToVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <TextBlock 
             Grid.Row="0" 
-            Text="{Binding RepositoriesCloned.Count}" 
+            Text="{Binding TargetCloneResults.Count}" 
             FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
             FontWeight="{StaticResource InfoBarTitleFontWeight}"
             HorizontalAlignment="Center"/>
@@ -68,27 +72,7 @@
             Text="{Binding RepositoriesClonedText}"
             Foreground="{ThemeResource TextFillColorSecondary}"/>
         </Grid>
-        <Grid
-        Grid.Column="2"
-        Visibility="{Binding WasCreateEnvironmentOperationStarted, Mode=OneWay}">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <!--- There will only ever be 1 environment created in the flow  at a time. -->
-            <TextBlock 
-            Grid.Row="0" 
-            Text="1" 
-            FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
-            FontWeight="{StaticResource InfoBarTitleFontWeight}"
-            HorizontalAlignment="Center"/>
-            <TextBlock 
-            Grid.Row="1" 
-            HorizontalAlignment="Center"
-            x:Uid="SummaryPageEnvironmentCreating"
-            Foreground="{ThemeResource TextFillColorSecondary}"/>
-        </Grid>
-        <Button Grid.Row="1" Grid.ColumnSpan="3" Visibility="{Binding FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
+        <Button Grid.Row="1" Grid.ColumnSpan="2" Visibility="{Binding FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
         Content="{Binding PageRedirectButtonText}"
         HorizontalAlignment="Center" 
         Command="{Binding RedirectToNextPageCommand, Mode=OneWay}" 
