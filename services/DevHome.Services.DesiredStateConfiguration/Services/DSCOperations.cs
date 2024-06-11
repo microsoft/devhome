@@ -2,62 +2,36 @@
 // Licensed under the MIT License.
 
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
 using DevHome.Services.DesiredStateConfiguration.Exceptions;
+using DevHome.Services.DesiredStateConfiguration.Models;
 using DevHome.Services.DesiredStateConfiguration.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Management.Configuration;
 using Windows.Storage.Streams;
 
-namespace DevHome.Services.DesiredStateConfiguration.Models;
+namespace DevHome.Services.DesiredStateConfiguration.Services;
 
-/// <summary>
-/// Model class for a YAML configuration file
-/// </summary>
-public class DSCConfiguration
+internal sealed class DSCOperations : IDSCOperations
 {
-    private const string PowerShellHandlerIdentifier = "pwsh";
     private readonly ILogger _logger;
-    private readonly FileInfo _fileInfo;
+    private const string PowerShellHandlerIdentifier = "pwsh";
 
-    public DSCConfiguration(ILogger logger, string filePath)
+    public DSCOperations(ILogger<DSCOperations> logger)
     {
         _logger = logger;
-        _fileInfo = new FileInfo(filePath);
-        Content = LoadContent(logger, _fileInfo);
     }
 
-    public DSCConfiguration(ILogger logger, string filePath, string content)
+    /// <inheritdoc />
+    public async Task<DSCApplicationResult> ApplyConfigurationAsync(IDSCFile file, Guid activityId)
     {
-        _logger = logger;
-        _fileInfo = new FileInfo(filePath);
-        Content = content;
-    }
+        var processor = await CreateConfigurationProcessorAsync();
+        var configSet = await OpenConfigurationSetAsync(file, processor);
 
-    /// <summary>
-    /// Gets the configuration file name
-    /// </summary>
-    public string Name => _fileInfo.Name;
-
-    /// <summary>
-    /// Gets the configuration file path
-    /// </summary>
-    public string Path => _fileInfo.FullName;
-
-    /// <summary>
-    /// Gets the configuration file directory path
-    /// </summary>
-    public string DirectoryPath => _fileInfo.Directory.FullName;
-
-    /// <summary>
-    /// Gets the configuration file content
-    /// </summary>
-    public string Content { get; }
-
-    public async Task<DSCApplicationResult> ApplyConfigurationAsync(ConfigurationProcessor processor, ConfigurationSet configSet, Guid activityId)
-    {
         _logger.LogInformation("Starting to apply configuration set");
         var result = await processor.ApplySetAsync(configSet, ApplyConfigurationSetFlags.None);
 
@@ -67,52 +41,42 @@ public class DSCConfiguration
         }
 
         TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Result", Telemetry.LogLevel.Critical, new ConfigurationSetResultEvent(configSet, result), activityId);
+
         _logger.LogInformation($"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
-        return new(result);
+        return new DSCApplicationResult(result);
     }
 
-    public async Task ResolveConfigurationUnitDetails(ConfigurationProcessor processor, ConfigurationSet configSet)
-    {
-        await processor.GetSetDetailsAsync(configSet, ConfigurationUnitDetailFlags.ReadOnly);
-    }
-
-    /// <summary>
-    /// Load configuration file content
-    /// </summary>
-    /// <returns>Configuration file content</returns>
-    private static string LoadContent(ILogger logger, FileInfo fileInfo)
-    {
-        logger.LogInformation($"Loading configuration file content from {fileInfo.FullName}");
-        using var text = fileInfo.OpenText();
-        return text.ReadToEnd();
-    }
-
-    /// <summary>
-    /// Open a configuration set using DSC configuration API
-    /// </summary>
-    /// <returns>Configuration set</returns>
-    /// <exception cref="OpenConfigurationSetException">Thrown when the configuration set cannot be opened</exception>
-    private async Task<ConfigurationSet> OpenConfigurationSetAsync()
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<DSCUnit>> GetConfigurationUnitDetailsAsync(IDSCFile file)
     {
         var processor = await CreateConfigurationProcessorAsync();
-        var inputStream = StringToStream(Content);
+        var configSet = await OpenConfigurationSetAsync(file, processor);
 
-        var openConfigResult = processor.OpenConfigurationSet(inputStream);
-        var configSet = openConfigResult.Set ?? throw new OpenConfigurationSetException(openConfigResult.ResultCode, openConfigResult.Field, openConfigResult.Value);
+        _logger.LogInformation("Getting configuration unit details");
+        await processor.GetSetDetailsAsync(configSet, ConfigurationUnitDetailFlags.ReadOnly);
 
-        // Set input file path in the configuration set to inform the
-        // processor about the working directory when applying the
-        // configuration
-        configSet.Name = Name;
-        configSet.Origin = DirectoryPath;
-        configSet.Path = Path;
-        return configSet;
+        var configUnitsOutOfProc = configSet.Units;
+        var configUnitsInProc = configUnitsOutOfProc.Select(unit => new DSCUnit(unit));
+        return configUnitsInProc.ToList();
     }
 
+    /// <inheritdoc />
+    public async Task ValidateConfigurationAsync(IDSCFile file)
+    {
+        // Try to open the configuration file to validate it.
+        _logger.LogInformation("Validating configuration file");
+        var processor = await CreateConfigurationProcessorAsync();
+        await OpenConfigurationSetAsync(file, processor);
+    }
+
+    /// <summary>
+    /// Create a configuration processor using DSC configuration API
+    /// </summary>
+    /// <returns>Configuration processor</returns>
     private async Task<ConfigurationProcessor> CreateConfigurationProcessorAsync()
     {
         ConfigurationStaticFunctions config = new();
-        var factory = await config.CreateConfigurationSetProcessorFactoryAsync(PowerShellHandlerIdentifier).AsTask();
+        var factory = await config.CreateConfigurationSetProcessorFactoryAsync(PowerShellHandlerIdentifier);
 
         // Create and configure the configuration processor.
         var processor = config.CreateConfigurationProcessor(factory);
@@ -120,6 +84,27 @@ public class DSCConfiguration
         processor.Diagnostics += LogConfigurationDiagnostics;
         processor.MinimumLevel = DiagnosticLevel.Verbose;
         return processor;
+    }
+
+    /// <summary>
+    /// Open a configuration set using DSC configuration API
+    /// </summary>
+    /// <param name="file">Configuration file</param>
+    /// <returns>Configuration set</returns>
+    /// <exception cref="OpenConfigurationSetException">Thrown when the configuration set cannot be opened</exception>
+    private async Task<ConfigurationSet> OpenConfigurationSetAsync(IDSCFile file, ConfigurationProcessor processor)
+    {
+        var inputStream = await StringToStreamAsync(file.Content);
+        var openConfigResult = processor.OpenConfigurationSet(inputStream);
+        var configSet = openConfigResult.Set ?? throw new OpenConfigurationSetException(openConfigResult.ResultCode, openConfigResult.Field, openConfigResult.Value);
+
+        // Set input file path in the configuration set to inform the
+        // processor about the working directory when applying the
+        // configuration
+        configSet.Name = file.Name;
+        configSet.Origin = file.DirectoryPath;
+        configSet.Path = file.Path;
+        return configSet;
     }
 
     /// <summary>
@@ -152,14 +137,14 @@ public class DSCConfiguration
     /// </summary>
     /// <param name="str">Target string</param>
     /// <returns>Input stream</returns>
-    private InMemoryRandomAccessStream StringToStream(string str)
+    private static async Task<InMemoryRandomAccessStream> StringToStreamAsync(string str)
     {
         InMemoryRandomAccessStream result = new();
         using (DataWriter writer = new(result))
         {
             writer.UnicodeEncoding = UnicodeEncoding.Utf8;
             writer.WriteString(str);
-            writer.StoreAsync().AsTask().Wait();
+            await writer.StoreAsync();
             writer.DetachStream();
         }
 

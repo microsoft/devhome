@@ -3,16 +3,17 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
 using Microsoft.Management.Configuration;
 
 namespace DevHome.Services.DesiredStateConfiguration.Models;
 
-public class DSCConfigurationUnit
+internal sealed class DSCUnit : IDSCUnit
 {
     private const string DescriptionMetadataKey = "description";
     private const string ModuleMetadataKey = "module";
 
-    public DSCConfigurationUnit(ConfigurationUnit unit)
+    public DSCUnit(ConfigurationUnit unit)
     {
         // Constructor copies all the required data from the out-of-proc COM
         // objects over to the current process. This ensures that we have this
@@ -38,20 +39,7 @@ public class DSCConfigurationUnit
         // Load details if available
         if (unit.Details != null)
         {
-            UnitType = unit.Details.UnitType;
-            UnitDescription = unit.Details.UnitDescription;
-            UnitDocumentationUri = unit.Details.UnitDocumentationUri?.ToString();
-            ModuleName = unit.Details.ModuleName;
-            ModuleType = unit.Details.ModuleType;
-            ModuleSource = unit.Details.ModuleSource;
-            ModuleDescription = unit.Details.ModuleDescription;
-            ModuleDocumentationUri = unit.Details.ModuleDocumentationUri?.ToString();
-            PublishedModuleUri = unit.Details.PublishedModuleUri?.ToString();
-            Version = unit.Details.Version;
-            IsLocal = unit.Details.IsLocal;
-            Author = unit.Details.Author;
-            Publisher = unit.Details.Publisher;
-            IsPublic = unit.Details.IsPublic;
+            Details = new DSCUnitDetails(unit.Details);
         }
     }
 
@@ -96,4 +84,6 @@ public class DSCConfigurationUnit
     public string Publisher { get; }
 
     public bool IsPublic { get; }
+
+    public IDSCUnitDetails Details { get; }
 }
