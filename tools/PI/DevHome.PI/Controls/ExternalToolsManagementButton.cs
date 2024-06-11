@@ -9,6 +9,7 @@ using System.Linq;
 using DevHome.PI.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.PI.Controls;
 
@@ -252,9 +253,13 @@ internal sealed class ExternalToolsManagementButton : Button
 
     private FontIcon GetFontIcon(string s)
     {
-        var icon = new FontIcon();
-        icon.FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Segoe Fluent Icons");
-        icon.Glyph = s;
+        var fontFamily = (FontFamily)Application.Current.Resources["SymbolThemeFontFamily"];
+
+        var icon = new FontIcon
+        {
+            FontFamily = fontFamily,
+            Glyph = s,
+        };
 
         return icon;
     }

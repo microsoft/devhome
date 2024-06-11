@@ -16,6 +16,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Graphics;
+using Windows.System;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
 
@@ -344,5 +345,11 @@ public partial class BarWindowViewModel : ObservableObject
                 _errorTitleText,
                 Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_STYLE.MB_ICONERROR);
         }
+    }
+
+    [RelayCommand]
+    public void LaunchAdvancedAppsPageInWindowsSettings()
+    {
+        _ = Launcher.LaunchUriAsync(new("ms-settings:advanced-apps"));
     }
 }

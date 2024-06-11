@@ -50,7 +50,7 @@ public static class WindowExExtensions
     /// </summary>
     /// <param name="window">Target window.</param>
     /// <param name="action">Action performed on the created dialog.</param>
-    private static async Task ShowMessageDialogAsync(this Window window, Action<ContentDialog> action)
+    public static async Task ShowMessageDialogAsync(this Window window, Action<ContentDialog> action)
     {
         var dialog = new ContentDialog()
         {

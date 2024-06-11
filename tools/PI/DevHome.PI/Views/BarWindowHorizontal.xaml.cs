@@ -4,19 +4,25 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
 using DevHome.PI.ViewModels;
+using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation;
+using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
+using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.UI.Shell.Common;
 using WinRT.Interop;
 using WinUIEx;
 using static DevHome.PI.Helpers.WindowHelper;
@@ -27,6 +33,8 @@ public partial class BarWindowHorizontal : WindowEx
 {
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowViewModel _viewModel;
+    private readonly UISettings _uiSettings = new();
+
     private bool isClosing;
 
     // Constants that control window sizes
@@ -76,6 +84,14 @@ public partial class BarWindowHorizontal : WindowEx
         var settingSize = Settings.Default.ExpandedLargeSize;
         _restoreState.Height = settingSize.Height;
         _restoreState.Width = settingSize.Width;
+
+        _uiSettings.ColorValuesChanged += (sender, args) =>
+        {
+            TheDispatcher.TryEnqueue(() =>
+            {
+                ApplySystemThemeToCaptionButtons();
+            });
+        };
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -109,8 +125,9 @@ public partial class BarWindowHorizontal : WindowEx
         SetRequestedTheme(t.Theme);
 
         // Calculate the DPI scale.
-        var dpiWindow = HwndExtensions.GetDpiForWindow(ThisHwnd);
-        _dpiScale = dpiWindow / 96.0;
+        var monitor = PInvoke.MonitorFromWindow(ThisHwnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+        PInvoke.GetScaleFactorForMonitor(monitor, out DEVICE_SCALE_FACTOR scaleFactor).ThrowOnFailure();
+        _dpiScale = (double)scaleFactor / 100;
 
         SetDefaultPosition();
 
@@ -141,8 +158,8 @@ public partial class BarWindowHorizontal : WindowEx
         _monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? ThisHwnd);
         var screenWidth = _monitorRect.right - _monitorRect.left;
         this.Move(
-            (int)(((screenWidth - Width) / 2) * _dpiScale) + _monitorRect.left,
-            (int)(_WindowPositionOffsetY * _dpiScale));
+            (int)((screenWidth - (Width * _dpiScale)) / 2) + _monitorRect.left,
+            (int)_WindowPositionOffsetY);
 
         // Get the saved settings for the ExpandedView size. On first run, this will be
         // the default 0,0, so we'll set the size proportional to the monitor size.
@@ -150,12 +167,12 @@ public partial class BarWindowHorizontal : WindowEx
         var settingSize = Settings.Default.ExpandedLargeSize;
         if (settingSize.Width == 0)
         {
-            settingSize.Width = _monitorRect.Width * 2 / 3;
+            settingSize.Width = (int)((_monitorRect.Width * 2) / (3 * _dpiScale));
         }
 
         if (settingSize.Height == 0)
         {
-            settingSize.Height = _monitorRect.Height * 3 / 4;
+            settingSize.Height = (int)((_monitorRect.Height * 3) / (4 * _dpiScale));
         }
 
         Settings.Default.ExpandedLargeSize = settingSize;
@@ -206,6 +223,19 @@ public partial class BarWindowHorizontal : WindowEx
         if (Content is FrameworkElement rootElement)
         {
             rootElement.RequestedTheme = theme;
+
+            if (theme == ElementTheme.Dark)
+            {
+                SetCaptionButtonColors(Colors.White);
+            }
+            else if (theme == ElementTheme.Light)
+            {
+                SetCaptionButtonColors(Colors.Black);
+            }
+            else
+            {
+                ApplySystemThemeToCaptionButtons();
+            }
         }
     }
 
@@ -288,5 +318,34 @@ public partial class BarWindowHorizontal : WindowEx
     private void MainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         SetRegionsForTitleBar();
+    }
+
+    // workaround as Appwindow titlebar doesn't update caption button colors correctly when changed while app is running
+    // https://task.ms/44172495
+    public void ApplySystemThemeToCaptionButtons()
+    {
+        if (Content is FrameworkElement rootElement)
+        {
+            Windows.UI.Color color;
+            if (rootElement.ActualTheme == ElementTheme.Dark)
+            {
+                color = Colors.White;
+            }
+            else
+            {
+                color = Colors.Black;
+            }
+
+            SetCaptionButtonColors(color);
+        }
+
+        return;
+    }
+
+    public void SetCaptionButtonColors(Windows.UI.Color color)
+    {
+        var res = Application.Current.Resources;
+        res["WindowCaptionForeground"] = color;
+        AppWindow.TitleBar.ButtonForegroundColor = color;
     }
 }
