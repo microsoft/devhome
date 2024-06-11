@@ -240,7 +240,6 @@
 
     <Style
         x:Key="CardBodyLaunchButtonStyle"
-        
         TargetType="Button">
         <Setter Property="HorizontalAlignment" Value="Right" />
         <Setter Property="VerticalAlignment" Value="Top" />

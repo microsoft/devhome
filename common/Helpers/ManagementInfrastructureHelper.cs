@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.Management.Infrastructure;
 using Serilog;
@@ -21,6 +22,12 @@ public enum FeatureAvailabilityKind
 public static class ManagementInfrastructureHelper
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ManagementInfrastructureHelper));
+
+    public static readonly Dictionary<string, string> ExtensionToFeatureNameMap = new()
+    {
+        { CommonConstants.HyperVExtensionClassId, CommonConstants.HyperVWindowsOptionalFeatureName },
+        { CommonConstants.WindowsSandBoxExtensionClassId, CommonConstants.WindowsSandboxOptionalFeatureName },
+    };
 
     public static FeatureAvailabilityKind IsWindowsFeatureAvailable(string featureName)
     {
@@ -63,5 +70,21 @@ public static class ManagementInfrastructureHelper
             default:
                 return FeatureAvailabilityKind.Unknown;
         }
+    }
+
+    /// <summary>
+    /// Gets a boolean indicating whether the extension should be disabled if the Windows optional
+    /// feature is absent from the machine.
+    /// </summary>
+    /// <param name="extensionClassId">The class Id of the out of proc extension object</param>
+    /// <returns>True when the Windows optional feature is absent. False otherwise.</returns>
+    public static bool ShouldDisableExtensionIfFeatureAbsent(string extensionClassId)
+    {
+        if (ExtensionToFeatureNameMap.TryGetValue(extensionClassId, out var featureName))
+        {
+            return IsWindowsFeatureAvailable(featureName) == FeatureAvailabilityKind.Absent;
+        }
+
+        return false;
     }
 }

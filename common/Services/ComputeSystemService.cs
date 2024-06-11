@@ -64,11 +64,8 @@ public class ComputeSystemService : IComputeSystemService
                 // If we're looking at an internal extension that relies upon a Windows optional feature being present on the machine. We need to
                 // check if its on the machine first before allowing it to be added to the list of extensions that are retrieved. If the feature is
                 // absent we disable the extension.
-                if (ShouldDisabledExtensionIfFeatureAbsent(extension.ExtensionUniqueId))
+                if (_extensionService.DisableExtensionIfFeatureAbsent(extension))
                 {
-                    _log.Information($"User machine does not have the {CommonConstants.ExtensionToFeatureNameMap[extension.ExtensionUniqueId]} feature present." +
-                        $" Disabling the extension with class Id: {extension.ExtensionUniqueId}");
-                    _extensionService.DisableExtension(extension.ExtensionUniqueId);
                     continue;
                 }
 
@@ -102,20 +99,5 @@ public class ComputeSystemService : IComputeSystemService
         }
 
         return computeSystemProvidersFromAllExtensions;
-    }
-
-    /// <summary>
-    /// Gets a boolean indicating whether the extension should be disabled if the Windows optional feature is absent from the machine.
-    /// </summary>
-    /// <param name="extensionClassId">The class Id of the out of proc extension object</param>
-    /// <returns>True when the Windows optional feature is absent. False otherwise.</returns>
-    private bool ShouldDisabledExtensionIfFeatureAbsent(string extensionClassId)
-    {
-        if (CommonConstants.ExtensionToFeatureNameMap.TryGetValue(extensionClassId, out var featureName))
-        {
-            return ManagementInfrastructureHelper.IsWindowsFeatureAvailable(featureName) == FeatureAvailabilityKind.Absent;
-        }
-
-        return false;
     }
 }

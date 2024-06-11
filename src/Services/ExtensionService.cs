@@ -3,12 +3,14 @@
 
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.ExtensionLibrary.TelemetryEvents;
 using DevHome.Models;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation.Collections;
@@ -17,6 +19,8 @@ namespace DevHome.Services;
 
 public class ExtensionService : IExtensionService, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemService));
+
     public event EventHandler OnExtensionsChanged = (_, _) => { };
 
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
@@ -379,5 +383,23 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         var extension = _enabledExtensions.Where(extension => extension.ExtensionUniqueId == extensionUniqueId);
         _enabledExtensions.Remove(extension.First());
+    }
+
+    /// <summary>
+    /// Gets a boolean indicating whether the extension was disabled due to its corresponding the Windows optional feature
+    /// being absent from the machine.
+    /// </summary>
+    /// <param name="extension">The out of proc extension object</param>
+    /// <returns>True when the Windows optional feature is absent and the Extension was disabled. False otherwise.</returns>
+    public bool DisableExtensionIfFeatureAbsent(IExtensionWrapper extension)
+    {
+        if (ManagementInfrastructureHelper.ShouldDisableExtensionIfFeatureAbsent(extension.ExtensionClassId))
+        {
+            _log.Information($"Disabling extension: '{extension.ExtensionDisplayName}' because its feature is absent");
+            DisableExtension(extension.ExtensionUniqueId);
+            return true;
+        }
+
+        return false;
     }
 }
