@@ -54,7 +54,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
             {
                 Title = stringResource.GetLocalized("ProjectIronsidesTitle"),
                 Description = stringResource.GetLocalized("ProjectIronsidesDesc"),
-                NavigateUri = "https://github.com/microsoft/devhome/issues/2796",
+                NavigateUri = "https://go.microsoft.com/fwlink/?linkid=2275140",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "PI.ico"),
                 UtilityAutomationId = "DevHome.PI",
             },
