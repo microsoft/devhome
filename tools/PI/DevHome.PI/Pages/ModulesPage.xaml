@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:diagnostics="using:System.Diagnostics"
+    xmlns:models="using:DevHome.PI.Models"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d"
     NavigationCacheMode="Enabled">
@@ -34,10 +34,10 @@
             <ListView x:Name="ModulesListView" SelectionMode="Single" ItemsSource="{x:Bind ViewModel.ModuleList, Mode=OneWay}"
                       SelectedIndex="{x:Bind ViewModel.SelectedModuleIndex, Mode=TwoWay}">
                 <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="diagnostics:ProcessModule">
+                    <DataTemplate x:DataType="models:ProcessModuleInfo">
                         <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                             <TextBlock Text="{x:Bind ModuleName}" FontWeight="Bold"/>
-                            <TextBlock Text="{x:Bind FileVersionInfo.FileVersion}" Margin="0"/>
+                            <TextBlock Text="{x:Bind FileVersion}" Margin="0"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -49,20 +49,20 @@
             <ScrollViewer Grid.Column="2" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
                 <StackPanel x:Name="ModuleDetailsPanel" Margin="8,0,0,0">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                        <TextBlock Text="{x:Bind ((diagnostics:ProcessModule)ModulesListView.SelectedItem).ModuleName, Mode=OneWay}"
+                        <TextBlock Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).ModuleName, Mode=OneWay}"
                                    FontSize="24" FontWeight="Bold"/>
                     </StackPanel>
                     <StackPanel>
                         <TextBlock x:Uid="FileVersionInfoTextBlock" FontSize="18" />
-                        <TextBox Text="{x:Bind ((diagnostics:ProcessModule)ModulesListView.SelectedItem).FileVersionInfo, Mode=OneWay}"
+                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).FileVersionInfo, Mode=OneWay}"
                                  FontFamily="Consolas" TextWrapping="Wrap" IsReadOnly="True"/>
 
                         <TextBlock x:Uid="BaseAddressTextBlock" FontSize="18" Margin="0,6,0,0"/>
-                        <TextBox Text="{x:Bind ((diagnostics:ProcessModule)ModulesListView.SelectedItem).BaseAddress, Mode=OneWay}" IsReadOnly="True"/>
+                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).BaseAddress, Mode=OneWay}" IsReadOnly="True"/>
                         <TextBlock x:Uid="EntrypointAddressTextBlock" FontSize="18" Margin="0,6,0,0"/>
-                        <TextBox Text="{x:Bind ((diagnostics:ProcessModule)ModulesListView.SelectedItem).EntryPointAddress, Mode=OneWay}" IsReadOnly="True"/>                        
+                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).EntryPointAddress, Mode=OneWay}" IsReadOnly="True"/>                        
                         <TextBlock x:Uid="MemorySizeTextBlock" FontSize="18" Margin="0,6,0,0"/>
-                        <TextBox Text="{x:Bind ((diagnostics:ProcessModule)ModulesListView.SelectedItem).ModuleMemorySize, Mode=OneWay}" IsReadOnly="True"/>
+                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).ModuleMemorySize, Mode=OneWay}" IsReadOnly="True"/>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

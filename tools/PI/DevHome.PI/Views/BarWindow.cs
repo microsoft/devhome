@@ -15,10 +15,14 @@ using Windows.Graphics;
 using Windows.Win32.Foundation;
 using WinUIEx;
 
-namespace DevHome.PI;
+namespace DevHome.PI.Views;
 
 public partial class BarWindow
 {
+    private readonly string _aliasDisabledDialogTitle = CommonHelper.GetLocalizedString("AliasDisabledDialogTitle");
+    private readonly string _aliasDisabledDialogContent = CommonHelper.GetLocalizedString("AliasDisabledDialogContent");
+    private readonly string _aliasDisabledDialogButtonText = CommonHelper.GetLocalizedString("AliasDisabledDialogButtonText");
+
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowHorizontal _horizontalWindow;
     private readonly BarWindowVertical _verticalWindow;
@@ -116,6 +120,21 @@ public partial class BarWindow
         {
             RotateBar();
         }
+    }
+
+    public void ShowDialogToEnableAppExecutionAlias()
+    {
+        _ = _horizontalWindow.ShowMessageDialogAsync(dialog =>
+        {
+            dialog.Title = _aliasDisabledDialogTitle;
+            dialog.Content = new TextBlock()
+            {
+                Text = _aliasDisabledDialogContent,
+                TextWrapping = TextWrapping.WrapWholeWords,
+            };
+            dialog.PrimaryButtonText = _aliasDisabledDialogButtonText;
+            dialog.PrimaryButtonCommand = _viewModel.LaunchAdvancedAppsPageInWindowsSettingsCommand;
+        });
     }
 
     public void RotateBar()
