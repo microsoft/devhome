@@ -36,16 +36,15 @@
         Padding="0,0,10,0">
         <Grid ColumnSpacing="50">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
                 <RowDefinition />
-                <RowDefinition />
-                <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="1.77*"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel x:Name="SummaryHeader" Grid.Row="0" Grid.ColumnSpan="2">
+            <StackPanel x:Name="SummaryHeader" Grid.Row="0" Grid.ColumnSpan="2" Margin="0, 0, 0, 40">
                 <!-- Display if the user has tasks need the machine to restart.-->
                 <summaryViews:SummaryNeedsRestart 
                 Visibility="{x:Bind ViewModel.ShowRestartNeeded}"
@@ -57,53 +56,48 @@
 
                 <!-- Introduction to the summary page via configuration results-->
                 <summaryViews:SummaryIntroViaConfiguration
-                    Padding="0,20,0,0"
                     Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}"
                     DataContext="{x:Bind ViewModel}"/>
 
                 <!-- Introduction to the summary page via non-configuration flow -->
                 <summaryViews:SummaryIntoViaNonConfigurationFlow 
-                    Padding="0,20,0,0"
                     Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                     DataContext="{x:Bind ViewModel}"/>
             </StackPanel>
 
-            <!-- Show any failed tasks if the loading screen has any failed tasks-->
-            <summaryViews:SummaryFailedTasks
-                Grid.Row="0"
-                Grid.Column="0"
-                Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
-                HorizontalAlignment="Stretch" 
-                Padding="0,15,0,30"
-                BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                BorderThickness="{ThemeResource TopLeftQuadrantThickness}"
-                DataContext="{x:Bind ViewModel}"/>
+            <StackPanel Grid.Row="1" Grid.Column="0">
+                <!-- Show any failed tasks if the loading screen has any failed tasks-->
+                <Border
+                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                    BorderThickness="{ThemeResource TopLeftQuadrantThickness}"
+                    Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
+                    <summaryViews:SummaryFailedTasks
+                        HorizontalAlignment="Stretch" 
+                        DataContext="{x:Bind ViewModel}"/>
+                </Border>
 
-            <!-- Number of apps and repos cloned. Show if not failed tasks-->
-            <summaryViews:SummaryAppsDownloadedReposCloned
-                Grid.Row="1"
-                Grid.Column="0"
-                Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
-                HorizontalAlignment="Stretch"
-                DataContext="{x:Bind ViewModel}"/>
+                <!-- Number of apps and repos cloned. Show if not failed tasks-->
+                <Border
+                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                    BorderThickness="{ThemeResource TopLeftQuadrantThickness}"
+                    Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}">
+                    <summaryViews:SummaryAppsDownloadedReposCloned
+                        HorizontalAlignment="Stretch"
+                        DataContext="{x:Bind ViewModel}"/>
+                </Border>
 
-            <!-- Displays the repos cloned and apps downloaded -->
-            <summaryViews:SummaryShowAppsAndRepos
-                Grid.Row="1"
-                Grid.Column="1"
+                    <!-- Next steps section -->
+                <summaryViews:SummaryNextSteps
                 DataContext="{x:Bind ViewModel}"/>
+            </StackPanel>
 
-            <summaryViews:SummaryAppInstallationNotes
-                Grid.Row="2"
-                Grid.Column="1"
-                Padding="0,12"
-                Visibility="{x:Bind ViewModel.AppsDownloadedInstallationNotes, Converter={StaticResource CollectionVisibilityConverter}}"/>
+            <StackPanel Grid.Row="1" Grid.Column="1" Spacing="12">
+                <!-- Displays the repos cloned and apps downloaded -->
+                <summaryViews:SummaryShowAppsAndRepos DataContext="{x:Bind ViewModel}"/>
 
-            <!-- Next steps section -->
-            <summaryViews:SummaryNextSteps
-                Grid.Row="2"
-                Grid.Column="0"
-                DataContext="{x:Bind ViewModel}"/>
+                <summaryViews:SummaryAppInstallationNotes
+                    Visibility="{x:Bind ViewModel.AppsDownloadedInstallationNotes, Converter={StaticResource CollectionVisibilityConverter}}"/>
+            </StackPanel>
         </Grid>
     </ScrollViewer>
 </UserControl>

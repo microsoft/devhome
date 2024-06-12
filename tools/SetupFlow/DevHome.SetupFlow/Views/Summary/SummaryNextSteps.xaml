@@ -23,8 +23,6 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid
-        BorderBrush="red"
-        BorderThickness="1"
         Visibility="{Binding NextSteps, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
         <Grid.RowDefinitions>
             <RowDefinition/>

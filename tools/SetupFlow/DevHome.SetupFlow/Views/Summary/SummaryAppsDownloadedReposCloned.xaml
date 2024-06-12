@@ -19,19 +19,17 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid BorderBrush="Red" BorderThickness="1" VerticalAlignment="Top">
+    <Grid Margin="0, 0, 0, 50">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
             <ColumnDefinition Width="{Binding RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}"/>
-            <ColumnDefinition />
+            <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid
-                        BorderBrush="blue"
-            BorderThickness="10"
         Visibility="{Binding AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}"
         Grid.Column="0"
         HorizontalAlignment="Center">
@@ -52,8 +50,6 @@
         </Grid>
         <Grid
     Grid.Column="1"
-                        BorderBrush="blue"
-            BorderThickness="10"
     Visibility="{Binding RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -96,8 +92,6 @@
         HorizontalAlignment="Center" 
         Command="{Binding RedirectToNextPageCommand, Mode=OneWay}" 
         Style="{StaticResource AccentButtonStyle}"
-                BorderBrush="Green"
-                BorderThickness="10"
         Margin="0, 50, 0, 0"/>
     </Grid>
 </UserControl>

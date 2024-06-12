@@ -9,7 +9,6 @@
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
     mc:Ignorable="d">
 
-    <!-- Installation notes -->
     <Grid>
         <Expander>
             <Expander.Header>
