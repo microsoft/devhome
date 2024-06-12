@@ -21,28 +21,28 @@
 
             <ctControls:SettingsCard x:Uid="MonitorCpuSettingCard">
                 <ctControls:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xE950;"/>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE950;"/>
                 </ctControls:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="CpuUsageToggle" Toggled="CpuUsageToggle_Toggled"/>
             </ctControls:SettingsCard>
             
             <ctControls:SettingsCard x:Uid="ShowInsightsCard">
                 <ctControls:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xE9D9;"/>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE9D9;"/>
                 </ctControls:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="ShowInsightsToggle" Toggled="ShowInsightsToggle_Toggled"/>
             </ctControls:SettingsCard>
             
             <ctControls:SettingsCard x:Uid="EnableClipboardMonitoringCard">
                 <ctControls:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xF0E3;"/>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF0E3;"/>
                 </ctControls:SettingsCard.HeaderIcon>
                 <ToggleSwitch x:Name="EnableClipboardMonitoringToggle" Toggled="EnableClipboardMonitoringToggle_Toggled"/>
             </ctControls:SettingsCard>
             
             <ctControls:SettingsCard x:Uid="ExcludedProcessesCard">
                 <ctControls:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xE71C;"/>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE71C;"/>
                 </ctControls:SettingsCard.HeaderIcon>
                 <Grid HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>

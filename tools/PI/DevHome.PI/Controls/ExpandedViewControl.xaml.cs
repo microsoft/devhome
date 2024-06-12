@@ -5,6 +5,7 @@ using System;
 using DevHome.PI.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 
 namespace DevHome.PI.Controls;
 
@@ -36,5 +37,10 @@ public sealed partial class ExpandedViewControl : UserControl
     public void NavigateToSettings(string viewModelType)
     {
         viewModel.NavigateToSettings(viewModelType);
+    }
+
+    private void GridSplitter_PointerPressed(object sender, PointerRoutedEventArgs e)
+    {
+        e.Handled = true;
     }
 }

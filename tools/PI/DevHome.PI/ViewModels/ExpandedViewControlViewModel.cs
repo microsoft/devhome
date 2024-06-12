@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.PI.Helpers;
@@ -60,6 +61,9 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     [ObservableProperty]
     private int selectedNavLinkIndex = 0;
 
+    [ObservableProperty]
+    private Visibility appSettingsVisibility = Visibility.Collapsed;
+
     public INavigationService NavigationService { get; }
 
     private readonly PageNavLink appDetailsNavLink;
@@ -86,6 +90,9 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         insightsNavLink = new PageNavLink("\uE946", CommonHelper.GetLocalizedString("InsightsHeaderTextBlock/Text"), typeof(InsightsPageViewModel));
 
         links = new();
+
+        appSettingsVisibility = TargetAppData.Instance.TargetProcess is not null ? Visibility.Visible : Visibility.Collapsed;
+
         AddPagesIfNecessary(TargetAppData.Instance.TargetProcess);
 
         // Initial values
@@ -137,6 +144,8 @@ public partial class ExpandedViewControlViewModel : ObservableObject
 
                 ApplicationName = process?.ProcessName ?? string.Empty;
                 Title = process?.ProcessName ?? string.Empty;
+
+                AppSettingsVisibility = process is not null ? Visibility.Visible : Visibility.Collapsed;
 
                 if (process is null)
                 {
@@ -257,5 +266,11 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         {
             navigationService.NavigateTo(viewModelType);
         }
+    }
+
+    [RelayCommand]
+    public void DetachFromProcess()
+    {
+        TargetAppData.Instance.ClearAppData();
     }
 }

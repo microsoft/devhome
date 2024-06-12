@@ -179,10 +179,6 @@ public partial class App : Application, IApp
 
         UnhandledException += App_UnhandledException;
         AppInstance.GetCurrent().Activated += OnActivated;
-
-#if DEBUG
-        DebugSettings.FailFastOnErrors = true;
-#endif
     }
 
     public void ShowMainWindow()

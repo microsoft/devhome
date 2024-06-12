@@ -42,7 +42,7 @@
         </StackPanel>
 
         <Grid Grid.Row="1" Margin="0,12,0,0">
-        <Grid.RowDefinitions>
+            <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -96,7 +96,7 @@
         </Grid>
 
         <ToggleSwitch 
-            x:Uid="IsPinnedToggleSwitch" x:Name="IsPinnedToggleSwitch"
+            x:Uid="IsPinnedToggleSwitch" x:Name="IsPinnedToggleSwitch" HorizontalContentAlignment="Left"
             Grid.Row="4" Margin="0,12,0,0" HorizontalAlignment="Left" IsOn="True"/>
         
         <StackPanel Orientation="Horizontal" Grid.Row="5" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="6">
