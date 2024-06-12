@@ -66,9 +66,9 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 
     public WinGetPackageJsonDataSource(
         ISetupFlowStringResource stringResource,
-        IWinGet wpm,
+        IWinGet winget,
         string fileName)
-        : base(wpm)
+        : base(winget)
     {
         _stringResource = stringResource;
         _fileName = fileName;
@@ -135,7 +135,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
             _log.Information($"Obtaining icon information for JSON packages: [{string.Join(", ", packages.Select(p => $"({p.Name}, {p.CatalogName})"))}]");
             foreach (var package in packages)
             {
-                var packageUri = WindowsPackageManager.CreatePackageUri(package);
+                var packageUri = WinGet.CreatePackageUri(package);
                 var jsonPackage = jsonCatalog.WinGetPackages.FirstOrDefault(p => packageUri.Equals(p.GetPackageUri(), WinGetPackageUriParameters.None));
                 if (jsonPackage != null)
                 {

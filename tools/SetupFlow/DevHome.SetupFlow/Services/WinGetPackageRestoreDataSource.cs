@@ -27,9 +27,9 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
 
     public WinGetPackageRestoreDataSource(
         ISetupFlowStringResource stringResource,
-        IWinGet wpm,
+        IWinGet winget,
         IRestoreInfo restoreInfo)
-        : base(wpm)
+        : base(winget)
     {
         _stringResource = stringResource;
         _restoreInfo = restoreInfo;
@@ -76,7 +76,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
             var packages = await GetPackagesAsync(_restoreDeviceInfo.WinGetApplicationsInfo.Select(p => GetPackageUri(p)).ToList());
             foreach (var package in packages)
             {
-                var packageUri = WindowsPackageManager.CreatePackageUri(package);
+                var packageUri = WinGet.CreatePackageUri(package);
                 _log.Information($"Obtaining icon information for restore package {package.Id}");
                 var appInfo = _restoreDeviceInfo.WinGetApplicationsInfo.FirstOrDefault(p => packageUri == GetPackageUri(p));
                 if (appInfo != null)
@@ -170,6 +170,6 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
     /// <remarks>All restored applications are from winget catalog</remarks>
     private WinGetPackageUri GetPackageUri(IRestoreApplicationInfo appInfo)
     {
-        return WindowsPackageManager.CreateWinGetCatalogPackageUri(appInfo.Id);
+        return WinGet.CreateWinGetCatalogPackageUri(appInfo.Id);
     }
 }

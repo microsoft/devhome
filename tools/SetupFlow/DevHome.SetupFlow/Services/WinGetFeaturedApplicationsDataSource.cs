@@ -36,8 +36,8 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
     /// </remarks>
     private int _estimatedCatalogCount;
 
-    public WinGetFeaturedApplicationsDataSource(IWinGet wpm, IExtensionService extensionService)
-        : base(wpm)
+    public WinGetFeaturedApplicationsDataSource(IWinGet winget, IExtensionService extensionService)
+        : base(winget)
     {
         _extensionService = extensionService;
     }

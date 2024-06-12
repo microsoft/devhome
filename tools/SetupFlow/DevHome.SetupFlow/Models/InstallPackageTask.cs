@@ -24,7 +24,7 @@ public class InstallPackageTask : ISetupTask
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(InstallPackageTask));
     private static readonly string MSStoreCatalogId = "StoreEdgeFD";
 
-    private readonly IWinGet _wpm;
+    private readonly IWinGet _winget;
     private readonly IWinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly Guid _activityId;
@@ -71,13 +71,13 @@ public class InstallPackageTask : ISetupTask
 #pragma warning restore 67
 
     public InstallPackageTask(
-        IWinGet wpm,
+        IWinGet winget,
         ISetupFlowStringResource stringResource,
         IWinGetPackage package,
         string installVersion,
         Guid activityId)
     {
-        _wpm = wpm;
+        _winget = winget;
         _stringResource = stringResource;
         _package = package;
         _activityId = activityId;
@@ -137,7 +137,7 @@ public class InstallPackageTask : ISetupTask
                 _log.Information($"Starting installation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id), MessageSeverityKind.Info);
                 var packageUri = _package.GetUri(_installVersion);
-                var installResult = await _wpm.InstallPackageAsync(packageUri, _activityId);
+                var installResult = await _winget.InstallPackageAsync(packageUri, _activityId);
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
 

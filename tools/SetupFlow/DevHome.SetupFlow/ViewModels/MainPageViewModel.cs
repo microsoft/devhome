@@ -39,7 +39,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     private const string QuickstartPlaygroundFlowFeatureName = "QuickstartPlayground";
 
     private readonly IHost _host;
-    private readonly IWinGet _wpm;
+    private readonly IWinGet _winget;
     private readonly IDSC _dsc;
     private readonly IExperimentationService _experimentationService;
 
@@ -76,7 +76,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     public MainPageViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        IWinGet wpm,
+        IWinGet winget,
         IDSC dsc,
         IHost host,
         MainPageBannerViewModel bannerViewModel,
@@ -84,7 +84,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
         : base(stringResource, orchestrator)
     {
         _host = host;
-        _wpm = wpm;
+        _winget = winget;
         _dsc = dsc;
         _experimentationService = experimentationService;
 
@@ -160,7 +160,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
         if (await ValidateAppInstallerAsync())
         {
             _log.Information($"{nameof(IWinGet)} COM Server is available. Showing package install item");
-            ShowAppInstallerUpdateNotification = await _wpm.IsUpdateAvailableAsync();
+            ShowAppInstallerUpdateNotification = await _winget.IsUpdateAvailableAsync();
         }
         else
         {
@@ -331,6 +331,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
 
     private async Task<bool> ValidateAppInstallerAsync()
     {
-        return EnablePackageInstallerItem = await _wpm.IsAvailableAsync();
+        return EnablePackageInstallerItem = await _winget.IsAvailableAsync();
     }
 }

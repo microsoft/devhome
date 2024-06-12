@@ -23,11 +23,11 @@ public abstract class WinGetPackageDataSource
     /// </summary>
     public abstract int CatalogCount { get; }
 
-    protected IWinGet WindowsPackageManager { get; }
+    protected IWinGet WinGet { get; }
 
-    public WinGetPackageDataSource(IWinGet wpm)
+    public WinGetPackageDataSource(IWinGet winget)
     {
-        WindowsPackageManager = wpm;
+        WinGet = winget;
     }
 
     /// <summary>
@@ -59,6 +59,6 @@ public abstract class WinGetPackageDataSource
         }
 
         // Get packages from winget catalog
-        return await WindowsPackageManager.GetPackagesAsync(packageUris);
+        return await WinGet.GetPackagesAsync(packageUris);
     }
 }
