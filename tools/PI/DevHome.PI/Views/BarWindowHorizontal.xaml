@@ -9,7 +9,7 @@
     xmlns:controls="using:DevHome.PI.Controls"
     xmlns:helpers="using:DevHome.PI.Helpers"
     mc:Ignorable="d"
-    Title="" MinHeight="70" MinWidth="700" Height="70" Width="700" MaxHeight="70"
+    Title="" MinHeight="72" MinWidth="700" Height="72" Width="700" MaxHeight="72"
     TaskBarIcon="Images/pi.ico"
     Closed="WindowEx_Closed">
 
@@ -32,12 +32,17 @@
                 <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock x:Uid="Title" FontSize="10" Margin="10,0,0,0" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center"/>
-            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0, 0, 10, 0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}">
+            <TextBlock x:Uid="Title" Grid.Column="1" Style="{StaticResource CaptionTextBlockStyle}" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,10,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}">
                 <Button
-                      x:Uid="SnapButton" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
-                      x:Name="SnapButton" Style="{StaticResource ChromeButton}" FontSize="11"
-                      Command="{x:Bind _viewModel.ToggleSnapCommand}" HorizontalAlignment="Left" IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}">
+                    x:Uid="SnapButton" 
+                    Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
+                    x:Name="SnapButton" Style="{StaticResource ChromeButton}" 
+                    FontSize="{StaticResource CaptionTextBlockFontSize}"
+                    Command="{x:Bind _viewModel.ToggleSnapCommand}" 
+                    HorizontalAlignment="Left" 
+                    IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
+                    ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}">
                     <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
                 </Button>
             </StackPanel>
@@ -47,7 +52,7 @@
             <StackPanel.Resources>
                 <Style TargetType="TextBlock">
                     <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
-                    <Setter Property="FontSize" Value="20"/>
+                    <Setter Property="FontSize" Value="{StaticResource SubtitleTextBlockFontSize}"/>
                 </Style>
                 <Style TargetType="Button">
                     <Setter Property="BorderThickness" Value="0"/>
@@ -64,7 +69,7 @@
             </StackPanel.Resources>
             
             <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Margin="0">
-                <TextBlock Text="&#xecaa;" Margin="0"  />
+                <TextBlock Text="&#xecaa;" Margin="0"/>
             </controls:ProcessSelectionButton>
 
             <controls:PISeparator />
@@ -81,8 +86,8 @@
                     </MenuFlyout>
                 </StackPanel.ContextFlyout>
                 <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" />
-                <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" />
-                <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" VerticalAlignment="Center" />
+                <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" VerticalAlignment="Center" />
+                <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" VerticalAlignment="Center" />
                 <controls:PISeparator />
             </StackPanel>
 
@@ -130,9 +135,9 @@
         </StackPanel>
 
         <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1">
-                <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" VerticalAlignment="Center" Margin="5"/>
-                <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="10" VerticalAlignment="Center" Margin="5"/>
+            <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" Margin="5"/>
+            <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" Margin="5"/>
+            <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" Margin="5"/>
             </StackPanel>
 
         <Border

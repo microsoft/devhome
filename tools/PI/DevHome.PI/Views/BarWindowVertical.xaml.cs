@@ -3,7 +3,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
@@ -78,7 +77,7 @@ public partial class BarWindowVertical : WindowEx
         var style = PInvoke.GetWindowLong(ThisHwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
         style &= ~(int)WINDOW_STYLE.WS_THICKFRAME;
         _ = PInvoke.SetWindowLong(ThisHwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, style);
-        PInvoke.SetWindowPos(ThisHwnd, HWND.Null, 0, 0, 0, 0, Windows.Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER);
+        PInvoke.SetWindowPos(ThisHwnd, HWND.Null, 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER);
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)

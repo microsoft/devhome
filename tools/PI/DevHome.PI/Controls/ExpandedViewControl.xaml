@@ -17,7 +17,7 @@
 
         <TextBlock
             x:Uid="ExpandedViewHeaderTextBlock" x:Name="ExpandedViewTitleTextBlock" Text="{x:Bind viewModel.Title, Mode=OneWay}"
-            FontSize="16" FontWeight="Bold" FontFamily="Segoe UI"/>
+            FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="Bold" FontFamily="Segoe UI"/>
 
         <Grid Grid.Row="1" Margin="0,8,0,0">
             <Grid.ColumnDefinitions>
@@ -39,7 +39,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="12">
                                     <TextBlock Text="{Binding IconText}" Style="{x:Null}"
-                                        FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="12"
+                                        FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource CaptionTextBlockFontSize}"
                                         HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding ContentText}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                 </StackPanel>
@@ -71,7 +71,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock 
-                            Text="&#xe713;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="12"
+                            Text="&#xe713;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource CaptionTextBlockFontSize}"
                             HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock 
                             Grid.Column="1" Text="{x:Bind viewModel.SettingsHeader, Mode=OneWay}"
@@ -98,17 +98,17 @@
                     HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6" 
                     HorizontalContentAlignment="Stretch">
                     <Expander.Header>
-                        <TextBlock x:Uid="ClickboardErrorTextBlock" FontSize="10"/>
+                        <TextBlock x:Uid="ClickboardErrorTextBlock" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
                     </Expander.Header>
                     <Grid>
                         <Grid.Resources>
                             <Style TargetType="TextBlock">
-                                <Setter Property="FontSize" Value="10"/>
+                                <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
                                 <Setter Property="Margin" Value="12,0,0,0"/>
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                             </Style>
                             <Style TargetType="TextBox">
-                                <Setter Property="FontSize" Value="10"/>
+                                <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
                                 <Setter Property="IsReadOnly" Value="True"/>
                                 <Setter Property="BorderThickness" Value="0"/>
                                 <Setter Property="Margin" Value="0,8,0,0"/>
@@ -142,7 +142,7 @@
                     <StackPanel Orientation="Horizontal">
                         <StackPanel.Resources>
                             <Style TargetType="TextBlock">
-                                <Setter Property="FontSize" Value="8"/>
+                                <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
                                 <Setter Property="Margin" Value="12,0,0,0"/>
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                 <Setter Property="HorizontalAlignment" Value="Left"/>

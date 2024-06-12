@@ -13,15 +13,19 @@
     <Grid>
         <Grid.Resources>
             <Style TargetType="TextBlock">
-                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontSize" Value="{StaticResource BodyTextBlockFontSize}"/>
                 <Setter Property="FontFamily" Value="Segoe UI"/>
             </Style>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Margin="16,16,0,0">
+
+        <TextBlock x:Uid="ProcessListHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+
+        <Grid Margin="16,16,0,0" Grid.Row="1">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -44,13 +48,14 @@
                 </ComboBox>
                 <Button x:Uid="RefreshButton" x:Name="RefreshButton" BorderThickness="0" Margin="8,0,0,0" Grid.Column="1"
                     Command="{x:Bind ViewModel.RefreshFilteredProcessListCommand}">
-                    <TextBlock Text="&#xE72C;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20"/>
+                    <TextBlock Text="&#xE72C;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}"/>
                 </Button>
             </Grid>
         </Grid>
+        
         <controls:DataGrid
             x:Uid="ProcessDataGrid"
-            x:Name="ProcessDataGrid" Grid.Row="1" Margin="16,4,0,0"
+            x:Name="ProcessDataGrid" Grid.Row="2" Margin="16,4,0,0"
             VerticalScrollBarVisibility="Visible"
             AlternatingRowBackground="Transparent"
             AlternatingRowForeground="Gray"
