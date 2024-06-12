@@ -3,31 +3,28 @@
 
 using System;
 using System.Diagnostics.Tracing;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
-using Microsoft.Management.Configuration;
 
-namespace DevHome.Services.DesiredStateConfiguration.TelemetryEvents;
+namespace DevHome.Services.DesiredStateConfiguration.Services;
 
 [EventData]
-internal sealed class ConfigurationSetResultEvent : EventBase
+public sealed class ConfigurationSetResultEvent : EventBase
 {
-    private readonly ConfigurationSet _configSet;
+    private readonly IDSCApplicationResult _setResult;
 
-    private readonly ApplyConfigurationSetResult _setResult;
+    public string SetName => _setResult.AppliedSet.Name;
 
-    public string SetName => _configSet.Name;
+    public string SetInstanceIdentifier => _setResult.AppliedSet.InstanceIdentifier.ToString();
 
-    public string SetInstanceIdentifier => _configSet.InstanceIdentifier.ToString();
-
-    public int ExceptionHResult => _setResult.ResultCode?.HResult ?? 0;
+    public int ExceptionHResult => _setResult.ResultException?.HResult ?? 0;
 
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
-    public ConfigurationSetResultEvent(ConfigurationSet configSet, ApplyConfigurationSetResult setResult)
+    public ConfigurationSetResultEvent(IDSCApplicationResult setResult)
     {
-        _configSet = configSet;
         _setResult = setResult;
     }
 

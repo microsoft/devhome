@@ -22,7 +22,7 @@ internal interface IDSCOperations
     /// </summary>
     /// <param name="file">File containing the DSC configuration</param>
     /// <returns>Details of configuration units</returns>
-    public Task<IReadOnlyList<IDSCUnit>> GetConfigurationUnitDetailsAsync(IDSCFile file);
+    public Task<IDSCSet> GetConfigurationUnitDetailsAsync(IDSCFile file);
 
     /// <summary>
     /// Validate the configuration in a file

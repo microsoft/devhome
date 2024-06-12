@@ -9,6 +9,11 @@ namespace DevHome.Services.DesiredStateConfiguration.Contracts;
 public interface IDSCApplicationResult
 {
     /// <summary>
+    /// Gets the configuration set that was applied.
+    /// </summary>
+    IDSCSet AppliedSet { get; }
+
+    /// <summary>
     /// Gets a value indicating whether the application of the configuration
     /// file succeeded.
     /// </summary>

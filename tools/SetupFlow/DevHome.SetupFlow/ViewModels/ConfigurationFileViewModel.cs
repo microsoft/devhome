@@ -113,8 +113,8 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         {
             if (Configuration != null && ConfigurationUnits == null)
             {
-                var configUnits = await _dsc.GetConfigurationUnitDetailsAsync(Configuration);
-                ConfigurationUnits = configUnits.Select(u => new DSCConfigurationUnitViewModel(u)).ToList();
+                var configSet = await _dsc.GetConfigurationUnitDetailsAsync(Configuration);
+                ConfigurationUnits = configSet.Units.Select(u => new DSCConfigurationUnitViewModel(u)).ToList();
             }
         }
         catch (Exception e)

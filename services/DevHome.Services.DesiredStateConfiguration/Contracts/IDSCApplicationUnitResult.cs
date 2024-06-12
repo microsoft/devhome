@@ -15,6 +15,8 @@ public interface IDSCApplicationUnitResult
 
     public string ErrorDescription { get; }
 
+    public bool RebootRequired { get; }
+
     public string Intent { get; }
 
     public bool IsSkipped { get; }

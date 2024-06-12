@@ -3,21 +3,21 @@
 
 using System;
 using System.Diagnostics.Tracing;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
-using Microsoft.Management.Configuration;
 
-namespace DevHome.Services.DesiredStateConfiguration.TelemetryEvents;
+namespace DevHome.Services.DesiredStateConfiguration.Services;
 
 [EventData]
-internal sealed class ConfigurationUnitResultEvent : EventBase
+public sealed class ConfigurationUnitResultEvent : EventBase
 {
-    private readonly ApplyConfigurationUnitResult _unitResult;
+    private readonly IDSCApplicationUnitResult _unitResult;
 
-    public string Type => _unitResult.Unit.Type;
+    public string Type => _unitResult.Type;
 
-    public int ExceptionHResult => _unitResult.ResultInformation.ResultCode?.HResult ?? 0;
+    public int ExceptionHResult => _unitResult.HResult;
 
     public string ResultDescription { get; private set; }
 
@@ -27,11 +27,11 @@ internal sealed class ConfigurationUnitResultEvent : EventBase
 
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
-    public ConfigurationUnitResultEvent(ApplyConfigurationUnitResult unitResult)
+    public ConfigurationUnitResultEvent(IDSCApplicationUnitResult unitResult)
     {
         _unitResult = unitResult;
-        ResultDescription = _unitResult.ResultInformation.Description;
-        ResultDetails = _unitResult.ResultInformation.Details;
+        ResultDescription = _unitResult.ErrorDescription;
+        ResultDetails = _unitResult.Details;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)

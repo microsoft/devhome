@@ -24,6 +24,7 @@ internal sealed class DSCApplicationUnitResult : IDSCApplicationUnitResult
         HResult = unitResult.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK;
         ResultSource = unitResult.ResultInformation?.ResultSource ?? ConfigurationUnitResultSource.None;
         ErrorDescription = unitResult.ResultInformation?.Description;
+        RebootRequired = unitResult.RebootRequired;
     }
 
     public string Type { get; }
@@ -33,6 +34,8 @@ internal sealed class DSCApplicationUnitResult : IDSCApplicationUnitResult
     public string UnitDescription { get; }
 
     public string ErrorDescription { get; }
+
+    public bool RebootRequired { get; }
 
     public string Intent { get; }
 

@@ -11,6 +11,8 @@ namespace DevHome.Services.DesiredStateConfiguration.Models;
 
 internal sealed class DSCApplicationResult : IDSCApplicationResult
 {
+    public IDSCSet AppliedSet { get; }
+
     public bool Succeeded { get; }
 
     public bool RequiresReboot { get; }
@@ -19,12 +21,13 @@ internal sealed class DSCApplicationResult : IDSCApplicationResult
 
     public IReadOnlyList<IDSCApplicationUnitResult> UnitResults { get; }
 
-    public DSCApplicationResult(ApplyConfigurationSetResult result)
+    public DSCApplicationResult(ConfigurationSet appliedSet, ApplyConfigurationSetResult result)
     {
         // Constructor copies all the required data from the out-of-proc COM
         // objects over to the current process. This ensures that we have this
         // information available even if the out-of-proc COM objects are no
         // longer available (e.g. AppInstaller service is no longer running).
+        AppliedSet = new DSCSet(appliedSet);
         Succeeded = result.ResultCode == null;
         RequiresReboot = result.UnitResults.Any(result => result.RebootRequired);
         ResultException = result.ResultCode;

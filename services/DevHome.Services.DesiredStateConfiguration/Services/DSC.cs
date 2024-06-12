@@ -29,7 +29,7 @@ internal sealed class DSC : IDSC
     public async Task<IDSCApplicationResult> ApplyConfigurationAsync(IDSCFile file, Guid activityId) => await _dscOperations.ApplyConfigurationAsync(file, activityId);
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<IDSCUnit>> GetConfigurationUnitDetailsAsync(IDSCFile file) => await _dscOperations.GetConfigurationUnitDetailsAsync(file);
+    public async Task<IDSCSet> GetConfigurationUnitDetailsAsync(IDSCFile file) => await _dscOperations.GetConfigurationUnitDetailsAsync(file);
 
     /// <inheritdoc/>
     public async Task ValidateConfigurationAsync(IDSCFile file) => await _dscOperations.ValidateConfigurationAsync(file);

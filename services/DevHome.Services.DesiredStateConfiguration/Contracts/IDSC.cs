@@ -19,7 +19,7 @@ public interface IDSC
     public Task<IDSCApplicationResult> ApplyConfigurationAsync(IDSCFile file, Guid activityId);
 
     /// <inheritdoc cref="IDSCOperations.GetConfigurationUnitDetailsAsync" />
-    public Task<IReadOnlyList<IDSCUnit>> GetConfigurationUnitDetailsAsync(IDSCFile file);
+    public Task<IDSCSet> GetConfigurationUnitDetailsAsync(IDSCFile file);
 
     /// <inheritdoc cref="IDSCOperations.ValidateConfigurationAsync" />
     public Task ValidateConfigurationAsync(IDSCFile file);
