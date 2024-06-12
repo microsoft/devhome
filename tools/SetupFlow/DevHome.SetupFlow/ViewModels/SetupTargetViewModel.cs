@@ -490,7 +490,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             return;
         }
 
-        Orchestrator.NavigateToOutsideFlow(KnownPageKeys.SetupFlow, "startCreationFlow");
+        Orchestrator.NavigateToOutsideFlow(KnownPageKeys.SetupFlow, "startCreationFlow;SetupEnvironmentPage");
     }
 
     private bool ShouldShowCard(ComputeSystemState state)

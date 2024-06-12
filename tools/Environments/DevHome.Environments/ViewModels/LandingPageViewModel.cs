@@ -148,7 +148,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
 
         _log.Information("User clicked on the create environment button. Navigating to Select environment page in Setup flow");
-        _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow");
+        _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow;EnvironmentsLandingPage");
     }
 
     // Updates the last sync time on the UI thread after set delay
