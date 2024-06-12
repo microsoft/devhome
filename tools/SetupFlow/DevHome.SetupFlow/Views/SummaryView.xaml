@@ -1,102 +1,113 @@
 <UserControl
     x:Class="DevHome.SetupFlow.Views.SummaryView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:commonviews="using:DevHome.Common.Views"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
-    xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:DevHome.SetupFlow.Models"
-    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
-    xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:summaryViews="using:DevHome.SetupFlow.Views.Summary"
-    setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
+    xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
     setupFlowBehaviors:SetupFlowNavigationBehavior.NextVisibility="Collapsed"
+    setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml"/>
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
                 <ResourceDictionary>
-                    <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
-                    <converters:CollectionVisibilityConverter x:Key="NegatedCollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
-                    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter"  TrueValue="Collapsed" FalseValue="Visible" />
+                    <converters:CollectionVisibilityConverter
+                        x:Key="CollectionVisibilityConverter"
+                        EmptyValue="Collapsed"
+                        NotEmptyValue="Visible" />
+                    <converters:CollectionVisibilityConverter
+                        x:Key="NegatedCollectionVisibilityConverter"
+                        EmptyValue="Visible"
+                        NotEmptyValue="Collapsed" />
+                    <converters:BoolToVisibilityConverter
+                        x:Key="NegatedBoolToVisibilityConverter"
+                        FalseValue="Visible"
+                        TrueValue="Collapsed" />
                     <Thickness x:Key="TopLeftQuadrantThickness">0, 1, 0, 2</Thickness>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
     <ScrollViewer
-        VerticalScrollMode="Enabled" 
-        VerticalScrollBarVisibility="Auto"
+        Padding="0,0,10,0"
         HorizontalAlignment="Stretch"
-        Padding="0,0,10,0">
+        VerticalScrollBarVisibility="Auto"
+        VerticalScrollMode="Enabled">
         <Grid ColumnSpacing="50">
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="1.77*"/>
+                <ColumnDefinition />
+                <ColumnDefinition Width="1.77*" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel x:Name="SummaryHeader" Grid.Row="0" Grid.ColumnSpan="2" Margin="0, 0, 0, 40">
-                <!-- Display if the user has tasks need the machine to restart.-->
-                <summaryViews:SummaryNeedsRestart 
-                Visibility="{x:Bind ViewModel.ShowRestartNeeded}"
-                Background="{ThemeResource ComboBoxItemBackgroundPressed}"
-                CornerRadius="5"
-                Height="55"
-                Padding="10"
-                DataContext="{x:Bind ViewModel}"/>
+            <StackPanel
+                x:Name="SummaryHeader"
+                Grid.Row="0"
+                Grid.ColumnSpan="2"
+                Margin="0,0,0,40">
+                <!--  Display if the user has tasks need the machine to restart.  -->
+                <summaryViews:SummaryNeedsRestart
+                    Height="55"
+                    Padding="10"
+                    Background="{ThemeResource ComboBoxItemBackgroundPressed}"
+                    CornerRadius="5"
+                    DataContext="{x:Bind ViewModel}"
+                    Visibility="{x:Bind ViewModel.ShowRestartNeeded}" />
 
-                <!-- Introduction to the summary page via configuration results-->
-                <summaryViews:SummaryIntroViaConfiguration
-                    Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}"
-                    DataContext="{x:Bind ViewModel}"/>
+                <!--  Introduction to the summary page via configuration results  -->
+                <summaryViews:SummaryIntroViaConfiguration DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}" />
 
-                <!-- Introduction to the summary page via non-configuration flow -->
-                <summaryViews:SummaryIntoViaNonConfigurationFlow 
-                    Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
-                    DataContext="{x:Bind ViewModel}"/>
+                <!--  Introduction to the summary page via non-configuration flow  -->
+                <summaryViews:SummaryIntoViaNonConfigurationFlow DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
             </StackPanel>
 
             <StackPanel Grid.Row="1" Grid.Column="0">
-                <!-- Show any failed tasks if the loading screen has any failed tasks-->
+                <!--  Show any failed tasks if the loading screen has any failed tasks  -->
                 <Border
-                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
                     BorderThickness="{ThemeResource TopLeftQuadrantThickness}"
                     Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
-                    <summaryViews:SummaryFailedTasks
-                        HorizontalAlignment="Stretch" 
-                        DataContext="{x:Bind ViewModel}"/>
+                    <summaryViews:SummaryFailedTasks HorizontalAlignment="Stretch" DataContext="{x:Bind ViewModel}" />
                 </Border>
 
-                <!-- Number of apps and repos cloned. Show if not failed tasks-->
+                <!--  Number of apps and repos cloned. Show if not failed tasks  -->
                 <Border
-                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
                     BorderThickness="{ThemeResource TopLeftQuadrantThickness}"
                     Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}">
-                    <summaryViews:SummaryAppsDownloadedReposCloned
-                        HorizontalAlignment="Stretch"
-                        DataContext="{x:Bind ViewModel}"/>
+                    <summaryViews:SummaryAppsDownloadedReposCloned HorizontalAlignment="Stretch" DataContext="{x:Bind ViewModel}" />
                 </Border>
 
-                    <!-- Next steps section -->
-                <summaryViews:SummaryNextSteps
-                DataContext="{x:Bind ViewModel}"/>
+                <!--  Next steps section  -->
+                <summaryViews:SummaryNextSteps DataContext="{x:Bind ViewModel}" />
             </StackPanel>
 
-            <StackPanel Grid.Row="1" Grid.Column="1" Spacing="12">
-                <!-- Displays the repos cloned and apps downloaded -->
-                <summaryViews:SummaryShowAppsAndRepos DataContext="{x:Bind ViewModel}"/>
+            <StackPanel
+                Grid.Row="1"
+                Grid.Column="1"
+                Spacing="12">
+                <!--  Displays the repos cloned and apps downloaded  -->
+                <summaryViews:SummaryShowAppsAndRepos DataContext="{x:Bind ViewModel}" />
 
-                <summaryViews:SummaryAppInstallationNotes
-                    Visibility="{x:Bind ViewModel.AppsDownloadedInstallationNotes, Converter={StaticResource CollectionVisibilityConverter}}"/>
+                <Border
+                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                    BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
+                    Visibility="{x:Bind ViewModel.AppsDownloadedInstallationNotes, Converter={StaticResource CollectionVisibilityConverter}}">
+                    <summaryViews:SummaryAppInstallationNotes DataContext="{x:Bind ViewModel}" />
+                </Border>
             </StackPanel>
         </Grid>
     </ScrollViewer>
