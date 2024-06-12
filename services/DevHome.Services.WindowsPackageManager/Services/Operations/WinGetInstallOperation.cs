@@ -31,7 +31,7 @@ internal sealed class WinGetInstallOperation : IWinGetInstallOperation
     }
 
     /// <inheritdoc />
-    public async Task<WinGetInstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri)
+    public async Task<IWinGetInstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri)
     {
         return await _recovery.DoWithRecoveryAsync(async () =>
         {

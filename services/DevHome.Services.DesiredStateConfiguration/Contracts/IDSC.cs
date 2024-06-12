@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DevHome.Services.DesiredStateConfiguration.Models;
 
 namespace DevHome.Services.DesiredStateConfiguration.Contracts;
 

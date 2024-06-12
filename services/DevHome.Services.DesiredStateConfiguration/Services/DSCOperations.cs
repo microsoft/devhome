@@ -27,7 +27,7 @@ internal sealed class DSCOperations : IDSCOperations
     }
 
     /// <inheritdoc />
-    public async Task<DSCApplicationResult> ApplyConfigurationAsync(IDSCFile file, Guid activityId)
+    public async Task<IDSCApplicationResult> ApplyConfigurationAsync(IDSCFile file, Guid activityId)
     {
         var processor = await CreateConfigurationProcessorAsync();
         var configSet = await OpenConfigurationSetAsync(file, processor);
@@ -47,7 +47,7 @@ internal sealed class DSCOperations : IDSCOperations
     }
 
     /// <inheritdoc />
-    public async Task<IReadOnlyList<DSCUnit>> GetConfigurationUnitDetailsAsync(IDSCFile file)
+    public async Task<IReadOnlyList<IDSCUnit>> GetConfigurationUnitDetailsAsync(IDSCFile file)
     {
         var processor = await CreateConfigurationProcessorAsync();
         var configSet = await OpenConfigurationSetAsync(file, processor);

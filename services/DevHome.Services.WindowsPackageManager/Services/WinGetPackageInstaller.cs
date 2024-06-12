@@ -34,7 +34,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
     }
 
     /// <inheritdoc />
-    public async Task<WinGetInstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version = null)
+    public async Task<IWinGetInstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version = null)
     {
         if (catalog == null)
         {

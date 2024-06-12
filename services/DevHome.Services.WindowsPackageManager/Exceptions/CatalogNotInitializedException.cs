@@ -9,6 +9,6 @@ namespace DevHome.Services.WindowsPackageManager.Exceptions;
 /// Exception thrown when the catalog is not initialized, likely because of a
 /// failure to connect to the catalog.
 /// </summary>
-public class CatalogNotInitializedException : ArgumentNullException
+internal sealed class CatalogNotInitializedException : ArgumentNullException
 {
 }

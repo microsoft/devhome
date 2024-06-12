@@ -15,5 +15,5 @@ internal interface IWinGetPackageInstaller
     /// <param name="packageId">Package id to install</param>
     /// <param name="version">Version of the package to install</param>
     /// <returns>Result of the installation</returns>
-    public Task<WinGetInstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version = null);
+    public Task<IWinGetInstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version = null);
 }

@@ -1,27 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Services.WindowsPackageManager.Contracts;
+
 namespace DevHome.Services.WindowsPackageManager.Models;
 
-public class WinGetInstallPackageResult
+internal sealed class WinGetInstallPackageResult : IWinGetInstallPackageResult
 {
-    /// <summary>
-    /// Gets a value indicating whether a restart is required to complete the
-    /// installation
-    /// </summary>
-    public bool RebootRequired
-    {
-        get; init;
-    }
+    /// <inheritdoc />
+    public bool RebootRequired { get; init; }
 
-    /// <summary>
-    ///  Gets the error code of the overall operation.
-    /// </summary>
-    /// <remarks>
-    /// Reference: https://github.com/msftrubengu/winget-cli/blob/demo/src/Microsoft.Management.Deployment/PackageManager.idl
-    /// </remarks>
-    public int ExtendedErrorCode
-    {
-        get; init;
-    }
+    /// <inheritdoc />
+    public int ExtendedErrorCode { get; init; }
 }
