@@ -34,7 +34,7 @@ public sealed class ElevatedInstallTask
     /// <summary>
     /// Installs a package given its ID and the ID of the catalog it comes from.
     /// </summary>
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(string packageId, string catalogName, string version)
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(string packageId, string catalogName, string version, Guid activityId)
     {
         return Task.Run(async () =>
         {
@@ -42,7 +42,7 @@ public sealed class ElevatedInstallTask
             try
             {
                 var winget = ElevatedComponentOperation.Host.Services.GetRequiredService<IWinGet>();
-                var installResult = await winget.InstallPackageAsync(new WinGetPackageUri(catalogName, packageId, new(version)));
+                var installResult = await winget.InstallPackageAsync(new WinGetPackageUri(catalogName, packageId, new(version)), activityId);
                 result.TaskAttempted = true;
                 result.RebootRequired = installResult.RebootRequired;
 

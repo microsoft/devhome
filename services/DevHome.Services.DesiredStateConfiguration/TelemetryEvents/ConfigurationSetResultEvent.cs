@@ -11,7 +11,7 @@ using Microsoft.Diagnostics.Telemetry.Internal;
 namespace DevHome.Services.DesiredStateConfiguration.Services;
 
 [EventData]
-public sealed class ConfigurationSetResultEvent : EventBase
+internal sealed class ConfigurationSetResultEvent : EventBase
 {
     private readonly IDSCApplicationResult _setResult;
 

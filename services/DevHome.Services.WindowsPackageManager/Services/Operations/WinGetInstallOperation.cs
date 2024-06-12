@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Contracts.Operations;
@@ -31,12 +32,12 @@ internal sealed class WinGetInstallOperation : IWinGetInstallOperation
     }
 
     /// <inheritdoc />
-    public async Task<IWinGetInstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri)
+    public async Task<IWinGetInstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId)
     {
         return await _recovery.DoWithRecoveryAsync(async () =>
         {
             var catalog = await _protocolParser.ResolveCatalogAsync(packageUri);
-            return await _packageInstaller.InstallPackageAsync(catalog, packageUri.PackageId, packageUri.Options.Version);
+            return await _packageInstaller.InstallPackageAsync(catalog, packageUri.PackageId, packageUri.Options.Version, activityId);
         });
     }
 }

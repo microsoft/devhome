@@ -7,10 +7,10 @@ using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents.SetupFlow;
+namespace DevHome.Services.WindowsPackageManager.TelemetryEvents;
 
 [EventData]
-public class AppInstallUserEvent : EventBase
+internal sealed class AppInstallUserEvent : EventBase
 {
     public string PackageId { get; }
 

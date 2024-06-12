@@ -63,7 +63,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         Console.WriteLine(value);
     }
 
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName, string version)
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName, string version, Guid activityId)
     {
         var taskArguments = GetInstallPackageTaskArguments(packageId, catalogName, version);
         return ValidateAndExecuteAsync(
@@ -72,7 +72,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
             {
                 _logger.LogInformation($"Installing package elevated: '{packageId}' from '{catalogName}'");
                 var task = new ElevatedInstallTask();
-                return await task.InstallPackage(taskArguments.PackageId, taskArguments.CatalogName, version);
+                return await task.InstallPackage(taskArguments.PackageId, taskArguments.CatalogName, version, activityId);
             },
             result => result.TaskSucceeded).AsAsyncOperation();
     }
