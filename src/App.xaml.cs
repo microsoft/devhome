@@ -203,7 +203,7 @@ public partial class App : Application, IApp
         // This code path does not necessarily terminate Dev Home, so we are only logging the exception information,
         // we are not going to close and flush the log. The exception stack trace may not be accurate, but the
         // argument message should be the original exception message.
-        Log.Error(e.Exception, $"Unhandled exception: {e.Message}");
+        Log.Fatal(e.Exception, $"Unhandled exception: {e.Message}");
         Log.CloseAndFlush();
 
         // We are about to crash, so signal the extensions to stop.
