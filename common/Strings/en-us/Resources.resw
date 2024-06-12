@@ -221,6 +221,10 @@
     <value>Restart now</value>
     <comment>Text for button that restarts the system.</comment>
   </data>
+  <data name="DoNotRestartButton" xml:space="preserve">
+    <value>Do not restart</value>
+    <comment>Text for button that allows the user to decline a system restart when one is needed.</comment>
+  </data>
   <data name="RestartAfterChangesMessage" xml:space="preserve">
     <value>Changes completed successfully. Please restart your machine for the changes to take effect</value>
     <comment>Text explaining that a restart is needed after enabling the Hyper-V feature or adding the user to the Hyper-V Admin group</comment>
@@ -326,14 +330,6 @@
   <data name="ChangesAppliedTitle" xml:space="preserve">
     <value>Changes applied</value>
     <comment>The title for a notification shown to the user to indicate that changes have been successfully applied.</comment>
-  </data>
-  <data name="ChangesNotAppliedMessage" xml:space="preserve">
-    <value>Changes were not applied. Please try again.</value>
-    <comment>The message for a notificatrion shown to the user to indicate that changes were not applied, hinting that they should try again, given this is usually because they canceled the operation.</comment>
-  </data>
-  <data name="ChangesNotAppliedTitle" xml:space="preserve">
-    <value>Changes not applied</value>
-    <comment>The title for a notification shown to the user to indicate that changes were not able to applied, most likely because they were canceled.</comment>
   </data>
   <data name="FailedToApplyChangesMessage" xml:space="preserve">
     <value>Restart the computer and try again.</value>

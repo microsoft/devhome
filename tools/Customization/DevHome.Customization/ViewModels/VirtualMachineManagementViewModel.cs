@@ -13,7 +13,7 @@ using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using DevHome.Common.Scripts;
 using DevHome.Common.Services;
-using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Serilog;
 
 namespace DevHome.Customization.ViewModels;
@@ -24,7 +24,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     private readonly bool _isUserAdministrator = WindowsIdentityHelper.IsUserAdministrator();
 
-    private readonly DispatcherQueue _dispatcherQueue;
+    private readonly Window _window;
 
     private OptionalFeatureNotificationHelper? _notificationsHelper;
 
@@ -40,11 +40,11 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     public ObservableCollection<OptionalFeatureState> Features { get; } = new();
 
-    public bool HasFeatureChanges => FeaturesLoaded && Features.Any(f => f.HasChanged);
+    public bool HasFeatureChanges => _isUserAdministrator && FeaturesLoaded && Features.Any(f => f.HasChanged);
 
-    public VirtualMachineManagementViewModel(DispatcherQueue dispatcherQueue)
+    public VirtualMachineManagementViewModel(Window window)
     {
-        _dispatcherQueue = dispatcherQueue;
+        _window = window;
 
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         Breadcrumbs =
@@ -76,11 +76,11 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     public void Initialize(StackedNotificationsBehavior notificationQueue)
     {
-        _notificationsHelper = new(notificationQueue, _log);
+        _notificationsHelper = new(_window, notificationQueue, _log);
 
         if (!_isUserAdministrator)
         {
-            _dispatcherQueue.EnqueueAsync(_notificationsHelper.ShowNonAdminUserNotification);
+            _window.DispatcherQueue.EnqueueAsync(_notificationsHelper.ShowNonAdminUserNotification);
         }
     }
 
@@ -96,7 +96,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
     {
         await Task.Run(async () =>
         {
-            await _dispatcherQueue.EnqueueAsync(() =>
+            await _window.DispatcherQueue.EnqueueAsync(() =>
             {
                 Features.Clear();
             });
@@ -109,7 +109,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
                     var featureState = new OptionalFeatureState(feature, _isUserAdministrator, ApplyChangesCommand);
                     featureState.PropertyChanged += FeatureState_PropertyChanged;
 
-                    await _dispatcherQueue.EnqueueAsync(() =>
+                    await _window.DispatcherQueue.EnqueueAsync(() =>
                     {
                         Features.Add(featureState);
                     });
@@ -120,7 +120,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     private async Task ApplyChangesAsync()
     {
-        await _dispatcherQueue.EnqueueAsync(async () =>
+        await _window.DispatcherQueue.EnqueueAsync(async () =>
         {
             await ModifyWindowsOptionalFeatures.ModifyFeaturesAsync(Features, _notificationsHelper, _log);
             await LoadFeaturesCommand.ExecuteAsync(null);
@@ -138,7 +138,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     private async Task OnFeaturesChanged()
     {
-        await _dispatcherQueue.EnqueueAsync(() =>
+        await _window.DispatcherQueue.EnqueueAsync(() =>
         {
             OnPropertyChanged(nameof(FeaturesLoaded));
             OnPropertyChanged(nameof(HasFeatureChanges));

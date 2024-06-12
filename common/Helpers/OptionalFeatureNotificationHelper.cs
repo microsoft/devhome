@@ -4,10 +4,12 @@
 using System;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
 using DevHome.Common.Extensions;
 using DevHome.Common.Scripts;
 using DevHome.Common.Services;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using static DevHome.Common.Scripts.ModifyWindowsOptionalFeatures;
@@ -18,13 +20,16 @@ public partial class OptionalFeatureNotificationHelper
 {
     private readonly ILogger _log;
 
+    private readonly Window _window;
+
     private readonly StackedNotificationsBehavior _notificationsHelper;
 
     private readonly StringResource _commonStringResource;
 
-    public OptionalFeatureNotificationHelper(StackedNotificationsBehavior notificationsHelper, ILogger log)
+    public OptionalFeatureNotificationHelper(Window window, StackedNotificationsBehavior notificationsHelper, ILogger log)
     {
         _commonStringResource = new StringResource("DevHome.Common.pri", "DevHome.Common/Resources");
+        _window = window;
         _notificationsHelper = notificationsHelper;
         _log = log;
     }
@@ -38,6 +43,9 @@ public partial class OptionalFeatureNotificationHelper
         {
             case ExitCode.Success:
                 // The script successfully modified all features
+                return;
+            case ExitCode.SuccessRestartNeeded:
+                // The script successfully modified all features but a restart is required.
                 ShowRestartNotification();
                 return;
             case ExitCode.NoChange:
@@ -52,14 +60,27 @@ public partial class OptionalFeatureNotificationHelper
         }
     }
 
-    private void ShowRestartNotification()
+    private async void ShowRestartNotification()
     {
-        _notificationsHelper?.ShowWithWindowExtension(
-            _commonStringResource.GetLocalized("ChangesAppliedTitle"),
-            _commonStringResource.GetLocalized("RestartAfterChangesMessage"),
-            InfoBarSeverity.Informational,
-            RestartComputerCommand,
-            _commonStringResource.GetLocalized("RestartButton"));
+        await _window.DispatcherQueue.EnqueueAsync(async () =>
+        {
+            var dialog = new ContentDialog
+            {
+                Title = _commonStringResource.GetLocalized("ChangesAppliedTitle"),
+                Content = _commonStringResource.GetLocalized("RestartAfterChangesMessage"),
+                CloseButtonText = _commonStringResource.GetLocalized("DoNotRestartButton"),
+                PrimaryButtonText = _commonStringResource.GetLocalized("RestartButton"),
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = _window.Content.XamlRoot,
+            };
+
+            dialog.PrimaryButtonClick += (sender, args) =>
+            {
+                RestartComputer();
+            };
+
+            await dialog.ShowAsync();
+        });
     }
 
     public void ShowNonAdminUserNotification()
@@ -70,22 +91,12 @@ public partial class OptionalFeatureNotificationHelper
             InfoBarSeverity.Informational);
     }
 
-    private void ShowChangesNotAppliedNotification()
-    {
-        _notificationsHelper?.ShowWithWindowExtension(
-            _commonStringResource.GetLocalized("ChangesNotAppliedTitle"),
-            _commonStringResource.GetLocalized("ChangesNotAppliedMessage"),
-            InfoBarSeverity.Warning);
-    }
-
     private void ShowFailedToApplyAllNotification()
     {
         _notificationsHelper?.ShowWithWindowExtension(
             _commonStringResource.GetLocalized("FailedToApplyChangesTitle"),
             _commonStringResource.GetLocalized("FailedToApplyChangesMessage"),
-            InfoBarSeverity.Error,
-            RestartComputerCommand,
-            _commonStringResource.GetLocalized("RestartButton"));
+            InfoBarSeverity.Error);
     }
 
     [RelayCommand]

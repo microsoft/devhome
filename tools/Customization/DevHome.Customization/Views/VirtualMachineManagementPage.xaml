@@ -32,19 +32,19 @@
                     <muxc:ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="models:OptionalFeatureState">
                         <controls:SettingsCard
-                        Header="{x:Bind Feature.DisplayName}"
-                        Description="{x:Bind Feature.Description}"
-                        IsClickEnabled="False">
-                        <StackPanel Orientation="Horizontal">
-                            <FontIcon
-                                x:Uid="ApplyChangesToolTip"
-                                Glyph="&#xE783;"
-                                Visibility="{x:Bind HasChanged, Mode=OneWay}"
-                                Margin="0 0 10 0" />
-                            <CheckBox
-                                IsChecked="{x:Bind IsEnabled, Mode=TwoWay}"
-                                IsEnabled="{x:Bind IsModifiable, Mode=OneWay}" />
-                        </StackPanel>
+                            Header="{x:Bind Feature.DisplayName}"
+                            Description="{x:Bind Feature.Description}"
+                            IsClickEnabled="False">
+                            <StackPanel Orientation="Horizontal">
+                                <FontIcon
+                                    x:Uid="ApplyChangesToolTip"
+                                    Glyph="&#xE783;"
+                                    Visibility="{x:Bind HasChanged, Mode=OneWay}"
+                                    Margin="0 0 10 0" />
+                                <CheckBox
+                                    IsChecked="{x:Bind IsEnabled, Mode=TwoWay}"
+                                    IsEnabled="{x:Bind IsModifiable, Mode=OneWay}" />
+                            </StackPanel>
                         </controls:SettingsCard>
                     </DataTemplate>
                     </muxc:ItemsRepeater.ItemTemplate>
