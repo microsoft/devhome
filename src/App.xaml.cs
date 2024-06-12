@@ -199,10 +199,18 @@ public partial class App : Application, IApp
 
     private async void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
-        // TODO: Log and handle exceptions as appropriate.
         // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
-        // https://github.com/microsoft/devhome/issues/613
+        // This code path does not necessarily terminate Dev Home, so we are only logging the exception information,
+        // we are not going to close and flush the log. The exception stack trace may not be accurate, but the
+        // argument message should be the original exception message.
+        Log.Error(e.Exception, $"Unhandled exception: {e.Message}");
+        Log.CloseAndFlush();
+
+        // We are about to crash, so signal the extensions to stop.
         await GetService<IExtensionService>().SignalStopExtensionsAsync();
+
+        // We are very likely in a bad and unrecoverable state, so ensure Dev Home crashes w/ the exception info.
+        Environment.FailFast(e.Message, e.Exception);
     }
 
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
@@ -224,10 +232,5 @@ public partial class App : Application, IApp
 
         // Activate the app and ensure the appropriate handlers are called.
         await _dispatcherQueue.EnqueueAsync(async () => await GetService<IActivationService>().ActivateAsync(localArgsDataReference));
-    }
-
-    private void Window_Closed(object sender, EventArgs e)
-    {
-        Log.CloseAndFlush();
     }
 }
