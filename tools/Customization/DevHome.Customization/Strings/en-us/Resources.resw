@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -300,5 +300,29 @@
   <data name="WindowsDeveloperCard.Header" xml:space="preserve">
     <value>Windows developer settings</value>
     <comment>The header for the Windows developer settings card</comment>
+  </data>
+  <data name="VirtualMachineManagement_Header" xml:space="preserve">
+    <value>Virtual machine management</value>
+    <comment>Header for main Windows customization page in the breadcrumb bar</comment>
+  </data>
+  <data name="VirtualMachineManagementCard.Description" xml:space="preserve">
+    <value>Access, manage, create and edit virtual machine environments in Windows</value>
+    <comment>The description for the virtual machine management settings card</comment>
+  </data>
+  <data name="VirtualMachineManagementCard.Header" xml:space="preserve">
+    <value>Virtual machine management</value>
+    <comment>The header for the virtual machine management settings card</comment>
+  </data>
+  <data name="ApplyChangesToolTip.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Click the apply button to confirm changes</value>
+    <comment>The tool tip for when the user hovers over an information indicator showing that changes to the feature state need to be applied because the user has toggled the state.</comment>
+  </data>
+  <data name="ApplyFeaturesButton.Content" xml:space="preserve">
+    <value>Apply</value>
+    <comment>Apply changes to feature state.</comment>
+  </data>
+  <data name="ResetFeaturesButton.Content" xml:space="preserve">
+    <value>Reset</value>
+    <comment>Reset any pending changes to feature state.</comment>
   </data>
 </root>

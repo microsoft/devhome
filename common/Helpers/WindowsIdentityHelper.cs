@@ -26,4 +26,11 @@ public class WindowsIdentityHelper
     {
         return _currentUserIdentity?.Name;
     }
+
+    public static bool IsUserAdministrator()
+    {
+        using WindowsIdentity identity = WindowsIdentity.GetCurrent();
+        var adminSid = new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null).Value;
+        return identity.Claims.Any(c => c.Value == adminSid);
+    }
 }

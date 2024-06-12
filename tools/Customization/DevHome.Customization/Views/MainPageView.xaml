@@ -25,19 +25,29 @@
                 IsClickEnabled="True"
                 Margin="{ThemeResource SettingsCardMargin}"/>
 
-        <!--  Dev Drive Insights  -->
-        <controls:SettingsCard
-            x:Uid="DevDriveInsightsCard"
-            AutomationProperties.AccessibilityView="Control"
-            AutomationProperties.AutomationId="NavigateDevDriveInsightsCardButton"
-            Command="{x:Bind ViewModel.NavigateToDevDriveInsightsPageCommand}"
-            Visibility="{Binding AnyDevDrivesPresent, Converter={StaticResource BoolToVisibilityConverter}}"
-            IsClickEnabled="True"
-            Margin="{ThemeResource SettingsCardMargin}">
-            <controls:SettingsCard.HeaderIcon>
-                <FontIcon Glyph="&#xE3AF;" FontFamily="{ThemeResource AmcFluentIcons}"/>
-            </controls:SettingsCard.HeaderIcon>
-        </controls:SettingsCard>
+            <!--  Virtual Machine Management  -->
+            <controls:SettingsCard
+                x:Uid="VirtualMachineManagementCard"
+                AutomationProperties.AccessibilityView="Control"
+                AutomationProperties.AutomationId="NavigateVirtualMachineManagementCardButton"
+                Command="{x:Bind ViewModel.NavigateToVirtualMachineManagementPageCommand}"
+                HeaderIcon="{ui:FontIcon Glyph=&#xE83B;}"
+                IsClickEnabled="True"
+                Margin="{ThemeResource SettingsCardMargin}"/>
+
+            <!--  Dev Drive Insights  -->
+            <controls:SettingsCard
+                x:Uid="DevDriveInsightsCard"
+                AutomationProperties.AccessibilityView="Control"
+                AutomationProperties.AutomationId="NavigateDevDriveInsightsCardButton"
+                Command="{x:Bind ViewModel.NavigateToDevDriveInsightsPageCommand}"
+                Visibility="{Binding AnyDevDrivesPresent, Converter={StaticResource BoolToVisibilityConverter}}"
+                IsClickEnabled="True"
+                Margin="{ThemeResource SettingsCardMargin}">
+                <controls:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xE3AF;" FontFamily="{ThemeResource AmcFluentIcons}"/>
+                </controls:SettingsCard.HeaderIcon>
+            </controls:SettingsCard>
 
             <!--  Quiet Background Processes  -->
             <quietviews:QuietBackgroundProcessesView />
