@@ -355,4 +355,8 @@
     <value>More Options</value>
     <comment>The text narrator should say for the ... button</comment>
   </data>
+  <data name="SyncEnvironmentsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Sync</value>
+    <comment>Accessible name for the button to sync environments.</comment>
+  </data>
 </root>

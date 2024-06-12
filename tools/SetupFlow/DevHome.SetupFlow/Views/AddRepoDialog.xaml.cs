@@ -44,9 +44,9 @@ public partial class AddRepoDialog : ContentDialog
     public SetupFlowOrchestrator Orchestrator { get; set; }
 
     /// <summary>
-    /// Hold the clone location in case the user decides not to add a dev drive.
+    /// Gets or sets the clone location in case the user decides not to add a dev drive.
     /// </summary>
-    private string _oldCloneLocation;
+    public string OldCloneLocation { get; set; }
 
     public AddRepoDialog(
         SetupFlowOrchestrator setupFlowOrchestrator,
@@ -160,90 +160,21 @@ public partial class AddRepoDialog : ContentDialog
     /// </summary>
     private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
+        var deferral = args.GetDeferral();
+
+        // Collect search inputs.
+        Dictionary<string, string> searchInput = new();
+        foreach (var searchBox in ShowingSearchTermsGrid.Children)
         {
-            // Get the number of repos already selected to clone in a previous instance.
-            // Used to figure out if the repo was added after the user logged into an account.
-            var numberOfReposToCloneCount = AddRepoViewModel.EverythingToClone.Count;
-
-            // If the user is logging in, the close button text will change.
-            // Keep a copy of the original to revert when this button click is done.
-            var originalCloseButtonText = AddRepoContentDialog.CloseButtonText;
-
-            var deferral = args.GetDeferral();
-            await AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
-
-            AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
-
-            // If the repo was not added.
-            if (numberOfReposToCloneCount == AddRepoViewModel.EverythingToClone.Count)
+            if (searchBox is AutoSuggestBox suggestBox)
             {
-                AddRepoViewModel.ShouldEnablePrimaryButton = false;
-                args.Cancel = true;
-                deferral.Complete();
-                return;
-            }
-
-            deferral.Complete();
-        }
-        else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
-        {
-            args.Cancel = true;
-            var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
-            if (!string.IsNullOrEmpty(repositoryProviderName))
-            {
-                var originalCloseButtonText = AddRepoContentDialog.CloseButtonText;
-
-                var deferral = args.GetDeferral();
-                await AddRepoViewModel.ChangeToRepoPageAsync();
-
-                AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
-
-                deferral.Complete();
+                searchInput.Add(suggestBox.Header as string, suggestBox.Text);
             }
         }
-        else if (AddRepoViewModel.CurrentPage == PageKind.SearchFields)
-        {
-            args.Cancel = true;
-            Dictionary<string, string> searchInput = new();
-            foreach (var searchBox in ShowingSearchTermsGrid.Children)
-            {
-                if (searchBox is AutoSuggestBox suggestBox)
-                {
-                    searchInput.Add(suggestBox.Header as string, suggestBox.Text);
-                }
-            }
 
-            // switching to the repo page causes repos to be queried.
-            var deferral = args.GetDeferral();
-            await AddRepoViewModel.ChangeToRepoPageAsync();
-            AddRepoViewModel.SearchForRepos(searchInput);
-            deferral.Complete();
-        }
-    }
+        args.Cancel = await AddRepoViewModel.PrimaryButtonClick(searchInput);
 
-    /// <summary>
-    /// Adds or removes the default dev drive.  This dev drive will be made at the loading screen.
-    /// </summary>
-    private void MakeNewDevDriveCheckBox_Click(object sender, RoutedEventArgs e)
-    {
-        // Getting here means
-        // 1. The user does not have any existing dev drives
-        // 2. The user wants to clone to a new dev drive.
-        // 3. The user un-checked this and does not want a new dev drive.
-        var isChecked = (sender as CheckBox).IsChecked;
-        if (isChecked.Value)
-        {
-            UpdateDevDriveInfo();
-        }
-        else
-        {
-            AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = string.Empty;
-            AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario = false;
-            AddRepoViewModel.EditDevDriveViewModel.RemoveNewDevDrive();
-            AddRepoViewModel.FolderPickerViewModel.EnableBrowseButton();
-            AddRepoViewModel.FolderPickerViewModel.CloneLocation = _oldCloneLocation;
-        }
+        deferral.Complete();
     }
 
     /// <summary>
@@ -260,20 +191,6 @@ public partial class AddRepoDialog : ContentDialog
             AddRepoViewModel.FilterRepositories(FilterTextBox.Text);
             SelectRepositories(AddRepoViewModel.EverythingToClone);
         }
-    }
-
-    /// <summary>
-    /// Update dialog to show Dev Drive information.
-    /// </summary>
-    public void UpdateDevDriveInfo()
-    {
-        AddRepoViewModel.EditDevDriveViewModel.MakeDefaultDevDrive();
-        AddRepoViewModel.FolderPickerViewModel.DisableBrowseButton();
-        _oldCloneLocation = AddRepoViewModel.FolderPickerViewModel.CloneLocation;
-        AddRepoViewModel.FolderPickerViewModel.CloneLocation = AddRepoViewModel.EditDevDriveViewModel.GetDriveDisplayName();
-        AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = AddRepoViewModel.EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-        AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario = true;
-        AddRepoViewModel.EditDevDriveViewModel.IsDevDriveCheckboxChecked = true;
     }
 
     private void FilterSuggestions(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)

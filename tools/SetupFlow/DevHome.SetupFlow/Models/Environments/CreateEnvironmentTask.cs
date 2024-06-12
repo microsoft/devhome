@@ -11,9 +11,12 @@ using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Models;
+using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using DevHome.SetupFlow.ViewModels.Environments;
+using DevHome.Telemetry;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;
 using Windows.Foundation;
@@ -24,7 +27,7 @@ namespace DevHome.SetupFlow.Models;
 /// <summary>
 /// Task that creates an environment using the user input from an adaptive card session.
 /// </summary>
-public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<CreationAdaptiveCardSessionEndedMessage>
+public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<CreationAdaptiveCardSessionEndedMessage>, IRecipient<CreationProviderChangedMessage>
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CreateEnvironmentTask));
 
@@ -40,6 +43,10 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
     private readonly AutoResetEvent _autoResetEventToStartCreationOperation = new(false);
 
     private readonly SetupFlowViewModel _setupFlowViewModel;
+
+    private readonly SetupFlowOrchestrator _orchestrator;
+
+    private bool _hasAdaptiveCardSessionFinished;
 
     private bool _disposedValue;
 
@@ -84,9 +91,11 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
         };
         _setupFlowViewModel = setupFlowViewModel;
         _setupFlowViewModel.EndSetupFlow += OnEndSetupFlow;
+        _orchestrator = setupFlowViewModel.Orchestrator;
 
         // Register for the adaptive card session ended message so we can use the session data to create the environment
         WeakReferenceMessenger.Default.Register<CreationAdaptiveCardSessionEndedMessage>(this);
+        WeakReferenceMessenger.Default.Register<CreationProviderChangedMessage>(this);
     }
 
     public ActionCenterMessages GetErrorMessages() => _actionCenterMessages;
@@ -106,7 +115,7 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
     public void Receive(CreationAdaptiveCardSessionEndedMessage message)
     {
         _log.Information("The extension sent the session ended event");
-        ProviderDetails = message.Value.ProviderDetails;
+        _hasAdaptiveCardSessionFinished = true;
 
         // Json input that the user entered in the adaptive card session
         UserJsonInput = message.Value.UserInputResultJson;
@@ -137,22 +146,41 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
             // event. Since the call flow is disjointed an extension may not have sent the session ended event when this method is called.
             _autoResetEventToStartCreationOperation.WaitOne(TimeSpan.FromMinutes(1));
 
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_Creation_Event",
+                LogLevel.Critical,
+                new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, EnvironmentsTelemetryStatus.Started),
+                _orchestrator.ActivityId);
+
             if (string.IsNullOrWhiteSpace(UserJsonInput))
             {
                 // The extension's creation adaptive card may not need user input. In that case, the user input will be null or empty.
                 _log.Information("UserJsonInput is null or empty.");
             }
 
-            // If the provider details are null, then we can't proceed with the operation. This happens if the auto event times out.
-            if (ProviderDetails == null)
+            // The extension did not send us back a response that the session has finished. This happens if the auto event times out
+            // while we're still waiting for the extension to send the stopped event.
+            if (!_hasAdaptiveCardSessionFinished)
             {
-                _log.Error("ProviderDetails is null so we cannot proceed with executing the task");
+                var logErrorMsg = $"Timed out waiting for the {ProviderDetails.ComputeSystemProvider.Id} provider to stop the adaptive card session";
+                _log.Error(logErrorMsg);
+
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    "Environment_Creation_Event",
+                    LogLevel.Critical,
+                    new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, EnvironmentsTelemetryStatus.Failed, logErrorMsg, logErrorMsg),
+                    _orchestrator.ActivityId);
+
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.EnvironmentCreationFailedToGetProviderInformation), MessageSeverityKind.Error);
                 return TaskFinishedState.Failure;
             }
 
             var sdkCreateEnvironmentOperation = ProviderDetails.ComputeSystemProvider.CreateCreateComputeSystemOperation(DeveloperIdWrapper.DeveloperId, UserJsonInput);
-            var createComputeSystemOperationWrapper = new CreateComputeSystemOperation(sdkCreateEnvironmentOperation, ProviderDetails, UserJsonInput);
+            var createComputeSystemOperationWrapper = new CreateComputeSystemOperation(
+                sdkCreateEnvironmentOperation,
+                ProviderDetails,
+                UserJsonInput,
+                _orchestrator.ActivityId);
 
             // Start the operation, which returns immediately and runs in the background.
             createComputeSystemOperationWrapper.StartOperation();
@@ -194,5 +222,15 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Weak reference message handler for when the selected provider changes in the select environment provider page. This will be triggered when the user
+    /// selects an item in the Select Environment Provider page.
+    /// </summary>
+    /// <param name="message">Message data that contains the new provider details.</param>
+    public void Receive(CreationProviderChangedMessage message)
+    {
+        ProviderDetails = message.Value;
     }
 }

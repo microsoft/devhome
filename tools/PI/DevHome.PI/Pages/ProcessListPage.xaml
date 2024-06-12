@@ -44,7 +44,7 @@
                 </ComboBox>
                 <Button x:Uid="RefreshButton" x:Name="RefreshButton" BorderThickness="0" Margin="8,0,0,0" Grid.Column="1"
                     Command="{x:Bind ViewModel.RefreshFilteredProcessListCommand}">
-                    <TextBlock Text="&#xE72C;" FontFamily="Segoe Fluent Icons" FontSize="20"/>
+                    <TextBlock Text="&#xE72C;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20"/>
                 </Button>
             </Grid>
         </Grid>

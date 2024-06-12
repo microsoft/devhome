@@ -10,6 +10,7 @@
 
     <Grid
         AutomationProperties.Name="{x:Bind ViewModel.Title}"
+        AutomationProperties.AutomationId="{x:Bind ViewModel.UtilityAutomationId, Mode=OneWay}"
         HorizontalAlignment="Stretch"
         Padding="15 15"
         CornerRadius="{ThemeResource ControlCornerRadius}"
@@ -67,13 +68,15 @@
             Grid.Row="2"
             IsOn="{x:Bind ViewModel.LaunchAsAdmin, Mode=TwoWay}"
             Visibility="{x:Bind ViewModel.SupportsLaunchAsAdmin, Mode=OneWay}"
-            Margin="15 0 0 5"/>
+            Margin="15 0 0 5" 
+            AutomationProperties.AutomationId="AdminToggleAutomationId"/>
 
         <Button
             x:Uid="LaunchButtonBase"
             Grid.Row="3"
             Margin="15 5 0 0"
-            Command="{x:Bind ViewModel.LaunchCommand}">
+            Command="{x:Bind ViewModel.LaunchCommand}"
+            AutomationProperties.AutomationId="LaunchButtonAutomationId">
 
             <StackPanel Orientation="Horizontal">
                 <TextBlock x:Uid="LaunchButton" />

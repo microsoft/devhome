@@ -9,7 +9,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.Environments;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -123,10 +126,12 @@ public partial class SetupFlowViewModel : ObservableObject
         await _mainPageViewModel.StartConfigurationFileAsync(file);
     }
 
-    public void StartCreationFlowAsync()
+    public void StartCreationFlowAsync(string originPage)
     {
         Orchestrator.FlowPages = [_mainPageViewModel];
-        _mainPageViewModel.StartCreateEnvironment(string.Empty);
+
+        // This method is only called when the user clicks a button that redirects them to 'Create Environment' flow in the setup flow.
+        _mainPageViewModel.StartCreateEnvironmentWithTelemetry(string.Empty, _creationFlowNavigationParameter, originPage);
     }
 
     public void OnNavigatedTo(NavigationEventArgs args)
@@ -136,11 +141,15 @@ public partial class SetupFlowViewModel : ObservableObject
         var parameter = args.Parameter?.ToString();
 
         if ((!string.IsNullOrEmpty(parameter)) &&
-            _creationFlowNavigationParameter.Equals(parameter, StringComparison.OrdinalIgnoreCase) &&
+            parameter.Contains(_creationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase) &&
             Orchestrator.CurrentSetupFlowKind != SetupFlowKind.CreateEnvironment)
         {
+            // We expect that when navigating from anywhere in Dev Home to the create environment page
+            // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartCreationFlow'
+            // and the second value being the page name that redirection came from for telemetry purposes.
+            var parameters = parameter.Split(';');
             Cancel();
-            StartCreationFlowAsync();
+            StartCreationFlowAsync(originPage: parameters[1]);
         }
     }
 

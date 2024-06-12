@@ -12,17 +12,20 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Win32.SafeHandles;
+using Serilog;
 using Windows.Devices.Display;
 using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
 using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.System.SystemInformation;
+using Windows.Win32.System.Threading;
 using Windows.Win32.UI.Accessibility;
 using Windows.Win32.UI.WindowsAndMessaging;
 
@@ -30,6 +33,8 @@ namespace DevHome.PI.Helpers;
 
 public class WindowHelper
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WindowHelper));
+
     private static nint GetClassLongPtr(HWND hWnd, GET_CLASS_LONG_INDEX nIndex)
     {
         if (IntPtr.Size == 8)
@@ -66,11 +71,7 @@ public class WindowHelper
         }
     }
 
-    // TODO The SnapOffsetHorizontal and SnapThreshold values don't allow for different DPIs.
-
-    // It seems the way rounded corners are implemented means that the window is really 8px
-    // bigger than it seems, so we'll subtract this when we do sidecar snapping.
-    private const int SnapOffsetHorizontal = 8;
+    // TODO The SnapThreshold values don't allow for different DPIs.
 
     // If the target window is moved to within SnapThreshold px of the edge of the screen, we unsnap.
     private const int SnapThreshold = 10;
@@ -228,20 +229,13 @@ public class WindowHelper
         return rectangle;
     }
 
-    public static Windows.Graphics.RectInt32 GetRect(Rect bounds, double scale)
+    public static RectInt32 GetRect(Rect bounds, double scale)
     {
-        return new Windows.Graphics.RectInt32(
+        return new RectInt32(
             _X: (int)Math.Round(bounds.X * scale),
             _Y: (int)Math.Round(bounds.Y * scale),
             _Width: (int)Math.Round(bounds.Width * scale),
             _Height: (int)Math.Round(bounds.Height * scale));
-    }
-
-    public enum BinaryType : int
-    {
-        Unknown = -1,
-        X32 = 0,
-        X64 = 6,
     }
 
     internal static unsafe string GetWindowTitle(HWND hWnd)
@@ -337,27 +331,11 @@ public class WindowHelper
         return softwareBitmap;
     }
 
-    public static async Task<SoftwareBitmapSource> GetSoftwareBitmapSourceFromSoftwareBitmap(SoftwareBitmap softwareBitmap)
+    public static async Task<SoftwareBitmapSource> GetSoftwareBitmapSourceFromSoftwareBitmapAsync(SoftwareBitmap softwareBitmap)
     {
         var softwareBitmapSource = new SoftwareBitmapSource();
         await softwareBitmapSource.SetBitmapAsync(softwareBitmap);
         return softwareBitmapSource;
-    }
-
-    public static async Task<Uri> SaveSoftwareBitmapToTempFile(SoftwareBitmap softwareBitmap)
-    {
-        var tempFolder = ApplicationData.Current.TemporaryFolder;
-        var tempFile = await tempFolder.CreateFileAsync(
-            Guid.NewGuid().ToString() + ".png", CreationCollisionOption.ReplaceExisting);
-
-        using (var stream = await tempFile.OpenAsync(FileAccessMode.ReadWrite))
-        {
-            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
-            encoder.SetSoftwareBitmap(softwareBitmap);
-            await encoder.FlushAsync();
-        }
-
-        return new Uri(tempFile.Path);
     }
 
     internal static unsafe uint GetProcessIdFromWindow(HWND hWnd)
@@ -494,12 +472,6 @@ public class WindowHelper
         }
     }
 
-    internal static void SnapToWindow(IntPtr targetHwnd, IntPtr dbarHwnd, SizeInt32 size)
-    {
-        PInvoke.GetWindowRect((HWND)targetHwnd, out var rect);
-        PInvoke.MoveWindow((HWND)dbarHwnd, rect.right - SnapOffsetHorizontal, rect.top, size.Width, size.Height, true);
-    }
-
     internal static bool IsWindowSnapped(HWND hwnd)
     {
         if (!PInvoke.GetWindowRect(hwnd, out var windowRect))
@@ -553,7 +525,6 @@ public class WindowHelper
         return rect;
     }
 
-    // TODO Allow for the taskbar when returning screen size.
     internal static RECT GetMonitorRectForWindow(HWND hWnd)
     {
         var monitor = PInvoke.MonitorFromWindow(hWnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
@@ -580,5 +551,142 @@ public class WindowHelper
                 process = Process.GetProcessById((int)processID);
             }
         }
+    }
+
+    // Only one ContentDialog can be shown at a time, so we have to keep track of the current one.
+    private static ContentDialog? ContentDialog { get; set; }
+
+    internal static async void ShowTimedMessageDialog(FrameworkElement frameworkElement, string message, string closeButtonText)
+    {
+        if (ContentDialog is not null)
+        {
+            ContentDialog.Hide();
+            ContentDialog = null;
+        }
+
+        ContentDialog = new ContentDialog
+        {
+            XamlRoot = frameworkElement.XamlRoot,
+            RequestedTheme = frameworkElement.ActualTheme,
+            Content = message,
+            CloseButtonText = closeButtonText,
+        };
+
+        var timer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(3),
+        };
+        timer.Tick += (s, e) =>
+        {
+            timer.Stop();
+            if (ContentDialog is null)
+            {
+                return;
+            }
+
+            ContentDialog.Hide();
+            ContentDialog = null;
+        };
+
+        try
+        {
+            await ContentDialog.ShowAsync();
+            timer.Start();
+            ContentDialog.Closed += (s, e) =>
+            {
+                ContentDialog = null;
+            };
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error showing timed message dialog");
+        }
+    }
+
+    internal enum CpuArchitecture
+    {
+        X86,
+        X64,
+        ARM,
+        ARM64,
+        Unknown,
+    }
+
+    internal static CpuArchitecture GetTargetArchitecture(IMAGE_FILE_MACHINE target)
+    {
+        return target switch
+        {
+            IMAGE_FILE_MACHINE.IMAGE_FILE_MACHINE_I386 => CpuArchitecture.X86,
+            IMAGE_FILE_MACHINE.IMAGE_FILE_MACHINE_AMD64 => CpuArchitecture.X64,
+            IMAGE_FILE_MACHINE.IMAGE_FILE_MACHINE_ARM => CpuArchitecture.ARM,
+            IMAGE_FILE_MACHINE.IMAGE_FILE_MACHINE_ARM64 => CpuArchitecture.ARM64,
+            _ => CpuArchitecture.Unknown,
+        };
+    }
+
+    internal static string GetAppArchitecture(SafeProcessHandle handle, string moduleName)
+    {
+        var cpuArchitecture = CommonHelper.GetLocalizedString("CpuArchitecture_Unknown");
+
+        try
+        {
+            unsafe
+            {
+                IMAGE_FILE_MACHINE processInfo;
+                IMAGE_FILE_MACHINE machineInfo;
+                var isWow64Result = PInvoke.IsWow64Process2(handle, out processInfo, &machineInfo);
+                if (isWow64Result)
+                {
+                    var processArchitecture = GetTargetArchitecture(processInfo);
+                    var machineArchitecture = GetTargetArchitecture(machineInfo);
+
+                    // "Unknown" means this is not a WOW64 process.
+                    if (processArchitecture == CpuArchitecture.Unknown)
+                    {
+                        if (machineArchitecture == CpuArchitecture.X64)
+                        {
+                            // If this is an x64 machine and it's not a WOW64 process, it's an x64 process.
+                            cpuArchitecture = CommonHelper.GetLocalizedString("CpuArchitecture_X64onX64");
+                        }
+                        else
+                        {
+                            // If this is not an x64 machine, we need to get the process architecture from the process itself.
+                            var processMachineInfo = default(PROCESS_MACHINE_INFORMATION);
+                            var getProcInfoResult
+                                = PInvoke.GetProcessInformation(
+                                handle,
+                                PROCESS_INFORMATION_CLASS.ProcessMachineTypeInfo,
+                                &processMachineInfo,
+                                (uint)Marshal.SizeOf<PROCESS_MACHINE_INFORMATION>());
+                            if (getProcInfoResult)
+                            {
+                                // Report the process architecture and the machine architecture.
+                                processArchitecture = GetTargetArchitecture(processMachineInfo.ProcessMachine);
+                                cpuArchitecture = CommonHelper.GetLocalizedString(
+                                    "CpuArchitecture_ProcessOnMachine", processArchitecture, machineArchitecture);
+                            }
+                            else
+                            {
+                                // If we can't get the process architecture, just report the machine architecture.
+                                cpuArchitecture = CommonHelper.GetLocalizedString(
+                                    "CpuArchitecture_UnknownOnMachine", machineArchitecture);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // This is a WOW64 process, so report the process architecture and the machine architecture.
+                        cpuArchitecture = CommonHelper.GetLocalizedString(
+                            "CpuArchitecture_ProcessOnMachine", processArchitecture, machineArchitecture);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error getting app architecture");
+        }
+
+        return cpuArchitecture;
     }
 }

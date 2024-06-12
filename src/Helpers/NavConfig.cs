@@ -45,6 +45,9 @@ internal sealed class Tool
     [JsonPropertyName("viewModelFullName")]
     public string ViewModelFullName { get; set; }
 
+    [JsonPropertyName("iconFontFamily")]
+    public string IconFontFamily { get; set; } = "SymbolThemeFontFamily";
+
     [JsonPropertyName("icon")]
     public string Icon { get; set; }
 

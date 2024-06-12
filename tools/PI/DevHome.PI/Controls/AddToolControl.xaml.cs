@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Runtime.InteropServices;
+using DevHome.Common;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using Microsoft.UI.Xaml;
@@ -13,12 +15,15 @@ namespace DevHome.PI.Controls;
 
 public sealed partial class AddToolControl : UserControl
 {
+    private readonly string invalidToolInfo = CommonHelper.GetLocalizedString("InvalidToolInfoMessage");
+    private readonly string messageCloseText = CommonHelper.GetLocalizedString("MessageCloseText");
+
     public AddToolControl()
     {
         InitializeComponent();
     }
 
-    private void BrowseButton_Click(object sender, RoutedEventArgs e)
+    private void ToolBrowseButton_Click(object sender, RoutedEventArgs e)
     {
         HandleBrowseButton();
     }
@@ -68,7 +73,15 @@ public sealed partial class AddToolControl : UserControl
 
     private void OkButton_Click(object sender, RoutedEventArgs e)
     {
-        ExternalToolsHelper.Instance.AddExternalTool(GetCurrentToolDefinition());
+        var tool = GetCurrentToolDefinition();
+        if (tool is null)
+        {
+            return;
+        }
+
+        ExternalToolsHelper.Instance.AddExternalTool(tool);
+        var toolRegisteredMessage = CommonHelper.GetLocalizedString("ToolRegisteredMessage", ToolNameTextBox.Text);
+        WindowHelper.ShowTimedMessageDialog(this, toolRegisteredMessage, messageCloseText);
         ClearValues();
     }
 
@@ -82,8 +95,14 @@ public sealed partial class AddToolControl : UserControl
         IsPinnedToggleSwitch.IsOn = true;
     }
 
-    private ExternalTool GetCurrentToolDefinition()
+    private ExternalTool? GetCurrentToolDefinition()
     {
+        if (string.IsNullOrEmpty(ToolNameTextBox.Text) || string.IsNullOrEmpty(ToolPathTextBox.Text))
+        {
+            WindowHelper.ShowTimedMessageDialog(this, invalidToolInfo, messageCloseText);
+            return null;
+        }
+
         var argType = ExternalToolArgType.None;
 
         if (HwndRadio.IsChecked ?? false)
@@ -123,6 +142,10 @@ public sealed partial class AddToolControl : UserControl
         }
 
         var tool = GetCurrentToolDefinition();
+        if (tool is null)
+        {
+            return;
+        }
 
         SampleCommandTextBox.Text = tool.CreateFullCommandLine(123, (Windows.Win32.Foundation.HWND)123);
     }

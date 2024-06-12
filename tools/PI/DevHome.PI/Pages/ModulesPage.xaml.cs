@@ -6,6 +6,7 @@ using DevHome.PI.Telemetry;
 using DevHome.PI.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.PI.Pages;
@@ -26,7 +27,7 @@ public sealed partial class ModulesPage : Page
         Application.Current.GetService<TelemetryReporter>().SwitchTo(Feature.LoadedModule);
     }
 
-    private void GridSplitter_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void GridSplitter_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
         e.Handled = true;
     }

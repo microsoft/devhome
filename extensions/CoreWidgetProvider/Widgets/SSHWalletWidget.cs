@@ -17,7 +17,7 @@ internal sealed class SSHWalletWidget : CoreWidget
 {
     private static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
 
-    private static readonly Regex HostRegex = new(@"^Host\s+(\S*)\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+    private static readonly Regex HostRegex = new(@"^Host\s+(?:(\S*) ?)*?\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
     private FileSystemWatcher? FileWatcher { get; set; }
 
@@ -133,6 +133,10 @@ internal sealed class SSHWalletWidget : CoreWidget
                 ContentData = _savedContentData;
                 SetActive();
                 break;
+
+            case WidgetAction.ChooseFile:
+                HandleCheckPath(actionInvokedArgs);
+                break;
         }
     }
 
@@ -162,16 +166,32 @@ internal sealed class SSHWalletWidget : CoreWidget
         Page = WidgetPageState.Loading;
         UpdateWidget();
 
-        // This is the action when the user clicks the submit button after entering a path while in
-        // the Configure state.
         Page = WidgetPageState.Configure;
         var data = args.Data;
         var dataObject = JsonSerializer.Deserialize(data, SourceGenerationContext.Default.DataPayload);
-        if (dataObject != null && dataObject.ConfigFile != null)
+
+        var chosenPath = string.Empty;
+
+        if (dataObject == null)
+        {
+            return;
+        }
+        else if (dataObject.ConfigFile != null)
+        {
+            // The user clicked the Preview button in the Configure state.
+            chosenPath = dataObject.ConfigFile;
+        }
+        else if (dataObject.FilePath != null)
+        {
+            // The user used the File Picker to select a file in the Configure state.
+            chosenPath = dataObject.FilePath;
+        }
+
+        if (!string.IsNullOrEmpty(chosenPath))
         {
             var updateRequestOptions = new WidgetUpdateRequestOptions(Id)
             {
-                Data = GetConfiguration(dataObject.ConfigFile),
+                Data = GetConfiguration(chosenPath),
                 CustomState = ConfigFile,
                 Template = GetTemplateForPage(Page),
             };
@@ -406,6 +426,12 @@ internal sealed class SSHWalletWidget : CoreWidget
 internal sealed class DataPayload
 {
     public string? ConfigFile
+    {
+        get; set;
+    }
+
+    [JsonPropertyName("filePath")]
+    public string? FilePath
     {
         get; set;
     }

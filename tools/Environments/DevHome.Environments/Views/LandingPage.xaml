@@ -215,9 +215,9 @@
         </Grid>
 
         <!-- Filtering and sorting -->
-        <Grid Grid.Row="1" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+        <Grid Grid.Row="1" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}" ColumnSpacing="5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="10*" />
+                <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
@@ -267,7 +267,10 @@
                     </i:Interaction.Behaviors>
                 </ComboBox>
                 <!-- Sync button -->
-                <Button Command="{x:Bind ViewModel.SyncButtonCommand}" Margin="0 3 0 0">
+                <Button
+                    x:Uid="SyncEnvironmentsButton"
+                    Command="{x:Bind ViewModel.SyncButtonCommand}"
+                    Margin="0 3 0 0">
                     <StackPanel Orientation="Horizontal" Padding="20 0" Spacing="8">
                         <FontIcon FontSize="16" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
                         <TextBlock x:Uid="SyncButtonTextBlock" />

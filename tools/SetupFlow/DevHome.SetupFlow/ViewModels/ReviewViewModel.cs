@@ -164,7 +164,12 @@ public partial class ReviewViewModel : SetupPageViewModelBase
             }
 
             var flowPages = Orchestrator.FlowPages.Select(p => p.GetType().Name).ToList();
-            TelemetryFactory.Get<ITelemetry>().Log("Review_SetUp", LogLevel.Critical, new ReviewSetUpCommandEvent(Orchestrator.IsSettingUpATargetMachine, flowPages));
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Review_SetUp",
+                LogLevel.Critical,
+                new ReviewSetUpCommandEvent(Orchestrator.IsSettingUpATargetMachine, flowPages),
+                relatedActivityId: Orchestrator.ActivityId);
+
             await Orchestrator.GoToNextPage();
         }
         catch (Exception e)

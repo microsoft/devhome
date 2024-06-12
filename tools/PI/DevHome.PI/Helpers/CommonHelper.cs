@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using DevHome.Common.Extensions;
@@ -9,11 +10,15 @@ using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.ApplicationModel;
+using Windows.Win32.Foundation;
 
 namespace DevHome.PI.Helpers;
 
 internal sealed class CommonHelper
 {
+    public const string UnpinGlyph = "\uE77A";
+    public const string PinGlyph = "\uE718";
+
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(CommonHelper));
 
     internal static string GetLocalizedString(string stringName, params object[] args)
@@ -51,9 +56,18 @@ internal sealed class CommonHelper
             var primaryWindow = Application.Current.GetService<PrimaryWindow>();
             primaryWindow.Close();
         }
-        catch (Exception ex)
+        catch (Win32Exception ex)
         {
-            _log.Error(ex, "UAC to run PI as admin was denied");
+            _log.Error(ex, "Could not run PI as admin");
+            if (ex.NativeErrorCode == (int)WIN32_ERROR.ERROR_CANT_ACCESS_FILE)
+            {
+                var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+                barWindow?.ShowDialogToEnableAppExecutionAlias();
+            }
+            else if (ex.NativeErrorCode == (int)WIN32_ERROR.ERROR_CANCELLED)
+            {
+                _log.Error(ex, "UAC to run PI as admin was denied");
+            }
         }
     }
 }

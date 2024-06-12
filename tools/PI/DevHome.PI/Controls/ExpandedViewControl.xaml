@@ -5,7 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="using:DevHome.PI.Models"
+    xmlns:controls="using:DevHome.PI.Controls"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
 
     <Grid Margin="16">
@@ -20,7 +21,8 @@
 
         <Grid Grid.Row="1" Margin="0,8,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -30,22 +32,35 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <ListView
-                x:Name="NavLinksList" SelectionMode="Single" VerticalAlignment="Stretch" ItemsSource="{x:Bind viewModel.Links}"
-                 SelectedIndex="{x:Bind viewModel.SelectedNavLinkIndex, Mode=TwoWay}" SelectionChanged="{x:Bind viewModel.Navigate}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding IconText}" Style="{x:Null}"
-                                FontFamily="Segoe Fluent Icons" FontSize="12"
-                                HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding ContentText}"
-                                Margin="12,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-
+                <StackPanel Orientation="Vertical">
+                    <ListView x:Name="NavLinksList" SelectionMode="Single" VerticalAlignment="Stretch" ItemsSource="{x:Bind viewModel.Links}"
+                         SelectedIndex="{x:Bind viewModel.SelectedNavLinkIndex, Mode=TwoWay}" SelectionChanged="{x:Bind viewModel.Navigate}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <TextBlock Text="{Binding IconText}" Style="{x:Null}"
+                                        FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="12"
+                                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding ContentText}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <Rectangle x:Name="Separator"
+                        Visibility="{x:Bind viewModel.AppSettingsVisibility, Mode=OneWay}"
+                        RadiusX="{ThemeResource AppBarSeparatorCornerRadius}"
+                        RadiusY="{ThemeResource AppBarSeparatorCornerRadius}"
+                        Height="{ThemeResource AppBarSeparatorWidth}"
+                        Width="{x:Bind NavLinksList.Width, Mode=OneWay}"
+                        Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}"
+                        Margin="4" />
+                    <Button 
+                        MinWidth="200" 
+                        HorizontalAlignment="Stretch" 
+                        x:Uid="DetachAppButton" 
+                        Visibility="{x:Bind viewModel.AppSettingsVisibility, Mode=OneWay}" 
+                        Command="{x:Bind viewModel.DetachFromProcessCommand}"/>
+                </StackPanel>
                 <Button
                     Grid.Row="1" x:Name="SettingsButton" Click="SettingsButton_Click"
                     BorderThickness="0" Background="Transparent" Margin="4,0,0,0"
@@ -56,7 +71,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock 
-                            Text="&#xe713;" FontFamily="Segoe Fluent Icons" FontSize="12"
+                            Text="&#xe713;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="12"
                             HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock 
                             Grid.Column="1" Text="{x:Bind viewModel.SettingsHeader, Mode=OneWay}"
@@ -65,7 +80,10 @@
                 </Button>
             </Grid>
 
-            <Grid Grid.Column="1" Margin="16,0,0,0">
+            <toolkit:GridSplitter 
+                Grid.Column="1" ResizeBehavior="BasedOnAlignment" ResizeDirection="Auto" PointerPressed="GridSplitter_PointerPressed"/>
+
+            <Grid Grid.Column="2" Margin="16,0,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>

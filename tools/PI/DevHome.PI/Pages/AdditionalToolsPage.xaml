@@ -21,7 +21,7 @@
 
             <ctControls:SettingsExpander x:Uid="SettingsAddToolCard" IsExpanded="False">
                 <ctControls:SettingsExpander.HeaderIcon>
-                    <FontIcon Glyph="&#xED0E;"/>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xED0E;"/>
                 </ctControls:SettingsExpander.HeaderIcon>
                 <ctControls:SettingsExpander.Items>
                     <ctControls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Left">
@@ -32,7 +32,7 @@
             
             <ctControls:SettingsExpander x:Uid="SettingsEditToolCard" IsExpanded="False">
                 <ctControls:SettingsExpander.HeaderIcon>
-                    <FontIcon Glyph="&#xE70F;"/>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE70F;"/>
                 </ctControls:SettingsExpander.HeaderIcon>
                 <ctControls:SettingsExpander.Items>
                     <ctControls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Left">

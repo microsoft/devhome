@@ -9,7 +9,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
+using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
+using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -157,6 +159,12 @@ internal sealed class ClipboardMonitor : WindowHooker<ClipboardMonitor>, INotify
         }
 
         return newContents;
+    }
+
+    public void Start()
+    {
+        var primaryWindow = Application.Current.GetService<PrimaryWindow>();
+        Start((HWND)primaryWindow.GetWindowHandle());
     }
 
     public override void Start(HWND hwndUsedForListening)

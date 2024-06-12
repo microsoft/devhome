@@ -21,8 +21,9 @@ parameters:
 
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
-  MSIXVersion: '0.1401'
+  MSIXVersion: '0.1501'
   VersionOfSDK: '0.700'
+
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
   testOutputArtifactDir: 'TestResults'
@@ -66,8 +67,6 @@ extends:
         - task: NuGetToolInstaller@1
 
         - task: NuGetAuthenticate@1
-          inputs:
-            nuGetServiceConnections: 'DevHomeInternal'
 
         - task: PowerShell@2
           displayName: Build SDK
@@ -109,8 +108,6 @@ extends:
         - task: NuGetToolInstaller@1
 
         - task: NuGetAuthenticate@1
-          inputs:
-            nuGetServiceConnections: 'DevHomeInternal'
 
         - task: PowerShell@2
           displayName: Build Stub Packages
@@ -139,8 +136,6 @@ extends:
             - task: NuGetToolInstaller@1
 
             - task: NuGetAuthenticate@1
-              inputs:
-                nuGetServiceConnections: 'DevHomeInternal'
 
             - task: PowerShell@2
               displayName: Replace Stubbed Files
