@@ -594,4 +594,3 @@ extends:
             condition: or(eq(variables['BuildingBranch'], 'staging'), eq(variables['BuildingBranch'], 'release'))
             artifactName: StoreBrokerPackage
             targetPath: '$(System.DefaultWorkingDirectory)\SBOutDir'
-            
