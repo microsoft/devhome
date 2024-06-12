@@ -46,6 +46,8 @@ public partial class FileExplorerViewModel : ObservableObject
         var experimentationService = Application.Current.GetService<IExperimentationService>();
         if (experimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
         {
+            // Currently, the UI displays a drop down which allows the user to select from a list of source control providers avaiable to Dev Home. This is
+            // subject to change per UI design specifications.
             var extensionService = Application.Current.GetService<IExtensionService>();
             var sourceControlExtensions = Task.Run(async () => await extensionService.GetInstalledExtensionsAsync(ProviderType.SourceControlIntegration)).Result.ToList();
             sourceControlExtensions.Sort((a, b) => string.Compare(a.ExtensionDisplayName, b.ExtensionDisplayName, System.StringComparison.OrdinalIgnoreCase));
@@ -72,10 +74,16 @@ public partial class FileExplorerViewModel : ObservableObject
         }
     }
 
-    public void AddRepositoryPath(string extension, string rootPath)
+    public bool AddRepositoryPath(string extension, string rootPath)
     {
         var normalizedPath = rootPath.ToUpper(CultureInfo.InvariantCulture).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        RepoTracker.AddRepositoryPath(extension, normalizedPath);
+        if (SourceControlIntegration.ValidateSourceControlExtension(extension, normalizedPath))
+        {
+             RepoTracker.AddRepositoryPath(extension, normalizedPath);
+             return true;
+        }
+
+        return false;
     }
 
     public bool ShowFileExtensions

@@ -67,19 +67,17 @@ public class RepositoryTracking
         log.Information($"Repositories retrieved from Repo Store, number of registered repositories: {TrackedRepositories.Count}");
     }
 
-    // TO DO: Determine if the extension GUID should be stored instead of name as it is more identifiable and/or determine any other unique property to use for
-    // mapping here
-    public void AddRepositoryPath(string extension, string rootPath)
+    public void AddRepositoryPath(string extensionId, string rootPath)
     {
         lock (trackRepoLock)
         {
             if (!TrackedRepositories.ContainsKey(rootPath))
             {
-                TrackedRepositories[rootPath] = extension!;
+                TrackedRepositories[rootPath] = extensionId!;
                 fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
                 try
                 {
-                    RepositoryChanged?.Invoke(extension, RepositoryChange.Added);
+                    RepositoryChanged?.Invoke(extensionId, RepositoryChange.Added);
                 }
                 catch (Exception ex)
                 {
@@ -99,12 +97,12 @@ public class RepositoryTracking
     {
         lock (trackRepoLock)
         {
-            TrackedRepositories.TryGetValue(rootPath, out var extension);
+            TrackedRepositories.TryGetValue(rootPath, out var extensionId);
             TrackedRepositories.Remove(rootPath);
             fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
             try
             {
-                RepositoryChanged?.Invoke(extension ??= string.Empty, RepositoryChange.Removed);
+                RepositoryChanged?.Invoke(extensionId ??= string.Empty, RepositoryChange.Removed);
             }
             catch (Exception ex)
             {

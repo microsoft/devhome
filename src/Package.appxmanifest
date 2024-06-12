@@ -135,20 +135,6 @@
             </uap3:Properties>
           </uap3:AppExtension>
         </uap3:Extension>
-		  <uap3:Extension Category="windows.appExtension">
-			  <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID5" PublicFolder="Public" DisplayName="SVN" Description="ms-resource:AppDescriptionGitExt">
-				  <uap3:Properties>
-					  <DevHomeProvider>
-						  <Activation>
-							  <CreateInstance ClassId="F47DE62D-F5A4-4455-80BC-46D16C115BDC" />
-						  </Activation>
-						  <SupportedInterfaces>
-							  <SourceControlIntegration />
-						  </SupportedInterfaces>
-					  </DevHomeProvider>
-				  </uap3:Properties>
-			  </uap3:AppExtension>
-		  </uap3:Extension>
         <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="ms-resource:WidgetProviderDisplayNameDev" Id="CoreWidgetProvider" PublicFolder="Public">
             <uap3:Properties>

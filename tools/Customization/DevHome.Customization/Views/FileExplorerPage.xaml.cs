@@ -6,8 +6,6 @@ using System.IO;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Customization.ViewModels;
-using DevHome.FileExplorerSourceControlIntegration.Services;
-using FileExplorerSourceControlIntegration;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
@@ -102,7 +100,10 @@ public sealed partial class FileExplorerPage : Page
     {
         if (ValidateRepositoryPath(rootPath))
         {
-            ViewModel.AddRepositoryPath(localRepositoryProvider.ExtensionClassId, RootPathTextBox.Text);
+            if (!ViewModel.AddRepositoryPath(localRepositoryProvider.ExtensionClassId, RootPathTextBox.Text))
+            {
+                RootPathErrorBar.IsOpen = true;
+            }
         }
 
         ViewModel.RefreshTrackedRepositories();
