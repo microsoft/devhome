@@ -219,16 +219,16 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     {
         switch (exception.ResultCode.HResult)
         {
-            case WinGetConfigurationException.WingetConfigErrorInvalidFieldType:
+            case ConfigurationException.WingetConfigErrorInvalidFieldType:
                 return StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalidType, exception.Field);
-            case WinGetConfigurationException.WingetConfigErrorInvalidFieldValue:
+            case ConfigurationException.WingetConfigErrorInvalidFieldValue:
                 return StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalidValue, exception.Field, exception.Value);
-            case WinGetConfigurationException.WingetConfigErrorMissingField:
+            case ConfigurationException.WingetConfigErrorMissingField:
                 return StringResource.GetLocalized(StringResourceKey.ConfigurationFieldMissing, exception.Field);
-            case WinGetConfigurationException.WingetConfigErrorUnknownConfigurationFileVersion:
+            case ConfigurationException.WingetConfigErrorUnknownConfigurationFileVersion:
                 return StringResource.GetLocalized(StringResourceKey.ConfigurationFileVersionUnknown, exception.Value);
-            case WinGetConfigurationException.WingetConfigErrorInvalidConfigurationFile:
-            case WinGetConfigurationException.WingetConfigErrorInvalidYaml:
+            case ConfigurationException.WingetConfigErrorInvalidConfigurationFile:
+            case ConfigurationException.WingetConfigErrorInvalidYaml:
             default:
                 return StringResource.GetLocalized(StringResourceKey.ConfigurationFileInvalid);
         }

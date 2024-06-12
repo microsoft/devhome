@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Services.DesiredStateConfiguration.Contracts;
+
 namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
 
 /// <summary>
@@ -8,21 +10,28 @@ namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
 /// </summary>
 public sealed class ElevatedConfigureUnitTaskResult
 {
-    public string? Type { get; set; }
+    private readonly IDSCApplicationUnitResult _unitResult;
 
-    public string? Id { get; set; }
+    public ElevatedConfigureUnitTaskResult(IDSCApplicationUnitResult unitResult)
+    {
+        _unitResult = unitResult;
+    }
 
-    public string? UnitDescription { get; set; }
+    public string? Type => _unitResult.Type;
 
-    public string? Intent { get; set; }
+    public string? Id => _unitResult.Id;
 
-    public bool IsSkipped { get; set; }
+    public string? UnitDescription => _unitResult.UnitDescription;
 
-    public int HResult { get; set; }
+    public string? Intent => _unitResult.Intent;
 
-    public int ResultSource { get; set; }
+    public bool IsSkipped => _unitResult.IsSkipped;
 
-    public string? Details { get; set; }
+    public int HResult => _unitResult.HResult;
 
-    public string? ErrorDescription { get; set; }
+    public int ResultSource => (int)_unitResult.ResultSource;
+
+    public string? Details => _unitResult.Details;
+
+    public string? ErrorDescription => _unitResult.ErrorDescription;
 }

@@ -101,7 +101,7 @@ public class ConfigureTask : ISetupTask
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.ApplyingConfigurationMessage), MessageSeverityKind.Info);
                 var result = await _dsc.ApplyConfigurationAsync(_file, _activityId);
                 RequiresReboot = result.RequiresReboot;
-                UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
+                UnitResults = result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
                 if (result.Succeeded)
                 {
                     return TaskFinishedState.Success;

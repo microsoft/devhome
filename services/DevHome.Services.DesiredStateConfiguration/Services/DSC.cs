@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Services.DesiredStateConfiguration.Contracts;
-using DevHome.Services.DesiredStateConfiguration.Models;
 
 namespace DevHome.Services.DesiredStateConfiguration.Services;
 
@@ -27,7 +26,7 @@ internal sealed class DSC : IDSC
     public async Task<bool> UnstubAsync() => await _dscDeployment.UnstubAsync();
 
     /// <inheritdoc/>
-    public async Task<DSCApplicationResult> ApplyConfigurationAsync(IDSCFile file, Guid activityId) => await _dscOperations.ApplyConfigurationAsync(file, activityId);
+    public async Task<IDSCApplicationResult> ApplyConfigurationAsync(IDSCFile file, Guid activityId) => await _dscOperations.ApplyConfigurationAsync(file, activityId);
 
     /// <inheritdoc/>
     public async Task<IReadOnlyList<IDSCUnit>> GetConfigurationUnitDetailsAsync(IDSCFile file) => await _dscOperations.GetConfigurationUnitDetailsAsync(file);

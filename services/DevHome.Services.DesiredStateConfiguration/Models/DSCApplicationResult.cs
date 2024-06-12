@@ -2,26 +2,32 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
 using Microsoft.Management.Configuration;
 
 namespace DevHome.Services.DesiredStateConfiguration.Models;
 
-public class DSCApplicationResult
+internal sealed class DSCApplicationResult : IDSCApplicationResult
 {
-    public ApplyConfigurationSetResult Result
-    {
-        get;
-    }
+    public bool Succeeded { get; }
 
-    public bool Succeeded => Result.ResultCode == null;
+    public bool RequiresReboot { get; }
 
-    public bool RequiresReboot => Result.UnitResults.Any(result => result.RebootRequired);
+    public Exception ResultException { get; }
 
-    public Exception ResultException => Result.ResultCode;
+    public IReadOnlyList<IDSCApplicationUnitResult> UnitResults { get; }
 
     public DSCApplicationResult(ApplyConfigurationSetResult result)
     {
-        Result = result;
+        // Constructor copies all the required data from the out-of-proc COM
+        // objects over to the current process. This ensures that we have this
+        // information available even if the out-of-proc COM objects are no
+        // longer available (e.g. AppInstaller service is no longer running).
+        Succeeded = result.ResultCode == null;
+        RequiresReboot = result.UnitResults.Any(result => result.RebootRequired);
+        ResultException = result.ResultCode;
+        UnitResults = result.UnitResults.Select(unitResult => new DSCApplicationUnitResult(unitResult)).ToList();
     }
 }

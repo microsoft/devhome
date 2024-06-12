@@ -9,7 +9,7 @@ namespace DevHome.Services.WindowsPackageManager.Models;
 /// <summary>
 /// Windows package manager (winget) package Uri
 /// </summary>
-public class WinGetPackageUri
+public sealed class WinGetPackageUri
 {
     /// <summary>
     /// Windows package manager custom protocol scheme

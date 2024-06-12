@@ -6,10 +6,8 @@ using DevHome.Services.DesiredStateConfiguration.Models;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Management.Configuration;
 using Serilog;
 using Windows.Foundation;
-using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.ElevatedComponent.Tasks;
 
@@ -31,21 +29,7 @@ public sealed class ElevatedConfigurationTask
                 taskResult.TaskAttempted = true;
                 taskResult.TaskSucceeded = result.Succeeded;
                 taskResult.RebootRequired = result.RequiresReboot;
-                taskResult.UnitResults = result.Result.UnitResults.Select(unitResult =>
-                {
-                    unitResult.Unit.Settings.TryGetValue("description", out var descriptionObj);
-                    return new ElevatedConfigureUnitTaskResult
-                    {
-                        Type = unitResult.Unit.Type,
-                        Id = unitResult.Unit.Identifier,
-                        UnitDescription = descriptionObj?.ToString() ?? string.Empty,
-                        Intent = unitResult.Unit.Intent.ToString(),
-                        IsSkipped = unitResult.State == ConfigurationUnitState.Skipped,
-                        HResult = unitResult.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK,
-                        ResultSource = (int)(unitResult.ResultInformation?.ResultSource ?? ConfigurationUnitResultSource.None),
-                        ErrorDescription = unitResult.ResultInformation?.Description,
-                    };
-                }).ToList();
+                taskResult.UnitResults = result.UnitResults.Select(unitResult => new ElevatedConfigureUnitTaskResult(unitResult)).ToList();
 
                 if (result.ResultException != null)
                 {

@@ -5,7 +5,7 @@ using System;
 
 namespace DevHome.Services.DesiredStateConfiguration.Exceptions;
 
-public class WinGetConfigurationException : Exception
+public class ConfigurationException : Exception
 {
     // WinGet Configuration error codes:
     // https://github.com/microsoft/winget-cli/blob/master/src/PowerShell/Microsoft.WinGet.Configuration.Engine/Exceptions/ErrorCodes.cs

@@ -17,7 +17,7 @@ public interface IDSC
     public Task<bool> UnstubAsync();
 
     /// <inheritdoc cref="IDSCOperations.ApplyConfigurationAsync" />
-    public Task<DSCApplicationResult> ApplyConfigurationAsync(IDSCFile file, Guid activityId);
+    public Task<IDSCApplicationResult> ApplyConfigurationAsync(IDSCFile file, Guid activityId);
 
     /// <inheritdoc cref="IDSCOperations.GetConfigurationUnitDetailsAsync" />
     public Task<IReadOnlyList<IDSCUnit>> GetConfigurationUnitDetailsAsync(IDSCFile file);

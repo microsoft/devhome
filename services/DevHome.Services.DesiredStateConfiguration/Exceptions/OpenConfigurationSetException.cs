@@ -6,7 +6,7 @@ using Microsoft.Management.Configuration;
 
 namespace DevHome.Services.DesiredStateConfiguration.Exceptions;
 
-public class OpenConfigurationSetException : WinGetConfigurationException
+public class OpenConfigurationSetException : ConfigurationException
 {
     /// <summary>
     /// Gets the <see cref="OpenConfigurationSetResult.ResultCode"/>
@@ -32,7 +32,7 @@ public class OpenConfigurationSetException : WinGetConfigurationException
         get;
     }
 
-    public OpenConfigurationSetException(Exception resultCode, string field, string value)
+    internal OpenConfigurationSetException(Exception resultCode, string field, string value)
     {
         ResultCode = resultCode;
         Field = field;
