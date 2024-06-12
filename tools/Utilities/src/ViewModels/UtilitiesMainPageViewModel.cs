@@ -23,7 +23,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
 
         Utilities = new ObservableCollection<UtilityViewModel>
         {
-            new(Path.Combine(appExAliasAbsFolderPath, "DevHome.HostsFileEditorApp.exe"))
+            new(Path.Combine("W:\\repo\\elevation\\src\\bin\\x64\\Debug\\net8.0-windows10.0.22621.0\\AppX", "DevHome.Elevation.ConsoleClient.exe"))
             {
                 Title = stringResource.GetLocalized("HostsFileEditorUtilityTitle"),
                 Description = stringResource.GetLocalized("HostsFileEditorUtilityDesc"),

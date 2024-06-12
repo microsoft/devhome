@@ -148,6 +148,22 @@
     </Content>
   </ItemGroup>
 
+  <!-- Elevation -->
+  <ItemGroup>
+    <Content Include="$(CppBaseOutDir)\DevHome.Elevation.Server\DevHome.Elevation.Server.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CppBaseOutDir)\DevHome.Elevation.ConsoleClient\DevHome.Elevation.ConsoleClient.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CppBaseOutDir)\DevHome.Elevation.ZoneLaunchPad\DevHome.Elevation.ZoneLaunchPad.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CppBaseOutDir)\DevHome.Elevation.Common\DevHome.Elevation.winmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <PropertyGroup>
     <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
     <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
