@@ -15,51 +15,15 @@
     xmlns:summaryViews="using:DevHome.SetupFlow.Views.Summary"
     setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
     setupFlowBehaviors:SetupFlowNavigationBehavior.NextVisibility="Collapsed"
-    Loaded="ViewLoaded"
-    Unloaded="ViewUnloaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml"/>
                 <ResourceDictionary>
-                    <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
                     <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
                     <converters:CollectionVisibilityConverter x:Key="NegatedCollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
-                    <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionWillNotSpanColumnsConverter" EmptyValue="0" NotEmptyValue="*"/>
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter"  TrueValue="Collapsed" FalseValue="Visible" />
-                    <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
-                    <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible" />
-                    <converters:DoubleToVisibilityConverter x:Key="ZeroCountWillNotSpanColumnsConverter" GreaterThan="0" FalseValue="0" TrueValue="*"/>
-                    <ControlTemplate x:Key="LinksTemplate">
-                        <Grid XYFocusKeyboardNavigation="Enabled">
-                            <Grid.Resources>
-                                <Style TargetType="HyperlinkButton" BasedOn="{StaticResource TextBlockButtonStyle}"/>
-                            </Grid.Resources>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <TextBlock
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_NextSteps"
-                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                Padding="0,20,0,25" 
-                                Foreground="{ThemeResource TextFillColorSecondary}"
-                                Grid.Row="0"/>
-                            <HyperlinkButton Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_SetUpAnotherProject" Command="{Binding GoToMainPageCommand}"/>
-                            <HyperlinkButton Grid.Row="2" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDevHomeSettings" Command="{Binding GoToDevHomeSettingsCommand}"/>
-                            <HyperlinkButton Grid.Row="3" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDeveloperSettingsInWindows" Command="{Binding GoToForDevelopersSettingsPageCommand}"/>
-                            <HyperlinkButton Grid.Row="4" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_LearnMoreAboutDevHome" Command="{Binding LearnMoreCommand}"/>
-                        </Grid>
-                    </ControlTemplate>
-                    <Style x:Key="ListViewItemStretchStyle" TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        <Setter Property="Margin" Value="0" />
-                        <Setter Property="Padding" Value="0" />
-                    </Style>
                     <Thickness x:Key="TopLeftQuadrantThickness">0, 1, 0, 2</Thickness>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
@@ -70,115 +34,76 @@
         VerticalScrollBarVisibility="Auto"
         HorizontalAlignment="Stretch"
         Padding="0,0,10,0">
-        <StackPanel>
-            <Grid RowSpacing="5" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+        <Grid ColumnSpacing="50">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
 
+            <StackPanel x:Name="SummaryHeader" Grid.Row="0" Grid.ColumnSpan="2">
                 <!-- Display if the user has tasks need the machine to restart.-->
-                <summaryViews:SummaryNeedsRestart  Visibility="{x:Bind ViewModel.ShowRestartNeeded}" Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10" DataContext="{x:Bind ViewModel}"/>
+                <summaryViews:SummaryNeedsRestart 
+                Visibility="{x:Bind ViewModel.ShowRestartNeeded}"
+                Background="{ThemeResource ComboBoxItemBackgroundPressed}"
+                CornerRadius="5"
+                Height="55"
+                Padding="10"
+                DataContext="{x:Bind ViewModel}"/>
 
                 <!-- Introduction to the summary page via configuration results-->
-                <summaryViews:SummaryIntroViaConfiguration  Grid.Row="1" Padding="0,20,0,40" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}" DataContext="{x:Bind ViewModel}"/>
+                <summaryViews:SummaryIntroViaConfiguration
+                    Padding="0,20,0,0"
+                    Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}"
+                    DataContext="{x:Bind ViewModel}"/>
 
                 <!-- Introduction to the summary page via non-configuration flow -->
-                <summaryViews:SummaryIntoViaNonConfigurationFlow Grid.Row="1" Padding="0,20,0,40" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" DataContext="{x:Bind ViewModel}"/>
-
-                <!-- Setup using configuration file results -->
-                <summaryViews:SummaryConfigurationFileResults  Grid.Row="2" Visibility="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay}"  BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopLeftQuadrantThickness}"  DataContext="{x:Bind ViewModel}"/>
-
-                <!-- Show results from the setup target machine flow -->
-                <Grid Grid.Row="2" ColumnSpacing="50" Visibility="{x:Bind ViewModel.ShowTargetMachineSetupResults, Mode=OneWay}">
-                    <Grid.ColumnDefinitions>
-                        <!-- repos cloned/apps downloaded and next steps column -->
-                        <ColumnDefinition/>
-                        <!-- Clone repos list and apps downloaded list-->
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-
-                    <!-- Numbers of tasks ran and next steps.-->
-                    <!-- Or, if any tasks failed, failed tasks and next steps.-->
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-
-                        <!-- Show any failed tasks if the loading screen has any failed tasks-->
-                        <summaryViews:SummaryTargetMachineWithErrors
-                            Grid.Row="0" 
-                            Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay}"
-                            HorizontalAlignment="Stretch" 
-                            Padding="0,15,0,30"
-                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}" DataContext="{x:Bind ViewModel}"/>
-
-
-                        <!-- Number of apps and repos cloned. Show if not failed tasks-->
-                        <summaryViews:SummaryTargetMachineAppsDownloadedReposCloned 
-                            Grid.Row="0" 
-                            Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
-                            HorizontalAlignment="Stretch" 
-                            Padding="0,15,0,30"
-                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}" DataContext="{x:Bind ViewModel}"/>
-
-                        <!-- Next steps section -->
-                        <summaryViews:SummaryNextSteps Grid.Row="1" DataContext="{x:Bind ViewModel}"/>
-                    </Grid>
-
-                    <!-- Displays the repos cloned and apps downloaded -->
-                    <summaryViews:SummaryTargetMachineShowAppsAndRepos Grid.Column="1" DataContext="{x:Bind ViewModel}"/>
-                </Grid>
-
-                <!-- Show result from non target machine setup flow -->
-                <Grid
-                    Grid.Row="2"
+                <summaryViews:SummaryIntoViaNonConfigurationFlow 
+                    Padding="0,20,0,0"
                     Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
-                    ColumnSpacing="50">
-                    <Grid.ColumnDefinitions>
-                        <!-- repos cloned/apps downloaded and next steps column -->
-                        <ColumnDefinition Width="*"/>
-                        <!-- Clone repos list and apps downloaded list-->
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
+                    DataContext="{x:Bind ViewModel}"/>
+            </StackPanel>
 
-                    <!-- Numbers of tasks ran and next steps.-->
-                    <!-- Or, if any tasks failed, failed tasks and next steps.-->
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
-                        </Grid.RowDefinitions>
+            <!-- Show any failed tasks if the loading screen has any failed tasks-->
+            <summaryViews:SummaryFailedTasks
+                Grid.Row="0"
+                Grid.Column="0"
+                Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
+                HorizontalAlignment="Stretch" 
+                Padding="0,15,0,30"
+                BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                BorderThickness="{ThemeResource TopLeftQuadrantThickness}"
+                DataContext="{x:Bind ViewModel}"/>
 
-                        <!-- Show any failed tasks if the loading screen has any failed tasks-->
-                        <summaryViews:SummaryFailedTasks Grid.Row="0" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
-                            HorizontalAlignment="Stretch" 
-                            Padding="0,15,0,30"
-                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}"
-                            DataContext="{x:Bind ViewModel}"/>
-                        
-                        <!-- Number of apps and repos cloned. Show if not failed tasks-->
-                        <summaryViews:SummaryAppsDownloadedReposCloned Grid.Row="0" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
-                            HorizontalAlignment="Stretch" 
-                            Padding="0,15,0,30"
-                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopLeftQuadrantThickness}"
-                            DataContext="{x:Bind ViewModel}"/>
-                        
-                        <!-- Next steps section -->
-                        <summaryViews:SummaryNextSteps Grid.Row="1" DataContext="{x:Bind ViewModel}"/>
-                    </Grid>
+            <!-- Number of apps and repos cloned. Show if not failed tasks-->
+            <summaryViews:SummaryAppsDownloadedReposCloned
+                Grid.Row="1"
+                Grid.Column="0"
+                Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
+                HorizontalAlignment="Stretch"
+                DataContext="{x:Bind ViewModel}"/>
 
-                    <!-- Displays the repos cloned and apps downloaded -->
-                    <summaryViews:SummaryShowAppsAndRepos Grid.Column="1" DataContext="{x:Bind ViewModel}"/>
-                </Grid>
-            </Grid>
-        </StackPanel>
+            <!-- Displays the repos cloned and apps downloaded -->
+            <summaryViews:SummaryShowAppsAndRepos
+                Grid.Row="1"
+                Grid.Column="1"
+                DataContext="{x:Bind ViewModel}"/>
+
+            <summaryViews:SummaryAppInstallationNotes
+                Grid.Row="2"
+                Grid.Column="1"
+                Padding="0,12"
+                Visibility="{x:Bind ViewModel.AppsDownloadedInstallationNotes, Converter={StaticResource CollectionVisibilityConverter}}"/>
+
+            <!-- Next steps section -->
+            <summaryViews:SummaryNextSteps
+                Grid.Row="2"
+                Grid.Column="0"
+                DataContext="{x:Bind ViewModel}"/>
+        </Grid>
     </ScrollViewer>
 </UserControl>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.SetupFlow.Views.Summary.SummaryAppInstallationNotes"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DevHome.SetupFlow.Views.Summary"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
+    mc:Ignorable="d">
+
+    <!-- Installation notes -->
+    <Grid>
+        <Expander>
+            <Expander.Header>
+                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0,12">Installation Notes</TextBlock>
+            </Expander.Header>
+            <ListView SelectionMode="None" ItemsSource="{Binding AppsDownloadedInstallationNotes}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:PackageViewModel">
+                        <Grid AutomationProperties.Name="{x:Bind PackageTitle}" ColumnSpacing="12" Margin="0,0,0,4" CornerRadius="8" Padding="18,20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <ImageIcon Width="24" VerticalAlignment="Top" Source="{x:Bind Icon}"/>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind PackageTitle}"/>
+                                <TextBlock
+                            MaxLines="2"
+                            IsTextSelectionEnabled="True"
+                            TextWrapping="WrapWholeWords"
+                            TextTrimming="WordEllipsis"
+                            IsTextTrimmedChanged="InstallationNotes_IsTextTrimmedChanged"
+                            Tag="{Binding ElementName=ViewAllButton}"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="{x:Bind InstallationNotes}"/>
+                                <Button
+                            Name="ViewAllButton"
+                            Visibility="Collapsed"
+                            Padding="0,5,0,6"
+                            Click="ViewAllButton_Click"
+                            Style="{ThemeResource TextBlockButtonStyle}"
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ViewAll"
+                            Tag="{x:Bind}"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Expander>
+    </Grid>
+</UserControl>

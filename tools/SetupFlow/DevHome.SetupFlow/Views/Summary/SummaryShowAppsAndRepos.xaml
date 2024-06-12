@@ -10,6 +10,8 @@
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
+    Loaded="ViewLoaded"
+    Unloaded="ViewUnloaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -111,52 +113,6 @@
                         </DataTemplate>
                     </GridView.ItemTemplate>
                 </GridView>
-            </Expander>
-        </Grid>
-
-        <!-- Installation notes -->
-        <Grid 
-        Padding="0,12"
-        Visibility="{Binding AppsDownloadedInstallationNotes, Converter={StaticResource CollectionVisibilityConverter}}"
-        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
-            <Expander>
-                <Expander.Header>
-                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0,12">Installation Notes</TextBlock>
-                </Expander.Header>
-                <ListView SelectionMode="None" ItemsSource="{Binding AppsDownloadedInstallationNotes}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:PackageViewModel">
-                            <Grid AutomationProperties.Name="{x:Bind PackageTitle}" ColumnSpacing="12" Margin="0,0,0,4" CornerRadius="8" Padding="18,20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <ImageIcon Width="24" VerticalAlignment="Top" Source="{x:Bind Icon}"/>
-                                <StackPanel Grid.Column="1">
-                                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind PackageTitle}"/>
-                                    <TextBlock
-                                    MaxLines="2"
-                                    IsTextSelectionEnabled="True"
-                                    TextWrapping="WrapWholeWords"
-                                    TextTrimming="WordEllipsis"
-                                    IsTextTrimmedChanged="InstallationNotes_IsTextTrimmedChanged"
-                                    Tag="{Binding ElementName=ViewAllButton}"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="{x:Bind InstallationNotes}"/>
-                                    <Button
-                                    Name="ViewAllButton"
-                                    Visibility="Collapsed"
-                                    Padding="0,5,0,6"
-                                    Click="ViewAllButton_Click"
-                                    Style="{ThemeResource TextBlockButtonStyle}"
-                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ViewAll"
-                                    Tag="{x:Bind}"/>
-                                </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
             </Expander>
         </Grid>
     </StackPanel>

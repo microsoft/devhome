@@ -22,8 +22,15 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Visibility="{Binding NextSteps, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
-        <ListView ItemsSource="{Binding NextSteps, Mode=OneWay}" SelectionMode="None" ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}">
+    <Grid
+        BorderBrush="red"
+        BorderThickness="1"
+        Visibility="{Binding NextSteps, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ListView Grid.Row="0" ItemsSource="{Binding NextSteps, Mode=OneWay}" SelectionMode="None" ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="UserControl">
                     <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0, 0, 0, 1">
@@ -32,7 +39,7 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Grid XYFocusKeyboardNavigation="Enabled" IsTabStop="false">
+        <Grid XYFocusKeyboardNavigation="Enabled" IsTabStop="false" Grid.Row="1">
             <Grid.Resources>
                 <Style TargetType="HyperlinkButton" BasedOn="{StaticResource TextBlockButtonStyle}"/>
             </Grid.Resources>
