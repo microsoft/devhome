@@ -23,7 +23,7 @@ public sealed partial class VirtualMachineManagementPage : Page
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.Initialize(NotificationQueue, ModifyFeaturesDialog);
+        ViewModel.Initialize(NotificationQueue);
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
