@@ -19,17 +19,27 @@
             Visibility="{x:Bind ViewModel.LoadFeaturesCommand.IsRunning, Mode=OneWay}"
             HorizontalAlignment="Center"/>
 
-        <Grid>
+        <Grid Visibility="{x:Bind ViewModel.FeaturesLoaded, Mode=OneWay}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+     
+            <InfoBar
+                Margin="0,0,0,12"
+                HorizontalAlignment="Stretch"
+                IsClosable="{x:Bind ViewModel.CanDismissNotifications}">
+                <i:Interaction.Behaviors>
+                    <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
+                </i:Interaction.Behaviors>
+            </InfoBar>
 
-            <ScrollView>
+            <ScrollView 
+                Grid.Row="1">
                 <muxc:ItemsRepeater
-                    ItemsSource="{x:Bind ViewModel.Features}"
-                    Visibility="{x:Bind ViewModel.FeaturesLoaded, Mode=OneWay}">
+                    ItemsSource="{x:Bind ViewModel.Features}">
                     <muxc:ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="models:OptionalFeatureState">
                         <controls:SettingsCard
@@ -47,24 +57,16 @@
                 </muxc:ItemsRepeater>
             </ScrollView>
 
-            <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0, 0, 0, 1" Margin="0, 5, 0, 0"/>
+            <Border
+                Grid.Row="2"
+                BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                BorderThickness="0, 0, 0, 1"
+                Margin="0, 5, 0, 0"/>
             
             <StackPanel
-                Grid.Row="1"
+                Grid.Row="3"
                 Orientation="Horizontal"
-                HorizontalAlignment="Right"
-                Visibility="{x:Bind ViewModel.FeaturesLoaded, Mode=OneWay}">
-                <ProgressRing
-                    IsActive="{x:Bind ViewModel.ApplyChangesCommand.IsRunning, Mode=OneWay}"
-                    Visibility="{x:Bind ViewModel.ApplyChangesCommand.IsRunning, Mode=OneWay}"
-                    Margin="0,0,10,0"/>
-                <Button
-                    x:Uid="ResetFeaturesButton"
-                    Command="{x:Bind ViewModel.ResetChangesCommand}"
-                    Style="{StaticResource DefaultButtonStyle}"
-                    IsEnabled="{x:Bind ViewModel.ChangesCanBeApplied, Mode=OneWay}"
-                    Margin="0,24,10,24"
-                    MinWidth="120"/>
+                HorizontalAlignment="Right">
                 <Button
                     x:Uid="ApplyFeaturesButton"
                     Command="{x:Bind ViewModel.ApplyChangesCommand}"
@@ -74,17 +76,5 @@
                     MinWidth="120"/>
             </StackPanel>
         </Grid>
-
-        <InfoBar
-            Grid.Row="2"
-            MaxWidth="480"
-            Margin="24"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom">
-            <i:Interaction.Behaviors>
-                <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
-            </i:Interaction.Behaviors>
-        </InfoBar>
-
     </Grid>
 </Page>

@@ -317,8 +317,4 @@
     <value>Apply</value>
     <comment>Apply changes to feature state.</comment>
   </data>
-  <data name="ResetFeaturesButton.Content" xml:space="preserve">
-    <value>Reset</value>
-    <comment>Reset any pending changes to feature state.</comment>
-  </data>
 </root>

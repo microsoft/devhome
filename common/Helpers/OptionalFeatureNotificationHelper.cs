@@ -42,9 +42,6 @@ public partial class OptionalFeatureNotificationHelper
         switch (exitCode)
         {
             case ExitCode.Success:
-                // The script successfully modified all features
-                return;
-            case ExitCode.SuccessRestartNeeded:
                 // The script successfully modified all features but a restart is required.
                 ShowRestartNotification();
                 return;
@@ -88,7 +85,7 @@ public partial class OptionalFeatureNotificationHelper
         _notificationsHelper?.ShowWithWindowExtension(
             _commonStringResource.GetLocalized("NonAdminUserTitle"),
             _commonStringResource.GetLocalized("NonAdminUserMessage"),
-            InfoBarSeverity.Informational);
+            InfoBarSeverity.Warning);
     }
 
     private void ShowFailedToApplyAllNotification()

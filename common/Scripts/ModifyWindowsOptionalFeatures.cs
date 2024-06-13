@@ -34,16 +34,19 @@ public static class ModifyWindowsOptionalFeatures
             }
         }
 
-        var startInfo = new ProcessStartInfo();
+        var scriptString = Script.Replace("FEATURE_STRING_INPUT", featuresString);
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                FileName = "powershell.exe",
+                Arguments = $"-ExecutionPolicy Bypass -Command {scriptString}",
+                UseShellExecute = true,
+                Verb = "runas",
+            },
+        };
 
-        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-        startInfo.FileName = $"powershell.exe";
-        startInfo.Arguments = $"-ExecutionPolicy Bypass -Command \"{Script.Replace("$args[0]", $"\"{featuresString}\"")}\"";
-        startInfo.UseShellExecute = true;
-        startInfo.Verb = "runas";
-
-        var process = new Process();
-        process.StartInfo = startInfo;
         await Task.Run(() =>
         {
             // Since a UAC prompt will be shown, we need to wait for the process to exit
@@ -73,9 +76,8 @@ public static class ModifyWindowsOptionalFeatures
     public enum ExitCode
     {
         Success = 0,
-        SuccessRestartNeeded = 1,
-        NoChange = 2,
-        Failure = 3,
+        NoChange = 1,
+        Failure = 2,
     }
 
     private static ExitCode FromExitCode(int exitCode)
@@ -83,8 +85,7 @@ public static class ModifyWindowsOptionalFeatures
         return exitCode switch
         {
             0 => ExitCode.Success,
-            1 => ExitCode.SuccessRestartNeeded,
-            2 => ExitCode.NoChange,
+            1 => ExitCode.NoChange,
             _ => ExitCode.Failure,
         };
     }
@@ -97,9 +98,8 @@ public static class ModifyWindowsOptionalFeatures
     ///
     /// The script defines the following possible exit statuses:
     /// - OperationSucceeded (0): All operations (enable or disable) succeeded and no restart is needed.
-    /// - OperationSucceededRestartNeeded (1): All operations (enable or disable) succeeded and a restart is needed.
-    /// - OperationSkipped (2): No operations were performed because the current state of all features matched the desired state.
-    /// - OperationFailed (3): At least one operation failed.
+    /// - OperationSkipped (1): No operations were performed because the current state of all features matched the desired state.
+    /// - OperationFailed (2): At least one operation failed.
     ///
     /// Only features present in "validFeatures" are considered valid. If an invalid feature name is encountered, the script exits with OperationFailed.
     /// This list should be kept consistent with the list of features in the WindowsOptionalFeatureNames class.
@@ -110,92 +110,75 @@ public static class ModifyWindowsOptionalFeatures
 enum OperationStatus
 {
     OperationSucceeded = 0
-    OperationSucceededRestartNeeded = 1
-    OperationSkipped = 2
-    OperationFailed = 3
+    OperationSkipped = 1
+    OperationFailed = 2
 }
 
 $validFeatures = @(
-    ""Containers"",
-    ""HostGuardian"",
-    ""Microsoft-Hyper-V-All"",
-    ""Microsoft-Hyper-V-Tools-All"",
-    ""Microsoft-Hyper-V"",
-    ""VirtualMachinePlatform"",
-    ""HypervisorPlatform"",
-    ""Containers-DisposableClientVM"",
-    ""Microsoft-Windows-Subsystem-Linux""
+    'Containers',
+    'HostGuardian',
+    'Microsoft-Hyper-V-All',
+    'Microsoft-Hyper-V-Tools-All',
+    'Microsoft-Hyper-V',
+    'VirtualMachinePlatform',
+    'HypervisorPlatform',
+    'Containers-DisposableClientVM',
+    'Microsoft-Windows-Subsystem-Linux'
 )
 
 function ModifyFeatures($featuresString)
 {
     $features = ConvertFrom-StringData $featuresString
+    $anyOperationFailed = $false
+    $anyOperationPerformed = $false
 
     foreach ($feature in $features.GetEnumerator())
     {
         $featureName = $feature.Key
         if ($featureName -notin $validFeatures)
         {
-            Write-Error ""Invalid feature name: $featureName""
             exit [OperationStatus]::OperationFailed
         }
 
         $isEnabled = [bool]::Parse($feature.Value);
-
         $featureState = Get-WindowsOptionalFeature -FeatureName $featureName -Online | Select-Object -ExpandProperty State;
         $currentEnabled = $featureState -eq 'Enabled';
 
         if ($currentEnabled -ne $isEnabled)
         {
-            $operationPerformed = $true
-
+            $anyOperationPerformed = $true
             if ($isEnabled)
             {
                 $enableResult = Enable-WindowsOptionalFeature -Online -FeatureName $featureName -All -NoRestart
-
                 if ($enableResult -eq $null)
                 {
-                    $operationFailed = $true
-                }
-                elseif ($enableResult.RestartNeeded -eq $true)
-                {
-                    $restartNeeded = $true
+                    $anyOperationFailed = $true
                 }
             }
             else
             {
                 $disableResult = Disable-WindowsOptionalFeature -Online -FeatureName $featureName -NoRestart
-
                 if ($disableResult -eq $null)
                 {
-                    $operationFailed = $true
-                }
-                elseif ($disableResult.RestartNeeded -eq $true)
-                {
-                    $restartNeeded = $true
+                    $anyOperationFailed = $true
                 }
             }
         }
     }
 
-    if ($operationFailed)
+    if ($anyOperationFailed)
     {
         exit [OperationStatus]::OperationFailed;
     }
-    elseif (-not $operationPerformed)
-    {
-        exit [OperationStatus]::OperationSkipped;
-    }
-    elseif ($restartNeeded)
-    {
-        exit [OperationStatus]::OperationSucceededRestartNeeded
-    }
-    else
+    elseif ($anyOperationPerformed)
     {
         exit [OperationStatus]::OperationSucceeded;
     }
+    {
+        exit [OperationStatus]::OperationSkipped;
+    }
 }
 
-ModifyFeatures $args[0];
+ModifyFeatures FEATURE_STRING_INPUT;
 ";
 }

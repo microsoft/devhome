@@ -42,6 +42,8 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
 
     public bool HasFeatureChanges => _isUserAdministrator && FeaturesLoaded && Features.Any(f => f.HasChanged);
 
+    public bool CanDismissNotifications => _isUserAdministrator;
+
     public VirtualMachineManagementViewModel(Window window)
     {
         _window = window;
@@ -74,7 +76,7 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
         _ = LoadFeaturesCommand.ExecuteAsync(null);
     }
 
-    public void Initialize(StackedNotificationsBehavior notificationQueue)
+    internal void Initialize(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = new(_window, notificationQueue, _log);
 
@@ -127,7 +129,6 @@ public partial class VirtualMachineManagementViewModel : ObservableObject
         });
     }
 
-    [RelayCommand]
     private void ResetChanges()
     {
         foreach (var feature in Features)
