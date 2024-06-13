@@ -52,7 +52,7 @@
                 </Button>
             </Grid>
         </Grid>
-        
+
         <controls:DataGrid
             x:Uid="ProcessDataGrid"
             x:Name="ProcessDataGrid" Grid.Row="2" Margin="16,4,0,0"
