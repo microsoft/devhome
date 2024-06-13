@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Security.Principal;
 using DevHome.Common.Helpers;
 using Windows.ApplicationModel;
 

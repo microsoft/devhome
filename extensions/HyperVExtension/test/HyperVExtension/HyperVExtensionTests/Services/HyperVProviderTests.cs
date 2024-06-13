@@ -7,11 +7,9 @@ using System.Text.Json;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Models.VirtualMachineCreation;
-using HyperVExtension.Providers;
 using HyperVExtension.UnitTest.Mocks;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Storage;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace HyperVExtension.UnitTest.HyperVExtensionTests.Services;
 

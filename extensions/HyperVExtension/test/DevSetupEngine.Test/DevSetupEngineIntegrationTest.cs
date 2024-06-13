@@ -3,10 +3,7 @@
 
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Win32;
 using Microsoft.Windows.DevHome.DevSetupEngine;
-using Windows.Win32;
-using Windows.Win32.System.Com;
 using WinRT;
 
 namespace DevSetupEngine.Test;
