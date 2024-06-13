@@ -313,10 +313,6 @@
     <value>Virtual machine management</value>
     <comment>The header for the virtual machine management settings card</comment>
   </data>
-  <data name="ApplyChangesToolTip.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Click the apply button to confirm changes</value>
-    <comment>The tool tip for when the user hovers over an information indicator showing that changes to the feature state need to be applied because the user has toggled the state.</comment>
-  </data>
   <data name="ApplyFeaturesButton.Content" xml:space="preserve">
     <value>Apply</value>
     <comment>Apply changes to feature state.</comment>

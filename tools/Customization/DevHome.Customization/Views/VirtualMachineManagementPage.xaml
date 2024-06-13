@@ -23,6 +23,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <ScrollView>
@@ -34,23 +35,20 @@
                         <controls:SettingsCard
                             Header="{x:Bind Feature.DisplayName}"
                             Description="{x:Bind Feature.Description}"
-                            IsClickEnabled="False">
-                            <StackPanel Orientation="Horizontal">
-                                <FontIcon
-                                    x:Uid="ApplyChangesToolTip"
-                                    Glyph="&#xE783;"
-                                    Visibility="{x:Bind HasChanged, Mode=OneWay}"
-                                    Margin="0 0 10 0" />
-                                <CheckBox
-                                    IsChecked="{x:Bind IsEnabled, Mode=TwoWay}"
-                                    IsEnabled="{x:Bind IsModifiable, Mode=OneWay}" />
-                            </StackPanel>
+                            IsClickEnabled="False"
+                            Margin="{ThemeResource SettingsCardMargin}">
+                            <CheckBox
+                                MinWidth="0"
+                                IsChecked="{x:Bind IsEnabled, Mode=TwoWay}"
+                                IsEnabled="{x:Bind IsModifiable, Mode=OneWay}" />
                         </controls:SettingsCard>
                     </DataTemplate>
                     </muxc:ItemsRepeater.ItemTemplate>
                 </muxc:ItemsRepeater>
             </ScrollView>
 
+            <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0, 0, 0, 1" Margin="0, 5, 0, 0"/>
+            
             <StackPanel
                 Grid.Row="1"
                 Orientation="Horizontal"

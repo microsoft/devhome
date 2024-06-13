@@ -7,22 +7,22 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <StackPanel>
-        <controls:SettingsCard x:Uid="ShowFileExtensionsCard">
+        <controls:SettingsCard x:Uid="ShowFileExtensionsCard" Margin="{ThemeResource SettingsCardMargin}">
             <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.ShowFileExtensions, Mode=TwoWay}" />
         </controls:SettingsCard>
-        <controls:SettingsCard x:Uid="ShowHiddenAndSystemFilesCard">
+        <controls:SettingsCard x:Uid="ShowHiddenAndSystemFilesCard" Margin="{ThemeResource SettingsCardMargin}">
             <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.ShowHiddenAndSystemFiles, Mode=TwoWay}" />
         </controls:SettingsCard>
-        <controls:SettingsCard x:Uid="ShowFullPathInTitleBarCard">
+        <controls:SettingsCard x:Uid="ShowFullPathInTitleBarCard" Margin="{ThemeResource SettingsCardMargin}">
             <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.ShowFullPathInTitleBar, Mode=TwoWay}" />
         </controls:SettingsCard>
-        <controls:SettingsCard x:Uid="ShowFilesAfterExtractCard">
+        <controls:SettingsCard x:Uid="ShowFilesAfterExtractCard" Margin="{ThemeResource SettingsCardMargin}">
             <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.ShowFilesAfterExtraction, Mode=TwoWay}" />
         </controls:SettingsCard>
-        <controls:SettingsCard x:Uid="ShowEmptyDrivesCard">
+        <controls:SettingsCard x:Uid="ShowEmptyDrivesCard" Margin="{ThemeResource SettingsCardMargin}">
             <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.ShowEmptyDrives, Mode=TwoWay}" />
         </controls:SettingsCard>
-        <controls:SettingsCard x:Uid="EndTaskOnTaskBar">
+        <controls:SettingsCard x:Uid="EndTaskOnTaskBar" Margin="{ThemeResource SettingsCardMargin}">
             <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.EndTaskOnTaskBarEnabled, Mode=TwoWay}" />
         </controls:SettingsCard>
     </StackPanel>
