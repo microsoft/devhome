@@ -81,15 +81,6 @@ public partial class App : Application, IApp
         InitializeComponent();
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-        // Set up Logging
-        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHome"));
-        var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
-        Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(configuration)
-            .CreateLogger();
-
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
         UseContentRoot(AppContext.BaseDirectory).
@@ -200,14 +191,11 @@ public partial class App : Application, IApp
     private async void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
         // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
-        // This code path does not necessarily terminate Dev Home, so we are only logging the exception information,
-        // we are not going to close and flush the log. The exception stack trace may not be accurate, but the
-        // argument message should be the original exception message.
         Log.Fatal(e.Exception, $"Unhandled exception: {e.Message}");
-        Log.CloseAndFlush();
 
         // We are about to crash, so signal the extensions to stop.
         await GetService<IExtensionService>().SignalStopExtensionsAsync();
+        Log.CloseAndFlush();
 
         // We are very likely in a bad and unrecoverable state, so ensure Dev Home crashes w/ the exception info.
         Environment.FailFast(e.Message, e.Exception);

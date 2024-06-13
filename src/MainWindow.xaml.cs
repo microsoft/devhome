@@ -29,6 +29,5 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
         Application.Current.GetService<IExtensionService>().SignalStopExtensionsAsync();
         TelemetryFactory.Get<ITelemetry>().Log("DevHome_MainWindow_Closed_Event", LogLevel.Critical, new DevHomeClosedEvent(mainWindowCreated));
         Log.Information("Terminating via MainWindow_Closed.");
-        Log.CloseAndFlush();
     }
 }
