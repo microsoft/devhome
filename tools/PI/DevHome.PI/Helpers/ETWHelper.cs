@@ -73,6 +73,7 @@ internal sealed class ETWHelper : IDisposable
             }
             catch (UnauthorizedAccessException ex)
             {
+                Stop();
                 WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, ex.Message, WinLogsHelper.EtwLogsName);
                 output.Add(entry);
             }
