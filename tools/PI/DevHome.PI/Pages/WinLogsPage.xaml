@@ -60,7 +60,7 @@
             AreRowDetailsFrozen="False"
             AreRowGroupHeadersFrozen="True"
             AutoGenerateColumns="False"
-            CanUserSortColumns="True"
+            CanUserSortColumns="False"
             CanUserReorderColumns="True"
             CanUserResizeColumns="True"
             ColumnHeaderHeight="32"
