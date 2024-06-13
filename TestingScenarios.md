@@ -13,3 +13,4 @@ These are the testing scenarios that need to be validated before shipping a new 
 1. [Creating Environment](tools/SetupFlow/DevHome.SetupFlow.UnitTest/TestingScenarios/CreateEnvironment.md)
 1. [Setting up an Environment](tools/SetupFlow/DevHome.SetupFlow.UnitTest/TestingScenarios/SetupEnvironment.md)
 1. [Quickstart Playground](tools/SetupFlow/DevHome.SetupFlow.UnitTest/TestingScenarios/QuickstartPlayground.md)
+1. [Project Ironsides](tools/PI/DevHome.PI.UnitTest/TestingScenarios/ProjectIronSides.md)
