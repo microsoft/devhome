@@ -317,4 +317,48 @@
     <value>Apply</value>
     <comment>Apply changes to feature state.</comment>
   </data>
+  <data name="CommittingChangesTitle" xml:space="preserve">
+    <value>Committing changes</value>
+    <comment>Title displayed during the process of applying changes</comment>
+  </data>
+  <data name="CommittingChangesMessage" xml:space="preserve">
+    <value>Please wait for the changes to take effect.</value>
+    <comment>Message indicating the user should wait for the changes to be applied</comment>
+  </data>
+  <data name="RestartNowButtonText" xml:space="preserve">
+    <value>Restart now</value>
+    <comment>Button text to restart the system immediately</comment>
+  </data>
+  <data name="CancelButtonText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Button text to cancel the current operation</comment>
+  </data>
+  <data name="RestartRequiredTitle" xml:space="preserve">
+    <value>Restart required</value>
+    <comment>Title displayed when a restart is required to apply changes</comment>
+  </data>
+  <data name="RestartRequiredMessage" xml:space="preserve">
+    <value>Please restart your machine for your applied changes to take effect.</value>
+    <comment>Message instructing the user to restart their machine to apply changes</comment>
+  </data>
+  <data name="DontRestartNowButtonText" xml:space="preserve">
+    <value>Don't restart now</value>
+    <comment>Button text to postpone system restart</comment>
+  </data>
+  <data name="ChangesNotAppliedTitle" xml:space="preserve">
+    <value>Changes not applied</value>
+    <comment>Title displayed when changes have not been applied yet</comment>
+  </data>
+  <data name="ChangesNotAppliedMessage" xml:space="preserve">
+    <value>Please click Apply changes for your settings to take effect.</value>
+    <comment>Message instructing the user to apply changes for them to take effect</comment>
+  </data>
+  <data name="ApplyChangesButtonText" xml:space="preserve">
+    <value>Apply changes</value>
+    <comment>Button text to apply the changes made</comment>
+  </data>
+  <data name="DiscardChangesButtonText" xml:space="preserve">
+    <value>Discard changes</value>
+    <comment>Button text to discard any changes made</comment>
+  </data>
 </root>

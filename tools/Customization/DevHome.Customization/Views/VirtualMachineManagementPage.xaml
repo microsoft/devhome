@@ -10,7 +10,8 @@
     xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
-    Loaded="OnLoaded">
+    Loaded="OnLoaded"
+    Unloaded="OnUnloaded">
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
 
@@ -76,5 +77,30 @@
                     MinWidth="120"/>
             </StackPanel>
         </Grid>
+
+        <ContentDialog
+            x:Name="ModifyFeaturesDialog"
+            DefaultButton="Primary"
+            PrimaryButtonStyle="{StaticResource AccentButtonStyle}"
+            Title="{x:Bind ViewModel.DialogState.Title, Mode=OneWay}"
+            PrimaryButtonText="{x:Bind ViewModel.DialogState.PrimaryButtonText, Mode=OneWay}"
+            SecondaryButtonText="{x:Bind ViewModel.DialogState.SecondaryButtonText, Mode=OneWay}"
+            IsPrimaryButtonEnabled="{x:Bind ViewModel.DialogState.IsPrimaryButtonEnabled, Mode=OneWay}"
+            IsSecondaryButtonEnabled="{x:Bind ViewModel.DialogState.IsSecondaryButtonEnabled, Mode=OneWay}"
+            PrimaryButtonCommand="{x:Bind ViewModel.DialogState.HandlePrimaryButtonCommand}"
+            SecondaryButtonCommand="{x:Bind ViewModel.DialogState.HandleSecondaryButtonCommand}">
+            <StackPanel
+                Orientation="Vertical">
+                <TextBlock
+                    Text="{x:Bind ViewModel.DialogState.Message, Mode=OneWay}"
+                    TextWrapping="WrapWholeWords"
+                    Margin="0,10,0,0"/>
+                <ProgressBar
+                    Visibility="{x:Bind ViewModel.DialogState.ShowProgress, Mode=OneWay}"
+                    IsIndeterminate="True"
+                    Height="4"
+                    Margin="0,10,0,12"/>
+            </StackPanel>
+        </ContentDialog>
     </Grid>
 </Page>

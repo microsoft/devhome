@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Helpers;
 using DevHome.Common.Models;
@@ -14,14 +15,15 @@ namespace DevHome.Common.Scripts;
 
 public static class ModifyWindowsOptionalFeatures
 {
-    public static async Task ModifyFeaturesAsync(
+    public static async Task<ExitCode> ModifyFeaturesAsync(
         IEnumerable<OptionalFeatureState> features,
         OptionalFeatureNotificationHelper? notificationsHelper = null,
-        ILogger? log = null)
+        ILogger? log = null,
+        CancellationToken cancellationToken = default)
     {
         if (!features.Any(f => f.HasChanged))
         {
-            return;
+            return ExitCode.NoChange;
         }
 
         var featuresString = string.Empty;
@@ -47,17 +49,33 @@ public static class ModifyWindowsOptionalFeatures
             },
         };
 
-        await Task.Run(() =>
+        var exitCode = ExitCode.Failure;
+        await Task.Run(
+            () =>
         {
             // Since a UAC prompt will be shown, we need to wait for the process to exit
             // This can also be cancelled by the user which will result in an exception,
             // which is handled as a failure.
-            var exitCode = ExitCode.Failure;
-
             try
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    log?.Information("Operation was cancelled.");
+                    exitCode = ExitCode.NoChange;
+                    return;
+                }
+
                 process.Start();
-                process.WaitForExit();
+                while (!process.WaitForExit(1000))
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        // Attempt to kill the process if cancellation is requested
+                        process.Kill();
+                        log?.Information("Operation was cancelled.");
+                        return;
+                    }
+                }
 
                 exitCode = FromExitCode(process.ExitCode);
             }
@@ -66,11 +84,12 @@ public static class ModifyWindowsOptionalFeatures
                 // This is most likely a case where the user cancelled the UAC prompt.
                 log?.Error(ex, "Script failed");
             }
+        },
+            cancellationToken);
 
-            notificationsHelper?.HandleModifyFeatureResult(exitCode);
+        notificationsHelper?.HandleModifyFeatureResult(exitCode);
 
-            return Task.CompletedTask;
-        });
+        return exitCode;
     }
 
     public enum ExitCode

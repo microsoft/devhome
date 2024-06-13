@@ -21,8 +21,13 @@ public sealed partial class VirtualMachineManagementPage : Page
         this.InitializeComponent();
     }
 
-    private void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.Initialize(NotificationQueue);
+        ViewModel.Initialize(NotificationQueue, ModifyFeaturesDialog);
+    }
+
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.Uninitialize();
     }
 }

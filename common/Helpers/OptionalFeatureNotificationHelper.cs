@@ -4,12 +4,10 @@
 using System;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
 using DevHome.Common.Extensions;
 using DevHome.Common.Scripts;
 using DevHome.Common.Services;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using static DevHome.Common.Scripts.ModifyWindowsOptionalFeatures;
@@ -20,16 +18,13 @@ public partial class OptionalFeatureNotificationHelper
 {
     private readonly ILogger _log;
 
-    private readonly Window _window;
-
     private readonly StackedNotificationsBehavior _notificationsHelper;
 
     private readonly StringResource _commonStringResource;
 
-    public OptionalFeatureNotificationHelper(Window window, StackedNotificationsBehavior notificationsHelper, ILogger log)
+    public OptionalFeatureNotificationHelper(StackedNotificationsBehavior notificationsHelper, ILogger log)
     {
         _commonStringResource = new StringResource("DevHome.Common.pri", "DevHome.Common/Resources");
-        _window = window;
         _notificationsHelper = notificationsHelper;
         _log = log;
     }
@@ -57,27 +52,14 @@ public partial class OptionalFeatureNotificationHelper
         }
     }
 
-    private async void ShowRestartNotification()
+    public void ShowRestartNotification()
     {
-        await _window.DispatcherQueue.EnqueueAsync(async () =>
-        {
-            var dialog = new ContentDialog
-            {
-                Title = _commonStringResource.GetLocalized("ChangesAppliedTitle"),
-                Content = _commonStringResource.GetLocalized("RestartAfterChangesMessage"),
-                CloseButtonText = _commonStringResource.GetLocalized("DoNotRestartButton"),
-                PrimaryButtonText = _commonStringResource.GetLocalized("RestartButton"),
-                DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = _window.Content.XamlRoot,
-            };
-
-            dialog.PrimaryButtonClick += (sender, args) =>
-            {
-                RestartComputer();
-            };
-
-            await dialog.ShowAsync();
-        });
+        _notificationsHelper?.ShowWithWindowExtension(
+            _commonStringResource.GetLocalized("ChangesAppliedTitle"),
+            _commonStringResource.GetLocalized("RestartAfterChangesMessage"),
+            InfoBarSeverity.Warning,
+            RestartComputerCommand,
+            _commonStringResource.GetLocalized("RestartButton"));
     }
 
     public void ShowNonAdminUserNotification()
@@ -97,7 +79,7 @@ public partial class OptionalFeatureNotificationHelper
     }
 
     [RelayCommand]
-    private void RestartComputer()
+    public static void RestartComputer()
     {
         var startInfo = new ProcessStartInfo
         {
