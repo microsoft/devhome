@@ -78,6 +78,7 @@ public class RepositoryTracking
             {
                 TrackedRepositories[rootPath] = extensionCLSID!;
                 fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
+                log.Information("Repository added to repo store");
                 try
                 {
                     RepositoryChanged?.Invoke(extensionCLSID, RepositoryChange.Added);
@@ -86,8 +87,6 @@ public class RepositoryTracking
                 {
                     log.Error(ex, $"Added event signaling failed: ");
                 }
-
-                log.Information("Repository added to repo store");
             }
             else
             {

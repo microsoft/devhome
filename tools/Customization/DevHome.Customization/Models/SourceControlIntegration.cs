@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using DevHome.Customization.Views;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Win32;
@@ -12,6 +13,8 @@ namespace DevHome.Customization.Models;
 
 public class SourceControlIntegration
 {
+    private static readonly Serilog.ILogger Log = Serilog.Log.ForContext("SourceContext", nameof(Models.SourceControlIntegration));
+
     public static bool ValidateSourceControlExtension(string extensionCLSID, string rootPath)
     {
         var providerPtr = IntPtr.Zero;
