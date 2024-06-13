@@ -20,20 +20,22 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid ColumnSpacing="25">
+    <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1.77*" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
 
-        <!--  Configuration unit results  -->
         <Grid RowSpacing="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <!--  Section header  -->
-            <Grid Padding="0,20,0,0">
+            <Grid
+                Grid.Column="1"
+                Padding="0,20,0,0"
+                HorizontalAlignment="Right">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
@@ -45,7 +47,10 @@
                     Style="{ThemeResource CaptionTextBlockStyle}"
                     Text="{Binding ConfigurationUnitStats}" />
             </Grid>
-            <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
+            <ScrollViewer
+                Grid.Row="1"
+                Margin="0,0,0,50"
+                VerticalScrollMode="Auto">
                 <ItemsRepeater ItemsSource="{Binding ConfigurationUnitResults, Mode=OneWay}">
                     <ItemsRepeater.Resources>
                         <Style TargetType="TextBlock">

@@ -33,6 +33,19 @@
                         x:Key="NegatedBoolToVisibilityConverter"
                         FalseValue="Visible"
                         TrueValue="Collapsed" />
+                    <!--  Configuration file flow has a wider left column, and smaller spacing between the columns  -->
+                    <converters:BoolToObjectConverter
+                        x:Key="ConfigurationFlowLeftColumnWidth"
+                        FalseValue="*"
+                        TrueValue="1.77*" />
+                    <converters:BoolToObjectConverter
+                        x:Key="ConfigurationFlowRightColumnWidth"
+                        FalseValue="1.77*"
+                        TrueValue="*" />
+                    <converters:BoolToObjectConverter
+                        x:Key="ConfigurationFileFlowColumnSpacing"
+                        FalseValue="50"
+                        TrueValue="25" />
                     <Thickness x:Key="TopLeftQuadrantThickness">0, 1, 0, 2</Thickness>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
@@ -43,21 +56,21 @@
         HorizontalAlignment="Stretch"
         VerticalScrollBarVisibility="Auto"
         VerticalScrollMode="Enabled">
-        <Grid ColumnSpacing="50">
+        <Grid ColumnSpacing="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay, Converter={StaticResource ConfigurationFileFlowColumnSpacing}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="1.77*" />
+                <ColumnDefinition Width="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay, Converter={StaticResource ConfigurationFlowLeftColumnWidth}}" />
+                <ColumnDefinition Width="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay, Converter={StaticResource ConfigurationFlowRightColumnWidth}}" />
             </Grid.ColumnDefinitions>
 
             <StackPanel
                 x:Name="SummaryHeader"
                 Grid.Row="0"
                 Grid.ColumnSpan="2"
-                Margin="0,0,0,40">
+                Margin="0,20,0,40">
                 <!--  Display if the user has tasks need the machine to restart.  -->
                 <summaryViews:SummaryNeedsRestart
                     Height="55"
