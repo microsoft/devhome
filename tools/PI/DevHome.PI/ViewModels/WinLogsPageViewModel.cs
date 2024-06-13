@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
@@ -195,7 +194,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         var newEntry = new WinLogsEntry(time, category, message, toolName);
         dispatcher.TryEnqueue(() =>
         {
-            WinLogEntries.Add(newEntry);
+            WinLogEntries.Add(newEntry, entry => entry.DateTimeGenerated);
             ThreadPool.QueueUserWorkItem((o) => FindPattern(newEntry.Message));
         });
     }

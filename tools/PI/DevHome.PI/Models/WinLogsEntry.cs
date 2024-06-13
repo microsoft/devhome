@@ -11,7 +11,6 @@ namespace DevHome.PI.Models;
 
 public class WinLogsEntry
 {
-    private readonly DateTime timeGenerated;
     private readonly WinLogCategory category;
     private readonly string errorText = CommonHelper.GetLocalizedString("WinLogCategoryError");
     private readonly string warningText = CommonHelper.GetLocalizedString("WinLogCategoryWarning");
@@ -20,14 +19,16 @@ public class WinLogsEntry
 
     public WinLogsEntry(DateTime? time, WinLogCategory category, string message, string toolName)
     {
-        timeGenerated = time ?? DateTime.Now;
+        DateTimeGenerated = time ?? DateTime.Now;
         this.category = category;
         this.Message = message;
         this.Tool = toolName;
         this.SelectedText = message;
     }
 
-    public string TimeGenerated => timeGenerated.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.CurrentCulture);
+    public DateTime DateTimeGenerated { get; }
+
+    public string TimeGenerated => DateTimeGenerated.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.CurrentCulture);
 
     public string Tool { get; }
 

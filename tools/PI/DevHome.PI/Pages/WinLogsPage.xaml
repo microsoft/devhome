@@ -56,12 +56,11 @@
         <controls:DataGrid
             x:Name="WinLogsDataGrid" Grid.Row="3" Margin="0,6,0,0"
             VerticalScrollBarVisibility="Visible"
-            AlternatingRowBackground="Transparent"
-            AlternatingRowForeground="Gray"
+            HorizontalScrollBarVisibility="Visible"
             AreRowDetailsFrozen="False"
             AreRowGroupHeadersFrozen="True"
             AutoGenerateColumns="False"
-            CanUserSortColumns="False"
+            CanUserSortColumns="True"
             CanUserReorderColumns="True"
             CanUserResizeColumns="True"
             ColumnHeaderHeight="32"
@@ -71,17 +70,17 @@
             CopyingRowClipboardContent="ViewModel.UpdateClipboardContent"
             ItemsSource="{x:Bind ViewModel.WinLogEntries, Mode=OneWay}"
             Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
-        <controls:DataGrid.Columns>
-            <controls:DataGridTextColumn x:Uid="TimeGeneratedColumn" Binding="{Binding TimeGenerated}" Width="180"/>
-            <controls:DataGridTextColumn x:Uid="LogCategoryColumn" Binding="{Binding Category}" Width="110"/>
-            <controls:DataGridTextColumn x:Uid="LogToolColumn" Binding="{Binding Tool}" Width="100"/>
-            <controls:DataGridTemplateColumn x:Uid="LogMessageColumn" Width="*" ClipboardContentBinding="{Binding Message}">
-                <controls:DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate>
-                        <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" TextWrapping="Wrap" Foreground="{Binding RowColor}" IsReadOnly="True"/>
-                    </DataTemplate>
-                </controls:DataGridTemplateColumn.CellTemplate>
-            </controls:DataGridTemplateColumn>
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn x:Uid="TimeGeneratedColumn" Binding="{Binding TimeGenerated}" Width="180"/>
+                <controls:DataGridTextColumn x:Uid="LogCategoryColumn" Binding="{Binding Category}" Width="110"/>
+                <controls:DataGridTextColumn x:Uid="LogToolColumn" Binding="{Binding Tool}" Width="100"/>
+                <controls:DataGridTemplateColumn x:Uid="LogMessageColumn" Width="*" ClipboardContentBinding="{Binding Message}">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" Foreground="{Binding RowColor}" IsReadOnly="True"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
     </Grid>
