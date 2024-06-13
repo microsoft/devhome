@@ -95,7 +95,7 @@
           </com:ComServer>
         </com:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescriptionCoreExt">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameCoreExt" Description="ms-resource:AppDescriptionCoreExt">
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>
@@ -108,7 +108,7 @@
           </uap3:AppExtension>
         </uap3:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID2" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescriptionHyperVExt">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID2" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameHyperVExt" Description="ms-resource:AppDescriptionHyperVExt">
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>
@@ -122,7 +122,7 @@
           </uap3:AppExtension>
         </uap3:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID4" PublicFolder="Public" DisplayName="Git" Description="ms-resource:AppDescriptionGitExt">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID3" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescriptionGitExt">
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>

@@ -24,7 +24,7 @@ public sealed partial class FileExplorerPage : Page
         get; set;
     }
 
-    private static readonly System.Buffers.SearchValues<char> InvalidChars = System.Buffers.SearchValues.Create("<>*?|.");
+    private static readonly System.Buffers.SearchValues<char> InvalidChars = System.Buffers.SearchValues.Create("<>*?|");
 
     private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(FileExplorerPage));
 

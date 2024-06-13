@@ -60,24 +60,27 @@ public class RepositoryTracking
             TrackedRepositories = fileService.Read<Dictionary<string, string>>(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName);
 
             // No repositories are currently being tracked. The file will be created on first add to repository tracking.
-            log.Debug("Repo store has just been created with the first registered repository root path");
-            TrackedRepositories ??= new Dictionary<string, string>();
+            if (TrackedRepositories == null)
+            {
+                TrackedRepositories = new Dictionary<string, string>();
+                log.Debug("Repo store has just been created with the first registered repository root path");
+            }
         }
 
         log.Information($"Repositories retrieved from Repo Store, number of registered repositories: {TrackedRepositories.Count}");
     }
 
-    public void AddRepositoryPath(string extensionId, string rootPath)
+    public void AddRepositoryPath(string extensionCLSID, string rootPath)
     {
         lock (trackRepoLock)
         {
-            if (!TrackedRepositories.ContainsKey(rootPath))
+            if (TrackedRepositories.Keys.FirstOrDefault(key => StringComparer.OrdinalIgnoreCase.Equals(key, rootPath)) == null)
             {
-                TrackedRepositories[rootPath] = extensionId!;
+                TrackedRepositories[rootPath] = extensionCLSID!;
                 fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
                 try
                 {
-                    RepositoryChanged?.Invoke(extensionId, RepositoryChange.Added);
+                    RepositoryChanged?.Invoke(extensionCLSID, RepositoryChange.Added);
                 }
                 catch (Exception ex)
                 {
@@ -97,20 +100,27 @@ public class RepositoryTracking
     {
         lock (trackRepoLock)
         {
-            TrackedRepositories.TryGetValue(rootPath, out var extensionId);
-            TrackedRepositories.Remove(rootPath);
-            fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
-            try
+            var rootPathRegistered = TrackedRepositories.Keys.FirstOrDefault(key => StringComparer.OrdinalIgnoreCase.Equals(key, rootPath));
+            if (rootPathRegistered != null)
             {
-                RepositoryChanged?.Invoke(extensionId ??= string.Empty, RepositoryChange.Removed);
+                TrackedRepositories.TryGetValue(rootPathRegistered, out var extensionCLSID);
+                TrackedRepositories.Remove(rootPathRegistered);
+                fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
+                log.Information("Repository removed from repo store");
+                try
+                {
+                    RepositoryChanged?.Invoke(extensionCLSID ??= string.Empty, RepositoryChange.Removed);
+                }
+                catch (Exception ex)
+                {
+                    log.Error(ex, $"Removed event signaling failed: ");
+                }
             }
-            catch (Exception ex)
+            else
             {
-                log.Error(ex, $"Removed event signaling failed: ");
+                log.Error("The root path is not registered for File Explorer Source Control Integration");
             }
         }
-
-        log.Information("Repository removed from repo store");
     }
 
     public Dictionary<string, string> GetAllTrackedRepositories()
@@ -132,10 +142,11 @@ public class RepositoryTracking
     {
         lock (trackRepoLock)
         {
-            if (TrackedRepositories.TryGetValue(rootPath, out var value))
+            var rootPathRegistered = TrackedRepositories.Keys.FirstOrDefault(key => StringComparer.OrdinalIgnoreCase.Equals(key, rootPath));
+            if (rootPathRegistered != null)
             {
                 log.Information("Source Control Provider returned for root path");
-                return TrackedRepositories[rootPath];
+                return TrackedRepositories[rootPathRegistered];
             }
             else
             {
