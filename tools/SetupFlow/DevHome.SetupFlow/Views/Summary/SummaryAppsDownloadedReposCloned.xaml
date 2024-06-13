@@ -75,6 +75,8 @@
                 Foreground="{ThemeResource TextFillColorSecondary}"
                 Text="{Binding RepositoriesClonedText}" />
         </Grid>
+
+        <!--  No apps or repos were cloned.  This UI represents the create an environment flow.  -->
         <Grid Grid.Column="2" Visibility="{Binding WasCreateEnvironmentOperationStarted, Mode=OneWay}">
             <Grid.RowDefinitions>
                 <RowDefinition />
