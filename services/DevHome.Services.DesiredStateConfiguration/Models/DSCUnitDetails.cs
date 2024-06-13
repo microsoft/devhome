@@ -8,6 +8,13 @@ namespace DevHome.Services.DesiredStateConfiguration.Models;
 
 internal sealed class DSCUnitDetails : IDSCUnitDetails
 {
+    public DSCUnitDetails(string moduleName)
+    {
+        // In case the details are not available, we can still create an
+        // instance with the unknown module name.
+        ModuleName = moduleName;
+    }
+
     public DSCUnitDetails(IConfigurationUnitProcessorDetails details)
     {
         // Constructor copies all the required data from the out-of-proc COM

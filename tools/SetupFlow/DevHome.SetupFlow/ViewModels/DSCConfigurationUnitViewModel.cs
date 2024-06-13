@@ -31,33 +31,33 @@ public class DSCConfigurationUnitViewModel
 
     public IList<KeyValuePair<string, string>> Metadata => _configurationUnit.Metadata;
 
-    public string UnitType => _configurationUnit.Details?.UnitType;
+    public string UnitType => _configurationUnit.Details.UnitType;
 
-    public string UnitDescription => _configurationUnit.Details?.UnitDescription;
+    public string UnitDescription => _configurationUnit.Details.UnitDescription;
 
-    public string UnitDocumentationUri => _configurationUnit.Details?.UnitDocumentationUri;
+    public string UnitDocumentationUri => _configurationUnit.Details.UnitDocumentationUri;
 
-    public string ModuleName => _configurationUnit.Details?.ModuleName;
+    public string ModuleName => _configurationUnit.Details.ModuleName;
 
-    public string ModuleType => _configurationUnit.Details?.ModuleType;
+    public string ModuleType => _configurationUnit.Details.ModuleType;
 
-    public string ModuleSource => _configurationUnit.Details?.ModuleSource;
+    public string ModuleSource => _configurationUnit.Details.ModuleSource;
 
-    public string ModuleDescription => _configurationUnit.Details?.ModuleDescription;
+    public string ModuleDescription => _configurationUnit.Details.ModuleDescription;
 
-    public string ModuleDocumentationUri => _configurationUnit.Details?.ModuleDocumentationUri;
+    public string ModuleDocumentationUri => _configurationUnit.Details.ModuleDocumentationUri;
 
-    public string PublishedModuleUri => _configurationUnit.Details?.PublishedModuleUri;
+    public string PublishedModuleUri => _configurationUnit.Details.PublishedModuleUri;
 
-    public string Version => _configurationUnit.Details?.Version;
+    public string Version => _configurationUnit.Details.Version;
 
-    public bool IsLocal => _configurationUnit.Details?.IsLocal ?? false;
+    public bool IsLocal => _configurationUnit.Details.IsLocal;
 
-    public string Author => _configurationUnit.Details?.Author;
+    public string Author => _configurationUnit.Details.Author;
 
-    public string Publisher => _configurationUnit.Details?.Publisher;
+    public string Publisher => _configurationUnit.Details.Publisher;
 
-    public bool IsPublic => _configurationUnit.Details?.IsPublic ?? false;
+    public bool IsPublic => _configurationUnit.Details.IsPublic;
 
     private string GetTitle()
     {

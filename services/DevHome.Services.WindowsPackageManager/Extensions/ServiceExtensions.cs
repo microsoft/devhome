@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Services.Core.Extensions;
 using DevHome.Services.WindowsPackageManager.COM;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Contracts.Operations;
@@ -29,6 +30,7 @@ public static class ServiceExtensions
 
     private static void AddWinGetCommon(this IServiceCollection services)
     {
+        services.AddCore();
         services.AddSingleton<IWinGet, WinGet>();
         services.AddSingleton<IWinGetCatalogConnector, WinGetCatalogConnector>();
         services.AddSingleton<IWinGetPackageFinder, WinGetPackageFinder>();

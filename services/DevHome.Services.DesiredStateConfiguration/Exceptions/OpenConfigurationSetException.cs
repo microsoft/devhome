@@ -32,7 +32,7 @@ public class OpenConfigurationSetException : ConfigurationException
         get;
     }
 
-    internal OpenConfigurationSetException(Exception resultCode, string field, string value)
+    public OpenConfigurationSetException(Exception resultCode, string field, string value)
     {
         ResultCode = resultCode;
         Field = field;

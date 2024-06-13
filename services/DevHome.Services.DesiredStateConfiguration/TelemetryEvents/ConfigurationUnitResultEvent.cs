@@ -15,7 +15,7 @@ internal sealed class ConfigurationUnitResultEvent : EventBase
 {
     private readonly IDSCApplicationUnitResult _unitResult;
 
-    public string Type => _unitResult.Type;
+    public string Type => _unitResult.AppliedUnit.Type;
 
     public int ExceptionHResult => _unitResult.HResult;
 

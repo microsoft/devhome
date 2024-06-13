@@ -10,7 +10,7 @@ namespace DevHome.Services.Core.Exceptions;
 /// </summary>
 public class RegisterPackageException : Exception
 {
-    internal RegisterPackageException(string message, Exception innerException)
+    public RegisterPackageException(string message, Exception innerException)
         : base(message, innerException)
     {
     }

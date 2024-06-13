@@ -24,13 +24,13 @@ public sealed class ElevatedConfigureUnitTaskResult
         _unitResult = unitResult;
     }
 
-    public string? Type => _unitResult?.Type;
+    public string? Type => _unitResult?.AppliedUnit.Type;
 
-    public string? Id => _unitResult?.Id;
+    public string? Id => _unitResult?.AppliedUnit.Id;
 
-    public string? UnitDescription => _unitResult?.UnitDescription;
+    public string? UnitDescription => _unitResult?.AppliedUnit.Description;
 
-    public string? Intent => _unitResult?.Intent;
+    public string? Intent => _unitResult?.AppliedUnit.Intent;
 
     public bool IsSkipped => _unitResult?.IsSkipped ?? false;
 

@@ -16,10 +16,10 @@ public class ConfigurationUnitResult
 {
     public ConfigurationUnitResult(IDSCApplicationUnitResult result)
     {
-        Type = result.Type;
-        Id = result.Id;
-        UnitDescription = result.UnitDescription;
-        Intent = result.Intent;
+        Type = result.AppliedUnit.Type;
+        Id = result.AppliedUnit.Id;
+        UnitDescription = result.AppliedUnit.Description;
+        Intent = result.AppliedUnit.Intent;
         IsSkipped = result.IsSkipped;
         HResult = result.HResult;
         ResultSource = result.ResultSource;

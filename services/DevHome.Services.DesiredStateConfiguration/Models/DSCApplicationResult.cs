@@ -11,16 +11,6 @@ namespace DevHome.Services.DesiredStateConfiguration.Models;
 
 internal sealed class DSCApplicationResult : IDSCApplicationResult
 {
-    public IDSCSet AppliedSet { get; }
-
-    public bool Succeeded { get; }
-
-    public bool RequiresReboot { get; }
-
-    public Exception ResultException { get; }
-
-    public IReadOnlyList<IDSCApplicationUnitResult> UnitResults { get; }
-
     public DSCApplicationResult(ConfigurationSet appliedSet, ApplyConfigurationSetResult result)
     {
         // Constructor copies all the required data from the out-of-proc COM
@@ -33,4 +23,14 @@ internal sealed class DSCApplicationResult : IDSCApplicationResult
         ResultException = result.ResultCode;
         UnitResults = result.UnitResults.Select(unitResult => new DSCApplicationUnitResult(unitResult)).ToList();
     }
+
+    public IDSCSet AppliedSet { get; }
+
+    public bool Succeeded { get; }
+
+    public bool RequiresReboot { get; }
+
+    public Exception ResultException { get; }
+
+    public IReadOnlyList<IDSCApplicationUnitResult> UnitResults { get; }
 }
