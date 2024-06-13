@@ -2,14 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
-using System.IO;
-using System.Linq;
+using DevHome.Common.Extensions;
 using DevHome.PI.Models;
+using DevHome.PI.ViewModels;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.PI.Helpers;
 
@@ -20,15 +19,11 @@ internal sealed class WatsonHelper : IDisposable
 
     private readonly Process targetProcess;
     private readonly EventLogWatcher? eventLogWatcher;
-    private readonly ObservableCollection<WatsonReport>? watsonOutput;
-    private readonly ObservableCollection<WinLogsEntry>? winLogsPageOutput;
 
-    public WatsonHelper(Process targetProcess, ObservableCollection<WatsonReport>? watsonOutput, ObservableCollection<WinLogsEntry>? winLogsPageOutput)
+    public WatsonHelper(Process targetProcess)
     {
         this.targetProcess = targetProcess;
         this.targetProcess.Exited += TargetProcess_Exited;
-        this.watsonOutput = watsonOutput;
-        this.winLogsPageOutput = winLogsPageOutput;
 
         try
         {
@@ -41,8 +36,8 @@ internal sealed class WatsonHelper : IDisposable
         catch (EventLogReadingException)
         {
             var message = CommonHelper.GetLocalizedString("WatsonStartErrorMessage");
-            WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, message, WinLogsHelper.WatsonName);
-            winLogsPageOutput?.Add(entry);
+            var winlogsViewModel = Application.Current.GetService<WinLogsPageViewModel>();
+            winlogsViewModel.AddNewEntry(DateTime.Now, WinLogCategory.Error, message, WinLogsHelper.WatsonName);
         }
     }
 
@@ -86,49 +81,28 @@ internal sealed class WatsonHelper : IDisposable
                     var moduleName = eventRecord.Properties[3].Value.ToString() ?? string.Empty;
                     var executable = eventRecord.Properties[0].Value.ToString() ?? string.Empty;
                     var eventGuid = eventRecord.Properties[12].Value.ToString() ?? string.Empty;
-                    var report = new WatsonReport(timeGenerated, moduleName, executable, eventGuid);
-                    watsonOutput?.Add(report);
 
-                    WinLogsEntry entry = new(timeGenerated, WinLogCategory.Error, eventRecord.FormatDescription(), WinLogsHelper.WatsonName);
-                    winLogsPageOutput?.Add(entry);
+                    var watsonViewModel = Application.Current.GetService<WatsonPageViewModel>();
+                    watsonViewModel.AddNewEntry(timeGenerated, moduleName, executable, eventGuid);
+
+                    var winlogsViewModel = Application.Current.GetService<WinLogsPageViewModel>();
+                    winlogsViewModel.AddNewEntry(timeGenerated, WinLogCategory.Error, eventRecord.FormatDescription(), WinLogsHelper.WatsonName);
                 }
             }
             else if (eventRecord.Id == 1001 && eventRecord.ProviderName.Equals("Windows Error Reporting", StringComparison.OrdinalIgnoreCase))
             {
-                // See if we've already put this into our Collection.
-                for (var i = 0; i < watsonOutput?.Count; i++)
-                {
-                    var existingReport = watsonOutput[i];
-                    if (existingReport.EventGuid.Equals(eventRecord.Properties[19].Value.ToString(), StringComparison.OrdinalIgnoreCase))
-                    {
-                        existingReport.WatsonLog = eventRecord.FormatDescription();
-                        try
-                        {
-                            // List files available in the archive.
-                            var directoryPath = eventRecord.Properties[16].Value.ToString();
-                            if (Directory.Exists(directoryPath))
-                            {
-                                IEnumerable<string> files = Directory.EnumerateFiles(directoryPath);
-                                foreach (var file in files)
-                                {
-                                    existingReport.WatsonReportFile = File.ReadAllText(file);
-                                }
-                            }
-                        }
-                        catch
-                        {
-                        }
+                var eventGuid = eventRecord.Properties[19].Value.ToString() ?? string.Empty;
+                var watsonLog = eventRecord.FormatDescription();
+                var directoryPath = eventRecord.Properties[16].Value.ToString() ?? string.Empty;
 
-                        break;
-                    }
-                }
+                var watsonViewModel = Application.Current.GetService<WatsonPageViewModel>();
+                watsonViewModel.UpdateEntry(eventGuid, watsonLog, directoryPath);
             }
         }
     }
 
-    public List<WatsonReport> GetWatsonReports()
+    public void GetExistingWatsonReports()
     {
-        Dictionary<string, WatsonReport> reports = [];
         EventLog eventLog = new("Application");
         var targetProcessName = targetProcess.ProcessName;
 
@@ -142,37 +116,21 @@ internal sealed class WatsonHelper : IDisposable
                 var moduleName = entry.ReplacementStrings[3];
                 var executable = entry.ReplacementStrings[0];
                 var eventGuid = entry.ReplacementStrings[12];
-                var report = new WatsonReport(timeGenerated, moduleName, executable, eventGuid);
-                reports.Add(entry.ReplacementStrings[12], report);
+
+                var watsonViewModel = Application.Current.GetService<WatsonPageViewModel>();
+                watsonViewModel.AddNewEntry(timeGenerated, moduleName, executable, eventGuid);
             }
             else if (entry.InstanceId == 1001
                 && entry.Source.Equals("Windows Error Reporting", StringComparison.OrdinalIgnoreCase))
             {
-                // See if we've already put this into our Dictionary.
-                if (reports.TryGetValue(entry.ReplacementStrings[19], out WatsonReport? report))
-                {
-                    report.WatsonLog = entry.Message;
+                var eventGuid = entry.ReplacementStrings[19];
+                var watsonLog = entry.Message;
+                var directoryPath = entry.ReplacementStrings[16];
 
-                    try
-                    {
-                        // List files available in the archive.
-                        if (Directory.Exists(entry.ReplacementStrings[16]))
-                        {
-                            var files = Directory.EnumerateFiles(entry.ReplacementStrings[16]);
-                            foreach (var file in files)
-                            {
-                                report.WatsonReportFile = File.ReadAllText(file);
-                            }
-                        }
-                    }
-                    catch
-                    {
-                    }
-                }
+                var watsonViewModel = Application.Current.GetService<WatsonPageViewModel>();
+                watsonViewModel.UpdateEntry(eventGuid, watsonLog, directoryPath);
             }
         }
-
-        return reports.Values.ToList();
     }
 
     private void TargetProcess_Exited(object? sender, EventArgs e)

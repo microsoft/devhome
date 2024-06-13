@@ -2,19 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using DevHome.PI.Models;
 using Microsoft.Diagnostics.Tracing;
-using Microsoft.UI;
-using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.PI.Helpers;
 
@@ -29,46 +21,48 @@ public class WinLogsHelper : IDisposable
     private readonly DebugMonitor debugMonitor;
     private readonly EventViewerHelper eventViewerHelper;
     private readonly WatsonHelper watsonHelper;
-    private readonly ObservableCollection<WinLogsEntry> output;
-    private readonly Process targetProcess;
 
     private Thread? etwThread;
     private Thread? debugMonitorThread;
     private Thread? eventViewerThread;
     private Thread? watsonThread;
 
-    public bool IsETWEnabled { get; }
-
-    public WinLogsHelper(Process targetProcess, ObservableCollection<WinLogsEntry> output)
+    public WinLogsHelper(Process targetProcess)
     {
-        this.targetProcess = targetProcess;
-        this.output = output;
-        IsETWEnabled = ETWHelper.IsUserInPerformanceLogUsersGroup();
-
         // Initialize ETW logs
-        etwHelper = new ETWHelper(targetProcess, output);
+        etwHelper = new ETWHelper(targetProcess);
 
         // Initialize DebugMonitor
-        debugMonitor = new DebugMonitor(targetProcess, output);
+        debugMonitor = new DebugMonitor(targetProcess);
 
         // Initialize EventViewer
-        eventViewerHelper = new EventViewerHelper(targetProcess, output);
+        eventViewerHelper = new EventViewerHelper(targetProcess);
 
         // Initialize Watson
-        watsonHelper = new WatsonHelper(targetProcess, null, output);
-
-        Start();
+        watsonHelper = new WatsonHelper(targetProcess);
     }
 
-    public void Start()
+    public void Start(bool isETWEnabled, bool isDebugMonitorEnabled, bool isEventViewerEnabled, bool isWatsonEnabled)
     {
-        if (IsETWEnabled)
+        if (isETWEnabled)
         {
             StartETWLogsThread();
         }
 
-        StartEventViewerThread();
-        StartWatsonThread();
+        if (isDebugMonitorEnabled)
+        {
+            StartDebugOutputsThread();
+        }
+
+        if (isEventViewerEnabled)
+        {
+            StartEventViewerThread();
+        }
+
+        if (isWatsonEnabled)
+        {
+            StartWatsonThread();
+        }
     }
 
     public void Stop()

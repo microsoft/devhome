@@ -3,20 +3,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Text;
 using System.Threading;
+using DevHome.Common.Extensions;
 using DevHome.PI.Models;
+using DevHome.PI.ViewModels;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.PI.Helpers;
 
 public sealed class DebugMonitor : IDisposable
 {
     private readonly Process targetProcess;
-    private readonly ObservableCollection<WinLogsEntry> output;
     private readonly EventWaitHandle stopEvent;
     private readonly string errorMessageText = CommonHelper.GetLocalizedString("WinLogsAlreadyRunningErrorMessage");
 
@@ -28,11 +29,10 @@ public sealed class DebugMonitor : IDisposable
 
     private static readonly List<string> IgnoreLogList = [];
 
-    public DebugMonitor(Process targetProcess, ObservableCollection<WinLogsEntry> output)
+    public DebugMonitor(Process targetProcess)
     {
         this.targetProcess = targetProcess;
         this.targetProcess.Exited += TargetProcess_Exited;
-        this.output = output;
 
         stopEvent = new EventWaitHandle(false, EventResetMode.AutoReset, StopEventName);
     }
@@ -63,8 +63,8 @@ public sealed class DebugMonitor : IDisposable
         // Don't initiate if there is an existing OutputDebugString monitor running
         if (!isNewBufferReadyEvent || !isNewDataReadyEvent)
         {
-            WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, errorMessageText, WinLogsHelper.DebugOutputLogsName);
-            output.Add(entry);
+            var winlogsViewModel = Application.Current.GetService<WinLogsPageViewModel>();
+            winlogsViewModel.AddNewEntry(DateTime.Now, WinLogCategory.Error, errorMessageText, WinLogsHelper.DebugOutputLogsName);
             return;
         }
 
@@ -120,8 +120,8 @@ public sealed class DebugMonitor : IDisposable
 
                         if (!hasIgnoreLog)
                         {
-                            WinLogsEntry entry = new(timeGenerated, WinLogCategory.Debug, entryMessage, WinLogsHelper.DebugOutputLogsName);
-                            output.Add(entry);
+                            var winlogsViewModel = Application.Current.GetService<WinLogsPageViewModel>();
+                            winlogsViewModel.AddNewEntry(timeGenerated, WinLogCategory.Debug, entryMessage, WinLogsHelper.DebugOutputLogsName);
                         }
                     }
                 }

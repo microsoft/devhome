@@ -2,24 +2,24 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using DevHome.Common.Extensions;
 using DevHome.PI.Models;
+using DevHome.PI.ViewModels;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.PI.Helpers;
 
 internal sealed class EventViewerHelper : IDisposable
 {
     private readonly Process targetProcess;
-    private readonly ObservableCollection<WinLogsEntry> output;
     private readonly EventLogWatcher? eventLogWatcher;
 
-    public EventViewerHelper(Process targetProcess, ObservableCollection<WinLogsEntry> output)
+    public EventViewerHelper(Process targetProcess)
     {
         this.targetProcess = targetProcess;
         this.targetProcess.Exited += TargetProcess_Exited;
-        this.output = output;
 
         try
         {
@@ -32,8 +32,8 @@ internal sealed class EventViewerHelper : IDisposable
         catch (EventLogReadingException)
         {
             var message = CommonHelper.GetLocalizedString("UnableToStartEventViewerErrorMessage");
-            WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, message, WinLogsHelper.EventViewerName);
-            output.Add(entry);
+            var winlogsViewModel = Application.Current.GetService<WinLogsPageViewModel>();
+            winlogsViewModel.AddNewEntry(DateTime.Now, WinLogCategory.Error, message, WinLogsHelper.EventViewerName);
         }
     }
 
@@ -69,8 +69,8 @@ internal sealed class EventViewerHelper : IDisposable
         {
             WinLogCategory category = WinLogsHelper.ConvertStandardEventLevelToWinLogCategory(eventArg.EventRecord.Level);
             var message = eventArg.EventRecord.FormatDescription();
-            WinLogsEntry entry = new(eventArg.EventRecord.TimeCreated, category, message, WinLogsHelper.EventViewerName);
-            output.Add(entry);
+            var winlogsViewModel = Application.Current.GetService<WinLogsPageViewModel>();
+            winlogsViewModel.AddNewEntry(eventArg.EventRecord.TimeCreated, category, message, WinLogsHelper.EventViewerName);
         }
     }
 

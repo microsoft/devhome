@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.PI.Helpers;
@@ -17,7 +17,6 @@ namespace DevHome.PI.ViewModels;
 public partial class WatsonPageViewModel : ObservableObject, IDisposable
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
-    private readonly ObservableCollection<WatsonReport> reports;
     private Process? targetProcess;
     private WatsonHelper? watsonHelper;
     private Thread? watsonThread;
@@ -25,18 +24,12 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private ObservableCollection<WatsonReport> reportEntries;
 
-    [ObservableProperty]
-    private string watsonInfoText;
-
     public WatsonPageViewModel()
     {
         dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
-        watsonInfoText = string.Empty;
-        reports = new();
         reportEntries = new();
-        reports.CollectionChanged += WatsonOutput_CollectionChanged;
 
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)
@@ -56,6 +49,54 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
             watsonThread.Name = "Watson Page Thread";
             watsonThread.Start();
         }
+    }
+
+    public void Dispose()
+    {
+        watsonHelper?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
+    public void AddNewEntry(DateTime timeGenerated, string moduleName, string executable, string eventGuid)
+    {
+        var newEntry = new WatsonReport(timeGenerated, moduleName, executable, eventGuid);
+        dispatcher.TryEnqueue(() =>
+        {
+            ReportEntries.Add(newEntry);
+        });
+    }
+
+    public void UpdateEntry(string eventGuid, string watsonLog, string directoryPath)
+    {
+        dispatcher.TryEnqueue(() =>
+        {
+            // See if we've already put this into our Collection.
+            for (var i = 0; i < ReportEntries?.Count; i++)
+            {
+                var existingReport = ReportEntries[i];
+                if (existingReport.EventGuid.Equals(eventGuid, StringComparison.OrdinalIgnoreCase))
+                {
+                    existingReport.WatsonLog = watsonLog;
+                    try
+                    {
+                        // List files available in the archive.
+                        if (Directory.Exists(directoryPath))
+                        {
+                            IEnumerable<string> files = Directory.EnumerateFiles(directoryPath);
+                            foreach (var file in files)
+                            {
+                                existingReport.WatsonReportFile = File.ReadAllText(file);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+
+                    break;
+                }
+            }
+        });
     }
 
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -81,15 +122,11 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
     {
         if (targetProcess is not null)
         {
-            watsonHelper = new WatsonHelper(targetProcess, reports, null);
+            watsonHelper = new WatsonHelper(targetProcess);
             watsonHelper.Start();
 
             // Get all existing reports
-            List<WatsonReport> existingReports = watsonHelper.GetWatsonReports();
-            foreach (var report in existingReports)
-            {
-                reports.Add(report);
-            }
+            watsonHelper.GetExistingWatsonReports();
         }
     }
 
@@ -108,30 +145,8 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
         }
     }
 
-    public void Dispose()
-    {
-        watsonHelper?.Dispose();
-        GC.SuppressFinalize(this);
-    }
-
-    private void WatsonOutput_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
-        {
-            dispatcher.TryEnqueue(() =>
-            {
-                foreach (WatsonReport newEntry in e.NewItems)
-                {
-                    ReportEntries.Add(newEntry);
-                }
-            });
-        }
-    }
-
     private void ClearWatsonLogs()
     {
-        reports?.Clear();
-
         dispatcher.TryEnqueue(() =>
         {
             ReportEntries.Clear();

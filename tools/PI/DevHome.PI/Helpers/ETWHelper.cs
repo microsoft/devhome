@@ -8,9 +8,12 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Security.Principal;
+using DevHome.Common.Extensions;
 using DevHome.PI.Models;
+using DevHome.PI.ViewModels;
 using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Session;
+using Microsoft.UI.Xaml;
 using Serilog;
 
 namespace DevHome.PI.Helpers;
@@ -19,7 +22,6 @@ internal sealed class ETWHelper : IDisposable
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ETWHelper));
     private readonly Process targetProcess;
-    private readonly ObservableCollection<WinLogsEntry> output;
 
     private static readonly List<string> ProviderList = ["1AFF6089-E863-4D36-BDFD-3581F07440BE" /*COM Tracelog*/];
     private TraceEventSession? session;
@@ -27,11 +29,10 @@ internal sealed class ETWHelper : IDisposable
     // From: https://learn.microsoft.com/windows-server/identity/ad-ds/manage/understand-security-identifiers
     private const string PerformanceLogUsersSid = "S-1-5-32-559";
 
-    public ETWHelper(Process targetProcess, ObservableCollection<WinLogsEntry> output)
+    public ETWHelper(Process targetProcess)
     {
         this.targetProcess = targetProcess;
         this.targetProcess.Exited += TargetProcess_Exited;
-        this.output = output;
     }
 
     public void Start()
@@ -101,8 +102,8 @@ internal sealed class ETWHelper : IDisposable
         }
 
         var category = WinLogsHelper.ConvertTraceEventLevelToWinLogCategory(level);
-        var entry = new WinLogsEntry(timeStamp, category, message, WinLogsHelper.EtwLogsName);
-        output.Add(entry);
+        var winlogsViewModel = Application.Current.GetService<WinLogsPageViewModel>();
+        winlogsViewModel.AddNewEntry(timeStamp, category, message, WinLogsHelper.EtwLogsName);
     }
 
     private void TargetProcess_Exited(object? sender, EventArgs e)

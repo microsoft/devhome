@@ -24,8 +24,6 @@ namespace DevHome.PI.ViewModels;
 public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 {
     private readonly bool logMeasures;
-
-    private readonly ObservableCollection<WinLogsEntry> winLogsOutput;
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
 
     [ObservableProperty]
@@ -65,8 +63,6 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
         winLogEntries = new();
-        winLogsOutput = new();
-        winLogsOutput.CollectionChanged += WinLogsOutput_CollectionChanged;
 
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)
@@ -75,7 +71,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         }
     }
 
-    public void UpdateTargetProcess(Process process)
+    private void UpdateTargetProcess(Process process)
     {
         if (targetProcess != process)
         {
@@ -88,8 +84,9 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
             {
                 if (!process.HasExited)
                 {
-                    winLogsHelper = new WinLogsHelper(targetProcess, winLogsOutput);
-                    IsETWLogsEnabled = winLogsHelper.IsETWEnabled;
+                    IsETWLogsEnabled = ETWHelper.IsUserInPerformanceLogUsersGroup();
+                    winLogsHelper = new WinLogsHelper(targetProcess);
+                    winLogsHelper.Start(IsETWLogsEnabled, IsDebugOutputEnabled, IsEventViewerEnabled, IsWatsonEnabled);
                 }
             }
             catch (Win32Exception ex)
@@ -137,25 +134,24 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         }
     }
 
-    private void WinLogsOutput_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    private void FindPattern(string message)
     {
-        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
-        {
-            dispatcher.TryEnqueue(() =>
-            {
-                foreach (WinLogsEntry newEntry in e.NewItems)
-                {
-                    WinLogEntries.Add(newEntry);
-                    ThreadPool.QueueUserWorkItem((o) => FindPattern(newEntry.Message));
-                }
-            });
-        }
-    }
+        var newInsight = InsightsHelper.FindPattern(message);
 
-    public void Dispose()
-    {
-        winLogsHelper?.Dispose();
-        GC.SuppressFinalize(this);
+        dispatcher.TryEnqueue(() =>
+        {
+            if (newInsight is not null)
+            {
+                newInsight.IsExpanded = true;
+                var insightsPageViewModel = Application.Current.GetService<InsightsPageViewModel>();
+                insightsPageViewModel.AddInsight(newInsight);
+                InsightsButtonVisibility = Visibility.Visible;
+            }
+            else
+            {
+                InsightsButtonVisibility = Visibility.Collapsed;
+            }
+        });
     }
 
     public void LogStateChanged(object sender, RoutedEventArgs e)
@@ -194,24 +190,20 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         }
     }
 
-    private void FindPattern(string message)
+    public void AddNewEntry(DateTime? time, WinLogCategory category, string message, string toolName)
     {
-        var newInsight = InsightsHelper.FindPattern(message);
-
+        var newEntry = new WinLogsEntry(time, category, message, toolName);
         dispatcher.TryEnqueue(() =>
         {
-            if (newInsight is not null)
-            {
-                newInsight.IsExpanded = true;
-                var insightsPageViewModel = Application.Current.GetService<InsightsPageViewModel>();
-                insightsPageViewModel.AddInsight(newInsight);
-                InsightsButtonVisibility = Visibility.Visible;
-            }
-            else
-            {
-                InsightsButtonVisibility = Visibility.Collapsed;
-            }
+            WinLogEntries.Add(newEntry);
+            ThreadPool.QueueUserWorkItem((o) => FindPattern(newEntry.Message));
         });
+    }
+
+    public void Dispose()
+    {
+        winLogsHelper?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     [RelayCommand]
@@ -223,7 +215,6 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
             App.Log("DevHome.PI_WinLogs_ClearLogs", LogLevel.Measure);
         }
 
-        winLogsOutput?.Clear();
         dispatcher.TryEnqueue(() =>
         {
             WinLogEntries.Clear();
