@@ -20,7 +20,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Uid="WinLogsHeaderTextBlock" FontSize="20" Margin="0,0,0,8" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}"/>
+        <TextBlock x:Uid="WinLogsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}"/>
         <Button Grid.Row="1" x:Uid="RunElevatedButton" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}"/>
         <StackPanel x:Name="WinLogsOptions" Grid.Row="2" Orientation="Horizontal" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
             <CheckBox
@@ -42,12 +42,12 @@
             <Button
                 x:Uid="ClearWinLogsButton" x:Name="ClearWinLogsButton"
                 BorderThickness="0" Command="{x:Bind ViewModel.ClearWinLogsCommand}">
-                <TextBlock Text="&#xE74D;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20"/>
+                <TextBlock Text="&#xE74D;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}"/>
             </Button>
             <local:GlowButton 
                 x:Uid="InsightsButton" x:Name="InsightsButton" Margin="6,0,0,0"
                 BorderThickness="0"              
-                Text="&#xE946;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Foreground="#0089FF"
+                Text="&#xE946;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}" Foreground="#0089FF"
                 Command="{x:Bind ViewModel.ShowInsightsPageCommand}" 
                 Visibility="{x:Bind ViewModel.InsightsButtonVisibility, Mode=OneWay}">
             </local:GlowButton>

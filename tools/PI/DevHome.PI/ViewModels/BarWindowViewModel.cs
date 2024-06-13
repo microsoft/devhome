@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -18,7 +17,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Graphics;
 using Windows.System;
 using Windows.Win32.Foundation;
-using Windows.Win32.Graphics.Gdi;
 
 namespace DevHome.PI.ViewModels;
 
@@ -29,6 +27,8 @@ public partial class BarWindowViewModel : ObservableObject
 
     private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
     private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
+    private readonly string _unsnapToolTip = CommonHelper.GetLocalizedString("UnsnapToolTip");
+    private readonly string _snapToolTip = CommonHelper.GetLocalizedString("SnapToolTip");
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly List<Button> _externalToolButtons = [];
@@ -50,6 +50,9 @@ public partial class BarWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private string _currentSnapButtonText = _SnapButtonText;
+
+    [ObservableProperty]
+    private string _currentSnapToolTip;
 
     [ObservableProperty]
     private string _appCpuUsage = string.Empty;
@@ -100,9 +103,7 @@ public partial class BarWindowViewModel : ObservableObject
         SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", PerfCounters.Instance.SystemDiskUsage);
 
         var process = TargetAppData.Instance.TargetProcess;
-
         IsAppBarVisible = process is not null;
-
         if (process != null)
         {
             ApplicationName = process.ProcessName;
@@ -112,7 +113,7 @@ public partial class BarWindowViewModel : ObservableObject
         }
 
         CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
-
+        CurrentSnapToolTip = IsSnapped ? _unsnapToolTip : _snapToolTip;
         _snapHelper = new();
 
         ((INotifyCollectionChanged)ExternalToolsHelper.Instance.FilteredExternalTools).CollectionChanged += FilteredExternalTools_CollectionChanged;
@@ -128,6 +129,7 @@ public partial class BarWindowViewModel : ObservableObject
     partial void OnIsSnappedChanged(bool value)
     {
         CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
+        CurrentSnapToolTip = IsSnapped ? _unsnapToolTip : _snapToolTip;
     }
 
     partial void OnBarOrientationChanged(Orientation value)
