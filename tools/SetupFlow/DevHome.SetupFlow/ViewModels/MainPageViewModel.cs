@@ -253,12 +253,28 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     [RelayCommand]
     public void StartCreateEnvironment(string flowTitle)
     {
+        StartCreateEnvironmentWithTelemetry(flowTitle, "StartCreationFlow", "Machine Configuration");
+    }
+
+    /// <summary>
+    /// Starts the create environment flow and logs that the create environment button has been clicked. This
+    /// can be generalized in the future so other flow can utilize it as well.
+    /// </summary>
+    public void StartCreateEnvironmentWithTelemetry(string flowTitle, string navigationAction, string originPage)
+    {
         _log.Information("Starting flow for environment creation");
         StartSetupFlowForTaskGroups(
             flowTitle,
             "CreateEnvironment",
             _host.GetService<SelectEnvironmentProviderTaskGroup>(),
             _host.GetService<EnvironmentCreationOptionsTaskGroup>());
+
+        // Send telemetry so we know which page in Dev Home the user clicked the create environment button.
+        TelemetryFactory.Get<ITelemetry>().Log(
+            "Create_Environment_button_Clicked",
+            LogLevel.Critical,
+            new EnvironmentRedirectionUserEvent(navigationAction: navigationAction, originPage),
+            relatedActivityId: Orchestrator.ActivityId);
     }
 
     /// <summary>

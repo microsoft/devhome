@@ -24,6 +24,7 @@ GetMonitorInfo
 GetMonitorInfo
 GetOpenFileName
 GetProcessInformation
+GetScaleFactorForMonitor
 GetTopWindow
 GetWindowInfo
 GetWindowLong
@@ -68,6 +69,7 @@ UnregisterHotKey
 WaitForSingleObject
 WindowFromPoint
 CF_*
+DEVICE_SCALE_FACTOR
 DWMWA_*
 DWMWINDOWATTRIBUTE
 EVENT_*

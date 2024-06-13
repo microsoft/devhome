@@ -31,8 +31,7 @@
                         MinRowSpacing="12" 
                         MinColumnSpacing="12"
                         ItemsStretch="Fill"
-                        MaximumRowsOrColumns="3"
-                        ItemsJustification="Center" />
+                        MaximumRowsOrColumns="3" />
                 </ItemsRepeater.Layout>
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:UtilityViewModel">

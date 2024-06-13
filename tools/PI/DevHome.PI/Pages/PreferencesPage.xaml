@@ -21,7 +21,7 @@
             
             <ctControls:SettingsCard x:Uid="SettingsThemeCard">
                 <ctControls:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xE790;" />
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE790;" />
                 </ctControls:SettingsCard.HeaderIcon>
                 <ComboBox x:Name="ThemeSelectionComboBox">
                     <ComboBoxItem x:Uid="SettingsThemeDefault" Tag="{x:Bind xaml:ElementTheme.Default}" AutomationProperties.AutomationId="SettingsThemeDefault" />

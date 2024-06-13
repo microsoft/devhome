@@ -13,7 +13,6 @@
     TaskBarIcon="Images/pi.ico"
     Closed="WindowEx_Closed">
 
-    <!-- TODO Make DesktopAcrylicBackdrop/MicaBackdrop and AcrylicBackgroundFillColorBaseBrush user-configurable.-->
     <Window.SystemBackdrop>
         <MicaBackdrop/>
     </Window.SystemBackdrop>
@@ -47,7 +46,7 @@
         <StackPanel x:Name="AllControls" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Background="Transparent" >
             <StackPanel.Resources>
                 <Style TargetType="TextBlock">
-                    <Setter Property="FontFamily" Value="Segoe Fluent Icons"/>
+                    <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
                     <Setter Property="FontSize" Value="20"/>
                 </Style>
                 <Style TargetType="Button">
@@ -76,7 +75,7 @@
                     <MenuFlyout>
                         <MenuFlyoutItem x:Uid="DetachMenuItem" Command="{x:Bind _viewModel.DetachFromProcessCommand}">
                             <MenuFlyoutItem.Icon>
-                                <FontIcon Glyph="&#xE894;"/>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE894;"/>
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
                     </MenuFlyout>
@@ -114,12 +113,12 @@
                             <MenuFlyout x:Name="ToolContextMenu">
                                 <MenuFlyoutItem x:Uid="UnpinMenuItem" Name="UnpinMenuItem" Click="{x:Bind TogglePinnedState}">
                                     <MenuFlyoutItem.Icon>
-                                        <FontIcon Glyph="&#xE77A;"/>
+                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE77A;"/>
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
                                 <MenuFlyoutItem x:Uid="UnregisterMenuItem" Name="UnregisterMenuItem" Click="{x:Bind UnregisterTool}">
                                     <MenuFlyoutItem.Icon>
-                                        <FontIcon Glyph="&#xECC9;"/>
+                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xECC9;"/>
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
                             </MenuFlyout>
