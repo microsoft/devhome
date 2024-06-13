@@ -83,16 +83,25 @@
                     <summaryViews:SummaryFailedTasks HorizontalAlignment="Stretch" DataContext="{x:Bind ViewModel}" />
                 </Border>
 
-                <!--  Number of apps and repos cloned. Show if not failed tasks  -->
+                <!--  Success results  -->
                 <Border
                     BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
                     BorderThickness="{ThemeResource TopLeftQuadrantThickness}"
                     Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}">
-                    <summaryViews:SummaryAppsDownloadedReposCloned HorizontalAlignment="Stretch" DataContext="{x:Bind ViewModel}" />
+                    <Grid>
+                        <summaryViews:SummaryConfigurationFileResults
+                            HorizontalAlignment="Stretch"
+                            DataContext="{x:Bind ViewModel}"
+                            Visibility="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay}" />
+                        <summaryViews:SummaryAppsDownloadedReposCloned
+                            HorizontalAlignment="Stretch"
+                            DataContext="{x:Bind ViewModel}"
+                            Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
+                    </Grid>
                 </Border>
 
-                <!--  Next steps section  -->
-                <summaryViews:SummaryNextSteps DataContext="{x:Bind ViewModel}" />
+                <!--  Next steps section show on the left side iff not configuration file flow  -->
+                <summaryViews:SummaryNextSteps DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
             </StackPanel>
 
             <StackPanel
@@ -100,7 +109,7 @@
                 Grid.Column="1"
                 Spacing="12">
                 <!--  Displays the repos cloned and apps downloaded  -->
-                <summaryViews:SummaryShowAppsAndRepos DataContext="{x:Bind ViewModel}" />
+                <summaryViews:SummaryShowAppsAndRepos DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
 
                 <Border
                     BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
@@ -108,6 +117,9 @@
                     Visibility="{x:Bind ViewModel.AppsDownloadedInstallationNotes, Converter={StaticResource CollectionVisibilityConverter}}">
                     <summaryViews:SummaryAppInstallationNotes DataContext="{x:Bind ViewModel}" />
                 </Border>
+
+                <summaryViews:SummaryNextSteps DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}" />
+
             </StackPanel>
         </Grid>
     </ScrollViewer>
