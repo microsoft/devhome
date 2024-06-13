@@ -8,9 +8,9 @@ namespace DevHome.PI.Models;
 
 public class WatsonReport
 {
-    private readonly DateTime timeGenerated;
+    public DateTime DateTimeGenerated { get; }
 
-    public string TimeGenerated => timeGenerated.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.CurrentCulture);
+    public string TimeGenerated => DateTimeGenerated.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.CurrentCulture);
 
     public string Module { get; }
 
@@ -24,7 +24,7 @@ public class WatsonReport
 
     public WatsonReport(DateTime timeGenerated, string moduleName, string executable, string eventGuid)
     {
-        this.timeGenerated = timeGenerated;
+        this.DateTimeGenerated = timeGenerated;
         Module = moduleName;
         Executable = executable;
         EventGuid = eventGuid;

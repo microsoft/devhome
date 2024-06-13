@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 
@@ -62,7 +63,7 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
         var newEntry = new WatsonReport(timeGenerated, moduleName, executable, eventGuid);
         dispatcher.TryEnqueue(() =>
         {
-            ReportEntries.Add(newEntry);
+            ReportEntries.Add(newEntry, entry => entry.DateTimeGenerated);
         });
     }
 
@@ -126,7 +127,7 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
             watsonHelper.Start();
 
             // Get all existing reports
-            watsonHelper.GetExistingWatsonReports();
+            watsonHelper.LoadExistingWatsonReports();
         }
     }
 

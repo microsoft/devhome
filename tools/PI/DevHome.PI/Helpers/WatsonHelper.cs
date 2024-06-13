@@ -101,7 +101,7 @@ internal sealed class WatsonHelper : IDisposable
         }
     }
 
-    public void GetExistingWatsonReports()
+    public void LoadExistingWatsonReports()
     {
         EventLog eventLog = new("Application");
         var targetProcessName = targetProcess.ProcessName;
