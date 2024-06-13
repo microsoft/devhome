@@ -77,7 +77,7 @@ public static class ManagementInfrastructureHelper
     /// </summary>
     /// <param name="extensionClassId">The class Id of the out of proc extension object</param>
     /// <returns>True when the Windows optional feature is absent for the extension. False otherwise.</returns>
-    public static bool IsExtensionsWindowsOptionalFeatureAbsent(string extensionClassId)
+    public static bool IsWindowsOptionalFeatureAbsentForExtension(string extensionClassId)
     {
         if (ExtensionToFeatureNameMap.TryGetValue(extensionClassId, out var featureName))
         {

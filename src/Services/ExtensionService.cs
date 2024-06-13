@@ -393,7 +393,7 @@ public class ExtensionService : IExtensionService, IDisposable
     /// <returns>True when the Windows optional feature is absent and the Extension was disabled. False otherwise.</returns>
     public bool DisableExtensionIfWindowsFeatureAbsent(IExtensionWrapper extension)
     {
-        if (ManagementInfrastructureHelper.IsExtensionsWindowsOptionalFeatureAbsent(extension.ExtensionClassId))
+        if (ManagementInfrastructureHelper.IsWindowsOptionalFeatureAbsentForExtension(extension.ExtensionClassId))
         {
             _log.Information($"Disabling extension: '{extension.ExtensionDisplayName}' because its feature is absent");
             DisableExtension(extension.ExtensionUniqueId);
