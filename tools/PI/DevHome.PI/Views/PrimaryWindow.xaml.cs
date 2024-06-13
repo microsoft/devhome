@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
@@ -12,7 +11,6 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.System;
 using Windows.Win32;
-using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using WinUIEx;
 using static DevHome.PI.Helpers.WindowHelper;
@@ -24,7 +22,7 @@ public sealed partial class PrimaryWindow : WindowEx
     private const VirtualKey HotKey = VirtualKey.F12;
 
     private const HOT_KEY_MODIFIERS KeyModifier = HOT_KEY_MODIFIERS.MOD_WIN;
-    private HotKeyHelper? hotKeyHelper;
+    private HotKeyHelper? _hotKeyHelper;
 
     public BarWindow? DBarWindow { get; private set; }
 
@@ -54,8 +52,8 @@ public sealed partial class PrimaryWindow : WindowEx
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        hotKeyHelper = new(this, HandleHotKey);
-        hotKeyHelper.RegisterHotKey(HotKey, KeyModifier);
+        _hotKeyHelper = new(this, HandleHotKey);
+        _hotKeyHelper.RegisterHotKey(HotKey, KeyModifier);
 
         App.Log("DevHome.PI_MainWindows_Loaded", LogLevel.Measure);
     }
@@ -63,7 +61,7 @@ public sealed partial class PrimaryWindow : WindowEx
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
         DBarWindow?.Close();
-        hotKeyHelper?.UnregisterHotKey();
+        _hotKeyHelper?.UnregisterHotKey();
     }
 
     public void HandleHotKey(int keyId)
