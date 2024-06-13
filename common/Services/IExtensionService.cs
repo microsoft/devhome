@@ -28,5 +28,5 @@ public interface IExtensionService
 
     public void DisableExtension(string extensionUniqueId);
 
-    public bool DisableExtensionIfWindowsFeatureAbsent(IExtensionWrapper extension);
+    public bool DisableExtensionIfWindowsFeatureNotAvailable(IExtensionWrapper extension);
 }

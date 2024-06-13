@@ -387,19 +387,19 @@ public class ExtensionService : IExtensionService, IDisposable
 
     /// <summary>
     /// Gets a boolean indicating whether the extension was disabled due to its corresponding the Windows optional feature
-    /// being absent from the machine.
+    /// being absent from the machine or in an unknown state.
     /// </summary>
     /// <param name="extension">The out of proc extension object</param>
-    /// <returns>True when the Windows optional feature is absent and the Extension was disabled. False otherwise.</returns>
-    public bool DisableExtensionIfWindowsFeatureAbsent(IExtensionWrapper extension)
+    /// <returns>True only if the extension was disabled. False otherwise.</returns>
+    public bool DisableExtensionIfWindowsFeatureNotAvailable(IExtensionWrapper extension)
     {
-        if (ManagementInfrastructureHelper.IsWindowsOptionalFeatureAbsentForExtension(extension.ExtensionClassId))
+        if (ManagementInfrastructureHelper.IsWindowsOptionalFeatureAvailableForExtension(extension.ExtensionClassId))
         {
-            _log.Information($"Disabling extension: '{extension.ExtensionDisplayName}' because its feature is absent");
-            DisableExtension(extension.ExtensionUniqueId);
-            return true;
+            return false;
         }
 
-        return false;
+        _log.Information($"Disabling extension: '{extension.ExtensionDisplayName}' because its feature is absent");
+        DisableExtension(extension.ExtensionUniqueId);
+        return true;
     }
 }

@@ -99,7 +99,7 @@ public partial class EnvironmentsNotificationHelper
         }
 
         var userInAdminGroup = _windowsIdentityHelper.IsUserHyperVAdmin();
-        var featureEnabled = ManagementInfrastructureHelper.IsWindowsFeatureAvailable(CommonConstants.HyperVWindowsOptionalFeatureName) == FeatureAvailabilityKind.Enabled;
+        var featureEnabled = ManagementInfrastructureHelper.GetWindowsFeatureAvailability(CommonConstants.HyperVWindowsOptionalFeatureName) == FeatureAvailabilityKind.Enabled;
 
         if (!featureEnabled && !userInAdminGroup)
         {

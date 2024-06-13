@@ -64,7 +64,7 @@ public class ComputeSystemService : IComputeSystemService
                 // If we're looking at an internal extension that relies upon a Windows optional feature being present on the machine. We need to
                 // check if its on the machine first before allowing it to be added to the list of extensions that are retrieved. If the feature is
                 // absent we disable the extension.
-                if (_extensionService.DisableExtensionIfWindowsFeatureAbsent(extension))
+                if (_extensionService.DisableExtensionIfWindowsFeatureNotAvailable(extension))
                 {
                     continue;
                 }
