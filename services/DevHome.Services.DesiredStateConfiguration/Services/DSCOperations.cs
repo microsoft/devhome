@@ -123,11 +123,14 @@ internal sealed class DSCOperations : IDSCOperations
                 _logger.LogWarning(diagnosticInformation.Message);
                 return;
             case DiagnosticLevel.Error:
-            case DiagnosticLevel.Critical:
-                _logger.LogError(diagnosticInformation.Message);
                 _logger.LogError(diagnosticInformation.Message);
                 return;
+            case DiagnosticLevel.Critical:
+                _logger.LogCritical(diagnosticInformation.Message);
+                return;
             case DiagnosticLevel.Verbose:
+                _logger.LogTrace(diagnosticInformation.Message);
+                return;
             case DiagnosticLevel.Informational:
             default:
                 _logger.LogInformation(diagnosticInformation.Message);
