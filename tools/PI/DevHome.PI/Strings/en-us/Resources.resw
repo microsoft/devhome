@@ -145,10 +145,6 @@
     <value>Expand or collapse the large content panel</value>
     <comment>The tooltip for a button which expands or collapses the large content panel.</comment>
   </data>
-  <data name="UnSnapButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Un-snap: make the bar free-floating</value>
-    <comment>The tooltip for a button that causes the bar to unsnap from the current window.</comment>
-  </data>
   <data name="ReSnapButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Snap the bar to the current foreground window</value>
     <comment>The tooltip for a button that causes the bar to snap to the current foreground window.</comment>
@@ -905,9 +901,9 @@
     <value>Select a process to investigate</value>
     <comment>Describes using a button in Project Ironsides's UX to investigate another process running on the system</comment>
   </data>
-  <data name="SnapButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SnapToolTip" xml:space="preserve">
     <value>Attach the diagnostic bar to the target application</value>
-    <comment>Describes using a button in Project Ironsides's UX</comment>
+    <comment>The tooltip text for a button that attaches the bar to the target application.</comment>
   </data>
   <data name="Title.Text" xml:space="preserve">
     <value>Dev Home Project Ironsides</value>
@@ -956,5 +952,9 @@
   <data name="DetachMenuItem.Text" xml:space="preserve">
     <value>Detach</value>
     <comment>Menu Item that allows the user to detach from the current process</comment>
+  </data>
+  <data name="UnsnapToolTip" xml:space="preserve">
+    <value>Detach the diagnostic bar from the target application</value>
+    <comment>The tooltip text for a button that detaches the bar from the target application.</comment>
   </data>
 </root>
