@@ -14,7 +14,6 @@ A more detailed look at how the projects are related:
 ```mermaid
 graph TD;
     %%{init:{'flowchart':{"defaultRenderer": "elk"}}}%%
-    DevHome.Telemetry-->DevHome.Common;
     DevHome.Common-->DevHome.Customization;
     DevHome.Common-->DevHome.Dashboard;
     DevHome.Common-->DevHome.Experiments;
