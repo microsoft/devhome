@@ -7,6 +7,7 @@ using System.Security.Principal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32.SafeHandles;
 using OpenQA.Selenium.Appium.Windows;
+using Windows.Win32;
 
 namespace DevHome.UITest.Pages;
 
