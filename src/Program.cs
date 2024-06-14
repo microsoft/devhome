@@ -27,7 +27,7 @@ public static class Program
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
 
-        Log.Information($"Launched with args: {string.Join(' ', args.ToArray())}");
+        Log.Information($"Launched with args: {string.Join(' ', [.. args])}");
 
         // Be sure to parse these args in this instance of the exe... don't redirect this to another instance for parsing which
         // may be running in a different security context.
