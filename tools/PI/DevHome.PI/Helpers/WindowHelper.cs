@@ -556,7 +556,7 @@ public class WindowHelper
     // Only one ContentDialog can be shown at a time, so we have to keep track of the current one.
     private static ContentDialog? ContentDialog { get; set; }
 
-    internal static void ShowTimedMessageDialog(FrameworkElement frameworkElement, string message, string closeButtonText)
+    internal static async void ShowTimedMessageDialog(FrameworkElement frameworkElement, string message, string closeButtonText)
     {
         if (ContentDialog is not null)
         {
@@ -590,13 +590,13 @@ public class WindowHelper
 
         try
         {
+            ContentDialog.Opened += (s, e) => timer.Start();
             ContentDialog.Closed += (s, e) =>
             {
                 timer.Stop();
                 ContentDialog = null;
             };
-            _ = ContentDialog.ShowAsync();
-            timer.Start();
+            await ContentDialog.ShowAsync();
         }
         catch (Exception ex)
         {
