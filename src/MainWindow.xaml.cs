@@ -6,6 +6,7 @@ using DevHome.Common.Services;
 using DevHome.Telemetry;
 using DevHome.TelemetryEvents;
 using Microsoft.UI.Xaml;
+using Serilog;
 
 namespace DevHome;
 
@@ -27,5 +28,6 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
     {
         Application.Current.GetService<IExtensionService>().SignalStopExtensionsAsync();
         TelemetryFactory.Get<ITelemetry>().Log("DevHome_MainWindow_Closed_Event", LogLevel.Critical, new DevHomeClosedEvent(mainWindowCreated));
+        Log.Information("Terminating via MainWindow_Closed.");
     }
 }

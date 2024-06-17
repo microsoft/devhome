@@ -17,6 +17,17 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        // Set up Logging
+        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHome"));
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+
+        Log.Information($"Launched with args: {string.Join(' ', [.. args])}");
+
         // Be sure to parse these args in this instance of the exe... don't redirect this to another instance for parsing which
         // may be running in a different security context.
         ParseCommandLine(args);
@@ -35,6 +46,9 @@ public static class Program
                 _app = new App();
             });
         }
+
+        Log.Information("Terminating Dev Home");
+        Log.CloseAndFlush();
     }
 
     private static async Task<bool> DecideRedirection()

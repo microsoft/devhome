@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -22,8 +21,8 @@ namespace DevHome.PI.ViewModels;
 
 public partial class BarWindowViewModel : ObservableObject
 {
-    private const string _UnsnapButtonText = "\ue89f";
-    private const string _SnapButtonText = "\ue8a0";
+    private const string UnsnapButtonText = "\ue89f";
+    private const string SnapButtonText = "\ue8a0";
 
     private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
     private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
@@ -31,7 +30,6 @@ public partial class BarWindowViewModel : ObservableObject
     private readonly string _snapToolTip = CommonHelper.GetLocalizedString("SnapToolTip");
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-    private readonly List<Button> _externalToolButtons = [];
 
     private readonly ObservableCollection<Button> _externalTools = [];
     private readonly SnapHelper _snapHelper;
@@ -49,7 +47,7 @@ public partial class BarWindowViewModel : ObservableObject
     private bool _isSnappingEnabled = false;
 
     [ObservableProperty]
-    private string _currentSnapButtonText = _SnapButtonText;
+    private string _currentSnapButtonText = SnapButtonText;
 
     [ObservableProperty]
     private string _currentSnapToolTip;
@@ -112,7 +110,7 @@ public partial class BarWindowViewModel : ObservableObject
             ApplicationHwnd = TargetAppData.Instance.HWnd;
         }
 
-        CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
+        CurrentSnapButtonText = IsSnapped ? UnsnapButtonText : SnapButtonText;
         CurrentSnapToolTip = IsSnapped ? _unsnapToolTip : _snapToolTip;
         _snapHelper = new();
 
@@ -128,7 +126,7 @@ public partial class BarWindowViewModel : ObservableObject
 
     partial void OnIsSnappedChanged(bool value)
     {
-        CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
+        CurrentSnapButtonText = IsSnapped ? UnsnapButtonText : SnapButtonText;
         CurrentSnapToolTip = IsSnapped ? _unsnapToolTip : _snapToolTip;
     }
 

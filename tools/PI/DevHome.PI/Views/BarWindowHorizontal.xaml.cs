@@ -35,43 +35,39 @@ public partial class BarWindowHorizontal : WindowEx
     private readonly BarWindowViewModel _viewModel;
     private readonly UISettings _uiSettings = new();
 
-    private bool isClosing;
+    private bool _isClosing;
     private WindowActivationState _currentActivationState = WindowActivationState.Deactivated;
 
     // Constants that control window sizes
-    private const int _WindowPositionOffsetY = 30;
-    private const int _FloatingHorizontalBarHeight = 70;
-    private const int _DefaultExpandedViewTop = 30;
-    private const int _DefaultExpandedViewLeft = 100;
-    private const int _RightSideGap = 10;
+    private const int WindowPositionOffsetY = 30;
+    private const int FloatingHorizontalBarHeight = 70;
+    private const int DefaultExpandedViewTop = 30;
+    private const int DefaultExpandedViewLeft = 100;
+    private const int RightSideGap = 10;
 
     private RECT _monitorRect;
 
     private RestoreState _restoreState = new()
     {
-        Top = _DefaultExpandedViewTop,
-        Left = _DefaultExpandedViewLeft,
+        Top = DefaultExpandedViewTop,
+        Left = DefaultExpandedViewLeft,
         BarOrientation = Orientation.Horizontal,
         IsLargePanelVisible = true,
     };
 
-    private const int _UnsnapGap = 9;
     private double _dpiScale = 1.0;
 
     internal HWND ThisHwnd { get; private set; }
 
     internal ClipboardMonitor? ClipboardMonitor { get; private set; }
 
-    public Microsoft.UI.Dispatching.DispatcherQueue TheDispatcher
-    {
-        get; set;
-    }
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     public BarWindowHorizontal(BarWindowViewModel model)
     {
         _viewModel = model;
 
-        TheDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         InitializeComponent();
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
@@ -88,7 +84,7 @@ public partial class BarWindowHorizontal : WindowEx
 
         _uiSettings.ColorValuesChanged += (sender, args) =>
         {
-            TheDispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 ApplySystemThemeToCaptionButtons();
             });
@@ -160,7 +156,7 @@ public partial class BarWindowHorizontal : WindowEx
         var screenWidth = _monitorRect.right - _monitorRect.left;
         this.Move(
             (int)((screenWidth - (Width * _dpiScale)) / 2) + _monitorRect.left,
-            (int)_WindowPositionOffsetY);
+            (int)WindowPositionOffsetY);
 
         // Get the saved settings for the ExpandedView size. On first run, this will be
         // the default 0,0, so we'll set the size proportional to the monitor size.
@@ -195,12 +191,12 @@ public partial class BarWindowHorizontal : WindowEx
             CacheRestoreState();
         }
 
-        if (!isClosing)
+        if (!_isClosing)
         {
-            isClosing = true;
+            _isClosing = true;
             var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
             barWindow?.Close();
-            isClosing = false;
+            _isClosing = false;
         }
     }
 
@@ -273,7 +269,7 @@ public partial class BarWindowHorizontal : WindowEx
         {
             // Conversely if they're snapped, the position is determined by the snap,
             // and we potentially adjust the size to ensure it doesn't extend beyond the screen.
-            var availableWidth = _monitorRect.Width - Math.Abs(AppWindow.Position.X) - _RightSideGap;
+            var availableWidth = _monitorRect.Width - Math.Abs(AppWindow.Position.X) - RightSideGap;
             if (availableWidth < _restoreState.Width)
             {
                 _restoreState.Width = availableWidth;
@@ -296,7 +292,7 @@ public partial class BarWindowHorizontal : WindowEx
         // Make sure we cache the state before switching to collapsed bar.
         CacheRestoreState();
         LargeContentPanel.Visibility = Visibility.Collapsed;
-        MaxHeight = _FloatingHorizontalBarHeight;
+        MaxHeight = FloatingHorizontalBarHeight;
     }
 
     internal void NavigateTo(Type viewModelType)
@@ -321,7 +317,7 @@ public partial class BarWindowHorizontal : WindowEx
         SetRegionsForTitleBar();
     }
 
-    // workaround as Appwindow titlebar doesn't update caption button colors correctly when changed while app is running
+    // workaround as AppWindow TitleBar doesn't update caption button colors correctly when changed while app is running
     // https://task.ms/44172495
     public void ApplySystemThemeToCaptionButtons()
     {
