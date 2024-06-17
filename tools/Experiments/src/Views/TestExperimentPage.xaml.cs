@@ -11,7 +11,10 @@ namespace DevHome.Experiments.Views;
 /// </summary>
 public sealed partial class TestExperimentPage : ToolPage
 {
-    public override string ShortName => "TestExperiment1";
+    public override string DisplayName =>
+        new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader(
+            "DevHome.Experiments.pri",
+            "DevHome.Experiments/Resources").GetString("NavigationPane/Content");
 
     public TestExperimentViewModel ViewModel
     {

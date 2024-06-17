@@ -8,8 +8,7 @@
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:views="using:DevHome.Common.Views"
-    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
-    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel.Breadcrumbs}"
     Loaded="Page_Loaded">
 
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">

@@ -10,7 +10,7 @@ namespace DevHome.Customization.Views;
 
 public sealed partial class MainPage : ToolPage
 {
-    public override string ShortName => "Windows customization";
+    public override string DisplayName => "Windows customization";
 
     public MainPageViewModel ViewModel
     {

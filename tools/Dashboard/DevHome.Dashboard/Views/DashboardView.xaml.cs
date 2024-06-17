@@ -35,7 +35,10 @@ public partial class DashboardView : ToolPage, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DashboardView));
 
-    public override string ShortName => "Dashboard";
+    public override string DisplayName =>
+        new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader(
+            "DevHome.Dashboard.pri",
+            "DevHome.Dashboard/Resources").GetString("NavigationPane/Content");
 
     public DashboardViewModel ViewModel { get; }
 

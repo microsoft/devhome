@@ -8,8 +8,7 @@
     xmlns:viewmodels="using:DevHome.Settings.ViewModels"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:views="using:DevHome.Common.Views"
-    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
-    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel.Breadcrumbs}">
 
     <Page.Resources>
         <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible"/>

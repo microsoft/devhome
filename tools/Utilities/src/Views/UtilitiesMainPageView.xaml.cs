@@ -11,7 +11,7 @@ namespace DevHome.Utilities.Views;
 
 public sealed partial class UtilitiesMainPageView : ToolPage
 {
-    public override string ShortName => "Utilities";
+    public override string DisplayName => "Utilities";
 
     public UtilitiesMainPageViewModel ViewModel { get; }
 

@@ -10,7 +10,10 @@ namespace DevHome.ExtensionLibrary.Views;
 
 public partial class ExtensionLibraryView : ToolPage
 {
-    public override string ShortName => "Extensions";
+    public override string DisplayName =>
+        new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader(
+            "DevHome.ExtensionLibrary.pri",
+            "DevHome.ExtensionLibrary/Resources").GetString("NavigationPane/Content");
 
     public ExtensionLibraryViewModel ViewModel { get; }
 

@@ -14,7 +14,10 @@ namespace DevHome.Environments.Views;
 
 public sealed partial class LandingPage : ToolPage
 {
-    public override string ShortName => "Environments";
+    public override string DisplayName =>
+        new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader(
+            "DevHome.Environments.pri",
+            "DevHome.Environments/Resources").GetString("NavigationPane/Content");
 
     public LandingPageViewModel ViewModel { get; }
 

@@ -22,7 +22,7 @@
         <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <BreadcrumbBar
                     x:Name="BreadcrumbBar"
-                    ItemsSource="{Binding Breadcrumbs}">
+                    ItemsSource="{Binding}">
                 <BreadcrumbBar.Resources>
                     <!-- Setting BreadcrumbBarNormalForegroundBrush outside of DataTemplate results in the value not being used inside the DataTemplate. -->
                     <!-- In order for DataTemplate to use the correct brushes, they must be set this way. -->
