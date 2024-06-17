@@ -9,7 +9,6 @@ using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.Views;
 using DevHome.Telemetry;
-using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 

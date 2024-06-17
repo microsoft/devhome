@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
-using DevHome.PI;
 using DevHome.PI.Telemetry;
 using DevHome.PI.ViewModels;
 using Microsoft.UI.Xaml;

@@ -17,20 +17,20 @@ namespace DevHome.PI.ViewModels;
 
 public partial class WatsonPageViewModel : ObservableObject, IDisposable
 {
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
-    private Process? targetProcess;
-    private WatsonHelper? watsonHelper;
-    private Thread? watsonThread;
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private Process? _targetProcess;
+    private WatsonHelper? _watsonHelper;
+    private Thread? _watsonThread;
 
     [ObservableProperty]
-    private ObservableCollection<WatsonReport> reportEntries;
+    private ObservableCollection<WatsonReport> _reportEntries;
 
     public WatsonPageViewModel()
     {
-        dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
-        reportEntries = new();
+        _reportEntries = new();
 
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)
@@ -41,14 +41,14 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
 
     public void UpdateTargetProcess(Process process)
     {
-        if (targetProcess != process)
+        if (_targetProcess != process)
         {
-            targetProcess = process;
+            _targetProcess = process;
 
             StopWatsonHelper();
-            watsonThread = new Thread(StartWatsonHelper);
-            watsonThread.Name = "Watson Page Thread";
-            watsonThread.Start();
+            _watsonThread = new Thread(StartWatsonHelper);
+            _watsonThread.Name = "Watson Page Thread";
+            _watsonThread.Start();
         }
     }
 
@@ -121,23 +121,23 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
 
     private void StartWatsonHelper()
     {
-        if (targetProcess is not null)
+        if (_targetProcess is not null)
         {
-            watsonHelper = new WatsonHelper(targetProcess);
-            watsonHelper.Start();
+            _watsonHelper = new WatsonHelper(_targetProcess, _reports, null);
+            _watsonHelper.Start();
 
             // Get all existing reports
-            watsonHelper.LoadExistingWatsonReports();
+            _watsonHelper.LoadExistingWatsonReports();
         }
     }
 
     private void StopWatsonHelper(bool shouldCleanLogs = true)
     {
-        watsonHelper?.Stop();
+        _watsonHelper?.Stop();
 
-        if (Thread.CurrentThread != watsonThread)
+        if (Thread.CurrentThread != _watsonThread)
         {
-            watsonThread?.Join();
+            _watsonThread?.Join();
         }
 
         if (shouldCleanLogs)
@@ -148,7 +148,7 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
 
     private void ClearWatsonLogs()
     {
-        dispatcher.TryEnqueue(() =>
+        _dispatcher.TryEnqueue(() =>
         {
             ReportEntries.Clear();
         });

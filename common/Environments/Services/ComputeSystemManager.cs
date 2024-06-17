@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Models;
-using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation;
@@ -33,7 +32,7 @@ public class ComputeSystemManager : IComputeSystemManager
     private readonly object _creationOperationLock = new();
 
     // Used in the setup flow to store the ComputeSystem needed to configure.
-    public ComputeSystemReviewItem? ComputeSystemSetupItem { get;  set; }
+    public ComputeSystemReviewItem? ComputeSystemSetupItem { get; set; }
 
     public ComputeSystemManager(IComputeSystemService computeSystemService)
     {
@@ -101,7 +100,7 @@ public class ComputeSystemManager : IComputeSystemManager
     {
         lock (_creationOperationLock)
         {
-           return _createComputeSystemOperations.Values.ToList();
+            return _createComputeSystemOperations.Values.ToList();
         }
     }
 
@@ -117,7 +116,7 @@ public class ComputeSystemManager : IComputeSystemManager
     {
         lock (_creationOperationLock)
         {
-           _createComputeSystemOperations.Remove(operation.OperationId);
+            _createComputeSystemOperations.Remove(operation.OperationId);
         }
     }
 

@@ -1,19 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using System.Web;
 using DevHome.Activation;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.ApplicationModel.Activation;
-using Windows.Storage;
 
 namespace DevHome.Services;
 

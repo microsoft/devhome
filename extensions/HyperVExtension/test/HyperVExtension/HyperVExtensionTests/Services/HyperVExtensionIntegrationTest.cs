@@ -3,12 +3,10 @@
 
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Management.Automation;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 using HyperVExtension.Common;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Helpers;
@@ -22,7 +20,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
 using Moq;
-using Windows.Storage;
 
 namespace HyperVExtension.UnitTest.HyperVExtensionTests.Services;
 
@@ -160,18 +157,18 @@ properties:
         {
             if (actionRequired.CorrectiveActionCardSession is VmCredentialAdaptiveCardSession credentialsCardSession)
             {
-               var extensionAdaptiveCard = new Mock<IExtensionAdaptiveCard>();
-               extensionAdaptiveCard
-                    .Setup(x => x.Update(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                    .Returns((string templateJson, string dataJson, string state) => new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null));
+                var extensionAdaptiveCard = new Mock<IExtensionAdaptiveCard>();
+                extensionAdaptiveCard
+                     .Setup(x => x.Update(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                     .Returns((string templateJson, string dataJson, string state) => new ProviderOperationResult(ProviderOperationStatus.Success, null, null, null));
 
-               extensionAdaptiveCard
-                    .Setup(x => x.State)
-                    .Returns("VmCredential");
+                extensionAdaptiveCard
+                     .Setup(x => x.State)
+                     .Returns("VmCredential");
 
-               credentialsCardSession.Initialize(extensionAdaptiveCard.Object);
-               var op = credentialsCardSession.OnAction(@"{ ""Type"": ""Action.Execute"", ""Id"": ""okAction"" }", @"{ ""id"": ""okAction"", ""UserVal"": """", ""PassVal"": """" }");
-               await op.AsTask();
+                credentialsCardSession.Initialize(extensionAdaptiveCard.Object);
+                var op = credentialsCardSession.OnAction(@"{ ""Type"": ""Action.Execute"", ""Id"": ""okAction"" }", @"{ ""id"": ""okAction"", ""UserVal"": """", ""PassVal"": """" }");
+                await op.AsTask();
             }
             else if (actionRequired.CorrectiveActionCardSession is WaitForLoginAdaptiveCardSession waitForLoginCardSession)
             {
