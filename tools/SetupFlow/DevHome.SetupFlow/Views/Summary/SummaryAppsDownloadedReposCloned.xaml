@@ -28,11 +28,11 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Margin="0,0,0,50">
+    <Grid Margin="0,0,0,30">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}" />
             <ColumnDefinition Width="{Binding RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}" />
-            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
