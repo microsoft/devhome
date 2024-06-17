@@ -12,8 +12,6 @@
 
             <Style x:Key="ChromeButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
                 <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
-                <Setter Property="Background" Value="{ThemeResource WindowCaptionBackground}" />
-                <Setter Property="Foreground" Value="{ThemeResource WindowCaptionForeground}" />
                 <Setter Property="FontSize" Value="10"/>
                 <Setter Property="Width" Value="40" />
                 <Setter Property="Height" Value="31" />
@@ -26,7 +24,7 @@
                                     <VisualStateGroup x:Name="CommonStates">
                                         <VisualState x:Name="Normal">
                                             <VisualState.Setters>
-                                                <Setter Target="LayoutRoot.Background" Value="{ThemeResource SubtleFillColorTransparent}" />
+                                                <Setter Target="LayoutRoot.Background" Value="Transparent" />
                                             </VisualState.Setters>
                                         </VisualState>
                                         <VisualState x:Name="PointerOver">
