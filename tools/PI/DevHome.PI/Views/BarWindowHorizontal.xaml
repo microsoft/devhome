@@ -11,6 +11,7 @@
     mc:Ignorable="d"
     Title="" MinHeight="70" MinWidth="700" Height="70" Width="700" MaxHeight="70"
     TaskBarIcon="Images/pi.ico"
+    Activated="Window_Activated"
     Closed="WindowEx_Closed">
 
     <Window.SystemBackdrop>
@@ -25,7 +26,7 @@
         </Grid.RowDefinitions>
 
         <!--Chrome buttons for a horizontal bar -->
-        <Grid x:Name="HorizontalBar" Background="Transparent" VerticalAlignment="Center" Height="28" Grid.Row="0">
+        <Grid x:Name="HorizontalBar" Background="Transparent" VerticalAlignment="Center" Height="31" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
                 <ColumnDefinition x:Name="ExtraSystemButtons" Width="*"/>
@@ -36,9 +37,9 @@
             <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0, 0, 10, 0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}">
                 <Button
                       x:Uid="SnapButton" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
-                      x:Name="SnapButton" Style="{StaticResource ChromeButton}" FontSize="11"
+                      x:Name="SnapButton" Style="{StaticResource ChromeButton}"  FontSize="11"
                       Command="{x:Bind _viewModel.ToggleSnapCommand}" HorizontalAlignment="Left" IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}">
-                    <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
+                    <TextBlock x:Name="SnapButtonText" Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}" />
                 </Button>
             </StackPanel>
         </Grid>
