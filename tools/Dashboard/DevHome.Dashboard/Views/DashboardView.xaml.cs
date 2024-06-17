@@ -811,19 +811,27 @@ public partial class DashboardView : ToolPage, IDisposable
         // moved from a higher index to a lower one, then the order of removal and insertion doesn't matter.
         PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChangedAsync;
 
-        PinnedWidgets.RemoveAt(draggedIndex);
-        var size = await draggedWidgetViewModel.Widget.GetSizeAsync();
-        await InsertWidgetInPinnedWidgetsAsync(draggedWidgetViewModel.Widget, size, droppedIndex);
-        await WidgetHelpers.SetPositionCustomStateAsync(draggedWidgetViewModel.Widget, droppedIndex);
-
-        // Update the CustomState Position of any widgets that were moved.
-        // The widget that has been dropped has already been updated, so don't do it again here.
-        var startIndex = draggedIndex < droppedIndex ? draggedIndex : droppedIndex + 1;
-        var endIndex = draggedIndex < droppedIndex ? droppedIndex : draggedIndex + 1;
-        for (var i = startIndex; i < endIndex; i++)
+        await _pinnedWidgetsLock.WaitAsync();
+        try
         {
-            var widgetToUpdate = PinnedWidgets.ElementAt(i);
-            await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
+            PinnedWidgets.RemoveAt(draggedIndex);
+            var size = await draggedWidgetViewModel.Widget.GetSizeAsync();
+            await InsertWidgetInPinnedWidgetsAsync(draggedWidgetViewModel.Widget, size, droppedIndex);
+            await WidgetHelpers.SetPositionCustomStateAsync(draggedWidgetViewModel.Widget, droppedIndex);
+
+            // Update the CustomState Position of any widgets that were moved.
+            // The widget that has been dropped has already been updated, so don't do it again here.
+            var startIndex = draggedIndex < droppedIndex ? draggedIndex : droppedIndex + 1;
+            var endIndex = draggedIndex < droppedIndex ? droppedIndex : draggedIndex + 1;
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                var widgetToUpdate = PinnedWidgets.ElementAt(i);
+                await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
+            }
+        }
+        finally
+        {
+            _pinnedWidgetsLock.Release();
         }
 
         PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
