@@ -87,17 +87,18 @@
                 <summaryViews:SummaryIntoViaNonConfigurationFlow DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
             </StackPanel>
 
+            <!--  Left Side  -->
             <StackPanel Grid.Row="1" Grid.Column="0">
 
                 <!--  Configuration file shows the same windows regardless of errors.  -->
-                <Grid Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}">
+                <Grid Visibility="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay}">
                     <Border BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopLeftQuadrantThickness}">
                         <summaryViews:SummaryConfigurationFileResults HorizontalAlignment="Stretch" DataContext="{x:Bind ViewModel}" />
                     </Border>
                 </Grid>
 
                 <!--  non-configuration file flow.  -->
-                <StackPanel Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
+                <StackPanel Visibility="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
                     <!--  Show errors if any.  -->
                     <Border
                         BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
@@ -111,20 +112,39 @@
                         BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
                         BorderThickness="{ThemeResource TopLeftQuadrantThickness}"
                         Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}">
-                        <summaryViews:SummaryAppsDownloadedReposCloned HorizontalAlignment="Stretch" DataContext="{x:Bind ViewModel}" />
+                        <Grid>
+                            <summaryViews:SummaryAppsDownloadedReposCloned
+                                HorizontalAlignment="Stretch"
+                                DataContext="{x:Bind ViewModel}"
+                                Visibility="{x:Bind ViewModel.IsSettingUpATargetMachine, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
+                            <summaryViews:SummaryTargetMachineAppsDownloadedReposCloned
+                                HorizontalAlignment="Stretch"
+                                DataContext="{x:Bind ViewModel}"
+                                Visibility="{x:Bind ViewModel.IsSettingUpATargetMachine, Mode=OneWay}" />
+                        </Grid>
                     </Border>
 
                     <!--  Next steps section show on the left side iff not configuration file flow  -->
-                    <summaryViews:SummaryNextSteps DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
+                    <summaryViews:SummaryNextSteps DataContext="{x:Bind ViewModel}" />
                 </StackPanel>
             </StackPanel>
 
+            <!--  Right side  -->
             <StackPanel
                 Grid.Row="1"
                 Grid.Column="1"
                 Spacing="12">
                 <!--  Displays the repos cloned and apps downloaded  -->
-                <summaryViews:SummaryShowAppsAndRepos DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
+                <Grid Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}">
+                    <summaryViews:SummaryShowAppsAndRepos
+                        HorizontalAlignment="Stretch"
+                        DataContext="{x:Bind ViewModel}"
+                        Visibility="{x:Bind ViewModel.IsSettingUpATargetMachine, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
+                    <summaryViews:SummaryTargetMachineShowAppsAndRepos
+                        HorizontalAlignment="Stretch"
+                        DataContext="{x:Bind ViewModel}"
+                        Visibility="{x:Bind ViewModel.IsSettingUpATargetMachine, Mode=OneWay}" />
+                </Grid>
 
                 <Border
                     BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
@@ -133,7 +153,7 @@
                     <summaryViews:SummaryAppInstallationNotes DataContext="{x:Bind ViewModel}" />
                 </Border>
 
-                <summaryViews:SummaryNextSteps DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}" />
+                <summaryViews:SummaryNextSteps DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay}" />
 
             </StackPanel>
         </Grid>
