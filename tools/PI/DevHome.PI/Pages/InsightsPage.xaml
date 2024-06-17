@@ -10,7 +10,14 @@
     NavigationCacheMode="Enabled">
 
     <Grid>
-        <ItemsControl ItemsSource="{x:Bind ViewModel.InsightsList}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Uid="InsightsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+
+        <ItemsControl ItemsSource="{x:Bind ViewModel.InsightsList}" Grid.Row="1">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:Insight">
                     <Expander IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}" ExpandDirection="Down" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6">

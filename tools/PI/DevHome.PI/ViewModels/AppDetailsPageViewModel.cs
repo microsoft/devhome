@@ -3,7 +3,6 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Helpers;
@@ -12,7 +11,6 @@ using DevHome.PI.Models;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.Win32;
-using Windows.Win32.System.Threading;
 
 namespace DevHome.PI.ViewModels;
 

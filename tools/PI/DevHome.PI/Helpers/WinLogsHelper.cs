@@ -2,19 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using DevHome.PI.Models;
 using Microsoft.Diagnostics.Tracing;
-using Microsoft.UI;
-using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.PI.Helpers;
 

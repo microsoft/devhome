@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.ServiceProcess;
-using HyperVExtension.Helpers;
-
 namespace HyperVExtension.UnitTest.Mocks;
 
 public enum HyperVState

@@ -9,11 +9,10 @@
     xmlns:controls="using:DevHome.PI.Controls"
     xmlns:helpers="using:DevHome.PI.Helpers"
     mc:Ignorable="d"
-    Title="" MinHeight="700" MinWidth="70" MaxWidth="70" Width="70" Height="700"
+    Title="" MinHeight="700" MinWidth="72" MaxWidth="72" Width="72" Height="700"
     TaskBarIcon="Images/pi.ico" IsTitleBarVisible="False"
     IsAlwaysOnTop="{x:Bind _viewModel.IsAlwaysOnTop, Mode=OneWay}"
     Closed="WindowEx_Closed">
-    <!-- TODO Make DesktopAcrylicBackdrop/MicaBackdrop and AcrylicBackgroundFillColorBaseBrush user-configurable.-->
     <Window.SystemBackdrop>
         <MicaBackdrop/>
     </Window.SystemBackdrop>
@@ -28,7 +27,7 @@
             <StackPanel.Resources>
                 <Style TargetType="TextBlock">
                     <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
-                    <Setter Property="FontSize" Value="20"/>
+                    <Setter Property="FontSize" Value="{StaticResource SubtitleTextBlockFontSize}"/>
                 </Style>
                 <Style TargetType="Button">
                     <Setter Property="BorderThickness" Value="0"/>
@@ -45,21 +44,23 @@
                 </Style>
             </StackPanel.Resources>
 
-            <Rectangle x:Name="Gripper" RadiusX="2" RadiusY="2" Width="32" Height="5" Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}" Margin="4" PointerPressed="Window_PointerPressed" PointerMoved="Window_PointerMoved" PointerReleased="Window_PointerReleased"/>
+            <Rectangle x:Name="Gripper" RadiusX="2" RadiusY="2" Width="32" Height="5" Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}" Margin="10" PointerPressed="Window_PointerPressed" PointerMoved="Window_PointerMoved" PointerReleased="Window_PointerReleased"/>
 
             <Button
                 x:Uid="SnapButton"
                 Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
                 HorizontalAlignment="Center"
                 IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
-                Command="{x:Bind _viewModel.ToggleSnapCommand}" >
-                <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
+                Command="{x:Bind _viewModel.ToggleSnapCommand}" 
+                Style="{StaticResource ChromeButton}" >
+                <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
             </Button>
             <Button
                 x:Uid="VerticalCloseButton"
                 Click="CloseButton_Click" 
-                HorizontalAlignment="Center" >
-                <TextBlock Text="&#xE8BB;"/>
+                HorizontalAlignment="Center" 
+                Style="{StaticResource ChromeButton}" >
+                <TextBlock Text="&#xE8BB;" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
             </Button>
 
             <controls:PISeparator Orientation="Horizontal"/>
@@ -81,8 +82,8 @@
                     </MenuFlyout>
                 </StackPanel.ContextFlyout>
                 <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" />
-                <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" HorizontalAlignment="Center" />
-                <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" Margin="5" HorizontalAlignment="Center" />
+                <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" HorizontalAlignment="Center" />
+                <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" HorizontalAlignment="Center" />
                 <controls:PISeparator Orientation="Horizontal"/>
             </StackPanel>
                         
@@ -129,9 +130,9 @@
         </StackPanel>
 
         <StackPanel x:Name="SystemResourceStackPanel" Orientation="Vertical" Grid.Row="1" Margin="0,0,0,5">
-            <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 0, 5, 0"/>
-            <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 5, 5, 5"/>
-            <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 0, 5, 0"/>
+            <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 0, 5, 0"/>
+            <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 5, 5, 5"/>
+            <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 0, 5, 0"/>
         </StackPanel>
     </Grid>
 </winex:WindowEx>

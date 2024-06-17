@@ -3,9 +3,7 @@
 
 using System.Globalization;
 using System.Text;
-using System.Xml.Linq;
 using Microsoft.Win32;
-using Serilog;
 
 namespace HyperVExtension.HostGuestCommunication;
 

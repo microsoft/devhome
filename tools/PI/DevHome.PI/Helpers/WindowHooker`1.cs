@@ -2,15 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-using System.Threading;
-using DevHome.PI.Helpers;
-using DevHome.PI.Models;
 using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;

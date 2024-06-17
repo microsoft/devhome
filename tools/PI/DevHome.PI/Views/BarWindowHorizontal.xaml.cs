@@ -351,8 +351,9 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void Window_Activated(object sender, WindowActivatedEventArgs args)
     {
+        // This follows the design guidance of dimming our title bar elements when the window isn't activated
+        // https://learn.microsoft.com/en-us/windows/apps/develop/title-bar#dim-the-title-bar-when-the-window-is-inactive
         _currentActivationState = args.WindowActivationState;
-
         UpdateSnapButtonTextColor();
     }
 
