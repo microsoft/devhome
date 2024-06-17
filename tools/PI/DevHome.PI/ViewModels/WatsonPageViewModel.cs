@@ -54,14 +54,14 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        watsonHelper?.Dispose();
+        _watsonHelper?.Dispose();
         GC.SuppressFinalize(this);
     }
 
     public void AddNewEntry(DateTime timeGenerated, string moduleName, string executable, string eventGuid)
     {
         var newEntry = new WatsonReport(timeGenerated, moduleName, executable, eventGuid);
-        dispatcher.TryEnqueue(() =>
+        _dispatcher.TryEnqueue(() =>
         {
             ReportEntries.Add(newEntry, entry => entry.DateTimeGenerated);
         });
@@ -69,7 +69,7 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
 
     public void UpdateEntry(string eventGuid, string watsonLog, string directoryPath)
     {
-        dispatcher.TryEnqueue(() =>
+        _dispatcher.TryEnqueue(() =>
         {
             // See if we've already put this into our Collection.
             for (var i = 0; i < ReportEntries?.Count; i++)
@@ -123,7 +123,7 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
     {
         if (_targetProcess is not null)
         {
-            _watsonHelper = new WatsonHelper(_targetProcess, _reports, null);
+            _watsonHelper = new WatsonHelper(_targetProcess);
             _watsonHelper.Start();
 
             // Get all existing reports
