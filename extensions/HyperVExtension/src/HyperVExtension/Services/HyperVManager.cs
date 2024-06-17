@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.ServiceProcess;
-using System.Xml.Linq;
 using HyperVExtension.Common;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Exceptions;

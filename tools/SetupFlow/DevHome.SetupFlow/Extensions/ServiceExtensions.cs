@@ -87,7 +87,7 @@ public static class ServiceExtensions
         services.AddWinGet();
 
         services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
-        services.AddSingleton<WinGetPackageDataSource,  WinGetPackageJsonDataSource>(sp =>
+        services.AddSingleton<WinGetPackageDataSource, WinGetPackageJsonDataSource>(sp =>
         {
             var dataSourcePath = sp.GetService<IOptions<SetupFlowOptions>>().Value.WinGetPackageJsonDataSourcePath;
             var dataSourceFullPath = Path.Combine(AppContext.BaseDirectory, dataSourcePath);

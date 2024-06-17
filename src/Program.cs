@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
-using DevHome.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.UI.Dispatching;
 using Serilog;

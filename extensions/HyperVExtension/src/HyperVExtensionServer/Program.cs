@@ -9,7 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.AppLifecycle;
 using Serilog;
 using Windows.ApplicationModel.Activation;
-using Windows.Storage;
 
 namespace HyperVExtension;
 

@@ -6,7 +6,6 @@ using System.Xml;
 using System.Xml.XPath;
 using HyperVExtension.HostGuestCommunication;
 using Serilog;
-using Windows.Devices.Sms;
 
 namespace HyperVExtension.CommunicationWithGuest;
 

@@ -19,7 +19,6 @@ using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.Graphics.Imaging;
-using Windows.Storage;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;

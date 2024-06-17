@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
@@ -12,7 +11,6 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.System;
 using Windows.Win32;
-using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using WinUIEx;
 using static DevHome.PI.Helpers.WindowHelper;

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Common.Contracts;
-using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
 using DevHome.Environments.Models;
 using DevHome.Environments.ViewModels;
