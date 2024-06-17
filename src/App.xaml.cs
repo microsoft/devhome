@@ -81,15 +81,6 @@ public partial class App : Application, IApp
         InitializeComponent();
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-        // Set up Logging
-        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHome"));
-        var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
-        Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(configuration)
-            .CreateLogger();
-
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
         UseContentRoot(AppContext.BaseDirectory).
@@ -199,10 +190,15 @@ public partial class App : Application, IApp
 
     private async void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
-        // TODO: Log and handle exceptions as appropriate.
         // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
-        // https://github.com/microsoft/devhome/issues/613
+        Log.Fatal(e.Exception, $"Unhandled exception: {e.Message}");
+
+        // We are about to crash, so signal the extensions to stop.
         await GetService<IExtensionService>().SignalStopExtensionsAsync();
+        Log.CloseAndFlush();
+
+        // We are very likely in a bad and unrecoverable state, so ensure Dev Home crashes w/ the exception info.
+        Environment.FailFast(e.Message, e.Exception);
     }
 
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
@@ -224,10 +220,5 @@ public partial class App : Application, IApp
 
         // Activate the app and ensure the appropriate handlers are called.
         await _dispatcherQueue.EnqueueAsync(async () => await GetService<IActivationService>().ActivateAsync(localArgsDataReference));
-    }
-
-    private void Window_Closed(object sender, EventArgs e)
-    {
-        Log.CloseAndFlush();
     }
 }
