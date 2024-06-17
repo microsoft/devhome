@@ -10,4 +10,4 @@
 - [ ] Closes #xxx
 - [ ] Tests added/passed
 - [ ] Documentation updated
-- [ ] Completed the compliance tasks for telemetry events (if added/modified) following the guidance in [aka.ms/devhome-telemetry](aka.ms/devhome-telemetry)
+- [ ] Telemetry compliance tasks completed for any telemetry events added/modified following the guidance in [aka.ms/devhome-telemetry](aka.ms/devhome-telemetry)
