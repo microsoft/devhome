@@ -11,15 +11,34 @@
             </ResourceDictionary.MergedDictionaries>
 
             <Style x:Key="ChromeButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Foreground" Value="#A0A0A0"/>
                 <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
                 <Setter Property="FontSize" Value="10"/>
+                <Setter Property="Width" Value="40" />
+                <Setter Property="Height" Value="31" />
                 <Setter Property="Template">
                     <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}">
-                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <ControlTemplate TargetType="Button" >
+                            <Border x:Name="LayoutRoot" >
+                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="ChromeButtonStyle"/>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background" Value="Transparent" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background" Value="{ThemeResource WindowCaptionButtonBackgroundPointerOver}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="LayoutRoot.Background" Value="{ThemeResource WindowCaptionButtonBackgroundPressed}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
                             </Border>
                         </ControlTemplate>
                     </Setter.Value>

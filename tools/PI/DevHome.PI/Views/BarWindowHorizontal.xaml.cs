@@ -15,6 +15,7 @@ using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Windows.Foundation;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
@@ -35,6 +36,7 @@ public partial class BarWindowHorizontal : WindowEx
     private readonly UISettings _uiSettings = new();
 
     private bool _isClosing;
+    private WindowActivationState _currentActivationState = WindowActivationState.Deactivated;
 
     // Constants that control window sizes
     private const int WindowPositionOffsetY = 30;
@@ -339,8 +341,27 @@ public partial class BarWindowHorizontal : WindowEx
 
     public void SetCaptionButtonColors(Windows.UI.Color color)
     {
-        var res = Application.Current.Resources;
-        res["WindowCaptionForeground"] = color;
         AppWindow.TitleBar.ButtonForegroundColor = color;
+        UpdateSnapButtonTextColor();
+    }
+
+    private void Window_Activated(object sender, WindowActivatedEventArgs args)
+    {
+        // This follows the design guidance of dimming our title bar elements when the window isn't activated
+        // https://learn.microsoft.com/en-us/windows/apps/develop/title-bar#dim-the-title-bar-when-the-window-is-inactive
+        _currentActivationState = args.WindowActivationState;
+        UpdateSnapButtonTextColor();
+    }
+
+    private void UpdateSnapButtonTextColor()
+    {
+        if (_currentActivationState == WindowActivationState.Deactivated)
+        {
+            SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
+        }
+        else
+        {
+            SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
+        }
     }
 }
