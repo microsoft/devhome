@@ -19,11 +19,11 @@ public partial class AboutViewModel : ObservableObject
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
     [ObservableProperty]
-    private string versionDescription;
+    private string _versionDescription;
 
     public AboutViewModel()
     {
-        versionDescription = GetVersionDescription();
+        _versionDescription = GetVersionDescription();
 
         Breadcrumbs = new ObservableCollection<Breadcrumb>
         {
