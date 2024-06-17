@@ -77,11 +77,7 @@ public partial class AppDetailsPageViewModel : ObservableObject
                         AppInfo.CpuArchitecture = cpuArchitecture;
                     }
 
-                    foreach (ProcessModule module in targetProcess.Modules)
-                    {
-                        AppInfo.CheckFrameworkTypes(module.ModuleName);
-                    }
-
+                    AppInfo.CheckFrameworkTypes(targetProcess.Modules);
                     AppInfo.IsStoreApp = PInvoke.IsImmersiveProcess(targetProcess.SafeHandle);
                 }
             }
