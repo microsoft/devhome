@@ -590,12 +590,13 @@ public class WindowHelper
 
         try
         {
-            await ContentDialog.ShowAsync();
-            timer.Start();
+            ContentDialog.Opened += (s, e) => timer.Start();
             ContentDialog.Closed += (s, e) =>
             {
+                timer.Stop();
                 ContentDialog = null;
             };
+            await ContentDialog.ShowAsync();
         }
         catch (Exception ex)
         {
