@@ -16,8 +16,8 @@ using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.Telemetry;
+using Microsoft.UI.Xaml;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -27,7 +27,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
     private readonly ConfigurationFileBuilder _configFileBuilder;
-    private readonly WindowEx _mainWindow;
+    private readonly Window _mainWindow;
 
     [ObservableProperty]
     private IList<ReviewTabViewModelBase> _reviewTabs;
@@ -95,7 +95,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         ConfigurationFileBuilder configFileBuilder,
-        WindowEx mainWindow)
+        Window mainWindow)
         : base(stringResource, orchestrator)
     {
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
@@ -164,7 +164,12 @@ public partial class ReviewViewModel : SetupPageViewModelBase
             }
 
             var flowPages = Orchestrator.FlowPages.Select(p => p.GetType().Name).ToList();
-            TelemetryFactory.Get<ITelemetry>().Log("Review_SetUp", LogLevel.Critical, new ReviewSetUpCommandEvent(Orchestrator.IsSettingUpATargetMachine, flowPages));
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Review_SetUp",
+                LogLevel.Critical,
+                new ReviewSetUpCommandEvent(Orchestrator.IsSettingUpATargetMachine, flowPages),
+                relatedActivityId: Orchestrator.ActivityId);
+
             await Orchestrator.GoToNextPage();
         }
         catch (Exception e)

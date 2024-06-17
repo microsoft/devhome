@@ -14,8 +14,8 @@ using DevHome.Common.Services;
 using DevHome.SetupFlow.Behaviors;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
+using Microsoft.UI.Dispatching;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -25,7 +25,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
     private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
     private readonly IExtensionService _extensionService;
     private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
     private readonly SemaphoreSlim _loadCatalogsSemaphore = new(1, 1);
 
     [ObservableProperty]
@@ -56,10 +56,10 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
         IExtensionService extensionService,
         ICatalogDataSourceLoader catalogDataSourceLoader,
         PackageCatalogViewModelFactory packageCatalogViewModelFactory,
-        WindowEx windowEx)
+        DispatcherQueue dispatcherQueue)
     {
         _extensionService = extensionService;
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
         _catalogDataSourceLoader = catalogDataSourceLoader;
         _packageCatalogViewModelFactory = packageCatalogViewModelFactory;
     }
@@ -172,7 +172,7 @@ public partial class PackageCatalogListViewModel : ObservableObject, IDisposable
 
     private async void OnExtensionChangedAsync(object sender, EventArgs e)
     {
-        await _windowEx.DispatcherQueue.EnqueueAsync(() => LoadCatalogsAsync());
+        await _dispatcherQueue.EnqueueAsync(() => LoadCatalogsAsync());
     }
 
     private void Dispose(bool disposing)

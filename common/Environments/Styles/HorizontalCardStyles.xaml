@@ -61,6 +61,7 @@
         TargetType="Grid">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="ColumnSpacing" Value="20" />
+        <Setter Property="Height" Value="36" />
         <Setter Property="Margin" Value="0,5,0,0" />
     </Style>
 

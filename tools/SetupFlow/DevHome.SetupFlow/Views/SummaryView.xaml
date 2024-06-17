@@ -31,7 +31,7 @@
                     <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible" />
                     <converters:DoubleToVisibilityConverter x:Key="ZeroCountWillNotSpanColumnsConverter" GreaterThan="0" FalseValue="0" TrueValue="*"/>
                     <ControlTemplate x:Key="LinksTemplate">
-                        <StackPanel>
+                        <StackPanel XYFocusKeyboardNavigation="Enabled">
                             <StackPanel.Resources>
                                 <Style TargetType="HyperlinkButton" BasedOn="{StaticResource TextBlockButtonStyle}"/>
                             </StackPanel.Resources>
@@ -183,7 +183,7 @@
                     </Grid>
 
                     <!-- Next steps section -->
-                    <ContentControl Grid.Column="1" Template="{ThemeResource LinksTemplate}" />
+                    <ContentControl Grid.Column="1" IsTabStop="False" Template="{ThemeResource LinksTemplate}" />
                 </Grid>
 
                 <!-- Target setup results -->
@@ -340,7 +340,7 @@
                                 </ListView.ItemTemplate>
                             </ListView>
                         </Grid>
-                        <ContentControl Grid.Row="2" Template="{ThemeResource LinksTemplate}" />
+                        <ContentControl Grid.Row="2" IsTabStop="False" Template="{ThemeResource LinksTemplate}" />
                     </Grid>
 
                     <!-- Displays the repos cloned and apps downloaded -->
@@ -586,7 +586,7 @@
                                 </ListView.ItemTemplate>
                             </ListView>
                         </Grid>
-                        <ContentControl Grid.Row="2" Template="{ThemeResource LinksTemplate}" />
+                        <ContentControl Grid.Row="2" IsTabStop="False" Template="{ThemeResource LinksTemplate}" />
                     </Grid>
 
                     <!-- Displays the repos cloned and apps downloaded -->
@@ -662,7 +662,7 @@
                                     </GridView.ItemsPanel>
                                     <GridView.ItemTemplate>
                                         <DataTemplate x:DataType="viewModels:PackageViewModel">
-                                            <controls:PackageDetailsSettingsCard Width="250" Padding="5">
+                                            <controls:PackageDetailsSettingsCard AutomationProperties.Name="{x:Bind PackageTitle}" Width="250" Padding="5">
                                                 <ToolTipService.ToolTip>
                                                     <controls:PackageDetailsTooltip Package="{x:Bind}" />
                                                 </ToolTipService.ToolTip>
@@ -673,7 +673,7 @@
                                                     <TextBlock Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{x:Bind PackageFullDescription}" />
                                                 </controls:PackageDetailsSettingsCard.Description>
                                                 <controls:PackageDetailsSettingsCard.HeaderIcon>
-                                                    <ImageIcon Source="{x:Bind Icon}"/>
+                                                    <ImageIcon AutomationProperties.Name="{x:Bind PackageTitle}" Source="{x:Bind Icon}"/>
                                                 </controls:PackageDetailsSettingsCard.HeaderIcon>
                                             </controls:PackageDetailsSettingsCard>
                                         </DataTemplate>
@@ -695,7 +695,7 @@
                                 <ListView SelectionMode="None" ItemsSource="{x:Bind ViewModel.AppsDownloadedInstallationNotes}">
                                     <ListView.ItemTemplate>
                                         <DataTemplate x:DataType="viewModels:PackageViewModel">
-                                            <Grid ColumnSpacing="12" Margin="0,0,0,4" CornerRadius="8" Padding="18,20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                                            <Grid AutomationProperties.Name="{x:Bind PackageTitle}" ColumnSpacing="12" Margin="0,0,0,4" CornerRadius="8" Padding="18,20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="auto" />
                                                     <ColumnDefinition Width="*" />
@@ -712,9 +712,10 @@
                                                         Tag="{Binding ElementName=ViewAllButton}"
                                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                         Text="{x:Bind InstallationNotes}"/>
-                                                    <HyperlinkButton
+                                                    <Button
                                                         Name="ViewAllButton"
                                                         Visibility="Collapsed"
+                                                        Padding="0,5,0,6"
                                                         Click="ViewAllButton_Click"
                                                         Style="{ThemeResource TextBlockButtonStyle}"
                                                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ViewAll"

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Security.Principal;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 
@@ -26,5 +27,11 @@ public static class RuntimeHelper
             var version = Environment.OSVersion.Version;
             return version.Major >= 10 && version.Build >= 22000;
         }
+    }
+
+    public static bool IsCurrentProcessRunningAsAdmin()
+    {
+        var identity = WindowsIdentity.GetCurrent();
+        return identity.Owner?.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid) ?? false;
     }
 }

@@ -5,11 +5,11 @@ using System;
 using System.Linq;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation;
 using Windows.UI.ViewManagement;
-using WinUIEx;
 
 namespace DevHome.Dashboard.Controls;
 
@@ -265,7 +265,7 @@ public sealed class WidgetBoard : Panel
 
     private void HandleTextScaleFactorChanged(UISettings sender, object args)
     {
-        Application.Current.GetService<WindowEx>().DispatcherQueue.EnqueueAsync(() =>
+        Application.Current.GetService<DispatcherQueue>().EnqueueAsync(() =>
         {
             _textScale = sender.TextScaleFactor;
             InvalidateMeasure();

@@ -94,7 +94,7 @@
                 </ListView.Header>
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:CloningInformation">
-                        <Grid>
+                        <Grid AutomationProperties.Name="{x:Bind RepoConfigAutomationName}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />

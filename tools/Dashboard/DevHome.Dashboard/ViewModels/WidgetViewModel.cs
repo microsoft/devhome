@@ -2,6 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
@@ -13,15 +17,15 @@ using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Telemetry;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
 using Windows.Data.Json;
-using Windows.System;
-using WinUIEx;
 
 namespace DevHome.Dashboard.ViewModels;
 
@@ -41,8 +45,9 @@ public partial class WidgetViewModel : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetViewModel));
 
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
     private readonly WidgetAdaptiveCardRenderingService _renderingService;
+    private readonly IScreenReaderService _screenReaderService;
 
     private RenderedAdaptiveCard _renderedCard;
 
@@ -99,10 +104,12 @@ public partial class WidgetViewModel : ObservableObject
         WidgetSize widgetSize,
         ComSafeWidgetDefinition widgetDefinition,
         WidgetAdaptiveCardRenderingService adaptiveCardRenderingService,
-        WindowEx windowEx)
+        IScreenReaderService screenReaderService,
+        DispatcherQueue dispatcherQueue)
     {
         _renderingService = adaptiveCardRenderingService;
-        _windowEx = windowEx;
+        _screenReaderService = screenReaderService;
+        _dispatcherQueue = dispatcherQueue;
 
         Widget = widget;
         WidgetSize = widgetSize;
@@ -150,9 +157,11 @@ public partial class WidgetViewModel : ObservableObject
                 // Use custom parser.
                 var elementParser = new AdaptiveElementParserRegistration();
                 elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
+                var actionParser = new AdaptiveActionParserRegistration();
+                actionParser.Set(ChooseFileAction.CustomTypeString, new ChooseFileParser());
 
                 // Create adaptive card.
-                card = AdaptiveCard.FromJsonString(json, elementParser, new AdaptiveActionParserRegistration());
+                card = AdaptiveCard.FromJsonString(json, elementParser, actionParser);
             }
             catch (Exception ex)
             {
@@ -174,7 +183,7 @@ public partial class WidgetViewModel : ObservableObject
             }
 
             // Render card on the UI thread.
-            _windowEx.DispatcherQueue.TryEnqueue(async () =>
+            _dispatcherQueue.TryEnqueue(async () =>
             {
                 try
                 {
@@ -184,6 +193,7 @@ public partial class WidgetViewModel : ObservableObject
                     {
                         _renderedCard.Action += HandleAdaptiveAction;
                         WidgetFrameworkElement = _renderedCard.FrameworkElement;
+                        AnnounceWarnings(card.AdaptiveCard);
                     }
                     else
                     {
@@ -236,7 +246,7 @@ public partial class WidgetViewModel : ObservableObject
     public void ShowLoadingCard()
     {
         _log.Debug("Show loading card.");
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _dispatcherQueue.TryEnqueue(() =>
         {
             WidgetFrameworkElement = new ProgressRing();
         });
@@ -245,7 +255,7 @@ public partial class WidgetViewModel : ObservableObject
     // Used to show a message instead of Adaptive Card content in a widget.
     public void ShowErrorCard(string error, string subError = null)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _dispatcherQueue.TryEnqueue(() =>
         {
             WidgetFrameworkElement = GetErrorCard(error, subError);
         });
@@ -275,6 +285,8 @@ public partial class WidgetViewModel : ObservableObject
         };
         sp.Children.Add(errorText);
 
+        var errorTextToAnnounce = errorText.Text;
+
         if (subError is not null)
         {
             var subErrorText = new TextBlock
@@ -286,7 +298,10 @@ public partial class WidgetViewModel : ObservableObject
             };
 
             sp.Children.Add(subErrorText);
+            errorTextToAnnounce += $" {subErrorText.Text}";
         }
+
+        _screenReaderService.Announce(errorTextToAnnounce);
 
         grid.Children.Add(sp);
         return grid;
@@ -298,7 +313,7 @@ public partial class WidgetViewModel : ObservableObject
         if (args.Action is AdaptiveOpenUrlAction openUrlAction)
         {
             _log.Information($"Url = {openUrlAction.Url}");
-            await Launcher.LaunchUriAsync(openUrlAction.Url);
+            await Windows.System.Launcher.LaunchUriAsync(openUrlAction.Url);
         }
         else if (args.Action is AdaptiveExecuteAction executeAction)
         {
@@ -320,6 +335,32 @@ public partial class WidgetViewModel : ObservableObject
             _log.Information($"Verb = {executeAction.Verb}, Data = {dataToSend}");
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
         }
+        else if (args.Action is ChooseFileAction filePickerAction)
+        {
+            var dataToSend = string.Empty;
+            if (!filePickerAction.LaunchFilePicker())
+            {
+                // Don't send data if the user canceled the file picker.
+                return;
+            }
+
+            var dataType = filePickerAction.ToJson().ValueType;
+            if (dataType != Windows.Data.Json.JsonValueType.Null)
+            {
+                dataToSend = filePickerAction.ToJson().Stringify();
+            }
+            else
+            {
+                var inputType = args.Inputs.AsJson().ValueType;
+                if (inputType != Windows.Data.Json.JsonValueType.Null)
+                {
+                    dataToSend = args.Inputs.AsJson().Stringify();
+                }
+            }
+
+            _log.Information($"Verb = {filePickerAction.Verb}, Data = {dataToSend}");
+            await Widget.NotifyActionInvokedAsync(filePickerAction.Verb, dataToSend);
+        }
 
         TelemetryFactory.Get<ITelemetry>().Log(
             "Dashboard_ReportWidgetInteraction",
@@ -339,5 +380,63 @@ public partial class WidgetViewModel : ObservableObject
     public void UnsubscribeFromWidgetUpdates()
     {
         Widget.WidgetUpdated -= HandleWidgetUpdated;
+    }
+
+    private void AnnounceWarnings(AdaptiveCard card)
+    {
+        if (!AutomationPeer.ListenerExists(AutomationEvents.AutomationFocusChanged))
+        {
+            return;
+        }
+
+        foreach (var element in card.Body)
+        {
+            SearchForWarning(element, false);
+        }
+    }
+
+    // We are only interested in plain texts. Buttons, Actions, Images
+    // and textboxes are all ignored. Including ActionSets and ImageSets.
+    // We are treating any text inside a container with the "Warning" style
+    // as an actual warning to be announced.
+    // For now, the only types of containers widgets use are Containers and Columns. In the future,
+    // we may add Caroussels, Tables and Facts to this list.
+    // We just need to add the other controls in this dictionary
+    // with the correct function to access its children.
+    private static readonly Dictionary<Type, string> ContainerTypes = new()
+    {
+        { typeof(AdaptiveContainer), "get_Items" },
+        { typeof(AdaptiveColumn), "get_Items" },
+        { typeof(AdaptiveColumnSet), "get_Columns" },
+    };
+
+    private void SearchForWarning(IAdaptiveCardElement element, bool isInsideWarningContainer)
+    {
+        if (element is AdaptiveTextBlock textBlock)
+        {
+            if (isInsideWarningContainer)
+            {
+                _screenReaderService.Announce(textBlock.Text);
+            }
+
+            return;
+        }
+
+        if (element is not IAdaptiveContainerBase)
+        {
+            return;
+        }
+
+        var containerElement = element as IAdaptiveContainerBase;
+
+        foreach (var containerType in ContainerTypes.Where(containerType => containerType.Key == containerElement.GetType()))
+        {
+            var itemsMethod = containerType.Key.GetMethod(containerType.Value, BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var subelement in itemsMethod.Invoke(containerElement, null) as IEnumerable)
+            {
+                SearchForWarning((IAdaptiveCardElement)subelement, isInsideWarningContainer || (containerElement.Style == ContainerStyle.Warning));
+            }
+        }
     }
 }
