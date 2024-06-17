@@ -16,7 +16,7 @@ using Windows.Foundation;
 namespace DevHome.Common.Environments.Services;
 
 /// <summary>
-/// Service thats used to get the ComputeSystems from the providers so they can be loaded into the UI.
+/// Service that's used to get the ComputeSystems from the providers so they can be loaded into the UI.
 /// This class is also used to keep track of the ComputeSystem that a configuration file will be applied to.
 /// </summary>
 public class ComputeSystemManager : IComputeSystemManager

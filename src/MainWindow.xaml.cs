@@ -12,7 +12,7 @@ namespace DevHome;
 
 public sealed partial class MainWindow : WinUIEx.WindowEx
 {
-    private readonly DateTime mainWindowCreated;
+    private readonly DateTime _mainWindowCreated;
 
     public MainWindow()
     {
@@ -21,13 +21,13 @@ public sealed partial class MainWindow : WinUIEx.WindowEx
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/DevHome.ico"));
         Content = null;
         Title = Application.Current.GetService<IAppInfoService>().GetAppNameLocalized();
-        mainWindowCreated = DateTime.UtcNow;
+        _mainWindowCreated = DateTime.UtcNow;
     }
 
     private void MainWindow_Closed(object sender, WindowEventArgs args)
     {
         Application.Current.GetService<IExtensionService>().SignalStopExtensionsAsync();
-        TelemetryFactory.Get<ITelemetry>().Log("DevHome_MainWindow_Closed_Event", LogLevel.Critical, new DevHomeClosedEvent(mainWindowCreated));
+        TelemetryFactory.Get<ITelemetry>().Log("DevHome_MainWindow_Closed_Event", LogLevel.Critical, new DevHomeClosedEvent(_mainWindowCreated));
         Log.Information("Terminating via MainWindow_Closed.");
     }
 }

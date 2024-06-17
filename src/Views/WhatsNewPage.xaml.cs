@@ -21,7 +21,7 @@ public sealed partial class WhatsNewPage : Page
 {
     private readonly Uri _devDrivePageKeyUri = new("ms-settings:disksandvolumes");
     private readonly Uri _devDriveLearnMoreLinkUri = new("https://go.microsoft.com/fwlink/?linkid=2236041");
-    private const string _devDriveLinkResourceKey = "WhatsNewPage_DevDriveCard/Link";
+    private const string DevDriveLinkResourceKey = "WhatsNewPage_DevDriveCard/Link";
 
     public WhatsNewViewModel ViewModel { get; }
 
@@ -52,7 +52,7 @@ public sealed partial class WhatsNewPage : Page
             {
                 if (!DevDriveUtil.IsDevDriveFeatureEnabled)
                 {
-                    card.ButtonText = Application.Current.GetService<IStringResource>().GetLocalized(_devDriveLinkResourceKey);
+                    card.ButtonText = Application.Current.GetService<IStringResource>().GetLocalized(DevDriveLinkResourceKey);
                     card.ShouldShowLink = false;
                 }
             }
