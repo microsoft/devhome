@@ -79,6 +79,9 @@ public partial class App : Application, IApp
     public App()
     {
         InitializeComponent();
+#if DEBUG
+        DebugSettings.FailFastOnErrors = true;
+#endif
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
         Host = Microsoft.Extensions.Hosting.Host.
@@ -170,10 +173,6 @@ public partial class App : Application, IApp
 
         UnhandledException += App_UnhandledException;
         AppInstance.GetCurrent().Activated += OnActivated;
-
-#if DEBUG
-        DebugSettings.FailFastOnErrors = true;
-#endif
     }
 
     public void ShowMainWindow()
