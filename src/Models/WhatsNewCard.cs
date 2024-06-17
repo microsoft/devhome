@@ -42,7 +42,7 @@ public class WhatsNewCard
         get; set;
     }
 
-    public string? Button
+    public string? ButtonText
     {
         get; set;
     }

@@ -5,10 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
-    xmlns:muxc="using:Microsoft.UI.Xaml.Controls" 
     xmlns:models="using:DevHome.Models"
     xmlns:behaviors="using:DevHome.Common.Behaviors" 
-    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="OnLoaded"
     SizeChanged="OnSizeChanged"
@@ -72,11 +70,11 @@
                         Margin="0 16"
                         MinWidth="248"
                         Style="{ThemeResource AccentButtonStyle}"
-                        Click="MachineConfigButton_Click" />
+                        Command="{x:Bind ViewModel.HeaderButtonNavigateCommand}" />
                 </StackPanel>
 
                 <!-- Big Cards -->
-                <muxc:ItemsRepeater
+                <ItemsRepeater
                     Name="BigFeaturesContainer"
                     Grid.Row="1"
                     Margin="35, 5, 45, 10"
@@ -84,7 +82,7 @@
                     animations:Connected.ListItemKey="animationKeyContentGrid"
                     ItemsSource="{x:Bind ViewModel.BigSource,Mode=OneWay}">
 
-                    <muxc:ItemsRepeater.Resources>
+                    <ItemsRepeater.Resources>
                         <!-- This repeater is responsible for the big cards. To add another here, make sure to assign IsBig as true -->
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_ExtensionsCard"
@@ -97,17 +95,17 @@
                             PageKey="DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel"
                             IsBig="True"
                             Priority="0" />
-                    </muxc:ItemsRepeater.Resources>
+                    </ItemsRepeater.Resources>
 
-                    <muxc:ItemsRepeater.Layout>
-                        <muxc:StackLayout 
+                    <ItemsRepeater.Layout>
+                        <StackLayout 
                             x:Name="BigCardGrid"
                             Spacing="12"
                             Orientation="Vertical" >
-                        </muxc:StackLayout>
-                    </muxc:ItemsRepeater.Layout>
+                        </StackLayout>
+                    </ItemsRepeater.Layout>
 
-                    <muxc:ItemsRepeater.ItemTemplate>
+                    <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="models:WhatsNewCard">
                             <Grid
                                 HorizontalAlignment="Stretch"
@@ -134,12 +132,7 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-
                                 <Image
-                                    Grid.Row="0"
                                     Grid.Column="0"
                                     Source="{ThemeResource ItemImage}"
                                     MaxHeight="188"
@@ -151,40 +144,40 @@
                                     <TextBlock
                                         HorizontalAlignment="Left"
                                         Style="{ThemeResource BodyTextStyle}"
-                                        Text="{x:Bind Title}" />
+                                        Text="{x:Bind Title, Mode=OneTime}" />
 
                                     <TextBlock
                                         Margin="0 8 0 10"
                                         TextWrapping="Wrap"
                                         HorizontalAlignment="Left"
-                                        Text="{x:Bind Description}"/>
+                                        Text="{x:Bind Description, Mode=OneTime}" />
 
                                     <HyperlinkButton
-                                        Content="{x:Bind Link}"
+                                        Content="{x:Bind Link, Mode=OneTime}"
                                         Foreground="{ThemeResource LearnMoreForeground}"
                                         NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
                                         Padding="0"
                                         Margin="0"
-                                        Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
+                                        Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneTime}" />
 
                                     <Button 
                                         Margin="0 0 0 10"
                                         Padding="50 5 50 5"
                                         DataContext="{x:Bind PageKey}"
-                                        AutomationProperties.AutomationId="{x:Bind AutomationId}"
+                                        AutomationProperties.AutomationId="{x:Bind AutomationId, Mode=OneTime}"
                                         Click="Button_ClickAsync"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Bottom"
-                                        Content="{x:Bind Button}" />
+                                        Content="{x:Bind ButtonText, Mode=OneTime}" />
 
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>
-                    </muxc:ItemsRepeater.ItemTemplate>
-                </muxc:ItemsRepeater>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
 
                 <!-- Small Cards -->
-                <muxc:ItemsRepeater
+                <ItemsRepeater
                     Name="FeaturesContainer"
                     Grid.Row="2"
                     Margin="35, 5, 45, 45"
@@ -192,7 +185,7 @@
                     animations:Connected.ListItemKey="animationKeyContentGrid"
                     ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}">
 
-                    <muxc:ItemsRepeater.Resources>
+                    <ItemsRepeater.Resources>
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDashCard"
                             x:Key="WhatsNewPage_DevDashCard"
@@ -219,10 +212,10 @@
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevDriveHero.png"
                             PageKey="ms-settings:disksandvolumes"
                             Priority="3" />
-                    </muxc:ItemsRepeater.Resources>
+                    </ItemsRepeater.Resources>
 
-                    <muxc:ItemsRepeater.Layout>
-                        <muxc:UniformGridLayout 
+                    <ItemsRepeater.Layout>
+                        <UniformGridLayout 
                             x:Name="CardGrid"
                             Orientation="Horizontal" 
                             MinItemWidth="200"
@@ -232,9 +225,9 @@
                             ItemsStretch="Fill"
                             MaximumRowsOrColumns="3"
                             ItemsJustification="Center" />
-                    </muxc:ItemsRepeater.Layout>
+                    </ItemsRepeater.Layout>
 
-                    <muxc:ItemsRepeater.ItemTemplate>
+                    <ItemsRepeater.ItemTemplate>
                         <DataTemplate 
                             x:DataType="models:WhatsNewCard">
                             <Grid
@@ -275,7 +268,7 @@
                                         <TextBlock
                                             HorizontalAlignment="Left"
                                             Style="{ThemeResource BodyTextStyle}"
-                                            Text="{x:Bind Title}" />
+                                            Text="{x:Bind Title, Mode=OneTime}" />
 
                                         <StackPanel Margin="0 16 0 20">
                                             <TextBlock
@@ -283,7 +276,7 @@
                                                 TextWrapping="Wrap"
                                                 VerticalAlignment="Top"
                                                 TextTrimming="WordEllipsis"
-                                                Text="{x:Bind Description}"/>
+                                                Text="{x:Bind Description, Mode=OneTime}" />
 
                                             <HyperlinkButton
                                                 Content="{x:Bind Link}"
@@ -292,7 +285,7 @@
                                                 VerticalAlignment="Top"
                                                 Padding="0"
                                                 Margin="0"
-                                                Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
+                                                Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneTime}" />
                                         </StackPanel>
                                     </StackPanel>
                                 </ScrollViewer>
@@ -300,27 +293,27 @@
                                 <Button
                                     Grid.Row="2"
                                     Margin="15 0 15 10"
-                                    AutomationProperties.AutomationId="{x:Bind AutomationId}"
+                                    AutomationProperties.AutomationId="{x:Bind AutomationId, Mode=OneTime}"
                                     DataContext="{x:Bind PageKey}"
                                     Click="Button_ClickAsync"
                                     HorizontalAlignment="Stretch"
-                                    AutomationProperties.Name="{x:Bind Button}"
+                                    AutomationProperties.Name="{x:Bind ButtonText, Mode=OneTime}"
                                     VerticalAlignment="Bottom">
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{x:Bind Button}" Margin="0 0 5 0" />
+                                            <TextBlock Text="{x:Bind ButtonText, Mode=OneTime}" Margin="0 0 5 0" />
                                             <!-- The open new window icon -->
                                             <FontIcon 
                                                 Glyph="&#xE8A7;" 
-                                                Visibility="{x:Bind ShouldShowIcon}" 
+                                                Visibility="{x:Bind ShouldShowIcon, Mode=OneTime}"
                                                 FontSize="12"/>
                                         </StackPanel>
                                     </Button.Content>
                                 </Button>
                             </Grid>
                         </DataTemplate>
-                    </muxc:ItemsRepeater.ItemTemplate>
-                </muxc:ItemsRepeater>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
             </Grid>
         </RelativePanel>
     </ScrollViewer>
