@@ -9,7 +9,7 @@ namespace DevHome.Common.Helpers;
 
 public static class Deployment
 {
-    private static readonly string DeploymentIdentifierKeyName = "DevHomeDeploymentIdentifier";
+    private static readonly string _deploymentIdentifierKeyName = "DevHomeDeploymentIdentifier";
 
     // This creates and returns a Guid associated with this deployment of DevHome. This uniquely
     // identifies this deployment across multiple launches and will be different per Windows user.
@@ -23,18 +23,18 @@ public static class Deployment
             try
             {
                 var localSettings = ApplicationData.Current.LocalSettings;
-                if (localSettings.Values.TryGetValue(DeploymentIdentifierKeyName, out var value))
+                if (localSettings.Values.TryGetValue(_deploymentIdentifierKeyName, out var value))
                 {
                     return (Guid)value;
                 }
 
                 var newGuid = Guid.NewGuid();
-                localSettings.Values[DeploymentIdentifierKeyName] = newGuid;
+                localSettings.Values[_deploymentIdentifierKeyName] = newGuid;
                 return newGuid;
             }
             catch (Exception ex)
             {
-                // We do not want this identifer's access to ever create a problem in the
+                // We do not want this identifier's access to ever create a problem in the
                 // application, so if we can't get it, return empty guid. An empty guid is also a
                 // signal that the data is unknown for filtering purposes.
                 Log.Error(ex, $"Failed getting Deployment Identifier");
