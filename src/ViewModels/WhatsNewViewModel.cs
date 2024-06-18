@@ -3,19 +3,25 @@
 
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Services;
 using DevHome.Models;
 
 namespace DevHome.ViewModels;
 
-public class WhatsNewViewModel : ObservableObject
+public partial class WhatsNewViewModel : ObservableObject
 {
     public ObservableCollection<WhatsNewCard> Source { get; } = new ObservableCollection<WhatsNewCard>();
 
     public ObservableCollection<WhatsNewCard> BigSource { get; } = new ObservableCollection<WhatsNewCard>();
 
-    public int NumberOfBigCards
+    public int NumberOfBigCards { get; set; }
+
+    private readonly INavigationService _navigationService;
+
+    public WhatsNewViewModel(INavigationService navigationService)
     {
-        get; set;
+        _navigationService = navigationService;
     }
 
     public void AddCard(WhatsNewCard card)
@@ -105,13 +111,9 @@ public class WhatsNewViewModel : ObservableObject
         }
     }
 
-    public void OnNavigatedTo(object parameter)
+    [RelayCommand]
+    private void HeaderButtonNavigate()
     {
-        Source.Clear();
-        BigSource.Clear();
-    }
-
-    public void OnNavigatedFrom()
-    {
+        _navigationService.NavigateTo(typeof(SetupFlow.ViewModels.SetupFlowViewModel).FullName!);
     }
 }

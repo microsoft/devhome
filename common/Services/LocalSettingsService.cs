@@ -15,8 +15,8 @@ namespace DevHome.Common.Services;
 
 public class LocalSettingsService : ILocalSettingsService
 {
-    private const string _defaultApplicationDataFolder = "DevHome/ApplicationData";
-    private const string _defaultLocalSettingsFile = "LocalSettings.json";
+    private const string DefaultApplicationDataFolder = "DevHome/ApplicationData";
+    private const string DefaultLocalSettingsFile = "LocalSettings.json";
 
     private readonly IFileService _fileService;
     private readonly LocalSettingsOptions _options;
@@ -34,8 +34,8 @@ public class LocalSettingsService : ILocalSettingsService
         _fileService = fileService;
         _options = options.Value;
 
-        _applicationDataFolder = Path.Combine(_localApplicationData, _options.ApplicationDataFolder ?? _defaultApplicationDataFolder);
-        _localSettingsFile = _options.LocalSettingsFile ?? _defaultLocalSettingsFile;
+        _applicationDataFolder = Path.Combine(_localApplicationData, _options.ApplicationDataFolder ?? DefaultApplicationDataFolder);
+        _localSettingsFile = _options.LocalSettingsFile ?? DefaultLocalSettingsFile;
 
         _settings = new Dictionary<string, object>();
     }
