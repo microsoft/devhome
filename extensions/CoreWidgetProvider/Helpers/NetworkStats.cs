@@ -8,11 +8,11 @@ namespace CoreWidgetProvider.Helpers;
 
 internal sealed class NetworkStats : IDisposable
 {
-    private readonly Dictionary<string, List<PerformanceCounter>> networkCounters = new();
+    private readonly Dictionary<string, List<PerformanceCounter>> _networkCounters = new();
 
-    private Dictionary<string, Data> NetworkUsages { get; set; } = new Dictionary<string, Data>();
+    private Dictionary<string, Data> NetworkUsages { get; set; } = new();
 
-    private Dictionary<string, List<float>> NetChartValues { get; set; } = new Dictionary<string, List<float>>();
+    private Dictionary<string, List<float>> NetChartValues { get; set; } = new();
 
     public sealed class Data
     {
@@ -39,15 +39,15 @@ internal sealed class NetworkStats : IDisposable
 
     private void InitNetworkPerfCounters()
     {
-        PerformanceCounterCategory pcc = new PerformanceCounterCategory("Network Interface");
+        var pcc = new PerformanceCounterCategory("Network Interface");
         var instanceNames = pcc.GetInstanceNames();
         foreach (var instanceName in instanceNames)
         {
-            List<PerformanceCounter> instanceCounters = new List<PerformanceCounter>();
+            var instanceCounters = new List<PerformanceCounter>();
             instanceCounters.Add(new PerformanceCounter("Network Interface", "Bytes Sent/sec", instanceName));
             instanceCounters.Add(new PerformanceCounter("Network Interface", "Bytes Received/sec", instanceName));
             instanceCounters.Add(new PerformanceCounter("Network Interface", "Current Bandwidth", instanceName));
-            networkCounters.Add(instanceName, instanceCounters);
+            _networkCounters.Add(instanceName, instanceCounters);
             NetChartValues.Add(instanceName, new List<float>());
             NetworkUsages.Add(instanceName, new Data());
         }
@@ -56,7 +56,7 @@ internal sealed class NetworkStats : IDisposable
     public void GetData()
     {
         float maxUsage = 0;
-        foreach (var networkCounterWithName in networkCounters)
+        foreach (var networkCounterWithName in _networkCounters)
         {
             try
             {
@@ -155,7 +155,7 @@ internal sealed class NetworkStats : IDisposable
 
     public void Dispose()
     {
-        foreach (var counterPair in networkCounters)
+        foreach (var counterPair in _networkCounters)
         {
             foreach (var counter in counterPair.Value)
             {
