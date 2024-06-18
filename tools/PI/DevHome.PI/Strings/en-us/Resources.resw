@@ -706,7 +706,7 @@
     <comment>Describes an issue related to security.</comment>
   </data>
   <data name="FaultingModuleColumn.Header" xml:space="preserve">
-    <value>Faulting module</value>
+    <value>Failure Bucket ID</value>
     <comment>Refers to the module which caused the fault which generated the crash report</comment>
   </data>
   <data name="GenericInsightDescription" xml:space="preserve">

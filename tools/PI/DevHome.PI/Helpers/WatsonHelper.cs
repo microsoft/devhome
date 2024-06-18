@@ -9,6 +9,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using DevHome.PI.Models;
 
 namespace DevHome.PI.Helpers;
@@ -18,57 +19,49 @@ internal sealed class WatsonHelper : IDisposable
     private const string WatsonQueryPart1 = "(*[System[Provider[@Name=\"Application Error\"]]] and *[System[EventID=1000]])";
     private const string WatsonQueryPart2 = "(*[System[Provider[@Name=\"Windows Error Reporting\"]]] and *[System[EventID=1001]])";
 
-    private readonly Process targetProcess;
-    private readonly EventLogWatcher? eventLogWatcher;
-    private readonly ObservableCollection<WatsonReport>? watsonOutput;
-    private readonly ObservableCollection<WinLogsEntry>? winLogsPageOutput;
+    private readonly EventLogWatcher _eventLogWatcher;
+    private readonly ObservableCollection<WatsonReport> _watsonReports = [];
+    private readonly ObservableCollection<WinLogsEntry> _watsonEvents = [];
 
-    public WatsonHelper(Process targetProcess, ObservableCollection<WatsonReport>? watsonOutput, ObservableCollection<WinLogsEntry>? winLogsPageOutput)
+    public ReadOnlyObservableCollection<WatsonReport> WatsonReports { get; private set; }
+
+    public ReadOnlyObservableCollection<WinLogsEntry> WatsonEvents { get; private set; }
+
+    public WatsonHelper()
     {
-        this.targetProcess = targetProcess;
-        this.targetProcess.Exited += TargetProcess_Exited;
-        this.watsonOutput = watsonOutput;
-        this.winLogsPageOutput = winLogsPageOutput;
+        WatsonReports = new(_watsonReports);
+        WatsonEvents = new(_watsonEvents);
 
-        try
-        {
-            // Subscribe for Application events matching the processName.
-            var filterQuery = string.Format(CultureInfo.CurrentCulture, "{0} or {1}", WatsonQueryPart1, WatsonQueryPart2);
-            EventLogQuery subscriptionQuery = new("Application", PathType.LogName, filterQuery);
-            eventLogWatcher = new EventLogWatcher(subscriptionQuery);
-            eventLogWatcher.EventRecordWritten += new EventHandler<EventRecordWrittenEventArgs>(EventLogEventRead);
-        }
-        catch (EventLogReadingException)
-        {
-            var message = CommonHelper.GetLocalizedString("WatsonStartErrorMessage");
-            WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, message, WinLogsHelper.WatsonName);
-            winLogsPageOutput?.Add(entry);
-        }
+        // Subscribe for Application events matching the processName.
+        var filterQuery = string.Format(CultureInfo.CurrentCulture, "{0} or {1}", WatsonQueryPart1, WatsonQueryPart2);
+        EventLogQuery subscriptionQuery = new("Application", PathType.LogName, filterQuery);
+        _eventLogWatcher = new EventLogWatcher(subscriptionQuery);
+        _eventLogWatcher.EventRecordWritten += new EventHandler<EventRecordWrittenEventArgs>(EventLogEventRead);
     }
 
     public void Start()
     {
-        if (eventLogWatcher is not null)
+        ThreadPool.QueueUserWorkItem((o) =>
         {
-            eventLogWatcher.Enabled = true;
-        }
+            ReadWatsonReportsFromEventLog();
+        });
+
+        ThreadPool.QueueUserWorkItem((o) =>
+        {
+            ReadLocalWatsonReports();
+        });
+
+        _eventLogWatcher.Enabled = true;
     }
 
     public void Stop()
     {
-        if (eventLogWatcher is not null)
-        {
-            eventLogWatcher.Enabled = false;
-        }
+        _eventLogWatcher.Enabled = false;
     }
 
     public void Dispose()
     {
-        if (eventLogWatcher is not null)
-        {
-            eventLogWatcher.Dispose();
-        }
-
+        _eventLogWatcher.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -79,26 +72,23 @@ internal sealed class WatsonHelper : IDisposable
         {
             if (eventRecord.Id == 1000 && eventRecord.ProviderName.Equals("Application Error", StringComparison.OrdinalIgnoreCase))
             {
-                var filePath = eventRecord.Properties[10].Value.ToString() ?? string.Empty;
-                if (filePath.Contains(targetProcess.ProcessName, StringComparison.OrdinalIgnoreCase))
-                {
-                    var timeGenerated = eventRecord.TimeCreated ?? DateTime.Now;
-                    var moduleName = eventRecord.Properties[3].Value.ToString() ?? string.Empty;
-                    var executable = eventRecord.Properties[0].Value.ToString() ?? string.Empty;
-                    var eventGuid = eventRecord.Properties[12].Value.ToString() ?? string.Empty;
-                    var report = new WatsonReport(timeGenerated, moduleName, executable, eventGuid);
-                    watsonOutput?.Add(report);
+                // var filePath = eventRecord.Properties[10].Value.ToString() ?? string.Empty;
+                var timeGenerated = eventRecord.TimeCreated ?? DateTime.Now;
+                var moduleName = eventRecord.Properties[3].Value.ToString() ?? string.Empty;
+                var executable = eventRecord.Properties[0].Value.ToString() ?? string.Empty;
+                var eventGuid = eventRecord.Properties[12].Value.ToString() ?? string.Empty;
+                var report = new WatsonReport(timeGenerated, moduleName, executable, eventGuid);
+                _watsonReports.Add(report);
 
-                    WinLogsEntry entry = new(timeGenerated, WinLogCategory.Error, eventRecord.FormatDescription(), WinLogsHelper.WatsonName);
-                    winLogsPageOutput?.Add(entry);
-                }
+                WinLogsEntry entry = new(timeGenerated, WinLogCategory.Error, eventRecord.FormatDescription(), WinLogsHelper.WatsonName);
+                _watsonEvents.Add(entry);
             }
             else if (eventRecord.Id == 1001 && eventRecord.ProviderName.Equals("Windows Error Reporting", StringComparison.OrdinalIgnoreCase))
             {
                 // See if we've already put this into our Collection.
-                for (var i = 0; i < watsonOutput?.Count; i++)
+                for (var i = 0; i < _watsonReports.Count; i++)
                 {
-                    var existingReport = watsonOutput[i];
+                    var existingReport = _watsonReports[i];
                     if (existingReport.EventGuid.Equals(eventRecord.Properties[19].Value.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         existingReport.WatsonLog = eventRecord.FormatDescription();
@@ -126,30 +116,27 @@ internal sealed class WatsonHelper : IDisposable
         }
     }
 
-    public List<WatsonReport> GetWatsonReports()
+    private void ReadWatsonReportsFromEventLog()
     {
-        Dictionary<string, WatsonReport> reports = [];
+        Dictionary<string, WatsonReport> partialReports = [];
         EventLog eventLog = new("Application");
-        var targetProcessName = targetProcess.ProcessName;
 
         foreach (EventLogEntry entry in eventLog.Entries)
         {
             if (entry.InstanceId == 1000
-                && entry.Source.Equals("Application Error", StringComparison.OrdinalIgnoreCase)
-                && entry.ReplacementStrings[10].Contains(targetProcessName, StringComparison.OrdinalIgnoreCase))
+                && entry.Source.Equals("Application Error", StringComparison.OrdinalIgnoreCase))
             {
                 var timeGenerated = entry.TimeGenerated;
                 var moduleName = entry.ReplacementStrings[3];
                 var executable = entry.ReplacementStrings[0];
                 var eventGuid = entry.ReplacementStrings[12];
                 var report = new WatsonReport(timeGenerated, moduleName, executable, eventGuid);
-                reports.Add(entry.ReplacementStrings[12], report);
+                partialReports.Add(entry.ReplacementStrings[12], report);
             }
-            else if (entry.InstanceId == 1001
-                && entry.Source.Equals("Windows Error Reporting", StringComparison.OrdinalIgnoreCase))
+            else if (entry.InstanceId == 1001 && entry.Source.Equals("Windows Error Reporting", StringComparison.OrdinalIgnoreCase))
             {
                 // See if we've already put this into our Dictionary.
-                if (reports.TryGetValue(entry.ReplacementStrings[19], out WatsonReport? report))
+                if (partialReports.TryGetValue(entry.ReplacementStrings[19], out WatsonReport? report))
                 {
                     report.WatsonLog = entry.Message;
 
@@ -165,19 +152,24 @@ internal sealed class WatsonHelper : IDisposable
                             }
                         }
                     }
-                    catch
+                    finally
                     {
+                        // We've gathered all the data from this Watson report. Publish it.
+                        _watsonReports.Add(report);
+                        partialReports.Remove(entry.ReplacementStrings[19]);
                     }
                 }
             }
         }
 
-        return reports.Values.ToList();
+        // For the remainer of the partial Watson events, just publish them. We won't get more info for them.
+        foreach (var report in partialReports.Values)
+        {
+            _watsonReports.Add(report);
+        }
     }
 
-    private void TargetProcess_Exited(object? sender, EventArgs e)
+    private void ReadLocalWatsonReports()
     {
-        Stop();
-        Dispose();
     }
 }

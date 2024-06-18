@@ -22,7 +22,31 @@
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Uid="WatsonsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            
+            <TextBlock x:Uid="WatsonsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+
+            <StackPanel Orientation="Horizontal" Spacing="5" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right">
+                <TextBlock VerticalAlignment="Center">Show all Watsons</TextBlock>
+                <ToggleSwitch/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="5" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
+                <TextBlock VerticalAlignment="Center">Local Watson collection for app</TextBlock>
+                <ToggleSwitch/>
+            </StackPanel>
+            <HyperlinkButton Content="More" Grid.Row="1" Grid.Column="2"/>
+        </Grid>
+
 
         <controls:DataGrid
             x:Name="WatsonsDataGrid" Grid.Row="1" Margin="0,6,0,0"
