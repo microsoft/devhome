@@ -24,6 +24,10 @@
                         x:Key="NegatedCollectionVisibilityConverter"
                         EmptyValue="Visible"
                         NotEmptyValue="Collapsed" />
+                    <converters:BoolToObjectConverter
+                        x:Key="SetUpEnvironmentThirdColumnWidth"
+                        FalseValue="auto"
+                        TrueValue="*" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -32,7 +36,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}" />
             <ColumnDefinition Width="{Binding RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}" />
-            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="{Binding WasCreateEnvironmentOperationStarted, Mode=OneWay, Converter={StaticResource SetUpEnvironmentThirdColumnWidth}}" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
