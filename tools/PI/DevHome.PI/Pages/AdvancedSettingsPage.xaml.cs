@@ -3,7 +3,6 @@
 
 using System.Text;
 using DevHome.Common.Extensions;
-using DevHome.PI.Models;
 using DevHome.PI.Properties;
 using DevHome.PI.ViewModels;
 using Microsoft.UI.Xaml;

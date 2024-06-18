@@ -1,9 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Runtime.InteropServices;
-using DevHome.Common;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using Microsoft.UI.Xaml;

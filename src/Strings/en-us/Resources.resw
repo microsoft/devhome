@@ -192,16 +192,16 @@
   <data name="AppDisplayNameStable" xml:space="preserve">
     <value>Dev Home (Preview)</value>
   </data>
-  <data name="WhatsNewPage_DevDashCard.Button" xml:space="preserve">
+  <data name="WhatsNewPage_DevDashCard.ButtonText" xml:space="preserve">
     <value>Pin widgets</value>
   </data>
-  <data name="WhatsNewPage_DevDriveCard.Button" xml:space="preserve">
+  <data name="WhatsNewPage_DevDriveCard.ButtonText" xml:space="preserve">
     <value>Create Dev Drive</value>
   </data>
   <data name="WhatsNewPage_DevDriveCard.Link" xml:space="preserve">
     <value>Learn more</value>
   </data>
-  <data name="WhatsNewPage_DevIdCard.Button" xml:space="preserve">
+  <data name="WhatsNewPage_DevIdCard.ButtonText" xml:space="preserve">
     <value>Connect accounts</value>
   </data>
   <data name="WhatsNewPage_GetStartedButton.Content" xml:space="preserve">
@@ -234,9 +234,9 @@
     <value>Administrator: Dev Home (Preview)</value>
     <comment>Name of app when run as administrator</comment>
   </data>
-  <data name="WhatsNewPage_ExtensionsCard.Button" xml:space="preserve">
+  <data name="WhatsNewPage_ExtensionsCard.ButtonText" xml:space="preserve">
     <value>Explore extensions</value>
-    <comment>Button on extensions card on "whats new" page</comment>
+    <comment>Button text on extensions card on "whats new" page</comment>
   </data>
   <data name="WhatsNewPage_ExtensionsCard.Description" xml:space="preserve">
     <value>Extensions help you get more out of Dev Home. For example, get recommendations for other repositories to add when setting up your machine in Dev Home and add other widgets to your dashboard.</value>

@@ -19,7 +19,7 @@ public class AppInstallManagerService : IAppInstallManagerService
 
     private readonly AppInstallManager _appInstallManager;
 
-    private static readonly TimeSpan StoreInstallTimeout = new(0, 0, 60);
+    private static readonly TimeSpan _storeInstallTimeout = new(0, 0, 60);
 
     public event TypedEventHandler<AppInstallManager, AppInstallManagerItemEventArgs> ItemCompleted
     {
@@ -81,7 +81,7 @@ public class AppInstallManagerService : IAppInstallManagerService
             var installTask = InstallPackageAsync(packageId);
 
             // Wait for a maximum of StoreInstallTimeout (60 seconds).
-            var completedTask = await Task.WhenAny(installTask, Task.Delay(StoreInstallTimeout));
+            var completedTask = await Task.WhenAny(installTask, Task.Delay(_storeInstallTimeout));
 
             if (completedTask.Exception != null)
             {

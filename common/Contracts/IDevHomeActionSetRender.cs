@@ -7,7 +7,7 @@ namespace DevHome.Common.Contracts;
 
 /// <summary>
 /// Represents a renderer for an adaptive card action set that Dev Home can use to invoke actions from within
-/// the action set. This is useful for invoking an adaptive card action from an abitraty button within Dev Home's UI.
+/// the action set. This is useful for invoking an adaptive card action from an arbitrary button within Dev Home's UI.
 /// </summary>
 public interface IDevHomeActionSetRender : IAdaptiveElementRenderer
 {

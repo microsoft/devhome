@@ -212,7 +212,7 @@ public sealed partial class QuickstartPlaygroundView : UserControl
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-               ProgressOutputScrollViewer.ScrollToVerticalOffset(ProgressOutputScrollViewer.ScrollableHeight);
+                ProgressOutputScrollViewer.ScrollToVerticalOffset(ProgressOutputScrollViewer.ScrollableHeight);
             });
         };
 

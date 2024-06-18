@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Microsoft.Management.Configuration;
 using Serilog;
 
 namespace HyperVExtension.DevSetupEngine;

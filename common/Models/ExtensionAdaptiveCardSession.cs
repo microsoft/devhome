@@ -2,11 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using DevHome.Common.Helpers;
 
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -61,7 +57,7 @@ public class ExtensionAdaptiveCardSession
         }
         catch (Exception ex)
         {
-           _log.Error(ex, $"Dispose failed due to exception");
+            _log.Error(ex, $"Dispose failed due to exception");
         }
     }
 
@@ -73,8 +69,8 @@ public class ExtensionAdaptiveCardSession
         }
         catch (Exception ex)
         {
-           _log.Error(ex, $"OnAction failed due to exception");
-           return new ProviderOperationResult(ProviderOperationStatus.Failure, ex, ex.Message, ex.Message);
+            _log.Error(ex, $"OnAction failed due to exception");
+            return new ProviderOperationResult(ProviderOperationStatus.Failure, ex, ex.Message, ex.Message);
         }
     }
 

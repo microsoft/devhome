@@ -58,7 +58,7 @@ public class SecondaryWindow : WinUIEx.WindowEx
                     value.TitleChanged += OnSecondaryWindowTitleChanged;
                 }
             }
-    }
+        }
     }
 
     /// <summary>

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using OpenQA.Selenium.Appium.Windows;
 
 namespace DevHome.UITest.Pages;
