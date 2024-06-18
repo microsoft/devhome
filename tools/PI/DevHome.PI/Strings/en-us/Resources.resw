@@ -357,25 +357,9 @@
     <value>None</value>
     <comment>Refers to the type of data being shown</comment>
   </data>
-  <data name="HwndRadio.Content" xml:space="preserve">
-    <value>Hwnd</value>
-    <comment>Refers to a Windows operating system data type (HWND) a window handle</comment>
-  </data>
-  <data name="ProcessIdRadio.Content" xml:space="preserve">
-    <value>ProcessId</value>
-    <comment>Refers to a Windows operating system process identifier (PID)</comment>
-  </data>
   <data name="PrefixTextBlock.Text" xml:space="preserve">
     <value>Prefix (if any)</value>
     <comment>Refers to arguments that can be passed to a process when it is created</comment>
-  </data>
-  <data name="OtherArgumentsTextBlock.Text" xml:space="preserve">
-    <value>Any other arguments</value>
-    <comment>Refers to arguments that can be passed to a process when it is created</comment>
-  </data>
-  <data name="SampleCommandLineTextBlock.Text" xml:space="preserve">
-    <value>Sample command line</value>
-    <comment>What the commandline to start the executable/application will look like</comment>
   </data>
   <data name="AddToolsOkButton.Content" xml:space="preserve">
     <value>OK</value>
@@ -814,7 +798,7 @@
     <comment>Label for the link to the documentation for the product.</comment>
   </data>
   <data name="SettingsDocumentationLink.NavigateUri" xml:space="preserve">
-    <value>https://github.com/microsoft/devhome/issues/2796</value>
+    <value>https://go.microsoft.com/fwlink/?linkid=2275140</value>
     <comment>Link to the documentation for the product.</comment>
   </data>
   <data name="SettingsPrivacyPolicyLink.Content" xml:space="preserve">
@@ -956,5 +940,73 @@
   <data name="UnsnapToolTip" xml:space="preserve">
     <value>Detach the diagnostic bar from the target application</value>
     <comment>The tooltip text for a button that detaches the bar from the target application.</comment>
+  </data>
+  <data name="ActivationTextBlock.Text" xml:space="preserve">
+    <value>Activation</value>
+    <comment>Header text for a group of radio buttons indicating the activation type</comment>
+  </data>
+  <data name="AppListButton.Content" xml:space="preserve">
+    <value>App list</value>
+    <comment>Text for a button to get a list of apps</comment>
+  </data>
+  <data name="AppsDataGridIconColumn.Header" xml:space="preserve">
+    <value>Icon</value>
+    <comment>Column heading for the icon column in a datagrid</comment>
+  </data>
+  <data name="AppsDataGridNameColumn.Header" xml:space="preserve">
+    <value>Name</value>
+    <comment>Column heading for the name column in a datagrid</comment>
+  </data>
+  <data name="ArgumentsDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Provide the command-line or protocol arguments here. Use {pid} or {hwnd} if you want Project Ironsides to substitute the target app's process ID or window handle. For example:</value>
+    <comment>Description text for a section where the user can type in the arguments to be used for the app</comment>
+  </data>
+  <data name="ArgumentsHeaderTextBlock.Text" xml:space="preserve">
+    <value>Arguments</value>
+    <comment>Header text for a section describing the arguments to be used for the app</comment>
+  </data>
+  <data name="LaunchRadio.Content" xml:space="preserve">
+    <value>Launch</value>
+    <comment>Text for a radio button for the launch activation option</comment>
+  </data>
+  <data name="ProtocolRadio.Content" xml:space="preserve">
+    <value>Protocol</value>
+    <comment>Text for a radio button for the protocol option</comment>
+  </data>
+  <data name="LaunchExampleTextBlock.Text" xml:space="preserve">
+    <value>Launch example:  /something /process={pid} /another={hwnd}</value>
+    <comment>Example launch activation argument string</comment>
+  </data>
+  <data name="ProtocolExampleTextBlock.Text" xml:space="preserve">
+    <value>Protocol example:  myprotocol:///args?one=ABC&amp;two={pid}&amp;three={hwnd}</value>
+    <comment>Example protocol argument string</comment>
+  </data>
+  <data name="ActivationTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The type of activation for this tool</value>
+    <comment>Describes the section where the user can specify the type of tool activation to use.</comment>
+  </data>
+  <data name="AppListButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Get a list of installed apps</value>
+    <comment>Describes a button that will get a list of installed apps.</comment>
+  </data>
+  <data name="IsPinnedToggleSwitch.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Pin this tool to the toolbar, as well as adding it to the menu</value>
+    <comment>Describes a toggle switch for pinning a tool to the toolbar.</comment>
+  </data>
+  <data name="LaunchRadio.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Launch this tool by its path or package identity</value>
+    <comment>Describes a radio button that specifies how to launch the selected tool.</comment>
+  </data>
+  <data name="ProtocolRadio.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Launch this tool by its registered protocol</value>
+    <comment>Describes a radio button that specifies how to launch the selected tool.</comment>
+  </data>
+  <data name="ToolBrowseButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Browse the filesystem to find a tool</value>
+    <comment>Describes a button for browsing the filesystem.</comment>
+  </data>
+  <data name="ToolNameHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The name you want to use for this tool in the menu and toolbar</value>
+    <comment>Describes a textbox where the user can enter a name for the tool.</comment>
   </data>
 </root>
