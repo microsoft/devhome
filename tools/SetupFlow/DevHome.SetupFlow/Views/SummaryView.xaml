@@ -56,7 +56,10 @@
         HorizontalAlignment="Stretch"
         VerticalScrollBarVisibility="Auto"
         VerticalScrollMode="Enabled">
-        <Grid ColumnSpacing="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay, Converter={StaticResource ConfigurationFileFlowColumnSpacing}}">
+        <Grid
+            MaxWidth="{ThemeResource MaxPageContentWidth}"
+            Margin="{ThemeResource ContentPageMargin}"
+            ColumnSpacing="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay, Converter={StaticResource ConfigurationFileFlowColumnSpacing}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition />

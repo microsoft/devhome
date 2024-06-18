@@ -20,72 +20,62 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition Width="auto" />
-        </Grid.ColumnDefinitions>
-
-        <Grid RowSpacing="20">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <!--  Section header  -->
-            <Grid
+    <Grid RowSpacing="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <!--  Section header  -->
+        <Grid
+            Grid.Column="1"
+            Padding="0,20,0,0"
+            HorizontalAlignment="Right">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Summary" Style="{ThemeResource BodyStrongTextBlockStyle}" />
+            <TextBlock
                 Grid.Column="1"
-                Padding="0,20,0,0"
-                HorizontalAlignment="Right">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Summary" Style="{ThemeResource BodyStrongTextBlockStyle}" />
-                <TextBlock
-                    Grid.Column="1"
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{ThemeResource CaptionTextBlockStyle}"
-                    Text="{Binding ConfigurationUnitStats}" />
-            </Grid>
-            <ScrollViewer
-                Grid.Row="1"
-                Margin="0,0,0,50"
-                VerticalScrollMode="Auto">
-                <ItemsRepeater ItemsSource="{Binding ConfigurationUnitResults, Mode=OneWay}">
-                    <ItemsRepeater.Resources>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="FontFamily" Value="{StaticResource CascadiaMonoFontFamily}" />
-                            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
-                            <Setter Property="LineHeight" Value="20" />
-                            <Setter Property="TextWrapping" Value="Wrap" />
-                            <Setter Property="IsTextSelectionEnabled" Value="True" />
-                        </Style>
-                    </ItemsRepeater.Resources>
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
-                            <StackPanel>
-                                <TextBlock Text="{x:Bind Title}" />
-                                <StackPanel Margin="20,0,0,0">
-                                    <TextBlock Text="{x:Bind ApplyResult}">
-                                        <i:Interaction.Behaviors>
-                                            <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
-                                                <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}" />
-                                            </ic:DataTriggerBehavior>
-                                            <ic:DataTriggerBehavior Binding="{x:Bind IsSkipped}" Value="True">
-                                                <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCautionBrush}" />
-                                            </ic:DataTriggerBehavior>
-                                        </i:Interaction.Behaviors>
-                                    </TextBlock>
-                                    <TextBlock
-                                        Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                        Text="{x:Bind ErrorDescription}"
-                                        Visibility="{x:Bind ErrorDescription, Converter={StaticResource StringVisibilityConverter}}" />
-                                </StackPanel>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
-            </ScrollViewer>
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{ThemeResource CaptionTextBlockStyle}"
+                Text="{Binding ConfigurationUnitStats}" />
         </Grid>
+        <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
+            <ItemsRepeater ItemsSource="{Binding ConfigurationUnitResults, Mode=OneWay}">
+                <ItemsRepeater.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontFamily" Value="{StaticResource CascadiaMonoFontFamily}" />
+                        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <Setter Property="LineHeight" Value="20" />
+                        <Setter Property="TextWrapping" Value="Wrap" />
+                        <Setter Property="IsTextSelectionEnabled" Value="True" />
+                    </Style>
+                </ItemsRepeater.Resources>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
+                        <StackPanel>
+                            <TextBlock Text="{x:Bind Title}" />
+                            <StackPanel Margin="20,0,0,0">
+                                <TextBlock Text="{x:Bind ApplyResult}">
+                                    <i:Interaction.Behaviors>
+                                        <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
+                                            <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}" />
+                                        </ic:DataTriggerBehavior>
+                                        <ic:DataTriggerBehavior Binding="{x:Bind IsSkipped}" Value="True">
+                                            <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCautionBrush}" />
+                                        </ic:DataTriggerBehavior>
+                                    </i:Interaction.Behaviors>
+                                </TextBlock>
+                                <TextBlock
+                                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                    Text="{x:Bind ErrorDescription}"
+                                    Visibility="{x:Bind ErrorDescription, Converter={StaticResource StringVisibilityConverter}}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </ScrollViewer>
     </Grid>
 </UserControl>
