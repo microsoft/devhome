@@ -28,20 +28,17 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Margin="0,0,0,30">
+    <Grid Margin="0,0,0,30" HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}" />
             <ColumnDefinition Width="{Binding RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <Grid
-            Grid.Column="0"
-            HorizontalAlignment="Center"
-            Visibility="{Binding AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}">
+        <Grid Grid.Column="0" Visibility="{Binding AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition />
