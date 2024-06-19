@@ -34,7 +34,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Summary" Style="{ThemeResource BodyStrongTextBlockStyle}" />
+            <TextBlock x:Uid="SummaryPage_Summary" Style="{ThemeResource BodyStrongTextBlockStyle}" />
             <TextBlock
                 Grid.Column="1"
                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
