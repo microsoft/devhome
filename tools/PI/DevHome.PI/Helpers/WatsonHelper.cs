@@ -162,6 +162,9 @@ internal sealed class WatsonHelper : IDisposable
                             }
                         }
                     }
+                    catch
+                    {
+                    }
                     finally
                     {
                         // We've gathered all the data from this Watson report. Publish it.
@@ -181,5 +184,19 @@ internal sealed class WatsonHelper : IDisposable
 
     private void ReadLocalWatsonReports()
     {
+        string localAppData = Environment.GetEnvironmentVariable("LOCALAPPDATA") ?? string.Empty;
+        string crashDumpsPath = Path.Combine(localAppData, "CrashDumps");
+
+        var files = Directory.EnumerateFiles(crashDumpsPath, "*.dmp");
+
+        foreach (var fileName in files)
+        {
+            var file = new FileInfo(fileName);
+
+            string[] elements = file.Name.Split('.');
+
+            var report = new WatsonReport(file.FullName, file.CreationTime, string.Empty, elements[0] + "." + elements[1], string.Empty, string.Empty);
+            _watsonReports.Add(report);
+        }
     }
 }
