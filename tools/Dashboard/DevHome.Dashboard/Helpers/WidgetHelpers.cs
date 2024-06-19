@@ -95,7 +95,7 @@ internal sealed class WidgetHelpers
 
         // Get the list of packages that contain Dev Home widgets and are enabled.
         var extensionService = Application.Current.GetService<IExtensionService>();
-        var enabledWidgetProviderIds = await extensionService.GetInstalledDevHomeWidgetPackageFamilyNamesAsync(false);
+        var enabledWidgetProviderIds = await extensionService.GetInstalledDevHomeWidgetPackageFamilyNamesAsync(includeDisabledExtensions: false);
 
         // Check if the specified widget provider is in the list.
         var include = enabledWidgetProviderIds.ToList().Contains(familyNamePartOfProviderId);
