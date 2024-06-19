@@ -59,7 +59,7 @@
     <Page Update="Views\Summary\SummaryConfigurationFileResults.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\Summary\SummaryIntoViaNonConfigurationFlow.xaml">
+    <Page Update="Views\Summary\SummaryInrtoViaNonConfigurationFlow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\Summary\SummaryIntroViaConfiguration.xaml">
@@ -136,7 +136,7 @@
     <None Remove="Views\Summary\SummaryAppsDownloadedReposCloned.xaml" />
     <None Remove="Views\Summary\SummaryConfigurationFileResults.xaml" />
     <None Remove="Views\Summary\SummaryFailedTasks.xaml" />
-    <None Remove="Views\Summary\SummaryIntoViaNonConfigurationFlow.xaml" />
+    <None Remove="Views\Summary\SummaryInrtoViaNonConfigurationFlow.xaml" />
     <None Remove="Views\Summary\SummaryIntroViaConfiguration.xaml" />
     <None Remove="Views\Summary\SummaryNeedsRestart.xaml" />
     <None Remove="Views\Summary\SummaryNextSteps.xaml" />

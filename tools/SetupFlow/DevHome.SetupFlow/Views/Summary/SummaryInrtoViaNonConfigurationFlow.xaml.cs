@@ -5,9 +5,9 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.Views.Summary;
 
-public sealed partial class SummaryIntoViaNonConfigurationFlow : UserControl
+public sealed partial class SummaryIntroViaNonConfigurationFlow : UserControl
 {
-    public SummaryIntoViaNonConfigurationFlow()
+    public SummaryIntroViaNonConfigurationFlow()
     {
         this.InitializeComponent();
     }
