@@ -59,7 +59,7 @@
     <Page Update="Views\Summary\SummaryConfigurationFileResults.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\Summary\SummaryInrtoViaNonConfigurationFlow.xaml">
+    <Page Update="Views\Summary\SummaryIntroViaNonConfigurationFlow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\Summary\SummaryIntroViaConfiguration.xaml">
