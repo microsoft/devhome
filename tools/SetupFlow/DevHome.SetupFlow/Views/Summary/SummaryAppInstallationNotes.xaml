@@ -59,7 +59,7 @@
                                     TextWrapping="WrapWholeWords" />
                                 <Button
                                     Name="ViewAllButton"
-                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ViewAll"
+                                    x:Uid="SummaryPage_ViewAll"
                                     Padding="0,5,0,6"
                                     Click="ViewAllButton_Click"
                                     Style="{ThemeResource TextBlockButtonStyle}"
