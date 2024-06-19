@@ -31,6 +31,6 @@
         <TextBlock
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Visibility="{Binding FailedTasks, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_HeaderWithErrors"/>
+                        x:Uid="SummaryPage_HeaderWithErrors"/>
     </Grid>
 </UserControl>
