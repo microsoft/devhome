@@ -78,14 +78,4 @@ public partial class FileExplorerViewModel : ObservableObject
             _shellSettings.SetShowFilesAfterExtractionEnabled(value);
         }
     }
-
-    public bool EndTaskOnTaskBarEnabled
-    {
-        get => _shellSettings.EndTaskOnTaskBarEnabled();
-        set
-        {
-            SettingChangedEvent.Log("EndTaskOnTaskBarEnabled", value.ToString());
-            _shellSettings.SetEndTaskOnTaskBarEnabled(value);
-        }
-    }
 }

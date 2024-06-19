@@ -70,4 +70,16 @@ public partial class MainPageViewModel : ObservableObject
     {
         NavigationService.NavigateTo(typeof(DevDriveInsightsViewModel).FullName!);
     }
+
+    [RelayCommand]
+    private void NavigateToVirtualizationFeatureManagementPage()
+    {
+        NavigationService.NavigateTo(typeof(VirtualizationFeatureManagementViewModel).FullName!);
+    }
+
+    [RelayCommand]
+    private void NavigateToGeneralSystemPage()
+    {
+        NavigationService.NavigateTo(typeof(GeneralSystemViewModel).FullName!);
+    }
 }
