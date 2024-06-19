@@ -91,42 +91,11 @@ internal sealed class WatsonHelper : IDisposable
                 var report = new WatsonReport(filePath, timeGenerated, moduleName, executable, eventGuid, description);
                 _watsonReports.Add(report);
             }
-            else if (eventRecord.Id == 1001 && eventRecord.ProviderName.Equals("Windows Error Reporting", StringComparison.OrdinalIgnoreCase))
-            {
-                // See if we've already put this into our Collection.
-                for (var i = 0; i < _watsonReports.Count; i++)
-                {
-                    var existingReport = _watsonReports[i];
-                    if (existingReport.EventGuid.Equals(eventRecord.Properties[19].Value.ToString(), StringComparison.OrdinalIgnoreCase))
-                    {
-                        existingReport.WatsonLog = eventRecord.FormatDescription();
-                        try
-                        {
-                            // List files available in the archive.
-                            var directoryPath = eventRecord.Properties[16].Value.ToString();
-                            if (Directory.Exists(directoryPath))
-                            {
-                                IEnumerable<string> files = Directory.EnumerateFiles(directoryPath);
-                                foreach (var file in files)
-                                {
-                                    existingReport.WatsonReportFile = File.ReadAllText(file);
-                                }
-                            }
-                        }
-                        catch
-                        {
-                        }
-
-                        break;
-                    }
-                }
-            }
         }
     }
 
     private void ReadWatsonReportsFromEventLog()
     {
-        Dictionary<string, WatsonReport> partialReports = [];
         EventLog eventLog = new("Application");
 
         foreach (EventLogEntry entry in eventLog.Entries)
@@ -140,45 +109,20 @@ internal sealed class WatsonHelper : IDisposable
                 var executable = entry.ReplacementStrings[0];
                 var eventGuid = entry.ReplacementStrings[12];
                 var description = entry.Message;
-                var report = new WatsonReport(filePath, timeGenerated, moduleName, executable, eventGuid, description);
-                partialReports.Add(entry.ReplacementStrings[12], report);
-            }
-            else if (entry.InstanceId == 1001 && entry.Source.Equals("Windows Error Reporting", StringComparison.OrdinalIgnoreCase))
-            {
-                // See if we've already put this into our Dictionary.
-                if (partialReports.TryGetValue(entry.ReplacementStrings[19], out WatsonReport? report))
+
+                // Does a local crash dump exist for this item?
+                var crashDumpFilename = moduleName + "123" + "dmp";
+                string crashDumpPath = Path.Combine(Environment.GetEnvironmentVariable("LOCALAPPDATA") ?? string.Empty, "CrashDumps", crashDumpFilename);
+
+                if (!File.Exists(crashDumpPath))
                 {
-                    report.WatsonLog = entry.Message;
-
-                    try
-                    {
-                        // List files available in the archive.
-                        if (Directory.Exists(entry.ReplacementStrings[16]))
-                        {
-                            var files = Directory.EnumerateFiles(entry.ReplacementStrings[16]);
-                            foreach (var file in files)
-                            {
-                                report.WatsonReportFile = File.ReadAllText(file);
-                            }
-                        }
-                    }
-                    catch
-                    {
-                    }
-                    finally
-                    {
-                        // We've gathered all the data from this Watson report. Publish it.
-                        _watsonReports.Add(report);
-                        partialReports.Remove(entry.ReplacementStrings[19]);
-                    }
+                    crashDumpPath = string.Empty;
                 }
-            }
-        }
 
-        // For the remainer of the partial Watson events, just publish them. We won't get more info for them.
-        foreach (var report in partialReports.Values)
-        {
-            _watsonReports.Add(report);
+                var report = new WatsonReport(filePath, timeGenerated, moduleName, executable, eventGuid, description);
+
+                _watsonReports.Add(report);
+            }
         }
     }
 
