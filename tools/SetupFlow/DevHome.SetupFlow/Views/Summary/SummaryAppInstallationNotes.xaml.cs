@@ -17,7 +17,7 @@ public sealed partial class SummaryAppInstallationNotes : UserControl
 
     private void ViewAllButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        // When installation notes' 'view all' button is clicked, open a new window with the full text
+        // When installation notes' "view all" button is clicked, open a new window with the full text
         if (sender is Button viewAllButton && viewAllButton.Tag is PackageViewModel package)
         {
             var window = new InstallationNotesWindow(package.PackageTitle, package.InstallationNotes);

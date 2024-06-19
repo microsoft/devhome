@@ -87,7 +87,7 @@
                 <summaryViews:SummaryIntroViaConfiguration DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}" />
 
                 <!--  Introduction to the summary page via non-configuration flow  -->
-                <summaryViews:SummaryIntoViaNonConfigurationFlow DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
+                <summaryViews:SummaryIntroViaNonConfigurationFlow DataContext="{x:Bind ViewModel}" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" />
             </StackPanel>
 
             <!--  Left Side  -->

@@ -23,7 +23,10 @@
         </Grid.Resources>
         <Expander>
             <Expander.Header>
-                <TextBlock Padding="0,12" Style="{ThemeResource BodyStrongTextBlockStyle}">Installation Notes</TextBlock>
+                <TextBlock
+                    x:Uid="SummaryPage_InstallationNotes"
+                    Padding="0,12"
+                    Style="{ThemeResource BodyStrongTextBlockStyle}" />
             </Expander.Header>
             <ListView ItemsSource="{Binding AppsDownloadedInstallationNotes}" SelectionMode="None">
                 <ListView.ItemTemplate>
