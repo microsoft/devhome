@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using DevHome.PI.Models;
+using TraceReloggerLib;
+using Windows.Devices.Bluetooth.GenericAttributeProfile;
 
 namespace DevHome.PI.Helpers;
 
@@ -21,16 +23,15 @@ internal sealed class WatsonHelper : IDisposable
 
     private readonly EventLogWatcher _eventLogWatcher;
     private readonly ObservableCollection<WatsonReport> _watsonReports = [];
-    private readonly ObservableCollection<WinLogsEntry> _watsonEvents = [];
+    public static readonly WatsonHelper Instance = new();
 
     public ReadOnlyObservableCollection<WatsonReport> WatsonReports { get; private set; }
 
-    public ReadOnlyObservableCollection<WinLogsEntry> WatsonEvents { get; private set; }
+    private bool _isRunning;
 
     public WatsonHelper()
     {
         WatsonReports = new(_watsonReports);
-        WatsonEvents = new(_watsonEvents);
 
         // Subscribe for Application events matching the processName.
         var filterQuery = string.Format(CultureInfo.CurrentCulture, "{0} or {1}", WatsonQueryPart1, WatsonQueryPart2);
@@ -41,22 +42,31 @@ internal sealed class WatsonHelper : IDisposable
 
     public void Start()
     {
-        ThreadPool.QueueUserWorkItem((o) =>
+        if (!_isRunning)
         {
-            ReadWatsonReportsFromEventLog();
-        });
+            ThreadPool.QueueUserWorkItem((o) =>
+            {
+                ReadWatsonReportsFromEventLog();
+            });
 
-        ThreadPool.QueueUserWorkItem((o) =>
-        {
-            ReadLocalWatsonReports();
-        });
+            ThreadPool.QueueUserWorkItem((o) =>
+            {
+                ReadLocalWatsonReports();
+            });
 
-        _eventLogWatcher.Enabled = true;
+            _eventLogWatcher.Enabled = true;
+
+            _isRunning = true;
+        }
     }
 
     public void Stop()
     {
-        _eventLogWatcher.Enabled = false;
+        if (!_isRunning)
+        {
+            _eventLogWatcher.Enabled = false;
+            _isRunning = false;
+        }
     }
 
     public void Dispose()
@@ -72,16 +82,14 @@ internal sealed class WatsonHelper : IDisposable
         {
             if (eventRecord.Id == 1000 && eventRecord.ProviderName.Equals("Application Error", StringComparison.OrdinalIgnoreCase))
             {
-                // var filePath = eventRecord.Properties[10].Value.ToString() ?? string.Empty;
+                var filePath = eventRecord.Properties[10].Value.ToString() ?? string.Empty;
                 var timeGenerated = eventRecord.TimeCreated ?? DateTime.Now;
                 var moduleName = eventRecord.Properties[3].Value.ToString() ?? string.Empty;
                 var executable = eventRecord.Properties[0].Value.ToString() ?? string.Empty;
                 var eventGuid = eventRecord.Properties[12].Value.ToString() ?? string.Empty;
-                var report = new WatsonReport(timeGenerated, moduleName, executable, eventGuid);
+                var description = eventRecord.FormatDescription();
+                var report = new WatsonReport(filePath, timeGenerated, moduleName, executable, eventGuid, description);
                 _watsonReports.Add(report);
-
-                WinLogsEntry entry = new(timeGenerated, WinLogCategory.Error, eventRecord.FormatDescription(), WinLogsHelper.WatsonName);
-                _watsonEvents.Add(entry);
             }
             else if (eventRecord.Id == 1001 && eventRecord.ProviderName.Equals("Windows Error Reporting", StringComparison.OrdinalIgnoreCase))
             {
@@ -126,11 +134,13 @@ internal sealed class WatsonHelper : IDisposable
             if (entry.InstanceId == 1000
                 && entry.Source.Equals("Application Error", StringComparison.OrdinalIgnoreCase))
             {
+                var filePath = entry.ReplacementStrings[10];
                 var timeGenerated = entry.TimeGenerated;
                 var moduleName = entry.ReplacementStrings[3];
                 var executable = entry.ReplacementStrings[0];
                 var eventGuid = entry.ReplacementStrings[12];
-                var report = new WatsonReport(timeGenerated, moduleName, executable, eventGuid);
+                var description = entry.Message;
+                var report = new WatsonReport(filePath, timeGenerated, moduleName, executable, eventGuid, description);
                 partialReports.Add(entry.ReplacementStrings[12], report);
             }
             else if (entry.InstanceId == 1001 && entry.Source.Equals("Windows Error Reporting", StringComparison.OrdinalIgnoreCase))

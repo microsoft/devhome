@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Threading;
 using DevHome.PI.Models;
 using Microsoft.Diagnostics.Tracing;
+using TraceReloggerLib;
 
 namespace DevHome.PI.Helpers;
 
@@ -21,14 +23,12 @@ public class WinLogsHelper : IDisposable
     private readonly ETWHelper etwHelper;
     private readonly DebugMonitor debugMonitor;
     private readonly EventViewerHelper eventViewerHelper;
-    private readonly WatsonHelper watsonHelper;
     private readonly ObservableCollection<WinLogsEntry> output;
     private readonly Process targetProcess;
 
     private Thread? etwThread;
     private Thread? debugMonitorThread;
     private Thread? eventViewerThread;
-    private Thread? watsonThread;
 
     public bool IsETWEnabled { get; }
 
@@ -47,9 +47,6 @@ public class WinLogsHelper : IDisposable
         // Initialize EventViewer
         eventViewerHelper = new EventViewerHelper(targetProcess, output);
 
-        // Initialize Watson
-        watsonHelper = new WatsonHelper(targetProcess, null, output);
-
         Start();
     }
 
@@ -61,7 +58,8 @@ public class WinLogsHelper : IDisposable
         }
 
         StartEventViewerThread();
-        StartWatsonThread();
+
+        ((INotifyCollectionChanged)WatsonHelper.Instance.WatsonReports).CollectionChanged += WatsonEvents_CollectionChanged;
     }
 
     public void Stop()
@@ -76,7 +74,7 @@ public class WinLogsHelper : IDisposable
         StopEventViewerThread();
 
         // Stop Watson
-        StopWatsonThread();
+        ((INotifyCollectionChanged)WatsonHelper.Instance.WatsonReports).CollectionChanged -= WatsonEvents_CollectionChanged;
     }
 
     public void Dispose()
@@ -84,7 +82,6 @@ public class WinLogsHelper : IDisposable
         etwHelper.Dispose();
         debugMonitor.Dispose();
         eventViewerHelper.Dispose();
-        watsonHelper.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -162,28 +159,21 @@ public class WinLogsHelper : IDisposable
         }
     }
 
-    private void StartWatsonThread()
+    private void WatsonEvents_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        // Stop and close existing thread if any
-        StopWatsonThread();
-
-        // Start a new thread
-        watsonThread = new Thread(() =>
+        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
-            // Start Watson logs
-            watsonHelper.Start();
-        });
-        watsonThread.Name = WatsonName + " Thread";
-        watsonThread.Start();
-    }
+            foreach (WatsonReport report in e.NewItems)
+            {
+                var filePath = report.FilePath ?? string.Empty;
 
-    private void StopWatsonThread()
-    {
-        watsonHelper.Stop();
-
-        if (Thread.CurrentThread != watsonThread)
-        {
-            watsonThread?.Join();
+                // Filter Watson events based on the process we're targeting
+                if (filePath.Contains(targetProcess.ProcessName, StringComparison.OrdinalIgnoreCase))
+                {
+                    WinLogsEntry entry = new(report.TimeStamp, WinLogCategory.Error, report.Description, WinLogsHelper.WatsonName);
+                    output.Add(entry);
+                }
+            }
         }
     }
 
@@ -203,7 +193,7 @@ public class WinLogsHelper : IDisposable
                     StartEventViewerThread();
                     break;
                 case WinLogsTool.Watson:
-                    StartWatsonThread();
+                    ((INotifyCollectionChanged)WatsonHelper.Instance.WatsonReports).CollectionChanged += WatsonEvents_CollectionChanged;
                     break;
             }
         }
@@ -221,7 +211,7 @@ public class WinLogsHelper : IDisposable
                     StopEventViewerThread();
                     break;
                 case WinLogsTool.Watson:
-                    StopWatsonThread();
+                    ((INotifyCollectionChanged)WatsonHelper.Instance.WatsonReports).CollectionChanged -= WatsonEvents_CollectionChanged;
                     break;
             }
         }

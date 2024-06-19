@@ -11,7 +11,7 @@ using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.PI.Pages;
 
-public sealed partial class WatsonsPage : Page, IDisposable
+public sealed partial class WatsonsPage : Page
 {
     private WatsonPageViewModel ViewModel { get; }
 
@@ -25,11 +25,5 @@ public sealed partial class WatsonsPage : Page, IDisposable
     {
         base.OnNavigatedTo(e);
         Application.Current.GetService<TelemetryReporter>().SwitchTo(Feature.WERReports);
-    }
-
-    public void Dispose()
-    {
-        ViewModel.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

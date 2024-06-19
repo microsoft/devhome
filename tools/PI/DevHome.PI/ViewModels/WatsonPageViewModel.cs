@@ -14,16 +14,12 @@ using DevHome.PI.Models;
 
 namespace DevHome.PI.ViewModels;
 
-public partial class WatsonPageViewModel : ObservableObject, IDisposable
+public partial class WatsonPageViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-    private readonly ObservableCollection<WatsonReport> _reports;
-    private Process? _targetProcess;
-    private WatsonHelper? _watsonHelper;
-    private Thread? _watsonThread;
 
     [ObservableProperty]
-    private ObservableCollection<WatsonReport> _reportEntries;
+    private ObservableCollection<WatsonReport> _displayedReports = [];
 
     [ObservableProperty]
     private string _watsonInfoText;
@@ -34,84 +30,18 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
         _watsonInfoText = string.Empty;
-        _reports = new();
-        _reportEntries = new();
-        _reports.CollectionChanged += WatsonOutput_CollectionChanged;
 
-        var process = TargetAppData.Instance.TargetProcess;
-        if (process is not null)
-        {
-            UpdateTargetProcess(process);
-        }
-    }
+        ((INotifyCollectionChanged)WatsonHelper.Instance.WatsonReports).CollectionChanged += WatsonOutput_CollectionChanged;
 
-    public void UpdateTargetProcess(Process process)
-    {
-        if (_targetProcess != process)
-        {
-            _targetProcess = process;
-
-            StopWatsonHelper();
-            _watsonThread = new Thread(StartWatsonHelper);
-            _watsonThread.Name = "Watson Page Thread";
-            _watsonThread.Start();
-        }
+        PopulateCurrentLogs(TargetAppData.Instance.TargetProcess);
     }
 
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(TargetAppData.TargetProcess))
         {
-            if (TargetAppData.Instance.TargetProcess is not null)
-            {
-                UpdateTargetProcess(TargetAppData.Instance.TargetProcess);
-            }
-            else
-            {
-                StopWatsonHelper(false);
-            }
+            PopulateCurrentLogs(TargetAppData.Instance.TargetProcess);
         }
-        else if (e.PropertyName == nameof(TargetAppData.HasExited))
-        {
-            StopWatsonHelper(false);
-        }
-    }
-
-    private void StartWatsonHelper()
-    {
-        if (_targetProcess is not null)
-        {
-            _watsonHelper = new WatsonHelper(_targetProcess, _reports, null);
-            _watsonHelper.Start();
-
-            // Get all existing reports
-            List<WatsonReport> existingReports = _watsonHelper.GetWatsonReports();
-            foreach (var report in existingReports)
-            {
-                _reports.Add(report);
-            }
-        }
-    }
-
-    private void StopWatsonHelper(bool shouldCleanLogs = true)
-    {
-        _watsonHelper?.Stop();
-
-        if (Thread.CurrentThread != _watsonThread)
-        {
-            _watsonThread?.Join();
-        }
-
-        if (shouldCleanLogs)
-        {
-            ClearWatsonLogs();
-        }
-    }
-
-    public void Dispose()
-    {
-        _watsonHelper?.Dispose();
-        GC.SuppressFinalize(this);
     }
 
     private void WatsonOutput_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -120,21 +50,27 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
         {
             _dispatcher.TryEnqueue(() =>
             {
-                foreach (WatsonReport newEntry in e.NewItems)
+                foreach (WatsonReport report in e.NewItems)
                 {
-                    ReportEntries.Add(newEntry);
+                    // Provide filtering if needed
+                    DisplayedReports.Add(report);
                 }
             });
         }
     }
 
-    private void ClearWatsonLogs()
+    private void PopulateCurrentLogs(Process? process)
     {
-        _reports?.Clear();
-
         _dispatcher.TryEnqueue(() =>
         {
-            ReportEntries.Clear();
+            DisplayedReports.Clear();
+
+            // Get all existing reports
+            foreach (var report in WatsonHelper.Instance.WatsonReports)
+            {
+                // Provide filtering if needed
+                DisplayedReports.Add(report);
+            }
         });
     }
 }

@@ -64,7 +64,7 @@
             FrozenColumnCount="0"
             GridLinesVisibility="None"
             HeadersVisibility="Column"
-            ItemsSource="{x:Bind ViewModel.ReportEntries, Mode=OneWay}">
+            ItemsSource="{x:Bind ViewModel.DisplayedReports, Mode=OneWay}">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn x:Uid="TimeGeneratedColumn" Binding="{Binding TimeGenerated}" Width="180"/>
                 <controls:DataGridTextColumn x:Uid="FaultingExecutableColumn" Binding="{Binding Executable}" Width="180"/>

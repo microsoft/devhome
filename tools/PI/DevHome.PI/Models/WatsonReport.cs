@@ -8,9 +8,11 @@ namespace DevHome.PI.Models;
 
 public class WatsonReport
 {
-    private readonly DateTime timeGenerated;
+    public DateTime TimeStamp { get; }
 
-    public string TimeGenerated => timeGenerated.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.CurrentCulture);
+    public string TimeGenerated => TimeStamp.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.CurrentCulture);
+
+    public string FilePath { get; }
 
     public string Module { get; }
 
@@ -22,11 +24,15 @@ public class WatsonReport
 
     public string? WatsonReportFile { get; set; }
 
-    public WatsonReport(DateTime timeGenerated, string moduleName, string executable, string eventGuid)
+    public string Description { get; set; }
+
+    public WatsonReport(string filePath, DateTime timeGenerated, string moduleName, string executable, string eventGuid, string description)
     {
-        this.timeGenerated = timeGenerated;
+        FilePath = filePath;
+        TimeStamp = timeGenerated;
         Module = moduleName;
         Executable = executable;
         EventGuid = eventGuid;
+        Description = description;
     }
 }
