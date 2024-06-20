@@ -195,8 +195,10 @@ public partial class AddRepoDialog : ContentDialog
 
     private void FilterSuggestions(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
     {
-        sender.ItemsSource = _searchFieldsAndValues[sender.Header.ToString()].Where(x => x.Contains(sender.Text));
-        return;
+        if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+        {
+            sender.ItemsSource = _searchFieldsAndValues[sender.Header.ToString()].Where(x => x.Contains(sender.Text));
+        }
     }
 
     private async void SwitchToSearchPage(object sender, RoutedEventArgs e)
