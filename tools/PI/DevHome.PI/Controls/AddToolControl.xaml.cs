@@ -28,43 +28,43 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(AddToolControl));
 
-    private readonly string invalidToolInfo = CommonHelper.GetLocalizedString("InvalidToolInfoMessage");
-    private readonly string messageCloseText = CommonHelper.GetLocalizedString("MessageCloseText");
+    private readonly string _invalidToolInfo = CommonHelper.GetLocalizedString("InvalidToolInfoMessage");
+    private readonly string _messageCloseText = CommonHelper.GetLocalizedString("MessageCloseText");
 
     // We have 3 sets of operations, and we arbitrarily divide the progress timing into 3 equal segments.
     private const int ShortcutProcessingEndIndex = 33;
     private const int PackageProcessingEndIndex = 67;
 
-    private InstalledAppInfo? selectedApp;
-    private List<string>? shortcuts;
-    private List<Package>? packages;
-    private List<InstalledAppInfo> allApps = [];
-    private int itemCount;
+    private InstalledAppInfo? _selectedApp;
+    private List<string>? _shortcuts;
+    private List<Package>? _packages;
+    private List<InstalledAppInfo> _allApps = [];
+    private int _itemCount;
 
     public ObservableCollection<InstalledAppInfo> SortedApps { get; set; } = [];
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    private bool isLoading;
+    private bool _isLoading;
 
     public bool IsLoading
     {
-        get => isLoading;
+        get => _isLoading;
         set
         {
-            isLoading = value;
+            _isLoading = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLoading)));
         }
     }
 
-    private int progressPercentage;
+    private int _progressPercentage;
 
     public int ProgressPercentage
     {
-        get => progressPercentage;
+        get => _progressPercentage;
         set
         {
-            progressPercentage = value;
+            _progressPercentage = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProgressPercentage)));
         }
     }
@@ -99,8 +99,6 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
                     lpstrFilter = pFilter,
                     nFilterIndex = 1,
                     nMaxFile = 255,
-
-                    // TODO - This should be the Settings window, not the bar window
                     hwndOwner = barWindow?.CurrentHwnd ?? Windows.Win32.Foundation.HWND.Null,
                 };
 
@@ -130,7 +128,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
 
         ExternalToolsHelper.Instance.AddExternalTool(tool);
         var toolRegisteredMessage = CommonHelper.GetLocalizedString("ToolRegisteredMessage", ToolNameTextBox.Text);
-        WindowHelper.ShowTimedMessageDialog(this, toolRegisteredMessage, messageCloseText);
+        WindowHelper.ShowTimedMessageDialog(this, toolRegisteredMessage, _messageCloseText);
         ClearValues();
     }
 
@@ -141,14 +139,14 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
         LaunchRadio.IsChecked = true;
         ArgumentsTextBox.Text = string.Empty;
         IsPinnedToggleSwitch.IsOn = true;
-        selectedApp = null;
+        _selectedApp = null;
     }
 
     private ExternalTool? GetCurrentToolDefinition()
     {
         if (string.IsNullOrEmpty(ToolNameTextBox.Text) || string.IsNullOrEmpty(ToolPathTextBox.Text))
         {
-            WindowHelper.ShowTimedMessageDialog(this, invalidToolInfo, messageCloseText);
+            WindowHelper.ShowTimedMessageDialog(this, _invalidToolInfo, _messageCloseText);
             return null;
         }
 
@@ -157,7 +155,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
         {
             activationType = ToolActivationType.Protocol;
         }
-        else if (selectedApp is not null && selectedApp.IsMsix)
+        else if (_selectedApp is not null && _selectedApp.IsMsix)
         {
             activationType = ToolActivationType.Msix;
         }
@@ -167,8 +165,8 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             ToolPathTextBox.Text,
             activationType,
             ArgumentsTextBox.Text,
-            selectedApp?.AppUserModelId ?? string.Empty,
-            selectedApp?.IconFilePath ?? string.Empty,
+            _selectedApp?.AppUserModelId ?? string.Empty,
+            _selectedApp?.IconFilePath ?? string.Empty,
             IsPinnedToggleSwitch.IsOn);
     }
 
@@ -179,23 +177,23 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
 
     private async void AppListButton_Click(object sender, RoutedEventArgs e)
     {
-        allApps.Clear();
+        _allApps.Clear();
         SortedApps.Clear();
 
-        itemCount = GetShortcuts();
-        if (itemCount == 0)
+        _itemCount = GetShortcuts();
+        if (_itemCount == 0)
         {
-            _log.Error("Error getting shortcuts");
+            _log.Error("Error getting _shortcuts");
         }
 
         var packageCount = GetPackages();
         if (packageCount == 0)
         {
-            _log.Error("Error getting packages");
+            _log.Error("Error getting _packages");
         }
 
-        itemCount += packageCount;
-        if (itemCount == 0)
+        _itemCount += packageCount;
+        if (_itemCount == 0)
         {
             _log.Error("Error getting list of installed apps");
             return;
@@ -212,7 +210,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
 
         await ProcessItemsAsync(progress);
 
-        foreach (var app in allApps)
+        foreach (var app in _allApps)
         {
             SortedApps.Add(app);
         }
@@ -233,18 +231,18 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
         var commonStartMenuProgramsPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), "Programs");
 
-        shortcuts = [];
+        _shortcuts = [];
         if (Directory.Exists(startMenuProgramsPath))
         {
-            shortcuts.AddRange(Directory.GetFiles(startMenuProgramsPath, "*.lnk", SearchOption.AllDirectories));
+            _shortcuts.AddRange(Directory.GetFiles(startMenuProgramsPath, "*.lnk", SearchOption.AllDirectories));
         }
 
         if (Directory.Exists(commonStartMenuProgramsPath))
         {
-            shortcuts.AddRange(Directory.GetFiles(commonStartMenuProgramsPath, "*.lnk", SearchOption.AllDirectories));
+            _shortcuts.AddRange(Directory.GetFiles(commonStartMenuProgramsPath, "*.lnk", SearchOption.AllDirectories));
         }
 
-        count = shortcuts?.Count ?? 0;
+        count = _shortcuts?.Count ?? 0;
         return count;
     }
 
@@ -252,10 +250,10 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
     {
         var count = 0;
         var packageManager = new PackageManager();
-        packages = packageManager.FindPackagesForUserWithPackageTypes(string.Empty, PackageTypes.Main).ToList();
-        if (packages is not null)
+        _packages = packageManager.FindPackagesForUserWithPackageTypes(string.Empty, PackageTypes.Main).ToList();
+        if (_packages is not null)
         {
-            count = packages.Count;
+            count = _packages.Count;
         }
 
         return count;
@@ -265,32 +263,32 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
     {
         // Process all the shortcut files.
         var currentCount = 0;
-        for (var i = 0; i < shortcuts?.Count; i++)
+        for (var i = 0; i < _shortcuts?.Count; i++)
         {
-            await Task.Run(() => ProcessShortcut(shortcuts[i]));
+            await Task.Run(() => ProcessShortcut(_shortcuts[i]));
 
             // Report progress.
             currentCount++;
-            var percentComplete = (i + 1) * ShortcutProcessingEndIndex / itemCount;
+            var percentComplete = (i + 1) * ShortcutProcessingEndIndex / _itemCount;
             progress.Report(percentComplete);
         }
 
-        for (var j = 0; j < packages?.Count; j++)
+        for (var j = 0; j < _packages?.Count; j++)
         {
-            await Task.Run(() => ProcessPackage(packages[j]));
+            await Task.Run(() => ProcessPackage(_packages[j]));
 
             // Report progress.
             currentCount++;
-            var percentComplete = ShortcutProcessingEndIndex + ((j + 1) * ShortcutProcessingEndIndex / itemCount);
+            var percentComplete = ShortcutProcessingEndIndex + ((j + 1) * ShortcutProcessingEndIndex / _itemCount);
             progress.Report(percentComplete);
         }
 
-        allApps = allApps.OrderBy(app => app.Name).ToList();
+        _allApps = _allApps.OrderBy(app => app.Name).ToList();
 
         // We get the icon data on the UI thread, because BitmapImages must be created on the UI thread.
-        for (var k = 0; k < allApps.Count; k++)
+        for (var k = 0; k < _allApps.Count; k++)
         {
-            var app = allApps[k];
+            var app = _allApps[k];
             if (app.IsMsix)
             {
                 if (app.AppPackage is not null)
@@ -317,7 +315,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             }
 
             currentCount++;
-            var percentComplete = PackageProcessingEndIndex + ((k + 1) * ShortcutProcessingEndIndex / itemCount);
+            var percentComplete = PackageProcessingEndIndex + ((k + 1) * ShortcutProcessingEndIndex / _itemCount);
             progress.Report(percentComplete);
 
             // Yield to make sure the UI thread can update the progress output.
@@ -329,7 +327,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
     {
         var appName = Path.GetFileNameWithoutExtension(filePath);
 
-        // Exclude Microsoft Virtual Desktop and WSA shortcuts.
+        // Exclude Microsoft Virtual Desktop _shortcuts.
         if (appName.Contains("Microsoft Virtual Desktop", StringComparison.OrdinalIgnoreCase))
         {
             return;
@@ -345,7 +343,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
         // Proceed with using the shortcut object.
         var targetPath = shortcut.TargetPath;
 
-        // Exclude shortcuts that point to empty targets, filesystem folders, or WSA apps.
+        // Exclude _shortcuts that point to empty targets, filesystem folders, or WSA apps.
         if (string.IsNullOrEmpty(targetPath)
             || Directory.Exists(targetPath)
             || targetPath.Contains("WsaClient.exe", StringComparison.OrdinalIgnoreCase))
@@ -364,7 +362,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
         }
 
         // Add the app for this shortcut to the list.
-        allApps.Add(new InstalledAppInfo
+        _allApps.Add(new InstalledAppInfo
         {
             Name = appName,
             ShortcutFilePath = filePath,
@@ -389,7 +387,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             var appListEntry = entries[0];
 
             // Add the app for this package to the list.
-            allApps.Add(new InstalledAppInfo
+            _allApps.Add(new InstalledAppInfo
             {
                 Name = package.DisplayName,
                 AppUserModelId = appListEntry.AppUserModelId,
@@ -402,7 +400,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
     {
         if (AppsListView.SelectedItem is InstalledAppInfo app)
         {
-            selectedApp = app;
+            _selectedApp = app;
             if (!string.IsNullOrEmpty(app.TargetPath))
             {
                 ToolPathTextBox.Text = app.TargetPath;
@@ -416,7 +414,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
         }
         else
         {
-            selectedApp = null;
+            _selectedApp = null;
             ToolPathTextBox.Text = string.Empty;
             ToolNameTextBox.Text = string.Empty;
         }
