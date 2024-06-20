@@ -285,11 +285,11 @@
     <value>WER Reports</value>
     <comment>The contents of a WER crash dumps.</comment>
   </data>
-  <data name="TimeGeneratedColumn.Header" xml:space="preserve">
+  <data name="WatsonTimeGeneratedColumn.Header" xml:space="preserve">
     <value>Time generated</value>
     <comment>The time at which the watson report was generated.</comment>
   </data>
-  <data name="FaultingExecutableColumn.Header" xml:space="preserve">
+  <data name="WatsonFaultingExecutableColumn.Header" xml:space="preserve">
     <value>Faulting executable</value>
     <comment>Refers to the process/application executable which caused the fault which generated the crash report</comment>
   </data>
@@ -705,7 +705,7 @@
     <value>Security issue</value>
     <comment>Describes an issue related to security.</comment>
   </data>
-  <data name="FaultingModuleColumn.Header" xml:space="preserve">
+  <data name="WatsonBucketColumn.Header" xml:space="preserve">
     <value>Failure Bucket ID</value>
     <comment>Refers to the module which caused the fault which generated the crash report</comment>
   </data>
@@ -956,5 +956,8 @@
   <data name="UnsnapToolTip" xml:space="preserve">
     <value>Detach the diagnostic bar from the target application</value>
     <comment>The tooltip text for a button that detaches the bar from the target application.</comment>
+  </data>
+  <data name="WatsonCabColumn.Header" xml:space="preserve">
+    <value>Watson Cab</value>
   </data>
 </root>

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
@@ -19,7 +20,6 @@ namespace DevHome.PI.Helpers;
 internal sealed class WatsonHelper : IDisposable
 {
     private const string WatsonQueryPart1 = "(*[System[Provider[@Name=\"Application Error\"]]] and *[System[EventID=1000]])";
-    private const string WatsonQueryPart2 = "(*[System[Provider[@Name=\"Windows Error Reporting\"]]] and *[System[EventID=1001]])";
 
     private readonly EventLogWatcher _eventLogWatcher;
     private readonly ObservableCollection<WatsonReport> _watsonReports = [];
@@ -34,8 +34,7 @@ internal sealed class WatsonHelper : IDisposable
         WatsonReports = new(_watsonReports);
 
         // Subscribe for Application events matching the processName.
-        var filterQuery = string.Format(CultureInfo.CurrentCulture, "{0} or {1}", WatsonQueryPart1, WatsonQueryPart2);
-        EventLogQuery subscriptionQuery = new("Application", PathType.LogName, filterQuery);
+        EventLogQuery subscriptionQuery = new("Application", PathType.LogName, WatsonQueryPart1);
         _eventLogWatcher = new EventLogWatcher(subscriptionQuery);
         _eventLogWatcher.EventRecordWritten += new EventHandler<EventRecordWrittenEventArgs>(EventLogEventRead);
     }
@@ -51,7 +50,7 @@ internal sealed class WatsonHelper : IDisposable
 
             ThreadPool.QueueUserWorkItem((o) =>
             {
-                ReadLocalWatsonReports();
+                // ReadLocalWatsonReports();
             });
 
             _eventLogWatcher.Enabled = true;
@@ -97,6 +96,7 @@ internal sealed class WatsonHelper : IDisposable
     private void ReadWatsonReportsFromEventLog()
     {
         EventLog eventLog = new("Application");
+        var converter = new Int32Converter();
 
         foreach (EventLogEntry entry in eventLog.Entries)
         {
@@ -110,16 +110,25 @@ internal sealed class WatsonHelper : IDisposable
                 var eventGuid = entry.ReplacementStrings[12];
                 var description = entry.Message;
 
-                // Does a local crash dump exist for this item?
-                var crashDumpFilename = moduleName + "123" + "dmp";
-                string crashDumpPath = Path.Combine(Environment.GetEnvironmentVariable("LOCALAPPDATA") ?? string.Empty, "CrashDumps", crashDumpFilename);
-
-                if (!File.Exists(crashDumpPath))
-                {
-                    crashDumpPath = string.Empty;
-                }
-
                 var report = new WatsonReport(filePath, timeGenerated, moduleName, executable, eventGuid, description);
+
+                // Does a local crash dump exist for this item?
+                // Crash dump files are of the form:
+                // MfcFormApp.exe.40912.dmp
+                // Build the possible path for them
+                if (converter.IsValid(entry.ReplacementStrings[8]))
+                {
+                    var pid = (int?)converter.ConvertFromString(entry.ReplacementStrings[8]);
+                    Debug.Assert(pid != null, "Why did the conversion fail?");
+                    var crashDumpFilename = executable + "." + pid?.ToString(CultureInfo.InvariantCulture) + ".dmp";
+
+                    string crashDumpPath = Path.Combine(Environment.GetEnvironmentVariable("LOCALAPPDATA") ?? string.Empty, "CrashDumps", crashDumpFilename);
+
+                    if (File.Exists(crashDumpPath))
+                    {
+                        report.CrashDumpPath = crashDumpPath;
+                    }
+                }
 
                 _watsonReports.Add(report);
             }

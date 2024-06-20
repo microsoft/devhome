@@ -20,11 +20,9 @@ public class WatsonReport
 
     public string EventGuid { get; }
 
-    public string? WatsonLog { get; set; }
-
-    public string? WatsonReportFile { get; set; }
-
     public string Description { get; set; }
+
+    public string? CrashDumpPath { get; set; }
 
     public WatsonReport(string filePath, DateTime timeGenerated, string moduleName, string executable, string eventGuid, string description)
     {
