@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <Configurations>Debug;Release;Debug-FailFast</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Scripts\DevSetupAgent.ps1" />
@@ -113,11 +114,23 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-FailFast|x64'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-FailFast|x86'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-FailFast|ARM64'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
 

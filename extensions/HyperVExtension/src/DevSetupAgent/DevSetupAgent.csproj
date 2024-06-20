@@ -9,6 +9,7 @@
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <PublishProfile Condition="'$(BuildingInsideVisualStudio)' != 'True'">Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfile>
     <SelfContained>true</SelfContained>
+    <Configurations>Debug;Release;Debug-FailFast</Configurations>
   </PropertyGroup>
 
   <!--
