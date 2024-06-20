@@ -79,7 +79,7 @@ public partial class App : Application, IApp
     public App()
     {
         InitializeComponent();
-#if DEBUG
+#if DEBUG_FAILFAST
         DebugSettings.FailFastOnErrors = true;
 #endif
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
