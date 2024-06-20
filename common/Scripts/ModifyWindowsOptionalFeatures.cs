@@ -16,7 +16,7 @@ namespace DevHome.Common.Scripts;
 public static class ModifyWindowsOptionalFeatures
 {
     public static async Task<ExitCode> ModifyFeaturesAsync(
-        IEnumerable<OptionalFeatureState> features,
+        IEnumerable<WindowsOptionalFeatureState> features,
         ILogger? log = null,
         CancellationToken cancellationToken = default)
     {

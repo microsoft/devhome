@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Management.Infrastructure;
 using Serilog;
+using static DevHome.Common.Helpers.WindowsOptionalFeatures;
 
 namespace DevHome.Common.Helpers;
 
@@ -26,7 +27,7 @@ public static class ManagementInfrastructureHelper
         return GetWindowsFeatureDetails(featureName)?.AvailabilityKind ?? FeatureAvailabilityKind.Unknown;
     }
 
-    public static WindowsOptionalFeature? GetWindowsFeatureDetails(string featureName)
+    public static FeatureInfo? GetWindowsFeatureDetails(string featureName)
     {
         try
         {
@@ -44,12 +45,12 @@ public static class ManagementInfrastructureHelper
 
                     // Most optional features do not have a description, so we provide one for known features
                     var description = featureInstance.CimInstanceProperties["Description"]?.Value as string;
-                    if (string.IsNullOrEmpty(description) && WindowsOptionalFeatureNames.FeatureDescriptions.TryGetValue(featureName, out var featureDescription))
+                    if (string.IsNullOrEmpty(description) && WindowsOptionalFeatures.FeatureDescriptions.TryGetValue(featureName, out var featureDescription))
                     {
                         description = featureDescription;
                     }
 
-                    return new WindowsOptionalFeature(
+                    return new FeatureInfo(
                         featureName,
                         featureInstance.CimInstanceProperties["Caption"]?.Value as string ?? featureName,
                         description ?? string.Empty,

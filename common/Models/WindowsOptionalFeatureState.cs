@@ -2,14 +2,13 @@
 // Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Helpers;
+using static DevHome.Common.Helpers.WindowsOptionalFeatures;
 
 namespace DevHome.Common.Models;
 
-public partial class OptionalFeatureState : ObservableObject
+public partial class WindowsOptionalFeatureState : ObservableObject
 {
-    public WindowsOptionalFeature Feature { get; }
+    public FeatureInfo Feature { get; }
 
     [ObservableProperty]
     private bool _isModifiable;
@@ -30,7 +29,7 @@ public partial class OptionalFeatureState : ObservableObject
 
     public bool HasChanged => IsEnabled != Feature.IsEnabled;
 
-    public OptionalFeatureState(WindowsOptionalFeature feature, bool modifiable)
+    public WindowsOptionalFeatureState(FeatureInfo feature, bool modifiable)
     {
         Feature = feature;
         IsEnabled = feature.IsEnabled;

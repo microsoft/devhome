@@ -6,7 +6,7 @@ using DevHome.Common.Environments.Helpers;
 
 namespace DevHome.Common.Helpers;
 
-public static class WindowsOptionalFeatureNames
+public static class WindowsOptionalFeatures
 {
     public const string Containers = "Containers";
     public const string GuardedHost = "HostGuardian";
@@ -47,5 +47,30 @@ public static class WindowsOptionalFeatureNames
     private static string GetFeatureDescription(string featureName)
     {
         return StringResourceHelper.GetResource(featureName + "Description");
+    }
+
+    public class FeatureInfo
+    {
+        public string FeatureName { get; set; }
+
+        public string DisplayName { get; set; }
+
+        public string Description { get; set; }
+
+        public bool IsEnabled { get; set; }
+
+        public bool IsAvailable { get; set; }
+
+        public FeatureAvailabilityKind AvailabilityKind { get; set; }
+
+        public FeatureInfo(string featureName, string displayName, string description, FeatureAvailabilityKind availabilityKind)
+        {
+            FeatureName = featureName;
+            DisplayName = displayName;
+            Description = description;
+            AvailabilityKind = availabilityKind;
+            IsEnabled = AvailabilityKind == FeatureAvailabilityKind.Enabled;
+            IsAvailable = AvailabilityKind == FeatureAvailabilityKind.Enabled || AvailabilityKind == FeatureAvailabilityKind.Disabled;
+        }
     }
 }

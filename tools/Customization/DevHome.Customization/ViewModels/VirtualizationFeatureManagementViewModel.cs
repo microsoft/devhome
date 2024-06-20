@@ -50,7 +50,7 @@ public partial class VirtualizationFeatureManagementViewModel : ObservableObject
 
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
-    public ObservableCollection<OptionalFeatureState> Features { get; } = new();
+    public ObservableCollection<WindowsOptionalFeatureState> Features { get; } = new();
 
     public bool HasFeatureChanges => _isUserAdministrator && FeaturesLoaded && Features.Any(f => f.HasChanged);
 
@@ -122,7 +122,7 @@ public partial class VirtualizationFeatureManagementViewModel : ObservableObject
 
     private async void FeatureState_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(OptionalFeatureState.IsEnabled))
+        if (e.PropertyName == nameof(WindowsOptionalFeatureState.IsEnabled))
         {
             await OnFeaturesChanged();
         }
@@ -130,17 +130,17 @@ public partial class VirtualizationFeatureManagementViewModel : ObservableObject
 
     private async Task LoadFeaturesAsync()
     {
-        var tempFeatures = new ObservableCollection<OptionalFeatureState>();
+        var tempFeatures = new ObservableCollection<WindowsOptionalFeatureState>();
 
         await Task.Run(() =>
         {
-            foreach (var featureName in WindowsOptionalFeatureNames.VirtualMachineFeatures)
+            foreach (var featureName in WindowsOptionalFeatures.VirtualMachineFeatures)
             {
                 var feature = ManagementInfrastructureHelper.GetWindowsFeatureDetails(featureName);
                 if (feature != null && feature.IsAvailable)
                 {
                     // A features is consider modifiable if the user is an administrator.
-                    var featureState = new OptionalFeatureState(feature, _isUserAdministrator);
+                    var featureState = new WindowsOptionalFeatureState(feature, _isUserAdministrator);
                     featureState.PropertyChanged += FeatureState_PropertyChanged;
 
                     // Add to the temporary list instead of the main Features collection to avoid the UI updating

@@ -42,7 +42,7 @@
                 <muxc:ItemsRepeater
                     ItemsSource="{x:Bind ViewModel.Features}">
                     <muxc:ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="models:OptionalFeatureState">
+                        <DataTemplate x:DataType="models:WindowsOptionalFeatureState">
                             <controls:SettingsCard
                             Header="{x:Bind Feature.DisplayName}"
                             Description="{x:Bind Feature.Description}"

@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using DevHome.Common.Models;
 using Serilog;
 
 namespace DevHome.Common.Scripts;
