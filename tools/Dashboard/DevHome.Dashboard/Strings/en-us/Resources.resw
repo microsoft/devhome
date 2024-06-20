@@ -189,6 +189,10 @@
     <value>Add new widget</value>
     <comment>The hyperlink to bring the user to the Add Widget dialog. Shows if the user hasn't added any widgets.</comment>
   </data>
+  <data name="RunningAsAdminMessage.Text" xml:space="preserve">
+    <value>Dev Home cannot display the Dashboard while running as Administrator.</value>
+    <comment>Message shown when the user ran as admin and we can't show the dashboard.</comment>
+  </data>
   <data name="RestartDevHomeMessage.Text" xml:space="preserve">
     <value>We're having trouble displaying widgets. Restarting Dev Home may help.</value>
     <comment>Message shown when there's no widget service and the user should restart Dev Home.</comment>

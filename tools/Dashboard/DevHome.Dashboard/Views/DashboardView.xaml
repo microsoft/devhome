@@ -137,6 +137,9 @@
                     </StackPanel>
 
                     <!-- Widget messages -->
+                    <StackPanel x:Name="RunningAsAdminMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
+                        <TextBlock x:Uid="RunningAsAdminMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
+                    </StackPanel>
                     <StackPanel x:Name="RestartDevHomeMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
                         <TextBlock x:Uid="RestartDevHomeMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
                     </StackPanel>
