@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
     <DevHomeSDKVersion Condition="$(DevHomeSDKVersion) == ''">$(DevHomeSDKVersion)</DevHomeSDKVersion>
-    <Configurations>Debug;Release;Debug-FailFast</Configurations>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

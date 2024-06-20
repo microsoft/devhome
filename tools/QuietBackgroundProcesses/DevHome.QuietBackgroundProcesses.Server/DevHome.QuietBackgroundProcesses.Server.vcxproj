@@ -26,20 +26,20 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug-FailFast|ARM">
-      <Configuration>Debug-FailFast</Configuration>
+    <ProjectConfiguration Include="Debug_FailFast|ARM">
+      <Configuration>Debug_FailFast</Configuration>
       <Platform>ARM</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug-FailFast|ARM64">
-      <Configuration>Debug-FailFast</Configuration>
+    <ProjectConfiguration Include="Debug_FailFast|ARM64">
+      <Configuration>Debug_FailFast</Configuration>
       <Platform>ARM64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug-FailFast|Win32">
-      <Configuration>Debug-FailFast</Configuration>
+    <ProjectConfiguration Include="Debug_FailFast|Win32">
+      <Configuration>Debug_FailFast</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug-FailFast|x64">
-      <Configuration>Debug-FailFast</Configuration>
+    <ProjectConfiguration Include="Debug_FailFast|x64">
+      <Configuration>Debug_FailFast</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|ARM">
@@ -88,7 +88,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug-FailFast'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
@@ -151,7 +151,7 @@
       <Optimization>Disabled</Optimization>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug-FailFast'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_FailFast'">
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Disabled</Optimization>

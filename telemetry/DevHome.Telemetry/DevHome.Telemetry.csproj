@@ -7,7 +7,7 @@
     <UseWinUI>true</UseWinUI>
     <!-- DefineConstants is removed in Unstub.ps1-->
     <DefineConstants>TELEMETRYEVENTSOURCE_PUBLIC</DefineConstants>
-    <Configurations>Debug;Release;Debug-FailFast</Configurations>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Serilog" Version="3.1.1" />

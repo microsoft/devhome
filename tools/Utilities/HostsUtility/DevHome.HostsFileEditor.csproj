@@ -13,7 +13,7 @@
     <EnableMsixTooling>false</EnableMsixTooling>
     <ProjectPriFileName>DevHome.HostsFileEditor.pri</ProjectPriFileName>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
-    <Configurations>Debug;Release;Debug-FailFast</Configurations>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Settings\HostsUtilitySettingsWindow.xaml" />
