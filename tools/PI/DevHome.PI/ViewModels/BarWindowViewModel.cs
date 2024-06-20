@@ -24,10 +24,15 @@ public partial class BarWindowViewModel : ObservableObject
     private const string UnsnapButtonText = "\ue89f";
     private const string SnapButtonText = "\ue8a0";
 
+    private const string ExpandButtonText = "\ue76c"; // ChevronRight
+    private const string CollapseButtonText = "\ue76b"; // CheveronLeft
+
     private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
     private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
     private readonly string _unsnapToolTip = CommonHelper.GetLocalizedString("UnsnapToolTip");
     private readonly string _snapToolTip = CommonHelper.GetLocalizedString("SnapToolTip");
+    private readonly string _expandToolTip = CommonHelper.GetLocalizedString("SwitchToLargeLayoutToolTip");
+    private readonly string _collapseToolTip = CommonHelper.GetLocalizedString("SwitchToSmallLayoutToolTip");
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
@@ -51,6 +56,12 @@ public partial class BarWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private string _currentSnapToolTip;
+
+    [ObservableProperty]
+    private string _currentExpandButtonText = ExpandButtonText;
+
+    [ObservableProperty]
+    private string _currentExpandToolTip;
 
     [ObservableProperty]
     private string _appCpuUsage = string.Empty;
@@ -116,6 +127,12 @@ public partial class BarWindowViewModel : ObservableObject
 
         ((INotifyCollectionChanged)ExternalToolsHelper.Instance.FilteredExternalTools).CollectionChanged += FilteredExternalTools_CollectionChanged;
         FilteredExternalTools_CollectionChanged(null, null);
+    }
+
+    partial void OnShowingExpandedContentChanged(bool value)
+    {
+        CurrentExpandButtonText = IsSnapped ? UnsnapButtonText : SnapButtonText;
+        CurrentExpandToolTip = IsSnapped ? _unsnapToolTip : _snapToolTip;
     }
 
     private void FilteredExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs? e)
