@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using HostsUILib.Helpers;
 using Serilog;
 
 namespace DevHome.HostsFileEditor.Helpers;

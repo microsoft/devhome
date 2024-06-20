@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent\DevHome.SetupFlow.ElevatedComponent.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
   </ItemGroup>
 
   <!-- The server .exe requires the .winmd to be located next to it. The project reference
@@ -28,5 +29,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings_setupflowelevated.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

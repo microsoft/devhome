@@ -16,7 +16,6 @@ using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
-using DevHome.Common.Views;
 using DevHome.Environments.Helpers;
 using Microsoft.UI.Xaml;
 using Serilog;

@@ -3,8 +3,6 @@
 
 using DevHome.Common.Views;
 using DevHome.Settings.ViewModels;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Settings.Views;
 

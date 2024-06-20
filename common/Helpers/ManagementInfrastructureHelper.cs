@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Globalization;
 using Microsoft.Management.Infrastructure;
 using Serilog;
 

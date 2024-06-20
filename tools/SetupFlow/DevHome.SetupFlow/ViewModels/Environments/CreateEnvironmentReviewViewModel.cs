@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.Services;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;

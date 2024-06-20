@@ -4,7 +4,6 @@
 using DevHome.Environments.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Environments.Selectors;
 
