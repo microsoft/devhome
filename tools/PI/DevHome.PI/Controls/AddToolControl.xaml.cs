@@ -5,14 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CommunityToolkit.WinUI.UI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
@@ -22,12 +18,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
 using Windows.ApplicationModel;
-using Windows.ApplicationModel.Core;
-using Windows.Foundation;
-using Windows.Graphics.Imaging;
 using Windows.Management.Deployment;
-using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.Win32;
 using Windows.Win32.UI.Controls.Dialogs;
 
@@ -120,7 +111,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             }
         }
 
-        if (fileName != string.Empty)
+        if (!string.IsNullOrEmpty(fileName))
         {
             ToolPathTextBox.Text = fileName;
             ToolNameTextBox.Text = Path.GetFileNameWithoutExtension(fileName);
@@ -194,19 +185,19 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
         itemCount = GetShortcuts();
         if (itemCount == 0)
         {
-            Log.Error("Error getting shortcuts");
+            _log.Error("Error getting shortcuts");
         }
 
         var packageCount = GetPackages();
         if (packageCount == 0)
         {
-            Log.Error("Error getting packages");
+            _log.Error("Error getting packages");
         }
 
         itemCount += packageCount;
         if (itemCount == 0)
         {
-            Log.Error("Error getting list of installed apps");
+            _log.Error("Error getting list of installed apps");
             return;
         }
 
@@ -276,7 +267,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
 
     private async Task ProcessItemsAsync(IProgress<int> progress)
     {
-        // Recursively search for .lnk files.
+        // Process all the shortcut files.
         var currentCount = 0;
         for (var i = 0; i < shortcuts?.Count; i++)
         {
@@ -317,6 +308,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
                     }
                     catch
                     {
+                        _log.Error("Error getting icon from package");
                     }
                 }
             }
@@ -348,7 +340,13 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
         }
 
         var wshShell = new WshShell();
-        var shortcut = (IWshShortcut)wshShell.CreateShortcut(filePath);
+        if (wshShell.CreateShortcut(filePath) is not IWshShortcut shortcut)
+        {
+            _log.Error("Error getting shortcut");
+            return;
+        }
+
+        // Proceed with using the shortcut object.
         var targetPath = shortcut.TargetPath;
 
         // Exclude shortcuts that point to empty targets, filesystem folders, or WSA apps.
@@ -369,6 +367,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             return;
         }
 
+        // Add the app for this shortcut to the list.
         allApps.Add(new InstalledAppInfo
         {
             Name = appName,
@@ -392,6 +391,8 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             // Note we use Package.Logo, not AppListEntry.DisplayInfo.GetLogo
             // because the latter doesn't get consistently-sized icons.
             var appListEntry = entries[0];
+
+            // Add the app for this package to the list.
             allApps.Add(new InstalledAppInfo
             {
                 Name = package.DisplayName,
@@ -401,9 +402,9 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
         }
     }
 
-    private void AppsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void AppsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (AppsDataGrid.SelectedItem is InstalledAppInfo app)
+        if (AppsListView.SelectedItem is InstalledAppInfo app)
         {
             selectedApp = app;
             if (!string.IsNullOrEmpty(app.TargetPath))
@@ -422,29 +423,6 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             selectedApp = null;
             ToolPathTextBox.Text = string.Empty;
             ToolNameTextBox.Text = string.Empty;
-        }
-    }
-
-    private void AppsDataGrid_Sorting(object sender, DataGridColumnEventArgs e)
-    {
-        var header = e.Column.Header.ToString();
-        switch (header)
-        {
-            case "Name":
-                if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
-                {
-                    AppsDataGrid.ItemsSource = new ObservableCollection<InstalledAppInfo>(
-                        from item in SortedApps orderby item.Name ascending select item);
-                    e.Column.SortDirection = DataGridSortDirection.Ascending;
-                }
-                else
-                {
-                    AppsDataGrid.ItemsSource = new ObservableCollection<InstalledAppInfo>(
-                        from item in SortedApps orderby item.Name descending select item);
-                    e.Column.SortDirection = DataGridSortDirection.Descending;
-                }
-
-                break;
         }
     }
 }

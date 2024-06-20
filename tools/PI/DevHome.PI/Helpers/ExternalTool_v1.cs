@@ -25,20 +25,11 @@ public partial class ExternalTool_v1 : ObservableObject
     [JsonConverter(typeof(EnumStringConverter<ExternalToolArgType>))]
     public ExternalToolArgType ArgType { get; private set; } = ExternalToolArgType.None;
 
-    public string ArgPrefix
-    {
-        get; private set;
-    }
+    public string ArgPrefix { get; private set; }
 
-    public string OtherArgs
-    {
-        get; private set;
-    }
+    public string OtherArgs { get; private set; }
 
-    public bool IsPinned
-    {
-        get; private set;
-    }
+    public bool IsPinned { get; private set; }
 
     public ExternalTool_v1(
         string name,

@@ -382,7 +382,7 @@ public class WindowHelper
             var decoder = await BitmapDecoder.CreateAsync(fileStream.AsRandomAccessStream());
             var softwareBitmap = await decoder.GetSoftwareBitmapAsync();
 
-            // SoftwareBitmapSource::SetBitmapAsync only supports SoftwareBitmap with
+            // SoftwareBitmapSource.SetBitmapAsync only supports SoftwareBitmap with
             // bgra8 pixel format and pre-multiplied or no alpha.
             if (softwareBitmap.BitmapPixelFormat != BitmapPixelFormat.Bgra8
                 || softwareBitmap.BitmapAlphaMode == BitmapAlphaMode.Straight)

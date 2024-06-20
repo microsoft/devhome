@@ -24,17 +24,7 @@ public class InstalledAppInfo
 
     public bool IsMsix
     {
-        get
-        {
-            if (AppUserModelId is not null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        get => AppUserModelId is not null;
 
         set
         {
