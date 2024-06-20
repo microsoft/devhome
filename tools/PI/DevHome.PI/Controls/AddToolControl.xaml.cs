@@ -222,7 +222,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
 
     private int GetShortcuts()
     {
-        var count = 0;
+        int count;
 
         // Search for .lnk files in the per-user and all-users Start Menu Programs directories.
         // %APPDATA%\Microsoft\Windows\Start Menu\Programs
@@ -244,11 +244,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             shortcuts.AddRange(Directory.GetFiles(commonStartMenuProgramsPath, "*.lnk", SearchOption.AllDirectories));
         }
 
-        if (shortcuts is not null)
-        {
-            count = shortcuts.Count;
-        }
-
+        count = shortcuts?.Count ?? 0;
         return count;
     }
 
