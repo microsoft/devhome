@@ -133,7 +133,7 @@
     <value>Unregister</value>
     <comment>The label for Unregister menu flyout for an icon in the toolbar. This will cause the program to no longer be registered with the bar.</comment>
   </data>
-  <data name="SwitchLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="RotateLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Switch between horizontal and vertical layout</value>
     <comment>The tooltip for a button which toggles the orientation of the bar between horizontal and vertical</comment>
   </data>

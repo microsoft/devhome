@@ -47,12 +47,20 @@
                     <TextBlock x:Name="SnapButtonText" Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
                 </Button>
                 <Button
-                    x:Uid="ExpandCollapseLayoutButton" 
-                    Style="{StaticResource ChromeButton}" 
-                    FontSize="{StaticResource CaptionTextBlockFontSize}"
-                    Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" 
-                    HorizontalAlignment="Left" 
-                    ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}">
+                     x:Uid="RotateLayoutButton" 
+                     Style="{StaticResource ChromeButton}" 
+                     FontSize="{StaticResource CaptionTextBlockFontSize}"
+                     Command="{x:Bind _viewModel.RotateLayoutCommand}" 
+                     HorizontalAlignment="Left">
+                    <TextBlock x:Name="RotateLayoutButtonText" Text="&#xe8b4;" />
+                </Button>
+                <Button
+                     x:Uid="ExpandCollapseLayoutButton" 
+                     Style="{StaticResource ChromeButton}" 
+                     FontSize="{StaticResource CaptionTextBlockFontSize}"
+                     Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" 
+                     HorizontalAlignment="Left" 
+                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}">
                     <TextBlock x:Name="ExpandCollapseLayoutButtonText" />
                 </Button>
             </StackPanel>
@@ -102,11 +110,7 @@
             </StackPanel>
 
             <!-- Per System controls -->
-            <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" HorizontalAlignment="Center" Command="{x:Bind _viewModel.SwitchLayoutCommand}">
-                <TextBlock Text="&#xe8b4;"/>
-            </Button>
-
-            <controls:ExternalToolsManagementButton
+              <controls:ExternalToolsManagementButton
                 x:Name="ManageExternalToolsButton"
                 x:Uid="ManageExternalToolsButton"
                 HorizontalAlignment="Center"

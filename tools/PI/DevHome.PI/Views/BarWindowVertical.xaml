@@ -55,6 +55,13 @@
                 Style="{StaticResource ChromeButton}" >
                 <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
             </Button>
+            <Button 
+                x:Uid="RotateLayoutButton" 
+                x:Name="RotateLayoutButton" 
+                Command="{x:Bind _viewModel.RotateLayoutCommand}" 
+                HorizontalAlignment="Center">
+                <TextBlock Text="&#xe8b4;" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
+            </Button>
             <Button
                 x:Uid="ExpandLayoutButton" 
                 Style="{StaticResource ChromeButton}" 
@@ -96,11 +103,7 @@
             </StackPanel>
                         
             <!-- Per System controls -->
-            <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" Command="{x:Bind _viewModel.SwitchLayoutCommand}" HorizontalAlignment="Center">
-                <TextBlock Text="&#xe8b4;"/>
-            </Button>
-
-            <controls:ExternalToolsManagementButton
+          <controls:ExternalToolsManagementButton
                 x:Name="ManageExternalToolsButton"
                 x:Uid="ManageExternalToolsButton"
                 HorizontalAlignment="Center"
