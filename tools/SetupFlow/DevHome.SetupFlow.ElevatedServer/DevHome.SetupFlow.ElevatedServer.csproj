@@ -15,6 +15,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <StartupObject>DevHome.SetupFlow.ElevatedServer.Program</StartupObject>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

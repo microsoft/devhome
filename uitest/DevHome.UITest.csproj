@@ -10,6 +10,7 @@
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <ProjectPriFileName>resources.pri</ProjectPriFileName>
     <RunSettingsFilePath>$(MSBuildProjectDirectory)\Test.runsettings</RunSettingsFilePath>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="NativeMethods.json" />

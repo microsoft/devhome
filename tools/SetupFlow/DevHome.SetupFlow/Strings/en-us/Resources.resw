@@ -1167,10 +1167,6 @@
     <value>Your changes won't be applied until the end</value>
     <comment>Tooltip for the next button in the repo page.</comment>
   </data>
-  <data name="LoadingScreen_SetupProgressBar_Description" xml:space="preserve">
-    <value>Number of tasks completed progress bar</value>
-    <comment>Description of the progress bar for screen readers</comment>
-  </data>
   <data name="RepoPageEditClonePathAutomationProperties" xml:space="preserve">
     <value>Edit Clone Path for Repository {0}</value>
     <comment>Dynamic description for the edit clone path button</comment>
@@ -2018,5 +2014,9 @@
   <data name="VersionComboBox.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Version</value>
     <comment>Name for the version combo box</comment>
+  </data>
+  <data name="SummaryPage_InstallationNotes.Text" xml:space="preserve">
+    <value>Installation Notes</value>
+    <comment>Text to introduce installation notes in the summary screen.</comment>
   </data>
 </root>

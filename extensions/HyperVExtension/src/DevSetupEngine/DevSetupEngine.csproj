@@ -3,6 +3,11 @@
   <!-- Debug builds produce a console app; otherwise a Windows app -->
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputType>Exe</OutputType>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
+    <OutputType>Exe</OutputType>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
     <OutputType>WinExe</OutputType>
