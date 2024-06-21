@@ -343,10 +343,8 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
         // Proceed with using the shortcut object.
         var targetPath = shortcut.TargetPath;
 
-        // Exclude _shortcuts that point to empty targets, filesystem folders, or WSA apps.
-        if (string.IsNullOrEmpty(targetPath)
-            || Directory.Exists(targetPath)
-            || targetPath.Contains("WsaClient.exe", StringComparison.OrdinalIgnoreCase))
+        // Exclude _shortcuts that point to empty targets or filesystem folders.
+        if (string.IsNullOrEmpty(targetPath) || Directory.Exists(targetPath))
         {
             return;
         }
