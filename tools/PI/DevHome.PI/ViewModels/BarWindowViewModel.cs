@@ -28,6 +28,8 @@ public partial class BarWindowViewModel : ObservableObject
     private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
     private readonly string _unsnapToolTip = CommonHelper.GetLocalizedString("UnsnapToolTip");
     private readonly string _snapToolTip = CommonHelper.GetLocalizedString("SnapToolTip");
+    private readonly string _expandToolTip = CommonHelper.GetLocalizedString("SwitchToLargeLayoutToolTip");
+    private readonly string _collapseToolTip = CommonHelper.GetLocalizedString("SwitchToSmallLayoutToolTip");
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
@@ -51,6 +53,9 @@ public partial class BarWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private string _currentSnapToolTip;
+
+    [ObservableProperty]
+    private string _currentExpandToolTip;
 
     [ObservableProperty]
     private string _appCpuUsage = string.Empty;
@@ -112,10 +117,16 @@ public partial class BarWindowViewModel : ObservableObject
 
         CurrentSnapButtonText = IsSnapped ? UnsnapButtonText : SnapButtonText;
         CurrentSnapToolTip = IsSnapped ? _unsnapToolTip : _snapToolTip;
+        CurrentExpandToolTip = ShowingExpandedContent ? _collapseToolTip : _expandToolTip;
         _snapHelper = new();
 
         ((INotifyCollectionChanged)ExternalToolsHelper.Instance.FilteredExternalTools).CollectionChanged += FilteredExternalTools_CollectionChanged;
         FilteredExternalTools_CollectionChanged(null, null);
+    }
+
+    partial void OnShowingExpandedContentChanged(bool value)
+    {
+        CurrentExpandToolTip = ShowingExpandedContent ? _collapseToolTip : _expandToolTip;
     }
 
     private void FilteredExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs? e)

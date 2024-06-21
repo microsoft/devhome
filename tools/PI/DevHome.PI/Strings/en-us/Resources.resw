@@ -141,9 +141,9 @@
     <value>Dissociate so that Project Ironsides is not tracking any app</value>
     <comment>Locked="{Ironsides}" The tooltip for a button which causes Project Ironsides to no longer track any app</comment>
   </data>
-  <data name="SwitchToLargeLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Expand or collapse the large content panel</value>
-    <comment>The tooltip for a button which expands or collapses the large content panel.</comment>
+  <data name="SwitchToLargeLayoutToolTip" xml:space="preserve">
+    <value>Expand the large content panel</value>
+    <comment>The tooltip for a button which expands the large content panel.</comment>
   </data>
   <data name="ReSnapButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Snap the bar to the current foreground window</value>
@@ -956,5 +956,9 @@
   <data name="UnsnapToolTip" xml:space="preserve">
     <value>Detach the diagnostic bar from the target application</value>
     <comment>The tooltip text for a button that detaches the bar from the target application.</comment>
+  </data>
+  <data name="SwitchToSmallLayoutToolTip" xml:space="preserve">
+    <value>Collapse the large content panel</value>
+    <comment>The tooltip for a button which collapses the large content panel.</comment>
   </data>
 </root>
