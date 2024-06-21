@@ -158,7 +158,8 @@ public partial class ExternalTool : ObservableObject
                     var startInfo = new ProcessStartInfo(Executable)
                     {
                         Arguments = parsedArguments,
-                        UseShellExecute = true,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
                     };
                     var process = Process.Start(startInfo);
                     result = process is not null;
