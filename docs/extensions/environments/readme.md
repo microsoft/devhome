@@ -21,7 +21,7 @@ Dev Home uses the [IComputeSystem](https://github.com/microsoft/devhome/blob/3dc
 
 ### General Dev Home extension setup
 If this is your first time building a Dev Home extension:
-1. Follow general Dev Home [extension documentation](https://github.com/microsoft/devhome/blob/main/docs/extensions.md) on how to get started with building an extension.
+1. Follow general Dev Home [extension documentation](https://github.com/microsoft/devhome/blob/main/docs/extensions/readme.md) on how to get started with building an extension.
 2. A sample Dev Home extension can be found [here.](https://github.com/microsoft/devhome/tree/main/extensions/SampleExtension)
 
 ### Environment specific setup

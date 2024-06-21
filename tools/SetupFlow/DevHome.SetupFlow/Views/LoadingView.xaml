@@ -114,7 +114,6 @@
             <ProgressBar
                 x:Name="SetupTaskProgressBar"
                 Grid.Row="2"
-                AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_SetupProgressBar_Description"
                 IsIndeterminate="{x:Bind ViewModel.IsIndeterminateProgressBar, Mode=OneWay}"
                 Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}"
                 Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
