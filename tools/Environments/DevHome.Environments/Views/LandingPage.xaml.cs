@@ -13,8 +13,6 @@ namespace DevHome.Environments.Views;
 
 public sealed partial class LandingPage : ToolPage
 {
-    public override string ShortName => "Environments";
-
     public LandingPageViewModel ViewModel { get; }
 
     public LandingPage()

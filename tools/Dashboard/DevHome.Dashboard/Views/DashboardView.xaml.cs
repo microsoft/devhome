@@ -35,8 +35,6 @@ public partial class DashboardView : ToolPage, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DashboardView));
 
-    public override string ShortName => "Dashboard";
-
     public DashboardViewModel ViewModel { get; }
 
     internal DashboardBannerViewModel BannerViewModel { get; }

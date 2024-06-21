@@ -7,5 +7,4 @@ namespace DevHome.Common;
 
 public abstract class ToolPage : DevHomePage
 {
-    public abstract string ShortName { get; }
 }

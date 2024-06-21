@@ -10,8 +10,6 @@ namespace DevHome.ExtensionLibrary.Views;
 
 public partial class ExtensionLibraryView : ToolPage
 {
-    public override string ShortName => "Extensions";
-
     public ExtensionLibraryViewModel ViewModel { get; }
 
     internal ExtensionLibraryBannerViewModel BannerViewModel { get; }

@@ -8,8 +8,6 @@ namespace Tools.SampleTool.Views;
 
 public partial class SampleToolPage : ToolPage
 {
-    public override string ShortName => "SampleTool";
-
     public SampleToolViewModel ViewModel
     {
         get;
