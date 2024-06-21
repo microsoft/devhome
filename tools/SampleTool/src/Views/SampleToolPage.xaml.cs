@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Common;
+using DevHome.Common.Views;
 using Tools.SampleTool.ViewModels;
 
 namespace Tools.SampleTool.Views;

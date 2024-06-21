@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Common;
+using DevHome.Common.Views;
 using DevHome.Experiments.ViewModels;
 
 namespace DevHome.Experiments.Views;

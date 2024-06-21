@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Common.Views;
-
-namespace DevHome.Common;
+namespace DevHome.Common.Views;
 
 public abstract class ToolPage : DevHomePage
 {

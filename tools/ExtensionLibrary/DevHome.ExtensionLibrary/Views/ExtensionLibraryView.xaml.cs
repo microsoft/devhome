@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Common;
 using DevHome.Common.Extensions;
+using DevHome.Common.Views;
 using DevHome.ExtensionLibrary.ViewModels;
 using Microsoft.UI.Xaml;
 
