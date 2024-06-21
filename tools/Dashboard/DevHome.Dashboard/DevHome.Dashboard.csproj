@@ -12,6 +12,7 @@
   <ItemGroup>
     <None Remove="Assets\HostConfigDark.json" />
     <None Remove="Assets\HostConfigLight.json" />
+    <None Remove="Controls\DashboardMessage.xaml" />
     <None Remove="Styles\Dashboard_ThemeResources.xaml" />
     <None Remove="Views\AddWidgetDialog.xaml" />
     <None Remove="Views\DashboardView.xaml" />
@@ -76,4 +77,12 @@
     <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
     <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
   </PropertyGroup>
+
+  <ItemGroup>
+    <CustomAdditionalCompileInputs Remove="Controls\DashboardMessage.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Remove="Controls\DashboardMessage.xaml" />
+  </ItemGroup>
 </Project>

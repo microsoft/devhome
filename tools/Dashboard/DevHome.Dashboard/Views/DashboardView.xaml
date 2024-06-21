@@ -133,23 +133,11 @@
                                 Margin="0,150,0,0"
                                 Visibility="{x:Bind ViewModel.GetNoWidgetMessageVisibility(views:DashboardView.PinnedWidgets.Count, ViewModel.IsLoading), Mode=OneWay}">
                         <TextBlock x:Uid="NoWidgetsAdded" HorizontalAlignment="Center" />
-                        <commonviews:AddCreateHyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" HorizontalAlignment="Center" Command="{x:Bind AddWidgetClickCommand}" />
+                        <commonviews:AddCreateHyperlinkButton x:Uid="AddFirstWidgetLink" HorizontalAlignment="Center" Command="{x:Bind AddWidgetClickCommand}" />
                     </StackPanel>
 
                     <!-- Widget messages -->
-                    <StackPanel x:Name="RunningAsAdminMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
-                        <TextBlock x:Uid="RunningAsAdminMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
-                    </StackPanel>
-                    <StackPanel x:Name="RestartDevHomeMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
-                        <TextBlock x:Uid="RestartDevHomeMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
-                    </StackPanel>
-                    <StackPanel x:Name="UpdateWidgetsMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
-                        <TextBlock x:Uid="UpdateWidgetsMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
-                        <HyperlinkButton x:Name="UpdateWidgetsMessageLink"
-                                         x:Uid="UpdateWidgetsMessageLink"
-                                         HorizontalAlignment="Center"
-                                         Command="{x:Bind GoToWidgetsInStoreCommand}" />
-                    </StackPanel>
+                    <controls:DashboardMessage x:Name="DashboardMessage" />
                 </StackPanel>
             </Grid>
         </ScrollViewer>

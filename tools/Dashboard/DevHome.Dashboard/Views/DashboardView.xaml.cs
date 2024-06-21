@@ -175,7 +175,7 @@ public partial class DashboardView : ToolPage, IDisposable
         if (ViewModel.IsRunningAsAdmin())
         {
             _log.Error($"Dev Home is running as admin, can't show Dashboard");
-            RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
+            DashboardMessage.Message = DashboardMessage.Messages.RunningAsAdmin;
         }
         else if (ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
         {
@@ -194,7 +194,7 @@ public partial class DashboardView : ToolPage, IDisposable
             else
             {
                 _log.Error($"Catalog event subscriptions failed, show error");
-                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
+                DashboardMessage.Message = DashboardMessage.Messages.RestartDevHome;
             }
         }
         else
@@ -204,12 +204,12 @@ public partial class DashboardView : ToolPage, IDisposable
                 widgetServiceState == WidgetServiceService.WidgetServiceStates.HasWebExperienceNoOrBadVersion)
             {
                 // Show error message that updating may help
-                UpdateWidgetsMessageStackPanel.Visibility = Visibility.Visible;
+                DashboardMessage.Message = DashboardMessage.Messages.UpdateWidgetService;
             }
             else
             {
                 _log.Error($"Initialization failed, WidgetServiceState unknown");
-                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
+                DashboardMessage.Message = DashboardMessage.Messages.RestartDevHome;
             }
         }
 

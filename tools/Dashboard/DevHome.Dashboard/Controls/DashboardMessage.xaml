@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.Dashboard.Controls.DashboardMessage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DevHome.Dashboard.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:views="using:DevHome.Common.Views">
+
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        <converters:EmptyStringToObjectConverter x:Key="EmptyStringToVisibleConverter" NotEmptyValue="Visible" EmptyValue="Collapsed" />
+    </UserControl.Resources>
+
+    <StackPanel
+        HorizontalAlignment="Center"
+        Margin="0,150,0,0"
+        Visibility="{x:Bind MessageText, Mode=OneWay, Converter={StaticResource EmptyStringToVisibleConverter}}">
+        <TextBlock
+            Text="{x:Bind MessageText, Mode=OneWay}"
+            HorizontalAlignment="Center"
+            TextWrapping="WrapWholeWords"
+            HorizontalTextAlignment="Center" />
+        <StackPanel Visibility="{x:Bind HyperlinkButtonText, Mode=OneWay, Converter={StaticResource EmptyStringToVisibleConverter}}">
+            <HyperlinkButton
+                Content="{x:Bind HyperlinkButtonText, Mode=OneWay}"
+                HorizontalAlignment="Center"
+                Visibility="{x:Bind UseAddCreateHyperlinkButton, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
+                Command="{x:Bind HyperlinkButtonCommand, Mode=OneWay}" />
+            <views:AddCreateHyperlinkButton
+                Content="{x:Bind MessageText, Mode=OneWay}"
+                HorizontalAlignment="Center"
+                Visibility="{x:Bind UseAddCreateHyperlinkButton, Mode=OneWay}"
+                Command="{x:Bind HyperlinkButtonCommand, Mode=OneWay}" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

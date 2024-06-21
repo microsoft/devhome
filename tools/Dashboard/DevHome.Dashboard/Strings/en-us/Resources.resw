@@ -181,7 +181,7 @@
     <value>Dashboard</value>
     <comment>Header label for the Dashboard page</comment>
   </data>
-  <data name="NoWidgetsAdded.Text" xml:space="preserve">
+  <data name="NoWidgetsAddedText" xml:space="preserve">
     <value>No widgets added yet</value>
     <comment>Message shown when no widgets have been added to the Dashboard</comment>
   </data>
@@ -189,19 +189,19 @@
     <value>Add new widget</value>
     <comment>The hyperlink to bring the user to the Add Widget dialog. Shows if the user hasn't added any widgets.</comment>
   </data>
-  <data name="RunningAsAdminMessage.Text" xml:space="preserve">
+  <data name="RunningAsAdminMessageText" xml:space="preserve">
     <value>Dashboard cannot be displayed while running as Administrator.</value>
     <comment>Message shown when the user ran as admin and we can't show the dashboard.</comment>
   </data>
-  <data name="RestartDevHomeMessage.Text" xml:space="preserve">
+  <data name="RestartDevHomeMessageText" xml:space="preserve">
     <value>We're having trouble displaying widgets. Restarting Dev Home may help.</value>
     <comment>Message shown when there's no widget service and the user should restart Dev Home.</comment>
   </data>
-  <data name="UpdateWidgetsMessage.Text" xml:space="preserve">
+  <data name="UpdateWidgetsMessageText" xml:space="preserve">
     <value>You do not have the required dependency installed to display widgets. Please install or update the package from the Store and then restart Dev Home.</value>
     <comment>Message shown when no widgets have been added to the Dashboard</comment>
   </data>
-  <data name="UpdateWidgetsMessageLink.Content" xml:space="preserve">
+  <data name="UpdateWidgetsMessageLinkText" xml:space="preserve">
     <value>Get in Store app</value>
     <comment>Button text to go to store listing</comment>
   </data>
