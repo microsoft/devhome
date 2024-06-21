@@ -168,7 +168,7 @@ public partial class BarWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void SwitchLayout()
+    public void RotateLayout()
     {
         if (BarOrientation == Orientation.Horizontal)
         {
