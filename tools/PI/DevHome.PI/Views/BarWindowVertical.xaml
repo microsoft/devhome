@@ -56,7 +56,7 @@
                 <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
             </Button>
             <Button
-                x:Uid="SwitchToLargeLayoutButton" 
+                x:Uid="ExpandLayoutButton" 
                 Style="{StaticResource ChromeButton}" 
                 Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" 
                 HorizontalAlignment="Center" 

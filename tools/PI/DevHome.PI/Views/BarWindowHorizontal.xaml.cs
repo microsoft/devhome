@@ -32,7 +32,7 @@ namespace DevHome.PI;
 public partial class BarWindowHorizontal : WindowEx
 {
     private const string ExpandButtonText = "\ue70d"; // ChevronDown
-    private const string CollapseButtonText = "\ue70e"; // CheveronUp
+    private const string CollapseButtonText = "\ue70e"; // ChevronUp
 
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowViewModel _viewModel;
@@ -84,7 +84,7 @@ public partial class BarWindowHorizontal : WindowEx
         var settingSize = Settings.Default.ExpandedLargeSize;
         _restoreState.Height = settingSize.Height;
         _restoreState.Width = settingSize.Width;
-        SwitchToLargeLayoutButtonText.Text = _viewModel.ShowingExpandedContent ? CollapseButtonText : ExpandButtonText;
+        ExpandCollapseLayoutButtonText.Text = _viewModel.ShowingExpandedContent ? CollapseButtonText : ExpandButtonText;
 
         _uiSettings.ColorValuesChanged += (sender, args) =>
         {
@@ -102,12 +102,12 @@ public partial class BarWindowHorizontal : WindowEx
             if (_viewModel.ShowingExpandedContent)
             {
                 ExpandLargeContentPanel();
-                SwitchToLargeLayoutButtonText.Text = CollapseButtonText;
+                ExpandCollapseLayoutButtonText.Text = CollapseButtonText;
             }
             else
             {
                 CollapseLargeContentPanel();
-                SwitchToLargeLayoutButtonText.Text = ExpandButtonText;
+                ExpandCollapseLayoutButtonText.Text = ExpandButtonText;
             }
         }
     }
@@ -364,12 +364,12 @@ public partial class BarWindowHorizontal : WindowEx
         if (_currentActivationState == WindowActivationState.Deactivated)
         {
             SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
-            SwitchToLargeLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
+            ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
         }
         else
         {
             SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
-            SwitchToLargeLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
+            ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
         }
     }
 }
