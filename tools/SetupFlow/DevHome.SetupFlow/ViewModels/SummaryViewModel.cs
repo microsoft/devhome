@@ -144,10 +144,19 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     public bool IsSettingUpATargetMachine => _orchestrator.IsSettingUpATargetMachine;
 
+    /// <summary>
+    /// Gets a value indicating whether a configuration file was used.
+    /// </summary>
     public bool ShowConfigurationUnitResults => ConfigurationUnitResults.Count > 0;
 
+    /// <summary>
+    /// Gets a value indicating whether to show results for setting up a target machine.
+    /// </summary>
     public bool ShowTargetMachineSetupResults => IsSettingUpATargetMachine && ShowConfigurationUnitResults;
 
+    /// <summary>
+    /// Gets a value indicating whether the configuration file flow was used.
+    /// </summary>
     public bool ShowConfigurationFileResults => ShowConfigurationUnitResults && !IsSettingUpATargetMachine;
 
     public bool CompletedWithErrors => TargetFailedResults.Count > 0 || FailedTasks.Count > 0;
