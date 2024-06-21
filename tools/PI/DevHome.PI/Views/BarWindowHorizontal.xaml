@@ -53,7 +53,7 @@
                     Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" 
                     HorizontalAlignment="Left" 
                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}">
-                    <TextBlock x:Name="SwitchToLargeLayoutButtonText" Text="{x:Bind _viewModel.CurrentExpandButtonText, Mode=OneWay}"/>
+                    <TextBlock x:Name="SwitchToLargeLayoutButtonText" />
                 </Button>
             </StackPanel>
         </Grid>

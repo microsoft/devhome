@@ -24,9 +24,6 @@ public partial class BarWindowViewModel : ObservableObject
     private const string UnsnapButtonText = "\ue89f";
     private const string SnapButtonText = "\ue8a0";
 
-    private const string ExpandButtonText = "\ue76c"; // ChevronRight
-    private const string CollapseButtonText = "\ue76b"; // CheveronLeft
-
     private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
     private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
     private readonly string _unsnapToolTip = CommonHelper.GetLocalizedString("UnsnapToolTip");
@@ -56,9 +53,6 @@ public partial class BarWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private string _currentSnapToolTip;
-
-    [ObservableProperty]
-    private string _currentExpandButtonText = ExpandButtonText;
 
     [ObservableProperty]
     private string _currentExpandToolTip;
@@ -123,6 +117,7 @@ public partial class BarWindowViewModel : ObservableObject
 
         CurrentSnapButtonText = IsSnapped ? UnsnapButtonText : SnapButtonText;
         CurrentSnapToolTip = IsSnapped ? _unsnapToolTip : _snapToolTip;
+        CurrentExpandToolTip = ShowingExpandedContent ? _collapseToolTip : _expandToolTip;
         _snapHelper = new();
 
         ((INotifyCollectionChanged)ExternalToolsHelper.Instance.FilteredExternalTools).CollectionChanged += FilteredExternalTools_CollectionChanged;
@@ -131,8 +126,7 @@ public partial class BarWindowViewModel : ObservableObject
 
     partial void OnShowingExpandedContentChanged(bool value)
     {
-        CurrentExpandButtonText = IsSnapped ? UnsnapButtonText : SnapButtonText;
-        CurrentExpandToolTip = IsSnapped ? _unsnapToolTip : _snapToolTip;
+        CurrentExpandToolTip = ShowingExpandedContent ? _collapseToolTip : _expandToolTip;
     }
 
     private void FilteredExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs? e)
