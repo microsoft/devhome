@@ -60,7 +60,7 @@
                 x:Name="RotateLayoutButton" 
                 Command="{x:Bind _viewModel.RotateLayoutCommand}" 
                 HorizontalAlignment="Center">
-                <TextBlock Text="&#xe7ad;" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
+                <TextBlock Text="&#xe8b4;" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
             </Button>
             <Button
                 x:Uid="ExpandLayoutButton" 

@@ -52,7 +52,7 @@
                      FontSize="{StaticResource CaptionTextBlockFontSize}"
                      Command="{x:Bind _viewModel.RotateLayoutCommand}" 
                      HorizontalAlignment="Left">
-                    <TextBlock x:Name="RotateLayoutButtonText" Text="&#xe7ad;" />
+                    <TextBlock x:Name="RotateLayoutButtonText" Text="&#xe8b4;" />
                 </Button>
                 <Button
                      x:Uid="ExpandCollapseLayoutButton" 
