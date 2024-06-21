@@ -1009,4 +1009,8 @@
     <value>The name you want to use for this tool in the menu and toolbar</value>
     <comment>Describes a textbox where the user can enter a name for the tool.</comment>
   </data>
+  <data name="SwitchToSmallLayoutToolTip" xml:space="preserve">
+    <value>Collapse the large content panel</value>
+    <comment>The tooltip for a button which collapses the large content panel.</comment>
+  </data>
 </root>
