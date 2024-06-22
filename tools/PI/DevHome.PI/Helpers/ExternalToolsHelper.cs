@@ -6,8 +6,10 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using DevHome.Common.Helpers;
 using Serilog;
 using Windows.Storage;
@@ -58,6 +60,8 @@ internal sealed class ExternalToolsHelper
     // The bar shows only the pinned tools.
     public ReadOnlyObservableCollection<ExternalTool> FilteredExternalTools { get; private set; }
 
+    internal static int ToolsCollectionVersion { get; private set; } = 2;
+
     private ExternalToolsHelper()
     {
         string localFolder;
@@ -82,10 +86,11 @@ internal sealed class ExternalToolsHelper
         allExternalTools.Clear();
         if (File.Exists(toolInfoFileName))
         {
+            var jsonData = File.ReadAllText(toolInfoFileName);
             try
             {
-                var jsonData = File.ReadAllText(toolInfoFileName);
-                var existingData = JsonSerializer.Deserialize<ExternalTool[]>(jsonData) ?? [];
+                var toolCollection = JsonSerializer.Deserialize<ExternalToolCollection>(jsonData);
+                var existingData = toolCollection?.ExternalTools ?? [];
                 foreach (var toolItem in existingData)
                 {
                     allExternalTools.Add(toolItem);
@@ -94,10 +99,52 @@ internal sealed class ExternalToolsHelper
             }
             catch (Exception ex)
             {
-                // TODO If we failed to parse the JSON file, we should rename it (using DateTime.Now),
-                // create a new one, and report to the user.
-                _log.Error(ex, $"Failed to parse {toolInfoFileName}");
+                _log.Error(ex, $"Failed to parse {toolInfoFileName}, attempting migration");
+                MigrateOldTools(jsonData);
             }
+        }
+    }
+
+    private void MigrateOldTools(string jsonData)
+    {
+        try
+        {
+            var oldFormatData = JsonSerializer.Deserialize<ExternalTool_v1[]>(jsonData) ?? [];
+            foreach (var oldTool in oldFormatData)
+            {
+                var arguments = string.Empty;
+                if (oldTool.ArgType == ExternalToolArgType.ProcessId)
+                {
+                    arguments = $" {oldTool.ArgPrefix}{{pid}} {oldTool.OtherArgs}";
+                }
+                else if (oldTool.ArgType == ExternalToolArgType.Hwnd)
+                {
+                    arguments = $" {oldTool.ArgPrefix}{{hwnd}} {oldTool.OtherArgs}";
+                }
+                else
+                {
+                    arguments = oldTool.OtherArgs;
+                }
+
+                var newTool = new ExternalTool(
+                    oldTool.Name,
+                    oldTool.Executable,
+                    ToolActivationType.Launch,
+                    arguments,
+                    string.Empty,
+                    string.Empty,
+                    oldTool.IsPinned);
+
+                allExternalTools.Add(newTool);
+                newTool.PropertyChanged += ToolItem_PropertyChanged;
+            }
+
+            // Write out the updated data with the new file format.
+            WriteToolsJsonFile();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Failed to migrate old tools");
         }
     }
 
@@ -119,7 +166,28 @@ internal sealed class ExternalToolsHelper
             }
         }
 
-        WriteToolsJsonFile();
+        // Only update the JSON file if the property is not attributed [JsonIgnore].
+        if (!IsJsonIgnoreProperty<ExternalTool>(e.PropertyName))
+        {
+            WriteToolsJsonFile();
+        }
+    }
+
+    private bool IsJsonIgnoreProperty<T>(string? propertyName)
+    {
+        if (string.IsNullOrEmpty(propertyName))
+        {
+            return false;
+        }
+
+        var property = typeof(T).GetProperty(propertyName);
+        if (property is not null)
+        {
+            var jsonIgnoreAttribute = property.GetCustomAttributes(typeof(JsonIgnoreAttribute), false).FirstOrDefault();
+            return jsonIgnoreAttribute is not null;
+        }
+
+        return false;
     }
 
     public ExternalTool AddExternalTool(ExternalTool tool)
@@ -139,7 +207,8 @@ internal sealed class ExternalToolsHelper
 
     private void WriteToolsJsonFile()
     {
-        var updatedJson = JsonSerializer.Serialize(allExternalTools, serializerOptions);
+        var toolCollection = new ExternalToolCollection(ToolsCollectionVersion, allExternalTools);
+        var updatedJson = JsonSerializer.Serialize(toolCollection, serializerOptions);
 
         try
         {
@@ -147,9 +216,6 @@ internal sealed class ExternalToolsHelper
         }
         catch (Exception ex)
         {
-            // TODO If we're unable to write to the file, we should figure out why.
-            // If the file has become corrupted, we should rename it (using DateTime.Now),
-            // create a new one, and report to the user. If it's locked, we just report to the user.
             _log.Error(ex, "WriteToolsJsonFile unable to write to file");
         }
     }
