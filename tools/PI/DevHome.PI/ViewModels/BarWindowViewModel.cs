@@ -64,6 +64,9 @@ public partial class BarWindowViewModel : ObservableObject
     private bool _isAppBarVisible = true;
 
     [ObservableProperty]
+    private bool _isProcessChooserVisible = false;
+
+    [ObservableProperty]
     private Visibility _externalToolSeparatorVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
@@ -106,6 +109,9 @@ public partial class BarWindowViewModel : ObservableObject
         SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", PerfCounters.Instance.SystemDiskUsage);
 
         var process = TargetAppData.Instance.TargetProcess;
+
+        // Show either the process chooser, or the app bar. Not both
+        IsProcessChooserVisible = process is null;
         IsAppBarVisible = process is not null;
         if (process != null)
         {
@@ -233,6 +239,16 @@ public partial class BarWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
+    public void LaunchInsights()
+    {
+        ToggleExpandedContentVisibility();
+
+        // And navigate to the appropriate page
+        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+        barWindow?.NavigateTo(typeof(InsightsPageViewModel));
+    }
+
+    [RelayCommand]
     public void ManageExternalToolsButton()
     {
         ToggleExpandedContentVisibility();
@@ -277,6 +293,9 @@ public partial class BarWindowViewModel : ObservableObject
                     ApplicationPid = process.Id;
                     ApplicationName = process.ProcessName;
                 }
+
+                // Conversely, the process chooser is only visible if we're not attached to a process
+                IsProcessChooserVisible = process is null;
             });
         }
         else if (e.PropertyName == nameof(TargetAppData.Icon))
