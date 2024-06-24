@@ -20,6 +20,7 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using static DevHome.Common.Helpers.ManagementInfrastructureHelper;
 
 namespace DevHome.Common.Environments.Helpers;
 
@@ -99,7 +100,7 @@ public partial class EnvironmentsNotificationHelper
         }
 
         var userInAdminGroup = _windowsIdentityHelper.IsUserHyperVAdmin();
-        var featureEnabled = ManagementInfrastructureHelper.GetWindowsFeatureAvailability(CommonConstants.HyperVWindowsOptionalFeatureName) == FeatureAvailabilityKind.Enabled;
+        var featureEnabled = IsWindowsOptionalFeatureEnabled(CommonConstants.HyperVWindowsOptionalFeatureName);
 
         if (!featureEnabled && !userInAdminGroup)
         {

@@ -92,6 +92,16 @@ public static class ManagementInfrastructureHelper
     }
 
     /// <summary>
+    /// Gets a boolean indicating whether the Windows optional feature is enabled.
+    /// </summary>
+    /// <param name="featureName">The name of the Windows optional feature that will be queried</param>
+    /// <returns>True only when the optional feature is enabled. False otherwise.</returns>
+    public static bool IsWindowsOptionalFeatureEnabled(string featureName)
+    {
+        return GetWindowsFeatureAvailability(featureName) == FeatureAvailabilityKind.Enabled;
+    }
+
+    /// <summary>
     /// Gets a boolean indicating whether the Windows optional feature that an extension relies on
     /// is available on the machine.
     /// </summary>

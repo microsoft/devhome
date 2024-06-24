@@ -14,6 +14,7 @@ using Serilog;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation.Collections;
+using static DevHome.Common.Helpers.ManagementInfrastructureHelper;
 
 namespace DevHome.Services;
 
@@ -393,7 +394,7 @@ public class ExtensionService : IExtensionService, IDisposable
     /// <returns>True only if the extension was disabled. False otherwise.</returns>
     public bool DisableExtensionIfWindowsFeatureNotAvailable(IExtensionWrapper extension)
     {
-        if (ManagementInfrastructureHelper.IsWindowsOptionalFeatureAvailableForExtension(extension.ExtensionClassId))
+        if (IsWindowsOptionalFeatureAvailableForExtension(extension.ExtensionClassId))
         {
             return false;
         }
