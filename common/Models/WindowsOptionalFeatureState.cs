@@ -13,19 +13,9 @@ public partial class WindowsOptionalFeatureState : ObservableObject
     [ObservableProperty]
     private bool _isModifiable;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasChanged))]
     private bool _isEnabled;
-
-    public bool IsEnabled
-    {
-        get => _isEnabled;
-        set
-        {
-            if (SetProperty(ref _isEnabled, value))
-            {
-                OnPropertyChanged(nameof(HasChanged));
-            }
-        }
-    }
 
     public bool HasChanged => IsEnabled != Feature.IsEnabled;
 

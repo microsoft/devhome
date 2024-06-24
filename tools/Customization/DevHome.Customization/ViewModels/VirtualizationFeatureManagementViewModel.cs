@@ -30,7 +30,7 @@ public partial class VirtualizationFeatureManagementViewModel : ObservableObject
 
     private readonly StringResource _stringResource;
 
-    private readonly bool _isUserAdministrator = WindowsIdentityHelper.IsUserAdministrator();
+    private readonly bool _isUserAdministrator = new WindowsIdentityHelper().IsUserAdministrator();
 
     private readonly Dictionary<string, bool> _initialFeatureEnabledStates = new();
 
@@ -236,7 +236,6 @@ public partial class VirtualizationFeatureManagementViewModel : ObservableObject
                     ShowFailedToApplyAllNotification();
                     break;
                 case ModifyWindowsOptionalFeatures.ExitCode.Cancelled:
-                case ModifyWindowsOptionalFeatures.ExitCode.NoChange:
                     // Do nothing for these conditions, the InfoBar will be updated by ModifyFeaturesAsync
                     // in these cases.
                     _modifyFeaturesDialog.Hide();

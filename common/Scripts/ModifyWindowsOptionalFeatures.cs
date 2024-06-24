@@ -22,7 +22,7 @@ public static class ModifyWindowsOptionalFeatures
     {
         if (!features.Any(f => f.HasChanged))
         {
-            return ExitCode.NoChange;
+            return ExitCode.Success;
         }
 
         // Format the argument for the PowerShell script using `n as a newline character since the list
@@ -117,9 +117,8 @@ public static class ModifyWindowsOptionalFeatures
     public enum ExitCode
     {
         Success = 0,
-        NoChange = 1,
-        Failure = 2,
-        Cancelled = 3,
+        Failure = 1,
+        Cancelled = 2,
     }
 
     private static ExitCode FromExitCode(int exitCode)
@@ -127,9 +126,18 @@ public static class ModifyWindowsOptionalFeatures
         return exitCode switch
         {
             0 => ExitCode.Success,
-            1 => ExitCode.NoChange,
-            2 => ExitCode.Failure,
+            1 => ExitCode.Failure,
             _ => ExitCode.Cancelled,
+        };
+    }
+
+    public static string GetExitCodeDescription(ExitCode exitCode)
+    {
+        return exitCode switch
+        {
+            ExitCode.Success => "Success",
+            ExitCode.Failure => "Failure",
+            _ => "Cancelled",
         };
     }
 
@@ -150,11 +158,12 @@ public static class ModifyWindowsOptionalFeatures
     /// </summary>
     private const string Script =
 @"
+$ErrorActionPreference='stop'
+
 enum OperationStatus
 {
     OperationSucceeded = 0
-    OperationSkipped = 1
-    OperationFailed = 2
+    OperationFailed = 1
 }
 
 $validFeatures = @(
@@ -172,8 +181,6 @@ $validFeatures = @(
 function ModifyFeatures($featuresString)
 {
     $features = ConvertFrom-StringData $featuresString
-    $anyOperationFailed = $false
-    $anyOperationPerformed = $false
 
     foreach ($feature in $features.GetEnumerator())
     {
@@ -189,37 +196,24 @@ function ModifyFeatures($featuresString)
 
         if ($currentEnabled -ne $isEnabled)
         {
-            $anyOperationPerformed = $true
+            $result = $null
             if ($isEnabled)
             {
-                $enableResult = Enable-WindowsOptionalFeature -Online -FeatureName $featureName -All -NoRestart
-                if ($enableResult -eq $null)
-                {
-                    $anyOperationFailed = $true
-                }
+                $result = Enable-WindowsOptionalFeature -Online -FeatureName $featureName -All -NoRestart
             }
             else
             {
-                $disableResult = Disable-WindowsOptionalFeature -Online -FeatureName $featureName -NoRestart
-                if ($disableResult -eq $null)
-                {
-                    $anyOperationFailed = $true
-                }
+                $result = Disable-WindowsOptionalFeature -Online -FeatureName $featureName -NoRestart
+            }
+
+            if ($null -eq $result)
+            {
+                exit [OperationStatus]::OperationFailed;
             }
         }
     }
 
-    if ($anyOperationFailed)
-    {
-        exit [OperationStatus]::OperationFailed;
-    }
-    elseif ($anyOperationPerformed)
-    {
-        exit [OperationStatus]::OperationSucceeded;
-    }
-    {
-        exit [OperationStatus]::OperationSkipped;
-    }
+    exit [OperationStatus]::OperationSucceeded;
 }
 
 ModifyFeatures FEATURE_STRING_INPUT;

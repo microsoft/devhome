@@ -30,7 +30,7 @@ public class WindowsIdentityHelper
     // Returns true if the current user has the built-in Administrators claim indicating that
     // they could elevate to an administrator role via UAC if needed. Does not check if the process
     // is running elevated.
-    public static bool IsUserAdministrator()
+    public virtual bool IsUserAdministrator()
     {
         using WindowsIdentity identity = WindowsIdentity.GetCurrent();
         var adminSid = new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null).Value;

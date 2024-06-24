@@ -9,13 +9,7 @@
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <ScrollView Grid.Row="2" VerticalAlignment="Top">
+        <ScrollView VerticalAlignment="Top">
             <views:GeneralSystemView />
         </ScrollView>
     </Grid>

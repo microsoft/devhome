@@ -44,7 +44,7 @@ public static class ManagementInfrastructureHelper
                     _log.Information($"Found feature: '{featureName}' with enablement state: '{featureAvailability}'");
 
                     // Most optional features do not have a description, so we provide one for known features
-                    var description = featureInstance.CimInstanceProperties["Description"]?.Value as string;
+                    var description = featureInstance.CimInstanceProperties["Description"]?.Value as string ?? string.Empty;
                     if (string.IsNullOrEmpty(description) && WindowsOptionalFeatures.FeatureDescriptions.TryGetValue(featureName, out var featureDescription))
                     {
                         description = featureDescription;
@@ -53,7 +53,7 @@ public static class ManagementInfrastructureHelper
                     return new FeatureInfo(
                         featureName,
                         featureInstance.CimInstanceProperties["Caption"]?.Value as string ?? featureName,
-                        description ?? string.Empty,
+                        description,
                         featureAvailability);
                 }
             }

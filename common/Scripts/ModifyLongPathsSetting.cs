@@ -55,12 +55,14 @@ public static class ModifyLongPathsSetting
 
     private const string EnableScript =
 @"
+$ErrorActionPreference='stop'
 Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
 if ($?) { exit 0 } else { exit 1 }
 ";
 
     private const string DisableScript =
 @"
+$ErrorActionPreference='stop'
 Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 0
 if ($?) { exit 0 } else { exit 1 }
 ";

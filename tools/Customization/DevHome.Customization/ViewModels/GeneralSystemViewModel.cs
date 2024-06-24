@@ -31,7 +31,7 @@ public partial class GeneralSystemViewModel : ObservableObject
 
     private readonly ShellSettings _shellSettings;
 
-    private readonly bool _isUserAdministrator = WindowsIdentityHelper.IsUserAdministrator();
+    private readonly bool _isUserAdministrator = new WindowsIdentityHelper().IsUserAdministrator();
 
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 

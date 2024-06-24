@@ -30,18 +30,10 @@ public class ModifyWindowsOptionalFeaturesEvent : EventBase
         get;
     }
 
-    private readonly string[] exitCodeStrings =
-[
-        "Success",
-        "NoChange",
-        "Failure",
-        "Cancelled",
-    ];
-
     public ModifyWindowsOptionalFeaturesEvent(string featureString, ExitCode result, long durationMs)
     {
         FeaturesString = featureString;
-        ExitCode = exitCodeStrings[(int)result];
+        ExitCode = GetExitCodeDescription(result);
         DurationMs = durationMs;
     }
 
