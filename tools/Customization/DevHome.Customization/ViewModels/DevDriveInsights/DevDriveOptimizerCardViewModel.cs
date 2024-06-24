@@ -62,7 +62,8 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
         string existingCacheLocation,
         string exampleLocationOnDevDrive,
         string environmentVariableToBeSet,
-        List<string> existingDevDriveLetters)
+        List<string> existingDevDriveLetters,
+        bool environmentVariableHasValue)
     {
         OptimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
         ExistingDevDriveLetters = existingDevDriveLetters;
@@ -71,7 +72,16 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
         ExampleLocationOnDevDrive = exampleLocationOnDevDrive;
         EnvironmentVariableToBeSet = environmentVariableToBeSet;
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
-        OptimizerDevDriveDescription = stringResource.GetLocalized("OptimizerDevDriveDescription", EnvironmentVariableToBeSet, ExistingCacheLocation, ExampleLocationOnDevDrive, EnvironmentVariableToBeSet);
+
+        if (environmentVariableHasValue)
+        {
+            OptimizerDevDriveDescription = stringResource.GetLocalized("OptimizerDevDriveDescription", EnvironmentVariableToBeSet, ExistingCacheLocation, ExampleLocationOnDevDrive, EnvironmentVariableToBeSet);
+        }
+        else
+        {
+            OptimizerDevDriveDescription = stringResource.GetLocalized("OptimizerDevDriveDescriptionWithEnvVarNotSet", ExistingCacheLocation, ExampleLocationOnDevDrive, EnvironmentVariableToBeSet);
+        }
+
         MakeTheChangeText = stringResource.GetLocalized("MakeTheChangeText");
         DevDriveOptimizationSuggestion = stringResource.GetLocalized("DevDriveOptimizationSuggestion");
     }

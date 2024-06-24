@@ -13,8 +13,8 @@
         <devEnvConverters:CardStateColorToBrushConverter x:Key="CardStateColorToBrushConverter"/>
         <devEnvConverters:CardStateToLocalizedTextConverter x:Key="CardStateToLocalizedTextConverter"/>
         <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
-        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToVisibleConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
-        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToCollapsedConverter" NotEmptyValue="Collapsed" EmptyValue="Visible"/>
+        <converters:EmptyStringToObjectConverter x:Key="EmptyStringToVisibleConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+        <converters:EmptyStringToObjectConverter x:Key="EmptyStringToCollapsedConverter" NotEmptyValue="Collapsed" EmptyValue="Visible"/>
     </UserControl.Resources>
 
         <Grid
@@ -35,7 +35,7 @@
                             Source="{x:Bind ComputeSystemImage, Mode=OneWay}"
                             Width="{StaticResource ComputeSystemImage64px}"
                             Height="{StaticResource ComputeSystemImage64px}"
-                            Stretch="Fill"/>
+                            Stretch="Uniform"/>
                     </Border>
                 </Grid>
             </Viewbox>
@@ -71,14 +71,15 @@
                     <!-- String that indicates the internal state of the compute system. -->
                     <TextBlock
                         Grid.Column="1"
-                        Visibility="{x:Bind ComputeSystemCreationStatus, Mode=OneWay, Converter={StaticResource EmptyObjectToCollapsedConverter}}"
+                        Visibility="{x:Bind ComputeSystemOperationStatus, Mode=OneWay, Converter={StaticResource EmptyStringToCollapsedConverter}}"
                         Text="{x:Bind CardState, Converter={StaticResource CardStateToLocalizedTextConverter}, Mode=OneWay}"
                         Style="{StaticResource CardBodyStateTextBlockStyle}"
+                        TextWrapping="WrapWholeWords"
                         IsTextSelectionEnabled="True"/>
                     <TextBlock
                         Grid.Column="1"
-                        Visibility="{x:Bind ComputeSystemCreationStatus, Mode=OneWay, Converter={StaticResource EmptyObjectToVisibleConverter}}"
-                        Text="{x:Bind ComputeSystemCreationStatus, Mode=OneWay}"
+                        Visibility="{x:Bind ComputeSystemOperationStatus, Mode=OneWay, Converter={StaticResource EmptyStringToVisibleConverter}}"
+                        Text="{x:Bind ComputeSystemOperationStatus, Mode=OneWay}"
                         Style="{StaticResource CardBodyStateTextBlockStyle}"
                         TextWrapping="Wrap"
                         TextTrimming="CharacterEllipsis"

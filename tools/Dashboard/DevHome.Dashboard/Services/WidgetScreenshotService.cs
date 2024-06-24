@@ -6,24 +6,25 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Dashboard.ComSafeWidgetObjects;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.Storage.Streams;
-using WinUIEx;
 
 namespace DevHome.Dashboard.Services;
 
 public class WidgetScreenshotService : IWidgetScreenshotService
 {
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     private readonly ConcurrentDictionary<string, BitmapImage> _widgetLightScreenshotCache;
     private readonly ConcurrentDictionary<string, BitmapImage> _widgetDarkScreenshotCache;
 
-    public WidgetScreenshotService(WindowEx windowEx)
+    public WidgetScreenshotService(DispatcherQueue dispatcherQueue)
     {
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
 
         _widgetLightScreenshotCache = new ConcurrentDictionary<string, BitmapImage>();
         _widgetDarkScreenshotCache = new ConcurrentDictionary<string, BitmapImage>();
@@ -35,7 +36,7 @@ public class WidgetScreenshotService : IWidgetScreenshotService
         _widgetDarkScreenshotCache.Remove(definitionId, out _);
     }
 
-    public async Task<BitmapImage> GetScreenshotFromCacheAsync(WidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    public async Task<BitmapImage> GetScreenshotFromCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
         BitmapImage bitmapImage;
@@ -58,12 +59,12 @@ public class WidgetScreenshotService : IWidgetScreenshotService
         // If the screenshot wasn't already in the cache, get it from the widget definition and add it to the cache before returning.
         if (actualTheme == ElementTheme.Dark)
         {
-            bitmapImage = await WidgetScreenshotToBitmapImageAsync(widgetDefinition.GetThemeResource(WidgetTheme.Dark).GetScreenshots().FirstOrDefault().Image);
+            bitmapImage = await WidgetScreenshotToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Dark)).GetScreenshots().FirstOrDefault().Image);
             _widgetDarkScreenshotCache.TryAdd(widgetDefinitionId, bitmapImage);
         }
         else
         {
-            bitmapImage = await WidgetScreenshotToBitmapImageAsync(widgetDefinition.GetThemeResource(WidgetTheme.Light).GetScreenshots().FirstOrDefault().Image);
+            bitmapImage = await WidgetScreenshotToBitmapImageAsync((await widgetDefinition.GetThemeResourceAsync(WidgetTheme.Light)).GetScreenshots().FirstOrDefault().Image);
             _widgetLightScreenshotCache.TryAdd(widgetDefinitionId, bitmapImage);
         }
 
@@ -75,7 +76,7 @@ public class WidgetScreenshotService : IWidgetScreenshotService
         // Return the bitmap image via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
         // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
         var completionSource = new TaskCompletionSource<BitmapImage>();
-        _windowEx.DispatcherQueue.TryEnqueue(async () =>
+        _dispatcherQueue.TryEnqueue(async () =>
         {
             using var bitmapStream = await iconStreamRef.OpenReadAsync();
             var itemImage = new BitmapImage();

@@ -23,22 +23,15 @@
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
     <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
-        <ToggleSplitButton
-            x:Name="SetUpButton"
-            IsEnabled="{x:Bind ViewModel.ReadAndAgree, Mode=OneWay}"
-            IsEnabledChanged="SetUpButton_IsEnabledChanged"
-            IsCheckedChanged="SetUpButton_IsCheckedChanged"
-            Command="{x:Bind ViewModel.ConfigureAsAdminCommand, Mode=OneWay}"
-            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsAdmin">
-            <SplitButton.Flyout>
-                <MenuFlyout>
-                    <MenuFlyoutItem
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsNonAdmin"
-                        Command="{x:Bind ViewModel.ConfigureAsNonAdminCommand}">
-                    </MenuFlyoutItem>
-                </MenuFlyout>
-            </SplitButton.Flyout>
-        </ToggleSplitButton>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                    <Setter Property="Margin" Value="6,0" />
+                </Style>
+            </StackPanel.Resources>
+            <Button x:Uid="SetUpAsNonAdmin" Command="{x:Bind ViewModel.ConfigureAsNonAdminCommand}"/>
+            <Button x:Uid="SetUpAsAdmin" Command="{x:Bind ViewModel.ConfigureAsAdminCommand}"/>
+        </StackPanel>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
 
     <UserControl.Resources>
@@ -94,9 +87,14 @@
                 IsClosable="False"
                 Severity="Warning"/>
 
-            <ctControls:Segmented Grid.Row="1" SelectedIndex="0">
+            <ctControls:Segmented Grid.Row="1" SelectedIndex="0" x:Name="SegmentedModeView">
                 <ctControls:SegmentedItem x:Name="SummaryView" x:Uid="ConfigurationFile_SummaryView" AutomationProperties.PositionInSet="1" AutomationProperties.SizeOfSet="2" />
                 <ctControls:SegmentedItem x:Name="CodeView" x:Uid="ConfigurationFile_CodeView" AutomationProperties.PositionInSet="2" AutomationProperties.SizeOfSet="2" />
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="SelectionChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.ViewSelectionChangedCommand}" CommandParameter="{Binding ElementName=SegmentedModeView, Path=SelectedValue.Name}" />
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
             </ctControls:Segmented>
 
             <!-- Summary mode -->
@@ -126,6 +124,12 @@
                             <StackPanel Spacing="{StaticResource SectionSpacing}" />
                         </ItemsPanelTemplate>
                     </ListView.ItemsPanel>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+                            <Setter Property="IsTabStop" Value="False" />
+                            <Setter Property="Padding" Value="0" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:DSCConfigurationUnitViewModel">
                             <Expander IsExpanded="False"

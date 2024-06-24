@@ -42,7 +42,7 @@ public class WhatsNewCard
         get; set;
     }
 
-    public string? Button
+    public string? ButtonText
     {
         get; set;
     }
@@ -65,6 +65,11 @@ public class WhatsNewCard
     }
 
     public bool? IsBig
+    {
+        get; set;
+    }
+
+    public string? AutomationId
     {
         get; set;
     }

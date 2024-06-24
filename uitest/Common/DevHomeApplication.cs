@@ -34,6 +34,14 @@ public sealed class DevHomeApplication
 
     private WindowsElement MachineConfigurationNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("DevHome.SetupFlow");
 
+    private WindowsElement IntroducingDevHomeNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("WhatsNew");
+
+    private WindowsElement SettingsNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("SettingsItem");
+
+    private WindowsElement ExtensionsNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("Extensions");
+
+    private WindowsElement UtilitiesNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("DevHome.Utilities");
+
     private DevHomeApplication()
     {
     }
@@ -54,6 +62,11 @@ public sealed class DevHomeApplication
         _devHomeSession = new(Configuration.WindowsApplicationDriverUrl, $"{Configuration.PackageFamilyName}!App");
     }
 
+    public string GetMainPageId()
+    {
+        return _devHomeSession.Driver.FindElementByAccessibilityId("MainPage").Id;
+    }
+
     public DashboardPage NavigateToDashboardPage()
     {
         Trace.WriteLine("Navigating to Dashboard");
@@ -67,6 +80,34 @@ public sealed class DevHomeApplication
     {
         Trace.WriteLine("Navigating to Machine Configuration");
         MachineConfigurationNavigationItem.Click();
+        return new(_devHomeSession.Driver);
+    }
+
+    public IntroducingDevHomePage NavigateToIntroducingDevHomePage()
+    {
+        Trace.WriteLine("Navigating to Introducing Dev Home");
+        IntroducingDevHomeNavigationItem.Click();
+        return new(_devHomeSession.Driver);
+    }
+
+    public SettingsPage NavigateToSettingsPage()
+    {
+        Trace.WriteLine("Navigating to Settings");
+        SettingsNavigationItem.Click();
+        return new(_devHomeSession.Driver);
+    }
+
+    public ExtensionsPage NavigateToExtensionsPage()
+    {
+        Trace.WriteLine("Navigating to Extensions");
+        ExtensionsNavigationItem.Click();
+        return new(_devHomeSession.Driver);
+    }
+
+    public UtilitiesPage NavigateToUtilitiesPage()
+    {
+        Trace.WriteLine("Navigating to Utilities");
+        UtilitiesNavigationItem.Click();
         return new(_devHomeSession.Driver);
     }
 

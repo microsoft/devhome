@@ -58,7 +58,8 @@ public partial class PackageViewModel : ObservableObject
     /// Indicates if a package is selected
     /// </summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ButtonAutomationName))]
+    [NotifyPropertyChangedFor(nameof(ActionButtonDescription))]
+    [NotifyPropertyChangedFor(nameof(ButtonAutomationId))]
     private bool _isSelected;
 
     [ObservableProperty]
@@ -129,9 +130,13 @@ public partial class PackageViewModel : ObservableObject
 
     public bool CanInstall => _orchestrator.IsSettingUpATargetMachine || !IsInstalled || _package.InstalledVersion != SelectedVersion;
 
-    public string ButtonAutomationName => IsSelected ?
+    public string ActionButtonDescription => IsSelected ?
         _stringResource.GetLocalized(StringResourceKey.RemoveApplication) :
         _stringResource.GetLocalized(StringResourceKey.AddApplication);
+
+    public string ButtonAutomationId => IsSelected ?
+        $"Remove_{_package.Id}" :
+        $"Add_{_package.Id}";
 
     public InstallPackageTask InstallPackageTask { get; private set; }
 

@@ -35,4 +35,9 @@ public class AppManagementTaskGroup : ISetupTaskGroup
     public SetupPageViewModelBase GetSetupPageViewModel() => _appManagementViewModel;
 
     public ReviewTabViewModelBase GetReviewTabViewModel() => _appManagementReviewViewModel;
+
+    public void HandleSearchQuery(string query)
+    {
+        _appManagementViewModel.PerformSearch(query);
+    }
 }

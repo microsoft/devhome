@@ -1,13 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Globalization;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 
 namespace DevHome.Common.Services;
 
 public class StringResource : IStringResource
 {
+    private const int MaxBufferLength = 1024;
+
     private readonly ResourceLoader _resourceLoader;
 
     /// <summary>
@@ -43,7 +48,12 @@ public class StringResource : IStringResource
         try
         {
             value = _resourceLoader.GetString(key);
-            value = string.Format(CultureInfo.CurrentCulture, value, args);
+
+            // only replace the placeholders if args is not empty
+            if (args.Length > 0)
+            {
+                value = string.Format(CultureInfo.CurrentCulture, value, args);
+            }
         }
         catch
         {
@@ -51,5 +61,27 @@ public class StringResource : IStringResource
         }
 
         return string.IsNullOrEmpty(value) ? key : value;
+    }
+
+    /// <summary>
+    /// Gets the string of a ms-resource for a given package.
+    /// </summary>
+    /// <param name="resource">the ms-resource:// path to a resource in an app package's pri file.</param>
+    /// <param name="packageFullName">the package containing the resource.</param>
+    /// <returns>The retrieved string represented by the resource key.</returns>
+    public unsafe string GetResourceFromPackage(string resource, string packageFullName)
+    {
+        var indirectPathToResource = "@{" + packageFullName + "?" + resource + "}";
+        Span<char> outputBuffer = new char[MaxBufferLength];
+
+        fixed (char* outBufferPointer = outputBuffer)
+        {
+            fixed (char* resourcePathPointer = indirectPathToResource)
+            {
+                var res = PInvoke.SHLoadIndirectString(resourcePathPointer, new PWSTR(outBufferPointer), (uint)outputBuffer.Length);
+                res.ThrowOnFailure();
+                return new string(outputBuffer.TrimEnd('\0'));
+            }
+        }
     }
 }

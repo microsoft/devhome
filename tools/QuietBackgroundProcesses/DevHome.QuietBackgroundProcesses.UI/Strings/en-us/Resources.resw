@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="NavigationPane.Content" xml:space="preserve">
+    <value>Quiet background processes</value>
+    <comment>The name of the Quiet background processes page</comment>
+  </data>
+  <data name="QuietBackgroundProcesses_QuietButton_Start" xml:space="preserve">
+    <value>Start session</value>
+    <comment>Button that starts a quiet background session</comment>
+  </data>
+  <data name="QuietBackgroundProcesses_QuietButton_Stop" xml:space="preserve">
+    <value>End session</value>
+    <comment>Button that stops a quiet background session</comment>
+  </data>
+  <data name="QuietBackgroundProcesses_Time_LastSessionLength" xml:space="preserve">
+    <value>Last session length:</value>
+    <comment>Length of the previously run quiet session</comment>
+  </data>
+  <data name="QuietBackgroundProcesses_Description" xml:space="preserve">
+    <value>Enhance resource management while developing for a maximum of 2 hours</value>
+    <comment>Description of the Quiet background processes feature</comment>
+  </data>
+  <data name="QuietBackgroundProcesses.Header" xml:space="preserve">
+    <value>Quiet background processes</value>
+    <comment>Inline title of the Quiet background processes feature</comment>
+  </data>
+  <data name="QuietBackgroundProcessesExplanation.Description" xml:space="preserve">
+    <value>An analytic summary will be available after a session has completed. The summary will include an overview of process resource consumption. The analytic summary is not available while feature is active.</value>
+    <comment>A description of the Quiet background processes time window</comment>
+  </data>
+  <data name="QuietBackgroundProcessesExplanation_LinkToDocs.Text" xml:space="preserve">
+    <value>Link to docs</value>
+    <comment>Link that launches documentation</comment>
+  </data>
+  <data name="QuietBackgroundProcessesExplanation_ProvideFeedback.Text" xml:space="preserve">
+    <value>Provide feedback</value>
+    <comment>Link that launches feedback</comment>
+  </data>
+  <data name="QuietBackgroundProcessesExplanation_RelatedLinks.Text" xml:space="preserve">
+    <value>Related links</value>
+    <comment>Label for the doc links</comment>
+  </data>
+  <data name="AnalyticSummaryButton.Content" xml:space="preserve">
+    <value>Analytic summary</value>
+    <comment>Button to open the analytic summary dialog</comment>
+  </data>
+
+  <!-- Analytic Summary -->
+  <data name="AnalyticSummary_Description.Text" xml:space="preserve">
+    <value>Analysis of process CPU utilization while the session was in use. Calculated amount of time that the process used CPU above the designated threshold.</value>
+    <comment>Desciption of the analytic summary page</comment>
+  </data>
+  <data name="AnalyticSummary_SortBy_Label.Text" xml:space="preserve">
+    <value>Sort by</value>
+    <comment>Label for the combo box for sorting</comment>
+  </data>
+  <data name="AnalyticSummary_ComboBox_SortBy.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Sort-by combo box</value>
+    <comment>Accessible name for the "Sort by" dropdown combo box in the analytic summary</comment>
+  </data>
+  <data name="ComboBox_SortBy_Process.Content" xml:space="preserve">
+    <value>Process</value>
+    <comment>Sortby dropdown option</comment>
+  </data>
+  <data name="ComboBox_SortBy_Type.Content" xml:space="preserve">
+    <value>Type</value>
+    <comment>Sortby dropdown option</comment>
+  </data>
+  <data name="ComboBox_SortBy_CpuAboveThreshold.Content" xml:space="preserve">
+    <value>CPU above threshold</value>
+    <comment>Sortby dropdown option</comment>
+  </data>
+  <data name="AnalyticSummary_FilterProcesses_PlaceholderText.PlaceholderText" xml:space="preserve">
+    <value>Search for a process</value>
+    <comment>Label for analytic summary save report button</comment>
+  </data>
+  <data name="AnalyticSummaryContentDialog.Title" xml:space="preserve">
+    <value>Analytic Summary</value>
+    <comment>Title of the analytic summary page</comment>
+  </data>
+  <data name="AnalyticSummaryContentDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Save report</value>
+    <comment>Label for analytic summary save report button</comment>
+  </data>
+  <data name="AnalyticSummaryContentDialog.CloseButtonText" xml:space="preserve">
+    <value>Close</value>
+    <comment>Label for analytic summary close button</comment>
+  </data>
+
+  <!-- Process performance table control -->
+  <data name="ProcessPerformanceTableControl_Heading_Process.Text" xml:space="preserve">
+    <value>Process</value>
+    <comment>Table heading for Process column</comment>
+  </data>
+  <data name="ProcessPerformanceTableControl_Heading_ProcessType.Text" xml:space="preserve">
+    <value>Type</value>
+    <comment>Table heading for Type column</comment>
+  </data>
+  <data name="ProcessPerformanceTableControl_Heading_CpuAboveThreshold.Text" xml:space="preserve">
+    <value>CPU above threshold</value>
+    <comment>Table heading for 'CPU time above threshold' column</comment>
+  </data>
+  <data name="ProcessPerformanceTableControl_Heading_CpuAboveThreshold.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The time that a process spent using the CPU at greater than 2% utilization.</value>
+    <comment>Sortby dropdown option</comment>
+  </data>
+  <data name="MinutesAbbreviation.Text" xml:space="preserve">
+    <value>min</value>
+    <comment>Abbreviation for the word minutes</comment>
+  </data>
+
+  <!-- Status Messages -->
+  <data name="QuietBackgroundProcesses_Status_FeatureNotSupported" xml:space="preserve">
+    <value>Feature not supported on this version of Windows</value>
+    <comment>Indicates that this OS isn't new enough to support the feature</comment>
+  </data>
+  <data name="QuietBackgroundProcesses_Status_SessionStartError" xml:space="preserve">
+    <value>There was an error that prevented the session from starting</value>
+    <comment>Something went wrong when running the session</comment>
+  </data>
+  <data name="QuietBackgroundProcesses_Status_UnableToFindActiveSession" xml:space="preserve">
+    <value>There was an error when retrieving the active quiet session</value>
+    <comment>Something went wrong when asking the server if a quiet session is ongoing</comment>
+  </data>
+  <data name="QuietBackgroundProcesses_Status_UnableToGetTimeLeft" xml:space="preserve">
+    <value>There was an error when getting the time remaning in the session</value>
+    <comment>Something went wrong when asking the server for time remaining</comment>
+  </data>
+  <data name="QuietBackgroundProcesses_Status_UnableToCancelSession" xml:space="preserve">
+    <value>Unable to cancel session</value>
+    <comment>Something went wrong when cancelling the session</comment>
+  </data>
+  <data name="QuietBackgroundProcesses_Status_UnableToGetAnalyticSummary" xml:space="preserve">
+    <value>There was an error retrieving the analytic summary</value>
+    <comment>Something went wrong getting the analytic summary</comment>
+  </data>
+</root>

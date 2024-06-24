@@ -10,13 +10,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.Telemetry;
+using Microsoft.UI.Xaml;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -26,7 +27,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
     private readonly ConfigurationFileBuilder _configFileBuilder;
-    private readonly WindowEx _mainWindow;
+    private readonly Window _mainWindow;
 
     [ObservableProperty]
     private IList<ReviewTabViewModelBase> _reviewTabs;
@@ -49,6 +50,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private string _reviewPageDescription;
+
+    public bool ShouldShowGenerateConfigurationFile => !Orchestrator.IsInCreateEnvironmentFlow;
 
     public bool HasApplicationsToInstall => Orchestrator.GetTaskGroup<AppManagementTaskGroup>()?.SetupTasks.Any() == true;
 
@@ -92,7 +95,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         ConfigurationFileBuilder configFileBuilder,
-        WindowEx mainWindow)
+        Window mainWindow)
         : base(stringResource, orchestrator)
     {
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
@@ -160,6 +163,13 @@ public partial class ReviewViewModel : SetupPageViewModelBase
                 await Orchestrator.InitializeElevatedServerAsync();
             }
 
+            var flowPages = Orchestrator.FlowPages.Select(p => p.GetType().Name).ToList();
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Review_SetUp",
+                LogLevel.Critical,
+                new ReviewSetUpCommandEvent(Orchestrator.IsSettingUpATargetMachine, flowPages),
+                relatedActivityId: Orchestrator.ActivityId);
+
             await Orchestrator.GoToNextPage();
         }
         catch (Exception e)
@@ -184,11 +194,25 @@ public partial class ReviewViewModel : SetupPageViewModelBase
             {
                 var configFile = _configFileBuilder.BuildConfigFileStringFromTaskGroups(Orchestrator.TaskGroups, ConfigurationFileKind.Normal);
                 await File.WriteAllTextAsync(fileName, configFile);
+                ReportGenerateConfiguration();
             }
         }
         catch (Exception e)
         {
             _log.Error(e, $"Failed to download configuration file.");
         }
+    }
+
+    private void ReportGenerateConfiguration()
+    {
+        var flowPages = Orchestrator.FlowPages.Select(p => p.GetType().Name).ToList();
+        TelemetryFactory.Get<ITelemetry>().Log("Review_GenerateConfiguration", LogLevel.Critical, new ReviewGenerateConfigurationCommandEvent(flowPages));
+
+        var installTasks = Orchestrator.TaskGroups.OfType<AppManagementTaskGroup>()
+            .SelectMany(x => x.DSCTasks.OfType<InstallPackageTask>());
+
+        var installedPackagesCount = installTasks.Count(task => task.IsInstalled);
+        var nonInstalledPackagesCount = installTasks.Count() - installedPackagesCount;
+        TelemetryFactory.Get<ITelemetry>().Log("Review_GenerateConfigurationForInstallPackages", LogLevel.Critical, new ReviewGenerateConfigurationForInstallEvent(installedPackagesCount, nonInstalledPackagesCount));
     }
 }

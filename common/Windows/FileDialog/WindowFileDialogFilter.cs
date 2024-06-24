@@ -12,7 +12,7 @@ namespace DevHome.Common.Windows.FileDialog;
 internal sealed class WindowFileDialogFilter : IWindowFileDialogFilter, IDisposable
 {
     private readonly COMDLG_FILTERSPEC _extension;
-    private bool disposedValue;
+    private bool _disposedValue;
 
     /// <inheritdoc />
     public unsafe string Name { get; }
@@ -56,7 +56,7 @@ internal sealed class WindowFileDialogFilter : IWindowFileDialogFilter, IDisposa
     /// <inheritdoc cref="Dispose()"/>
     private unsafe void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!_disposedValue)
         {
             if (disposing)
             {
@@ -64,7 +64,7 @@ internal sealed class WindowFileDialogFilter : IWindowFileDialogFilter, IDisposa
                 Marshal.FreeHGlobal((IntPtr)_extension.pszSpec.Value);
             }
 
-            disposedValue = true;
+            _disposedValue = true;
         }
     }
 }

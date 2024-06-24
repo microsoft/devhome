@@ -15,9 +15,9 @@ namespace CoreWidgetProvider.Widgets;
 
 internal sealed class SSHWalletWidget : CoreWidget
 {
-    private static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
+    private static readonly string _defaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
 
-    private static readonly Regex HostRegex = new(@"^Host\s+(\S*)\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+    private static readonly Regex _hostRegex = new(@"^Host\s+(?:(\S*) ?)*?\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
     private FileSystemWatcher? FileWatcher { get; set; }
 
@@ -61,9 +61,7 @@ internal sealed class SSHWalletWidget : CoreWidget
             var hostsArray = new JsonArray();
 
             var hostEntries = GetHostEntries();
-            if (hostEntries != null)
-            {
-                hostEntries.ToList().ForEach(hostEntry =>
+            hostEntries?.ToList().ForEach(hostEntry =>
                 {
                     var host = hostEntry.Groups[1].Value;
                     var hostJson = new JsonObject
@@ -73,7 +71,6 @@ internal sealed class SSHWalletWidget : CoreWidget
                         };
                     ((IList<JsonNode?>)hostsArray).Add(hostJson);
                 });
-            }
 
             hostsData.Add("hosts", hostsArray);
             hostsData.Add("selected_config_file", ConfigFile);
@@ -133,6 +130,10 @@ internal sealed class SSHWalletWidget : CoreWidget
                 ContentData = _savedContentData;
                 SetActive();
                 break;
+
+            case WidgetAction.ChooseFile:
+                HandleCheckPath(actionInvokedArgs);
+                break;
         }
     }
 
@@ -162,16 +163,32 @@ internal sealed class SSHWalletWidget : CoreWidget
         Page = WidgetPageState.Loading;
         UpdateWidget();
 
-        // This is the action when the user clicks the submit button after entering a path while in
-        // the Configure state.
         Page = WidgetPageState.Configure;
         var data = args.Data;
         var dataObject = JsonSerializer.Deserialize(data, SourceGenerationContext.Default.DataPayload);
-        if (dataObject != null && dataObject.ConfigFile != null)
+
+        var chosenPath = string.Empty;
+
+        if (dataObject == null)
+        {
+            return;
+        }
+        else if (dataObject.ConfigFile != null)
+        {
+            // The user clicked the Preview button in the Configure state.
+            chosenPath = dataObject.ConfigFile;
+        }
+        else if (dataObject.FilePath != null)
+        {
+            // The user used the File Picker to select a file in the Configure state.
+            chosenPath = dataObject.FilePath;
+        }
+
+        if (!string.IsNullOrEmpty(chosenPath))
         {
             var updateRequestOptions = new WidgetUpdateRequestOptions(Id)
             {
-                Data = GetConfiguration(dataObject.ConfigFile),
+                Data = GetConfiguration(chosenPath),
                 CustomState = ConfigFile,
                 Template = GetTemplateForPage(Page),
             };
@@ -193,7 +210,7 @@ internal sealed class SSHWalletWidget : CoreWidget
 
         if (!string.IsNullOrEmpty(fileContent))
         {
-            return HostRegex.Matches(fileContent);
+            return _hostRegex.Matches(fileContent);
         }
 
         return null;
@@ -259,7 +276,7 @@ internal sealed class SSHWalletWidget : CoreWidget
         //    is in the customize flow and we should show the _savedConfigFile.
         // 3. Else, show the DefaultConfigFile.
         var suggestedConfigFile = string.IsNullOrEmpty(configFile) ? _savedConfigFile : configFile;
-        suggestedConfigFile = string.IsNullOrEmpty(suggestedConfigFile) ? DefaultConfigFile : suggestedConfigFile;
+        suggestedConfigFile = string.IsNullOrEmpty(suggestedConfigFile) ? _defaultConfigFile : suggestedConfigFile;
 
         var sshConfigData = new JsonObject
             {
@@ -406,6 +423,12 @@ internal sealed class SSHWalletWidget : CoreWidget
 internal sealed class DataPayload
 {
     public string? ConfigFile
+    {
+        get; set;
+    }
+
+    [JsonPropertyName("filePath")]
+    public string? FilePath
     {
         get; set;
     }

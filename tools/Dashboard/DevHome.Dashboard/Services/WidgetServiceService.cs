@@ -14,7 +14,7 @@ namespace DevHome.Dashboard.Services;
 
 public class WidgetServiceService : IWidgetServiceService
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetHostingService));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetServiceService));
 
     private readonly IPackageDeploymentService _packageDeploymentService;
     private readonly IAppInstallManagerService _appInstallManagerService;

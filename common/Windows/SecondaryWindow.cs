@@ -8,23 +8,23 @@ using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Markup;
+using Windows.Graphics;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
-using WinUIEx;
 
 namespace DevHome.Common.Windows;
 
 [ContentProperty(Name = nameof(SecondaryWindowContent))]
-public class SecondaryWindow : WindowEx
+public class SecondaryWindow : WinUIEx.WindowEx
 {
     private readonly SecondaryWindowTemplate _windowTemplate;
-    private WindowEx? _primaryWindow;
+    private Window? _primaryWindow;
     private bool _useAppTheme;
     private bool _isModal;
     private bool _isTopLevel;
 
-    private WindowEx MainWindow => Application.Current.GetService<WindowEx>();
+    private Window MainWindow => Application.Current.GetService<Window>();
 
     private IThemeSelectorService ThemeSelector => Application.Current.GetService<IThemeSelectorService>();
 
@@ -58,7 +58,7 @@ public class SecondaryWindow : WindowEx
                     value.TitleChanged += OnSecondaryWindowTitleChanged;
                 }
             }
-    }
+        }
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public class SecondaryWindow : WindowEx
         }
     }
 
-    public WindowEx? PrimaryWindow
+    public Window? PrimaryWindow
     {
         get => _primaryWindow;
         set
@@ -195,7 +195,7 @@ public class SecondaryWindow : WindowEx
         SystemBackdrop = PrimaryWindow.SystemBackdrop;
 
         Title = AppInfo.GetAppNameLocalized();
-        this.SetIcon(AppInfo.IconPath);
+        AppWindow.SetIcon(AppInfo.IconPath);
 
         ShowInTaskbar();
     }
@@ -212,7 +212,7 @@ public class SecondaryWindow : WindowEx
     /// </summary>
     /// <remarks>
     /// <para>This method should be called after the secondary window is shown.</para>
-    /// <para>See also: <seealso cref="WindowExtensions.CenterOnScreen"/></para>
+    /// <para>See also: <seealso cref="WindowExExtensions.CenterOnScreen"/></para>
     /// </remarks>
     public void CenterOnWindow()
     {
@@ -224,22 +224,23 @@ public class SecondaryWindow : WindowEx
         {
             // Get DPI for primary widow
             const float defaultDPI = 96f;
-            var dpi = HwndExtensions.GetDpiForWindow(PrimaryWindow.GetWindowHandle()) / defaultDPI;
+            var dpi = PInvoke.GetDpiForWindow((HWND)PrimaryWindow.GetWindowHandle()) / defaultDPI;
 
             // Extract primary window dimensions
             var primaryWindowLeftOffset = PrimaryWindow.AppWindow.Position.X;
             var primaryWindowTopOffset = PrimaryWindow.AppWindow.Position.Y;
-            var primaryWindowHalfWidth = (PrimaryWindow.Width * dpi) / 2;
-            var primaryWindowHalfHeight = (PrimaryWindow.Height * dpi) / 2;
+            var primaryWindowHalfWidth = (PrimaryWindow.AppWindow.Size.Width * dpi) / 2;
+            var primaryWindowHalfHeight = (PrimaryWindow.AppWindow.Size.Height * dpi) / 2;
 
             // Derive secondary window dimensions
-            var secondaryWindowHalfWidth = (Width * dpi) / 2;
-            var secondaryWindowHalfHeight = (Height * dpi) / 2;
+            var secondaryWindowHalfWidth = (AppWindow.Size.Width * dpi) / 2;
+            var secondaryWindowHalfHeight = (AppWindow.Size.Height * dpi) / 2;
             var secondaryWindowLeftOffset = primaryWindowLeftOffset + primaryWindowHalfWidth - secondaryWindowHalfWidth;
             var secondaryWindowTopOffset = primaryWindowTopOffset + primaryWindowHalfHeight - secondaryWindowHalfHeight;
 
             // Move and resize secondary window
-            this.MoveAndResize(secondaryWindowLeftOffset, secondaryWindowTopOffset, Width, Height);
+            var newRect = new RectInt32((int)secondaryWindowLeftOffset, (int)secondaryWindowTopOffset, AppWindow.Size.Width, AppWindow.Size.Height);
+            AppWindow.MoveAndResize(newRect);
         }
     }
 

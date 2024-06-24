@@ -21,7 +21,7 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Image Height="150" Width="150" Source="/Assets/Preview/AppList.scale-400.png" HorizontalAlignment="Center" Margin="0 0 0 10" />
+                <Image Height="150" Width="150" Source="/Assets/InitializationPage/AppList.scale-400.png" HorizontalAlignment="Center" Margin="0 0 0 10" />
                 <TextBlock x:Uid="InitializationPage_Title"  TextWrapping="Wrap" HorizontalAlignment="Center" FontSize="28" />
             </StackPanel>
 

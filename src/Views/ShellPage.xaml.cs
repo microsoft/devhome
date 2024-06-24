@@ -165,10 +165,10 @@ public sealed partial class ShellPage : Page
                         helpers:NavigationHelper.NavigateTo=""{tool.ViewModelFullName}""
                         AutomationProperties.AutomationId=""{tool.Identity}"">
                         <NavigationViewItem.Icon>
-                            <FontIcon FontFamily=""{{StaticResource SymbolThemeFontFamily}}"" Glyph=""&#x{tool.Icon};""/>
+                            <FontIcon FontFamily=""{{StaticResource {tool.IconFontFamily}}}"" Glyph=""&#x{tool.Icon};""/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>";
-                NavigationViewItem navigationViewItem = (NavigationViewItem)XamlReader.Load(navigationViewItemString);
+                var navigationViewItem = (NavigationViewItem)XamlReader.Load(navigationViewItemString);
 
                 if (expFeature != null)
                 {

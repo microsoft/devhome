@@ -7,15 +7,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.ObjectModel.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.DevHomeAdaptiveCards.CardModels;
-using DevHome.Common.DevHomeAdaptiveCards.Parsers;
 using DevHome.Common.Renderers;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Elevation;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
@@ -42,6 +39,8 @@ public partial class SetupFlowOrchestrator : ObservableObject
     private readonly string _adaptiveCardPreviousButtonId = "DevHomeMachineConfigurationPreviousButton";
 
     private readonly List<SetupPageViewModelBase> _flowPages = new();
+
+    private readonly INavigationService _navigationService;
 
     /// <summary>
     /// Index for the current page in the <see cref="_flowPages"/>.
@@ -80,6 +79,13 @@ public partial class SetupFlowOrchestrator : ObservableObject
     public bool IsSettingUpATargetMachine => CurrentSetupFlowKind == SetupFlowKind.SetupTarget;
 
     public bool IsSettingUpLocalMachine => CurrentSetupFlowKind == SetupFlowKind.LocalMachine;
+
+    public bool IsInCreateEnvironmentFlow => CurrentSetupFlowKind == SetupFlowKind.CreateEnvironment;
+
+    public SetupFlowOrchestrator(INavigationService navigationService)
+    {
+        _navigationService = navigationService;
+    }
 
     /// <summary>
     /// Occurs right before a page changes
@@ -193,12 +199,16 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
     partial void OnCurrentPageViewModelChanging(SetupPageViewModelBase value) => PageChanging?.Invoke(null, EventArgs.Empty);
 
+    public bool IsNavigatingForward { get; private set; }
+
+    public bool IsNavigatingBackward { get; private set; }
+
     [RelayCommand(CanExecute = nameof(CanGoToPreviousPage))]
     public async Task GoToPreviousPage()
     {
         // If an adaptive card is being shown in the setup flow, we need to invoke the action
         // of the previous button in the action set to move the flow to the previous page in the adaptive card.
-        if (DevHomeActionSetRenderer?.ActionButtonInvoker != null)
+        if (DevHomeActionSetRenderer?.ActionButtonInvoker != null && !CurrentPageViewModel.IsInitialAdaptiveCardPage)
         {
             DevHomeActionSetRenderer.InitiateAction(_adaptiveCardPreviousButtonId);
         }
@@ -257,7 +267,7 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
     private async Task SetCurrentPageIndex(int index)
     {
-        var movingForward = index > _currentPageIndex;
+        IsNavigatingForward = index > _currentPageIndex;
 
         SetupPageViewModelBase previousPage = CurrentPageViewModel;
 
@@ -271,12 +281,17 @@ public partial class SetupFlowOrchestrator : ObservableObject
         ShouldShowDoneButton = _currentPageIndex == FlowPages.Count - 1;
 
         // Do post-navigation tasks only when moving forwards, not when going back to a previous page.
-        if (movingForward)
+        if (IsNavigatingForward)
         {
             await previousPage?.OnNavigateFromAsync();
         }
 
+        IsNavigatingBackward = !IsNavigatingForward;
         await CurrentPageViewModel?.OnNavigateToAsync();
+
+        // Reset navigation now that the navigation tasks are done.
+        IsNavigatingForward = false;
+        IsNavigatingBackward = false;
     }
 
     /// <summary>
@@ -298,5 +313,11 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
         _log.Warning($"Failed to invoke adaptive card action with Id: {buttonId} due to input validation failure");
         return false;
+    }
+
+    public void NavigateToOutsideFlow(string knownNavPageName, object parameter = null)
+    {
+        _log.Information($"Navigating to {knownNavPageName} with parameter: {parameter}");
+        _navigationService.NavigateTo(knownNavPageName, parameter);
     }
 }

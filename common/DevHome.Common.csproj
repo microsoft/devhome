@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
     <DevHomeSDKVersion Condition="$(DevHomeSDKVersion) == ''">$(DevHomeSDKVersion)</DevHomeSDKVersion>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +15,8 @@
     <None Remove="Environments\CustomControls\CardHeader.xaml" />
     <None Remove="Environments\Styles\HorizontalCardStyles.xaml" />
     <None Remove="Environments\Templates\EnvironmentsTemplates.xaml" />
+    <None Remove="Views\AddCreateButton.xaml" />
+    <None Remove="Views\AddCreateHyperlinkButton.xaml" />
     <None Remove="Views\Banner.xaml" />
     <None Remove="Views\CloseButton.xaml" />
     <None Remove="Views\HyperlinkTextBlock.xaml" />
@@ -23,7 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="2.0.0-beta" />
-    <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="2.0.0-beta" />
+    <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="2.1.0-beta" />
     <PackageReference Include="AdaptiveCards.Templating" Version="1.5.0" />
     <PackageReference Include="CommunityToolkit.Common" Version="8.2.2" />
     <PackageReference Include="CommunityToolkit.Labs.WinUI.Shimmer" Version="0.1.230830" />
@@ -42,7 +45,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
-    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.300.443" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.600.494" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -52,8 +55,8 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="System.Management.Automation" Version="7.2.8" />
-    <PackageReference Include="WinUIEx" Version="1.8.0" />
+    <PackageReference Include="System.Management.Automation" Version="7.4.0" />
+    <PackageReference Include="WinUIEx" Version="2.3.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -73,8 +76,15 @@
     <Page Update="Environments\Templates\EnvironmentsTemplates.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+    <Page Update="Views\AddCreateHyperlinkButton.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\Banner.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\AddCreateButton.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\CloseButton.xaml">
       <Generator>MSBuild:Compile</Generator>

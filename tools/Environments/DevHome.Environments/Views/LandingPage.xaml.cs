@@ -41,7 +41,7 @@ public sealed partial class LandingPage : ToolPage
 
         TitleGrid.Children.Add(onlyLocalButton);
 
-        var column = Grid.GetColumn(Titlebar);
+        var column = Grid.GetColumn(EnvironmentsHeader);
         Grid.SetColumn(onlyLocalButton, column + 1);
     }
 
@@ -52,8 +52,8 @@ public sealed partial class LandingPage : ToolPage
     }
 #endif
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        _ = ViewModel.LoadModelAsync(false);
+        await ViewModel.LoadModelAsync(false);
     }
 }

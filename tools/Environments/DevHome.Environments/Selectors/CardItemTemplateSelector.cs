@@ -4,7 +4,6 @@
 using DevHome.Environments.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Environments.Selectors;
 
@@ -25,7 +24,7 @@ public class CardItemTemplateSelector : DataTemplateSelector
     }
 
     /// <summary>
-    /// Resolves the data template based on the if the ComputeSystemsListViewModel currently containers any ComputeSystemWrappers.
+    /// Resolves the data template based on the if the ComputeSystemsListViewModel currently containers any ComputeSystems.
     /// </summary>
     /// <param name="item">The ComputeSystemsListViewModel object</param>
     private DataTemplate? ResolveDataTemplate(object item)

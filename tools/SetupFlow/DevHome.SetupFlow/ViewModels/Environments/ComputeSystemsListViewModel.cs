@@ -39,7 +39,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
     [ObservableProperty]
     private string _displayName;
 
-    public event EventHandler<ComputeSystem> CardSelectionChanged = (s, e) => { };
+    public event EventHandler<ComputeSystemCache> CardSelectionChanged = (s, e) => { };
 
     [ObservableProperty]
     private object _selectedItem;
@@ -56,7 +56,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
     public ComputeSystemsResult CurrentResult { get; set; }
 
-    public List<ComputeSystem> ComputeSystemWrappers { get; set; } = new();
+    public List<ComputeSystemCache> ComputeSystems { get; set; } = new();
 
     [ObservableProperty]
     private string _accessibilityName;
@@ -69,7 +69,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
     {
         get
         {
-            if (CurrentDeveloperId == null || string.IsNullOrEmpty(CurrentDeveloperId.LoginId))
+            if ((CurrentDeveloperId == null) || string.IsNullOrEmpty(CurrentDeveloperId.LoginId))
             {
                 return string.Empty;
             }
@@ -96,6 +96,11 @@ public partial class ComputeSystemsListViewModel : ObservableObject
         }
     }
 
+    public override string ToString()
+    {
+        return AccessibilityName;
+    }
+
     public ComputeSystemsListViewModel(ComputeSystemsLoadedData loadedData)
     {
         Provider = loadedData.ProviderDetails.ComputeSystemProvider;
@@ -108,9 +113,9 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
         DisplayName = Provider.DisplayName;
 
-        if (CurrentResult != null && CurrentResult.ComputeSystems != null)
+        if ((CurrentResult != null) && (CurrentResult.ComputeSystems != null))
         {
-            ComputeSystemWrappers = CurrentResult.ComputeSystems.Select(computeSystem => new ComputeSystem(computeSystem)).ToList();
+            ComputeSystems = CurrentResult.ComputeSystems.Select(computeSystem => new ComputeSystemCache(computeSystem)).ToList();
         }
 
         // Create a new AdvancedCollectionView for the ComputeSystemCards collection.
@@ -146,7 +151,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                _log.Error(ex, $"Failed to filter Compute system cards. Error: {ex.Message}");
+                _log.Error(ex, $"Failed to filter Compute system cards");
             }
 
             return true;
@@ -168,7 +173,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
         }
 
         SelectedItem = viewModel;
-        CardSelectionChanged(this, viewModel.ComputeSystemWrapper);
+        CardSelectionChanged(this, viewModel.ComputeSystem);
     }
 
     public void RemoveCardViewModelEventHandlers()
@@ -190,5 +195,13 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
         ComputeSystemCardAdvancedCollectionView.SortDescriptions.Clear();
         ComputeSystemCardAdvancedCollectionView.SortDescriptions.Add(new SortDescription(sortOption, direction));
+    }
+
+    public void SetAllSelectionFlagsToFalse()
+    {
+        foreach (var cardViewModel in ComputeSystemCardCollection)
+        {
+            cardViewModel.IsSelected = false;
+        }
     }
 }

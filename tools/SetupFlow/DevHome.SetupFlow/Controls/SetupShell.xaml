@@ -92,7 +92,7 @@
         </StackPanel>
 
         <!-- Content -->
-        <ScrollViewer Grid.Row="3" Grid.ColumnSpan="2" Visibility="{x:Bind ContentVisibility}">
+        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind ContentVisibility}">
             <ContentControl IsTabStop="False"
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Stretch"
@@ -105,5 +105,22 @@
                 </ContentControl.Template>
             </ContentControl>
         </ScrollViewer>
+
+        <!-- Notification -->
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind SetupShellNotificationVisibility}">
+            <ContentControl 
+                IsTabStop="False"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Content="{x:Bind SetupShellNotification, Mode=OneWay}">
+                <ContentControl.Template>
+                    <ControlTemplate TargetType="ContentControl">
+                        <ContentPresenter 
+                            Content="{TemplateBinding Content}"
+                            MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}"/>
+                    </ControlTemplate>
+                </ContentControl.Template>
+            </ContentControl>
+        </Grid>
     </Grid>
 </UserControl>

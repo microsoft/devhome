@@ -6,6 +6,7 @@
   <Import Project="$(SolutionDir)ToolingVersions.props" />
   <Import Project="$(SolutionDir)Directory.CppBuild.props" />
   <PropertyGroup Label="Globals">
+    <ConfigurationType>Utlity</ConfigurationType>
     <CppWinRTOptimized>true</CppWinRTOptimized>
     <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
     <CppWinRTGenerateWindowsMetadata>true</CppWinRTGenerateWindowsMetadata>
@@ -21,11 +22,26 @@
     <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.22621.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
     <WindowsAppContainer>false</WindowsAppContainer>
-    <MdmergeMergedDir>AnyCPU\$(Configuration)\Merged\</MdmergeMergedDir>
     <OutDir>$(CppOutDir)</OutDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_FailFast|ARM">
+      <Configuration>Debug_FailFast</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_FailFast|ARM64">
+      <Configuration>Debug_FailFast</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_FailFast|Win32">
+      <Configuration>Debug_FailFast</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_FailFast|x64">
+      <Configuration>Debug_FailFast</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|ARM">
       <Configuration>Debug</Configuration>
       <Platform>ARM</Platform>
@@ -69,6 +85,10 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
@@ -132,6 +152,12 @@
       <Optimization>Disabled</Optimization>
     </ClCompile>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_FailFast'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -145,13 +171,11 @@
     <Midl Include="DevHome.QuietBackgroundProcesses.idl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Common.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PropertySheet.props" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="empty.cpp" />
   </ItemGroup>
   <!-- Run mdmerge.exe on our generated winmd files -->
   <Target Name="Mdmerge" AfterTargets="Build" Outputs="$(MergedWinmdFilePath)">
@@ -162,7 +186,7 @@
       <MdmergeInputs Include="@(_MdmergeInputs-&gt;'%(WinMDPath)'-&gt;Distinct())" />
     </ItemGroup>
     <PropertyGroup>
-      <MdmergeMergedDir>AnyCPU\$(Configuration)\Merged\</MdmergeMergedDir>
+      <MdmergeMergedDir>$(Platform)\$(Configuration)\Merged\</MdmergeMergedDir>
       <MdmergeMergeDepth>-n:2</MdmergeMergeDepth>
       <MdmergeParameters>-v</MdmergeParameters>
       <MdmergeParameters>$(MdmergeParameters) -metadata_dir "$(WindowsSDK_MetadataFoundationPath)"</MdmergeParameters>

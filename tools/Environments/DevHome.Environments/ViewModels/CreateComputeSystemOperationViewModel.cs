@@ -3,14 +3,12 @@
 
 using System;
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
-using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -19,11 +17,11 @@ namespace DevHome.Environments.ViewModels;
 /// </summary>
 public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBase
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CreateComputeSystemOperationViewModel));
 
     private readonly IComputeSystemManager _computeSystemManager;
 
-    private readonly WindowEx _windowEx;
+    private readonly Window _mainWindow;
 
     private readonly StringResource _stringResource;
 
@@ -41,25 +39,33 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
     /// </summary>
     private readonly Func<ComputeSystemCardBase, bool> _removalAction;
 
+    /// <summary>
+    /// Callback action to add the newly created compute system.
+    /// </summary>
+    private readonly Action<ComputeSystemViewModel> _addComputeSystemAction;
+
     public CreateComputeSystemOperation Operation { get; }
 
     public CreateComputeSystemOperationViewModel(
         IComputeSystemManager computeSystemManager,
         StringResource stringResource,
-        WindowEx windowsEx,
+        Window mainWindow,
         Func<ComputeSystemCardBase, bool> removalAction,
+        Action<ComputeSystemViewModel> addComputeSystemAction,
         CreateComputeSystemOperation operation)
     {
-        IsCreationInProgress = true;
-        _windowEx = windowsEx;
+        IsOperationInProgress = true;
+        _mainWindow = mainWindow;
         _removalAction = removalAction;
+        _addComputeSystemAction = addComputeSystemAction;
         _stringResource = stringResource;
         _computeSystemManager = computeSystemManager;
         Operation = operation;
+        Name = Operation.EnvironmentName;
 
         var providerDetails = Operation.ProviderDetails;
         ProviderDisplayName = providerDetails.ComputeSystemProvider.DisplayName;
-        IsCreateComputeSystemOperation = true;
+        IsCardCreating = true;
 
         // Hook up event handlers to the operation
         Operation.Completed += OnOperationCompleted;
@@ -72,7 +78,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
         State = ComputeSystemState.Creating;
         StateColor = CardStateColor.Caution;
 
-        // Setup the button to remove the the view model from the UI and the header Image
+        // Setup the button to remove the view model from the UI and the header Image
         DotOperations = new ObservableCollection<OperationsViewModel>() { new(_stringResource.GetLocalized("RemoveButtonTextForCreateComputeSystem"), _cancelationUniCodeForGlyph, RemoveViewModelFromUI) };
         HeaderImage = CardProperty.ConvertMsResourceToIcon(providerDetails.ComputeSystemProvider.Icon, providerDetails.ExtensionWrapper.PackageFullName);
 
@@ -90,25 +96,24 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
 
     private void UpdateStatusIfCompleted(CreateComputeSystemResult createComputeSystemResult)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _mainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             // Update the creation status
-            IsCreationInProgress = false;
+            IsOperationInProgress = false;
             if (createComputeSystemResult.Result.Status == ProviderOperationStatus.Success)
             {
-                UpdateUiMessage(_stringResource.GetLocalized("SuccessMessageForCreateComputeSystem", ProviderDisplayName));
-                ComputeSystem = new(createComputeSystemResult.ComputeSystem);
-                State = ComputeSystemState.Created;
-                StateColor = CardStateColor.Success;
+                RemoveViewModelFromUI();
+                AddComputeSystemToUI(createComputeSystemResult);
             }
             else
             {
-                UpdateUiMessage(_stringResource.GetLocalized("FailureMessageForCreateComputeSystem", createComputeSystemResult.Result.DisplayMessage));
+                // Reset text in UI card to show error and show the error notification info bar to tell the user the operation failed
+                var errorMsg = _stringResource.GetLocalized("FailureMessageForCreateComputeSystem", createComputeSystemResult.Result.DisplayMessage);
+                UpdateUiMessage(errorMsg);
+                OnErrorReceived(errorMsg);
                 State = ComputeSystemState.Unknown;
                 StateColor = CardStateColor.Failure;
             }
-
-            RemoveEventHandlers();
         });
     }
 
@@ -125,7 +130,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
 
     private void UpdateUiMessage(string operationStatus, uint percentage = 0)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _mainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             if (operationStatus == null)
             {
@@ -139,12 +144,31 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
 
     private void RemoveViewModelFromUI()
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _mainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             _removalAction(this);
             RemoveEventHandlers();
             Operation.CancelOperation();
             _computeSystemManager.RemoveOperation(Operation);
+        });
+    }
+
+    private async void AddComputeSystemToUI(CreateComputeSystemResult result)
+    {
+        var newComputeSystemViewModel = new ComputeSystemViewModel(
+            _computeSystemManager,
+            result.ComputeSystem,
+            Operation.ProviderDetails.ComputeSystemProvider,
+            _removalAction,
+            Operation.ProviderDetails.ExtensionWrapper.PackageFullName,
+            _mainWindow);
+
+        await newComputeSystemViewModel.InitializeCardDataAsync();
+
+        _mainWindow.DispatcherQueue.TryEnqueue(() =>
+        {
+            newComputeSystemViewModel.InitializeUXData();
+            _addComputeSystemAction(newComputeSystemViewModel);
         });
     }
 }

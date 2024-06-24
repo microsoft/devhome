@@ -4,7 +4,6 @@
 using System.Diagnostics;
 using DevHome.UITest.Extensions;
 using DevHome.UITest.Pages;
-using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Windows;
 
 namespace DevHome.UITest.Dialogs;
@@ -39,28 +38,7 @@ public class AddWidgetDialog : PageDialog<DashboardPage>
 
     public DashboardPage.WidgetControl AddCPUUsageWidget() => QuickAddWidget(CPUUsageNavigationItem, "CPU");
 
-    public DashboardPage.WidgetControl AddSSHWidget(string configFilePath)
-    {
-        return WaitForWidgetToBeAdded(() =>
-        {
-            Trace.WriteLine($"Clicking on SSH navigation item");
-            SSHNavigationItem.Click();
-
-            // Wait for the widget to be rendered before configuring and
-            // pinning it
-            // TODO: Can we use AccessibilityId for adaptive cards forms?
-            Trace.WriteLine($"Configuring SSH widget: Adding SSH config file path");
-            var container = Driver.WaitUntilVisible(ByWindowsAutomation.ClassName("NamedContainerAutomationPeer"));
-            var input = container.FindElementByClassName("TextBox");
-            input.Clear();
-            input.SendKeys(configFilePath);
-            var submit = container.FindElementByClassName("Button");
-            submit.Click();
-
-            Trace.WriteLine($"Pinning SSH widget");
-            PinButton.Click();
-        });
-    }
+    public DashboardPage.WidgetControl AddSSHWidget() => QuickAddWidget(SSHNavigationItem, "SSH keychain");
 
     private string GetWidgetNavigationItemId(string widgetId) => $"NavViewItem_{Configuration.Widget.IdPrefix}!App!!{Configuration.Widget.Provider}!!{widgetId}";
 

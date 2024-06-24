@@ -77,10 +77,11 @@
                     </StackPanel>
                 </controls:PackageDetailsSettingsCard.Description>
                 <controls:PackageDetailsSettingsCard.HeaderIcon>
-                    <ImageIcon Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
+                    <ImageIcon AutomationProperties.Name="{Binding PackageTitle}" Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
                 </controls:PackageDetailsSettingsCard.HeaderIcon>
                 <StackPanel Orientation="Horizontal" Spacing="10">
                     <ComboBox
+                        x:Uid="VersionComboBox"
                         Visibility="{Binding ShowVersionList}"
                         BorderThickness="0"
                         FontSize="{ThemeResource CaptionTextBlockFontSize}"
@@ -91,7 +92,9 @@
                         SelectedItem="{Binding SelectedVersion, Mode=TwoWay}"
                         ItemsSource="{Binding AvailableVersions}" />
                     <Button
-                        AutomationProperties.Name="{Binding ButtonAutomationName}"
+                        ToolTipService.ToolTip="{Binding ActionButtonDescription}"
+                        AutomationProperties.Name="{Binding ActionButtonDescription}"
+                        AutomationProperties.AutomationId="{Binding ButtonAutomationId}"
                         Padding="5"
                         Command="{Binding ToggleSelectionCommand,Mode=OneWay}">
                         <FontIcon

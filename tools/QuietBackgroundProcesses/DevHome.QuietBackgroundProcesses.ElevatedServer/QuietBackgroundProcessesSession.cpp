@@ -49,7 +49,7 @@ namespace ABI::DevHome::QuietBackgroundProcesses
             // Stop and discard the previous timer
             if (g_activeTimer)
             {
-                g_activeTimer->Cancel();
+                g_activeTimer->Cancel(nullptr);
             }
 
             std::chrono::seconds duration = DEFAULT_QUIET_DURATION;
@@ -58,23 +58,28 @@ namespace ABI::DevHome::QuietBackgroundProcesses
                 duration = std::chrono::seconds(durationOverride.value());
             }
 
+            // Let's make the quiet window a placebo 5 percent of the time
+            bool placebo = (rand() % 100) < 5;
+
             // Start timer
-            g_activeTimer.reset(new TimedQuietSession(duration));
+            g_activeTimer.reset(new TimedQuietSession(placebo, duration));
 
             // Return duration for showing countdown
-            *result = g_activeTimer->TimeLeftInSeconds();
+            *result = g_activeTimer->TimeLeftInSeconds().count();
             return S_OK;
         }
         CATCH_RETURN()
 
-        STDMETHODIMP Stop() noexcept override try
+        STDMETHODIMP Stop(ABI::DevHome::QuietBackgroundProcesses::IProcessPerformanceTable** result) noexcept override
+        try
         {
             auto lock = std::scoped_lock(g_mutex);
+            *result = nullptr;
 
             // Turn off quiet mode and cancel timer
             if (g_activeTimer)
             {
-                g_activeTimer->Cancel();
+                g_activeTimer->Cancel(result);
                 g_activeTimer.reset();
             }
 
@@ -100,7 +105,7 @@ namespace ABI::DevHome::QuietBackgroundProcesses
             *value = 0;
             if (g_activeTimer)
             {
-                *value = g_activeTimer->TimeLeftInSeconds();
+                *value = g_activeTimer->TimeLeftInSeconds().count();
             }
             return S_OK;
         }

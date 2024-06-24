@@ -2,6 +2,11 @@
   <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputType>Exe</OutputType>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
+    <OutputType>Exe</OutputType>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
     <OutputType>WinExe</OutputType>
@@ -22,7 +27,7 @@
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.300.443" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.600.494" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />

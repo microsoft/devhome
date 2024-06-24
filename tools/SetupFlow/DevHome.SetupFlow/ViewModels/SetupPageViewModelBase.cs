@@ -3,11 +3,8 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.DevHomeAdaptiveCards.CardModels;
-using DevHome.Common.DevHomeAdaptiveCards.Parsers;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -96,6 +93,12 @@ public partial class SetupPageViewModelBase : ObservableObject
     {
         get;
     }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the base object is the page that displays the initial adaptive card
+    /// within a flow that supports adaptive cards with a next and previous button.
+    /// </summary>
+    public bool IsInitialAdaptiveCardPage { get; protected set; }
 
     public bool IsLastStepPage => IsStepPage && Orchestrator.SetupStepPages.LastOrDefault() == this;
 

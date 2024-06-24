@@ -51,7 +51,7 @@ public partial class CardProperty : ObservableObject
 
     public string PackageFullName { get; private set; }
 
-    public CardProperty(ComputeSystemProperty property, string packageFullName)
+    public CardProperty(ComputeSystemPropertyCache property, string packageFullName)
     {
         Title = property.Name;
         PackageFullName = packageFullName;
@@ -284,5 +284,10 @@ public partial class CardProperty : ObservableObject
         }
 
         return "-";
+    }
+
+    public override string ToString()
+    {
+        return Title + " - " + Value;
     }
 }

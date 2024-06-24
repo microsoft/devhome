@@ -6,6 +6,7 @@
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:views="using:DevHome.Customization.Views"
+    xmlns:quietviews="using:DevHome.QuietBackgroundProcesses.UI.Views"
     Loaded="UserControl_Loaded">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
@@ -39,7 +40,7 @@
         </controls:SettingsCard>
 
             <!--  Quiet Background Processes  -->
-            <views:QuietBackgroundProcessesView />
+            <quietviews:QuietBackgroundProcessesView />
         </StackPanel>
 
         <!--  More Windows settings  -->

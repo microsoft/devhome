@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+    <RootNamespace>DevHome.EnvironmentVariables</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x86;x64;arm64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <PublishProfile Condition="'$(BuildingInsideVisualStudio)' != 'True'">Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfile>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>false</EnableMsixTooling>
+    <ProjectPriFileName>DevHome.EnvironmentVariables.pri</ProjectPriFileName>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
+  </PropertyGroup>
+  <ItemGroup>
+    <Page Remove="EnvironmentVariablesApp.xaml" />
+    <ApplicationDefinition Include="EnvironmentVariablesApp.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="PowerToys.EnvironmentVariablesUILib" Version="0.80.3" />
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings_environmentvariables.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

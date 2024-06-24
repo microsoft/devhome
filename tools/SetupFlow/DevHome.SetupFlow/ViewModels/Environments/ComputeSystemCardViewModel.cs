@@ -2,19 +2,19 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.WinUI;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Extensions;
-using Microsoft.UI.Xaml;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
@@ -25,13 +25,15 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemCardViewModel));
 
-    private readonly WindowEx _windowEx;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     private readonly IComputeSystemManager _computeSystemManager;
 
-    private const int _maxCardProperties = 6;
+    private readonly string _packageFullName;
 
-    public ComputeSystem ComputeSystemWrapper { get; private set; }
+    private readonly object _lock = new();
+
+    public ComputeSystemCache ComputeSystem { get; private set; }
 
     public BitmapImage ComputeSystemImage { get; set; }
 
@@ -54,56 +56,63 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     [ObservableProperty]
     private CardStateColor _stateColor;
 
-    // This will be used for the accessibility name of the compute system card.
     [ObservableProperty]
     private Lazy<string> _accessibilityName;
 
-    public List<CardProperty> ComputeSystemProperties { get; set; }
+    public ObservableCollection<CardProperty> ComputeSystemProperties { get; set; }
 
-    // only display first 6 properties
-    public ObservableCollection<CardProperty> ComputeSystemPropertiesForCardUI
+    public ComputeSystemCardViewModel(ComputeSystemCache computeSystem, IComputeSystemManager manager, DispatcherQueue dispatcherQueue, string packageFullName)
     {
-        get
-        {
-            var properties = new ObservableCollection<CardProperty>();
-            for (var i = 0; i < Math.Min(ComputeSystemProperties.Count, _maxCardProperties); i++)
-            {
-                properties.Add(ComputeSystemProperties[i]);
-            }
-
-            return properties;
-        }
-    }
-
-    public ComputeSystemCardViewModel(ComputeSystem computeSystem, IComputeSystemManager manager, WindowEx windowEx)
-    {
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
         _computeSystemManager = manager;
-        ComputeSystemTitle = computeSystem.DisplayName;
-        ComputeSystemWrapper = computeSystem;
-        ComputeSystemWrapper.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
+        ComputeSystemTitle = computeSystem.DisplayName.Value;
+        ComputeSystem = computeSystem;
+        ComputeSystem.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;
+        AccessibilityName = new Lazy<string>(BuildAutomationName);
+        _packageFullName = packageFullName;
     }
 
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _dispatcherQueue.EnqueueAsync(async () =>
         {
-            if (sender.Id == ComputeSystemWrapper.Id)
+            if (sender.Id == ComputeSystem.Id.Value &&
+                sender.AssociatedProviderId.Equals(ComputeSystem.AssociatedProviderId.Value, StringComparison.OrdinalIgnoreCase))
             {
                 CardState = state;
                 StateColor = ComputeSystemHelpers.GetColorBasedOnState(state);
+                ComputeSystem.ResetComputeSystemProperties();
+                await RefreshOperationDataAsync();
             }
         });
     }
 
+    private async Task RefreshOperationDataAsync()
+    {
+        ComputeSystem.ResetComputeSystemProperties();
+        await UpdatePropertiesAsync();
+    }
+
+    private async Task UpdatePropertiesAsync()
+    {
+        var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem, _packageFullName);
+        lock (_lock)
+        {
+            if (!ComputeSystemHelpers.RemoveAllItemsAndReplace(ComputeSystemProperties, properties))
+            {
+                ComputeSystemProperties = new(properties);
+            }
+        }
+    }
+
     public async Task<ComputeSystemState> GetCardStateAsync()
     {
-        var result = await ComputeSystemWrapper.GetStateAsync();
+        var result = await ComputeSystem.GetStateAsync();
 
         if (result.Result.Status == ProviderOperationStatus.Failure)
         {
-            _log.Error($"Failed to get state for compute system {ComputeSystemWrapper.DisplayName} from provider {ComputeSystemWrapper.AssociatedProviderId}. Error: {result.Result.DiagnosticText}");
+            _log.Error($"Failed to get state for compute system {ComputeSystem.DisplayName} from provider {ComputeSystem.AssociatedProviderId}. Error: {result.Result.DiagnosticText}");
         }
 
         StateColor = ComputeSystemHelpers.GetColorBasedOnState(result.State);
@@ -112,7 +121,21 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     public void RemoveComputeSystemStateChangedHandler()
     {
-        ComputeSystemWrapper.StateChanged -= _computeSystemManager.OnComputeSystemStateChanged;
+        ComputeSystem.StateChanged -= _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged -= OnComputeSystemStateChanged;
+    }
+
+    private string BuildAutomationName()
+    {
+        var stringBuilder = new StringBuilder();
+        stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{ComputeSystemTitle}");
+        stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{CardState}");
+
+        foreach (var property in ComputeSystemProperties)
+        {
+            stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{property}");
+        }
+
+        return stringBuilder.ToString();
     }
 }

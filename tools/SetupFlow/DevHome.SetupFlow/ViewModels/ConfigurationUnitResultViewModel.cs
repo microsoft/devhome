@@ -5,6 +5,7 @@ using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Management.Configuration;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -28,6 +29,7 @@ public class ConfigurationUnitResultViewModel
     {
         _stringResource = stringResource;
         _unitResult = unitResult;
+        SetName();
     }
 
     public string Title => BuildTitle();
@@ -41,6 +43,50 @@ public class ConfigurationUnitResultViewModel
     public bool IsError => !IsSkipped && _unitResult.HResult != HRESULT.S_OK;
 
     public bool IsSuccess => _unitResult.HResult == HRESULT.S_OK;
+
+    public bool IsCloneRepoUnit => string.Equals(_unitResult.Type, "GitClone", System.StringComparison.OrdinalIgnoreCase);
+
+    public bool IsPrivateRepo => false;
+
+    public string Name { get; private set; }
+
+    public BitmapImage StatusSymbolIcon { get; set; }
+
+    private void SetName()
+    {
+        // Get either Git repo name for if this is a repo clone request or package name for package install request.
+        // We add into Id in ConfigurationFileBuilder.
+        if (!string.IsNullOrEmpty(_unitResult.Id))
+        {
+            if (IsCloneRepoUnit)
+            {
+                var start = ConfigurationFileBuilder.RepoNamePrefix.Length;
+                var descriptionParts = _unitResult.Id.Substring(start).Split(ConfigurationFileBuilder.RepoNameSuffix);
+                Name = descriptionParts[0];
+            }
+            else
+            {
+                var descriptionParts = _unitResult.Id.Split(ConfigurationFileBuilder.PackageNameSeparator);
+
+                if (descriptionParts.Length > 1)
+                {
+                    Name = descriptionParts[1];
+                }
+                else
+                {
+                    Name = descriptionParts[0];
+                }
+            }
+        }
+        else if (!string.IsNullOrEmpty(_unitResult.UnitDescription))
+        {
+            Name = _unitResult.UnitDescription;
+        }
+        else
+        {
+            Name = "<No Data>";
+        }
+    }
 
     private string GetApplyResult()
     {
