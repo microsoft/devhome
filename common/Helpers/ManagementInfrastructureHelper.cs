@@ -3,10 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using Microsoft.Management.Infrastructure;
 using Serilog;
-using Windows.Foundation.Metadata;
 
 namespace DevHome.Common.Helpers;
 
@@ -29,15 +27,10 @@ public static class ManagementInfrastructureHelper
         { CommonConstants.HyperVExtensionClassId, CommonConstants.HyperVWindowsOptionalFeatureName },
     };
 
-    public static FeatureAvailabilityKind GetWindowsFeatureAvailability(string? featureName)
+    public static FeatureAvailabilityKind GetWindowsFeatureAvailability(string featureName)
     {
         try
         {
-            if (featureName == null)
-            {
-                return FeatureAvailabilityKind.Unknown;
-            }
-
             // use the local session
             using var session = CimSession.Create(null);
 
@@ -86,8 +79,6 @@ public static class ManagementInfrastructureHelper
     public static bool IsWindowsOptionalFeatureAvailable(string featureName)
     {
         var availability = GetWindowsFeatureAvailability(featureName);
-
-        _log.Information($"Feature {featureName} is currently '{availability}'");
         return (availability == FeatureAvailabilityKind.Enabled) || (availability == FeatureAvailabilityKind.Disabled);
     }
 
@@ -108,19 +99,17 @@ public static class ManagementInfrastructureHelper
     /// <param name="extensionClassId">The class Id of the out of proc extension object</param>
     /// <returns>
     /// True only when one of the following is met:
-    /// 1. The classId is not from an extension that Dev Home internally knows about.
-    /// 2. The classId is from an extension Dev Home internally knows about and the feature is either enabled or disabled.
+    /// 1. The classId is not an internal Dev Home extension.
+    /// 2. The classId is an internal Dev Home extension and the feature is either enabled or disabled.
     /// </returns>
     public static bool IsWindowsOptionalFeatureAvailableForExtension(string extensionClassId)
     {
-        ExtensionToFeatureNameMap.TryGetValue(extensionClassId, out var featureName);
-
-        if (featureName == null)
+        if (ExtensionToFeatureNameMap.TryGetValue(extensionClassId, out var featureName))
         {
-            // This isn't an internal Dev Home extension that we know about, so don't try to disable it.
-            return true;
+            return IsWindowsOptionalFeatureAvailable(featureName);
         }
 
-        return IsWindowsOptionalFeatureAvailable(featureName);
+        // This isn't an internal Dev Home extension that we know about, so don't try to disable it.
+        return true;
     }
 }

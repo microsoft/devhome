@@ -3,7 +3,6 @@
 
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
-using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.ExtensionLibrary.TelemetryEvents;
 using DevHome.Models;
@@ -394,12 +393,13 @@ public class ExtensionService : IExtensionService, IDisposable
     /// <returns>True only if the extension was disabled. False otherwise.</returns>
     public bool DisableExtensionIfWindowsFeatureNotAvailable(IExtensionWrapper extension)
     {
+        // Only attempt to disable feature if its available.
         if (IsWindowsOptionalFeatureAvailableForExtension(extension.ExtensionClassId))
         {
             return false;
         }
 
-        _log.Information($"Disabling extension: '{extension.ExtensionDisplayName}' because its feature is absent");
+        _log.Information($"Disabling extension: '{extension.ExtensionDisplayName}' because its feature is absent or unknown");
         DisableExtension(extension.ExtensionUniqueId);
         return true;
     }
