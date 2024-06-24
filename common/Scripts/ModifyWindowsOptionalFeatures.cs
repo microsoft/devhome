@@ -148,12 +148,11 @@ public static class ModifyWindowsOptionalFeatures
     /// It parses this string into a dictionary, iterates over each feature, and performs the necessary enable or disable operation based on the desired state.
     ///
     /// The script defines the following possible exit statuses:
-    /// - OperationSucceeded (0): All operations (enable or disable) succeeded and no restart is needed.
-    /// - OperationSkipped (1): No operations were performed because the current state of all features matched the desired state.
-    /// - OperationFailed (2): At least one operation failed.
+    /// - OperationSucceeded (0): All operations (enable or disable) succeeded.
+    /// - OperationFailed (1): At least one operation failed.
     ///
     /// Only features present in "validFeatures" are considered valid. If an invalid feature name is encountered, the script exits with OperationFailed.
-    /// This list should be kept consistent with the list of features in the WindowsOptionalFeatureNames class.
+    /// This list should generally be kept consistent with the list of features in the WindowsOptionalFeatures class.
     ///
     /// </summary>
     private const string Script =

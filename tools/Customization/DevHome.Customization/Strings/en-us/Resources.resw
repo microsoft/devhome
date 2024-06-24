@@ -379,7 +379,7 @@
   </data>
   <data name="LongPaths.Description" xml:space="preserve">
     <value>Remove MAX_PATH limitations from common Win32 file and directory functions.</value>
-    <comment>The description for the long paths settings card</comment>
+    <comment>Locked="{MAX_PATH}" The description for the long paths settings card</comment>
   </data>
   <data name="LongPaths.Header" xml:space="preserve">
     <value>Enable long paths</value>

@@ -8,6 +8,7 @@ namespace DevHome.Common.Helpers;
 
 public static class WindowsOptionalFeatures
 {
+    // If changes are made to the set of features here, consider updating ModifyWindowsOptionalFeatures' valid feature set.
     public const string Containers = "Containers";
     public const string GuardedHost = "HostGuardian";
     public const string HyperV = "Microsoft-Hyper-V-All";
