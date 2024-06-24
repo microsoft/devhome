@@ -89,6 +89,7 @@ public sealed partial class WidgetControl : UserControl
     private void OnUnloaded()
     {
         _uiSettings.TextScaleFactorChanged -= HandleTextScaleFactorChangedAsync;
+        WidgetSource = null;
     }
 
     private async void HandleTextScaleFactorChangedAsync(UISettings sender, object args)

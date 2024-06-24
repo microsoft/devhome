@@ -83,7 +83,7 @@
 
                     <!-- Widget grid -->
                     <GridView x:Name="WidgetGridView"
-                              ItemsSource="{x:Bind ViewModel.PinnedWidgets}"
+                              ItemsSource="{x:Bind ViewModel.PinnedWidgets, Mode=OneWay}"
                               CanReorderItems="True"
                               CanDragItems="True"
                               DragItemsStarting="WidgetGridView_DragItemsStarting">

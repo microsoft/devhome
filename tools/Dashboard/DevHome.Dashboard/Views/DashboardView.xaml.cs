@@ -132,6 +132,9 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     private async Task OnUnloadedAsync()
     {
+        ViewModel.PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChangedAsync;
+        Bindings.StopTracking();
+
         Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
 
         _log.Debug($"Leaving Dashboard, deactivating widgets.");
@@ -145,6 +148,7 @@ public partial class DashboardView : ToolPage, IDisposable
             _log.Error(ex, "Exception in UnsubscribeFromWidgets:");
         }
 
+        ViewModel.PinnedWidgets.Clear();
         await UnsubscribeFromWidgetCatalogEventsAsync();
     }
 
