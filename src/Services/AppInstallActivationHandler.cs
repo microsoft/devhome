@@ -1,19 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using System.Web;
 using DevHome.Activation;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.ApplicationModel.Activation;
-using Windows.Storage;
 
 namespace DevHome.Services;
 
@@ -31,7 +28,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
     private readonly Window _mainWindow;
     private readonly ISetupFlowStringResource _setupFlowStringResource;
-    private static readonly char[] Separator = [','];
+    private static readonly char[] _separator = [','];
 
     public enum ActivationQueryType
     {
@@ -109,7 +106,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
 
     private string[] SplitAndTrimIdentifiers(string query)
     {
-        return query.Split(Separator, StringSplitOptions.RemoveEmptyEntries)
+        return query.Split(_separator, StringSplitOptions.RemoveEmptyEntries)
                     .Select(id => id.Trim(' ', '"'))
                     .ToArray();
     }

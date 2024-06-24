@@ -11,6 +11,7 @@
     mc:Ignorable="d"
     Title="" MinHeight="72" MinWidth="700" Height="72" Width="700" MaxHeight="72"
     TaskBarIcon="Images/pi.ico"
+    Activated="Window_Activated"
     Closed="WindowEx_Closed">
 
     <Window.SystemBackdrop>
@@ -25,7 +26,7 @@
         </Grid.RowDefinitions>
 
         <!--Chrome buttons for a horizontal bar -->
-        <Grid x:Name="HorizontalBar" Background="Transparent" VerticalAlignment="Center" Height="28" Grid.Row="0">
+        <Grid x:Name="HorizontalBar" Background="Transparent" VerticalAlignment="Center" Height="31" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
                 <ColumnDefinition x:Name="ExtraSystemButtons" Width="*"/>
@@ -43,7 +44,24 @@
                     HorizontalAlignment="Left" 
                     IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}">
-                    <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
+                    <TextBlock x:Name="SnapButtonText" Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
+                </Button>
+                <Button
+                     x:Uid="RotateLayoutButton" 
+                     Style="{StaticResource ChromeButton}" 
+                     FontSize="{StaticResource CaptionTextBlockFontSize}"
+                     Command="{x:Bind _viewModel.RotateLayoutCommand}" 
+                     HorizontalAlignment="Left">
+                    <TextBlock x:Name="RotateLayoutButtonText" Text="&#xe8b4;" />
+                </Button>
+                <Button
+                     x:Uid="ExpandCollapseLayoutButton" 
+                     Style="{StaticResource ChromeButton}" 
+                     FontSize="{StaticResource CaptionTextBlockFontSize}"
+                     Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" 
+                     HorizontalAlignment="Left" 
+                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}">
+                    <TextBlock x:Name="ExpandCollapseLayoutButtonText" />
                 </Button>
             </StackPanel>
         </Grid>
@@ -92,14 +110,7 @@
             </StackPanel>
 
             <!-- Per System controls -->
-            <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" HorizontalAlignment="Center" Command="{x:Bind _viewModel.SwitchLayoutCommand}">
-                <TextBlock Text="&#xe8b4;"/>
-            </Button>
-            <Button x:Uid="SwitchToLargeLayoutButton" Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" HorizontalAlignment="Center">
-                <TextBlock Text="&#xe8a1;"/>
-            </Button>
-
-            <controls:ExternalToolsManagementButton
+              <controls:ExternalToolsManagementButton
                 x:Name="ManageExternalToolsButton"
                 x:Uid="ManageExternalToolsButton"
                 HorizontalAlignment="Center"

@@ -55,18 +55,27 @@ internal sealed class ETWHelper : IDisposable
                 session.Dispose();
             }
 
-            using (session = new TraceEventSession(sessionName))
+            try
             {
-                // Filter the provider events based on processId
-                var providerOptions = new TraceEventProviderOptions { ProcessIDFilter = [targetProcess.Id] };
-                foreach (var provider in ProviderList)
+                using (session = new TraceEventSession(sessionName))
                 {
-                    session.EnableProvider(provider, TraceEventLevel.Always, options: providerOptions);
-                }
+                    // Filter the provider events based on processId
+                    var providerOptions = new TraceEventProviderOptions { ProcessIDFilter = [targetProcess.Id] };
+                    foreach (var provider in ProviderList)
+                    {
+                        session.EnableProvider(provider, TraceEventLevel.Always, options: providerOptions);
+                    }
 
-                session.Source.Dynamic.All += EventsHandler;
-                session.Source.UnhandledEvents += UnHandledEventsHandler;
-                session.Source.Process();
+                    session.Source.Dynamic.All += EventsHandler;
+                    session.Source.UnhandledEvents += UnHandledEventsHandler;
+                    session.Source.Process();
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Stop();
+                WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, ex.Message, WinLogsHelper.EtwLogsName);
+                output.Add(entry);
             }
         }
     }

@@ -4,7 +4,6 @@
 using System.Diagnostics;
 using DevHome.UITest.Extensions;
 using DevHome.UITest.Pages;
-using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Windows;
 
 namespace DevHome.UITest.Dialogs;

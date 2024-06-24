@@ -19,38 +19,11 @@
 
     <Grid x:Name="MainPanel" Loaded="MainPanel_Loaded" HorizontalAlignment="Center">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Chrome buttons for a vertical bar -->
-        <StackPanel x:Name="ChromeButtonPanelVertical" Orientation="Vertical" HorizontalAlignment="Center" Margin="0, 10" Grid.Row="0">
-            <Rectangle x:Name="SeparatorRectangleVertical" RadiusX="2" RadiusY="2" Width="32" Height="5" Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}" Margin="4" PointerPressed="Window_PointerPressed" PointerMoved="Window_PointerMoved" PointerReleased="Window_PointerReleased"/>
- 
-            <Button
-                x:Uid="SnapButton"
-                Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
-                Margin="0,20, 0, 0"
-                Style="{StaticResource ChromeButton}"
-                HorizontalAlignment="Center"
-                IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
-                Command="{x:Bind _viewModel.ToggleSnapCommand}"
-                ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}">
-                <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
-            </Button>
-            <Button
-                x:Uid="VerticalCloseButton"
-                Style="{StaticResource ChromeButton}"
-                Click="CloseButton_Click" 
-                HorizontalAlignment="Center"
-                Margin="0,20, 0, 0" >
-                <TextBlock Text="&#xE8BB;"/>
-            </Button>
-        </StackPanel>
-
-
-        <StackPanel x:Name="AllControls" Orientation="Vertical" Grid.Row="1" HorizontalAlignment="Center" Margin="0" Background="Transparent">
+        <StackPanel x:Name="AllControls" Orientation="Vertical" Grid.Row="0" HorizontalAlignment="Center" Margin="0" Background="Transparent" Spacing="5">
             <StackPanel.Resources>
                 <Style TargetType="TextBlock">
                     <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
@@ -70,7 +43,43 @@
                     <Setter Property="Background" Value="Transparent"/>
                 </Style>
             </StackPanel.Resources>
-                        
+
+            <Rectangle x:Name="Gripper" RadiusX="2" RadiusY="2" Width="32" Height="5" Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}" Margin="10" PointerPressed="Window_PointerPressed" PointerMoved="Window_PointerMoved" PointerReleased="Window_PointerReleased"/>
+
+            <Button
+                x:Uid="SnapButton"
+                Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
+                HorizontalAlignment="Center"
+                IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
+                Command="{x:Bind _viewModel.ToggleSnapCommand}" 
+                Style="{StaticResource ChromeButton}" >
+                <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
+            </Button>
+            <Button 
+                x:Uid="RotateLayoutButton" 
+                x:Name="RotateLayoutButton" 
+                Command="{x:Bind _viewModel.RotateLayoutCommand}" 
+                HorizontalAlignment="Center">
+                <TextBlock Text="&#xe8b4;" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
+            </Button>
+            <Button
+                x:Uid="ExpandLayoutButton" 
+                Style="{StaticResource ChromeButton}" 
+                Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" 
+                HorizontalAlignment="Center" 
+                ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}">
+                <TextBlock Text="&#xF745;" FontSize="{StaticResource CaptionTextBlockFontSize}" /> <!-- ChevronRight -->
+            </Button>
+            <Button
+                x:Uid="VerticalCloseButton"
+                Click="CloseButton_Click" 
+                HorizontalAlignment="Center" 
+                Style="{StaticResource ChromeButton}" >
+                <TextBlock Text="&#xE8BB;" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
+            </Button>
+
+            <controls:PISeparator Orientation="Horizontal"/>
+
             <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Margin="0">
                 <TextBlock Text="&#xecaa;" Margin="0" />
             </controls:ProcessSelectionButton>
@@ -94,14 +103,7 @@
             </StackPanel>
                         
             <!-- Per System controls -->
-            <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" Command="{x:Bind _viewModel.SwitchLayoutCommand}" HorizontalAlignment="Center">
-                <TextBlock Text="&#xe8b4;"/>
-            </Button>
-            <Button x:Uid="SwitchToLargeLayoutButton" Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" HorizontalAlignment="Center">
-                <TextBlock Text="&#xe8a1;"/>
-            </Button>
-
-            <controls:ExternalToolsManagementButton
+          <controls:ExternalToolsManagementButton
                 x:Name="ManageExternalToolsButton"
                 x:Uid="ManageExternalToolsButton"
                 HorizontalAlignment="Center"
@@ -135,7 +137,7 @@
             <controls:PISeparator Orientation="Horizontal" Visibility="{x:Bind _viewModel.ExternalToolSeparatorVisibility, Mode=OneWay}"/>
         </StackPanel>
 
-        <StackPanel x:Name="SystemResourceStackPanel" Orientation="Vertical" Grid.Row="2" Margin="0,0,0,5">
+        <StackPanel x:Name="SystemResourceStackPanel" Orientation="Vertical" Grid.Row="1" Margin="0,0,0,5">
             <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 0, 5, 0"/>
             <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 5, 5, 5"/>
             <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 0, 5, 0"/>

@@ -172,7 +172,12 @@ public partial class DashboardView : ToolPage, IDisposable
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
         ViewModel.IsLoading = true;
 
-        if (ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
+        if (ViewModel.IsRunningAsAdmin())
+        {
+            _log.Error($"Dev Home is running as admin, can't show Dashboard");
+            RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
+        }
+        else if (ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
         {
             ViewModel.HasWidgetService = true;
             if (await SubscribeToWidgetCatalogEventsAsync())
@@ -302,7 +307,6 @@ public partial class DashboardView : ToolPage, IDisposable
                     continue;
                 }
 
-                // Ensure only one copy of a widget is pinned if that widget's definition only allows for one instance.
                 var comSafeWidgetDefinition = new ComSafeWidgetDefinition(widgetDefinitionId);
                 if (!await comSafeWidgetDefinition.PopulateAsync())
                 {
@@ -311,6 +315,14 @@ public partial class DashboardView : ToolPage, IDisposable
                     continue;
                 }
 
+                // If the widget's extension was disabled, hide the widget (don't add it to the list), but don't delete it.
+                if (!await WidgetHelpers.IsIncludedWidgetProviderAsync(comSafeWidgetDefinition.ProviderDefinition))
+                {
+                    _log.Information($"Not adding widget from disabled extension {comSafeWidgetDefinition.ProviderDefinitionId}");
+                    continue;
+                }
+
+                // Ensure only one copy of a widget is pinned if that widget's definition only allows for one instance.
                 if (comSafeWidgetDefinition.AllowMultiple == false)
                 {
                     if (pinnedSingleInstanceWidgets.Contains(widgetDefinitionId))

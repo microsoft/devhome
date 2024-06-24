@@ -7,16 +7,16 @@ namespace CoreWidgetProvider.Helpers;
 
 public class IconLoader
 {
-    private static readonly Dictionary<string, string> Base64ImageRegistry = new();
+    private static readonly Dictionary<string, string> _base64ImageRegistry = new();
 
     public static string GetIconAsBase64(string filename)
     {
         var log = Log.ForContext("SourceContext", nameof(IconLoader));
         log.Debug(nameof(IconLoader), $"Asking for icon: {filename}");
-        if (!Base64ImageRegistry.TryGetValue(filename, out var value))
+        if (!_base64ImageRegistry.TryGetValue(filename, out var value))
         {
             value = ConvertIconToDataString(filename);
-            Base64ImageRegistry.Add(filename, value);
+            _base64ImageRegistry.Add(filename, value);
             log.Debug(nameof(IconLoader), $"The icon {filename} was converted and is now stored.");
         }
 

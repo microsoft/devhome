@@ -5,6 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:models="using:DevHome.PI.Models"
+    xmlns:local="using:DevHome.PI.Controls"
     mc:Ignorable="d">
 
     <Grid>
@@ -17,21 +20,64 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Vertical">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button 
-                    x:Name="ToolBrowseButton" x:Uid="ToolBrowseButton" 
-                    HorizontalAlignment="Left" MinWidth="100"
-                    Click="ToolBrowseButton_Click"/>
-                <TextBox 
-                    x:Name="ToolPathTextBox" Grid.Column="1" MinWidth="800" Margin="8,0,0,0" 
-                    IsReadOnly="True"/>
+                <Button
+                    x:Name="AppListButton" x:Uid="AppListButton" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="100" Click="AppListButton_Click"/>
+                <ListView 
+                    x:Name="AppsListView" 
+                    Grid.Column="1" 
+                    SelectionChanged="AppsListView_SelectionChanged" 
+                    HorizontalAlignment="Stretch"
+                    Height="200" 
+                    ItemsSource="{x:Bind SortedApps, Mode=OneWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:InstalledAppInfo">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{x:Bind Icon}" Width="24" Height="24"/>
+                                <TextBlock Text="{x:Bind Name}" Margin="6,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Grid>
-            <Grid Margin="0,6,0,0">
+
+            <!-- Occupies the same grid row as the apps list. -->
+            <local:ProgressTextRing 
+                x:Name="LoadingProgressTextRing"
+                Foreground="BlueViolet" 
+                Diameter="60" 
+                FontSize="16" 
+                FontFamily="Segoe UI"
+                IsActive="{x:Bind IsLoading, Mode=OneWay}" 
+                Value="{x:Bind ProgressPercentage, Mode=OneWay}"/>
+
+            <Grid Grid.Row="1" Margin="0,6,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button 
+                    x:Name="ToolBrowseButton" x:Uid="ToolBrowseButton" HorizontalAlignment="Left" MinWidth="100" Click="ToolBrowseButton_Click"/>
+                <TextBox 
+                    x:Name="ToolPathTextBox" Grid.Column="1" MinWidth="800" Margin="8,0,0,0" IsReadOnly="True" HorizontalAlignment="Stretch"/>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="0,6,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="200"/>
@@ -39,67 +85,43 @@
                 <TextBlock x:Uid="ToolNameHeaderTextBlock" VerticalAlignment="Center" MinWidth="100"/>
                 <TextBox x:Name="ToolNameTextBox" Grid.Column="1" HorizontalAlignment="Stretch" Margin="8,0,0,0" />
             </Grid>
-        </StackPanel>
-
-        <Grid Grid.Row="1" Margin="0,12,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <TextBlock x:Uid="BasicArgumentsTextBlock"/>
-            <Grid Grid.Row="1" Margin="0,6,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <RadioButton 
-                        x:Uid="NoneRadio" x:Name="NoneRadio" IsChecked="True" GroupName="SwitchGroup" 
-                        Checked="UpdateSampleCommandline"/>
-                    <RadioButton 
-                        x:Uid="HwndRadio" x:Name="HwndRadio" GroupName="SwitchGroup" 
-                        Checked="UpdateSampleCommandline"/>
-                    <RadioButton 
-                        x:Uid="ProcessIdRadio" x:Name="ProcessIdRadio" GroupName="SwitchGroup" 
-                        Checked="UpdateSampleCommandline"/>
-                </StackPanel>
-                <TextBlock 
-                    x:Uid="PrefixTextBlock" Grid.Column="1" Margin="0,0,8,0"
-                    VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                <TextBox 
-                    x:Name="PrefixTextBox" Grid.Column="2" MinWidth="150" HorizontalAlignment="Right" 
-                    TextChanged="UpdateSampleCommandline"/>
-            </Grid>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0,12,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <TextBlock x:Uid="OtherArgumentsTextBlock"/>
-            <TextBox
-                x:Name="OtherArgsTextBox" Grid.Row="1" TextWrapping="Wrap" MinHeight="60"
-                TextChanged="UpdateSampleCommandline"/>
+        <Grid Grid.Row="3" Margin="0,6,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Uid="ActivationTextBlock" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,0,0">
+                <RadioButton x:Name="LaunchRadio" GroupName="ActivationGroup" x:Uid="LaunchRadio" IsChecked="True"/>
+                <RadioButton x:Name="ProtocolRadio" GroupName="ActivationGroup" x:Uid="ProtocolRadio"/>
+            </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="3" Margin="0,12,0,0">
+        <Grid Grid.Row="4" Margin="0,6,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock x:Uid="SampleCommandLineTextBlock"/>
-            <TextBox
-                x:Name="SampleCommandTextBox" Grid.Row="1" MinHeight="60"
-                TextWrapping="Wrap" IsReadOnly="True"/>
+            <TextBlock x:Uid="ArgumentsHeaderTextBlock" HorizontalAlignment="Left"/>
+            <TextBlock x:Uid="ArgumentsDescriptionTextBlock" Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" Margin="6,0,0,0"/>
+            <TextBlock x:Uid="LaunchExampleTextBlock" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" TextWrapping="Wrap" Margin="6,0,0,0"/>
+            <TextBlock x:Uid="ProtocolExampleTextBlock" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" TextWrapping="Wrap" Margin="6,0,0,0"/>
+            <TextBox x:Name="ArgumentsTextBox" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch" Margin="6,0,0,0"/>
         </Grid>
 
         <ToggleSwitch 
             x:Uid="IsPinnedToggleSwitch" x:Name="IsPinnedToggleSwitch" HorizontalContentAlignment="Left"
-            Grid.Row="4" Margin="0,12,0,0" HorizontalAlignment="Left" IsOn="True"/>
+            Grid.Row="5" HorizontalAlignment="Left" IsOn="True" Margin="0,-6,0,0"/>
         
-        <StackPanel Orientation="Horizontal" Grid.Row="5" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="6">
+        <StackPanel Orientation="Horizontal" Grid.Row="6" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="6">
             <Button 
                 x:Uid="AddToolsOkButton" x:Name="OkButton" MinWidth="100"
                 Click="OkButton_Click"/>
