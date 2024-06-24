@@ -11,7 +11,6 @@
     xmlns:pg="using:DevHome.Common"
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:vm="using:DevHome.Dashboard.ViewModels"
-    xmlns:views="using:DevHome.Dashboard.Views"
     xmlns:controls="using:DevHome.Dashboard.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
@@ -84,7 +83,7 @@
 
                     <!-- Widget grid -->
                     <GridView x:Name="WidgetGridView"
-                              ItemsSource="{x:Bind views:DashboardView.PinnedWidgets}"
+                              ItemsSource="{x:Bind ViewModel.PinnedWidgets}"
                               CanReorderItems="True"
                               CanDragItems="True"
                               DragItemsStarting="WidgetGridView_DragItemsStarting">
@@ -131,7 +130,7 @@
                     <StackPanel x:Name="NoWidgetsStackPanel"
                                 HorizontalAlignment="Center"
                                 Margin="0,150,0,0"
-                                Visibility="{x:Bind ViewModel.GetNoWidgetMessageVisibility(views:DashboardView.PinnedWidgets.Count, ViewModel.IsLoading), Mode=OneWay}">
+                                Visibility="{x:Bind ViewModel.GetNoWidgetMessageVisibility(ViewModel.PinnedWidgets.Count, ViewModel.IsLoading), Mode=OneWay}">
                         <TextBlock x:Uid="NoWidgetsAdded" HorizontalAlignment="Center" />
                         <commonviews:AddCreateHyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" HorizontalAlignment="Center" Command="{x:Bind AddWidgetClickCommand}" />
                     </StackPanel>

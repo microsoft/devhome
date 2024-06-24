@@ -14,7 +14,6 @@ using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
-using DevHome.Dashboard.Views;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
@@ -177,7 +176,7 @@ public sealed partial class WidgetControl : UserControl
                 _log.Debug($"User removed widget, delete widget {widgetIdToDelete}");
                 var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
                 Application.Current.GetService<IScreenReaderService>().Announce(stringResource.GetLocalized("WidgetRemoved"));
-                DashboardView.PinnedWidgets.Remove(widgetViewModel);
+                Application.Current.GetService<DashboardViewModel>().PinnedWidgets.Remove(widgetViewModel);
                 try
                 {
                     await widgetToDelete.DeleteAsync();
