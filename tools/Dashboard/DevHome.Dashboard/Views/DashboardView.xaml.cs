@@ -186,7 +186,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
                 if (isFirstDashboardRun)
                 {
-                    await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
+                    await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
                 }
 
                 await InitializePinnedWidgetListAsync(isFirstDashboardRun);

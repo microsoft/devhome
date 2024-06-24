@@ -39,7 +39,7 @@ public sealed partial class WidgetControl : UserControl
     // https://learn.microsoft.com/en-us/windows/apps/design/widgets/widgets-design-fundamentals
     // Adaptive cards render with 8px padding on each side, so we subtract that from the header height,
     // as well as 1px for the border.
-    private const double _headerHeightUnscaled = 39;
+    private const double HeaderHeightUnscaled = 39;
 
     private SelectableMenuFlyoutItem _currentSelectedSize;
 
@@ -118,7 +118,7 @@ public sealed partial class WidgetControl : UserControl
 
     private void SetScaledWidthAndHeight(double textScale)
     {
-        HeaderHeight = new GridLength(_headerHeightUnscaled * textScale);
+        HeaderHeight = new GridLength(HeaderHeightUnscaled * textScale);
         WidgetHeight = GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize) * textScale;
         WidgetWidth = WidgetHelpers.WidgetPxWidth * textScale;
     }
