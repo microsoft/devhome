@@ -38,6 +38,7 @@ public partial class MainPageViewModel : ObservableObject
         Breadcrumbs = [new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!)];
     }
 
+    [RelayCommand]
     public async Task LoadViewModelContentAsync()
     {
         await Task.Run(async () =>
