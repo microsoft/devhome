@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
@@ -149,12 +150,26 @@ internal sealed class SSHWalletWidget : CoreWidget
         var cmd = new Process();
         cmd.StartInfo = new ProcessStartInfo
         {
-            FileName = "cmd.exe",
-            Arguments = $"/k \"ssh {args.Data}\"",
+            FileName = "wt.exe",
+            Arguments = $"ssh {args.Data}",
             UseShellExecute = true,
         };
 
-        cmd.Start();
+        try
+        {
+            cmd.Start();
+        }
+        catch (Win32Exception win32Ex)
+        {
+            Log.Error(win32Ex, "Failed to start wt.exe. Falling back to cmd.exe.");
+            cmd.StartInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = $"/k \"ssh {args.Data}\"",
+                UseShellExecute = true,
+            };
+            cmd.Start();
+        }
     }
 
     private void HandleCheckPath(WidgetActionInvokedArgs args)
