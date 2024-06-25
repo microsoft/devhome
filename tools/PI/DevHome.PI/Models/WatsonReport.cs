@@ -2,35 +2,42 @@
 // Licensed under the MIT License.
 
 using System;
+using System.ComponentModel;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DevHome.PI.Models;
 
-public class WatsonReport
+public partial class WatsonReport : ObservableObject
 {
-    public DateTime TimeStamp { get; }
+    [ObservableProperty]
+    private DateTime _timeStamp;
 
     public string TimeGenerated => TimeStamp.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.CurrentCulture);
 
-    public string FilePath { get; }
+    [ObservableProperty]
+    private string _filePath = string.Empty;
 
-    public string Module { get; }
+    [ObservableProperty]
+    private string _module = string.Empty;
 
-    public string Executable { get; }
+    [ObservableProperty]
+    private string _executable = string.Empty;
 
-    public string EventGuid { get; }
+    [ObservableProperty]
+    private string _eventGuid = string.Empty;
 
-    public string Description { get; set; }
+    [ObservableProperty]
+    private string _description = string.Empty;
 
-    public string? CrashDumpPath { get; set; }
+    [ObservableProperty]
+    private int _pid = 0;
 
-    public WatsonReport(string filePath, DateTime timeGenerated, string moduleName, string executable, string eventGuid, string description)
+    [ObservableProperty]
+    private string _crashDumpPath = string.Empty;
+
+    public WatsonReport()
     {
-        FilePath = filePath;
-        TimeStamp = timeGenerated;
-        Module = moduleName;
-        Executable = executable;
-        EventGuid = eventGuid;
-        Description = description;
     }
 }
