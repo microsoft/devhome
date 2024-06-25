@@ -185,7 +185,7 @@
                     SelectionMode="Single">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:LoadingMessageViewModel">
-                            <Grid ColumnSpacing="5">
+                            <Grid AutomationProperties.Name="{x:Bind MessageToShow}" ColumnSpacing="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="{StaticResource SymbolAndProgressRingColumnWidth}" />
                                     <ColumnDefinition Width="*" />
@@ -212,7 +212,7 @@
                     SelectionMode="None">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:LoadingMessageViewModel">
-                            <Grid ColumnSpacing="5">
+                            <Grid AutomationProperties.Name="{x:Bind MessageToShow}" ColumnSpacing="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="{StaticResource SymbolAndProgressRingColumnWidth}" />
                                     <ColumnDefinition Width="*" />

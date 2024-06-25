@@ -33,6 +33,8 @@
     <None Remove="Views\FileExplorerView.xaml" />
     <None Remove="Views\DevDriveInsightsPage.xaml" />
     <None Remove="Views\DevDriveInsightsView.xaml" />
+    <None Remove="Views\GeneralSystemPage.xaml" />
+    <None Remove="Views\GeneralSystemView.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\MainPageView.xaml" />
   </ItemGroup>
@@ -46,11 +48,19 @@
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+    <Page Update="Views\GeneralSystemView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\MainPageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\VirtualizationFeatureManagementPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
