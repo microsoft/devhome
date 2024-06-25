@@ -1,0 +1,38 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "DevHome.SettingsCardChoiceSet",
+      "id": "SelectedDistroListIndex",
+      "label": "${SettingsCardLabel}",
+      "isRequired": true,
+      "devHomeSettingsCards": [
+        {
+          "type": "DevHome.SettingsCard",
+          "$data": "${AvailableDistros}",
+          "devHomeSettingsCardDescription": "",
+          "devHomeSettingsCardHeader": "${Header}",
+          "devHomeSettingsCardHeaderIcon": "${HeaderIcon}"
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "id": "DevHomeTopLevelActionSet",
+      "actions": [
+        {
+          "id": "DevHomeMachineConfigurationNextButton",
+          "type": "Action.Submit",
+          "title": "${PrimaryButtonLabelForCreationFlow}"
+        },
+        {
+          "id": "DevHomeMachineConfigurationPreviousButton",
+          "type": "Action.Submit",
+          "title": "${SecondaryButtonLabelForCreationFlow}"
+        }
+      ]
+    }
+  ]
+}

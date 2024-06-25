@@ -1,0 +1,88 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "medium",
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "${ProviderName}",
+              "wrap": true,
+              "size": "medium"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "extraLarge",
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Name",
+              "wrap": true,
+              "size": "medium"
+            },
+            {
+              "type": "TextBlock",
+              "text": "${NameOfNewDistro}",
+              "wrap": true,
+              "size": "medium"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "extraLarge",
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "type": "Image",
+              "url": "${DiskImageUrl}"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "medium",
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "${DisplayName}",
+              "wrap": true,
+              "size": "medium"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "id": "DevHomeTopLevelActionSet",
+      "actions": [
+        {
+          "id": "DevHomeMachineConfigurationNextButton",
+          "type": "Action.Submit",
+          "title": "${PrimaryButtonLabelForCreationFlow}"
+        },
+        {
+          "id": "DevHomeMachineConfigurationPreviousButton",
+          "type": "Action.Submit",
+          "title": "${SecondaryButtonLabelForCreationFlow}"
+        }
+      ]
+    }
+  ]
+}

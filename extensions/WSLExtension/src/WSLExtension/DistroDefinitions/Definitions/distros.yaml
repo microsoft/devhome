@@ -1,0 +1,247 @@
+---
+- Name: Pengwin
+  Registration: WLinux
+  Logo: pengwin.png
+  HasArm64Version: true
+  DistroKind: pengwin
+  
+- Name: Pengwin Enterprise 7
+  Registration: WLE
+  Logo: pengwinenterprise.png
+  HasArm64Version: false
+  DistroKind: pengwinenterprise
+
+- Name: Pengwin Enterprise 8
+  Registration: PengwinEnterprise8
+  Logo: pengwinenterprise.png
+  HasArm64Version: false
+  DistroKind: pengwinenterprise
+
+- Name: Pengwin Enterprise 9
+  Registration: PengwinEnterprise9
+  Logo: pengwinenterprise.png
+  HasArm64Version: false
+  DistroKind: pengwinenterprise
+
+- Name: Fedora Remix for WSL
+  Registration: fedoraremix
+  Logo: fedoraremix.png
+  HasArm64Version: true
+  DistroKind: fedoraremix
+
+- Name: Debian
+  Registration: Debian
+  Logo: debian.png
+  HasArm64Version: true
+  DistroKind: debian
+
+- Name: Alpine WSL
+  Registration: Alpine
+  Logo: alpine.png
+  HasArm64Version: false
+  DistroKind: alpine
+
+- Name: Ubuntu
+  Registration: Ubuntu
+  Logo: ubuntu3.png
+  HasArm64Version: true
+  DistroKind: ubuntu
+  WtProfileGuid: "{51855cb2-8cce-5362-8f54-464b92b32386}"
+    
+- Name: Ubuntu on Windows Community Preview
+  Registration: Ubuntu-CommPrev
+  Logo: ubuntu1.png
+  HasArm64Version: true
+  DistroKind: ubuntu
+
+- Name: Ubuntu (Preview)
+  Registration: Ubuntu-Preview
+  Logo: ubuntu7.png
+  HasArm64Version: true
+  DistroKind: ubuntu
+  WtProfileGuid: "{8c701c6d-1341-546d-84ae-1a1fb3a809ed}"
+
+- Name: Ubuntu 24.04 LTS
+  Registration: Ubuntu-24.04
+  Logo: ubuntu24.png
+  HasArm64Version: true
+  DistroKind: ubuntu
+  WtProfileGuid: "{acbafd15-cbbb-5bb3-8a61-bed446ff4b83}"
+
+- Name: Ubuntu 22.04 LTS
+  Registration: Ubuntu-22.04
+  Logo: ubuntu4.png
+  HasArm64Version: true
+  DistroKind: ubuntu
+  WtProfileGuid: "{e5a83caa-4c73-52b3-ae6b-bc438d721ef9}"
+  
+- Name: Ubuntu 20.04 LTS
+  Registration: Ubuntu-20.04
+  Logo: ubuntu5.png
+  HasArm64Version: true
+  DistroKind: ubuntu
+  WtProfileGuid: "{4dd1e689-b517-5f39-947d-78e8a8bdf958}"
+  
+- Name: Ubuntu 18.04 LTS
+  Registration: Ubuntu-18.04
+  Logo: ubuntu6.png
+  HasArm64Version: true
+  DistroKind: ubuntu
+  WtProfileGuid: "{24a0533e-913b-5f8c-a5cb-6be85a4c9e70}"
+
+- Name: Ubuntu 16.04 LTS
+  Registration: Ubuntu-16.04
+  Logo: ubuntu2.png
+  HasArm64Version: true
+  DistroKind: ubuntu
+
+- Name: Kali Linux
+  Registration: kali-linux
+  Logo: kalilinux.png
+  HasArm64Version: true
+  DistroKind: kalilinux
+  
+- Name: openSUSE Leap 15-1
+  Registration: openSUSE-Leap-15-1
+  Logo: opensuse.png
+  HasArm64Version: false
+  DistroKind: opensuse
+
+- Name: openSUSE Leap 15.2
+  Registration: openSUSE-Leap-15.2
+  Logo: opensuse.png
+  HasArm64Version: false
+  DistroKind: opensuse
+
+- Name: openSUSE Leap 15.3
+  Registration: openSUSE-Leap-15.3
+  Logo: opensuse.png
+  HasArm64Version: false
+  DistroKind: opensuse
+
+- Name: openSUSE Leap 15.4
+  Registration: openSUSE-Leap-15.4
+  Logo: opensuse.png
+  HasArm64Version: false
+  DistroKind: opensuse
+
+- Name: openSUSE Leap 15.5
+  Registration: openSUSE-Leap-15.5
+  Logo: opensuse.png
+  HasArm64Version: false
+  DistroKind: opensuse
+
+- Name: openSUSE Tumbleweed
+  Registration: openSUSE-Tumbleweed
+  Logo: opensuse.png
+  HasArm64Version: false
+  DistroKind: opensuse
+
+- Name: Oracle Linux 7.9
+  Registration: OracleLinux_7_9
+  Logo: oracle.png
+  HasArm64Version: false
+  DistroKind: oracle
+
+- Name: Oracle Linux 8.5
+  Registration: OracleLinux_8_5
+  Logo: oracle.png
+  HasArm64Version: false
+  DistroKind: oracle
+
+- Name: Oracle Linux 8.6
+  Registration: OracleLinux_8_6
+  Logo: oracle.png
+  HasArm64Version: false
+  DistroKind: oracle
+
+- Name: Oracle Linux 8.7
+  Registration: OracleLinux_8_7
+  Logo: oracle.png
+  HasArm64Version: false
+  DistroKind: oracle
+
+- Name: Oracle Linux 8.8
+  Registration: OracleLinux_8_8
+  Logo: oracle.png
+  HasArm64Version: false
+  DistroKind: oracle
+
+- Name: Oracle Linux 9.1
+  Registration: OracleLinux_9_1
+  Logo: oracle.png
+  HasArm64Version: false
+  DistroKind: oracle
+
+- Name: Oracle Linux 9.2
+  Registration: OracleLinux_9_2
+  Logo: oracle.png
+  HasArm64Version: false
+  DistroKind: oracle
+
+- Name: Oracle Linux 9.3
+  Registration: OracleLinux_9_3
+  Logo: oracle.png
+  HasArm64Version: false
+  DistroKind: oracle
+
+- Name: AlmaLinux 8 WSL
+  Registration: AlmaLinux-8
+  Logo: almalinux.png
+  HasArm64Version: true
+  DistroKind: almalinux
+
+- Name: AlmaLinux 9
+  Registration: AlmaLinux9
+  Logo: almalinux.png
+  HasArm64Version: true
+  DistroKind: almalinux
+
+- Name: SLES 15
+  Registration: SLES-15
+  Logo: sles.png
+  HasArm64Version: false
+  DistroKind: sles
+
+- Name: SLES 15 SP1
+  Registration: SLES-15-SP1
+  Logo: sles.png
+  HasArm64Version: false
+  DistroKind: sles
+
+- Name: SLES 15 SP2
+  Registration: SUSE-Linux-Enterprise-Server-15-SP2
+  Logo: sles.png
+  HasArm64Version: false
+  DistroKind: sles
+
+- Name: SLES 15 SP3
+  Registration: SUSE-Linux-Enterprise-Server-15-SP3
+  Logo: sles.png
+  HasArm64Version: false
+  DistroKind: sles
+
+- Name: SLES 15 SP4
+  Registration: SUSE-Linux-Enterprise-Server-15-SP4
+  Logo: sles.png
+  HasArm64Version: false
+  DistroKind: sles
+
+- Name: SLES 15 SP5
+  Registration: SUSE-Linux-Enterprise-15-SP5
+  Logo: sles.png
+  HasArm64Version: false
+  DistroKind: sles
+
+- Name: SLES 12
+  Registration: SLES-12
+  Logo: sles.png
+  HasArm64Version: false
+  DistroKind: sles
+
+- Name: SLES 12 SP5
+  Registration: SUSE-Linux-Enterprise-Server-12-SP5
+  Logo: sles.png
+  HasArm64Version: false
+  DistroKind: sles
+

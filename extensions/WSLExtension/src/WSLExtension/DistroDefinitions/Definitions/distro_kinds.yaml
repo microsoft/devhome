@@ -1,0 +1,95 @@
+﻿---
+- Name: pengwin
+  Logo: pengwin.png
+  RealName: Pengwin
+  
+- Name: pengwinenterprise
+  Logo: pengwinenterprise.png
+  RealName: Scientific Linux
+
+- Name: fedoraremix
+  Logo: fedoraremix.png
+  RealName: Fedora Remix for WSL
+  
+- Name: fedora
+  Logo: fedora.png
+  RealName: Fedora Linux
+  
+- Name: debian
+  Logo: debian.png
+  RealName: Debian GNU/Linux
+  
+- Name: alpine
+  Logo: alpine.png
+  RealName: Alpine Linux
+  
+- Name: ubuntu
+  Logo: ubuntu3.png
+  RealName: Ubuntu
+
+- Name: neon
+  Logo: neon.png
+  RealName: KDE neon
+  
+- Name: kalilinux
+  Logo: kalilinux.png
+  RealName: Kali GNU/Linux
+
+- Name: mariner
+  Logo: linux.png
+  RealName: Common Base Linux Mariner
+
+- Name: opensuse
+  Logo: opensuse.png
+  RealName: openSUSE Leap
+
+- Name: opensuse-tumbleweed
+  Logo: opensuse.png
+  RealName: openSUSE Tumbleweed
+  
+- Name: sles
+  Logo: sles.png
+  RealName: SLES
+  
+- Name: clearlinux
+  Logo: clearlinux.png
+  RealName: Clear Linux OS
+
+- Name: oracle
+  Logo: oracle.png
+  RealName: Oracle Linux Server
+
+- Name: almalinux
+  Logo: almalinux.png
+  RealName: AlmaLinux
+
+- Name: rhel
+  Logo: rhel.png
+  RealName: Red Hat Enterprise Linux
+
+- Name: rhel-server
+  Logo: rhel.png
+  RealName: Red Hat Enterprise Linux Server
+
+- Name: archlinux
+  Logo: linux.png
+  RealName: Arch Linux
+  
+- Name: gentoo
+  Logo: linux.png
+  RealName: Gentoo
+
+- Name: like-fedora
+  Logo: fedora.png
+  RealName: Like:Fedora
+  IdLike: 
+    - rhel
+    - centos
+    - fedora
+  
+- Name: like-debian
+  Logo: debian.png
+  RealName: Like:Debian
+  IdLike: 
+    - ubuntu
+    - debian
