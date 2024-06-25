@@ -1026,7 +1026,7 @@
     <comment>A text label for the Clipboard Monitor button</comment>
   </data>
   <data name="Insights.ToolTipService.ToolTip" xml:space="preserve">
-    <value>See insights that PI has gained</value>
+    <value>See insights that Project Ironsides has gained</value>
     <comment>Tooltip that tells users what the Insights button will do</comment>
   </data>
   <data name="InsightsLabel.Text" xml:space="preserve">

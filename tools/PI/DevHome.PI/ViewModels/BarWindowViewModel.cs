@@ -112,7 +112,7 @@ public partial class BarWindowViewModel : ObservableObject
 
         // Show either the process chooser, or the app bar. Not both
         IsProcessChooserVisible = process is null;
-        IsAppBarVisible = process is not null;
+        IsAppBarVisible = !IsProcessChooserVisible;
         if (process != null)
         {
             ApplicationName = process.ProcessName;

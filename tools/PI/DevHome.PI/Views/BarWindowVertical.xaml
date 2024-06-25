@@ -102,11 +102,6 @@
 
             <controls:PISeparator Orientation="Horizontal"/>
 
-            <Button Command="{x:Bind _viewModel.LaunchInsightsCommand}">
-                <TextBlock x:Uid="Insights" Text="&#xea80;" FontFamily="Segoe MDL2 Assets" FontSize="{StaticResource SubtitleTextBlockFontSize}" />
-            </Button>
-            <controls:PISeparator />
-
             <!-- Per System controls -->
             <controls:ExternalToolsManagementButton
                 x:Name="ManageExternalToolsButton"
@@ -139,10 +134,6 @@
                     </Button>
                 </DataTemplate>
             </ItemsRepeater>
-            <controls:PISeparator Orientation="Horizontal" Visibility="{x:Bind _viewModel.ExternalToolSeparatorVisibility, Mode=OneWay}"/>
-            <Button>
-                <TextBlock x:Uid="ClipboardMonitor" Text="&#xf0e3;" FontFamily="Segoe MDL2 Assets" FontSize="{StaticResource SubtitleTextBlockFontSize}" />
-            </Button>
         </StackPanel>
 
         <StackPanel x:Name="SystemResourceStackPanel" Orientation="Vertical" Grid.Row="1" Margin="0,0,0,5">

@@ -139,11 +139,11 @@
                         <Setter Property="Background" Value="Transparent"/>
                     </Style>
                 </Grid.Resources>
-                <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="10">
-                <TextBlock x:Uid="ExpandedViewTargetAppPidTextBox" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}" Text="{x:Bind viewModel.ApplicationPid, Mode=OneWay}"/>
-                <TextBlock x:Uid="ExpandedViewAppCpuPerf" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}" Text="{x:Bind viewModel.CpuUsage, Mode=OneWay}"/>
-                <TextBlock x:Uid="ExpandedViewAppMemoryPerf" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}" Text="{x:Bind viewModel.RamUsage, Mode=OneWay}"/>
-                <TextBlock x:Uid="ExpandedViewAppDiskPerf" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}" Text="{x:Bind viewModel.DiskUsage, Mode=OneWay}"/>
+                <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="10" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}">
+                    <TextBlock x:Uid="ExpandedViewTargetAppPidTextBox"  Text="{x:Bind viewModel.ApplicationPid, Mode=OneWay}"/>
+                    <TextBlock x:Uid="ExpandedViewAppCpuPerf" Text="{x:Bind viewModel.CpuUsage, Mode=OneWay}"/>
+                    <TextBlock x:Uid="ExpandedViewAppMemoryPerf" Text="{x:Bind viewModel.RamUsage, Mode=OneWay}"/>
+                    <TextBlock x:Uid="ExpandedViewAppDiskPerf" Text="{x:Bind viewModel.DiskUsage, Mode=OneWay}"/>
                 </StackPanel>
 
                 <Button HorizontalAlignment="Right" Grid.Column="1" Click="SettingsButton_Click">
