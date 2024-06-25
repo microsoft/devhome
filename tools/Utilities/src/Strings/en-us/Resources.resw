@@ -131,10 +131,13 @@
     <value>Hosts File Editor</value>
     <comment>;Locked={"Hosts"}</comment>
   </data>
-  <data name="LaunchButton.Text" xml:space="preserve">
+  <data name="LearnMoreHyperlinkButton.Content" xml:space="preserve">
+    <value>Learn more</value>
+  </data>
+  <data name="LaunchButton.Content" xml:space="preserve">
     <value>Launch</value>
   </data>
-  <data name="LaunchButtonBase.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+  <data name="LaunchButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Launch</value>
   </data>
   <data name="NavigationPane.Content" xml:space="preserve">
