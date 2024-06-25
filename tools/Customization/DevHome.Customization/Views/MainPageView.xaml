@@ -25,19 +25,39 @@
                 IsClickEnabled="True"
                 Margin="{ThemeResource SettingsCardMargin}"/>
 
-        <!--  Dev Drive Insights  -->
-        <controls:SettingsCard
-            x:Uid="DevDriveInsightsCard"
-            AutomationProperties.AccessibilityView="Control"
-            AutomationProperties.AutomationId="NavigateDevDriveInsightsCardButton"
-            Command="{x:Bind ViewModel.NavigateToDevDriveInsightsPageCommand}"
-            Visibility="{Binding AnyDevDrivesPresent, Converter={StaticResource BoolToVisibilityConverter}}"
-            IsClickEnabled="True"
-            Margin="{ThemeResource SettingsCardMargin}">
-            <controls:SettingsCard.HeaderIcon>
-                <FontIcon Glyph="&#xE3AF;" FontFamily="{ThemeResource AmcFluentIcons}"/>
-            </controls:SettingsCard.HeaderIcon>
-        </controls:SettingsCard>
+            <!--  Virtualization Feature Management  -->
+            <controls:SettingsCard
+                x:Uid="VirtualizationFeatureManagementCard"
+                AutomationProperties.AccessibilityView="Control"
+                AutomationProperties.AutomationId="NavigateVirtualizationFeatureManagementCardButton"
+                Command="{x:Bind ViewModel.NavigateToVirtualizationFeatureManagementPageCommand}"
+                HeaderIcon="{ui:FontIcon Glyph=&#xE83B;}"
+                IsClickEnabled="True"
+                Margin="{ThemeResource SettingsCardMargin}"/>
+
+            <!-- General System -->
+            <controls:SettingsCard
+                x:Uid="GeneralSystemCard"
+                AutomationProperties.AccessibilityView="Control"
+                AutomationProperties.AutomationId="NavigateGeneralSystemCardButton"
+                Command="{x:Bind ViewModel.NavigateToGeneralSystemPageCommand}"
+                HeaderIcon="{ui:FontIcon Glyph=&#xF156;}"
+                IsClickEnabled="True"
+                Margin="{ThemeResource SettingsCardMargin}"/>
+
+            <!--  Dev Drive Insights  -->
+            <controls:SettingsCard
+                x:Uid="DevDriveInsightsCard"
+                AutomationProperties.AccessibilityView="Control"
+                AutomationProperties.AutomationId="NavigateDevDriveInsightsCardButton"
+                Command="{x:Bind ViewModel.NavigateToDevDriveInsightsPageCommand}"
+                Visibility="{Binding AnyDevDrivesPresent, Converter={StaticResource BoolToVisibilityConverter}}"
+                IsClickEnabled="True"
+                Margin="{ThemeResource SettingsCardMargin}">
+                <controls:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xE3AF;" FontFamily="{ThemeResource AmcFluentIcons}"/>
+                </controls:SettingsCard.HeaderIcon>
+            </controls:SettingsCard>
 
             <!--  Quiet Background Processes  -->
             <quietviews:QuietBackgroundProcessesView />
@@ -54,7 +74,7 @@
                 AutomationProperties.AutomationId="LaunchWindowsDeveloperSettingsButton"
                 Command="{x:Bind ViewModel.LaunchWindowsDeveloperSettingsCommand}"
                 HeaderIcon="{ui:FontIcon Glyph=&#xEC7A;}"
-                IsClickEnabled="True" 
+                IsClickEnabled="True"
                 Margin="{ThemeResource SettingsCardMargin}"/>
         </StackPanel>
     </StackPanel>
