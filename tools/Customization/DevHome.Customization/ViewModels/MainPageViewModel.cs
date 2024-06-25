@@ -18,7 +18,7 @@ namespace DevHome.Customization.ViewModels;
 
 public partial class MainPageViewModel : ObservableObject
 {
-    private INavigationService NavigationService { get; }
+    private readonly INavigationService _navigationService;
 
     private readonly DispatcherQueue _dispatcherQueue;
 
@@ -31,7 +31,7 @@ public partial class MainPageViewModel : ObservableObject
         INavigationService navigationService,
         DispatcherQueue dispatcherQueue)
     {
-        NavigationService = navigationService;
+        _navigationService = navigationService;
         _dispatcherQueue = dispatcherQueue;
 
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
@@ -62,13 +62,13 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand]
     private void NavigateToFileExplorerPage()
     {
-        NavigationService.NavigateTo(typeof(FileExplorerViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(FileExplorerViewModel).FullName!);
     }
 
     [RelayCommand]
     private void NavigateToDevDriveInsightsPage()
     {
-        NavigationService.NavigateTo(typeof(DevDriveInsightsViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(DevDriveInsightsViewModel).FullName!);
     }
 
     [RelayCommand]
