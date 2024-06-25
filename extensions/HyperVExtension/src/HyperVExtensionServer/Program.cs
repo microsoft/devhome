@@ -111,7 +111,7 @@ public sealed class Program
         // If you want to instantiate a new instance each time the host asks, create the new instance inside the delegate.
         extensionServer.RegisterExtension(() => hyperVExtension, true);
 
-        // This will make the main thread wait until the event is signalled by the extension class.
+        // This will make the main thread wait until the event is signaled by the extension class.
         // Since we have single instance of the extension object, we exit as soon as it is disposed.
         hyperVExtension.ExtensionDisposedEvent.WaitOne();
         Log.Information($"Extension is disposed.");
