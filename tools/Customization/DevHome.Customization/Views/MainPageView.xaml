@@ -8,9 +8,6 @@
     xmlns:views="using:DevHome.Customization.Views"
     xmlns:quietviews="using:DevHome.QuietBackgroundProcesses.UI.Views"
     Loaded="UserControl_Loaded">
-    <UserControl.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-    </UserControl.Resources>
 
     <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
         <!--  Primary settings group (untitled)  -->
@@ -51,7 +48,7 @@
                 AutomationProperties.AccessibilityView="Control"
                 AutomationProperties.AutomationId="NavigateDevDriveInsightsCardButton"
                 Command="{x:Bind ViewModel.NavigateToDevDriveInsightsPageCommand}"
-                Visibility="{Binding AnyDevDrivesPresent, Converter={StaticResource BoolToVisibilityConverter}}"
+                Visibility="{x:Bind ViewModel.AnyDevDrivesPresent, Mode=OneWay}"
                 IsClickEnabled="True"
                 Margin="{ThemeResource SettingsCardMargin}">
                 <controls:SettingsCard.HeaderIcon>
