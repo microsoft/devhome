@@ -13,7 +13,6 @@
     <AnalysisMode>Recommended</AnalysisMode>
     <PlatformTarget>$(Platform)</PlatformTarget>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-    <DisableXbfLineInfo>False</DisableXbfLineInfo>
   </PropertyGroup>
 
 <!--
@@ -40,5 +39,9 @@
     <Compile Condition="$(MSBuildProjectName) == 'DevHomeStub'" Include="$(MSBuildThisFileDirectory)\codeAnalysis\StubSuppressions.cs" Link="GlobalSuppressions.cs" />
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)\codeAnalysis\StyleCop.json" Link="StyleCop.json" />
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
+    <DisableXbfLineInfo>False</DisableXbfLineInfo>
+  </PropertyGroup>
 
 </Project>
