@@ -75,12 +75,12 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand]
     private void NavigateToVirtualizationFeatureManagementPage()
     {
-        NavigationService.NavigateTo(typeof(VirtualizationFeatureManagementViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(VirtualizationFeatureManagementViewModel).FullName!);
     }
 
     [RelayCommand]
     private void NavigateToGeneralSystemPage()
     {
-        NavigationService.NavigateTo(typeof(GeneralSystemViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(GeneralSystemViewModel).FullName!);
     }
 }
