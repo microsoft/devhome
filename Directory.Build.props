@@ -13,6 +13,7 @@
     <AnalysisMode>Recommended</AnalysisMode>
     <PlatformTarget>$(Platform)</PlatformTarget>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    <DisableXbfLineInfo>False</DisableXbfLineInfo>
   </PropertyGroup>
 
 <!--
