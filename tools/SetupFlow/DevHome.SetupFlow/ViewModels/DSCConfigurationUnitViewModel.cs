@@ -2,15 +2,15 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using DevHome.SetupFlow.Models;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public class DSCConfigurationUnitViewModel
 {
-    private readonly DSCConfigurationUnit _configurationUnit;
+    private readonly IDSCUnit _configurationUnit;
 
-    public DSCConfigurationUnitViewModel(DSCConfigurationUnit configurationUnit)
+    public DSCConfigurationUnitViewModel(IDSCUnit configurationUnit)
     {
         _configurationUnit = configurationUnit;
     }
@@ -31,33 +31,33 @@ public class DSCConfigurationUnitViewModel
 
     public IList<KeyValuePair<string, string>> Metadata => _configurationUnit.Metadata;
 
-    public string UnitType => _configurationUnit.UnitType;
+    public string UnitType => _configurationUnit.Details.UnitType;
 
-    public string UnitDescription => _configurationUnit.UnitDescription;
+    public string UnitDescription => _configurationUnit.Details.UnitDescription;
 
-    public string UnitDocumentationUri => _configurationUnit.UnitDocumentationUri;
+    public string UnitDocumentationUri => _configurationUnit.Details.UnitDocumentationUri;
 
-    public string ModuleName => _configurationUnit.ModuleName;
+    public string ModuleName => _configurationUnit.Details.ModuleName;
 
-    public string ModuleType => _configurationUnit.ModuleType;
+    public string ModuleType => _configurationUnit.Details.ModuleType;
 
-    public string ModuleSource => _configurationUnit.ModuleSource;
+    public string ModuleSource => _configurationUnit.Details.ModuleSource;
 
-    public string ModuleDescription => _configurationUnit.ModuleDescription;
+    public string ModuleDescription => _configurationUnit.Details.ModuleDescription;
 
-    public string ModuleDocumentationUri => _configurationUnit.ModuleDocumentationUri;
+    public string ModuleDocumentationUri => _configurationUnit.Details.ModuleDocumentationUri;
 
-    public string PublishedModuleUri => _configurationUnit.PublishedModuleUri;
+    public string PublishedModuleUri => _configurationUnit.Details.PublishedModuleUri;
 
-    public string Version => _configurationUnit.Version;
+    public string Version => _configurationUnit.Details.Version;
 
-    public bool IsLocal => _configurationUnit.IsLocal;
+    public bool IsLocal => _configurationUnit.Details.IsLocal;
 
-    public string Author => _configurationUnit.Author;
+    public string Author => _configurationUnit.Details.Author;
 
-    public string Publisher => _configurationUnit.Publisher;
+    public string Publisher => _configurationUnit.Details.Publisher;
 
-    public bool IsPublic => _configurationUnit.IsPublic;
+    public bool IsPublic => _configurationUnit.Details.IsPublic;
 
     private string GetTitle()
     {

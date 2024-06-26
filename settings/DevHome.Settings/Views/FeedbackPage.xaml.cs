@@ -11,6 +11,7 @@ using System.Web;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
+using DevHome.Services.Core.Contracts;
 using DevHome.Settings.ViewModels;
 using Microsoft.Management.Infrastructure;
 using Microsoft.UI.Xaml;
@@ -248,7 +249,7 @@ public sealed partial class FeedbackPage : DevHomePage
 
         MEMORYSTATUSEX memStatus = default;
         memStatus.dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX));
-        PInvoke.GlobalMemoryStatusEx(out memStatus);
+        PInvoke.GlobalMemoryStatusEx(ref memStatus);
 
         var availMemKbToGb = Math.Round(memStatus.ullAvailPhys / ByteSizeGB, 2);
         var totalMemKbToGb = Math.Round(memStatus.ullTotalPhys / ByteSizeGB, 2);
