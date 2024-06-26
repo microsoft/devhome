@@ -134,44 +134,6 @@ public class ProcessCaller : IProcessCaller
         }
     }
 
-    public string CallElevatedProcess(string command, string arguments, Encoding outputEncoding, string? workingDirectory = null)
-    {
-        var process = new Process
-        {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = command,
-                Arguments = arguments,
-                UseShellExecute = true,
-                RedirectStandardOutput = false,
-                RedirectStandardError = false,
-                CreateNoWindow = true,
-                Verb = "runas",
-            },
-        };
-
-        if (workingDirectory != null)
-        {
-            process.StartInfo.WorkingDirectory = workingDirectory;
-        }
-
-        try
-        {
-            StartProcess(process);
-
-            return string.Empty;
-        }
-        finally
-        {
-            process.Dispose();
-        }
-    }
-
-    public string RunCmdInDistro(string distroRegistration, string command, bool root)
-    {
-        return RunCmdInDistro(distroRegistration, command, out _, root);
-    }
-
     public string RunCmdInDistro(string distroRegistration, string command, out int exitCode, bool root, string? stdIn = null)
     {
         var userRoot = root ? " --user root " : string.Empty;

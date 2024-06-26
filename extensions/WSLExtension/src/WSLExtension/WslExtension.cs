@@ -10,7 +10,7 @@ using WSLExtension.Common.Extensions;
 namespace WSLExtension;
 
 [ComVisible(true)]
-[Guid("23C9CD5B-BC49-46F6-8C8E-9DE3214C5927")]
+[Guid("121253AB-BA5D-4E73-99CF-25A2CB8BF173")]
 [ComDefaultInterface(typeof(IExtension))]
 public sealed class WslExtension : IExtension, IDisposable
 {

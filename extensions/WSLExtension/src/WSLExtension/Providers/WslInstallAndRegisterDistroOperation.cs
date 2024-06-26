@@ -30,7 +30,7 @@ public class WslInstallAndRegisterDistroOperation : ICreateComputeSystemOperatio
             var registration = _distro.Registration;
             if (!_wslManager.IsWslEnabled)
             {
-                await _wslManager.InstallWsl(registration);
+                await _wslManager.InstallWslDistribution(registration);
                 Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs("Installed", 100));
 
                 var d = _wslManager.Definitions
@@ -58,7 +58,7 @@ public class WslInstallAndRegisterDistroOperation : ICreateComputeSystemOperatio
                 });
             }
 
-            _wslManager.InstallWslDistribution(registration);
+            _wslManager.InstallWslDistributionDistribution(registration);
 
             WslRegisteredDistro? foundDistro;
             while ((foundDistro = InstalledDistroRunning(registration)) == default)
@@ -73,7 +73,7 @@ public class WslInstallAndRegisterDistroOperation : ICreateComputeSystemOperatio
     }
 
     private WslRegisteredDistro? InstalledDistroRunning(string registration)
-        => _wslManager.GetAllRegisteredDistros().FirstOrDefault(d => d.Id == registration && d.Running.HasValue && d.Running.Value);
+        => _wslManager.GetAllRegisteredDistributions().FirstOrDefault(d => d.Id == registration && d.Running.HasValue && d.Running.Value);
 
 #pragma warning disable CS0067 // The event 'WslInstallAndRegisterDistroOperation.ActionRequired' is never used
     public event TypedEventHandler<ICreateComputeSystemOperation, CreateComputeSystemActionRequiredEventArgs>? ActionRequired;

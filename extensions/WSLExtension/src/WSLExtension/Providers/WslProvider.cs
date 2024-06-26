@@ -35,7 +35,7 @@ public class WslProvider : IComputeSystemProvider
 
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForDeveloperId(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
     {
-        var task = _wslManager.GetOnlineAvailableDistros();
+        var task = _wslManager.GetOnlineAvailableDistributions();
         task.Wait();
 
         var distroList = task.Result;
@@ -53,7 +53,7 @@ public class WslProvider : IComputeSystemProvider
             var deserializedObject = JsonSerializer.Deserialize(inputJson, typeof(WslInstallationUserInput));
             var wslInstallationUserInput = deserializedObject as WslInstallationUserInput ?? throw new InvalidOperationException($"Json deserialization failed for input Json: {inputJson}");
 
-            var task = _wslManager.GetOnlineAvailableDistros();
+            var task = _wslManager.GetOnlineAvailableDistributions();
             task.Wait();
 
             var distroList = task.Result;
@@ -87,7 +87,7 @@ public class WslProvider : IComputeSystemProvider
         {
             try
             {
-                var computeSystems = _wslManager.GetAllRegisteredDistros();
+                var computeSystems = _wslManager.GetAllRegisteredDistributions();
 
                 _log.Information($"Successfully retrieved all wsl distros on: {DateTime.Now}");
                 return new ComputeSystemsResult(computeSystems);

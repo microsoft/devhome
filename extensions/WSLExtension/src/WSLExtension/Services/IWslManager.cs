@@ -13,9 +13,9 @@ namespace WSLExtension.Services;
 
 public interface IWslManager
 {
-    /// <summary> Gets a list of Hyper-V virtual machines.</summary>
-    /// <returns> A list of virtual machines.</returns>
-    public IEnumerable<WslRegisteredDistro> GetAllRegisteredDistros();
+    /// <summary> Gets a list of all registered WSL distributions on the machine.</summary>
+    /// <returns> A list of registered WSL distributions.</returns>
+    public IEnumerable<WslRegisteredDistro> GetAllRegisteredDistributions();
 
     void Run(string registration, string? wtProfileGuid);
 
@@ -23,11 +23,11 @@ public interface IWslManager
 
     void Unregister(string registration);
 
-    Task<List<Distro>> GetOnlineAvailableDistros();
+    Task<List<Distro>> GetOnlineAvailableDistributions();
 
-    Task<int> InstallWsl(string registration);
+    Task<int> InstallWslDistribution(string registration);
 
-    void InstallWslDistribution(string registration);
+    void InstallWslDistributionDistribution(string registration);
 
     bool IsWslEnabled { get; }
 

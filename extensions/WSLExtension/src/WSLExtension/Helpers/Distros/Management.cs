@@ -26,7 +26,7 @@ public class Management
         }
     }
 
-    public static async Task<int> InstallWsl(IProcessCaller processCaller, string distroRegistration)
+    public static async Task<int> InstallWslDistribution(IProcessCaller processCaller, string distroRegistration)
     {
         var exitCode = await processCaller.CallInteractiveProcess(
             "wsl",

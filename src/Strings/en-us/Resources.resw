@@ -310,4 +310,12 @@
     <value>Hyper-V Extension</value>
     <comment>{Locked="Hyper-V"} Extension Display Name</comment>
   </data>
+  <data name="AppDisplayNameWslExt" xml:space="preserve">
+    <value>Windows Subsystem for Linux Extension</value>
+    <comment>{Locked="Windows Subsystem for Linux"} Extension Display Name</comment>
+  </data>
+  <data name="AppDescriptionWslExt" xml:space="preserve">
+    <value>Windows Subsystem for Linux</value>
+    <comment>{Locked="Windows Subsystem for Linux"} Extension Description</comment>
+  </data>
 </root>

@@ -11,18 +11,13 @@ using Windows.ApplicationModel.Activation;
 using Windows.Storage;
 using WSLExtension.Common.Extensions;
 using WSLExtension.Extensions;
-using WSLExtension.Helpers;
 using WSLExtension.Services;
 
 namespace WSLExtension;
 
 public sealed class Program
 {
-    public static IHost? Host
-    {
-        get;
-        set;
-    }
+    public static IHost? Host { get; set; }
 
     [MTAThread]
     public static void Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
@@ -80,17 +75,6 @@ public sealed class Program
                 HandleCOMServerActivation();
             }
         }
-
-        // Handle Protocol.
-        if (activationArgs.Kind == ExtendedActivationKind.Protocol)
-        {
-            var protocolActivatedEventArgs = activationArgs.Data as IProtocolActivatedEventArgs;
-            if (protocolActivatedEventArgs is not null)
-            {
-                Log.Information($"Protocol Activation redirected from: {protocolActivatedEventArgs.Uri}");
-                HandleProtocolActivation(protocolActivatedEventArgs.Uri);
-            }
-        }
     }
 
     /// <summary>
@@ -134,10 +118,5 @@ public sealed class Program
         // Since we have single instance of the extension object, we exit as soon as it is disposed.
         wslExtension.ExtensionDisposedEvent.WaitOne();
         Log.Information("Extension is disposed.");
-    }
-
-    private static void HandleProtocolActivation(Uri protocolUri)
-    {
-        // TODO: Handle protocol activation if need be.
     }
 }

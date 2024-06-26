@@ -41,7 +41,7 @@ public class WslManager : IWslManager
 
     public List<Distro> Definitions => _distroDefinitions.ToList();
 
-    public IEnumerable<WslRegisteredDistro> GetAllRegisteredDistros()
+    public IEnumerable<WslRegisteredDistro> GetAllRegisteredDistributions()
     {
         var distros = DistroDefinitionsManager.Merge(
             _distroDefinitions.ToList(),
@@ -60,7 +60,7 @@ public class WslManager : IWslManager
         });
     }
 
-    public async Task<List<Distro>> GetOnlineAvailableDistros()
+    public async Task<List<Distro>> GetOnlineAvailableDistributions()
     {
         var distros = await GetAvailableDistros.Execute(_processCaller);
         var registeredDistros = GetInstalledDistros.Execute(_processCaller);
@@ -107,12 +107,12 @@ public class WslManager : IWslManager
         Management.Unregister(registration, _processCaller);
     }
 
-    public async Task<int> InstallWsl(string registration)
+    public async Task<int> InstallWslDistribution(string registration)
     {
-        return await Management.InstallWsl(_processCaller, registration);
+        return await Management.InstallWslDistribution(_processCaller, registration);
     }
 
-    public void InstallWslDistribution(string registration)
+    public void InstallWslDistributionDistribution(string registration)
     {
         Management.InstallDistro(_processCaller, registration);
     }
