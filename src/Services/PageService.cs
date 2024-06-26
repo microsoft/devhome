@@ -42,11 +42,13 @@ public class PageService : IPageService
             }
         }
 
+        // Configure nested pages from tools
+        this.ConfigureCustomizationPages();
+
         // Configure footer pages
         Configure<WhatsNewViewModel, WhatsNewPage>();
         this.ConfigureExtensionLibraryPages();
         this.ConfigureSettingsPages();
-        this.ConfigureCustomizationPages();
 
         // Configure Experimental Feature pages
         ExperimentalFeature.LocalSettingsService = localSettingsService;

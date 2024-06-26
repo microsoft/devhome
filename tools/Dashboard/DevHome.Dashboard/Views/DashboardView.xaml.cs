@@ -9,11 +9,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Common.Views;
 using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
@@ -34,8 +34,6 @@ namespace DevHome.Dashboard.Views;
 public partial class DashboardView : ToolPage, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DashboardView));
-
-    public override string ShortName => "Dashboard";
 
     public DashboardViewModel ViewModel { get; }
 
