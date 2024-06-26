@@ -58,8 +58,7 @@
         VerticalScrollBarVisibility="Auto"
         VerticalScrollMode="Enabled">
         <communityControls:UniformGrid
-            MinWidth="600"
-            MaxWidth="{ThemeResource MaxPageContentWidth}"
+            x:Name="ParentUniformGrid"
             Margin="{ThemeResource ContentPageMargin}"
             ColumnSpacing="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay, Converter={StaticResource ConfigurationFileFlowColumnSpacing}}">
             <Grid.RowDefinitions>
