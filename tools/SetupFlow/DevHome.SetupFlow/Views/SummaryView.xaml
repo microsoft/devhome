@@ -57,6 +57,11 @@
         HorizontalAlignment="Stretch"
         VerticalScrollBarVisibility="Auto"
         VerticalScrollMode="Enabled">
+        <!--  Setting min width here prevents text clipping with "Next Steps"  -->
+        <!--
+            I tried putting minWidth on the "Left Side" stack panel.  WHile it did keep the MinWidth
+            It did clip when the window become too small.
+        -->
         <communityControls:UniformGrid
             x:Name="ParentUniformGrid"
             Margin="{ThemeResource ContentPageMargin}"
@@ -65,6 +70,10 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay, Converter={StaticResource ConfigurationFlowLeftColumnWidth}}" />
+                <ColumnDefinition Width="{x:Bind ViewModel.ShowConfigurationFileResults, Mode=OneWay, Converter={StaticResource ConfigurationFlowRightColumnWidth}}" />
+            </Grid.ColumnDefinitions>
             <StackPanel
                 x:Name="SummaryHeader"
                 Grid.Row="0"

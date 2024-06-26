@@ -15,17 +15,15 @@ public sealed partial class SummaryView : UserControl
 {
     private readonly UISettings _uiSettings = new();
 
-    private double _textScale = 1.0;
-
     private const double BaseWidth = 550;
 
     public SummaryView()
     {
         this.InitializeComponent();
 
-        _textScale = _uiSettings.TextScaleFactor;
+        var textScale = _uiSettings.TextScaleFactor;
         _uiSettings.TextScaleFactorChanged += HandleTextScaleFactorChanged;
-        ParentUniformGrid.MinWidth = BaseWidth * _textScale;
+        ParentUniformGrid.MinWidth = BaseWidth * textScale;
     }
 
     public SummaryViewModel ViewModel => (SummaryViewModel)this.DataContext;
@@ -34,8 +32,8 @@ public sealed partial class SummaryView : UserControl
     {
         Application.Current.GetService<DispatcherQueue>().EnqueueAsync(() =>
         {
-            _textScale = sender.TextScaleFactor;
-            ParentUniformGrid.MinWidth = BaseWidth * _textScale;
+            var textScale = sender.TextScaleFactor;
+            ParentUniformGrid.MinWidth = BaseWidth * textScale;
             InvalidateMeasure();
         });
     }
