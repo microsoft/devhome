@@ -172,7 +172,12 @@ public partial class DashboardView : ToolPage, IDisposable
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
         ViewModel.IsLoading = true;
 
-        if (ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
+        if (ViewModel.IsRunningAsAdmin())
+        {
+            _log.Error($"Dev Home is running as admin, can't show Dashboard");
+            RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
+        }
+        else if (ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
         {
             ViewModel.HasWidgetService = true;
             if (await SubscribeToWidgetCatalogEventsAsync())
