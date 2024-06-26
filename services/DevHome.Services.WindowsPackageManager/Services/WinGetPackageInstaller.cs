@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Services.Core.Extensions;
 using DevHome.Services.WindowsPackageManager.COM;
@@ -19,11 +20,13 @@ namespace DevHome.Services.WindowsPackageManager.Services;
 /// <summary>
 /// Installs a package using the Windows Package Manager (WinGet).
 /// </summary>
-internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
+internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposable
 {
     private readonly ILogger _logger;
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IWinGetPackageFinder _packageFinder;
+    private readonly SemaphoreSlim _lock = new(1, 1);
+    private bool _disposedValue;
 
     public WinGetPackageInstaller(
         ILogger<WinGetPackageInstaller> logger,
@@ -43,11 +46,13 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
             throw new CatalogNotInitializedException();
         }
 
-        // Report telemetry for attempting app install
-        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_AppSelected", Telemetry.LogLevel.Critical, new AppInstallUserEvent(packageId, catalog.Catalog.Info.Id), activityId);
-
         try
         {
+            await _lock.WaitAsync();
+
+            // Report telemetry for attempting app install
+            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_AppSelected", Telemetry.LogLevel.Critical, new AppInstallUserEvent(packageId, catalog.Catalog.Info.Id), activityId);
+
             // 1. Find package
             var package = await _packageFinder.GetPackageAsync(catalog, packageId);
             if (package == null)
@@ -82,6 +87,10 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
             // Report telemetry for failed install and rethrow
             TelemetryFactory.Get<ITelemetry>().LogError("AppInstall_InstallFailed", Telemetry.LogLevel.Critical, new AppInstallResultEvent(packageId, catalog.Catalog.Info.Id), activityId);
             throw;
+        }
+        finally
+        {
+            _lock.Release();
         }
     }
 
@@ -131,5 +140,25 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
 
         _logger.LogError($"Specified install version was not found {version}.");
         throw new InstallPackageException(InstallResultStatus.InvalidOptions, InstallPackageException.InstallErrorInvalidParameter, HRESULT.S_OK);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _lock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
