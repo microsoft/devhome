@@ -32,6 +32,8 @@ public sealed partial class PrimaryWindow : WindowEx
     {
         InitializeComponent();
         ExternalToolsHelper.Instance.Init();
+        hotKeyHelper = new(this, HandleHotKey);
+        hotKeyHelper.RegisterHotKey(HotKey, KeyModifier);
     }
 
     public void ShowBarWindow()
@@ -54,9 +56,6 @@ public sealed partial class PrimaryWindow : WindowEx
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        hotKeyHelper = new(this, HandleHotKey);
-        hotKeyHelper.RegisterHotKey(HotKey, KeyModifier);
-
         App.Log("DevHome.PI_MainWindows_Loaded", LogLevel.Measure);
     }
 
