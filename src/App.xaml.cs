@@ -15,6 +15,9 @@ using DevHome.Dashboard.Extensions;
 using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
 using DevHome.Services;
+using DevHome.Services.Core.Extensions;
+using DevHome.Services.DesiredStateConfiguration.Extensions;
+using DevHome.Services.WindowsPackageManager.Extensions;
 using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Services;
@@ -104,6 +107,11 @@ public partial class App : Application, IApp
             services.AddTransient<IActivationHandler, DSCFileActivationHandler>();
             services.AddTransient<IActivationHandler, AppInstallActivationHandler>();
 
+            // Service projects
+            services.AddCore();
+            services.AddWinGet();
+            services.AddDSC();
+
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
             services.AddSingleton<IExperimentationService, ExperimentationService>();
@@ -119,8 +127,6 @@ public partial class App : Application, IApp
             services.AddSingleton<IAppInfoService, AppInfoService>();
             services.AddSingleton<ITelemetry>(TelemetryFactory.Get<ITelemetry>());
             services.AddSingleton<IStringResource, StringResource>();
-            services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
-            services.AddSingleton<IPackageDeploymentService, PackageDeploymentService>();
             services.AddSingleton<IScreenReaderService, ScreenReaderService>();
             services.AddSingleton<IComputeSystemService, ComputeSystemService>();
             services.AddSingleton<IComputeSystemManager, ComputeSystemManager>();

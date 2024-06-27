@@ -5,9 +5,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Helpers;
-using DevHome.Common.Services;
 using DevHome.Dashboard.Helpers;
-using DevHome.Services;
+using DevHome.Services.Core.Contracts;
 using Serilog;
 
 namespace DevHome.Dashboard.Services;
@@ -17,7 +16,7 @@ public class WidgetServiceService : IWidgetServiceService
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetServiceService));
 
     private readonly IPackageDeploymentService _packageDeploymentService;
-    private readonly IAppInstallManagerService _appInstallManagerService;
+    private readonly IMicrosoftStoreService _msStoreService;
 
     private WidgetServiceStates _widgetServiceState = WidgetServiceStates.Unknown;
 
@@ -32,10 +31,10 @@ public class WidgetServiceService : IWidgetServiceService
         Unknown,
     }
 
-    public WidgetServiceService(IPackageDeploymentService packageDeploymentService, IAppInstallManagerService appInstallManagerService)
+    public WidgetServiceService(IPackageDeploymentService packageDeploymentService, IMicrosoftStoreService msStoreService)
     {
         _packageDeploymentService = packageDeploymentService;
-        _appInstallManagerService = appInstallManagerService;
+        _msStoreService = msStoreService;
     }
 
     public bool CheckForWidgetServiceAsync()
@@ -77,7 +76,7 @@ public class WidgetServiceService : IWidgetServiceService
     public async Task<bool> TryInstallingWidgetService()
     {
         _log.Information("Try installing widget service...");
-        var installedSuccessfully = await _appInstallManagerService.TryInstallPackageAsync(WidgetHelpers.WidgetServiceStorePackageId);
+        var installedSuccessfully = await _msStoreService.TryInstallPackageAsync(WidgetHelpers.WidgetServiceStorePackageId);
         _widgetServiceState = installedSuccessfully ? WidgetServiceStates.HasStoreWidgetServiceGoodVersion : WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion;
         _log.Information($"InstalledSuccessfully == {installedSuccessfully}, {_widgetServiceState}");
         return installedSuccessfully;

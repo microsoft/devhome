@@ -3,17 +3,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Common.Views;
 using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
@@ -35,15 +34,11 @@ public partial class DashboardView : ToolPage, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DashboardView));
 
-    public override string ShortName => "Dashboard";
-
     public DashboardViewModel ViewModel { get; }
 
     internal DashboardBannerViewModel BannerViewModel { get; }
 
     private readonly WidgetViewModelFactory _widgetViewModelFactory;
-
-    public static ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
 
     private readonly SemaphoreSlim _pinnedWidgetsLock = new(1, 1);
 
@@ -62,8 +57,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
         this.InitializeComponent();
 
-        PinnedWidgets = new ObservableCollection<WidgetViewModel>();
-        PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
+        ViewModel.PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
 
         _dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
         _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
@@ -121,7 +115,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private async void HandleRendererUpdated(object sender, object args)
     {
         // Re-render the widgets with the new theme and renderer.
-        foreach (var widget in PinnedWidgets)
+        foreach (var widget in ViewModel.PinnedWidgets)
         {
             await widget.RenderAsync();
         }
@@ -136,6 +130,9 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     private async Task OnUnloadedAsync()
     {
+        ViewModel.PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChangedAsync;
+        Bindings.StopTracking();
+
         Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
 
         _log.Debug($"Leaving Dashboard, deactivating widgets.");
@@ -149,6 +146,7 @@ public partial class DashboardView : ToolPage, IDisposable
             _log.Error(ex, "Exception in UnsubscribeFromWidgets:");
         }
 
+        ViewModel.PinnedWidgets.Clear();
         await UnsubscribeFromWidgetCatalogEventsAsync();
     }
 
@@ -156,7 +154,7 @@ public partial class DashboardView : ToolPage, IDisposable
     {
         try
         {
-            foreach (var widget in PinnedWidgets)
+            foreach (var widget in ViewModel.PinnedWidgets)
             {
                 widget.UnsubscribeFromWidgetUpdates();
             }
@@ -172,7 +170,12 @@ public partial class DashboardView : ToolPage, IDisposable
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
         ViewModel.IsLoading = true;
 
-        if (ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
+        if (ViewModel.IsRunningAsAdmin())
+        {
+            _log.Error($"Dev Home is running as admin, can't show Dashboard");
+            RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
+        }
+        else if (ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
         {
             ViewModel.HasWidgetService = true;
             if (await SubscribeToWidgetCatalogEventsAsync())
@@ -181,7 +184,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
                 if (isFirstDashboardRun)
                 {
-                    await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
+                    await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
                 }
 
                 await InitializePinnedWidgetListAsync(isFirstDashboardRun);
@@ -372,7 +375,7 @@ public partial class DashboardView : ToolPage, IDisposable
         // For example, if the provider for the widget at position 0 was deleted, the widget at position 1
         // should be updated to have position 0, etc.
         var updatedPlace = 0;
-        foreach (var widget in PinnedWidgets)
+        foreach (var widget in ViewModel.PinnedWidgets)
         {
             await WidgetHelpers.SetPositionCustomStateAsync(widget.Widget, updatedPlace++);
         }
@@ -443,7 +446,7 @@ public partial class DashboardView : ToolPage, IDisposable
             _log.Information($"Created default widget {unsafeWidgetId}");
 
             // Set custom state on new widget.
-            var position = PinnedWidgets.Count;
+            var position = ViewModel.PinnedWidgets.Count;
             var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
             _log.Debug($"SetCustomState: {newCustomState}");
             await comSafeWidget.SetCustomStateAsync(newCustomState);
@@ -524,7 +527,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 }
 
                 // Set custom state on new widget.
-                var position = PinnedWidgets.Count;
+                var position = ViewModel.PinnedWidgets.Count;
                 var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
                 _log.Debug($"SetCustomState: {newCustomState}");
                 await comSafeWidget.SetCustomStateAsync(newCustomState);
@@ -591,7 +594,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 {
                     try
                     {
-                        PinnedWidgets.Insert(index, wvm);
+                        ViewModel.PinnedWidgets.Insert(index, wvm);
                     }
                     catch (Exception ex)
                     {
@@ -655,7 +658,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
         var matchingWidgetsFound = 0;
 
-        foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
+        foreach (var widgetToUpdate in ViewModel.PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
         {
             // Things in the definition that we need to update to if they have changed:
             // AllowMultiple, DisplayTitle, Capabilities (size), ThemeResource (icons)
@@ -668,7 +671,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 {
                     _log.Information($"No longer allowed to have multiple of widget {updatedDefinitionId}");
                     _log.Information($"Delete widget {widgetToUpdate.Widget.Id}");
-                    PinnedWidgets.Remove(widgetToUpdate);
+                    ViewModel.PinnedWidgets.Remove(widgetToUpdate);
                     await widgetToUpdate.Widget.DeleteAsync();
                     _log.Information($"Deleted Widget {widgetToUpdate.Widget.Id}");
                 });
@@ -707,10 +710,10 @@ public partial class DashboardView : ToolPage, IDisposable
         _dispatcherQueue.TryEnqueue(async () =>
         {
             _log.Information($"WidgetDefinitionDeleted {definitionId}");
-            foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
+            foreach (var widgetToRemove in ViewModel.PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
             {
                 _log.Information($"Remove widget {widgetToRemove.Widget.Id}");
-                PinnedWidgets.Remove(widgetToRemove);
+                ViewModel.PinnedWidgets.Remove(widgetToRemove);
 
                 // The widget definition is gone, so delete widgets with that definition.
                 await widgetToRemove.Widget.DeleteAsync();
@@ -734,10 +737,10 @@ public partial class DashboardView : ToolPage, IDisposable
             {
                 var removedIndex = e.OldStartingIndex;
                 _log.Debug($"Removed widget at index {removedIndex}");
-                for (var i = removedIndex; i < PinnedWidgets.Count; i++)
+                for (var i = removedIndex; i < ViewModel.PinnedWidgets.Count; i++)
                 {
                     _log.Debug($"Updating widget position for widget now at {i}");
-                    var widgetToUpdate = PinnedWidgets.ElementAt(i);
+                    var widgetToUpdate = ViewModel.PinnedWidgets.ElementAt(i);
                     await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
                 }
             }
@@ -756,7 +759,7 @@ public partial class DashboardView : ToolPage, IDisposable
         var draggedObject = e.Items.FirstOrDefault();
         var draggedWidgetViewModel = draggedObject as WidgetViewModel;
         e.Data.Properties.Add(DraggedWidget, draggedWidgetViewModel);
-        e.Data.Properties.Add(DraggedIndex, PinnedWidgets.IndexOf(draggedWidgetViewModel));
+        e.Data.Properties.Add(DraggedIndex, ViewModel.PinnedWidgets.IndexOf(draggedWidgetViewModel));
     }
 
     private void WidgetControl_DragOver(object sender, DragEventArgs e)
@@ -816,9 +819,9 @@ public partial class DashboardView : ToolPage, IDisposable
         // moved from a lower index to a higher one, removing the moved widget before inserting it will ensure that any
         // widgets between the starting and ending indices move up to replace the removed widget. If the widget was
         // moved from a higher index to a lower one, then the order of removal and insertion doesn't matter.
-        PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChangedAsync;
+        ViewModel.PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChangedAsync;
 
-        PinnedWidgets.RemoveAt(draggedIndex);
+        ViewModel.PinnedWidgets.RemoveAt(draggedIndex);
         var size = await draggedWidgetViewModel.Widget.GetSizeAsync();
         await InsertWidgetInPinnedWidgetsAsync(draggedWidgetViewModel.Widget, size, droppedIndex);
         await WidgetHelpers.SetPositionCustomStateAsync(draggedWidgetViewModel.Widget, droppedIndex);
@@ -829,11 +832,11 @@ public partial class DashboardView : ToolPage, IDisposable
         var endIndex = draggedIndex < droppedIndex ? droppedIndex : draggedIndex + 1;
         for (var i = startIndex; i < endIndex; i++)
         {
-            var widgetToUpdate = PinnedWidgets.ElementAt(i);
+            var widgetToUpdate = ViewModel.PinnedWidgets.ElementAt(i);
             await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
         }
 
-        PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
+        ViewModel.PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
 
         _log.Debug($"Drop ended");
     }

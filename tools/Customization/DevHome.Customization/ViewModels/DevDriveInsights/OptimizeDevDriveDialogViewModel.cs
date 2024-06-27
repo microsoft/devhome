@@ -63,16 +63,16 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         string exampleDevDriveLocation,
         List<string> existingDevDriveLetters)
     {
-        DirectoryPathTextBox = string.Empty;
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         ExistingDevDriveLetters = existingDevDriveLetters;
         ExampleDevDriveLocation = stringResource.GetLocalized("ExampleText") + exampleDevDriveLocation;
+        DirectoryPathTextBox = exampleDevDriveLocation;
         ChooseDirectoryPromptText = stringResource.GetLocalized("ChooseDirectoryPromptText");
         MakeChangesText = stringResource.GetLocalized("MakeChangesText");
         ExistingCacheLocation = existingCacheLocation;
         EnvironmentVariableToBeSet = environmentVariableToBeSet;
         OptimizeDevDriveDialogDescription = stringResource.GetLocalized("OptimizeDevDriveDialogDescription/Text", ExistingCacheLocation, EnvironmentVariableToBeSet);
-        IsPrimaryButtonEnabled = false;
+        IsPrimaryButtonEnabled = true;
         ErrorMessage = string.Empty;
         IsNotDevDrive = false;
     }

@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
@@ -39,7 +40,7 @@ public partial class PackageViewModel : ObservableObject
 
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IWinGetPackage _package;
-    private readonly IWindowsPackageManager _wpm;
+    private readonly IWinGet _winget;
     private readonly IThemeSelectorService _themeSelector;
     private readonly IScreenReaderService _screenReaderService;
     private readonly SetupFlowOrchestrator _orchestrator;
@@ -71,14 +72,14 @@ public partial class PackageViewModel : ObservableObject
 
     public PackageViewModel(
         ISetupFlowStringResource stringResource,
-        IWindowsPackageManager wpm,
+        IWinGet winget,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
         IScreenReaderService screenReaderService,
         SetupFlowOrchestrator orchestrator)
     {
         _stringResource = stringResource;
-        _wpm = wpm;
+        _winget = winget;
         _package = package;
         _themeSelector = themeSelector;
         _screenReaderService = screenReaderService;
@@ -161,7 +162,7 @@ public partial class PackageViewModel : ObservableObject
             return _package.PackageUrl;
         }
 
-        if (_wpm.IsMsStorePackage(_package))
+        if (_winget.IsMsStorePackage(_package))
         {
             return new Uri($"ms-windows-store://pdp/?productid={_package.Id}");
         }
@@ -228,7 +229,7 @@ public partial class PackageViewModel : ObservableObject
 
     private InstallPackageTask CreateInstallTask()
     {
-        return _package.CreateInstallTask(_wpm, _stringResource, SelectedVersion, _orchestrator.ActivityId);
+        return new InstallPackageTask(_winget, _stringResource, _package, SelectedVersion, _orchestrator.ActivityId);
     }
 
     private string GetPackageShortDescription()
@@ -246,13 +247,13 @@ public partial class PackageViewModel : ObservableObject
     private string GetPackageFullDescription()
     {
         // Version | Source | Publisher name
-        if (!_wpm.IsMsStorePackage(_package) && !string.IsNullOrEmpty(_package.PublisherName))
+        if (!_winget.IsMsStorePackage(_package) && !string.IsNullOrEmpty(_package.PublisherName))
         {
             return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, SelectedVersion, CatalogName, PublisherName);
         }
 
         // Version | Source
-        if (!_wpm.IsMsStorePackage(_package))
+        if (!_winget.IsMsStorePackage(_package))
         {
             return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, SelectedVersion, CatalogName);
         }
@@ -274,7 +275,7 @@ public partial class PackageViewModel : ObservableObject
     private bool IsVersioningSupported()
     {
         // Store packages have a single version
-        return !_wpm.IsMsStorePackage(_package);
+        return !_winget.IsMsStorePackage(_package);
     }
 
     /// <summary>

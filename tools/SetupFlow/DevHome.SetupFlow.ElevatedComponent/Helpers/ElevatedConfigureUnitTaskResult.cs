@@ -1,6 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Services.DesiredStateConfiguration.Contracts;
+using Microsoft.Management.Configuration;
+using Windows.Win32.Foundation;
+
 namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
 
 /// <summary>
@@ -8,21 +12,33 @@ namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
 /// </summary>
 public sealed class ElevatedConfigureUnitTaskResult
 {
-    public string? Type { get; set; }
+    private readonly IDSCApplicationUnitResult? _unitResult;
 
-    public string? Id { get; set; }
+    public ElevatedConfigureUnitTaskResult()
+    {
+        // This constructor is required for CsWinRT projection.
+    }
 
-    public string? UnitDescription { get; set; }
+    internal ElevatedConfigureUnitTaskResult(IDSCApplicationUnitResult unitResult)
+    {
+        _unitResult = unitResult;
+    }
 
-    public string? Intent { get; set; }
+    public string? Type => _unitResult?.AppliedUnit.Type;
 
-    public bool IsSkipped { get; set; }
+    public string? Id => _unitResult?.AppliedUnit.Id;
 
-    public int HResult { get; set; }
+    public string? UnitDescription => _unitResult?.AppliedUnit.Description;
 
-    public int ResultSource { get; set; }
+    public string? Intent => _unitResult?.AppliedUnit.Intent;
 
-    public string? Details { get; set; }
+    public bool IsSkipped => _unitResult?.IsSkipped ?? false;
 
-    public string? ErrorDescription { get; set; }
+    public int HResult => _unitResult?.HResult ?? HRESULT.S_OK;
+
+    public int ResultSource => (int)(_unitResult?.ResultSource ?? ConfigurationUnitResultSource.None);
+
+    public string? Details => _unitResult?.Details;
+
+    public string? ErrorDescription => _unitResult?.ErrorDescription;
 }

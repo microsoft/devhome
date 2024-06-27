@@ -4,6 +4,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
+using DevHome.Services.WindowsPackageManager.Contracts;
 using Serilog;
 
 namespace DevHome.SetupFlow.Services;
@@ -14,16 +16,16 @@ namespace DevHome.SetupFlow.Services;
 public class AppManagementInitializer : IAppManagementInitializer
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AppManagementInitializer));
-    private readonly IWindowsPackageManager _wpm;
+    private readonly IWinGet _winget;
     private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
-    private readonly IDesiredStateConfiguration _dsc;
+    private readonly IDSC _dsc;
 
     public AppManagementInitializer(
-        IWindowsPackageManager wpm,
-        IDesiredStateConfiguration dsc,
+        IWinGet winget,
+        IDSC dsc,
         ICatalogDataSourceLoader catalogDataSourceLoader)
     {
-        _wpm = wpm;
+        _winget = winget;
         _dsc = dsc;
         _catalogDataSourceLoader = catalogDataSourceLoader;
     }
@@ -65,7 +67,7 @@ public class AppManagementInitializer : IAppManagementInitializer
             _log.Information($"Ensuring app management initialization");
 
             // Initialize windows package manager after AppInstaller is registered
-            await _wpm.InitializeAsync();
+            await _winget.InitializeAsync();
 
             // Load catalogs from all data sources
             await LoadCatalogsAsync();
@@ -120,16 +122,16 @@ public class AppManagementInitializer : IAppManagementInitializer
         _log.Information("Ensuring AppInstaller is registered ...");
 
         // If WinGet COM Server is available, then AppInstaller is registered
-        if (await _wpm.IsAvailableAsync())
+        if (await _winget.IsAvailableAsync())
         {
             _log.Information("AppInstaller is already registered");
             return true;
         }
 
         _log.Information("WinGet COM Server is not available. AppInstaller might be staged but not registered, attempting to register it to fix the issue");
-        if (await _wpm.RegisterAppInstallerAsync())
+        if (await _winget.RegisterAppInstallerAsync())
         {
-            if (await _wpm.IsAvailableAsync())
+            if (await _winget.IsAvailableAsync())
             {
                 _log.Information("AppInstaller was registered successfully");
                 return true;

@@ -13,7 +13,7 @@ Dev Home has a modular architecture that consists of multiple components. These 
 A more detailed look at how the projects are related:
 ```mermaid
 graph TD;
-    DevHome.Telemetry-->DevHome.Common;
+    %%{init:{'flowchart':{"defaultRenderer": "elk"}}}%%
     DevHome.Common-->DevHome.Customization;
     DevHome.Common-->DevHome.Dashboard;
     DevHome.Common-->DevHome.Experiments;
@@ -34,6 +34,14 @@ graph TD;
     DevHome.ExtensionLibrary-->DevHome;
     DevHome.Settings-->DevHome;
     DevHome.SetupFlow-->DevHome;
+    DevHome.Services.Core-->DevHome.Services.WindowsPackageManager;
+    DevHome.Services.Core-->DevHome.Services.DesiredStateConfiguration;
+    DevHome.Telemetry-->DevHome.Services.Core;
+    DevHome.Services.Core-->DevHome.Common;
+    DevHome.Services.WindowsPackageManager-->DevHome.SetupFlow;
+    DevHome.Services.DesiredStateConfiguration-->DevHome.SetupFlow;
+    DevHome.Services.WindowsPackageManager-->DevHome.SetupFlow.ElevatedComponent;
+    DevHome.Services.DesiredStateConfiguration-->DevHome.SetupFlow.ElevatedComponent;
 ```
 
 ## Dev Home Core

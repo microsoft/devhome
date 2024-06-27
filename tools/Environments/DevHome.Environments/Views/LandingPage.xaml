@@ -1,8 +1,8 @@
-<pg:ToolPage
+<commonviews:ToolPage
     x:Class="DevHome.Environments.Views.LandingPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:pg="using:DevHome.Common"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:vm="using:DevHome.Environments.ViewModels"
     xmlns:customControls="using:DevHome.Environments.CustomControls"
@@ -16,9 +16,9 @@
     xmlns:views="using:DevHome.Common.Views"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="OnLoaded">
-    <pg:ToolPage.Resources>
+    <commonviews:ToolPage.Resources>
         <ResourceDictionary Source="ms-appx:///DevHome.Common/Environments/Templates/EnvironmentsTemplates.xaml" />
-    </pg:ToolPage.Resources>
+    </commonviews:ToolPage.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -350,4 +350,4 @@
             </InfoBar>
         </Grid>
     </Grid>
-</pg:ToolPage>
+</commonviews:ToolPage>

@@ -52,10 +52,9 @@ public sealed partial class PrimaryWindow : WindowEx
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
+        App.Log("DevHome.PI_MainWindows_Loaded", LogLevel.Measure);
         _hotKeyHelper = new(this, HandleHotKey);
         _hotKeyHelper.RegisterHotKey(HotKey, KeyModifier);
-
-        App.Log("DevHome.PI_MainWindows_Loaded", LogLevel.Measure);
     }
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)
