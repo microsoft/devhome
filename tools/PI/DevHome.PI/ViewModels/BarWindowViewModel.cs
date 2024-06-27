@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
+using DevHome.PI.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -362,5 +363,12 @@ public partial class BarWindowViewModel : ObservableObject
     public void LaunchAdvancedAppsPageInWindowsSettings()
     {
         _ = Launcher.LaunchUriAsync(new("ms-settings:advanced-apps"));
+    }
+
+    [RelayCommand]
+    public void ToggleClipboardMonitor()
+    {
+        ClipboardMonitorWindow monitor = new ClipboardMonitorWindow();
+        monitor.Activate();
     }
 }

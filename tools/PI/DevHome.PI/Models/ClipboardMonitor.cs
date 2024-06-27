@@ -22,6 +22,8 @@ internal sealed class ClipboardMonitor : WindowHooker<ClipboardMonitor>, INotify
 
     public ClipboardContents Contents { get; private set; } = new();
 
+    public bool IsEnabled => ListenerHwnd != HWND.Null;
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     internal ClipboardMonitor()
@@ -173,6 +175,8 @@ internal sealed class ClipboardMonitor : WindowHooker<ClipboardMonitor>, INotify
         {
             Log.Error("AddClipboardFormatListener failed: {GetLastError}", Marshal.GetLastWin32Error().ToString(CultureInfo.CurrentCulture));
         }
+
+        OnPropertyChanged(nameof(IsEnabled));
     }
 
     public override void Stop()
@@ -182,6 +186,7 @@ internal sealed class ClipboardMonitor : WindowHooker<ClipboardMonitor>, INotify
             PInvoke.RemoveClipboardFormatListener(ListenerHwnd);
 
             base.Stop();
+            OnPropertyChanged(nameof(IsEnabled));
         }
     }
 

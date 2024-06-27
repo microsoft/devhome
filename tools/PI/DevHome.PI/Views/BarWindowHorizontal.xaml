@@ -143,6 +143,10 @@
                 </DataTemplate>
             </ItemsRepeater>
             <controls:PISeparator Visibility="{x:Bind _viewModel.ExternalToolSeparatorVisibility, Mode=OneWay}"/>
+            <Button Command="{x:Bind _viewModel.ToggleClipboardMonitorCommand}">
+                <TextBlock x:Uid="ClipboardMonitor" Text="&#xf0e3;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}" />
+            </Button>
+            <TextBlock x:Uid="ClipboardMonitorLabel" x:Name="ClipboardMonitorLabel" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
         </StackPanel>
 
         <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1" Spacing="5">
