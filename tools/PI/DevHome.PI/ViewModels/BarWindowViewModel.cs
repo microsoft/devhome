@@ -4,6 +4,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -64,6 +65,9 @@ public partial class BarWindowViewModel : ObservableObject
     private bool _isAppBarVisible = true;
 
     [ObservableProperty]
+    private bool _isProcessChooserVisible = false;
+
+    [ObservableProperty]
     private Visibility _externalToolSeparatorVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
@@ -106,9 +110,13 @@ public partial class BarWindowViewModel : ObservableObject
         SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", PerfCounters.Instance.SystemDiskUsage);
 
         var process = TargetAppData.Instance.TargetProcess;
-        IsAppBarVisible = process is not null;
-        if (process != null)
+
+        // Show either the process chooser, or the app bar. Not both
+        IsProcessChooserVisible = process is null;
+        IsAppBarVisible = !IsProcessChooserVisible;
+        if (IsAppBarVisible)
         {
+            Debug.Assert(process is not null, "Process should not be null if we're showing the app bar");
             ApplicationName = process.ProcessName;
             ApplicationPid = process.Id;
             ApplicationIcon = TargetAppData.Instance.Icon;
@@ -233,6 +241,16 @@ public partial class BarWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
+    public void LaunchInsights()
+    {
+        ToggleExpandedContentVisibility();
+
+        // And navigate to the appropriate page
+        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+        barWindow?.NavigateTo(typeof(InsightsPageViewModel));
+    }
+
+    [RelayCommand]
     public void ManageExternalToolsButton()
     {
         ToggleExpandedContentVisibility();
@@ -277,6 +295,9 @@ public partial class BarWindowViewModel : ObservableObject
                     ApplicationPid = process.Id;
                     ApplicationName = process.ProcessName;
                 }
+
+                // Conversely, the process chooser is only visible if we're not attached to a process
+                IsProcessChooserVisible = process is null;
             });
         }
         else if (e.PropertyName == nameof(TargetAppData.Icon))

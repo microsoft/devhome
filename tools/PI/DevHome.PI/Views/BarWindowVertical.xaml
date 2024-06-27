@@ -80,11 +80,10 @@
 
             <controls:PISeparator Orientation="Horizontal"/>
 
-            <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Margin="0">
-                <TextBlock Text="&#xecaa;" Margin="0" />
+            <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Visibility="{x:Bind _viewModel.IsProcessChooserVisible, Mode=OneWay}">
+                <TextBlock Text="&#xe179;" />
             </controls:ProcessSelectionButton>
 
-            <controls:PISeparator Orientation="Horizontal"/>
             <!-- Per App controls -->
             <StackPanel Orientation="Vertical" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}">
                 <StackPanel.ContextFlyout>
@@ -99,11 +98,12 @@
                 <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" />
                 <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" HorizontalAlignment="Center" />
                 <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" HorizontalAlignment="Center" />
-                <controls:PISeparator Orientation="Horizontal"/>
             </StackPanel>
-                        
+
+            <controls:PISeparator Orientation="Horizontal"/>
+
             <!-- Per System controls -->
-          <controls:ExternalToolsManagementButton
+            <controls:ExternalToolsManagementButton
                 x:Name="ManageExternalToolsButton"
                 x:Uid="ManageExternalToolsButton"
                 HorizontalAlignment="Center"
@@ -134,7 +134,6 @@
                     </Button>
                 </DataTemplate>
             </ItemsRepeater>
-            <controls:PISeparator Orientation="Horizontal" Visibility="{x:Bind _viewModel.ExternalToolSeparatorVisibility, Mode=OneWay}"/>
         </StackPanel>
 
         <StackPanel x:Name="SystemResourceStackPanel" Orientation="Vertical" Grid.Row="1" Margin="0,0,0,5">
