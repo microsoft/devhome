@@ -49,6 +49,9 @@ public partial class WidgetViewModel : ObservableObject
     private readonly WidgetAdaptiveCardRenderingService _renderingService;
     private readonly IScreenReaderService _screenReaderService;
 
+    private readonly AdaptiveElementParserRegistration _elementParser;
+    private readonly AdaptiveActionParserRegistration _actionParser;
+
     private RenderedAdaptiveCard _renderedCard;
 
     [ObservableProperty]
@@ -114,6 +117,12 @@ public partial class WidgetViewModel : ObservableObject
         Widget = widget;
         WidgetSize = widgetSize;
         WidgetDefinition = widgetDefinition;
+
+        // Use custom parser.
+        _elementParser = new AdaptiveElementParserRegistration();
+        _elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
+        _actionParser = new AdaptiveActionParserRegistration();
+        _actionParser.Set(ChooseFileAction.CustomTypeString, new ChooseFileParser());
     }
 
     public async Task RenderAsync()
@@ -154,14 +163,8 @@ public partial class WidgetViewModel : ObservableObject
                 var context = new EvaluationContext(cardData, hostData);
                 var json = template.Expand(context);
 
-                // Use custom parser.
-                var elementParser = new AdaptiveElementParserRegistration();
-                elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
-                var actionParser = new AdaptiveActionParserRegistration();
-                actionParser.Set(ChooseFileAction.CustomTypeString, new ChooseFileParser());
-
                 // Create adaptive card.
-                card = AdaptiveCard.FromJsonString(json, elementParser, actionParser);
+                card = AdaptiveCard.FromJsonString(json, _elementParser, _actionParser);
             }
             catch (Exception ex)
             {

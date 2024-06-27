@@ -21,12 +21,16 @@ using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
+using Windows.System;
+using Windows.UI.Core;
+using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 
 namespace DevHome.Dashboard.Views;
 
@@ -465,13 +469,13 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     public async Task GoToWidgetsInStoreAsync()
     {
-        if (Common.Helpers.RuntimeHelper.IsOnWindows11)
+        if (RuntimeHelper.IsOnWindows11)
         {
-            await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
+            await Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
         }
         else
         {
-            await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
+            await Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
         }
     }
 
@@ -839,6 +843,59 @@ public partial class DashboardView : ToolPage, IDisposable
         ViewModel.PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
 
         _log.Debug($"Drop ended");
+    }
+
+    private void WidgetGridView_KeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+    {
+        _log.Information($"*** key down");
+
+        if (e.Handled /*|| sender as WidgetBoard is not WidgetBoard widgetBoard*/)
+        {
+            _log.Information($"e.handled = {e.Handled}");
+            return;
+        }
+
+        var key = e.Key;
+        _log.Information($"e.Key = {key}");
+        _log.Information($"sender = {sender}");
+
+        if (key == VirtualKey.Menu || key == VirtualKey.Shift)
+        {
+            ////e.Handled = true;
+            ////return;
+        }
+
+        if (key == VirtualKey.Left || key == VirtualKey.Right)
+        {
+            var downState = CoreVirtualKeyStates.Down;
+
+            // VirtualKeys "Menu" key is also the "Alt" key on the keyboard.
+            var isAltKeyPressed = (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Menu) & downState) == downState;
+            var isShiftKeyPressed = (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift) & downState) == downState;
+
+            var s = WidgetGridView.SelectedIndex;
+            _log.Information($"selectedIndex = {s}");
+
+            if (isAltKeyPressed && isShiftKeyPressed)
+            {
+                var selectedIndex = WidgetGridView.SelectedIndex;
+                _log.Information($"selectedIndex = {selectedIndex}");
+                if (key == VirtualKey.Left)
+                {
+                    if (selectedIndex > 0)
+                    {
+                        ViewModel.PinnedWidgets.Move(selectedIndex, selectedIndex - 1);
+                    }
+                }
+                else if (key == VirtualKey.Right)
+                {
+                    if (selectedIndex < ViewModel.PinnedWidgets.Count)
+                    {
+                        ViewModel.PinnedWidgets.Move(selectedIndex, selectedIndex + 1);
+                    }
+                }
+            }
+        }
     }
 
     public void Dispose()

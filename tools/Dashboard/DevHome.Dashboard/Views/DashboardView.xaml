@@ -60,7 +60,7 @@
                     x:Uid="AddWidget"
                     HorizontalAlignment="Right"
                     Command="{x:Bind AddWidgetClickCommand}"
-                    IsEnabled="{x:Bind ViewModel.HasWidgetService, Mode=OneWay}"/>
+                    IsEnabled="{x:Bind ViewModel.HasWidgetService, Mode=OneWay}" />
             </StackPanel>
         </Grid>
 
@@ -85,7 +85,9 @@
                               ItemsSource="{x:Bind ViewModel.PinnedWidgets, Mode=OneWay}"
                               CanReorderItems="True"
                               CanDragItems="True"
-                              DragItemsStarting="WidgetGridView_DragItemsStarting">
+                              DragItemsStarting="WidgetGridView_DragItemsStarting"
+                              SelectionMode="Single"
+                              SingleSelectionFollowsFocus="True">
                         <GridView.ItemTemplate>
                             <DataTemplate x:DataType="vm:WidgetViewModel">
                                 <controls:WidgetControl WidgetSource="{x:Bind}"
@@ -99,19 +101,20 @@
                             <ItemsPanelTemplate>
                                 <controls:WidgetBoard XYFocusKeyboardNavigation="Enabled"
                                                       XYFocusRightNavigationStrategy="RectilinearDistance"
-                                                      XYFocusLeftNavigationStrategy="RectilinearDistance"/>
+                                                      XYFocusLeftNavigationStrategy="RectilinearDistance"
+                                                      KeyDown="WidgetGridView_KeyDown" />
                             </ItemsPanelTemplate>
                         </GridView.ItemsPanel>
                         <GridView.ItemContainerStyle>
                             <Style TargetType="GridViewItem">
                                 <!-- Default margin is "0,0,4,4". Override since margins are set on the WidgetBoard instead. -->
-                                <Setter Property="Margin" Value="0,0,0,0"/>
-                                <Setter Property="AutomationProperties.AutomationId" Value="WidgetItem"/>
+                                <Setter Property="Margin" Value="0,0,0,0" />
+                                <Setter Property="AutomationProperties.AutomationId" Value="WidgetItem" />
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="GridViewItem">
                                             <!-- Removes overlay over entire widget on hover -->
-                                            <ListViewItemPresenter PointerOverBackground="{ThemeResource ListViewItemBackground}"/>
+                                            <ListViewItemPresenter PointerOverBackground="{ThemeResource ListViewItemBackground}" />
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
@@ -123,7 +126,7 @@
                     <ProgressRing x:Name="LoadingWidgetsProgressRing"
                                   Margin="0,150,0,0"
                                   IsActive="True"
-                                  HorizontalAlignment="Center"/>
+                                  HorizontalAlignment="Center" />
 
                     <!-- Widget grid empty message -->
                     <StackPanel x:Name="NoWidgetsStackPanel"
