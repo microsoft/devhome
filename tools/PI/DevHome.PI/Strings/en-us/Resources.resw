@@ -943,6 +943,8 @@
   </data>
   <data name="WatsonCabColumn.Header" xml:space="preserve">
     <value>Watson Cab</value>
+    <comment>Header text for the link to a Watson cab</comment>
+  </data>
   <data name="ActivationTextBlock.Text" xml:space="preserve">
     <value>Activation</value>
     <comment>Header text for a group of radio buttons indicating the activation type</comment>
