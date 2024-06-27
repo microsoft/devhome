@@ -25,7 +25,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposa
     private readonly ILogger _logger;
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IWinGetPackageFinder _packageFinder;
-    private readonly SemaphoreSlim _lock = new(1, 1);
+    private readonly SemaphoreSlim _findLock = new(1, 1);
     private bool _disposedValue;
 
     public WinGetPackageInstaller(
@@ -46,20 +46,13 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposa
             throw new CatalogNotInitializedException();
         }
 
+        // Report telemetry for attempting app install
+        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_AppSelected", Telemetry.LogLevel.Critical, new AppInstallUserEvent(packageId, catalog.Catalog.Info.Id), activityId);
+
         try
         {
-            await _lock.WaitAsync();
-
-            // Report telemetry for attempting app install
-            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_AppSelected", Telemetry.LogLevel.Critical, new AppInstallUserEvent(packageId, catalog.Catalog.Info.Id), activityId);
-
             // 1. Find package
-            var package = await _packageFinder.GetPackageAsync(catalog, packageId);
-            if (package == null)
-            {
-                _logger.LogError($"Install aborted for package {packageId} because it was not found in the provided catalog {catalog.GetDescriptiveName()}");
-                throw new FindPackagesException(FindPackagesResultStatus.CatalogError);
-            }
+            var package = await FindPackageOrThrowAsync(catalog, packageId);
 
             // 2. Install package
             _logger.LogInformation($"Starting package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
@@ -87,10 +80,6 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposa
             // Report telemetry for failed install and rethrow
             TelemetryFactory.Get<ITelemetry>().LogError("AppInstall_InstallFailed", Telemetry.LogLevel.Critical, new AppInstallResultEvent(packageId, catalog.Catalog.Info.Id), activityId);
             throw;
-        }
-        finally
-        {
-            _lock.Release();
         }
     }
 
@@ -142,13 +131,38 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposa
         throw new InstallPackageException(InstallResultStatus.InvalidOptions, InstallPackageException.InstallErrorInvalidParameter, HRESULT.S_OK);
     }
 
+    private async Task<CatalogPackage> FindPackageOrThrowAsync(WinGetCatalog catalog, string packageId)
+    {
+        // During installation, ensure that only one package is being found at
+        // a time. This is mainly to prevent the elevated process from
+        // encountering a racing condition the first time attempting to access
+        // a catalog.
+        // Related issue: https://github.com/microsoft/winget-cli/issues/4587
+        await _findLock.WaitAsync();
+        try
+        {
+            var package = await _packageFinder.GetPackageAsync(catalog, packageId);
+            if (package == null)
+            {
+                _logger.LogError($"Install aborted for package {packageId} because it was not found in the provided catalog {catalog.GetDescriptiveName()}");
+                throw new FindPackagesException(FindPackagesResultStatus.CatalogError);
+            }
+
+            return package;
+        }
+        finally
+        {
+            _findLock.Release();
+        }
+    }
+
     private void Dispose(bool disposing)
     {
         if (!_disposedValue)
         {
             if (disposing)
             {
-                _lock.Dispose();
+                _findLock.Dispose();
             }
 
             _disposedValue = true;
