@@ -90,4 +90,68 @@ public partial class WatsonPageViewModel : ObservableObject
             }
         }
     }
+
+    internal void SortByFaultingExecutable(bool sortAscending)
+    {
+        ObservableCollection<WatsonDisplayInfo> sortedCollection;
+
+        if (sortAscending)
+        {
+            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderBy(x => x.Report.Executable));
+        }
+        else
+        {
+            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderByDescending(x => x.Report.Executable));
+        }
+
+        DisplayedReports = sortedCollection;
+    }
+
+    internal void SortByDateTime(bool sortAscending)
+    {
+        ObservableCollection<WatsonDisplayInfo> sortedCollection;
+
+        if (sortAscending)
+        {
+            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderBy(x => x.Report.TimeGenerated));
+        }
+        else
+        {
+            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderByDescending(x => x.Report.TimeGenerated));
+        }
+
+        DisplayedReports = sortedCollection;
+    }
+
+    internal void SortByWatsonBucket(bool sortAscending)
+    {
+        ObservableCollection<WatsonDisplayInfo> sortedCollection;
+
+        if (sortAscending)
+        {
+            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderBy(x => x.FailureBucket));
+        }
+        else
+        {
+            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderByDescending(x => x.FailureBucket));
+        }
+
+        DisplayedReports = sortedCollection;
+    }
+
+    internal void SortByCrashDumpPath(bool sortAscending)
+    {
+        ObservableCollection<WatsonDisplayInfo> sortedCollection;
+
+        if (sortAscending)
+        {
+            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderBy(x => x.Report.CrashDumpPath));
+        }
+        else
+        {
+            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderByDescending(x => x.Report.CrashDumpPath));
+        }
+
+        DisplayedReports = sortedCollection;
+    }
 }

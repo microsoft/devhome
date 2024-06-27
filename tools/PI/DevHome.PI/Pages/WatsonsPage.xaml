@@ -57,21 +57,21 @@
             AreRowDetailsFrozen="False"
             AreRowGroupHeadersFrozen="True"
             AutoGenerateColumns="False"
-            CanUserSortColumns="False"
+            CanUserSortColumns="True"
             CanUserReorderColumns="True"
             CanUserResizeColumns="True"
             ColumnHeaderHeight="32"
-            MaxColumnWidth="400"
             FrozenColumnCount="0"
             GridLinesVisibility="None"
             HeadersVisibility="Column"
             SelectionChanged="WatsonsDataGrid_SelectionChanged"
+            Sorting="WatsonsDataGrid_Sorting"
             ItemsSource="{x:Bind ViewModel.DisplayedReports, Mode=OneWay}">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn x:Uid="WatsonTimeGeneratedColumn" Binding="{Binding Report.TimeGenerated}" Width="180"/>
-                <controls:DataGridTextColumn x:Uid="WatsonFaultingExecutableColumn" Binding="{Binding Report.Executable}" Width="180"/>
-                <controls:DataGridTextColumn x:Uid="WatsonBucketColumn" Binding="{Binding FailureBucket}" Width="240"/>
-                <controls:DataGridTextColumn x:Uid="WatsonCabColumn" Binding="{Binding Report.CrashDumpPath}" Width="*"/>
+                <controls:DataGridTextColumn Tag="DateTime" x:Uid="WatsonTimeGeneratedColumn" Binding="{Binding Report.TimeGenerated}" Width="180"/>
+                <controls:DataGridTextColumn Tag="FaultingExecutable" x:Uid="WatsonFaultingExecutableColumn" Binding="{Binding Report.Executable}" Width="180"/>
+                <controls:DataGridTextColumn Tag="WatsonBucket" x:Uid="WatsonBucketColumn" Binding="{Binding FailureBucket}" Width="240"/>
+                <controls:DataGridTextColumn Tag="CrashDumpPath" x:Uid="WatsonCabColumn" Binding="{Binding Report.CrashDumpPath}" Width="*" Foreground="Blue"/>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics;
 using DevHome.Common.Extensions;
 using DevHome.PI.Models;
 using DevHome.PI.Telemetry;
@@ -61,6 +62,48 @@ public sealed partial class WatsonsPage : Page
             case 2: // !xamltriage
                 WatsonInfo.Text = "TBD";
                 break;
+        }
+    }
+
+    private void WatsonsDataGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
+    {
+        if (e.Column.Tag is not null)
+        {
+            bool sortAscending = e.Column.SortDirection == CommunityToolkit.WinUI.UI.Controls.DataGridSortDirection.Ascending;
+
+            // Flip the sort direction
+            sortAscending = !sortAscending;
+
+            string? tag = e.Column.Tag.ToString();
+            Debug.Assert(tag is not null, "Why is the tag null?");
+
+            if (tag == "DateTime")
+            {
+                ViewModel.SortByDateTime(sortAscending);
+            }
+            else if (tag == "FaultingExecutable")
+            {
+                ViewModel.SortByFaultingExecutable(sortAscending);
+            }
+            else if (tag == "WatsonBucket")
+            {
+                ViewModel.SortByWatsonBucket(sortAscending);
+            }
+            else if (tag == "CrashDumpPath")
+            {
+                ViewModel.SortByCrashDumpPath(sortAscending);
+            }
+
+            e.Column.SortDirection = sortAscending ? CommunityToolkit.WinUI.UI.Controls.DataGridSortDirection.Ascending : CommunityToolkit.WinUI.UI.Controls.DataGridSortDirection.Descending;
+
+            // Clear the sort direction for the other columns
+            foreach (CommunityToolkit.WinUI.UI.Controls.DataGridColumn column in WatsonsDataGrid.Columns)
+            {
+                if (column != e.Column)
+                {
+                    column.SortDirection = null;
+                }
+            }
         }
     }
 }

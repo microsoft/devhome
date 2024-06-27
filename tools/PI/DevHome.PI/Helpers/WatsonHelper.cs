@@ -182,7 +182,9 @@ internal sealed class WatsonHelper : IDisposable
         string processID = filenameWithNoDmp.Substring(pidIndex + 1);
 
         // Now peel off the PID. This should give us a.b.exe
-        string executable = filenameWithNoDmp.Substring(0, pidIndex);
+        string executableFullPath = filenameWithNoDmp.Substring(0, pidIndex);
+
+        FileInfo fileInfo = new(executableFullPath);
 
         var converter = new Int32Converter();
         int? pid = (int?)converter.ConvertFromString(processID);
@@ -190,13 +192,13 @@ internal sealed class WatsonHelper : IDisposable
         lock (_watsonReports)
         {
             // Do we have an entry for this item already (created from the Watson files on disk)
-            WatsonReport? watsonReport = FindMatchingReport(timeGenerated, executable, pid);
+            WatsonReport? watsonReport = FindMatchingReport(timeGenerated, fileInfo.Name, pid);
 
             if (watsonReport is null)
             {
                 watsonReport = new WatsonReport();
                 watsonReport.TimeStamp = timeGenerated;
-                watsonReport.Executable = executable;
+                watsonReport.Executable = fileInfo.Name;
                 watsonReport.Pid = pid ?? 0;
                 _watsonReports.Add(watsonReport);
             }
