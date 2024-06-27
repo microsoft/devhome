@@ -16,6 +16,7 @@
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
     setupFlowBehaviors:SetupFlowNavigationBehavior.NextVisibility="Collapsed"
     setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
+    Unloaded="UserControl_Unloaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
