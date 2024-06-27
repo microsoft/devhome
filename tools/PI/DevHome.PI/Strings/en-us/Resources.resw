@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -139,7 +139,7 @@
   </data>
   <data name="DissociateButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Dissociate so that Project Ironsides is not tracking any app</value>
-    <comment>Locked="{Ironsides}" The tooltip for a button which causes Project Ironsides to no longer track any app</comment>
+    <comment>{Locked="Ironsides"} The tooltip for a button which causes Project Ironsides to no longer track any app</comment>
   </data>
   <data name="SwitchToLargeLayoutToolTip" xml:space="preserve">
     <value>Expand the large content panel</value>
@@ -163,7 +163,7 @@
   </data>
   <data name="ToolLaunchErrorMessage" xml:space="preserve">
     <value>Failed to launch: {0}</value>
-    <comment>Locked={"{0}"} Text for when there was an error launching an external tool. {0} is the name of an executable(.exe) file.</comment>
+    <comment>{Locked="{0}"} Text for when there was an error launching an external tool. {0} is the name of an executable(.exe) file.</comment>
   </data>
   <data name="AppDetailsTextBlock.Text" xml:space="preserve">
     <value>App details</value>
@@ -491,7 +491,7 @@
   </data>
   <data name="RunElevatedButton.Content" xml:space="preserve">
     <value>Run Project Ironsides as Admin to get more data</value>
-    <comment>Locked="{Ironsides}" When the user clicks this button we relaunch Project Ironsides as admin to get more app details</comment>
+    <comment>{Locked="Ironsides"} When the user clicks this button we relaunch Project Ironsides as admin to get more app details</comment>
   </data>
   <data name="InsightsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Go to the key insights</value>
@@ -503,7 +503,7 @@
   </data>
   <data name="TerminatedText" xml:space="preserve">
     <value>{0} (terminated)</value>
-    <comment>Locked={"{0}"} Text indicating that the process has terminated. {0} is the process name. </comment>
+    <comment>{Locked="{0}"} Text indicating that the process has terminated. {0} is the process name. </comment>
   </data>
   <data name="InsightsHeaderTextBlock.Text" xml:space="preserve">
     <value>Insights</value>
@@ -515,19 +515,19 @@
   </data>
   <data name="TargetAppPidTextFormat" xml:space="preserve">
     <value>pid: {0}</value>
-    <comment>Locked={"{0}"} Showing a process identifier. {0} is an integer</comment>
+    <comment>{Locked="{0}"} Showing a process identifier. {0} is an integer</comment>
   </data>
   <data name="CpuPerfTextFormat" xml:space="preserve">
     <value>cpu: {0:0.0}%</value>
-    <comment>Locked={"{0:0.0}"} Showing CPU utilization. {0} is a percentage 0-100</comment>
+    <comment>{Locked="{0:0.0}"} Showing CPU utilization. {0} is a percentage 0-100</comment>
   </data>
   <data name="MemoryPerfTextFormat" xml:space="preserve">
     <value>memory: {0:N2} MB</value>
-    <comment>Locked={"{0:N2}"} Showing RAM utilization. MB stands for megabytes. {0} is a number.</comment>
+    <comment>{Locked="{0:N2}"} Showing RAM utilization. MB stands for megabytes. {0} is a number.</comment>
   </data>
   <data name="DiskPerfTextFormat" xml:space="preserve">
     <value>dsk: {0:N0} MB/s</value>
-    <comment>Locked={"{0:N0}"} Showing disk utilization. MB/s stands for megabytes per second. {0} is a number.</comment>
+    <comment>{Locked="{0:N0}"} Showing disk utilization. MB/s stands for megabytes per second. {0} is a number.</comment>
   </data>
   <data name="CpuPerfNotAvailableText" xml:space="preserve">
     <value>cpu: n/a %</value>
@@ -543,11 +543,11 @@
   </data>
   <data name="CpuNotificationFormatText" xml:space="preserve">
     <value>{0} CPU usage: {1:0.0}%</value>
-    <comment>Locked={"{0},{1:0.0}"} A notification for CPU usage. {0} is the name of a process (notepad.exe for example). {1} is a percentage</comment>
+    <comment>{Locked="{0},{1:0.0}"} A notification for CPU usage. {0} is the name of a process (notepad.exe for example). {1} is a percentage</comment>
   </data>
   <data name="UnhandledTraceEventErrorMessage" xml:space="preserve">
     <value>GOT UNHANDLED EVENT: {0}</value>
-    <comment>Locked={"{0}"} An error message when an unhandled trace event is encountered. {0} is a verbose version of the event</comment>
+    <comment>{Locked="{0}"} An error message when an unhandled trace event is encountered. {0} is a verbose version of the event</comment>
   </data>
   <data name="UnableToStartEventViewerErrorMessage" xml:space="preserve">
     <value>Could not start EventViewer</value>
@@ -559,11 +559,11 @@
   </data>
   <data name="LockedFileInsightSpecificDescription" xml:space="preserve">
     <value>The app is trying to access the file '{0}', but this is locked by '{1}'. To fix this, close '{1}'</value>
-    <comment>Locked={"{0}", "{1}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name. {1} is the name of an executable(.exe) process.</comment>
+    <comment>{Locked="{0}", "{1}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name. {1} is the name of an executable(.exe) process.</comment>
   </data>
   <data name="LockedFileInsightUnknownDescription" xml:space="preserve">
     <value>The app is trying to access the file '{0}', but this is locked by an unknown process</value>
-    <comment>Locked={"{0}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name.</comment>
+    <comment>{Locked="{0}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name.</comment>
   </data>
   <data name="WatsonStartErrorMessage" xml:space="preserve">
     <value>Could not start Watson</value>
@@ -603,19 +603,19 @@
   </data>
   <data name="CpuPerfTextFormatNoLabel" xml:space="preserve">
     <value>{0:0.0}%</value>
-    <comment>Locked={"{0:0.0}"} Showing CPU utilization. {0} is a percentage 0-100</comment>
+    <comment>{Locked="{0:0.0}"} Showing CPU utilization. {0} is a percentage 0-100</comment>
   </data>
   <data name="DiskPerfTextFormatNoLabel" xml:space="preserve">
     <value>{0:N0} MB/s</value>
-    <comment>Locked={"{0:N0}"} Showing disk utilization. MB/s stands for megabytes per second. {0} is a number.</comment>
+    <comment>{Locked="{0:N0}"} Showing disk utilization. MB/s stands for megabytes per second. {0} is a number.</comment>
   </data>
   <data name="GpuPerfTextFormatNoLabel" xml:space="preserve">
     <value>{0:0.0}%</value>
-    <comment>Locked={"{0:0.0}"} Showing GPU utilization. {0} is a percentage 0-100</comment>
+    <comment>{Locked="{0:0.0}"} Showing GPU utilization. {0} is a percentage 0-100</comment>
   </data>
   <data name="MemoryPerfTextFormatNoLabel" xml:space="preserve">
     <value>{0:N2} MB</value>
-    <comment>Locked={"{0:N2}"} Showing RAM utilization. MB stands for megabytes. {0} is a number.</comment>
+    <comment>{Locked="{0:N2}"} Showing RAM utilization. MB stands for megabytes. {0} is a number.</comment>
   </data>
   <data name="AppCPUUsage.ToolTipService.ToolTip" xml:space="preserve">
     <value>CPU usage of the attached process.</value>
@@ -627,7 +627,7 @@
   </data>
   <data name="DiskPerfPercentUsageTextFormatNoLabel" xml:space="preserve">
     <value>{0:0.0}%</value>
-    <comment>Locked={"{0:0.0}"} Showing Disk utilization. {0} is a percentage 0-100</comment>
+    <comment>{Locked="{0:0.0}"} Showing Disk utilization. {0} is a percentage 0-100</comment>
   </data>
   <data name="ExpandedViewAppCpuPerf.ToolTipService.ToolTip" xml:space="preserve">
     <value>CPU usage of the attached process.</value>
@@ -647,7 +647,7 @@
   </data>
   <data name="MemoryPerfTextFormatNoLabelGB" xml:space="preserve">
     <value>{0:N2} GB</value>
-    <comment>Locked={"{0:N2}"} Showing RAM utilization. GB stands for gigabytes. {0} is a number.</comment>
+    <comment>{Locked="{0:N2}"} Showing RAM utilization. GB stands for gigabytes. {0} is a number.</comment>
   </data>
   <data name="SystemCPUUsage.ToolTipService.ToolTip" xml:space="preserve">
     <value>Amount of CPU used by the overall system.</value>
@@ -671,7 +671,7 @@
   </data>
   <data name="PIStartupTaskDisplayName" xml:space="preserve">
     <value>Hotkey for Dev Home Project Ironsides</value>
-    <comment>Locked="{Ironsides}" The description of the startup task for Dev Home Project Ironsides. This shows up in task manager/Windows Settings &gt; Startup Apps.</comment>
+    <comment>{Locked="Ironsides"} The description of the startup task for Dev Home Project Ironsides. This shows up in task manager/Windows Settings &gt; Startup Apps.</comment>
   </data>
   <data name="IsPythonTextBlock.Text" xml:space="preserve">
     <value>Is Python</value>
@@ -695,7 +695,7 @@
   </data>
   <data name="GenericInsightDescription" xml:space="preserve">
     <value>Error {0}: {1}</value>
-    <comment>Locked={"{0}", "{1}"} A description to help a user that is dealing with non-specific error situation. {0} is the error name. {1} is the error description.</comment>
+    <comment>{Locked="{0}", "{1}"} A description to help a user that is dealing with non-specific error situation. {0} is the error name. {1} is the error description.</comment>
   </data>
   <data name="FrameworkTypesTextBlock.Text" xml:space="preserve">
     <value>Framework types used in this app</value>
@@ -819,7 +819,7 @@
   </data>
   <data name="SettingsAddToolCard.Header" xml:space="preserve">
     <value>Register an external tool with Dev Home Project Ironsides</value>
-    <comment>Locked="{Ironsides}" Header for the settings item to add a tool to the product.</comment>
+    <comment>{Locked="Ironsides"} Header for the settings item to add a tool to the product.</comment>
   </data>
   <data name="SettingsEditToolCard.Header" xml:space="preserve">
     <value>Edit or unregister existing tools</value>
@@ -899,7 +899,7 @@
   </data>
   <data name="CpuArchitecture_ProcessOnMachine" xml:space="preserve">
     <value>{0} process running on {1} machine</value>
-    <comment>Locked={"{0}", "{1}"} Message text when the process is the specified CPU architecture running on the specified CPU machine. {0} is the process architecture, {1} is the machine architecture.</comment>
+    <comment>{Locked="{0}", "{1}"} Message text when the process is the specified CPU architecture running on the specified CPU machine. {0} is the process architecture, {1} is the machine architecture.</comment>
   </data>
   <data name="CpuArchitecture_Unknown" xml:space="preserve">
     <value>Unknown</value>
@@ -907,7 +907,7 @@
   </data>
   <data name="CpuArchitecture_UnknownOnMachine" xml:space="preserve">
     <value>Unknown process type running on {0}</value>
-    <comment>Locked={"{0}"}. Message text when the process is unknown CPU architecture running on the specified CPU machine. {0} is the machine architecture.</comment>
+    <comment>{Locked="{0}"}. Message text when the process is unknown CPU architecture running on the specified CPU machine. {0} is the machine architecture.</comment>
   </data>
   <data name="CpuArchitecture_X64onX64" xml:space="preserve">
     <value>X64 process running on X64 machine</value>
@@ -919,11 +919,11 @@
   </data>
   <data name="AliasDisabledDialogContent" xml:space="preserve">
     <value>Go to Windows Settings &gt; Apps &gt; Advanced app settings &gt; App execution alias &gt; Project Ironsides &gt; Enable the toggle and try to launch PI as admin again.</value>
-    <comment>Locked="{Ironsides}" Content Dialog content suggesting users steps to enable app execution alias from Windows Settings app</comment>
+    <comment>{Locked="Ironsides"} Content Dialog content suggesting users steps to enable app execution alias from Windows Settings app</comment>
   </data>
   <data name="AliasDisabledDialogTitle" xml:space="preserve">
     <value>Enable App Execution Alias for Project Ironsides and try again</value>
-    <comment>Locked="{Ironsides}" Content Dialog title to enable app execution alias for Project Ironsides</comment>
+    <comment>{Locked="Ironsides"} Content Dialog title to enable app execution alias for Project Ironsides</comment>
   </data>
   <data name="DetachAppButton.Content" xml:space="preserve">
     <value>Detach from target app</value>
@@ -959,7 +959,7 @@
   </data>
   <data name="ArgumentsDescriptionTextBlock.Text" xml:space="preserve">
     <value>Provide the command-line or protocol arguments here. Use {pid} or {hwnd} if you want Project Ironsides to substitute the target app's process ID or window handle. For example:</value>
-    <comment>Description text for a section where the user can type in the arguments to be used for the app</comment>
+    <comment>{Locked="Ironsides"} Description text for a section where the user can type in the arguments to be used for the app</comment>
   </data>
   <data name="ArgumentsHeaderTextBlock.Text" xml:space="preserve">
     <value>Arguments</value>
