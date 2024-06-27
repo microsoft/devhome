@@ -3,10 +3,8 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using DevHome.Common.Extensions;
-using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
 using DevHome.PI.ViewModels;
@@ -26,30 +24,25 @@ namespace DevHome.PI;
 public partial class BarWindowVertical : WindowEx
 {
     private readonly Settings _settings = Settings.Default;
-    private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
-    private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
     private readonly BarWindowViewModel _viewModel;
 
     private int _cursorPosX; // = 0;
     private int _cursorPosY; // = 0;
     private int _appWindowPosX; // = 0;
     private int _appWindowPosY; // = 0;
-    private bool isWindowMoving; // = false;
-    private bool isClosing;
+    private bool _isWindowMoving; // = false;
+    private bool _isClosing;
 
     internal HWND ThisHwnd { get; private set; }
 
-    public Microsoft.UI.Dispatching.DispatcherQueue TheDispatcher
-    {
-        get; set;
-    }
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     public BarWindowVertical(BarWindowViewModel model)
     {
         _viewModel = model;
 
         // The main constructor is used in all cases, including when there's no target window.
-        TheDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         InitializeComponent();
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
@@ -78,7 +71,7 @@ public partial class BarWindowVertical : WindowEx
         var style = PInvoke.GetWindowLong(ThisHwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
         style &= ~(int)WINDOW_STYLE.WS_THICKFRAME;
         _ = PInvoke.SetWindowLong(ThisHwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, style);
-        PInvoke.SetWindowPos(ThisHwnd, HWND.Null, 0, 0, 0, 0, Windows.Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER);
+        PInvoke.SetWindowPos(ThisHwnd, HWND.Null, 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER);
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -91,12 +84,12 @@ public partial class BarWindowVertical : WindowEx
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
-        if (!isClosing)
+        if (!_isClosing)
         {
-            isClosing = true;
+            _isClosing = true;
             var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
             barWindow?.Close();
-            isClosing = false;
+            _isClosing = false;
         }
     }
 
@@ -118,7 +111,7 @@ public partial class BarWindowVertical : WindowEx
     private void Window_PointerReleased(object sender, PointerRoutedEventArgs e)
     {
         ((UIElement)sender).ReleasePointerCaptures();
-        isWindowMoving = false;
+        _isWindowMoving = false;
 
         // If we're occupying the same space as the target window, and we're not in medium/large mode, snap to the app
         if (!_viewModel.IsSnapped && TargetAppData.Instance.HWnd != HWND.Null)
@@ -141,7 +134,7 @@ public partial class BarWindowVertical : WindowEx
                 _viewModel.UnsnapBarWindow();
             }
 
-            isWindowMoving = true;
+            _isWindowMoving = true;
             ((UIElement)sender).CapturePointer(e.Pointer);
             _appWindowPosX = AppWindow.Position.X;
             _appWindowPosY = AppWindow.Position.Y;
@@ -153,7 +146,7 @@ public partial class BarWindowVertical : WindowEx
 
     private void Window_PointerMoved(object sender, PointerRoutedEventArgs e)
     {
-        if (isWindowMoving)
+        if (_isWindowMoving)
         {
             var properties = e.GetCurrentPoint((UIElement)sender).Properties;
             if (properties.IsLeftButtonPressed)

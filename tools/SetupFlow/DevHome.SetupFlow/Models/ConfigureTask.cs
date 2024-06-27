@@ -5,9 +5,9 @@ extern alias Projection;
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -22,8 +22,8 @@ public class ConfigureTask : ISetupTask
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigureTask));
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly IDesiredStateConfiguration _dsc;
-    private readonly StorageFile _file;
+    private readonly IDSC _dsc;
+    private readonly IDSCFile _file;
     private readonly Guid _activityId;
 
     public event ISetupTask.ChangeMessageHandler AddMessage;
@@ -54,8 +54,8 @@ public class ConfigureTask : ISetupTask
 
     public ConfigureTask(
         ISetupFlowStringResource stringResource,
-        IDesiredStateConfiguration dsc,
-        StorageFile file,
+        IDSC dsc,
+        IDSCFile file,
         Guid activityId)
     {
         _stringResource = stringResource;
@@ -98,9 +98,9 @@ public class ConfigureTask : ISetupTask
             try
             {
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.ApplyingConfigurationMessage), MessageSeverityKind.Info);
-                var result = await _dsc.ApplyConfigurationAsync(_file.Path, _activityId);
+                var result = await _dsc.ApplyConfigurationAsync(_file, _activityId);
                 RequiresReboot = result.RequiresReboot;
-                UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
+                UnitResults = result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
                 if (result.Succeeded)
                 {
                     return TaskFinishedState.Success;
@@ -146,17 +146,10 @@ public class ConfigureTask : ISetupTask
     /// <returns>Arguments for this task</returns>
     public ConfigureTaskArguments GetArguments()
     {
-        var fileData = GetFileData();
-        return new ConfigureTaskArguments
+        return new()
         {
-            FilePath = fileData.FilePath,
-            Content = fileData.Content,
+            FilePath = _file.Path,
+            Content = _file.Content,
         };
-    }
-
-    private (string FilePath, string Content) GetFileData()
-    {
-        var content = File.ReadAllText(_file.Path);
-        return (_file.Path, content);
     }
 }

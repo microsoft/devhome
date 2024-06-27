@@ -3,7 +3,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -12,10 +11,8 @@ using System.Threading;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using Microsoft.UI.Xaml;
-using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace DevHome.PI.Models;
 
@@ -193,10 +190,10 @@ internal sealed class ClipboardMonitor : WindowHooker<ClipboardMonitor>, INotify
         switch (msg)
         {
             case PInvoke.WM_CLIPBOARDUPDATE:
-            {
-                ThreadPool.QueueUserWorkItem((o) => ClipboardChanged());
-                break;
-            }
+                {
+                    ThreadPool.QueueUserWorkItem((o) => ClipboardChanged());
+                    break;
+                }
         }
 
         return base.CustomWndProc(hWnd, msg, wParam, lParam);

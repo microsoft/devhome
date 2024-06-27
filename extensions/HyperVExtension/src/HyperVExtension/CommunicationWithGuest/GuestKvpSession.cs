@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Text.Json.Nodes;
 using HyperVExtension.HostGuestCommunication;
 
 namespace HyperVExtension.CommunicationWithGuest;

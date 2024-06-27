@@ -14,7 +14,7 @@ namespace CoreWidgetProvider.Widgets;
 
 public sealed class WidgetServer : IDisposable
 {
-    private readonly HashSet<uint> registrationCookies = new();
+    private readonly HashSet<uint> _registrationCookies = new();
 
     [UnconditionalSuppressMessage(
         "ReflectionAnalysis",
@@ -41,7 +41,7 @@ public sealed class WidgetServer : IDisposable
             Marshal.ThrowExceptionForHR(hr);
         }
 
-        registrationCookies.Add(cookie);
+        _registrationCookies.Add(cookie);
         Log.Debug($"Cookie: {cookie}");
         hr = PInvoke.CoResumeClassObjects();
         if (hr < 0)
@@ -62,7 +62,7 @@ public sealed class WidgetServer : IDisposable
     public void Dispose()
     {
         Log.Debug($"Revoking class object registrations:");
-        foreach (var cookie in registrationCookies)
+        foreach (var cookie in _registrationCookies)
         {
             Log.Debug($"Cookie: {cookie}");
             var hr = PInvoke.CoRevokeClassObject(cookie);

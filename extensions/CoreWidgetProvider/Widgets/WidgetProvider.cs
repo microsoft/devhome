@@ -12,17 +12,17 @@ namespace CoreWidgetProvider.Widgets;
 [Guid("F8B2DBB9-3687-4C6E-99B2-B92C82905937")]
 internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
 {
-    private readonly Dictionary<string, IWidgetImplFactory> widgetDefinitionRegistry = new();
-    private readonly Dictionary<string, WidgetImpl> runningWidgets = new();
+    private readonly Dictionary<string, IWidgetImplFactory> _widgetDefinitionRegistry = new();
+    private readonly Dictionary<string, WidgetImpl> _runningWidgets = new();
 
     public WidgetProvider()
     {
         Log.Debug("Provider Constructed");
-        widgetDefinitionRegistry.Add("SSH_Wallet", new WidgetImplFactory<SSHWalletWidget>());
-        widgetDefinitionRegistry.Add("System_Memory", new WidgetImplFactory<SystemMemoryWidget>());
-        widgetDefinitionRegistry.Add("System_NetworkUsage", new WidgetImplFactory<SystemNetworkUsageWidget>());
-        widgetDefinitionRegistry.Add("System_GPUUsage", new WidgetImplFactory<SystemGPUUsageWidget>());
-        widgetDefinitionRegistry.Add("System_CPUUsage", new WidgetImplFactory<SystemCPUUsageWidget>());
+        _widgetDefinitionRegistry.Add("SSH_Wallet", new WidgetImplFactory<SSHWalletWidget>());
+        _widgetDefinitionRegistry.Add("System_Memory", new WidgetImplFactory<SystemMemoryWidget>());
+        _widgetDefinitionRegistry.Add("System_NetworkUsage", new WidgetImplFactory<SystemNetworkUsageWidget>());
+        _widgetDefinitionRegistry.Add("System_GPUUsage", new WidgetImplFactory<SystemGPUUsageWidget>());
+        _widgetDefinitionRegistry.Add("System_CPUUsage", new WidgetImplFactory<SystemCPUUsageWidget>());
         RecoverRunningWidgets();
     }
 
@@ -32,13 +32,13 @@ internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
         var widgetDefinitionId = widgetContext.DefinitionId;
         Log.Debug($"Calling Initialize for Widget Id: {widgetId} - {widgetDefinitionId}");
 
-        if (!widgetDefinitionRegistry.TryGetValue(widgetDefinitionId, out var value))
+        if (!_widgetDefinitionRegistry.TryGetValue(widgetDefinitionId, out var value))
         {
             Log.Error($"Unknown widget DefinitionId: {widgetDefinitionId}");
             return;
         }
 
-        if (runningWidgets.ContainsKey(widgetId))
+        if (_runningWidgets.ContainsKey(widgetId))
         {
             Log.Warning($"Attempted to initialize a widget twice: {widgetDefinitionId} - {widgetId}");
             return;
@@ -46,7 +46,7 @@ internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
 
         var factory = value;
         var widgetImpl = factory.Create(widgetContext, state);
-        runningWidgets.Add(widgetId, widgetImpl);
+        _runningWidgets.Add(widgetId, widgetImpl);
     }
 
     private void RecoverRunningWidgets()
@@ -70,7 +70,7 @@ internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
 
         foreach (var widgetInfo in recoveredWidgets)
         {
-            if (!runningWidgets.ContainsKey(widgetInfo.WidgetContext.Id))
+            if (!_runningWidgets.ContainsKey(widgetInfo.WidgetContext.Id))
             {
                 InitializeWidget(widgetInfo.WidgetContext, widgetInfo.CustomState);
             }
@@ -89,7 +89,7 @@ internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
     {
         Log.Debug($"Activate id: {widgetContext.Id} definitionId: {widgetContext.DefinitionId}");
         var widgetId = widgetContext.Id;
-        if (runningWidgets.TryGetValue(widgetId, out var runningWidget))
+        if (_runningWidgets.TryGetValue(widgetId, out var runningWidget))
         {
             runningWidget.Activate(widgetContext);
         }
@@ -98,7 +98,7 @@ internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
             // Called to activate a widget that we don't know about, which is unexpected. Try to recover by creating it.
             Log.Warning($"Found WidgetId that was not known: {widgetContext.Id}, attempting to recover by creating it.");
             CreateWidget(widgetContext);
-            if (runningWidgets.TryGetValue(widgetId, out var recoveredWidget))
+            if (_runningWidgets.TryGetValue(widgetId, out var recoveredWidget))
             {
                 recoveredWidget.Activate(widgetContext);
             }
@@ -108,7 +108,7 @@ internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
     public void Deactivate(string widgetId)
     {
         Log.Debug($"Deactivate id: {widgetId}");
-        if (runningWidgets.TryGetValue(widgetId, out var value))
+        if (_runningWidgets.TryGetValue(widgetId, out var value))
         {
             value.Deactivate(widgetId);
         }
@@ -117,10 +117,10 @@ internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
     public void DeleteWidget(string widgetId, string customState)
     {
         Log.Information($"DeleteWidget id: {widgetId}");
-        if (runningWidgets.TryGetValue(widgetId, out var value))
+        if (_runningWidgets.TryGetValue(widgetId, out var value))
         {
             value.DeleteWidget(widgetId, customState);
-            runningWidgets.Remove(widgetId);
+            _runningWidgets.Remove(widgetId);
         }
     }
 
@@ -129,7 +129,7 @@ internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
         Log.Debug($"OnActionInvoked id: {actionInvokedArgs.WidgetContext.Id} definitionId: {actionInvokedArgs.WidgetContext.DefinitionId}");
         var widgetContext = actionInvokedArgs.WidgetContext;
         var widgetId = widgetContext.Id;
-        if (runningWidgets.TryGetValue(widgetId, out var value))
+        if (_runningWidgets.TryGetValue(widgetId, out var value))
         {
             value.OnActionInvoked(actionInvokedArgs);
         }
@@ -140,7 +140,7 @@ internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
         Log.Debug($"OnCustomizationRequested id: {customizationRequestedArgs.WidgetContext.Id} definitionId: {customizationRequestedArgs.WidgetContext.DefinitionId}");
         var widgetContext = customizationRequestedArgs.WidgetContext;
         var widgetId = widgetContext.Id;
-        if (runningWidgets.TryGetValue(widgetId, out var value))
+        if (_runningWidgets.TryGetValue(widgetId, out var value))
         {
             value.OnCustomizationRequested(customizationRequestedArgs);
         }
@@ -151,7 +151,7 @@ internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
         Log.Debug($"OnWidgetContextChanged id: {contextChangedArgs.WidgetContext.Id} definitionId: {contextChangedArgs.WidgetContext.DefinitionId}");
         var widgetContext = contextChangedArgs.WidgetContext;
         var widgetId = widgetContext.Id;
-        if (runningWidgets.TryGetValue(widgetId, out var value))
+        if (_runningWidgets.TryGetValue(widgetId, out var value))
         {
             value.OnWidgetContextChanged(contextChangedArgs);
         }

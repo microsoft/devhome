@@ -28,7 +28,7 @@ public class EntryPointEvent : EventBase
         Widget = 4,
     }
 
-    private readonly string[] entryPointNames =
+    private readonly string[] _entryPointNames =
     [
         string.Empty,
         "Settings",
@@ -39,7 +39,7 @@ public class EntryPointEvent : EventBase
 
     public EntryPointEvent(EntryPoint entryPoint)
     {
-        EntryPointName = entryPointNames[(int)entryPoint];
+        EntryPointName = _entryPointNames[(int)entryPoint];
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)

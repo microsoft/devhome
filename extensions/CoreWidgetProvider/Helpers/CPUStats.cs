@@ -8,10 +8,10 @@ namespace CoreWidgetProvider.Helpers;
 internal sealed class CPUStats : IDisposable
 {
     // CPU counters
-    private readonly PerformanceCounter procPerf = new("Processor Information", "% Processor Utility", "_Total");
-    private readonly PerformanceCounter procPerformance = new("Processor Information", "% Processor Performance", "_Total");
-    private readonly PerformanceCounter procFrequency = new("Processor Information", "Processor Frequency", "_Total");
-    private readonly Dictionary<Process, PerformanceCounter> cpuCounters = new();
+    private readonly PerformanceCounter _procPerf = new("Processor Information", "% Processor Utility", "_Total");
+    private readonly PerformanceCounter _procPerformance = new("Processor Information", "% Processor Performance", "_Total");
+    private readonly PerformanceCounter _procFrequency = new("Processor Information", "Processor Frequency", "_Total");
+    private readonly Dictionary<Process, PerformanceCounter> _cpuCounters = new();
 
     internal sealed class ProcessStats
     {
@@ -26,7 +26,7 @@ internal sealed class CPUStats : IDisposable
 
     public ProcessStats[] ProcessCPUStats { get; set; }
 
-    public List<float> CpuChartValues { get; set; } = new List<float>();
+    public List<float> CpuChartValues { get; set; } = new();
 
     public CPUStats()
     {
@@ -45,16 +45,16 @@ internal sealed class CPUStats : IDisposable
     {
         var allProcesses = Process.GetProcesses().Where(p => (long)p.MainWindowHandle != 0);
 
-        foreach (Process process in allProcesses)
+        foreach (var process in allProcesses)
         {
-            cpuCounters.Add(process, new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true));
+            _cpuCounters.Add(process, new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true));
         }
     }
 
     public void GetData()
     {
-        CpuUsage = procPerf.NextValue() / 100;
-        CpuSpeed = procFrequency.NextValue() * (procPerformance.NextValue() / 100);
+        CpuUsage = _procPerf.NextValue() / 100;
+        CpuSpeed = _procFrequency.NextValue() * (_procPerformance.NextValue() / 100);
 
         lock (CpuChartValues)
         {
@@ -63,7 +63,7 @@ internal sealed class CPUStats : IDisposable
 
         var processCPUUsages = new Dictionary<Process, float>();
 
-        foreach (var processCounter in cpuCounters)
+        foreach (var processCounter in _cpuCounters)
         {
             try
             {
@@ -111,11 +111,11 @@ internal sealed class CPUStats : IDisposable
 
     public void Dispose()
     {
-        procPerf.Dispose();
-        procPerformance.Dispose();
-        procFrequency.Dispose();
+        _procPerf.Dispose();
+        _procPerformance.Dispose();
+        _procFrequency.Dispose();
 
-        foreach (var counter in cpuCounters.Values)
+        foreach (var counter in _cpuCounters.Values)
         {
             counter.Dispose();
         }

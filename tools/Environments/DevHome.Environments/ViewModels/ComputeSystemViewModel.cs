@@ -22,7 +22,6 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DevHome.Environments.ViewModels;
 

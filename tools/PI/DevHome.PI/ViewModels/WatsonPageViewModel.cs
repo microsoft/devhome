@@ -16,27 +16,27 @@ namespace DevHome.PI.ViewModels;
 
 public partial class WatsonPageViewModel : ObservableObject, IDisposable
 {
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
-    private readonly ObservableCollection<WatsonReport> reports;
-    private Process? targetProcess;
-    private WatsonHelper? watsonHelper;
-    private Thread? watsonThread;
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly ObservableCollection<WatsonReport> _reports;
+    private Process? _targetProcess;
+    private WatsonHelper? _watsonHelper;
+    private Thread? _watsonThread;
 
     [ObservableProperty]
-    private ObservableCollection<WatsonReport> reportEntries;
+    private ObservableCollection<WatsonReport> _reportEntries;
 
     [ObservableProperty]
-    private string watsonInfoText;
+    private string _watsonInfoText;
 
     public WatsonPageViewModel()
     {
-        dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
-        watsonInfoText = string.Empty;
-        reports = new();
-        reportEntries = new();
-        reports.CollectionChanged += WatsonOutput_CollectionChanged;
+        _watsonInfoText = string.Empty;
+        _reports = new();
+        _reportEntries = new();
+        _reports.CollectionChanged += WatsonOutput_CollectionChanged;
 
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)
@@ -47,14 +47,14 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
 
     public void UpdateTargetProcess(Process process)
     {
-        if (targetProcess != process)
+        if (_targetProcess != process)
         {
-            targetProcess = process;
+            _targetProcess = process;
 
             StopWatsonHelper();
-            watsonThread = new Thread(StartWatsonHelper);
-            watsonThread.Name = "Watson Page Thread";
-            watsonThread.Start();
+            _watsonThread = new Thread(StartWatsonHelper);
+            _watsonThread.Name = "Watson Page Thread";
+            _watsonThread.Start();
         }
     }
 
@@ -79,27 +79,27 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
 
     private void StartWatsonHelper()
     {
-        if (targetProcess is not null)
+        if (_targetProcess is not null)
         {
-            watsonHelper = new WatsonHelper(targetProcess, reports, null);
-            watsonHelper.Start();
+            _watsonHelper = new WatsonHelper(_targetProcess, _reports, null);
+            _watsonHelper.Start();
 
             // Get all existing reports
-            List<WatsonReport> existingReports = watsonHelper.GetWatsonReports();
+            List<WatsonReport> existingReports = _watsonHelper.GetWatsonReports();
             foreach (var report in existingReports)
             {
-                reports.Add(report);
+                _reports.Add(report);
             }
         }
     }
 
     private void StopWatsonHelper(bool shouldCleanLogs = true)
     {
-        watsonHelper?.Stop();
+        _watsonHelper?.Stop();
 
-        if (Thread.CurrentThread != watsonThread)
+        if (Thread.CurrentThread != _watsonThread)
         {
-            watsonThread?.Join();
+            _watsonThread?.Join();
         }
 
         if (shouldCleanLogs)
@@ -110,7 +110,7 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        watsonHelper?.Dispose();
+        _watsonHelper?.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -118,7 +118,7 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 foreach (WatsonReport newEntry in e.NewItems)
                 {
@@ -130,9 +130,9 @@ public partial class WatsonPageViewModel : ObservableObject, IDisposable
 
     private void ClearWatsonLogs()
     {
-        reports?.Clear();
+        _reports?.Clear();
 
-        dispatcher.TryEnqueue(() =>
+        _dispatcher.TryEnqueue(() =>
         {
             ReportEntries.Clear();
         });

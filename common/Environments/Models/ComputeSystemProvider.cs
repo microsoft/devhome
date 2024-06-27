@@ -22,7 +22,7 @@ public class ComputeSystemProvider
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemProvider));
 
-    private readonly string errorString;
+    private readonly string _errorString;
 
     private readonly IComputeSystemProvider _computeSystemProvider;
 
@@ -41,7 +41,7 @@ public class ComputeSystemProvider
         DisplayName = computeSystemProvider.DisplayName;
         SupportedOperations = computeSystemProvider.SupportedOperations;
         Icon = computeSystemProvider.Icon;
-        errorString = StringResourceHelper.GetResource("ComputeSystemUnexpectedError", DisplayName);
+        _errorString = StringResourceHelper.GetResource("ComputeSystemUnexpectedError", DisplayName);
     }
 
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForDeveloperId(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
@@ -53,7 +53,7 @@ public class ComputeSystemProvider
         catch (Exception ex)
         {
             _log.Error(ex, $"CreateAdaptiveCardSessionForDeveloperId for: {this} failed due to exception");
-            return new ComputeSystemAdaptiveCardResult(ex, errorString, ex.Message);
+            return new ComputeSystemAdaptiveCardResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -66,7 +66,7 @@ public class ComputeSystemProvider
         catch (Exception ex)
         {
             _log.Error(ex, $"CreateAdaptiveCardSessionForComputeSystem for: {this} failed due to exception");
-            return new ComputeSystemAdaptiveCardResult(ex, errorString, ex.Message);
+            return new ComputeSystemAdaptiveCardResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -79,7 +79,7 @@ public class ComputeSystemProvider
         catch (Exception ex)
         {
             _log.Error(ex, $"GetComputeSystemsAsync for: {this} failed due to exception");
-            return new ComputeSystemsResult(ex, errorString, ex.Message);
+            return new ComputeSystemsResult(ex, _errorString, ex.Message);
         }
     }
 

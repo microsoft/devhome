@@ -12,7 +12,6 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
-using WinUIEx;
 
 namespace DevHome.Common.Renderers;
 
