@@ -81,7 +81,7 @@ extends:
             symbolProject: 'DevHome'
             indexSources: false
             symbolsArtifactName: 'DevHomeSDK'
-            symbolsVersion: '$(Build.BuildNumber)'
+            symbolsVersion: '$(BuildingBranch)$(Build.BuildNumber)'
             searchPattern: |
               **/bin/**/*.pdb
               **/bin/**/*.exe
@@ -225,7 +225,7 @@ extends:
                 subscription: $(SymbolSubscription)
                 indexSources: true
                 symbolsArtifactName: 'DevHome_${{ platform }}_${{ configuration }}'
-                symbolsVersion: $(Build.BuildNumber)
+                symbolsVersion: '$(BuildingBranch)$(Build.BuildNumber)'
                 searchPattern: >-
                   $(Build.SourcesDirectory)\**\bin\**\*.pdb
 
@@ -535,7 +535,7 @@ extends:
           displayName: 'Create Staging StoreBroker Package'
           condition: eq(variables['BuildingBranch'], 'staging')
           inputs:
-            ConnectedServiceNameARM: 'DevHomeCanary StoreBroker ServiceConnection'
+            serviceEndpoint: 'DevHomeCanary StoreBroker ServiceConnection'
             sbConfigPath: '$(System.DefaultWorkingDirectory)\build\store\canary\SBConfig.json'
             sourceFolder: 'StorePublish'
             contents: '*.msixbundle'
@@ -548,7 +548,7 @@ extends:
           displayName: 'Publish Staging StoreBroker Package'
           condition: eq(variables['BuildingBranch'], 'staging')
           inputs:
-            ConnectedServiceNameARM: 'DevHomeCanary StoreBroker ServiceConnection'
+            serviceEndpoint: 'DevHomeCanary StoreBroker ServiceConnection'
             appId: 9MX22N5S7HRD
             inputMethod: JsonAndZip
             jsonPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.json'
@@ -563,7 +563,7 @@ extends:
           displayName: 'Create Release StoreBroker Package'
           condition: eq(variables['BuildingBranch'], 'release')
           inputs:
-            ConnectedServiceNameARM: 'DevHome StoreBroker ServiceConnection'
+            serviceEndpoint: 'DevHome StoreBroker ServiceConnection'
             sbConfigPath: '$(System.DefaultWorkingDirectory)\build\store\preview\SBConfig.json'
             sourceFolder: 'StorePublish'
             contents: '*.msixbundle'
@@ -576,7 +576,7 @@ extends:
           displayName: 'Publish Release StoreBroker Package'
           condition: eq(variables['BuildingBranch'], 'release')
           inputs:
-            ConnectedServiceNameARM: 'DevHome StoreBroker ServiceConnection'
+            serviceEndpoint: 'DevHome StoreBroker ServiceConnection'
             appId: 9N8MHTPHNGVV
             inputMethod: JsonAndZip
             jsonPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.json'

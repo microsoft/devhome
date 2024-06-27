@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Models.WingetConfigure;
@@ -63,7 +62,7 @@ public class ConfigurationFileBuilder
             appResources.Add(CreateWinGetInstallForGitPreReq(configurationFileKind));
         }
 
-        List<WinGetConfigResource> listOfResources = [..appResources, ..repoResources];
+        List<WinGetConfigResource> listOfResources = [.. appResources, .. repoResources];
 
         if (listOfResources.Count == 0)
         {

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.Graphics.Imaging;
-using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
@@ -338,6 +339,69 @@ public class WindowHelper
         return softwareBitmapSource;
     }
 
+    internal static BitmapImage? GetBitmapImageFromFile(string filePath)
+    {
+        BitmapImage? bitmapImage = null;
+        try
+        {
+            // Creating a BitmapImage must be done on the UI thread.
+            bitmapImage = new BitmapImage();
+            var icon = Icon.ExtractAssociatedIcon(filePath);
+            if (icon is not null)
+            {
+                using var bitmap = icon.ToBitmap();
+                using var stream = new MemoryStream();
+                bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+
+                stream.Seek(0, SeekOrigin.Begin);
+                var randomAccessStream = new InMemoryRandomAccessStream();
+                var outputStream = randomAccessStream.GetOutputStreamAt(0);
+                var writer = new DataWriter(outputStream);
+                writer.WriteBytes(stream.ToArray());
+                writer.StoreAsync().GetResults();
+                randomAccessStream.Seek(0);
+
+                bitmapImage.SetSource(randomAccessStream);
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error($"Error creating BitmapImage from filePath: {ex.Message}");
+        }
+
+        return bitmapImage;
+    }
+
+    internal static async Task<SoftwareBitmapSource?> GetSoftwareBitmapSourceFromImageFilePath(string iconFilePath)
+    {
+        SoftwareBitmapSource? softwareBitmapSource = null;
+
+        try
+        {
+            var fileStream = File.OpenRead(iconFilePath);
+            var decoder = await BitmapDecoder.CreateAsync(fileStream.AsRandomAccessStream());
+            var softwareBitmap = await decoder.GetSoftwareBitmapAsync();
+
+            // SoftwareBitmapSource.SetBitmapAsync only supports SoftwareBitmap with
+            // bgra8 pixel format and pre-multiplied or no alpha.
+            if (softwareBitmap.BitmapPixelFormat != BitmapPixelFormat.Bgra8
+                || softwareBitmap.BitmapAlphaMode == BitmapAlphaMode.Straight)
+            {
+                softwareBitmap = SoftwareBitmap.Convert(
+                    softwareBitmap, BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied);
+            }
+
+            softwareBitmapSource = new SoftwareBitmapSource();
+            await softwareBitmapSource.SetBitmapAsync(softwareBitmap);
+        }
+        catch (Exception ex)
+        {
+            _log.Error($"Error creating SoftwareBitmapSource from file path: {ex.Message}");
+        }
+
+        return softwareBitmapSource;
+    }
+
     internal static unsafe uint GetProcessIdFromWindow(HWND hWnd)
     {
         uint processID = 0;
@@ -590,12 +654,13 @@ public class WindowHelper
 
         try
         {
-            await ContentDialog.ShowAsync();
-            timer.Start();
+            ContentDialog.Opened += (s, e) => timer.Start();
             ContentDialog.Closed += (s, e) =>
             {
+                timer.Stop();
                 ContentDialog = null;
             };
+            await ContentDialog.ShowAsync();
         }
         catch (Exception ex)
         {

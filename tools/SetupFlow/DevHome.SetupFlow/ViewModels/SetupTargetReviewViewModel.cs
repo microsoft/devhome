@@ -7,7 +7,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.SetupFlow.Services;
-using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.ViewModels;
 

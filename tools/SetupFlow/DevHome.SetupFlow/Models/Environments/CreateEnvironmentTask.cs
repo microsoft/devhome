@@ -15,7 +15,6 @@ using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using DevHome.SetupFlow.ViewModels.Environments;
 using DevHome.Telemetry;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;

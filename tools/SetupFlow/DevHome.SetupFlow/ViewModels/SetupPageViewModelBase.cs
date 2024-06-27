@@ -3,11 +3,8 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.DevHomeAdaptiveCards.CardModels;
-using DevHome.Common.DevHomeAdaptiveCards.Parsers;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;

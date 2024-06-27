@@ -3,15 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using DevHome.PI.Telemetry;
-using Microsoft.Diagnostics.Tracing.Parsers.MicrosoftWindowsWPF;
-using Windows.Foundation.Metadata;
-using static DevHome.PI.Telemetry.FeatureState;
 
 namespace DevHome.PI.Telemetry;
 

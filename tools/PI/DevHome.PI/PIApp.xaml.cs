@@ -4,7 +4,6 @@
 using System;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.PI.Controls;
 using DevHome.PI.Pages;
 using DevHome.PI.Services;
 using DevHome.PI.Telemetry;

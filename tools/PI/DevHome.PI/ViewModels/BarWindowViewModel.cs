@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -18,20 +16,22 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Graphics;
 using Windows.System;
 using Windows.Win32.Foundation;
-using Windows.Win32.Graphics.Gdi;
 
 namespace DevHome.PI.ViewModels;
 
 public partial class BarWindowViewModel : ObservableObject
 {
-    private const string _UnsnapButtonText = "\ue89f";
-    private const string _SnapButtonText = "\ue8a0";
+    private const string UnsnapButtonText = "\ue89f";
+    private const string SnapButtonText = "\ue8a0";
 
     private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
     private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
+    private readonly string _unsnapToolTip = CommonHelper.GetLocalizedString("UnsnapToolTip");
+    private readonly string _snapToolTip = CommonHelper.GetLocalizedString("SnapToolTip");
+    private readonly string _expandToolTip = CommonHelper.GetLocalizedString("SwitchToLargeLayoutToolTip");
+    private readonly string _collapseToolTip = CommonHelper.GetLocalizedString("SwitchToSmallLayoutToolTip");
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-    private readonly List<Button> _externalToolButtons = [];
 
     private readonly ObservableCollection<Button> _externalTools = [];
     private readonly SnapHelper _snapHelper;
@@ -49,7 +49,13 @@ public partial class BarWindowViewModel : ObservableObject
     private bool _isSnappingEnabled = false;
 
     [ObservableProperty]
-    private string _currentSnapButtonText = _SnapButtonText;
+    private string _currentSnapButtonText = SnapButtonText;
+
+    [ObservableProperty]
+    private string _currentSnapToolTip;
+
+    [ObservableProperty]
+    private string _currentExpandToolTip;
 
     [ObservableProperty]
     private string _appCpuUsage = string.Empty;
@@ -100,9 +106,7 @@ public partial class BarWindowViewModel : ObservableObject
         SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", PerfCounters.Instance.SystemDiskUsage);
 
         var process = TargetAppData.Instance.TargetProcess;
-
         IsAppBarVisible = process is not null;
-
         if (process != null)
         {
             ApplicationName = process.ProcessName;
@@ -111,12 +115,18 @@ public partial class BarWindowViewModel : ObservableObject
             ApplicationHwnd = TargetAppData.Instance.HWnd;
         }
 
-        CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
-
+        CurrentSnapButtonText = IsSnapped ? UnsnapButtonText : SnapButtonText;
+        CurrentSnapToolTip = IsSnapped ? _unsnapToolTip : _snapToolTip;
+        CurrentExpandToolTip = ShowingExpandedContent ? _collapseToolTip : _expandToolTip;
         _snapHelper = new();
 
         ((INotifyCollectionChanged)ExternalToolsHelper.Instance.FilteredExternalTools).CollectionChanged += FilteredExternalTools_CollectionChanged;
         FilteredExternalTools_CollectionChanged(null, null);
+    }
+
+    partial void OnShowingExpandedContentChanged(bool value)
+    {
+        CurrentExpandToolTip = ShowingExpandedContent ? _collapseToolTip : _expandToolTip;
     }
 
     private void FilteredExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs? e)
@@ -127,7 +137,8 @@ public partial class BarWindowViewModel : ObservableObject
 
     partial void OnIsSnappedChanged(bool value)
     {
-        CurrentSnapButtonText = IsSnapped ? _UnsnapButtonText : _SnapButtonText;
+        CurrentSnapButtonText = IsSnapped ? UnsnapButtonText : SnapButtonText;
+        CurrentSnapToolTip = IsSnapped ? _unsnapToolTip : _snapToolTip;
     }
 
     partial void OnBarOrientationChanged(Orientation value)
@@ -157,7 +168,7 @@ public partial class BarWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void SwitchLayout()
+    public void RotateLayout()
     {
         if (BarOrientation == Orientation.Horizontal)
         {

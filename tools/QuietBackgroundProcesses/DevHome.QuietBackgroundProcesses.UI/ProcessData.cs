@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.UI.Xaml.Automation;
 
 namespace DevHome.QuietBackgroundProcesses.UI;
 
