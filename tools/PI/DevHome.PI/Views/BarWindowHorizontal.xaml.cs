@@ -31,6 +31,9 @@ namespace DevHome.PI;
 
 public partial class BarWindowHorizontal : WindowEx
 {
+    private const string ExpandButtonText = "\ue70d"; // ChevronDown
+    private const string CollapseButtonText = "\ue70e"; // ChevronUp
+
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowViewModel _viewModel;
     private readonly UISettings _uiSettings = new();
@@ -81,6 +84,7 @@ public partial class BarWindowHorizontal : WindowEx
         var settingSize = Settings.Default.ExpandedLargeSize;
         _restoreState.Height = settingSize.Height;
         _restoreState.Width = settingSize.Width;
+        ExpandCollapseLayoutButtonText.Text = _viewModel.ShowingExpandedContent ? CollapseButtonText : ExpandButtonText;
 
         _uiSettings.ColorValuesChanged += (sender, args) =>
         {
@@ -98,10 +102,12 @@ public partial class BarWindowHorizontal : WindowEx
             if (_viewModel.ShowingExpandedContent)
             {
                 ExpandLargeContentPanel();
+                ExpandCollapseLayoutButtonText.Text = CollapseButtonText;
             }
             else
             {
                 CollapseLargeContentPanel();
+                ExpandCollapseLayoutButtonText.Text = ExpandButtonText;
             }
         }
     }
@@ -342,7 +348,7 @@ public partial class BarWindowHorizontal : WindowEx
     public void SetCaptionButtonColors(Windows.UI.Color color)
     {
         AppWindow.TitleBar.ButtonForegroundColor = color;
-        UpdateSnapButtonTextColor();
+        UpdateCustomTitleBarButtonsTextColor();
     }
 
     private void Window_Activated(object sender, WindowActivatedEventArgs args)
@@ -350,18 +356,22 @@ public partial class BarWindowHorizontal : WindowEx
         // This follows the design guidance of dimming our title bar elements when the window isn't activated
         // https://learn.microsoft.com/en-us/windows/apps/develop/title-bar#dim-the-title-bar-when-the-window-is-inactive
         _currentActivationState = args.WindowActivationState;
-        UpdateSnapButtonTextColor();
+        UpdateCustomTitleBarButtonsTextColor();
     }
 
-    private void UpdateSnapButtonTextColor()
+    private void UpdateCustomTitleBarButtonsTextColor()
     {
         if (_currentActivationState == WindowActivationState.Deactivated)
         {
             SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
+            ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
+            RotateLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
         }
         else
         {
             SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
+            ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
+            RotateLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
         }
     }
 }

@@ -13,12 +13,12 @@ internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
 {
     private static Dictionary<string, string> Templates { get; set; } = new();
 
-    private readonly DataManager dataManager;
+    private readonly DataManager _dataManager;
 
     public SystemCPUUsageWidget()
         : base()
     {
-        dataManager = new(DataType.CPU, UpdateWidget);
+        _dataManager = new(DataType.CPU, UpdateWidget);
     }
 
     private string SpeedToString(float cpuSpeed)
@@ -39,7 +39,7 @@ internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
         {
             var cpuData = new JsonObject();
 
-            var currentData = dataManager.GetCPUStats();
+            var currentData = _dataManager.GetCPUStats();
 
             cpuData.Add("cpuUsage", FloatToPercentString(currentData.CpuUsage));
             cpuData.Add("cpuSpeed", SpeedToString(currentData.CpuSpeed));
@@ -116,7 +116,7 @@ internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
 
         if (processIndex != -1)
         {
-            dataManager.GetCPUStats().KillTopProcess(processIndex);
+            _dataManager.GetCPUStats().KillTopProcess(processIndex);
         }
     }
 
@@ -129,7 +129,7 @@ internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
             LoadContentData();
         }
 
-        dataManager.Start();
+        _dataManager.Start();
 
         LogCurrentState();
         UpdateWidget();
@@ -137,7 +137,7 @@ internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
 
     protected override void SetInactive()
     {
-        dataManager.Stop();
+        _dataManager.Stop();
 
         ActivityState = WidgetActivityState.Inactive;
 
@@ -146,7 +146,7 @@ internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
 
     protected override void SetDeleted()
     {
-        dataManager.Stop();
+        _dataManager.Stop();
 
         SetState(string.Empty);
         ActivityState = WidgetActivityState.Unknown;
@@ -155,6 +155,6 @@ internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
 
     public void Dispose()
     {
-        dataManager.Dispose();
+        _dataManager.Dispose();
     }
 }

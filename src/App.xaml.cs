@@ -79,6 +79,9 @@ public partial class App : Application, IApp
     public App()
     {
         InitializeComponent();
+#if DEBUG_FAILFAST
+        DebugSettings.FailFastOnErrors = true;
+#endif
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
         Host = Microsoft.Extensions.Hosting.Host.

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="DevHome.SetupFlow.Views.Summary.SummaryNeedsRestart"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonviews="using:DevHome.Common.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:DevHome.SetupFlow.Views.Summary"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <!--  Display if the user has tasks need the machine to restart.  -->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition MinWidth="100" />
+        </Grid.ColumnDefinitions>
+        <StackPanel
+            Grid.Column="0"
+            Orientation="Horizontal"
+            Spacing="5">
+            <FontIcon
+                FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"
+                Glyph="&#xF167;" />
+            <TextBlock
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequired_First"
+                VerticalAlignment="Center"
+                Style="{ThemeResource BodyStrongTextBlockStyle}" />
+            <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequired_Second" VerticalAlignment="Center" />
+        </StackPanel>
+        <StackPanel
+            Grid.Column="1"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal"
+            Spacing="5">
+            <Button
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequiredButton"
+                Width="120"
+                Style="{ThemeResource DefaultButtonStyle}" />
+            <commonviews:CloseButton Command="{Binding RemoveRestartGridCommand}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

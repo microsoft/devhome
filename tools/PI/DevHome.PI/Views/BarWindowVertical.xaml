@@ -55,6 +55,21 @@
                 Style="{StaticResource ChromeButton}" >
                 <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
             </Button>
+            <Button 
+                x:Uid="RotateLayoutButton" 
+                x:Name="RotateLayoutButton" 
+                Command="{x:Bind _viewModel.RotateLayoutCommand}" 
+                HorizontalAlignment="Center">
+                <TextBlock Text="&#xe8b4;" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
+            </Button>
+            <Button
+                x:Uid="ExpandLayoutButton" 
+                Style="{StaticResource ChromeButton}" 
+                Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" 
+                HorizontalAlignment="Center" 
+                ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}">
+                <TextBlock Text="&#xF745;" FontSize="{StaticResource CaptionTextBlockFontSize}" /> <!-- ChevronRight -->
+            </Button>
             <Button
                 x:Uid="VerticalCloseButton"
                 Click="CloseButton_Click" 
@@ -88,14 +103,7 @@
             </StackPanel>
                         
             <!-- Per System controls -->
-            <Button x:Uid="SwitchLayoutButton" x:Name="SwitchLayoutButton" Command="{x:Bind _viewModel.SwitchLayoutCommand}" HorizontalAlignment="Center">
-                <TextBlock Text="&#xe8b4;"/>
-            </Button>
-            <Button x:Uid="SwitchToLargeLayoutButton" Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" HorizontalAlignment="Center">
-                <TextBlock Text="&#xe8a1;"/>
-            </Button>
-
-            <controls:ExternalToolsManagementButton
+          <controls:ExternalToolsManagementButton
                 x:Name="ManageExternalToolsButton"
                 x:Uid="ManageExternalToolsButton"
                 HorizontalAlignment="Center"

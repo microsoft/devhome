@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.PI.Controls.ProgressTextRing"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+
+        <ProgressRing 
+            x:Name="ProgressRingControl" 
+            IsIndeterminate="False"
+            IsActive="{x:Bind IsActive, Mode=OneWay}" 
+            Foreground="{x:Bind Foreground, Mode=OneWay}" 
+            Width="{x:Bind Diameter, Mode=OneWay}" 
+            Height="{x:Bind Diameter, Mode=OneWay}"
+            Value="{x:Bind Value, Mode=OneWay}"/>
+
+        <TextBlock 
+            x:Name="TextBlockControl" 
+            Visibility="{x:Bind TextBlockVisibility, Mode=OneWay}" 
+            Foreground="{x:Bind Foreground, Mode=OneWay}" 
+            FontSize="{x:Bind TextBlockFontSize, Mode=OneWay}"
+            FontFamily="{x:Bind FontFamily, Mode=OneWay}"
+            Text="{x:Bind PercentageText, Mode=OneWay}"
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center"/>
+
+    </Grid>
+</UserControl>
