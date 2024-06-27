@@ -213,6 +213,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
 
             var galleryImage = _vMGalleryImageList.Images[inputForGalleryOperation.SelectedImageListIndex];
             var newEnvironmentNameLabel = _stringResource.GetLocalized("NameLabelForNewVirtualMachine", ":");
+            var microsoftLogoAltText = _stringResource.GetLocalized("MicrosoftLogoAltText");
             var primaryButtonForCreationFlowText = _stringResource.GetLocalized("PrimaryButtonLabelForCreationFlow");
             var secondaryButtonForCreationFlowText = _stringResource.GetLocalized("SecondaryButtonLabelForCreationFlow");
             var storageFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(Constants.ExtensionIconInternal));
@@ -234,6 +235,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
                 { "DiskImageUrl", galleryImage.Symbol.Uri },
                 { "PrimaryButtonLabelForCreationFlow", primaryButtonForCreationFlowText },
                 { "SecondaryButtonLabelForCreationFlow", secondaryButtonForCreationFlowText },
+                { "DiskImageAltText", microsoftLogoAltText },
             };
 
             var template = LoadTemplate(SessionState.ReviewForm);
