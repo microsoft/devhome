@@ -27,7 +27,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
         [experimental]
         [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 7)] 
-        SourceControlIntegration = 6,
+        LocalRepository = 6,
     };
 
     // Definitions for exceptions.
