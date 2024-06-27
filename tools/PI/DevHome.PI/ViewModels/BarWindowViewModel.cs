@@ -4,6 +4,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -113,8 +114,9 @@ public partial class BarWindowViewModel : ObservableObject
         // Show either the process chooser, or the app bar. Not both
         IsProcessChooserVisible = process is null;
         IsAppBarVisible = !IsProcessChooserVisible;
-        if (process != null)
+        if (IsAppBarVisible)
         {
+            Debug.Assert(process is not null, "Process should not be null if we're showing the app bar");
             ApplicationName = process.ProcessName;
             ApplicationPid = process.Id;
             ApplicationIcon = TargetAppData.Instance.Icon;
