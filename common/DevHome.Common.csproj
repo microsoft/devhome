@@ -35,9 +35,9 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.1.240328-rc" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.1.240328-rc" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
-    <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
+    <PackageReference Include="LibGit2Sharp" Version="0.30.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240424-x2212" />
+    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240605-x2134" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

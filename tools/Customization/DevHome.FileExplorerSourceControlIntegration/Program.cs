@@ -57,7 +57,7 @@ public sealed class Program
         Log.Information($"Activating COM Server");
         using var sourceControlProviderServer = new SourceControlProviderServer();
         var sourceControlProviderInstance = new SourceControlProvider();
-        var wrapper = new Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.PerFolderRootSelectorWrapper(sourceControlProviderInstance);
+        var wrapper = new Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.ExtraFolderPropertiesWrapper(sourceControlProviderInstance, sourceControlProviderInstance);
         sourceControlProviderServer.RegisterSourceControlProviderServer(() => wrapper);
         sourceControlProviderServer.Run();
     }
