@@ -235,7 +235,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
                 { "DiskImageUrl", galleryImage.Symbol.Uri },
                 { "PrimaryButtonLabelForCreationFlow", primaryButtonForCreationFlowText },
                 { "SecondaryButtonLabelForCreationFlow", secondaryButtonForCreationFlowText },
-                { "DiskImageAltText", microsoftLogoAltText },
+                { "DiskImageAltText", _stringResource.GetLocalized("ImageLogoAltText", galleryImage.Name) },
             };
 
             var template = LoadTemplate(SessionState.ReviewForm);

@@ -357,8 +357,8 @@
     <value>Unable to start the virtual machine management service. The Hyper-V feature may have been recently enabled but a reboot has not been initiated. Please check that the service exists in the Windows Services snap-in if a reboot has already been done.</value>
     <comment>{Locked="{Hyper-V}", "{Windows}"} Error text to show the user that virtual machine management service can't be started by the extension</comment>
   </data>
-  <data name="MicrosoftLogoAltText" xml:space="preserve">
-    <value>Microsoft Logo</value>
-    <comment>Locked="{Microsoft}" The alt text for the Microsoft logo on the review tab.</comment>
+  <data name="ImageLogoAltText" xml:space="preserve">
+    <value>{0} Logo</value>
+    <comment>Locked="{0}" The alt text for the Microsoft logo on the review tab. {0} is the name of the image.</comment>
   </data>
 </root>
