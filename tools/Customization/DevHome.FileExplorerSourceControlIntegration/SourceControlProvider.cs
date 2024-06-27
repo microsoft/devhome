@@ -76,9 +76,9 @@ public class SourceControlProvider :
         var localProviderResult = localProvider.GetRepository(rootFolderPath);
         if (localProviderResult.Result.Status == ProviderOperationStatus.Failure)
         {
-            log.Information("Could not open local repository.");
-            log.Information(localProviderResult.Result.DisplayMessage);
-            throw new ArgumentOutOfRangeException(nameof(rootFolderPath), rootFolderPath, localProviderResult.Result.DisplayMessage);
+            log.Warning("Could not open local repository.");
+            log.Warning(localProviderResult.Result.DisplayMessage);
+            throw new ArgumentException(localProviderResult.Result.DisplayMessage);
         }
 
         return localProviderResult.Repository.GetProperties(propertyStrings, relativePath);
