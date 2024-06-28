@@ -21,9 +21,9 @@ public sealed partial class SummaryView : UserControl
     {
         this.InitializeComponent();
 
-        // Setting min width on the Uniform Grid prevents text clipping with "Next Steps"
-        // I tried putting minWidth on the "Left Side" stack panel.  While it did keep the MinWidth
-        // It did clip when the window become too small.
+        // Setting MinWidth on the UniformGrid prevents text clipping in "Next Steps".
+        // Setting MinWidth on the "Left Side" stack panel keeps the MinWidth but still clips
+        // when the window becomes too small.
         var textScale = _uiSettings.TextScaleFactor;
         _uiSettings.TextScaleFactorChanged += HandleTextScaleFactorChanged;
         ParentUniformGrid.MinWidth = BaseWidth * textScale;
