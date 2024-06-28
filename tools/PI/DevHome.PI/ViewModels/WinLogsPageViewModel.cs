@@ -88,8 +88,9 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
             {
                 if (!process.HasExited)
                 {
+                    IsETWLogsEnabled = ETWHelper.IsUserInPerformanceLogUsersGroup();
                     winLogsHelper = new WinLogsHelper(targetProcess, winLogsOutput);
-                    IsETWLogsEnabled = winLogsHelper.IsETWEnabled;
+                    winLogsHelper.Start(IsETWLogsEnabled, IsDebugOutputEnabled, IsEventViewerEnabled, IsWatsonEnabled);
                 }
             }
             catch (Win32Exception ex)

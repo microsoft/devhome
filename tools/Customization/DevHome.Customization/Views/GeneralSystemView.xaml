@@ -1,0 +1,27 @@
+<UserControl
+    x:Class="DevHome.Customization.Views.GeneralSystemView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
+    Loaded="OnLoaded"
+    Unloaded="OnUnloaded">
+    <StackPanel>
+
+        <InfoBar
+            Margin="0,0,0,12"
+            HorizontalAlignment="Stretch">
+            <i:Interaction.Behaviors>
+                <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
+            </i:Interaction.Behaviors>
+        </InfoBar>
+
+        <controls:SettingsCard x:Uid="LongPaths" Margin="{ThemeResource SettingsCardMargin}">
+            <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.LongPathsEnabled, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.CanModifyLongPaths, Mode=OneWay}"/>
+        </controls:SettingsCard>
+        <controls:SettingsCard x:Uid="EndTaskOnTaskBar" Margin="{ThemeResource SettingsCardMargin}">
+            <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.EndTaskOnTaskBarEnabled, Mode=TwoWay}" />
+        </controls:SettingsCard>
+    </StackPanel>
+</UserControl>

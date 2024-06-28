@@ -5,7 +5,6 @@ using HyperVExtension.Common;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Models.VMGalleryJsonToClasses;
-using HyperVExtension.Providers;
 using HyperVExtension.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;

@@ -1,17 +1,15 @@
 <!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
-<pg:ToolPage
+<commonviews:ToolPage
     x:Class="DevHome.Dashboard.Views.DashboardView"
     x:Uid="DashboardPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pg="using:DevHome.Common"
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:vm="using:DevHome.Dashboard.ViewModels"
-    xmlns:views="using:DevHome.Dashboard.Views"
     xmlns:controls="using:DevHome.Dashboard.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
@@ -67,82 +65,91 @@
         </Grid>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
-            <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-                <!-- Top Banner - Default/First run experience - shown until user dismissed -->
-                <commonviews:Banner x:Name="DashboardBanner"
-                    TextWidth="450"
-                    Visibility="{x:Bind BannerViewModel.ShowDashboardBanner,Mode=OneWay}"
-                    HideButtonVisibility="true"
-                    HideButtonCommand="{x:Bind BannerViewModel.HideDashboardBannerButtonCommand,Mode=OneWay}"
-                    ButtonCommand="{x:Bind BannerViewModel.DashboardBannerButtonCommand,Mode=OneWay}"
-                    x:Uid="ms-resource:///DevHome.Dashboard/Resources/DashboardBanner"
-                    BackgroundSource="{ThemeResource DashboardBannerBack}"
-                    OverlaySource="{ThemeResource DashboardBannerFront}"
-                    Margin="0,0,0,10" />
+            <!-- This Grid helps keep the content centered -->
+            <Grid>
+                <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+                    <!-- Top Banner - Default/First run experience - shown until user dismissed -->
+                    <commonviews:Banner x:Name="DashboardBanner"
+                                        TextWidth="450"
+                                        Visibility="{x:Bind BannerViewModel.ShowDashboardBanner,Mode=OneWay}"
+                                        HideButtonVisibility="true"
+                                        HideButtonCommand="{x:Bind BannerViewModel.HideDashboardBannerButtonCommand,Mode=OneWay}"
+                                        ButtonCommand="{x:Bind BannerViewModel.DashboardBannerButtonCommand,Mode=OneWay}"
+                                        x:Uid="ms-resource:///DevHome.Dashboard/Resources/DashboardBanner"
+                                        BackgroundSource="{ThemeResource DashboardBannerBack}"
+                                        OverlaySource="{ThemeResource DashboardBannerFront}"
+                                        Margin="0,0,0,10" />
 
-                <!-- Widget grid -->
-                <GridView x:Name="WidgetGridView" ItemsSource="{x:Bind views:DashboardView.PinnedWidgets}"
-                          CanReorderItems="True"
-                          CanDragItems="True"
-                          DragItemsStarting="WidgetGridView_DragItemsStarting">
-                    <GridView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:WidgetViewModel">
-                            <controls:WidgetControl WidgetSource="{x:Bind}"
-                                                    AllowDrop="True" 
-                                                    DragOver="WidgetControl_DragOver"
-                                                    XYFocusKeyboardNavigation="Disabled"
-                                                    Drop="WidgetControl_Drop" />
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
-                    <GridView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <controls:WidgetBoard XYFocusKeyboardNavigation="Enabled"
-                                                  XYFocusRightNavigationStrategy="RectilinearDistance"
-                                                  XYFocusLeftNavigationStrategy="RectilinearDistance"/>
-                        </ItemsPanelTemplate>
-                    </GridView.ItemsPanel>
-                    <GridView.ItemContainerStyle>
-                        <Style TargetType="GridViewItem">
-                            <!-- Default margin is "0,0,4,4". Override since margins are set on the WidgetBoard instead. -->
-                            <Setter Property="Margin" Value="0,0,0,0"/>
-                            <Setter Property="AutomationProperties.AutomationId" Value="WidgetItem"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="GridViewItem">
-                                        <!-- Removes overlay over entire widget on hover -->
-                                        <ListViewItemPresenter PointerOverBackground="{ThemeResource ListViewItemBackground}"/>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </GridView.ItemContainerStyle>
-                </GridView>
+                    <!-- Widget grid -->
+                    <GridView x:Name="WidgetGridView"
+                              ItemsSource="{x:Bind ViewModel.PinnedWidgets, Mode=OneWay}"
+                              CanReorderItems="True"
+                              CanDragItems="True"
+                              DragItemsStarting="WidgetGridView_DragItemsStarting">
+                        <GridView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:WidgetViewModel">
+                                <controls:WidgetControl WidgetSource="{x:Bind}"
+                                                        AllowDrop="True" 
+                                                        DragOver="WidgetControl_DragOver"
+                                                        XYFocusKeyboardNavigation="Disabled"
+                                                        Drop="WidgetControl_Drop" />
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                        <GridView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <controls:WidgetBoard XYFocusKeyboardNavigation="Enabled"
+                                                      XYFocusRightNavigationStrategy="RectilinearDistance"
+                                                      XYFocusLeftNavigationStrategy="RectilinearDistance"/>
+                            </ItemsPanelTemplate>
+                        </GridView.ItemsPanel>
+                        <GridView.ItemContainerStyle>
+                            <Style TargetType="GridViewItem">
+                                <!-- Default margin is "0,0,4,4". Override since margins are set on the WidgetBoard instead. -->
+                                <Setter Property="Margin" Value="0,0,0,0"/>
+                                <Setter Property="AutomationProperties.AutomationId" Value="WidgetItem"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="GridViewItem">
+                                            <!-- Removes overlay over entire widget on hover -->
+                                            <ListViewItemPresenter PointerOverBackground="{ThemeResource ListViewItemBackground}"/>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </GridView.ItemContainerStyle>
+                    </GridView>
 
-                <!-- Widget grid loading progress -->
-                <ProgressRing x:Name="LoadingWidgetsProgressRing"
-                              Margin="0,150,0,0"
-                              IsActive="True"
-                              HorizontalAlignment="Center"/>
+                    <!-- Widget grid loading progress -->
+                    <ProgressRing x:Name="LoadingWidgetsProgressRing"
+                                  Margin="0,150,0,0"
+                                  IsActive="True"
+                                  HorizontalAlignment="Center"/>
 
-                <!-- Widget grid empty message -->
-                <StackPanel x:Name="NoWidgetsStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0"
-                            Visibility="{x:Bind ViewModel.GetNoWidgetMessageVisibility(views:DashboardView.PinnedWidgets.Count, ViewModel.IsLoading), Mode=OneWay}">
-                    <TextBlock x:Uid="NoWidgetsAdded" HorizontalAlignment="Center" />
-                    <commonviews:AddCreateHyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" HorizontalAlignment="Center" Command="{x:Bind AddWidgetClickCommand}" />
+                    <!-- Widget grid empty message -->
+                    <StackPanel x:Name="NoWidgetsStackPanel"
+                                HorizontalAlignment="Center"
+                                Margin="0,150,0,0"
+                                Visibility="{x:Bind ViewModel.GetNoWidgetMessageVisibility(ViewModel.PinnedWidgets.Count, ViewModel.IsLoading), Mode=OneWay}">
+                        <TextBlock x:Uid="NoWidgetsAdded" HorizontalAlignment="Center" />
+                        <commonviews:AddCreateHyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" HorizontalAlignment="Center" Command="{x:Bind AddWidgetClickCommand}" />
+                    </StackPanel>
+
+                    <!-- Widget messages -->
+                    <StackPanel x:Name="RunningAsAdminMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
+                        <TextBlock x:Uid="RunningAsAdminMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel x:Name="RestartDevHomeMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
+                        <TextBlock x:Uid="RestartDevHomeMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel x:Name="UpdateWidgetsMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
+                        <TextBlock x:Uid="UpdateWidgetsMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
+                        <HyperlinkButton x:Name="UpdateWidgetsMessageLink"
+                                         x:Uid="UpdateWidgetsMessageLink"
+                                         HorizontalAlignment="Center"
+                                         Command="{x:Bind GoToWidgetsInStoreCommand}" />
+                    </StackPanel>
                 </StackPanel>
-
-                <!-- Widget messages -->
-                <StackPanel x:Name="RestartDevHomeMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
-                    <TextBlock x:Uid="RestartDevHomeMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
-                </StackPanel>
-                <StackPanel x:Name="UpdateWidgetsMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
-                    <TextBlock x:Uid="UpdateWidgetsMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
-                    <HyperlinkButton x:Name="UpdateWidgetsMessageLink"
-                                     x:Uid="UpdateWidgetsMessageLink"
-                                     HorizontalAlignment="Center"
-                                     Command="{x:Bind GoToWidgetsInStoreCommand}" />
-                </StackPanel>
-            </StackPanel>
+            </Grid>
         </ScrollViewer>
     </Grid>
-</pg:ToolPage>
+</commonviews:ToolPage>

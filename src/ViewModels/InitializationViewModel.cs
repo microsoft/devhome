@@ -3,10 +3,9 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Dashboard.Services;
-using DevHome.Services;
+using DevHome.Services.Core.Contracts;
 using DevHome.Views;
 using Microsoft.UI.Xaml;
 using Serilog;
@@ -19,7 +18,7 @@ public class InitializationViewModel : ObservableObject
 
     private readonly IThemeSelectorService _themeSelector;
     private readonly IWidgetServiceService _widgetServiceService;
-    private readonly IAppInstallManagerService _appInstallManagerService;
+    private readonly IMicrosoftStoreService _msStoreService;
     private readonly IPackageDeploymentService _packageDeploymentService;
 
 #if CANARY_BUILD
@@ -36,12 +35,12 @@ public class InitializationViewModel : ObservableObject
     public InitializationViewModel(
         IThemeSelectorService themeSelector,
         IWidgetServiceService widgetServiceService,
-        IAppInstallManagerService appInstallManagerService,
+        IMicrosoftStoreService msStoreService,
         IPackageDeploymentService packageDeploymentService)
     {
         _themeSelector = themeSelector;
         _widgetServiceService = widgetServiceService;
-        _appInstallManagerService = appInstallManagerService;
+        _msStoreService = msStoreService;
         _packageDeploymentService = packageDeploymentService;
     }
 
@@ -78,7 +77,7 @@ public class InitializationViewModel : ObservableObject
             try
             {
                 _log.Information("Installing DevHomeGitHubExtension...");
-                await _appInstallManagerService.TryInstallPackageAsync(GitHubExtensionStorePackageId);
+                await _msStoreService.TryInstallPackageAsync(GitHubExtensionStorePackageId);
             }
             catch (Exception ex)
             {

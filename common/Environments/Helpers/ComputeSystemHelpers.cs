@@ -9,7 +9,6 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
-using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;

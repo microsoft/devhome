@@ -10,21 +10,23 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Windows.FileDialog;
-using DevHome.SetupFlow.Common.Exceptions;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
+using DevHome.Services.DesiredStateConfiguration.Exceptions;
+using DevHome.Services.DesiredStateConfiguration.Models;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
-using Serilog;
 using Windows.Storage;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ConfigurationFileViewModel));
-    private readonly IDesiredStateConfiguration _dsc;
+    private readonly ILogger _logger;
+    private readonly IDSC _dsc;
     private readonly Window _mainWindow;
 
     public List<ConfigureTask> TaskList { get; } = new List<ConfigureTask>();
@@ -34,7 +36,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Content))]
-    private Configuration _configuration;
+    private IDSCFile _configuration;
 
     /// <summary>
     /// Store the value for whether the agreements are read.
@@ -48,12 +50,14 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     private IList<DSCConfigurationUnitViewModel> _configurationUnits;
 
     public ConfigurationFileViewModel(
+        ILogger<ConfigurationFileViewModel> logger,
         ISetupFlowStringResource stringResource,
-        IDesiredStateConfiguration dsc,
+        IDSC dsc,
         Window mainWindow,
         SetupFlowOrchestrator orchestrator)
         : base(stringResource, orchestrator)
     {
+        _logger = logger;
         _dsc = dsc;
         _mainWindow = mainWindow;
 
@@ -64,7 +68,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
     partial void OnReadAndAgreeChanged(bool value)
     {
-        _log.Information($"Read and agree changed. Value: {value}");
+        _logger.LogInformation($"Read and agree changed. Value: {value}");
         CanGoToNextPage = value;
         Orchestrator.NotifyNavigationCanExecuteChanged();
     }
@@ -82,7 +86,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             task.RequiresAdmin = true;
         }
 
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", LogLevel.Critical, new ConfigureCommandEvent(true), Orchestrator.ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", Telemetry.LogLevel.Critical, new ConfigureCommandEvent(true), Orchestrator.ActivityId);
         try
         {
             await Orchestrator.InitializeElevatedServerAsync();
@@ -90,39 +94,39 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error(e, $"Failed to initialize elevated process.");
+            _logger.LogError(e, $"Failed to initialize elevated process.");
         }
     }
 
     [RelayCommand(CanExecute = nameof(ReadAndAgree))]
     private async Task ConfigureAsNonAdminAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", LogLevel.Critical, new ConfigureCommandEvent(false), Orchestrator.ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", Telemetry.LogLevel.Critical, new ConfigureCommandEvent(false), Orchestrator.ActivityId);
         await Orchestrator.GoToNextPage();
     }
 
     [RelayCommand]
     private async Task OnLoadedAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Loaded", LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance), Orchestrator.ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Loaded", Telemetry.LogLevel.Critical, new EmptyEvent(PartA_PrivTags.ProductAndServicePerformance), Orchestrator.ActivityId);
         try
         {
             if (Configuration != null && ConfigurationUnits == null)
             {
-                var configUnits = await _dsc.GetConfigurationUnitDetailsAsync(Configuration, Orchestrator.ActivityId);
-                ConfigurationUnits = configUnits.Select(u => new DSCConfigurationUnitViewModel(u)).ToList();
+                var configSet = await _dsc.GetConfigurationUnitDetailsAsync(Configuration);
+                ConfigurationUnits = configSet.Units.Select(u => new DSCConfigurationUnitViewModel(u)).ToList();
             }
         }
         catch (Exception e)
         {
-            _log.Error(e, $"Failed to get configuration unit details.");
+            _logger.LogError(e, $"Failed to get configuration unit details.");
         }
     }
 
     [RelayCommand]
     private void OnViewSelectionChanged(string newViewMode)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_ViewSelectionChanged", LogLevel.Critical, new ConfigureModeCommandEvent(newViewMode), Orchestrator.ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_ViewSelectionChanged", Telemetry.LogLevel.Critical, new ConfigureModeCommandEvent(newViewMode), Orchestrator.ActivityId);
     }
 
     /// <summary>
@@ -134,7 +138,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         try
         {
             // Create and configure file picker
-            _log.Information("Launching file picker to select configuration file");
+            _logger.LogInformation("Launching file picker to select configuration file");
             using var fileDialog = new WindowOpenFileDialog();
             fileDialog.AddFileType(StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML"), ".yaml", ".yml", ".winget");
             var file = await fileDialog.ShowAsync(_mainWindow);
@@ -142,7 +146,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error(e, $"Failed to open file picker.");
+            _logger.LogError(e, $"Failed to open file picker.");
             return false;
         }
     }
@@ -154,7 +158,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// <returns>True if the configuration file was loaded, false otherwise</returns>
     public async Task<bool> LoadFileAsync(StorageFile file)
     {
-        _log.Information("Loading a configuration file");
+        _logger.LogInformation("Loading a configuration file");
         if (!await _dsc.IsUnstubbedAsync())
         {
             await _mainWindow.ShowErrorMessageDialogAsync(
@@ -177,22 +181,22 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         // Check if a file was selected
         if (file == null)
         {
-            _log.Information("No configuration file selected");
+            _logger.LogInformation("No configuration file selected");
             return false;
         }
 
         try
         {
-            _log.Information($"Selected file: {file.Path}");
-            Configuration = new(file.Path);
+            _logger.LogInformation($"Selected file: {file.Path}");
+            Configuration = await DSCFile.LoadAsync(file.Path);
             Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
-            await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
-            TaskList.Add(new(StringResource, _dsc, file, Orchestrator.ActivityId));
+            await _dsc.ValidateConfigurationAsync(Configuration);
+            TaskList.Add(new(StringResource, _dsc, Configuration, Orchestrator.ActivityId));
             return true;
         }
         catch (OpenConfigurationSetException e)
         {
-            _log.Error(e, $"Opening configuration set failed.");
+            _logger.LogError(e, $"Opening configuration set failed.");
             await _mainWindow.ShowErrorMessageDialogAsync(
                 StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
                 GetErrorMessage(e),
@@ -200,7 +204,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
         catch (Exception e)
         {
-            _log.Error(e, $"Unknown error while opening configuration set.");
+            _logger.LogError(e, $"Unknown error while opening configuration set.");
 
             await _mainWindow.ShowErrorMessageDialogAsync(
                 file.Name,
@@ -215,16 +219,16 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     {
         switch (exception.ResultCode.HResult)
         {
-            case WinGetConfigurationException.WingetConfigErrorInvalidFieldType:
+            case ConfigurationException.WingetConfigErrorInvalidFieldType:
                 return StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalidType, exception.Field);
-            case WinGetConfigurationException.WingetConfigErrorInvalidFieldValue:
+            case ConfigurationException.WingetConfigErrorInvalidFieldValue:
                 return StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalidValue, exception.Field, exception.Value);
-            case WinGetConfigurationException.WingetConfigErrorMissingField:
+            case ConfigurationException.WingetConfigErrorMissingField:
                 return StringResource.GetLocalized(StringResourceKey.ConfigurationFieldMissing, exception.Field);
-            case WinGetConfigurationException.WingetConfigErrorUnknownConfigurationFileVersion:
+            case ConfigurationException.WingetConfigErrorUnknownConfigurationFileVersion:
                 return StringResource.GetLocalized(StringResourceKey.ConfigurationFileVersionUnknown, exception.Value);
-            case WinGetConfigurationException.WingetConfigErrorInvalidConfigurationFile:
-            case WinGetConfigurationException.WingetConfigErrorInvalidYaml:
+            case ConfigurationException.WingetConfigErrorInvalidConfigurationFile:
+            case ConfigurationException.WingetConfigErrorInvalidYaml:
             default:
                 return StringResource.GetLocalized(StringResourceKey.ConfigurationFileInvalid);
         }

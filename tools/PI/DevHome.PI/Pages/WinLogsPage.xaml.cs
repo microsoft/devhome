@@ -3,7 +3,6 @@
 
 using System;
 using DevHome.Common.Extensions;
-using DevHome.PI;
 using DevHome.PI.Telemetry;
 using DevHome.PI.ViewModels;
 using Microsoft.UI.Xaml;
@@ -14,7 +13,7 @@ namespace DevHome.PI.Pages;
 
 public partial class WinLogsPage : Page, IDisposable
 {
-    private WinLogsPageViewModel ViewModel { get;  }
+    private WinLogsPageViewModel ViewModel { get; }
 
     public WinLogsPage()
     {

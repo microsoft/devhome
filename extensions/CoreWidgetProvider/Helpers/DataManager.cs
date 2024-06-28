@@ -7,23 +7,23 @@ namespace CoreWidgetProvider.Helpers;
 
 internal sealed class DataManager : IDisposable
 {
-    private readonly SystemData systemData;
-    private readonly DataType dataType;
-    private readonly Timer updateTimer;
-    private readonly Action updateAction;
+    private readonly SystemData _systemData;
+    private readonly DataType _dataType;
+    private readonly Timer _updateTimer;
+    private readonly Action _updateAction;
 
     private const int OneSecondInMilliseconds = 1000;
 
     public DataManager(DataType type, Action updateWidget)
     {
-        systemData = new SystemData();
-        updateAction = updateWidget;
-        dataType = type;
+        _systemData = new SystemData();
+        _updateAction = updateWidget;
+        _dataType = type;
 
-        updateTimer = new Timer(OneSecondInMilliseconds);
-        updateTimer.Elapsed += UpdateTimer_Elapsed;
-        updateTimer.AutoReset = true;
-        updateTimer.Enabled = false;
+        _updateTimer = new Timer(OneSecondInMilliseconds);
+        _updateTimer.Elapsed += UpdateTimer_Elapsed;
+        _updateTimer.AutoReset = true;
+        _updateTimer.Enabled = false;
     }
 
     private void GetMemoryData()
@@ -60,7 +60,7 @@ internal sealed class DataManager : IDisposable
 
     private void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        switch (dataType)
+        switch (_dataType)
         {
             case DataType.CPU:
                 {
@@ -91,10 +91,7 @@ internal sealed class DataManager : IDisposable
                 }
         }
 
-        if (updateAction != null)
-        {
-            updateAction();
-        }
+        _updateAction?.Invoke();
     }
 
     internal MemoryStats GetMemoryStats()
@@ -131,17 +128,17 @@ internal sealed class DataManager : IDisposable
 
     public void Start()
     {
-        updateTimer.Start();
+        _updateTimer.Start();
     }
 
     public void Stop()
     {
-        updateTimer.Stop();
+        _updateTimer.Stop();
     }
 
     public void Dispose()
     {
-        systemData.Dispose();
-        updateTimer.Dispose();
+        _systemData.Dispose();
+        _updateTimer.Dispose();
     }
 }

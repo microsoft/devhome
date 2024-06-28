@@ -323,4 +323,40 @@
   <data name="ChooseFileActionToolTip" xml:space="preserve">
     <value>Choose file</value>
   </data>
+  <data name="ContainersDescription" xml:space="preserve">
+    <value>Provides services and tools to create and manage Windows Server Containers and their resources.</value>
+    <comment>Locked="{Windows Server Containers}" Description for the Containers optional feature.</comment>
+  </data>
+  <data name="GuardedHostDescription" xml:space="preserve">
+    <value>Enables the device to create and run Shielded Virtual Machine using remote attestation.</value>
+    <comment>Locked="{Shielded Virtual Machine}" Description for the HostGuardian optional feature.</comment>
+  </data>
+  <data name="HyperVDescription" xml:space="preserve">
+    <value>Provides services and management tools for creating and running virtual machines and their resources.</value>
+    <comment>Description for the Microsoft-Hyper-V-All optional feature.</comment>
+  </data>
+  <data name="HyperVManagementToolsDescription" xml:space="preserve">
+    <value>Includes GUI and command-line tools for managing Hyper-V.</value>
+    <comment>Description for the Microsoft-Hyper-V-Tools-All optional feature.</comment>
+  </data>
+  <data name="HyperVPlatformDescription" xml:space="preserve">
+    <value>Provides the services that you can use to create and manage virtual machines and their resources.</value>
+    <comment>Description for the Microsoft-Hyper-V optional feature.</comment>
+  </data>
+  <data name="VirtualMachinePlatformDescription" xml:space="preserve">
+    <value>Enables platform support for virtual machines.</value>
+    <comment>Description for the VirtualMachinePlatform optional feature.</comment>
+  </data>
+  <data name="WindowsHypervisorPlatformDescription" xml:space="preserve">
+    <value>Enables virtualization software to run on the Windows hypervisor.</value>
+    <comment>Description for the WindowsHypervisorPlatform optional feature.</comment>
+  </data>
+  <data name="WindowsSandboxDescription" xml:space="preserve">
+    <value>Enables the dependencies required to run Windows Sandbox scenarios.</value>
+    <comment>Locked="{Windows Sandbox}" Description for the Containers-DisposableClientVM optional feature.</comment>
+  </data>
+  <data name="WindowsSubsystemForLinuxDescription" xml:space="preserve">
+    <value>Provides services and environments for running native user-mode Linux shells and tools on Windows.</value>
+    <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
+  </data>
 </root>

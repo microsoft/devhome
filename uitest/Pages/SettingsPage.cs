@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
-using DevHome.UITest.Common;
 using OpenQA.Selenium.Appium.Windows;
 
 namespace DevHome.UITest.Pages;

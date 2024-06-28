@@ -93,9 +93,9 @@ internal sealed class WidgetHelpers
         var endOfPfnIndex = providerId.IndexOf('!', StringComparison.Ordinal);
         var familyNamePartOfProviderId = providerId[..endOfPfnIndex];
 
-        // Get the list of packages that contain Dev Home widgets.
+        // Get the list of packages that contain Dev Home widgets and are enabled.
         var extensionService = Application.Current.GetService<IExtensionService>();
-        var enabledWidgetProviderIds = await extensionService.GetInstalledDevHomeWidgetPackageFamilyNamesAsync(true);
+        var enabledWidgetProviderIds = await extensionService.GetInstalledDevHomeWidgetPackageFamilyNamesAsync(includeDisabledExtensions: false);
 
         // Check if the specified widget provider is in the list.
         var include = enabledWidgetProviderIds.ToList().Contains(familyNamePartOfProviderId);

@@ -4,7 +4,6 @@
 using System;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.PI.Controls;
 using DevHome.PI.Pages;
 using DevHome.PI.Services;
 using DevHome.PI.Telemetry;
@@ -48,7 +47,9 @@ public partial class App : Application, IApp
                 services.AddSingleton<PIAppInfoService>();
 
                 // Window
-                services.AddSingleton<PrimaryWindow>();
+                // Provide an explicit implementationInstance otherwise AddSingleton does not create a new instance immediately.
+                // It will lazily init when the first component requires it but the hotkey helper needs to be registered immediately.
+                services.AddSingleton<PrimaryWindow>(new PrimaryWindow());
 
                 // Views and ViewModels
                 services.AddSingleton<AppDetailsPage>();

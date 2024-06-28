@@ -22,7 +22,7 @@ parameters:
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
   MSIXVersion: '0.1501'
-  VersionOfSDK: '0.600'
+  VersionOfSDK: '0.700'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
   testOutputArtifactDir: 'TestResults'
@@ -81,7 +81,7 @@ extends:
             symbolProject: 'DevHome'
             indexSources: false
             symbolsArtifactName: 'DevHomeSDK'
-            symbolsVersion: '$(Build.BuildNumber)'
+            symbolsVersion: '$(BuildingBranch)$(Build.BuildNumber)'
             searchPattern: |
               **/bin/**/*.pdb
               **/bin/**/*.exe
@@ -225,7 +225,7 @@ extends:
                 subscription: $(SymbolSubscription)
                 indexSources: true
                 symbolsArtifactName: 'DevHome_${{ platform }}_${{ configuration }}'
-                symbolsVersion: $(Build.BuildNumber)
+                symbolsVersion: '$(BuildingBranch)$(Build.BuildNumber)'
                 searchPattern: >-
                   $(Build.SourcesDirectory)\**\bin\**\*.pdb
 
