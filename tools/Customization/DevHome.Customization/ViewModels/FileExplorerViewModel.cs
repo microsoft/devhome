@@ -49,7 +49,7 @@ public partial class FileExplorerViewModel : ObservableObject
             // Currently, the UI displays a drop down which allows the user to select from a list of source control providers avaiable to Dev Home. This is
             // subject to change per UI design specifications.
             var extensionService = Application.Current.GetService<IExtensionService>();
-            var sourceControlExtensions = Task.Run(async () => await extensionService.GetInstalledExtensionsAsync(ProviderType.SourceControlIntegration)).Result.ToList();
+            var sourceControlExtensions = Task.Run(async () => await extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository)).Result.ToList();
             sourceControlExtensions.Sort((a, b) => string.Compare(a.ExtensionDisplayName, b.ExtensionDisplayName, System.StringComparison.OrdinalIgnoreCase));
             sourceControlExtensions.ForEach((sourceControlExtension) =>
             {
