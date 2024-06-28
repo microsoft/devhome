@@ -23,6 +23,7 @@ GetForegroundWindow
 GetMonitorInfo
 GetMonitorInfo
 GetOpenFileName
+GetParent
 GetProcessInformation
 GetScaleFactorForMonitor
 GetTopWindow

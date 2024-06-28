@@ -608,6 +608,15 @@ public class WindowHelper
 
         if (hwnd != HWND.Null)
         {
+            // Walk up until we get the topmost parent window
+            HWND hwndParent = PInvoke.GetParent(hwnd);
+
+            while (hwndParent != HWND.Null)
+            {
+                hwnd = hwndParent;
+                hwndParent = PInvoke.GetParent(hwnd);
+            }
+
             var processID = WindowHelper.GetProcessIdFromWindow(hwnd);
 
             if (processID != 0)
