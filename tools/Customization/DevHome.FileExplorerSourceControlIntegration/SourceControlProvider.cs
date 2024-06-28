@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
-using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using DevHome.FileExplorerSourceControlIntegration.Services;
+using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation.Collections;
