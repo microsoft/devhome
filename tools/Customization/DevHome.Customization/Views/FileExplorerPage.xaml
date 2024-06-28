@@ -3,9 +3,18 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
-    xmlns:views="using:DevHome.Customization.Views"
+    xmlns:views="using:DevHome.Customization.Views" xmlns:converters="using:CommunityToolkit.WinUI.Converters" xmlns:viewmodels="using:DevHome.Customization.ViewModels"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
+
+    <Page.Resources>
+        <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible"/>
+
+        <DataTemplate x:Key="LocalRepositoryProviderButtonTemplate" x:DataType="viewmodels:FileExplorerSourceControlIntegrationViewModel">
+            <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Stretch" Click="AddRepository_Click" Tag="{x:Bind}"/>
+        </DataTemplate>
+
+    </Page.Resources>
 
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
         <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
@@ -25,9 +34,29 @@
                   MinWidth="300" 
                   HorizontalAlignment="Left"/>
 
-                    <Button  Content="Add" 
+                    <Button  
+                         Content="Add" 
                          Click="AddButton_Click" 
-                         Margin="10, 27, 0, 0"/>
+                         Margin="10, 27, 0, 0">
+                    <Button.Resources>
+                        <Flyout x:Name="LocalRepositoryProvidersFlyout" Placement="Bottom">
+                                <ItemsRepeater ItemsSource="{x:Bind ViewModel.LocalRepositoryProviders}"
+                                               ItemTemplate="{StaticResource LocalRepositoryProviderButtonTemplate}"
+                                               HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                <ItemsRepeater.Layout>
+                                    <StackLayout Orientation="Vertical" Spacing="8" />
+                                </ItemsRepeater.Layout>
+                            </ItemsRepeater>
+                            <Flyout.FlyoutPresenterStyle>
+                                <Style TargetType="FlyoutPresenter">
+                                    <Setter Property="IsTabStop" Value="True"/>
+                                    <Setter Property="TabNavigation" Value="Cycle"/>
+                                    <Setter Property="MinWidth" Value="150" />
+                                </Style>
+                            </Flyout.FlyoutPresenterStyle>
+                        </Flyout>
+                    </Button.Resources>
+                    </Button>
                     <InfoBar x:Name="RootPathErrorBar"
                          x:Uid="ErrorRootPathValidation"
                          Title="Error"

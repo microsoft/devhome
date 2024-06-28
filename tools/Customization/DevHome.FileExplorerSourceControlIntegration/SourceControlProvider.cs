@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
+using DevHome.FileExplorerSourceControlIntegration.Services;
 using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -46,9 +47,10 @@ public class SourceControlProvider :
         var providerPtr = IntPtr.Zero;
         try
         {
-            // "BDA76685-E749-4f09-8F13-C466D0802DA1" is the hardcoded GUID for the git extension. In a future change, the value will no longer be hard-coded and
-            // will be discoverable given a root path from a storage location
-            var hr = PInvoke.CoCreateInstance(Guid.Parse("BDA76685-E749-4f09-8F13-C466D0802DA1"), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(ILocalRepositoryProvider).GUID, out var extensionObj);
+            var repositoryTracker = new RepositoryTracking(null);
+            var activationGUID = repositoryTracker.GetSourceControlProviderForRootPath(rootPath);
+
+            var hr = PInvoke.CoCreateInstance(Guid.Parse(activationGUID), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(ILocalRepositoryProvider).GUID, out var extensionObj);
             providerPtr = Marshal.GetIUnknownForObject(extensionObj);
             if (hr < 0)
             {
