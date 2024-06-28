@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
@@ -204,6 +205,9 @@ public partial class BarWindowHorizontal : WindowEx
             barWindow?.Close();
             _isClosing = false;
         }
+
+        // Unsubscribe from the activation handler
+        Activated -= Window_Activated;
     }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -361,17 +365,36 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void UpdateCustomTitleBarButtonsTextColor()
     {
-        if (_currentActivationState == WindowActivationState.Deactivated)
+        FrameworkElement? rootElement = Content as FrameworkElement;
+        Debug.Assert(rootElement != null, "Expected Content to be a FrameworkElement");
+
+        Windows.UI.Color color;
+        if (rootElement.ActualTheme == ElementTheme.Dark)
         {
-            SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
-            ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
-            RotateLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
+            color = Colors.White;
         }
         else
         {
-            SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
-            ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
-            RotateLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
+            color = Colors.Black;
+        }
+
+        if (_currentActivationState == WindowActivationState.Deactivated)
+        {
+            // Deactivated state has a translucent brush
+            color.A = 0x66;
+            SolidColorBrush brush = new(color);
+
+            SnapButtonText.Foreground = brush;
+            ExpandCollapseLayoutButtonText.Foreground = brush;
+            RotateLayoutButtonText.Foreground = brush;
+        }
+        else
+        {
+            SolidColorBrush brush = new(color);
+
+            SnapButtonText.Foreground = brush;
+            ExpandCollapseLayoutButtonText.Foreground = brush;
+            RotateLayoutButtonText.Foreground = brush;
         }
     }
 }
