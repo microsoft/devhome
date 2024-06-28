@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using DevHome.Common.Extensions;
+using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
 using DevHome.PI.ViewModels;
@@ -14,9 +15,13 @@ using Microsoft.UI.Xaml.Input;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.UI.Shell.Common;
 using Windows.Win32.UI.WindowsAndMessaging;
 using WinRT.Interop;
 using WinUIEx;
+
+using static DevHome.PI.Helpers.CommonHelper;
 using static DevHome.PI.Helpers.WindowHelper;
 
 namespace DevHome.PI;
@@ -32,6 +37,8 @@ public partial class BarWindowVertical : WindowEx
     private int _appWindowPosY; // = 0;
     private bool _isWindowMoving; // = false;
     private bool _isClosing;
+
+    private double _dpiScale = 1.0;
 
     internal HWND ThisHwnd { get; private set; }
 
@@ -60,6 +67,22 @@ public partial class BarWindowVertical : WindowEx
 
         // Regardless of what is set in the XAML, our initial window width is too big. Setting this to 70 (same as the XAML file)
         Width = 70;
+
+        // Calculate the DPI scale.
+        var monitor = PInvoke.MonitorFromWindow(ThisHwnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+        PInvoke.GetScaleFactorForMonitor(monitor, out DEVICE_SCALE_FACTOR scaleFactor).ThrowOnFailure();
+        _dpiScale = (double)scaleFactor / 100;
+
+        SetDefaultPosition();
+    }
+
+    private void SetDefaultPosition()
+    {
+        // If attached to an app it should show up on the monitor that the app is on
+        var monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+        this.Move(
+            monitorRect.left + (int)(70 * _dpiScale),
+            monitorRect.top + (int)(70 * _dpiScale));
     }
 
     private void RemoveThickFrameAttribute()
@@ -91,6 +114,13 @@ public partial class BarWindowVertical : WindowEx
             barWindow?.Close();
             _isClosing = false;
         }
+    }
+
+    internal void UpdatePositionFromHwnd(HWND hwnd)
+    {
+        RECT rect;
+        PInvoke.GetWindowRect(hwnd, out rect);
+        this.Move(rect.left, rect.top);
     }
 
     internal void SetRequestedTheme(ElementTheme theme)
