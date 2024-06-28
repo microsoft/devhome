@@ -514,19 +514,19 @@
     <comment>Description of the error code</comment>
   </data>
   <data name="TargetAppPidTextFormat" xml:space="preserve">
-    <value>pid: {0}</value>
+    <value>PID: {0}</value>
     <comment>{Locked="{0}"} Showing a process identifier. {0} is an integer</comment>
   </data>
   <data name="CpuPerfTextFormat" xml:space="preserve">
-    <value>cpu: {0:0.0}%</value>
+    <value>{0:0.0}% CPU usage</value>
     <comment>{Locked="{0:0.0}"} Showing CPU utilization. {0} is a percentage 0-100</comment>
   </data>
   <data name="MemoryPerfTextFormat" xml:space="preserve">
-    <value>memory: {0:N2} MB</value>
+    <value>{0:N2} MB Memory used</value>
     <comment>{Locked="{0:N2}"} Showing RAM utilization. MB stands for megabytes. {0} is a number.</comment>
   </data>
   <data name="DiskPerfTextFormat" xml:space="preserve">
-    <value>dsk: {0:N0} MB/s</value>
+    <value>{0:N0} MB/s Disk utilization</value>
     <comment>{Locked="{0:N0}"} Showing disk utilization. MB/s stands for megabytes per second. {0} is a number.</comment>
   </data>
   <data name="CpuPerfNotAvailableText" xml:space="preserve">
@@ -1012,5 +1012,29 @@
   <data name="SwitchToSmallLayoutToolTip" xml:space="preserve">
     <value>Collapse the large content panel</value>
     <comment>The tooltip for a button which collapses the large content panel.</comment>
+  </data>
+  <data name="AppName.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Name of the attached app</value>
+    <comment>Refers to the app's name in the bar</comment>
+  </data>
+  <data name="ClipboardMonitor.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Open the Clipboard Monitor window</value>
+    <comment>Tooltip that tells users what the Clipboard Monitor button will do</comment>
+  </data>
+  <data name="ClipboardMonitorLabel.Text" xml:space="preserve">
+    <value>Clipboard Monitor</value>
+    <comment>A text label for the Clipboard Monitor button</comment>
+  </data>
+  <data name="Insights.ToolTipService.ToolTip" xml:space="preserve">
+    <value>See insights that Project Ironsides has gained</value>
+    <comment>Tooltip that tells users what the Insights button will do</comment>
+  </data>
+  <data name="InsightsLabel.Text" xml:space="preserve">
+    <value>Insights</value>
+    <comment>A text label for the Insights button</comment>
+  </data>
+  <data name="ProcessesLabel.Text" xml:space="preserve">
+    <value>Processes</value>
+    <comment>A text label for the Processes button</comment>
   </data>
 </root>
