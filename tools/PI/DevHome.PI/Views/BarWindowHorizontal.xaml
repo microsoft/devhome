@@ -72,9 +72,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-
-            <StackPanel x:Name="AllControls" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Background="Transparent" >
-            <StackPanel.Resources>
+            <Grid.Resources>
                 <Style TargetType="TextBlock">
                     <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
                     <Setter Property="FontSize" Value="{StaticResource SubtitleTextBlockFontSize}"/>
@@ -91,7 +89,10 @@
                     <Setter Property="BorderThickness" Value="0"/>
                     <Setter Property="Background" Value="Transparent"/>
                 </Style>
-            </StackPanel.Resources>
+            </Grid.Resources>
+            
+            <StackPanel x:Name="AllControls" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Background="Transparent" >
+          
 
             <!-- Process Chooser area -->
             <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsProcessChooserVisible, Mode=OneWay}" Margin="0,0,0,0" >
@@ -99,7 +100,6 @@
                     <TextBlock Text="&#xe179;"/>
                 </controls:ProcessSelectionButton>
                 <TextBlock x:Uid="ProcessesLabel" x:Name="ProcessesLabel" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
-                <controls:PISeparator />
             </StackPanel>
 
             <!-- Per App controls -->
@@ -119,9 +119,9 @@
                 <controls:PISeparator />
             </StackPanel>
 
-                <controls:PISeparator Visibility="{x:Bind _viewModel.ExternalToolSeparatorVisibility, Mode=OneWay}"/>
-                
-                <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsHorizontalLayout}">
+            <controls:PISeparator />
+
+            <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsHorizontalLayout}">
                 <DataTemplate x:DataType="helpers:ExternalTool">
                     <Button Click="_viewModel.ExternalToolButton_Click" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" Tag="{x:Bind}">
                         <Image Source="{x:Bind ToolIcon, Mode=OneWay}" Width="22" Height="22" Stretch="Uniform"/>
@@ -142,29 +142,24 @@
                     </Button>
                 </DataTemplate>
             </ItemsRepeater>
-        </StackPanel>
-
-            <controls:PISeparator />
+            </StackPanel>
 
             <!-- Per System controls -->
             <controls:ExternalToolsManagementButton
                 x:Name="ManageExternalToolsButton"
                 x:Uid="ManageExternalToolsButton"
-                HorizontalAlignment="Center"
+                HorizontalAlignment="Left"
                 Command="{x:Bind _viewModel.ManageExternalToolsButtonCommand}"
-                ExternalToolLaunchRequest="{x:Bind _viewModel.ManageExternalToolsButton_ExternalToolLaunchRequest}"
-                Grid.Column="1">
-                <TextBlock Text="&#xEC7A;"/>
+                    Grid.Column="1"
+                ExternalToolLaunchRequest="{x:Bind _viewModel.ManageExternalToolsButton_ExternalToolLaunchRequest}">
+                <TextBlock Text="&#xE712;"/>
             </controls:ExternalToolsManagementButton>
-            <controls:PISeparator />
-
 
             <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="2" Spacing="10" Margin="0 0 10 0">
-            <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
-            <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
-            <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
-        </StackPanel>
-
+                <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
+                <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
+                <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
+            </StackPanel>
         </Grid>
 
         <Border
