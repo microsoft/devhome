@@ -13,8 +13,6 @@ using Windows.System;
 using Windows.Win32;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using WinUIEx;
-
-using static DevHome.PI.Helpers.CommonHelper;
 using static DevHome.PI.Helpers.WindowHelper;
 
 namespace DevHome.PI;

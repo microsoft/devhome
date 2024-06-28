@@ -129,9 +129,7 @@ public partial class BarWindowHorizontal : WindowEx
         SetRequestedTheme(t.Theme);
 
         // Calculate the DPI scale.
-        var monitor = PInvoke.MonitorFromWindow(ThisHwnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        PInvoke.GetScaleFactorForMonitor(monitor, out DEVICE_SCALE_FACTOR scaleFactor).ThrowOnFailure();
-        _dpiScale = (double)scaleFactor / 100;
+        _dpiScale = GetDpiScaleForWindow(ThisHwnd);
 
         SetDefaultPosition();
 
@@ -276,47 +274,21 @@ public partial class BarWindowHorizontal : WindowEx
         MaxHeight = double.NaN;
 
         var monitorRect = GetMonitorRectForWindow(ThisHwnd);
-        var monitor = PInvoke.MonitorFromWindow(ThisHwnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        PInvoke.GetScaleFactorForMonitor(monitor, out DEVICE_SCALE_FACTOR scaleFactor).ThrowOnFailure();
-        var dpiScale = (double)scaleFactor / 100;
+        var dpiScale = GetDpiScaleForWindow(ThisHwnd);
 
-        // If they expand to ExpandedView and they're not snapped
-        if (!_viewModel.IsSnapped)
-        {
-            // Conversely if they're snapped, the position is determined by the snap,
-            // and we potentially adjust the size to ensure it doesn't extend beyond the screen.
-            var availableWidth = monitorRect.Width - Math.Abs(AppWindow.Position.X - monitorRect.left) - RightSideGap;
-            _restoreState.Width = (int)((double)availableWidth / dpiScale);
+        // Expand the window but keep the x,y coordinates of top-left most corner of the window the same so it doesn't
+        // jump around the screen.
+        var availableWidth = monitorRect.Width - Math.Abs(AppWindow.Position.X - monitorRect.left) - RightSideGap;
+        _restoreState.Width = (int)((double)availableWidth / dpiScale);
 
-            Width = _restoreState.Width;
+        Width = _restoreState.Width;
 
-            var availableHeight = monitorRect.Height - Math.Abs(AppWindow.Position.Y - monitorRect.top);
+        var availableHeight = monitorRect.Height - Math.Abs(AppWindow.Position.Y - monitorRect.top);
 
-            _restoreState.Height = (int)((double)availableHeight / dpiScale);
+        _restoreState.Height = (int)((double)availableHeight / dpiScale);
 
-            this.MoveAndResize(
-                AppWindow.Position.X, AppWindow.Position.Y, _restoreState.Width, _restoreState.Height);
-        }
-        else
-        {
-            // Conversely if they're snapped, the position is determined by the snap,
-            // and we potentially adjust the size to ensure it doesn't extend beyond the screen.
-            var availableWidth = _monitorRect.Width - Math.Abs(AppWindow.Position.X) - RightSideGap;
-            if (availableWidth < _restoreState.Width)
-            {
-                _restoreState.Width = availableWidth;
-            }
-
-            Width = _restoreState.Width;
-
-            var availableHeight = _monitorRect.Height - Math.Abs(AppWindow.Position.Y);
-            if (availableHeight < _restoreState.Height)
-            {
-                _restoreState.Height = availableHeight;
-            }
-
-            Height = _restoreState.Height;
-        }
+        this.MoveAndResize(
+            AppWindow.Position.X, AppWindow.Position.Y, _restoreState.Width, _restoreState.Height);
     }
 
     private void CollapseLargeContentPanel()

@@ -69,9 +69,7 @@ public partial class BarWindowVertical : WindowEx
         Width = 70;
 
         // Calculate the DPI scale.
-        var monitor = PInvoke.MonitorFromWindow(ThisHwnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        PInvoke.GetScaleFactorForMonitor(monitor, out DEVICE_SCALE_FACTOR scaleFactor).ThrowOnFailure();
-        _dpiScale = (double)scaleFactor / 100;
+        _dpiScale = GetDpiScaleForWindow(ThisHwnd);
 
         SetDefaultPosition();
     }
