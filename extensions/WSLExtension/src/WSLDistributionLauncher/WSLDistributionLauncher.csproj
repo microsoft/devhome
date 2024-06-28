@@ -12,7 +12,7 @@
 	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
 		<OutputType>WinExe</OutputType>
 	</PropertyGroup>
-	
+
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
@@ -20,18 +20,17 @@
 		<CsWinRTEnabled>false</CsWinRTEnabled>
 		<Platforms>x86;x64;arm64</Platforms>
 		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-		<StartupObject>WSLExtension.Program</StartupObject>
+		<StartupObject>WSLDistributionLauncher.Program</StartupObject>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
+		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
 			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
- 
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 		<PackageReference Include="Serilog" Version="3.1.1" />
 		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
@@ -41,12 +40,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\WSLDistributionLauncher\WSLDistributionLauncher.csproj" />
-	  <ProjectReference Include="..\WSLExtension\WSLExtension.csproj" />
+	  <AdditionalFiles Include="NativeMethods.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="wsl_appsettings.json">
+		<None Update="WSLDistributionLauncher.runtimeconfig.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

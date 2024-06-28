@@ -3,29 +3,38 @@
 
 using System.CodeDom.Compiler;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.Win32;
 using WSLExtension.Common;
 using WSLExtension.DistroDefinitions;
+using WSLExtension.Exceptions;
+using WSLExtension.Extensions;
 using WSLExtension.Helpers;
 using WSLExtension.Helpers.Distros;
 using WSLExtension.Models;
+using static WSLExtension.Constants;
 
 namespace WSLExtension.Services;
 
 public class WslManager : IWslManager
 {
     private readonly IProcessCaller _processCaller;
-    private readonly IRegistryAccess _registryAccess;
     private readonly IStringResource _stringResource;
     private readonly bool _isWslEnabled;
     private readonly ImmutableList<Distro> _distroDefinitions;
+    private readonly PackageHelper _packageHelper = new();
 
-    public WslManager(IProcessCaller processCaller, IRegistryAccess registryAccess, IStringResource stringResource)
+    private readonly object _lock = new();
+
+    public Dictionary<string, HashSet<Process>> DistributionSessionMap { get; private set; } = new();
+
+    public WslManager(IProcessCaller processCaller, IStringResource stringResource)
     {
         _processCaller = processCaller;
-        _registryAccess = registryAccess;
         _stringResource = stringResource;
         _distroDefinitions = [];
         _isWslEnabled = WslInfo.IsWslEnabled(_processCaller);
@@ -56,7 +65,7 @@ public class WslManager : IWslManager
             IsDefault = d.DefaultDistro,
             IsWsl2 = d.Version2,
             Logo = d.Logo,
-            WtProfileGuid = d.WtProfileGuid,
+            WindowsTerminalProfileGuid = d.WindowsTerminalProfileGuid,
         });
     }
 
@@ -92,28 +101,84 @@ public class WslManager : IWslManager
         return Convert.ToBase64String(bytes);
     }
 
-    public void Run(string registration, string? wtProfileGuid)
+    public void UnregisterDistribution(string distributionName)
     {
-        DistroState.Run(registration, wtProfileGuid, isRoot: false, processCaller: _processCaller);
+        var arguments = UnregisterDistributionArgs.FormatArgs(distributionName);
+        var process = _processCaller.CallInteractiveProcess(GetFileNameForProcessLaunch(), arguments);
+        process.WaitForExit();
+
+        if (process.ExitCode != 0)
+        {
+            throw new WslManagerException($"Failed to unregister the distro {distributionName}");
+        }
     }
 
-    public void Terminate(string registration)
+    public void InstallDistribution(string distributionName)
     {
-        DistroState.Terminate(registration, _processCaller);
+        var arguments = InstallDistributionArgs.FormatArgs(distributionName);
+        var process = _processCaller.CallInteractiveProcess(GetFileNameForProcessLaunch(), arguments);
+        process.WaitForExit();
+
+        if (process.ExitCode != 0)
+        {
+            throw new WslManagerException($"Failed to install the distro {distributionName}");
+        }
     }
 
-    public void Unregister(string registration)
+    public void LaunchDistribution(string distributionName)
     {
-        Management.Unregister(registration, _processCaller);
+        var arguments = LaunchDistributionArgs.FormatArgs(distributionName);
+        var process = _processCaller.CallInteractiveProcess(GetFileNameForProcessLaunch(), arguments);
+        lock (_lock)
+        {
+            if (DistributionSessionMap.TryGetValue(distributionName, out var processList))
+            {
+                processList.Add(process);
+            }
+            else
+            {
+                DistributionSessionMap.Add(distributionName, new HashSet<Process> { process });
+            }
+
+            process.EnableRaisingEvents = true;
+            process.Exited += OnProcessClosed;
+        }
     }
 
-    public async Task<int> InstallWslDistribution(string registration)
+    public string GetFileNameForProcessLaunch()
     {
-        return await Management.InstallWslDistribution(_processCaller, registration);
+        return _packageHelper.IsPackageInstalled(WindowsTerminalPackageFamilyName) ? WindowsTerminalExe : CommandPromptExe;
     }
 
-    public void InstallWslDistributionDistribution(string registration)
+    public void OnProcessClosed(object? sender, EventArgs e)
     {
-        Management.InstallDistro(_processCaller, registration);
+        if (sender is not Process process)
+        {
+            return;
+        }
+
+        lock (_lock)
+        {
+            foreach (var processSet in DistributionSessionMap.Values)
+            {
+                if (processSet.Remove(process))
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    public int SessionsInUseForDistribution(string distributionName)
+    {
+        lock (_lock)
+        {
+            if (DistributionSessionMap.TryGetValue(distributionName, out var processSet))
+            {
+                return processSet.Count;
+            }
+
+            return 0;
+        }
     }
 }

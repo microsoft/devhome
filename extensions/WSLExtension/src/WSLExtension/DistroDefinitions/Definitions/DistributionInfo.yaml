@@ -35,18 +35,12 @@
   HasArm64Version: true
   DistroKind: debian
 
-- Name: Alpine WSL
-  Registration: Alpine
-  Logo: alpine.png
-  HasArm64Version: false
-  DistroKind: alpine
-
 - Name: Ubuntu
   Registration: Ubuntu
   Logo: ubuntu3.png
   HasArm64Version: true
   DistroKind: ubuntu
-  WtProfileGuid: "{51855cb2-8cce-5362-8f54-464b92b32386}"
+  WindowsTerminalProfileGuid: "{51855cb2-8cce-5362-8f54-464b92b32386}"
     
 - Name: Ubuntu on Windows Community Preview
   Registration: Ubuntu-CommPrev
@@ -59,35 +53,35 @@
   Logo: ubuntu7.png
   HasArm64Version: true
   DistroKind: ubuntu
-  WtProfileGuid: "{8c701c6d-1341-546d-84ae-1a1fb3a809ed}"
+  WindowsTerminalProfileGuid: "{8c701c6d-1341-546d-84ae-1a1fb3a809ed}"
 
 - Name: Ubuntu 24.04 LTS
   Registration: Ubuntu-24.04
   Logo: ubuntu24.png
   HasArm64Version: true
   DistroKind: ubuntu
-  WtProfileGuid: "{acbafd15-cbbb-5bb3-8a61-bed446ff4b83}"
+  WindowsTerminalProfileGuid: "{acbafd15-cbbb-5bb3-8a61-bed446ff4b83}"
 
 - Name: Ubuntu 22.04 LTS
   Registration: Ubuntu-22.04
   Logo: ubuntu4.png
   HasArm64Version: true
   DistroKind: ubuntu
-  WtProfileGuid: "{e5a83caa-4c73-52b3-ae6b-bc438d721ef9}"
+  WindowsTerminalProfileGuid: "{e5a83caa-4c73-52b3-ae6b-bc438d721ef9}"
   
 - Name: Ubuntu 20.04 LTS
   Registration: Ubuntu-20.04
   Logo: ubuntu5.png
   HasArm64Version: true
   DistroKind: ubuntu
-  WtProfileGuid: "{4dd1e689-b517-5f39-947d-78e8a8bdf958}"
+  WindowsTerminalProfileGuid: "{4dd1e689-b517-5f39-947d-78e8a8bdf958}"
   
 - Name: Ubuntu 18.04 LTS
   Registration: Ubuntu-18.04
   Logo: ubuntu6.png
   HasArm64Version: true
   DistroKind: ubuntu
-  WtProfileGuid: "{24a0533e-913b-5f8c-a5cb-6be85a4c9e70}"
+  WindowsTerminalProfileGuid: "{24a0533e-913b-5f8c-a5cb-6be85a4c9e70}"
 
 - Name: Ubuntu 16.04 LTS
   Registration: Ubuntu-16.04

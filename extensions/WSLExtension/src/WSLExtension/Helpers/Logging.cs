@@ -11,7 +11,7 @@ public class Logging
 
     public static readonly string LogFolderName = "Logs";
 
-    public static readonly string DefaultLogFileName = "wsl";
+    public static readonly string DefaultLogFileName = "WSL";
 
     private static readonly Lazy<string> _logFolderRoot = new(() => Path.Combine(ApplicationData.Current.TemporaryFolder.Path, LogFolderName));
 

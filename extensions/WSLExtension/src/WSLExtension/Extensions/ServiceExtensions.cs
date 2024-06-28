@@ -18,6 +18,7 @@ public static class ServiceExtensions
         services.AddSingleton<IStringResource, StringResource>();
         services.AddSingleton<IComputeSystemProvider, WslProvider>();
         services.AddSingleton<WslExtension>();
+        services.AddSingleton<IProcessCaller, ProcessCaller>();
         services.AddSingleton<IWslManager, WslManager>();
 
         return services;

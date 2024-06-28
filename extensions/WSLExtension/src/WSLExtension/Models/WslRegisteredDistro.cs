@@ -18,6 +18,31 @@ public class WslRegisteredDistro : IComputeSystem
 
     private readonly IWslManager _wslManager;
 
+    public IDeveloperId AssociatedDeveloperId { get; set; } = null!;
+
+    public string AssociatedProviderId { get; set; } = "Microsoft.WSL";
+
+    public string DisplayName { get; set; } = null!;
+
+    public string Id { get; set; } = null!;
+
+    public string SupplementalDisplayName { get; set; } = string.Empty;
+
+    public ComputeSystemOperations SupportedOperations =>
+        ComputeSystemOperations.Delete;
+
+    public bool? Running { get; set; }
+
+    public bool? IsDefault { get; set; }
+
+    public bool? IsWsl2 { get; set; }
+
+    public string? Logo { get; set; }
+
+    public string? WindowsTerminalProfileGuid { get; set; }
+
+    public event TypedEventHandler<IComputeSystem, ComputeSystemState>? StateChanged = (s, e) => { };
+
     public WslRegisteredDistro(IStringResource stringResource, IWslManager wslManager)
     {
         _stringResource = stringResource;
@@ -37,33 +62,7 @@ public class WslRegisteredDistro : IComputeSystem
         }).AsAsyncOperation();
     }
 
-    public IAsyncOperation<ComputeSystemOperationResult> StartAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> ShutDownAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> RestartAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> TerminateAsync(string options)
-    {
-        return Task.Run(() =>
-        {
-            try
-            {
-                _wslManager.Terminate(Id);
-            }
-            catch (WslManagerException e)
-            {
-                return new ComputeSystemOperationResult(e, e.Message, e.Message);
-            }
-
-            Running = false;
-            StateChanged?.Invoke(this, ComputeSystemState.Stopped);
-            return new ComputeSystemOperationResult();
-        }).AsAsyncOperation();
-    }
+    public IAsyncOperation<ComputeSystemOperationResult> TerminateAsync(string options) => Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 
     public IAsyncOperation<ComputeSystemOperationResult> DeleteAsync(string options)
     {
@@ -71,39 +70,19 @@ public class WslRegisteredDistro : IComputeSystem
         {
             try
             {
-                _wslManager.Unregister(Id);
+                StateChanged?.Invoke(this, ComputeSystemState.Deleting);
+                Running = false;
+                _wslManager.UnregisterDistribution(Id);
+                StateChanged?.Invoke(this, ComputeSystemState.Deleted);
+                return new ComputeSystemOperationResult();
             }
             catch (WslManagerException e)
             {
+                StateChanged?.Invoke(this, ComputeSystemState.Unknown);
                 return new ComputeSystemOperationResult(e, e.Message, e.Message);
             }
-
-            Running = false;
-            StateChanged?.Invoke(this, ComputeSystemState.Deleted);
-            return new ComputeSystemOperationResult();
         }).AsAsyncOperation();
     }
-
-    public IAsyncOperation<ComputeSystemOperationResult> SaveAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> PauseAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> ResumeAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> CreateSnapshotAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> RevertSnapshotAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> DeleteSnapshotAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string inputJson) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 
     public IAsyncOperation<ComputeSystemThumbnailResult> GetComputeSystemThumbnailAsync(string options)
     {
@@ -149,7 +128,8 @@ public class WslRegisteredDistro : IComputeSystem
     {
         return Task.Run(() =>
         {
-            _wslManager.Run(Id, WtProfileGuid);
+            StateChanged?.Invoke(this, ComputeSystemState.Starting);
+            _wslManager.LaunchDistribution(Id);
             Running = true;
             StateChanged?.Invoke(this, ComputeSystemState.Running);
             return new ComputeSystemOperationResult();
@@ -159,29 +139,33 @@ public class WslRegisteredDistro : IComputeSystem
     public IApplyConfigurationOperation CreateApplyConfigurationOperation(string configuration) =>
         throw new NotImplementedException();
 
-    public IDeveloperId AssociatedDeveloperId { get; set; } = null!;
+    public IAsyncOperation<ComputeSystemOperationResult> SaveAsync(string options) =>
+        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 
-    public string AssociatedProviderId { get; set; } = "Microsoft.WSL";
+    public IAsyncOperation<ComputeSystemOperationResult> PauseAsync(string options) =>
+        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 
-    public string DisplayName { get; set; } = null!;
+    public IAsyncOperation<ComputeSystemOperationResult> ResumeAsync(string options) =>
+        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 
-    public string Id { get; set; } = null!;
+    public IAsyncOperation<ComputeSystemOperationResult> CreateSnapshotAsync(string options) =>
+        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 
-    public string SupplementalDisplayName { get; set; } = string.Empty;
+    public IAsyncOperation<ComputeSystemOperationResult> RevertSnapshotAsync(string options) =>
+        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 
-    public ComputeSystemOperations SupportedOperations =>
-        ComputeSystemOperations.Terminate |
-        ComputeSystemOperations.Delete;
+    public IAsyncOperation<ComputeSystemOperationResult> DeleteSnapshotAsync(string options) =>
+        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 
-    public bool? Running { get; set; }
+    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string inputJson) =>
+        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 
-    public bool? IsDefault { get; set; }
+    public IAsyncOperation<ComputeSystemOperationResult> StartAsync(string options) =>
+    Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 
-    public bool? IsWsl2 { get; set; }
+    public IAsyncOperation<ComputeSystemOperationResult> ShutDownAsync(string options) =>
+        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 
-    public string? Logo { get; set; }
-
-    public string? WtProfileGuid { get; set; }
-
-    public event TypedEventHandler<IComputeSystem, ComputeSystemState>? StateChanged = (s, e) => { };
+    public IAsyncOperation<ComputeSystemOperationResult> RestartAsync(string options) =>
+        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 }

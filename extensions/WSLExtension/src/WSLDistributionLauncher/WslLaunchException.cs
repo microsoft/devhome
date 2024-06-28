@@ -6,14 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WSLExtension.Services;
 
-namespace WSLExtension.Helpers;
+namespace WSLDistributionLauncher;
 
-public class WslInfo
+internal sealed class WslLaunchException : Exception
 {
-    public static bool IsWslEnabled(IProcessCaller processCaller)
+    public WslLaunchException(string message)
+        : base(message)
     {
-        return true;
     }
 }

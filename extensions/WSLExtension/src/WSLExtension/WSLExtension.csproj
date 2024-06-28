@@ -33,10 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="DistroDefinitions\Definitions\distros.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DistroDefinitions\Definitions\distro_kinds.yaml">
+    <Content Include="DistroDefinitions\Definitions\DistributionInfo.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\ReviewFormForWslInstallation.json">
@@ -46,4 +43,5 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
 </Project>

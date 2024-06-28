@@ -17,19 +17,15 @@ public interface IWslManager
     /// <returns> A list of registered WSL distributions.</returns>
     public IEnumerable<WslRegisteredDistro> GetAllRegisteredDistributions();
 
-    void Run(string registration, string? wtProfileGuid);
-
-    void Terminate(string registration);
-
-    void Unregister(string registration);
+    void UnregisterDistribution(string distributionName);
 
     Task<List<Distro>> GetOnlineAvailableDistributions();
 
-    Task<int> InstallWslDistribution(string registration);
-
-    void InstallWslDistributionDistribution(string registration);
+    void InstallDistribution(string distributionName);
 
     bool IsWslEnabled { get; }
 
     List<Distro> Definitions { get; }
+
+    void LaunchDistribution(string distributionName);
 }

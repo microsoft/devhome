@@ -94,8 +94,6 @@ public sealed class Program
             {
                 // Services
                 services.AddWslExtensionServices(context);
-                services.AddSingleton<IProcessCaller, ProcessCaller>();
-                services.AddSingleton<IRegistryAccess, RegistryAccess>();
             }).
             Build();
     }

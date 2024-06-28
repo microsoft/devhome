@@ -19,7 +19,7 @@ public class DistroDefinitionsManager
         var deserializer = BuildDeserializer();
         try
         {
-            var uri = new Uri("ms-appx:///WSLExtension/DistroDefinitions/Definitions/distros.yaml");
+            var uri = new Uri("ms-appx:///WSLExtension/DistroDefinitions/Definitions/DistributionInfo.yaml");
             var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
             var yamlString = await FileIO.ReadTextAsync(storageFile);
             var definitions = deserializer.Deserialize<List<Distro>>(yamlString);
@@ -60,7 +60,7 @@ public class DistroDefinitionsManager
 
             r.Name = definition.Name;
             r.Logo = definition.Logo;
-            r.WtProfileGuid = definition.WtProfileGuid;
+            r.WindowsTerminalProfileGuid = definition.WindowsTerminalProfileGuid;
             return r;
         }).ToList();
     }

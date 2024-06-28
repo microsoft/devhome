@@ -20,18 +20,6 @@ public static class Json
         return (await JsonSerializer.DeserializeAsync<T>(stream))!;
     }
 
-    public static async Task<string> StringifyAsync<T>(T value)
-    {
-        if (typeof(T) == typeof(bool))
-        {
-            return value!.ToString()!.ToLowerInvariant();
-        }
-
-        await using var stream = new MemoryStream();
-        await JsonSerializer.SerializeAsync(stream, value);
-        return Encoding.UTF8.GetString(stream.ToArray());
-    }
-
     private static readonly JsonSerializerOptions _options = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -47,15 +35,5 @@ public static class Json
         }
 
         return JsonSerializer.Deserialize<T>(value, _options);
-    }
-
-    public static string Stringify<T>(T value)
-    {
-        if (typeof(T) == typeof(bool))
-        {
-            return value!.ToString()!.ToLowerInvariant();
-        }
-
-        return JsonSerializer.Serialize(value, _options);
     }
 }

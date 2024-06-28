@@ -1,25 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using System.Text;
 
 namespace WSLExtension.Services;
 
 public interface IProcessCaller
 {
-    string CallProcess(string command, string arguments, string? workingDirectory = null);
+    public Process CallInteractiveProcess(string fileName, string arguments);
 
-    string CallProcess(string command, string arguments, Encoding outputEncoding, string? workingDirectory = null);
+    public string CallProcess(string command, string arguments, out int exitCode, string? workingDirectory = null);
 
-    string CallProcess(string command, string arguments, Encoding outputEncoding, out int exitCode, string? workingDirectory = null);
-
-    string CallProcess(string command, string arguments, out int exitCode, string? workingDirectory = null);
-
-    void CallDetachedProcess(string command, string arguments, bool useShell = false);
-
-    string RunCmdInDistro(string distroRegistration, string command, out int exitCode, bool root = false, string? stdIn = null);
-
-    string RunCmdInDistroDetached(string distroRegistration, string command, bool root = false, string? stdIn = null);
-
-    Task<int> CallInteractiveProcess(string command, string arguments);
+    public void CallDetachedProcess(string command, string arguments, bool useShell = false);
 }

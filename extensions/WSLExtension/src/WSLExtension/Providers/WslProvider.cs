@@ -89,12 +89,12 @@ public class WslProvider : IComputeSystemProvider
             {
                 var computeSystems = _wslManager.GetAllRegisteredDistributions();
 
-                _log.Information($"Successfully retrieved all wsl distros on: {DateTime.Now}");
+                _log.Information($"Successfully retrieved all wsl distros");
                 return new ComputeSystemsResult(computeSystems);
             }
             catch (Exception ex)
             {
-                _log.Error($"Failed to retrieve all wsl distros on: {DateTime.Now}", ex);
+                _log.Error($"Failed to retrieve all wsl distros", ex);
                 return new ComputeSystemsResult(ex, OperationErrorString, ex.Message);
             }
         }).AsAsyncOperation();
