@@ -120,7 +120,7 @@
             </StackPanel>
 
             <controls:PISeparator />
-
+            <ScrollViewer x:Name="ExternalToolsScrollViewer" ViewChanging="ScrollViewer_ViewChanging">
             <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsHorizontalLayout}">
                 <DataTemplate x:DataType="helpers:ExternalTool">
                     <Button Click="_viewModel.ExternalToolButton_Click" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" Tag="{x:Bind}">
@@ -142,6 +142,8 @@
                     </Button>
                 </DataTemplate>
             </ItemsRepeater>
+                </ScrollViewer>
+
             </StackPanel>
 
             <!-- Per System controls -->

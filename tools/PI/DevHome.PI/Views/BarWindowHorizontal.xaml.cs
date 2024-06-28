@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
@@ -321,6 +322,9 @@ public partial class BarWindowHorizontal : WindowEx
     private void MainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         SetRegionsForTitleBar();
+
+        Debug.WriteLine(ExternalToolsScrollViewer.XamlRoot.Content.ActualSize.ToString());
+        Debug.WriteLine(ExternalToolsScrollViewer.XamlRoot.Content.DesiredSize.ToString());
     }
 
     // workaround as AppWindow TitleBar doesn't update caption button colors correctly when changed while app is running
@@ -373,5 +377,10 @@ public partial class BarWindowHorizontal : WindowEx
             ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
             RotateLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
         }
+    }
+
+    private void ScrollViewer_ViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
+    {
+        Debug.WriteLine(ExternalToolsScrollViewer.ScrollableWidth);
     }
 }
