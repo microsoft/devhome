@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Services.Core.Extensions;
 using DevHome.Services.WindowsPackageManager.COM;
@@ -19,11 +20,13 @@ namespace DevHome.Services.WindowsPackageManager.Services;
 /// <summary>
 /// Installs a package using the Windows Package Manager (WinGet).
 /// </summary>
-internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
+internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposable
 {
     private readonly ILogger _logger;
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IWinGetPackageFinder _packageFinder;
+    private readonly SemaphoreSlim _findLock = new(1, 1);
+    private bool _disposedValue;
 
     public WinGetPackageInstaller(
         ILogger<WinGetPackageInstaller> logger,
@@ -49,12 +52,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
         try
         {
             // 1. Find package
-            var package = await _packageFinder.GetPackageAsync(catalog, packageId);
-            if (package == null)
-            {
-                _logger.LogError($"Install aborted for package {packageId} because it was not found in the provided catalog {catalog.GetDescriptiveName()}");
-                throw new FindPackagesException(FindPackagesResultStatus.CatalogError);
-            }
+            var package = await FindPackageOrThrowAsync(catalog, packageId);
 
             // 2. Install package
             _logger.LogInformation($"Starting package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
@@ -131,5 +129,50 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
 
         _logger.LogError($"Specified install version was not found {version}.");
         throw new InstallPackageException(InstallResultStatus.InvalidOptions, InstallPackageException.InstallErrorInvalidParameter, HRESULT.S_OK);
+    }
+
+    private async Task<CatalogPackage> FindPackageOrThrowAsync(WinGetCatalog catalog, string packageId)
+    {
+        // During installation, ensure that only one package is being found at
+        // a time. This is mainly to prevent the elevated process from
+        // encountering a racing condition the first time attempting to access
+        // a catalog.
+        // Related issue: https://github.com/microsoft/winget-cli/issues/4587
+        await _findLock.WaitAsync();
+        try
+        {
+            var package = await _packageFinder.GetPackageAsync(catalog, packageId);
+            if (package == null)
+            {
+                _logger.LogError($"Install aborted for package {packageId} because it was not found in the provided catalog {catalog.GetDescriptiveName()}");
+                throw new FindPackagesException(FindPackagesResultStatus.CatalogError);
+            }
+
+            return package;
+        }
+        finally
+        {
+            _findLock.Release();
+        }
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _findLock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
