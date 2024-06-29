@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
@@ -135,6 +136,25 @@ public partial class BarWindowHorizontal : WindowEx
         SetDefaultPosition();
 
         SetRegionsForTitleBar();
+
+        PopulateCommandBar();
+    }
+
+    public void PopulateCommandBar()
+    {
+        foreach (ExternalTool tool in ExternalToolsHelper.Instance.FilteredExternalTools)
+        {
+            AppBarButton button = new AppBarButton
+            {
+                Label = tool.Name,
+                Tag = tool,
+            };
+
+            button.Icon = tool.MenuIcon;
+
+            button.Click += _viewModel.ExternalToolButton_Click;
+            MyCommandBar.PrimaryCommands.Add(button);
+        }
     }
 
     public void SetRegionsForTitleBar()
@@ -321,6 +341,9 @@ public partial class BarWindowHorizontal : WindowEx
     private void MainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         SetRegionsForTitleBar();
+        Debug.WriteLine(ToolColumn.ActualWidth);
+
+        MyCommandBar.Width = ToolColumn.ActualWidth;
     }
 
     // workaround as AppWindow TitleBar doesn't update caption button colors correctly when changed while app is running
