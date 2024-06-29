@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="DistroDefinitions\Definitions\DistributionInfo.yaml">
+    <Content Include="DistroDefinitions\KnownDistributionInfo.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\ReviewFormForWslInstallation.json">

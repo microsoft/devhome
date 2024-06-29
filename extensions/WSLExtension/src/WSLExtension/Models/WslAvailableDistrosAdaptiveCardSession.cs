@@ -24,7 +24,7 @@ public class WslAvailableDistrosAdaptiveCardSession : IExtensionAdaptiveCardSess
 {
     private readonly string _adaptiveCardNextButtonId = "DevHomeMachineConfigurationNextButton";
 
-    private readonly List<DistributionState> _distroList;
+    private readonly List<DistributionState> _availableDistributions;
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WslRegisteredDistribution));
 
     private const string PathToReviewFormTemplate = "ReviewFormForWslInstallation.json";
@@ -35,7 +35,7 @@ public class WslAvailableDistrosAdaptiveCardSession : IExtensionAdaptiveCardSess
 
     public WslAvailableDistrosAdaptiveCardSession(List<DistributionState> distroList, IStringResource stringResource)
     {
-        _distroList = distroList;
+        _availableDistributions = distroList;
         _stringResource = stringResource;
     }
 
@@ -155,26 +155,26 @@ public class WslAvailableDistrosAdaptiveCardSession : IExtensionAdaptiveCardSess
         {
             // Create the JSON array for the gallery images and add the data for each image.
             // these will be display in the initial creation form.
-            var jsonArrayOfAvailableDistros = new JsonArray();
+            var jsonArrayOfAvailableDistributions = new JsonArray();
             var primaryButtonForCreationFlowText = "Next";
             var secondaryButtonForCreationFlowText = "Previous";
 
-            foreach (var distro in _distroList)
+            foreach (var distribution in _availableDistributions)
             {
                 var dataJson = new JsonObject
                 {
-                    { "Header", distro.Name },
-                    { "HeaderIcon", distro.Logo },
+                    { "Header", distribution.FriendlyName },
+                    { "HeaderIcon", distribution.Base64StringLogo },
                 };
 
-                jsonArrayOfAvailableDistros.Add(dataJson);
+                jsonArrayOfAvailableDistributions.Add(dataJson);
             }
 
             var templateData =
                 $"{{\"PrimaryButtonLabelForCreationFlow\" : \"{primaryButtonForCreationFlowText}\"," +
                 $"\"SecondaryButtonLabelForCreationFlow\" : \"{secondaryButtonForCreationFlowText}\"," +
                 $"\"SettingsCardLabel\": \"Choose the WSL distribution you want to install:\"," +
-                $"\"AvailableDistros\" : {jsonArrayOfAvailableDistros.ToJsonString()}" +
+                $"\"AvailableDistros\" : {jsonArrayOfAvailableDistributions.ToJsonString()}" +
                 $"}}";
 
             var template = LoadTemplate(SessionState.WslInstallationForm);
@@ -203,7 +203,7 @@ public class WslAvailableDistrosAdaptiveCardSession : IExtensionAdaptiveCardSess
                                               $"Json deserialization failed for input Json: {inputJson}");
 
             if (inputForWslInstallation.SelectedDistroListIndex < 0 ||
-                inputForWslInstallation.SelectedDistroListIndex > _distroList.Count)
+                inputForWslInstallation.SelectedDistroListIndex > _availableDistributions.Count)
             {
                 return new ProviderOperationResult(
                     ProviderOperationStatus.Failure,
@@ -212,21 +212,30 @@ public class WslAvailableDistrosAdaptiveCardSession : IExtensionAdaptiveCardSess
                     "Selected image index is out of range");
             }
 
-            var distro = _distroList[inputForWslInstallation.SelectedDistroListIndex];
+            var distribution = _availableDistributions[inputForWslInstallation.SelectedDistroListIndex];
             var newDistroNameLabel = "Name:";
             var primaryButtonForCreationFlowText = _stringResource.GetLocalized("PrimaryButtonLabelForCreationFlow");
             var secondaryButtonForCreationFlowText =
                 _stringResource.GetLocalized("SecondaryButtonLabelForCreationFlow");
+
             var reviewFormData = new JsonObject
             {
                 { "ProviderName", Constants.WslProviderDisplayName },
-                { "NameOfNewDistro", distro.Registration },
-                { "DisplayName", distro.Name },
+                { "NewEnvironmentName", distribution.FriendlyName },
+                { "DisplayName", distribution.DistributionName },
                 { "NameLabel", newDistroNameLabel },
-                { "DiskImageUrl", $"data:image/png;base64,{distro.Logo}" },
+                { "DiskImageUrl", $"data:image/png;base64,{distribution.Base64StringLogo}" },
                 { "PrimaryButtonLabelForCreationFlow", primaryButtonForCreationFlowText },
                 { "SecondaryButtonLabelForCreationFlow", secondaryButtonForCreationFlowText },
             };
+
+            // Add friendly name of the selected distribution to the original user input so Dev Home
+            // can show its name on the Environments page when the environment is being created.
+            OriginalUserInputJson = new JsonObject
+            {
+                { "NewEnvironmentName", distribution.FriendlyName },
+                { "SelectedDistroListIndex", $"{inputForWslInstallation.SelectedDistroListIndex}" },
+            }.ToJsonString();
 
             return _availableDistrosAdaptiveCard!.Update(
                 LoadTemplate(SessionState.ReviewForm),

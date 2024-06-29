@@ -9,7 +9,9 @@ public class KnownDistributionInfo
 
     public string DistributionName { get; set; } = string.Empty;
 
-    public string Logo { get; set; } = string.Empty;
+    public string LogoAssetName { get; set; } = string.Empty;
+
+    public string Base64StringLogo { get; set; } = string.Empty;
 
     public string? WindowsTerminalProfileGuid { get; set; }
 }

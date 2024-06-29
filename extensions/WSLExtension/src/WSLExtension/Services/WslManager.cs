@@ -1,23 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.Win32;
-using Windows.ApplicationModel;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.Win32;
 using WSLExtension.Common;
 using WSLExtension.DistroDefinitions;
 using WSLExtension.Exceptions;
 using WSLExtension.Extensions;
 using WSLExtension.Helpers;
-using WSLExtension.Helpers.Distros;
 using WSLExtension.Models;
 using static Microsoft.Win32.Registry;
 using static WSLExtension.Constants;
@@ -28,7 +18,7 @@ namespace WSLExtension.Services;
 
 public class WslManager : IWslManager
 {
-    private readonly IProcessCaller _processCaller;
+    private readonly IProcessCreator _processCaller;
 
     private readonly IStringResource _stringResource;
 
@@ -40,7 +30,9 @@ public class WslManager : IWslManager
 
     public Dictionary<string, HashSet<Process>> DistributionRunningProcessMap { get; private set; } = new();
 
-    public WslManager(IProcessCaller processCaller, IStringResource stringResource)
+    private string? _base64StringForDefaultWslLogo;
+
+    public WslManager(IProcessCreator processCaller, IStringResource stringResource)
     {
         _processCaller = processCaller;
         _stringResource = stringResource;
@@ -48,81 +40,66 @@ public class WslManager : IWslManager
 
     public async Task<List<WslRegisteredDistribution>> GetAllRegisteredDistributionsAsync()
     {
-        _knownDistributionMap ??= await RetrieveKnownDistributionInfoAsync();
-        var registeredDistributions = GetRegisteredDistributions();
+        _knownDistributionMap ??= await GetKnownDistributionInfoFromYamlAsync();
+        var registeredDistributions = await GetRegisteredDistributionsAsync();
         var wslComputeSystems = new List<WslRegisteredDistribution>();
 
         foreach (var distribution in registeredDistributions)
         {
-            if (_knownDistributionMap.TryGetValue(distribution.Key, out var knownDistributionInfo))
-            {
-                distribution.Value.Logo = knownDistributionInfo.Logo;
-                distribution.Value.FriendlyName = knownDistributionInfo.FriendlyName;
-            }
-
             wslComputeSystems.Add(new WslRegisteredDistribution(_stringResource, distribution.Value, this));
         }
 
         return wslComputeSystems;
     }
 
-    public async Task<List<DistributionState>> GetOnlineAvailableDistributionsAsync()
+    public async Task<List<DistributionState>> GetKnownDistributionsFromMsStoreAsync()
     {
-        var task = distros
-            .Where(d => registeredDistros.All(r => r.Registration != d.Registration))
-            .Select(async d => new DistributionState
-            {
-                Registration = d.Registration,
-                Name = d.Name,
-                Logo = await ReadAndEncodeImage(d.Logo),
-            });
-
-        var distroArray = await Task.WhenAll(task);
-
-        var processData = _processCaller.CreateProcessWithoutWindow(GetFileNameForProcessLaunch(), ListAllWslDistributionsFromMsStoreArgs);
+        var processData = _processCaller.CreateProcessWithoutWindow(WslExe, ListAllWslDistributionsFromMsStoreArgs);
         if (processData.ExitCode != 0)
         {
             throw new WslManagerException($"Failed to retrieve all available WSL distributions from the Microsoft Store:" +
                 $" StdOutput: {processData.StdError}");
         }
 
-        var registeredDistributionsMap = GetRegisteredDistributions();
+        var registeredDistributionsMap = await GetRegisteredDistributionsAsync();
         var distributionsToListOnCreationPage = new List<DistributionState>();
-        _knownDistributionMap ??= await RetrieveKnownDistributionInfoAsync();
+        _knownDistributionMap ??= await GetKnownDistributionInfoFromYamlAsync();
+        _base64StringForDefaultWslLogo ??= await GetBase64StringFromLogoPathAsync(DefaultWslLogoPath);
         foreach (var distributionName in ParseKnownDistributionsFoundInMsStore(processData.StdOutput))
         {
-            if (registeredDistributionsMap.TryGetValue(distributionName, out var distribution))
+            // filter out distributions that are already registered on machine.
+            if (registeredDistributionsMap.TryGetValue(distributionName, out var _))
             {
                 continue;
             }
 
+            // Add known distributions that are common between our yaml file and the wsl --list --online output.
             if (_knownDistributionMap.TryGetValue(distributionName, out var knownDistributionInfo))
             {
-                distribution.Value.Logo = knownDistributionInfo.Logo;
-                distribution.Value.FriendlyName = knownDistributionInfo.FriendlyName;
+                var distributionState = new DistributionState(knownDistributionInfo);
+
+                // If an entry in the yaml file lacks a logo, we'll use the default wsl logo.
+                if (string.IsNullOrEmpty(distributionState.Base64StringLogo))
+                {
+                    distributionState.Base64StringLogo = _base64StringForDefaultWslLogo;
+                }
+
+                distributionsToListOnCreationPage.Add(distributionState);
+            }
+            else
+            {
+                // This is a new distribution returned via the wsl --list --online command that we don't know about.
+                distributionsToListOnCreationPage.Add(new(distributionName, _base64StringForDefaultWslLogo));
             }
         }
 
-        return distroArray.ToList();
-    }
-
-    public static async Task<string?> ReadAndEncodeImage(string? logo)
-    {
-        var uri = new Uri($"ms-appx:///WSLExtension/DistroDefinitions/Assets/{logo}");
-        var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
-        var randomAccessStream = await storageFile.OpenReadAsync();
-
-        // Convert the stream to a byte array
-        var bytes = new byte[randomAccessStream.Size];
-        await randomAccessStream.ReadAsync(bytes.AsBuffer(), (uint)randomAccessStream.Size, InputStreamOptions.None);
-
-        return Convert.ToBase64String(bytes);
+        return distributionsToListOnCreationPage;
     }
 
     public void UnregisterDistribution(string distributionName)
     {
         var arguments = UnregisterDistributionArgs.FormatArgs(distributionName);
-        var processData = _processCaller.CreateProcessWithoutWindow(GetFileNameForProcessLaunch(), arguments);
+        var processData = _processCaller.CreateProcessWithoutWindow(WslExe, arguments);
 
         if (processData.ExitCode != 0)
         {
@@ -199,11 +176,11 @@ public class WslManager : IWslManager
         }
     }
 
-    public DistributionState? GetRegisteredDistribution(string distributionName)
+    public async Task<DistributionState?> GetRegisteredDistributionAsync(string distributionName)
     {
-        foreach (var registeredDistribution in GetRegisteredDistributions().Values)
+        foreach (var registeredDistribution in (await GetRegisteredDistributionsAsync()).Values)
         {
-            if (distributionName.Equals(registeredDistribution.Name, StringComparison.Ordinal))
+            if (distributionName.Equals(registeredDistribution.DistributionName, StringComparison.Ordinal))
             {
                 return registeredDistribution;
             }
@@ -212,7 +189,7 @@ public class WslManager : IWslManager
         return null;
     }
 
-    private Dictionary<string, DistributionState> GetRegisteredDistributions()
+    private async Task<Dictionary<string, DistributionState>> GetRegisteredDistributionsAsync()
     {
         var distributions = new Dictionary<string, DistributionState>();
 
@@ -223,6 +200,7 @@ public class WslManager : IWslManager
             return distributions;
         }
 
+        _knownDistributionMap ??= await GetKnownDistributionInfoFromYamlAsync();
         foreach (var subKeyName in linuxSubSystemKey.GetSubKeyNames())
         {
             var subKey = linuxSubSystemKey.OpenSubKey(subKeyName);
@@ -233,7 +211,16 @@ public class WslManager : IWslManager
             }
 
             var distribution = BuildDistribution(subKey);
-            distributions.Add(distribution.Name, distribution);
+
+            // Add the logo and friendly name to the DistributionState object if its a distribution we
+            // know about in KnownDistributionInfo.yaml.
+            if (_knownDistributionMap.TryGetValue(distribution.DistributionName, out var knownDistributionInfo))
+            {
+                distribution.Base64StringLogo = knownDistributionInfo.Base64StringLogo;
+                distribution.FriendlyName = knownDistributionInfo.FriendlyName;
+            }
+
+            distributions.Add(distribution.DistributionName, distribution);
         }
 
         return distributions;

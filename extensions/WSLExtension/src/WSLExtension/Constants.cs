@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Serilog;
+
 namespace WSLExtension;
 
 public sealed class Constants
@@ -22,6 +24,11 @@ public sealed class Constants
     public const string WindowsTerminalExe = "wt.exe";
     public const string WindowsTerminalPackageFamilyName = "Microsoft.WindowsTerminal_8wekyb3d8bbwe";
     public const string CommandPromptExe = "cmd.exe";
+    public const string WslExe = "wsl.exe";
+
+    public const string DefaultWslLogoPath = @"ms-appx:///WSLExtension/DistroDefinitions/Assets/linux.png";
+    public const string WslLogoPathFormat = @"ms-appx:///WSLExtension/DistroDefinitions/Assets/{0}";
+    public const string KnownDistributionYamlLocation = @"ms-appx:///WSLExtension/DistroDefinitions/KnownDistributionInfo.yaml";
 
     // Wsl registry distributions location.
     public const string WslRegisryLocation = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Lxss";
@@ -36,11 +43,11 @@ public sealed class Constants
     public const string LaunchDistributionArgs = "wsl --distribution {0}";
 
     // Unregisters wsl distribution from machine
-    public const string UnregisterDistributionArgs = "wsl --unregister {0}";
+    public const string UnregisterDistributionArgs = "--unregister {0}";
 
     // Download, installs and registers wsl distribution on machine.
     public const string InstallDistributionArgs = "wsl --install {0}";
 
     // Download, installs and registers wsl distribution on machine.
-    public const string ListAllWslDistributionsFromMsStoreArgs = "wsl --list --online";
+    public const string ListAllWslDistributionsFromMsStoreArgs = "--list --online";
 }

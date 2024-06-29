@@ -34,7 +34,7 @@
             },
             {
               "type": "TextBlock",
-              "text": "${NameOfNewDistro}",
+              "text": "${NewEnvironmentName}",
               "wrap": true,
               "size": "medium"
             }
@@ -48,7 +48,8 @@
           "items": [
             {
               "type": "Image",
-              "url": "${DiskImageUrl}"
+              "url": "${DiskImageUrl}",
+              "height": "32px"
             }
           ]
         },

@@ -1,12 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation;
@@ -25,47 +20,53 @@ public class WslProvider : IComputeSystemProvider
 
     private readonly IWslManager _wslManager;
 
+    public string DisplayName => Constants.WslProviderDisplayName;
+
+    public Uri Icon => new(Constants.ExtensionIcon);
+
+    public string Id => Constants.WslProviderId;
+
+    public string OperationErrorString => "ErrorPerformingOperation";
+
+    public ComputeSystemProviderOperations SupportedOperations => ComputeSystemProviderOperations.CreateComputeSystem;
+
     public WslProvider(IStringResource stringResource, IWslManager wslManager)
     {
         _stringResource = stringResource;
         _wslManager = wslManager;
     }
 
-    public string OperationErrorString => "ErrorPerformingOperation";
-
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForDeveloperId(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
     {
-        var task = _wslManager.GetOnlineAvailableDistributions();
-        task.Wait();
-
-        var distroList = task.Result;
-
-        return new ComputeSystemAdaptiveCardResult(new WslAvailableDistrosAdaptiveCardSession(distroList, _stringResource));
+        var distributionList = _wslManager.GetKnownDistributionsFromMsStoreAsync().GetAwaiter().GetResult();
+        return new ComputeSystemAdaptiveCardResult(new WslAvailableDistrosAdaptiveCardSession(distributionList, _stringResource));
     }
-
-    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForComputeSystem(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind) =>
-        throw new NotImplementedException();
 
     public ICreateComputeSystemOperation? CreateCreateComputeSystemOperation(IDeveloperId? developerId, string inputJson)
     {
         try
         {
             var deserializedObject = JsonSerializer.Deserialize(inputJson, typeof(WslInstallationUserInput));
-            var wslInstallationUserInput = deserializedObject as WslInstallationUserInput ?? throw new InvalidOperationException($"Json deserialization failed for input Json: {inputJson}");
+            var wslInstallationUserInput =
+                deserializedObject as WslInstallationUserInput ?? throw new InvalidOperationException($"Json deserialization failed for input Json: {inputJson}");
 
-            var task = _wslManager.GetOnlineAvailableDistributions();
-            task.Wait();
+            var distributionList = _wslManager.GetKnownDistributionsFromMsStoreAsync().GetAwaiter().GetResult();
 
-            var distroList = task.Result;
+            if (wslInstallationUserInput.SelectedDistroListIndex < 0 ||
+                wslInstallationUserInput.SelectedDistroListIndex > distributionList.Count)
+            {
+                throw new InvalidOperationException($"Provided index {wslInstallationUserInput.SelectedDistroListIndex} invalid. " +
+                    $"Available number of distributions: {distributionList.Count}");
+            }
 
             return new WslInstallAndRegisterDistroOperation(
-                distroList[wslInstallationUserInput.SelectedDistroListIndex],
+                distributionList[wslInstallationUserInput.SelectedDistroListIndex],
                 _stringResource,
                 _wslManager);
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Failed to install WSL distro on: {DateTime.Now}");
+            _log.Error(ex, $"Failed to install WSL distro");
 
             // Dev Home will handle null values as failed operations. We can't throw because this is an out of proc
             // COM call, so we'll lose the error information. We'll log the error and return null.
@@ -73,21 +74,13 @@ public class WslProvider : IComputeSystemProvider
         }
     }
 
-    public string DisplayName => Constants.WslProviderDisplayName;
-
-    public Uri Icon => new(Constants.ExtensionIcon);
-
-    public string Id => Constants.WslProviderId;
-
-    public ComputeSystemProviderOperations SupportedOperations => ComputeSystemProviderOperations.CreateComputeSystem;
-
     public IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId)
     {
-        return Task.Run(() =>
+        return Task.Run(async () =>
         {
             try
             {
-                var computeSystems = _wslManager.GetAllRegisteredDistributions();
+                var computeSystems = await _wslManager.GetAllRegisteredDistributionsAsync();
 
                 _log.Information($"Successfully retrieved all wsl distros");
                 return new ComputeSystemsResult(computeSystems);
@@ -99,4 +92,7 @@ public class WslProvider : IComputeSystemProvider
             }
         }).AsAsyncOperation();
     }
+
+    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForComputeSystem(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind) =>
+        throw new NotImplementedException();
 }

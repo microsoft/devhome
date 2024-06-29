@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Win32;
+using WSLExtension.DistroDefinitions;
 using static Microsoft.Win32.Registry;
 using static WSLExtension.Constants;
 
@@ -11,11 +12,11 @@ namespace WSLExtension.Models;
 
 public class DistributionState
 {
-    private const int InstallingState = 3;
+    private const int InstalledState = 1;
 
     public string FriendlyName { get; set; } = string.Empty;
 
-    public string DistributionName { get; set; } = null!;
+    public string DistributionName { get; set; } = string.Empty;
 
     public bool? Version2 { get; set; }
 
@@ -23,15 +24,30 @@ public class DistributionState
 
     public string? PackageFamilyName { get; set; }
 
-    public string? Logo { get; set; }
+    public string? LogoPathInPackage { get; set; }
 
-    public DistributionState()
+    public string? Base64StringLogo { get; set; }
+
+    public bool IsRunning { get; set; }
+
+    public bool IsDefaultDistribution { get; set; }
+
+    public DistributionState(string distributionName)
     {
+        DistributionName = distributionName;
     }
 
-    public DistributionState(string registration)
+    public DistributionState(KnownDistributionInfo knownDistributionInfo)
     {
-        DistributionName = registration;
+        DistributionName = knownDistributionInfo.DistributionName;
+        FriendlyName = knownDistributionInfo.FriendlyName;
+        Base64StringLogo = knownDistributionInfo.Base64StringLogo;
+    }
+
+    public DistributionState(string distributionName, string base64StringForLogo)
+    {
+        DistributionName = distributionName;
+        Base64StringLogo = base64StringForLogo;
     }
 
     public DistributionState(string? distributionName, string? subkeyName, string? packageFamilyName, bool isVersion2)
@@ -42,7 +58,7 @@ public class DistributionState
         PackageFamilyName = packageFamilyName;
     }
 
-    public bool IsDistributionBeingInstalled()
+    public bool IsDistributionInstalled()
     {
         var distributionKey = CurrentUser.OpenSubKey($@"{WslRegisryLocation}\{SubKeyName}", false);
 
@@ -52,6 +68,8 @@ public class DistributionState
         }
 
         var state = distributionKey?.GetValue(WslState) as int?;
-        return state == InstallingState;
+
+        // Any other state other than a 1 means the distribution is not fully installed yet.
+        return state == InstalledState;
     }
 }

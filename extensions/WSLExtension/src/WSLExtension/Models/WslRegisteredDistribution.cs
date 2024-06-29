@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -9,8 +10,10 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using WSLExtension.Common;
 using WSLExtension.Exceptions;
+using WSLExtension.Extensions;
 using WSLExtension.Helpers;
 using WSLExtension.Services;
+using static WSLExtension.Constants;
 
 namespace WSLExtension.Models;
 
@@ -30,7 +33,7 @@ public class WslRegisteredDistribution : IComputeSystem
 
     public string DisplayName { get; set; } = null!;
 
-    public string Id { get; set; } = null!;
+    public string Id { get; set; }
 
     public string SupplementalDisplayName { get; set; } = string.Empty;
 
@@ -48,8 +51,9 @@ public class WslRegisteredDistribution : IComputeSystem
         _stringResource = stringResource;
         _distributionState = distributionState;
         _wslManager = wslManager;
-        DisplayName = distributionState.DistributionName;
-        SupplementalDisplayName = distributionState.FriendlyName;
+        DisplayName = distributionState.FriendlyName;
+        SupplementalDisplayName = distributionState.DistributionName;
+        Id = distributionState.DistributionName;
     }
 
     public IAsyncOperation<ComputeSystemStateResult> GetStateAsync()
@@ -93,19 +97,16 @@ public class WslRegisteredDistribution : IComputeSystem
         {
             try
             {
-                var logoStream = await _packageHelper.GetPackageIconAsRandomAccessStreamAsync(_distributionState.PackageFamilyName);
-
-                if (logoStream == null)
+                // if there is a base64String for the logo of the distribution, use that. If not, default to using
+                // the icon for the package family.
+                if (!string.IsNullOrEmpty(_distributionState.Base64StringLogo))
                 {
-                    var uri = new Uri($"ms-appx:///WSLExtension/DistroDefinitions/Assets/{}");
-                    var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
-                    logoStream = await storageFile.OpenReadAsync();
+                    var convertedArray = Convert.FromBase64String(_distributionState.Base64StringLogo);
+                    return new ComputeSystemThumbnailResult(convertedArray);
                 }
 
-                // Convert the stream to a byte array
-                var bytes = new byte[logoStream.Size];
-                await logoStream.ReadAsync(bytes.AsBuffer(), (uint)logoStream.Size, InputStreamOptions.None);
-                return new ComputeSystemThumbnailResult(bytes);
+                var byteArray = await _packageHelper.GetPackageIconAsByteArrayAsync(_distributionState.PackageFamilyName!);
+                return new ComputeSystemThumbnailResult(byteArray);
             }
             catch (Exception)
             {

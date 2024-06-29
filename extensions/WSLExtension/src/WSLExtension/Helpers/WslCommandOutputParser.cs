@@ -27,18 +27,19 @@ public static class WslCommandOutputParser
                     continue;
                 }
 
-                var distroDefault = line.StartsWith('*');
+                // Line starting with an asterisk indicates the distribution is the default distribution
+                var isDistroDefault = line.StartsWith('*');
 
                 var parts = line.Substring(2).Split([" "], StringSplitOptions.RemoveEmptyEntries);
 
-                var distro = new DistributionState(parts[WslListColumnName])
+                var distribution = new DistributionState(parts[WslListColumnName])
                 {
-                    DefaultDistro = distroDefault,
-                    Running = parts[WslListColumnState] == WslListStateRunning,
+                    IsDefaultDistribution = isDistroDefault,
+                    IsRunning = parts[WslListColumnState] == WslListStateRunning,
                     Version2 = parts[WslListColumnVersion] == "2",
                 };
 
-                distros.Add(distro);
+                distros.Add(distribution);
             }
         }
 
