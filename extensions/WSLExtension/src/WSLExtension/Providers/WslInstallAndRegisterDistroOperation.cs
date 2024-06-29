@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 using WSLExtension.Common;
@@ -16,11 +17,19 @@ public class WslInstallAndRegisterDistroOperation : ICreateComputeSystemOperatio
     private readonly IStringResource _stringResource;
     private readonly IWslManager _wslManager;
 
+    private readonly DataReceivedEventHandler _outputDataReceivedEventHandler;
+
+    private readonly DataReceivedEventHandler _errorDataReceivedEventHandler;
+
+    private string _wslInstallStdError = string.Empty;
+
     public WslInstallAndRegisterDistroOperation(DistributionState distributionState, IStringResource stringResource, IWslManager wslManager)
     {
         _distributionState = distributionState;
         _stringResource = stringResource;
         _wslManager = wslManager;
+        _outputDataReceivedEventHandler = new(OnStandardOutputReceived);
+        _errorDataReceivedEventHandler = new(OnStandardErrorReceived);
     }
 
     public IAsyncOperation<CreateComputeSystemResult> StartAsync()
@@ -29,7 +38,19 @@ public class WslInstallAndRegisterDistroOperation : ICreateComputeSystemOperatio
         {
             Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs("Installing", 0));
 
-            _wslManager.InstallDistribution(_distributionState.DistributionName);
+            var processData = _wslManager.InstallDistribution(
+                _distributionState.DistributionName,
+                _outputDataReceivedEventHandler,
+                _errorDataReceivedEventHandler);
+
+            if (processData.ExitCode != 0)
+            {
+                Console.WriteLine($"process exit code: {processData.ExitCode}");
+                return new CreateComputeSystemResult(
+                    new InvalidDataException(),
+                    $"failed to install new distro due to error {_wslInstallStdError}",
+                    $"failed to install new distro due to error {_wslInstallStdError}");
+            }
 
             // Cancel waiting for install if the distribution hasn't been installed after 10 minutes.
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -56,6 +77,18 @@ public class WslInstallAndRegisterDistroOperation : ICreateComputeSystemOperatio
 
             return new CreateComputeSystemResult(new InvalidDataException(), "failed to install new distro", "failed to install new distro");
         }).AsAsyncOperation();
+    }
+
+    private void OnStandardOutputReceived(object sender, DataReceivedEventArgs args)
+    {
+        Console.WriteLine(args.Data);
+        Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(args.Data, 0));
+    }
+
+    private void OnStandardErrorReceived(object sender, DataReceivedEventArgs args)
+    {
+        _wslInstallStdError = args.Data ?? "Error installing wsl distribution but wsl.exe did not return error output";
+        Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(_wslInstallStdError, 0));
     }
 
     public event TypedEventHandler<ICreateComputeSystemOperation, CreateComputeSystemActionRequiredEventArgs>? ActionRequired

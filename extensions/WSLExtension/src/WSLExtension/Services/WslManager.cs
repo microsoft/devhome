@@ -107,16 +107,10 @@ public class WslManager : IWslManager
         }
     }
 
-    public void InstallDistribution(string distributionName)
+    public WslProcessData InstallDistribution(string distributionName, DataReceivedEventHandler stdOutputHandler, DataReceivedEventHandler stdErrorHandler)
     {
         var arguments = InstallDistributionArgs.FormatArgs(distributionName);
-        var process = _processCaller.CreateProcessWithWindow(GetFileNameForProcessLaunch(), arguments);
-        process.WaitForExit();
-
-        if (process.ExitCode != 0)
-        {
-            throw new WslManagerException($"Failed to install the distro {distributionName}");
-        }
+        return _processCaller.CreateProcessWithoutWindow(WslExe, arguments, stdOutputHandler, stdErrorHandler);
     }
 
     public void LaunchDistribution(string distributionName)

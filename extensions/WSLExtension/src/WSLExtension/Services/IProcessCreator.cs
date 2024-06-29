@@ -11,4 +11,10 @@ public interface IProcessCreator
     public Process CreateProcessWithWindow(string fileName, string arguments);
 
     public WslProcessData CreateProcessWithoutWindow(string fileName, string arguments);
+
+    public WslProcessData CreateProcessWithoutWindow(
+        string fileName,
+        string arguments,
+        DataReceivedEventHandler stdOutputHandler,
+        DataReceivedEventHandler stdErrorHandler);
 }

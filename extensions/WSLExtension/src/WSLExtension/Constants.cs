@@ -46,7 +46,7 @@ public sealed class Constants
     public const string UnregisterDistributionArgs = "--unregister {0}";
 
     // Download, installs and registers wsl distribution on machine.
-    public const string InstallDistributionArgs = "wsl --install {0}";
+    public const string InstallDistributionArgs = "--install {0} --web-download";
 
     // Download, installs and registers wsl distribution on machine.
     public const string ListAllWslDistributionsFromMsStoreArgs = "--list --online";

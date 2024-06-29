@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using WSLExtension.Models;
 
 namespace WSLExtension.Services;
@@ -17,7 +18,7 @@ public interface IWslManager
 
     void UnregisterDistribution(string distributionName);
 
-    void InstallDistribution(string distributionName);
+    public WslProcessData InstallDistribution(string distributionName, DataReceivedEventHandler stdOutputHandler, DataReceivedEventHandler stdErrorHandler);
 
     void LaunchDistribution(string distributionName);
 }
