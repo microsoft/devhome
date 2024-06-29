@@ -70,6 +70,7 @@ Dev Home currently has the following tools:
 - Setup flow
 - Extensions Library
 - [Windows customization](../tools/Customization/DevHome.Customization/Customization.md)
+- Utilities
 
 ## Extensions
 
