@@ -1,4 +1,4 @@
-﻿<Page
+﻿<commonviews:DevHomePage
     x:Class="DevHome.Views.WhatsNewPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
     xmlns:models="using:DevHome.Models"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:behaviors="using:DevHome.Common.Behaviors" 
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="OnLoaded"
@@ -317,4 +318,4 @@
             </Grid>
         </RelativePanel>
     </ScrollViewer>
-</Page>
+</commonviews:DevHomePage>

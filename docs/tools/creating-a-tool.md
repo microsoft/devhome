@@ -21,13 +21,11 @@
 
 ## Tool requirements
 
-Each tool must define a custom page view extending from the [`ToolPage`](../common/ToolPage.cs) abstract class, and implement it like in this example:
+Each tool must define a custom page view extending from the [`ToolPage`](../../common/Views/ToolPage.cs) abstract class, and implement it like in this example:
 
 ```cs
 public class SampleToolPage : ToolPage
 {
-    public override string ShortName => "SampleTool";
-
     public SampleToolPage()
     {
         ViewModel = Application.Current.GetService<SampleToolViewModel>();
@@ -36,24 +34,18 @@ public class SampleToolPage : ToolPage
 }
 ```
 
-The Dev Home framework will look at all types in its assembly for any inheriting from `ToolPage`:
+If a page is not part of a tool, it should extend from [`DevHomePage.cs`](../../common/Views/DevHomePage.cs).
 
-On a found type, the framework will use:
-  - ShortName property to get the name of the tool
-
-### Method definition
+<!-- ### Method definition
 
 This section contains a more detailed description of each of the interface methods.
 
-ShortName
-
-```cs
-public abstract string ShortName { get; }
-```
-
-Returns the name of the tool. This is used for the navigation menu text.
+-->
 
 ## Code organization
 
-[`toolpage.cs`](../common/ToolPage.cs)
+[`ToolPage.cs`](../../common/Views/ToolPage.cs)
 Contains the interface definition for Dev Home tools.
+
+[`DevHomePage.cs`](../../common/Views/DevHomePage.cs)
+Contains the interface definition for all Dev Home pages.

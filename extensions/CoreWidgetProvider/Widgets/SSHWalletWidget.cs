@@ -192,8 +192,14 @@ internal sealed class SSHWalletWidget : CoreWidget
                 CustomState = ConfigFile,
                 Template = GetTemplateForPage(Page),
             };
-
-            WidgetManager.GetDefault().UpdateWidget(updateRequestOptions);
+            try
+            {
+                WidgetManager.GetDefault().UpdateWidget(updateRequestOptions);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Exception updating widget via WidgetManager.");
+            }
         }
     }
 
@@ -364,7 +370,14 @@ internal sealed class SSHWalletWidget : CoreWidget
         };
 
         Log.Debug($"Updating widget for {Page}");
-        WidgetManager.GetDefault().UpdateWidget(updateOptions);
+        try
+        {
+            WidgetManager.GetDefault().UpdateWidget(updateOptions);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Exception updating widget via WidgetManager.");
+        }
     }
 
     public override string GetTemplatePath(WidgetPageState page)

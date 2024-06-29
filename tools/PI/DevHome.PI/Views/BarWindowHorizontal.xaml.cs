@@ -25,6 +25,7 @@ using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.Shell.Common;
 using WinRT.Interop;
 using WinUIEx;
+using static DevHome.PI.Helpers.CommonHelper;
 using static DevHome.PI.Helpers.WindowHelper;
 
 namespace DevHome.PI;
@@ -128,13 +129,14 @@ public partial class BarWindowHorizontal : WindowEx
         SetRequestedTheme(t.Theme);
 
         // Calculate the DPI scale.
-        var monitor = PInvoke.MonitorFromWindow(ThisHwnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        PInvoke.GetScaleFactorForMonitor(monitor, out DEVICE_SCALE_FACTOR scaleFactor).ThrowOnFailure();
-        _dpiScale = (double)scaleFactor / 100;
+        _dpiScale = GetDpiScaleForWindow(ThisHwnd);
 
         SetDefaultPosition();
 
         SetRegionsForTitleBar();
+
+        // Now that the position is set correctly show the window
+        this.Show();
     }
 
     public void SetRegionsForTitleBar()
@@ -158,11 +160,11 @@ public partial class BarWindowHorizontal : WindowEx
     private void SetDefaultPosition()
     {
         // If attached to an app it should show up on the monitor that the app is on
-        _monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? ThisHwnd);
+        _monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
         var screenWidth = _monitorRect.right - _monitorRect.left;
         this.Move(
             (int)((screenWidth - (Width * _dpiScale)) / 2) + _monitorRect.left,
-            (int)WindowPositionOffsetY);
+            (int)WindowPositionOffsetY + _monitorRect.top);
 
         // Get the saved settings for the ExpandedView size. On first run, this will be
         // the default 0,0, so we'll set the size proportional to the monitor size.
@@ -184,6 +186,13 @@ public partial class BarWindowHorizontal : WindowEx
         // Set the default restore state for the ExpandedView size to the (adjusted) settings size.
         _restoreState.Height = settingSize.Height;
         _restoreState.Width = settingSize.Width;
+    }
+
+    internal void UpdatePositionFromHwnd(HWND hwnd)
+    {
+        RECT rect;
+        PInvoke.GetWindowRect(hwnd, out rect);
+        this.Move(rect.left, rect.top);
     }
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)
@@ -264,33 +273,22 @@ public partial class BarWindowHorizontal : WindowEx
         LargeContentPanel.Visibility = Visibility.Visible;
         MaxHeight = double.NaN;
 
-        // If they expand to ExpandedView and they're not snapped, we can use the
-        // RestoreState size & position.
-        if (!_viewModel.IsSnapped)
-        {
-            this.MoveAndResize(
-                _restoreState.Left, _restoreState.Top, _restoreState.Width, _restoreState.Height);
-        }
-        else
-        {
-            // Conversely if they're snapped, the position is determined by the snap,
-            // and we potentially adjust the size to ensure it doesn't extend beyond the screen.
-            var availableWidth = _monitorRect.Width - Math.Abs(AppWindow.Position.X) - RightSideGap;
-            if (availableWidth < _restoreState.Width)
-            {
-                _restoreState.Width = availableWidth;
-            }
+        var monitorRect = GetMonitorRectForWindow(ThisHwnd);
+        var dpiScale = GetDpiScaleForWindow(ThisHwnd);
 
-            Width = _restoreState.Width;
+        // Expand the window but keep the x,y coordinates of top-left most corner of the window the same so it doesn't
+        // jump around the screen.
+        var availableWidth = monitorRect.Width - Math.Abs(AppWindow.Position.X - monitorRect.left) - RightSideGap;
+        _restoreState.Width = (int)((double)availableWidth / dpiScale);
 
-            var availableHeight = _monitorRect.Height - Math.Abs(AppWindow.Position.Y);
-            if (availableHeight < _restoreState.Height)
-            {
-                _restoreState.Height = availableHeight;
-            }
+        Width = _restoreState.Width;
 
-            Height = _restoreState.Height;
-        }
+        var availableHeight = monitorRect.Height - Math.Abs(AppWindow.Position.Y - monitorRect.top);
+
+        _restoreState.Height = (int)((double)availableHeight / dpiScale);
+
+        this.MoveAndResize(
+            AppWindow.Position.X, AppWindow.Position.Y, _restoreState.Width, _restoreState.Height);
     }
 
     private void CollapseLargeContentPanel()

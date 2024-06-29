@@ -1,12 +1,12 @@
 ﻿<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
-<pg:ToolPage
+<commonviews:ToolPage
     x:Class="DevHome.SetupFlow.Views.SetupFlowPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
-    xmlns:pg="using:DevHome.Common"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     xmlns:environmentViews="using:DevHome.SetupFlow.Views.Environments"
@@ -140,4 +140,4 @@
             </i:Interaction.Behaviors>
         </controls:SetupFlowNavigation>
     </Grid>
-</pg:ToolPage>
+</commonviews:ToolPage>

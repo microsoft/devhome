@@ -13,7 +13,6 @@ namespace DevHome.Common.Views;
 /// the individual Page should handle that.  Take a look at EnvironmentCreationOptionsView.xaml
 /// for an example on using the autofocus behavior to focus when the element when it becomes visible.
 /// </summary>
-/// </summary>
 public class DevHomePage : Page
 {
     public DevHomePage()

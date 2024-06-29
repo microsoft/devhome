@@ -18,10 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DevHome.Utilities\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Page Update="Views\UtilityView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Common;
+using DevHome.Common.Views;
 using DevHome.Experiments.ViewModels;
 
 namespace DevHome.Experiments.Views;
@@ -11,8 +11,6 @@ namespace DevHome.Experiments.Views;
 /// </summary>
 public sealed partial class TestExperimentPage : ToolPage
 {
-    public override string ShortName => "TestExperiment1";
-
     public TestExperimentViewModel ViewModel
     {
         get;

@@ -61,7 +61,7 @@ internal sealed class MemoryStats : IDisposable
     {
         Windows.Win32.System.SystemInformation.MEMORYSTATUSEX memStatus = default;
         memStatus.dwLength = (uint)Marshal.SizeOf(typeof(Windows.Win32.System.SystemInformation.MEMORYSTATUSEX));
-        if (PInvoke.GlobalMemoryStatusEx(out memStatus))
+        if (PInvoke.GlobalMemoryStatusEx(ref memStatus))
         {
             AllMem = memStatus.ullTotalPhys;
             var availableMem = memStatus.ullAvailPhys;

@@ -7,6 +7,7 @@ using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.DeveloperId;
+using DevHome.Common.Views;
 using DevHome.Models;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
@@ -17,7 +18,7 @@ using Windows.System;
 
 namespace DevHome.Views;
 
-public sealed partial class WhatsNewPage : Page
+public sealed partial class WhatsNewPage : DevHomePage
 {
     private readonly Uri _devDrivePageKeyUri = new("ms-settings:disksandvolumes");
     private readonly Uri _devDriveLearnMoreLinkUri = new("https://go.microsoft.com/fwlink/?linkid=2236041");
