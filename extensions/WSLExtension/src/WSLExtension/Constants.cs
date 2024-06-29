@@ -23,6 +23,15 @@ public sealed class Constants
     public const string WindowsTerminalPackageFamilyName = "Microsoft.WindowsTerminal_8wekyb3d8bbwe";
     public const string CommandPromptExe = "cmd.exe";
 
+    // Wsl registry distributions location.
+    public const string WslRegisryLocation = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Lxss";
+
+    // Wsl registry data names within a distribution location.
+    public const string PackageFamilyName = "PackageFamilyName";
+    public const string DistributionName = "DistributionName";
+    public const string WslVersion = "Version";
+    public const string WslState = "State";
+
     // Launches wsl.exe with the provided distribution
     public const string LaunchDistributionArgs = "wsl --distribution {0}";
 
@@ -31,4 +40,7 @@ public sealed class Constants
 
     // Download, installs and registers wsl distribution on machine.
     public const string InstallDistributionArgs = "wsl --install {0}";
+
+    // Download, installs and registers wsl distribution on machine.
+    public const string ListAllWslDistributionsFromMsStoreArgs = "wsl --list --online";
 }

@@ -15,17 +15,13 @@ public interface IWslManager
 {
     /// <summary> Gets a list of all registered WSL distributions on the machine.</summary>
     /// <returns> A list of registered WSL distributions.</returns>
-    public IEnumerable<WslRegisteredDistro> GetAllRegisteredDistributions();
+    public Task<List<WslRegisteredDistribution>> GetAllRegisteredDistributionsAsync();
+
+    public Task<List<DistributionState>> GetOnlineAvailableDistributionsAsync();
 
     void UnregisterDistribution(string distributionName);
 
-    Task<List<Distro>> GetOnlineAvailableDistributions();
-
     void InstallDistribution(string distributionName);
-
-    bool IsWslEnabled { get; }
-
-    List<Distro> Definitions { get; }
 
     void LaunchDistribution(string distributionName);
 }

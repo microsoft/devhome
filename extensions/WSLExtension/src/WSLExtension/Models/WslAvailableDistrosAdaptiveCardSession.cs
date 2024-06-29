@@ -24,8 +24,8 @@ public class WslAvailableDistrosAdaptiveCardSession : IExtensionAdaptiveCardSess
 {
     private readonly string _adaptiveCardNextButtonId = "DevHomeMachineConfigurationNextButton";
 
-    private readonly List<Distro> _distroList;
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WslRegisteredDistro));
+    private readonly List<DistributionState> _distroList;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WslRegisteredDistribution));
 
     private const string PathToReviewFormTemplate = "ReviewFormForWslInstallation.json";
     private const string PathToWslInstallationFormTemplate = "WslInstallationForm.json";
@@ -33,7 +33,7 @@ public class WslAvailableDistrosAdaptiveCardSession : IExtensionAdaptiveCardSess
     private readonly IStringResource _stringResource;
     private volatile IExtensionAdaptiveCard? _availableDistrosAdaptiveCard;
 
-    public WslAvailableDistrosAdaptiveCardSession(List<Distro> distroList, IStringResource stringResource)
+    public WslAvailableDistrosAdaptiveCardSession(List<DistributionState> distroList, IStringResource stringResource)
     {
         _distroList = distroList;
         _stringResource = stringResource;

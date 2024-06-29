@@ -9,21 +9,21 @@ namespace WSLExtension.Helpers.Distros;
 
 public class GetAvailableDistros
 {
-    public static async Task<List<Distro>> Execute(IProcessCaller processCaller)
+    public static async Task<List<DistributionState>> Execute(IProcessCaller processCaller)
     {
         var distrosAvailable = processCaller.CallProcess("wsl", "--list --online", out var exitCode);
         if (exitCode != 0)
         {
-            return new List<Distro>();
+            return new List<DistributionState>();
         }
 
         var distros = ParseDistroList(distrosAvailable);
 
-        var definitionsRead = new List<Distro>(await DistroDefinitionsManager.ReadDistroDefinitions());
+        var definitionsRead = new List<DistributionState>(await DistroDefinitionsManager.ReadDistroDefinitions());
 
         return DistroDefinitionsManager.Merge(
             definitionsRead,
-            distros.Select(n => new Distro(n))
+            distros.Select(n => new DistributionState(n))
                 .ToList())
             .Where(r => r.Name != null).ToList();
     }

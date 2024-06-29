@@ -1,0 +1,63 @@
+---
+- FriendlyName: Debian
+  DistributionName: Debian
+  Logo: debian.png
+
+# logo can be found: https://gitlab.com/kalilinux/documentation/press-pack/-/blob/main/Kali/Logomark_and_Wordmark/kali-logo-dragon-white-black.jpg
+# See: https://www.kali.org/docs/policy/trademark/ for trademark information.
+- FriendlyName: Kali Linux
+  DistributionName: kali-linux
+  Logo: kali-logo-dragon-white-black.jpg
+
+- FriendlyName: openSUSE Leap 15.5
+  DistributionName: openSUSE-Leap-15.5
+  Logo: opensuse.png
+
+- FriendlyName: openSUSE Tumbleweed
+  DistributionName: openSUSE-Tumbleweed
+  Logo: opensuse.png
+
+- FriendlyName: Oracle Linux 7.9
+  DistributionName: OracleLinux_7_9
+  Logo: linux.png
+
+- FriendlyName: Oracle Linux 8.7
+  DistributionName: OracleLinux_8_7
+  Logo: linux.png
+
+- FriendlyName: Oracle Linux 9.1
+  DistributionName: OracleLinux_9_1
+  Logo: linux.png
+
+- FriendlyName: SLES 15 SP4
+  DistributionName: SUSE-Linux-Enterprise-Server-15-SP4
+  Logo: sles.png
+
+- FriendlyName: SLES 15 SP5
+  DistributionName: SUSE-Linux-Enterprise-15-SP5
+  Logo: sles.png
+
+- FriendlyName: Ubuntu
+  DistributionName: Ubuntu
+  Logo: ubuntu3.png
+  WindowsTerminalProfileGuid: "{51855cb2-8cce-5362-8f54-464b92b32386}"
+    
+- FriendlyName: Ubuntu 24.04 LTS
+  DistributionName: Ubuntu-24.04
+  Logo: ubuntu3.png
+  WindowsTerminalProfileGuid: "{acbafd15-cbbb-5bb3-8a61-bed446ff4b83}"
+
+- FriendlyName: Ubuntu 22.04 LTS
+  DistributionName: Ubuntu-22.04
+  Logo: ubuntu3.png
+  WindowsTerminalProfileGuid: "{e5a83caa-4c73-52b3-ae6b-bc438d721ef9}"
+  
+- FriendlyName: Ubuntu 20.04 LTS
+  DistributionName: Ubuntu-20.04
+  Logo: ubuntu3.png
+  WindowsTerminalProfileGuid: "{4dd1e689-b517-5f39-947d-78e8a8bdf958}"
+  
+- FriendlyName: Ubuntu 18.04 LTS
+  DistributionName: Ubuntu-18.04
+  Logo: ubuntu3.png
+  WindowsTerminalProfileGuid: "{24a0533e-913b-5f8c-a5cb-6be85a4c9e70}"

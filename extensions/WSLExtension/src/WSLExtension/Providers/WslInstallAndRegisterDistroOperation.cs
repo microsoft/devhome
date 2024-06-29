@@ -10,11 +10,11 @@ namespace WSLExtension.Models;
 
 public class WslInstallAndRegisterDistroOperation : ICreateComputeSystemOperation
 {
-    private readonly Distro _distro;
+    private readonly DistributionState _distro;
     private readonly IStringResource _stringResource;
     private readonly IWslManager _wslManager;
 
-    public WslInstallAndRegisterDistroOperation(Distro distro, IStringResource stringResource, IWslManager wslManager)
+    public WslInstallAndRegisterDistroOperation(DistributionState distro, IStringResource stringResource, IWslManager wslManager)
     {
         _distro = distro;
         _stringResource = stringResource;
@@ -31,7 +31,7 @@ public class WslInstallAndRegisterDistroOperation : ICreateComputeSystemOperatio
 
             _wslManager.InstallDistribution(registration);
 
-            WslRegisteredDistro? foundDistro;
+            WslRegisteredDistribution? foundDistro;
             while ((foundDistro = InstalledDistroRunning(registration)) == default)
             {
                 await Task.Delay(1000);
@@ -43,7 +43,7 @@ public class WslInstallAndRegisterDistroOperation : ICreateComputeSystemOperatio
         }).AsAsyncOperation();
     }
 
-    private WslRegisteredDistro? InstalledDistroRunning(string registration)
+    private WslRegisteredDistribution? InstalledDistroRunning(string registration)
        => _wslManager.GetAllRegisteredDistributions().FirstOrDefault(d => d.Id == registration && d.Running.HasValue && d.Running.Value);
 
     public event TypedEventHandler<ICreateComputeSystemOperation, CreateComputeSystemActionRequiredEventArgs>? ActionRequired

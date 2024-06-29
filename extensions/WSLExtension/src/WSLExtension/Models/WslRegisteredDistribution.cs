@@ -3,20 +3,26 @@
 
 using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using WSLExtension.Common;
 using WSLExtension.Exceptions;
+using WSLExtension.Helpers;
 using WSLExtension.Services;
 
 namespace WSLExtension.Models;
 
-public class WslRegisteredDistro : IComputeSystem
+public class WslRegisteredDistribution : IComputeSystem
 {
     private readonly IStringResource _stringResource;
 
+    private readonly PackageHelper _packageHelper = new();
+
     private readonly IWslManager _wslManager;
+
+    private readonly DistributionState _distributionState;
 
     public IDeveloperId AssociatedDeveloperId { get; set; } = null!;
 
@@ -35,18 +41,15 @@ public class WslRegisteredDistro : IComputeSystem
 
     public bool? IsDefault { get; set; }
 
-    public bool? IsWsl2 { get; set; }
-
-    public string? Logo { get; set; }
-
-    public string? WindowsTerminalProfileGuid { get; set; }
-
     public event TypedEventHandler<IComputeSystem, ComputeSystemState>? StateChanged = (s, e) => { };
 
-    public WslRegisteredDistro(IStringResource stringResource, IWslManager wslManager)
+    public WslRegisteredDistribution(IStringResource stringResource, DistributionState distributionState, IWslManager wslManager)
     {
         _stringResource = stringResource;
+        _distributionState = distributionState;
         _wslManager = wslManager;
+        DisplayName = distributionState.DistributionName;
+        SupplementalDisplayName = distributionState.FriendlyName;
     }
 
     public IAsyncOperation<ComputeSystemStateResult> GetStateAsync()
@@ -88,19 +91,26 @@ public class WslRegisteredDistro : IComputeSystem
     {
         return Task.Run(async () =>
         {
-            if (Logo == null)
+            try
             {
-                return new ComputeSystemThumbnailResult(null, string.Empty, string.Empty);
+                var logoStream = await _packageHelper.GetPackageIconAsRandomAccessStreamAsync(_distributionState.PackageFamilyName);
+
+                if (logoStream == null)
+                {
+                    var uri = new Uri($"ms-appx:///WSLExtension/DistroDefinitions/Assets/{}");
+                    var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
+                    logoStream = await storageFile.OpenReadAsync();
+                }
+
+                // Convert the stream to a byte array
+                var bytes = new byte[logoStream.Size];
+                await logoStream.ReadAsync(bytes.AsBuffer(), (uint)logoStream.Size, InputStreamOptions.None);
+                return new ComputeSystemThumbnailResult(bytes);
             }
-
-            var uri = new Uri($"ms-appx:///WSLExtension/DistroDefinitions/Assets/{Logo}");
-            var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
-            var randomAccessStream = await storageFile.OpenReadAsync();
-
-            // Convert the stream to a byte array
-            var bytes = new byte[randomAccessStream.Size];
-            await randomAccessStream.ReadAsync(bytes.AsBuffer(), (uint)randomAccessStream.Size, InputStreamOptions.None);
-            return new ComputeSystemThumbnailResult(bytes);
+            catch (Exception)
+            {
+                return new ComputeSystemThumbnailResult(new InvalidDataException(), "error with thumbnail", "error with thumbnail");
+            }
         }).AsAsyncOperation();
     }
 
@@ -110,9 +120,9 @@ public class WslRegisteredDistro : IComputeSystem
         {
             var properties = new List<ComputeSystemProperty>();
 
-            if (IsWsl2 != null)
+            if (_distributionState.Version2 != null)
             {
-                properties.Add(ComputeSystemProperty.CreateCustom(IsWsl2.Value ? "2" : "1", "WSL", null));
+                properties.Add(ComputeSystemProperty.CreateCustom(_distributionState.Version2.Value ? "2" : "1", "WSL", null));
             }
 
             if (IsDefault != null && IsDefault.Value)

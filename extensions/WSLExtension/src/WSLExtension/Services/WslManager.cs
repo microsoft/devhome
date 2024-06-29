@@ -2,9 +2,12 @@
 // Licensed under the MIT License.
 
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Microsoft.Win32;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -16,67 +19,58 @@ using WSLExtension.Extensions;
 using WSLExtension.Helpers;
 using WSLExtension.Helpers.Distros;
 using WSLExtension.Models;
+using static Microsoft.Win32.Registry;
 using static WSLExtension.Constants;
+using static WSLExtension.DistroDefinitions.KnownDistributionHelper;
+using static WSLExtension.Helpers.WslCommandOutputParser;
 
 namespace WSLExtension.Services;
 
 public class WslManager : IWslManager
 {
     private readonly IProcessCaller _processCaller;
+
     private readonly IStringResource _stringResource;
-    private readonly bool _isWslEnabled;
-    private readonly ImmutableList<Distro> _distroDefinitions;
+
     private readonly PackageHelper _packageHelper = new();
 
     private readonly object _lock = new();
 
-    public Dictionary<string, HashSet<Process>> DistributionSessionMap { get; private set; } = new();
+    private Dictionary<string, KnownDistributionInfo>? _knownDistributionMap;
+
+    public Dictionary<string, HashSet<Process>> DistributionRunningProcessMap { get; private set; } = new();
 
     public WslManager(IProcessCaller processCaller, IStringResource stringResource)
     {
         _processCaller = processCaller;
         _stringResource = stringResource;
-        _distroDefinitions = [];
-        _isWslEnabled = WslInfo.IsWslEnabled(_processCaller);
-
-        var task = Task.Run(DistroDefinitionsManager.ReadDistroDefinitions);
-        task.Wait();
-
-        _distroDefinitions = ImmutableList.CreateRange(task.Result);
     }
 
-    // ReSharper disable once ConvertToAutoProperty
-    public bool IsWslEnabled => _isWslEnabled;
-
-    public List<Distro> Definitions => _distroDefinitions.ToList();
-
-    public IEnumerable<WslRegisteredDistro> GetAllRegisteredDistributions()
+    public async Task<List<WslRegisteredDistribution>> GetAllRegisteredDistributionsAsync()
     {
-        var distros = DistroDefinitionsManager.Merge(
-            _distroDefinitions.ToList(),
-            GetInstalledDistros.Execute(_processCaller));
+        _knownDistributionMap ??= await RetrieveKnownDistributionInfoAsync();
+        var registeredDistributions = GetRegisteredDistributions();
+        var wslComputeSystems = new List<WslRegisteredDistribution>();
 
-        return distros.Select(d => new WslRegisteredDistro(_stringResource, this)
+        foreach (var distribution in registeredDistributions)
         {
-            DisplayName = d.Name ?? d.Registration,
-            SupplementalDisplayName = d.Name != null && d.Name != d.Registration ? d.Registration : string.Empty,
-            Running = d.Running,
-            Id = d.Registration,
-            IsDefault = d.DefaultDistro,
-            IsWsl2 = d.Version2,
-            Logo = d.Logo,
-            WindowsTerminalProfileGuid = d.WindowsTerminalProfileGuid,
-        });
+            if (_knownDistributionMap.TryGetValue(distribution.Key, out var knownDistributionInfo))
+            {
+                distribution.Value.Logo = knownDistributionInfo.Logo;
+                distribution.Value.FriendlyName = knownDistributionInfo.FriendlyName;
+            }
+
+            wslComputeSystems.Add(new WslRegisteredDistribution(_stringResource, distribution.Value, this));
+        }
+
+        return wslComputeSystems;
     }
 
-    public async Task<List<Distro>> GetOnlineAvailableDistributions()
+    public async Task<List<DistributionState>> GetOnlineAvailableDistributionsAsync()
     {
-        var distros = await GetAvailableDistros.Execute(_processCaller);
-        var registeredDistros = GetInstalledDistros.Execute(_processCaller);
-
         var task = distros
             .Where(d => registeredDistros.All(r => r.Registration != d.Registration))
-            .Select(async d => new Distro
+            .Select(async d => new DistributionState
             {
                 Registration = d.Registration,
                 Name = d.Name,
@@ -84,6 +78,30 @@ public class WslManager : IWslManager
             });
 
         var distroArray = await Task.WhenAll(task);
+
+        var processData = _processCaller.CreateProcessWithoutWindow(GetFileNameForProcessLaunch(), ListAllWslDistributionsFromMsStoreArgs);
+        if (processData.ExitCode != 0)
+        {
+            throw new WslManagerException($"Failed to retrieve all available WSL distributions from the Microsoft Store:" +
+                $" StdOutput: {processData.StdError}");
+        }
+
+        var registeredDistributionsMap = GetRegisteredDistributions();
+        var distributionsToListOnCreationPage = new List<DistributionState>();
+        _knownDistributionMap ??= await RetrieveKnownDistributionInfoAsync();
+        foreach (var distributionName in ParseKnownDistributionsFoundInMsStore(processData.StdOutput))
+        {
+            if (registeredDistributionsMap.TryGetValue(distributionName, out var distribution))
+            {
+                continue;
+            }
+
+            if (_knownDistributionMap.TryGetValue(distributionName, out var knownDistributionInfo))
+            {
+                distribution.Value.Logo = knownDistributionInfo.Logo;
+                distribution.Value.FriendlyName = knownDistributionInfo.FriendlyName;
+            }
+        }
 
         return distroArray.ToList();
     }
@@ -104,19 +122,18 @@ public class WslManager : IWslManager
     public void UnregisterDistribution(string distributionName)
     {
         var arguments = UnregisterDistributionArgs.FormatArgs(distributionName);
-        var process = _processCaller.CallInteractiveProcess(GetFileNameForProcessLaunch(), arguments);
-        process.WaitForExit();
+        var processData = _processCaller.CreateProcessWithoutWindow(GetFileNameForProcessLaunch(), arguments);
 
-        if (process.ExitCode != 0)
+        if (processData.ExitCode != 0)
         {
-            throw new WslManagerException($"Failed to unregister the distro {distributionName}");
+            throw new WslManagerException($"Failed to unregister the distro {distributionName}: StdOutput: {processData.StdError}");
         }
     }
 
     public void InstallDistribution(string distributionName)
     {
         var arguments = InstallDistributionArgs.FormatArgs(distributionName);
-        var process = _processCaller.CallInteractiveProcess(GetFileNameForProcessLaunch(), arguments);
+        var process = _processCaller.CreateProcessWithWindow(GetFileNameForProcessLaunch(), arguments);
         process.WaitForExit();
 
         if (process.ExitCode != 0)
@@ -128,16 +145,16 @@ public class WslManager : IWslManager
     public void LaunchDistribution(string distributionName)
     {
         var arguments = LaunchDistributionArgs.FormatArgs(distributionName);
-        var process = _processCaller.CallInteractiveProcess(GetFileNameForProcessLaunch(), arguments);
+        var process = _processCaller.CreateProcessWithWindow(GetFileNameForProcessLaunch(), arguments);
         lock (_lock)
         {
-            if (DistributionSessionMap.TryGetValue(distributionName, out var processList))
+            if (DistributionRunningProcessMap.TryGetValue(distributionName, out var processList))
             {
                 processList.Add(process);
             }
             else
             {
-                DistributionSessionMap.Add(distributionName, new HashSet<Process> { process });
+                DistributionRunningProcessMap.Add(distributionName, new HashSet<Process> { process });
             }
 
             process.EnableRaisingEvents = true;
@@ -159,7 +176,7 @@ public class WslManager : IWslManager
 
         lock (_lock)
         {
-            foreach (var processSet in DistributionSessionMap.Values)
+            foreach (var processSet in DistributionRunningProcessMap.Values)
             {
                 if (processSet.Remove(process))
                 {
@@ -173,12 +190,62 @@ public class WslManager : IWslManager
     {
         lock (_lock)
         {
-            if (DistributionSessionMap.TryGetValue(distributionName, out var processSet))
+            if (DistributionRunningProcessMap.TryGetValue(distributionName, out var processSet))
             {
                 return processSet.Count;
             }
 
             return 0;
         }
+    }
+
+    public DistributionState? GetRegisteredDistribution(string distributionName)
+    {
+        foreach (var registeredDistribution in GetRegisteredDistributions().Values)
+        {
+            if (distributionName.Equals(registeredDistribution.Name, StringComparison.Ordinal))
+            {
+                return registeredDistribution;
+            }
+        }
+
+        return null;
+    }
+
+    private Dictionary<string, DistributionState> GetRegisteredDistributions()
+    {
+        var distributions = new Dictionary<string, DistributionState>();
+
+        var linuxSubSystemKey = CurrentUser.OpenSubKey(WslRegisryLocation, false);
+
+        if (linuxSubSystemKey == null)
+        {
+            return distributions;
+        }
+
+        foreach (var subKeyName in linuxSubSystemKey.GetSubKeyNames())
+        {
+            var subKey = linuxSubSystemKey.OpenSubKey(subKeyName);
+
+            if (subKey == null)
+            {
+                continue;
+            }
+
+            var distribution = BuildDistribution(subKey);
+            distributions.Add(distribution.Name, distribution);
+        }
+
+        return distributions;
+    }
+
+    private DistributionState BuildDistribution(RegistryKey registryKey)
+    {
+        // the distribution name should never be empty and is always a string.
+        var regDistributionName = (string?)registryKey?.GetValue(DistributionName);
+        var subkeyName = registryKey?.Name.Split('\\').Last();
+        var isVersion2 = registryKey?.GetValue(WslVersion) as int? == 2;
+        var packageFamilyName = registryKey?.GetValue(PackageFamilyName) as string;
+        return new DistributionState(regDistributionName, subkeyName, packageFamilyName, isVersion2);
     }
 }

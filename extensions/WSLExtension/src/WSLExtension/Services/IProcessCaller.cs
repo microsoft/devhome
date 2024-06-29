@@ -3,14 +3,15 @@
 
 using System.Diagnostics;
 using System.Text;
+using WSLExtension.Models;
 
 namespace WSLExtension.Services;
 
 public interface IProcessCaller
 {
-    public Process CallInteractiveProcess(string fileName, string arguments);
+    public Process CreateProcessWithWindow(string fileName, string arguments);
+
+    public WslProcessData CreateProcessWithoutWindow(string fileName, string arguments);
 
     public string CallProcess(string command, string arguments, out int exitCode, string? workingDirectory = null);
-
-    public void CallDetachedProcess(string command, string arguments, bool useShell = false);
 }
