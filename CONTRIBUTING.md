@@ -4,11 +4,11 @@ Below is our guidance for how to report issues, propose new features, and submit
 
 ## Open development workflow
 
-The Dev Home team is VERY active in this GitHub Repo. We live in it all day long and carry out all our development in the open!
+The Dev Home team is VERY active in this GitHub Repo. In fact, we live in it all day long and carry out all our development in the open!
 
-When the team finds issues, we file them in the repo. When we propose new ideas or think up new features, we file new feature requests. When we work on fixes or features, we create branches and work on those improvements. And when PRs are reviewed, we review them in public - including all the good, the bad, and the ugly parts.
+When the team finds issues, we file them in the repo. When we propose new ideas or think-up new features, we file new feature requests. When we work on fixes or features, we create branches and work on those improvements. And when PRs are reviewed, we review in public - including all the good, the bad, and the ugly parts.
 
-The point of doing all this work in public is to ensure that we are holding ourselves to a high degree of transparency, and so that the community sees that we apply the same processes and hold ourselves to the same quality bar as we do to community-submitted issues and PRs. We also want to make sure that we expose our team culture and "tribal knowledge" that is inherent in any closely-knit team, which often contains considerable value to those new to the project who are trying to figure out "why the heck does this thing look/work like this???"
+The point of doing all this work in public is to ensure that we are holding ourselves to a high degree of transparency, and so that the community sees that we apply the same processes and hold ourselves to the same quality-bar as we do to community-submitted issues and PRs. We also want to make sure that we expose our team culture and "tribal knowledge" that is inherent in any closely-knit team, which often contains considerable value to those new to the project who are trying to figure out "why the heck does this thing look/work like this???"
 
 ### Repo bot
 
@@ -28,13 +28,13 @@ Therefore, if you do file issues or create PRs, please keep an eye on your GitHu
 
 ## Before you start, file an issue
 
-Please follow this simple rule to help us eliminate any unnecessary wasted effort & frustration, and ensure efficient and effective use of everyone's time - yours, ours, and other community members:
+Please follow this simple rule to help us eliminate any unnecessary wasted effort & frustration, and ensure an efficient and effective use of everyone's time - yours, ours, and other community members':
 
 > 👉 If you have a question, think you've discovered an issue, would like to propose a new feature, etc., then find/file an issue **BEFORE** starting work to fix/implement it.
 
 ### Search existing issues first
 
-Before filing a new issue, search existing open and closed issues first: This project is moving fast! Someone else has likely found the problem you're seeing, and someone may be working on or have already contributed a fix!
+Before filing a new issue, search existing open and closed issues first: This project is moving fast! It is likely someone else has found the problem you're seeing, and someone may be working on or have already contributed a fix!
 
 If no existing item describes your issue/feature, great - please file a new issue:
 
@@ -45,7 +45,7 @@ If no existing item describes your issue/feature, great - please file a new issu
 * Want to know if we're planning on building a particular feature? File an issue
 * Got a great idea for a new feature? File an issue/request/idea
 * Don't understand how to do something? File an issue
-* Found an existing issue that describes yours? Great - upvote and add additional commentary/info/repro-steps/etc.
+* Found an existing issue that describes yours? Great - upvote and add additional commentary / info / repro-steps / etc.
 
 When you hit "New Issue", select the type of issue closest to what you want to report/ask/request.
 
