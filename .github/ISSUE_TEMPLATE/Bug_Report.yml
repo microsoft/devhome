@@ -13,7 +13,6 @@ body:
     label: Dev Home version
     placeholder: "0.1.3651.0"
     description: 
-  validations:
     required: false
     
 - id: windowsversion
@@ -24,14 +23,12 @@ body:
     description: |
       Please run `ver` or `[Environment]::OSVersion`.
   validations:
-    required: false
 
 - id: othersoftware
   type: textarea
   attributes:
     label: Other software
     description: If you're reporting a bug about our interaction with other software, what software? What versions?
-    placeholder: _No description_
     validations:
     required: false
 
