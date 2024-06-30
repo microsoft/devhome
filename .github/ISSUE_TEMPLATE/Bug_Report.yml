@@ -1,5 +1,5 @@
 name: "Report a bug 🐛"
-description: Report errors or unexpected behavior
+description: Report errors or unexpected behavior.
 labels: [Issue-Bug]
 body:
 - type: markdown
@@ -39,7 +39,7 @@ body:
   type: textarea
   attributes:
     label: Steps to reproduce the bug
-    placeholder: Enter detailed steps to tell us what you were doing when you encountered the bug.
+    Placeholder: Enter detailed steps to tell us what you did when encountering the bug.
   validations:
     required: true
 
