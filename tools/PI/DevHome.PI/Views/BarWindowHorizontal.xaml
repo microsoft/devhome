@@ -85,15 +85,18 @@
                     <Setter Property="Background" Value="Transparent"/>
                 </Style>
             </StackPanel.Resources>
-            
-            <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Margin="0">
-                <TextBlock Text="&#xecaa;" Margin="0"/>
-            </controls:ProcessSelectionButton>
 
-            <controls:PISeparator />
+            <!-- Process Chooser area -->
+            <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsProcessChooserVisible, Mode=OneWay}" Margin="0,0,0,0" >
+                <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" VerticalAlignment="Center">
+                    <TextBlock Text="&#xe179;"/>
+                </controls:ProcessSelectionButton>
+                <TextBlock x:Uid="ProcessesLabel" x:Name="ProcessesLabel" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
+                <controls:PISeparator />
+            </StackPanel>
 
             <!-- Per App controls -->
-            <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}">
+            <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}" Spacing="10" Margin="10 0 0 0">
                 <StackPanel.ContextFlyout>
                     <MenuFlyout>
                         <MenuFlyoutItem x:Uid="DetachMenuItem" Command="{x:Bind _viewModel.DetachFromProcessCommand}">
@@ -103,9 +106,9 @@
                         </MenuFlyoutItem>
                     </MenuFlyout>
                 </StackPanel.ContextFlyout>
-                <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" />
-                <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" VerticalAlignment="Center" />
-                <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" VerticalAlignment="Center" />
+                <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Height="20" Width="20" />
+                <TextBlock x:Uid="AppName" Text="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
+                <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
                 <controls:PISeparator />
             </StackPanel>
 
@@ -145,7 +148,7 @@
             <controls:PISeparator Visibility="{x:Bind _viewModel.ExternalToolSeparatorVisibility, Mode=OneWay}"/>
         </StackPanel>
 
-        <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1" Spacing="5">
+        <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1" Spacing="10" Margin="0 0 10 0">
             <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
             <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
             <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>

@@ -160,89 +160,90 @@ public static class Program
 
     private static void OnActivated(object? sender, Microsoft.Windows.AppLifecycle.AppActivationArguments e)
     {
+        var wasFirstActivation = firstActivation;
+        firstActivation = false;
+        var commandLine = string.Empty;
         if (e.Kind == Microsoft.Windows.AppLifecycle.ExtendedActivationKind.Launch)
         {
-            var commandLine = e.Data.As<ILaunchActivatedEventArgs>().Arguments;
-
-            // Convert commandLine into a string array. We just can't split based just on spaces, in case there are spaces inclosed in quotes
-            // i.e. --application "My App"
-            var commandLineArgs = Regex.Matches(commandLine, @"[\""].+?[\""]|[^ ]+").Select(m => m.Value).ToArray();
-
-            // TODO: This should be replaced with system.commandline Microsoft.Extensions.Configuration
-            //  is not intended to be a general purpose commandline parser, but rather only supports /key=value or /key value pairs
-            var builder = new ConfigurationBuilder();
-            builder.AddCommandLine(commandLineArgs);
-            var config = builder.Build();
-
-            Process? targetProcess = null;
-            var targetApp = config["application"];
-            var targetPid = config["pid"];
-            var pageToExpand = config["expandWindow"];
-
-            try
+            commandLine = e.Data.As<ILaunchActivatedEventArgs>().Arguments;
+        }
+        else if (e.Kind == Microsoft.Windows.AppLifecycle.ExtendedActivationKind.StartupTask)
+        {
+            // Start the app in the background to handle the startup task and register the hotkey
+            if (wasFirstActivation && !App.IsFeatureEnabled())
             {
-                if (targetApp != null)
-                {
-                    Debug.Assert(targetApp != string.Empty, "Why is appname empty?");
-
-                    Process[] processes = Process.GetProcessesByName(targetApp);
-                    if (processes.Length > 0)
-                    {
-                        targetProcess = processes[0];
-                    }
-                }
-                else if (targetPid != null)
-                {
-                    var pid = int.Parse(targetPid, CultureInfo.CurrentCulture);
-                    targetProcess = Process.GetProcessById(pid);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Failed to find target process {TargetApp} {TargetPid}", targetApp, targetPid);
+                // Exit the process if PI Expermental feature is not enabled and its the first activation in the process
+                Log.Information("Experimental feature is not enabled. Exiting the process.");
+                Process.GetCurrentProcess().Kill(false);
             }
 
-            if (config["startuptask"] != null)
-            {
-                // Start the app in the background to handle the startup task and register the hotkey
-                if (firstActivation && !App.IsFeatureEnabled())
-                {
-                    // Exit the process if PI Expermental feature is not enabled and its the first activation in the process
-                    Log.Information("Experimental feature is not enabled. Exiting the process.");
-                    Process.GetCurrentProcess().Kill(true);
-                }
-            }
-            else
-            {
-                Debug.Assert(_app != null, "Why is _app null on a redirection?");
-
-                // Be sure to set the target app on the UI thread
-                _app?.UIDispatcher?.TryEnqueue(() =>
-                {
-                    if (targetProcess != null)
-                    {
-                        TargetAppData.Instance.SetNewAppData(targetProcess, Windows.Win32.Foundation.HWND.Null);
-                    }
-
-                    // Show the bar window
-                    var primaryWindow = Application.Current.GetService<PrimaryWindow>();
-                    primaryWindow.ShowBarWindow();
-
-                    if (pageToExpand != null)
-                    {
-                        var barWindow = primaryWindow.DBarWindow;
-                        Debug.Assert(barWindow is not null, "We show the bar window, so it cannot be null here");
-
-                        var pageType = Type.GetType($"DevHome.PI.ViewModels.{pageToExpand}");
-                        if (pageType is not null)
-                        {
-                            barWindow.NavigateTo(pageType);
-                        }
-                    }
-                });
-            }
+            // Don't show the bar window for startup task activations.
+            return;
         }
 
-        firstActivation = false;
+        // Convert commandLine into a string array. We just can't split based just on spaces, in case there are spaces inclosed in quotes
+        // i.e. --application "My App"
+        var commandLineArgs = Regex.Matches(commandLine, @"[\""].+?[\""]|[^ ]+").Select(m => m.Value).ToArray();
+
+        // TODO: This should be replaced with system.commandline Microsoft.Extensions.Configuration
+        //  is not intended to be a general purpose commandline parser, but rather only supports /key=value or /key value pairs
+        var builder = new ConfigurationBuilder();
+        builder.AddCommandLine(commandLineArgs);
+        var config = builder.Build();
+
+        Process? targetProcess = null;
+        var targetApp = config["application"];
+        var targetPid = config["pid"];
+        var pageToExpand = config["expandWindow"];
+
+        try
+        {
+            if (targetApp != null)
+            {
+                Debug.Assert(targetApp != string.Empty, "Why is appname empty?");
+
+                Process[] processes = Process.GetProcessesByName(targetApp);
+                if (processes.Length > 0)
+                {
+                    targetProcess = processes[0];
+                }
+            }
+            else if (targetPid != null)
+            {
+                var pid = int.Parse(targetPid, CultureInfo.CurrentCulture);
+                targetProcess = Process.GetProcessById(pid);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to find target process {TargetApp} {TargetPid}", targetApp, targetPid);
+        }
+
+        Debug.Assert(_app != null, "Why is _app null on a redirection?");
+
+        // Be sure to set the target app on the UI thread
+        _app?.UIDispatcher?.TryEnqueue(() =>
+        {
+            if (targetProcess != null)
+            {
+                TargetAppData.Instance.SetNewAppData(targetProcess, Windows.Win32.Foundation.HWND.Null);
+            }
+
+            // Show the bar window
+            var primaryWindow = Application.Current.GetService<PrimaryWindow>();
+            primaryWindow.ShowBarWindow();
+
+            if (pageToExpand != null)
+            {
+                var barWindow = primaryWindow.DBarWindow;
+                Debug.Assert(barWindow is not null, "We show the bar window, so it cannot be null here");
+
+                var pageType = Type.GetType($"DevHome.PI.ViewModels.{pageToExpand}");
+                if (pageType is not null)
+                {
+                    barWindow.NavigateTo(pageType);
+                }
+            }
+        });
     }
 }

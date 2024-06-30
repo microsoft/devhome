@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Exceptions;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -37,7 +39,7 @@ public partial class SearchViewModel : ObservableObject
     }
 
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SearchViewModel));
-    private readonly IWindowsPackageManager _wpm;
+    private readonly IWinGet _winget;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly PackageProvider _packageProvider;
     private readonly IScreenReaderService _screenReaderService;
@@ -67,9 +69,13 @@ public partial class SearchViewModel : ObservableObject
     /// </summary>
     public string NoSearchResultsText => _stringResource.GetLocalized(StringResourceKey.NoSearchResultsFoundTitle, SearchText);
 
-    public SearchViewModel(IWindowsPackageManager wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider, IScreenReaderService screenReaderService)
+    public SearchViewModel(
+        IWinGet winget,
+        ISetupFlowStringResource stringResource,
+        PackageProvider packageProvider,
+        IScreenReaderService screenReaderService)
     {
-        _wpm = wpm;
+        _winget = winget;
         _stringResource = stringResource;
         _packageProvider = packageProvider;
         _screenReaderService = screenReaderService;
@@ -93,7 +99,7 @@ public partial class SearchViewModel : ObservableObject
         {
             // Run the search on a separate (non-UI) thread to prevent lagging the UI.
             _log.Information($"Running package search for query [{text}]");
-            var matches = await Task.Run(async () => await _wpm.SearchAsync(text, SearchResultLimit), cancellationToken);
+            var matches = await Task.Run(async () => await _winget.SearchAsync(text, SearchResultLimit), cancellationToken);
 
             // Don't update the UI if the operation was canceled
             if (cancellationToken.IsCancellationRequested)

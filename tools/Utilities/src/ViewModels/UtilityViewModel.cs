@@ -17,10 +17,9 @@ namespace DevHome.Utilities.ViewModels;
 public partial class UtilityViewModel : ObservableObject
 {
 #nullable enable
-
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(UtilityViewModel));
-    private readonly IExperimentationService? experimentationService;
-    private readonly string? experimentalFeature;
+    private readonly IExperimentationService? _experimentationService;
+    private readonly string? _experimentalFeature;
     private readonly string _exeName;
 #nullable disable
 
@@ -29,9 +28,9 @@ public partial class UtilityViewModel : ObservableObject
         get
         {
             // Query if there is an experimental feature and return its enabled value
-            if (experimentalFeature is not null)
+            if (_experimentalFeature is not null)
             {
-                var isExperimentalFeatureEnabled = experimentationService?.IsFeatureEnabled(experimentalFeature) ?? true;
+                var isExperimentalFeatureEnabled = _experimentationService?.IsFeatureEnabled(_experimentalFeature) ?? true;
                 return isExperimentalFeatureEnabled;
             }
 
@@ -60,9 +59,9 @@ public partial class UtilityViewModel : ObservableObject
 #nullable enable
     public UtilityViewModel(string exeName, IExperimentationService? experimentationService = null, string? experimentalFeature = null)
     {
-        this._exeName = exeName;
-        this.experimentationService = experimentationService;
-        this.experimentalFeature = experimentalFeature;
+        _exeName = exeName;
+        _experimentationService = experimentationService;
+        _experimentalFeature = experimentalFeature;
         LaunchCommand = new RelayCommand(Launch);
         _log.Information($"UtilityViewModel created for Title: {Title}, exe: {exeName}");
     }

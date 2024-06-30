@@ -18,7 +18,7 @@ namespace DevHome.Customization.ViewModels;
 
 public partial class MainPageViewModel : ObservableObject
 {
-    private INavigationService NavigationService { get; }
+    private readonly INavigationService _navigationService;
 
     private readonly DispatcherQueue _dispatcherQueue;
 
@@ -31,13 +31,14 @@ public partial class MainPageViewModel : ObservableObject
         INavigationService navigationService,
         DispatcherQueue dispatcherQueue)
     {
-        NavigationService = navigationService;
+        _navigationService = navigationService;
         _dispatcherQueue = dispatcherQueue;
 
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         Breadcrumbs = [new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!)];
     }
 
+    [RelayCommand]
     public async Task LoadViewModelContentAsync()
     {
         await Task.Run(async () =>
@@ -62,24 +63,24 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand]
     private void NavigateToFileExplorerPage()
     {
-        NavigationService.NavigateTo(typeof(FileExplorerViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(FileExplorerViewModel).FullName!);
     }
 
     [RelayCommand]
     private void NavigateToDevDriveInsightsPage()
     {
-        NavigationService.NavigateTo(typeof(DevDriveInsightsViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(DevDriveInsightsViewModel).FullName!);
     }
 
     [RelayCommand]
     private void NavigateToVirtualizationFeatureManagementPage()
     {
-        NavigationService.NavigateTo(typeof(VirtualizationFeatureManagementViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(VirtualizationFeatureManagementViewModel).FullName!);
     }
 
     [RelayCommand]
     private void NavigateToGeneralSystemPage()
     {
-        NavigationService.NavigateTo(typeof(GeneralSystemViewModel).FullName!);
+        _navigationService.NavigateTo(typeof(GeneralSystemViewModel).FullName!);
     }
 }
