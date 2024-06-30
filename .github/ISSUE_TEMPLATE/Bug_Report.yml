@@ -31,7 +31,8 @@ body:
   attributes:
     label: Other software
     description: If you're reporting a bug about our interaction with other software, what software? What versions?
-  validations:
+    placeholder: _No description_
+    validations:
     required: false
 
 - id: repro
