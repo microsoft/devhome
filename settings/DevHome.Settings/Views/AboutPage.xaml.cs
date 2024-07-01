@@ -12,7 +12,7 @@ using Serilog;
 
 namespace DevHome.Settings.Views;
 
-public sealed partial class AboutPage : DevHomePage
+public sealed partial class AboutPage : ToolPage
 {
     public AboutViewModel ViewModel { get; }
 
