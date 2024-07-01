@@ -52,6 +52,10 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
     private readonly ObservableCollection<ExplorerItem> _dataSource = new();
 
+    private readonly Guid _activityId;
+
+    public Guid ActivityId => _activityId;
+
     private IQuickStartProjectGenerationOperation _quickStartProjectGenerationOperation = null!;
 
     private QuickStartProjectResult _quickStartProject = null!;
@@ -181,6 +185,8 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
         _quickStartProjectService = quickStartProjectService;
         _localSettingsService = localSettingsService;
 
+        _activityId = orchestrator.ActivityId;
+
         // Placeholder launch text while button is disabled.
         LaunchButtonText = StringResource.GetLocalized(StringResourceKey.QuickstartPlaygroundLaunchButton, string.Empty);
     }
@@ -190,7 +196,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     {
         return Task.Run(async () =>
         {
-            TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundSaveProjectClicked");
+            TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundSaveProjectClicked", relatedActivityId: _activityId);
 
             // TODO: Replace with WindowSaveFileDialog
             var folderPicker = new FolderPicker();
@@ -202,7 +208,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             if (!string.IsNullOrWhiteSpace(location?.Path))
             {
                 CopyDirectory(_outputFolderForCurrentPrompt, location.Path);
-                TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundSaveProjectCompleted");
+                TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundSaveProjectCompleted", relatedActivityId: _activityId);
             }
         });
     }
@@ -273,7 +279,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
         }
         catch (Exception ex)
         {
-            TelemetryFactory.Get<ITelemetry>().LogException("QuickstartPlaygroundDeleteDirectoryContents", ex);
+            TelemetryFactory.Get<ITelemetry>().LogException("QuickstartPlaygroundDeleteDirectoryContents", ex, _activityId);
         }
     }
 
@@ -431,7 +437,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             ArgumentNullException.ThrowIfNullOrEmpty(userPrompt);
             ArgumentNullException.ThrowIfNull(ActiveQuickstartSelection);
 
-            TelemetryFactory.Get<ITelemetry>().Log("QuickstartPlaygroundGenerateButtonClicked", LogLevel.Critical, new GenerateButtonClicked(userPrompt));
+            TelemetryFactory.Get<ITelemetry>().Log("QuickstartPlaygroundGenerateButtonClicked", LogLevel.Critical, new GenerateButtonClicked(userPrompt), _activityId);
 
             // Ensure file view isn't visible (in the case where the user has previously run a Generate command)
             IsFileViewVisible = false;
@@ -460,7 +466,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             var outputFolder = await GetOutputFolder();
             _outputFolderForCurrentPrompt = outputFolder.Path;
 
-            _quickStartProjectGenerationOperation = ActiveQuickstartSelection.CreateProjectGenerationOperation(userPrompt, outputFolder);
+            _quickStartProjectGenerationOperation = ActiveQuickstartSelection.CreateProjectGenerationOperation(userPrompt, outputFolder, _activityId);
             _quickStartProject = await _quickStartProjectGenerationOperation.GenerateAsync().AsTask(progress);
             _quickStartProjectGenerationOperation = null!;
             if (_quickStartProject.Result.Status == ProviderOperationStatus.Success)
@@ -468,13 +474,17 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
                 SetUpFileView();
                 SetupLaunchButton();
                 EnableProjectButtons = true;
-                TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundGenerateSuccceded");
+                TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundGenerateSuccceded", relatedActivityId: _activityId);
             }
             else
             {
                 IsErrorViewVisible = true;
                 ErrorMessage = StringResource.GetLocalized("QuickstartPlaygroundGenerationFailedDetails", _quickStartProject.Result.DisplayMessage);
-                TelemetryFactory.Get<ITelemetry>().Log("QuickstartPlaygroundGenerateFailed", LogLevel.Critical, new ProjectGenerationErrorInfo(_quickStartProject.Result.DisplayMessage, _quickStartProject.Result.ExtendedError, _quickStartProject.Result.DiagnosticText));
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    "QuickstartPlaygroundGenerateFailed",
+                    LogLevel.Critical,
+                    new ProjectGenerationErrorInfo(_quickStartProject.Result.DisplayMessage, _quickStartProject.Result.ExtendedError, _quickStartProject.Result.DiagnosticText),
+                    _activityId);
             }
         }
         finally
@@ -501,7 +511,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     [RelayCommand(CanExecute = nameof(EnableProjectButtons))]
     private async Task LaunchProjectHost(IQuickStartProjectHost? projectHost = null)
     {
-        TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundLaunchProjectClicked");
+        TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundLaunchProjectClicked", relatedActivityId: _activityId);
         var projectHostToLaunch = projectHost ?? QuickStartProjectHosts[0];
         await Task.Run(projectHostToLaunch.Launch);
     }
@@ -527,7 +537,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
     public void ProvideFeedback(bool isPositive, string feedback)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("QuickstartPlaygroundFeedbackSubmitted", LogLevel.Critical, new FeedbackSubmitted(isPositive, feedback));
+        TelemetryFactory.Get<ITelemetry>().Log("QuickstartPlaygroundFeedbackSubmitted", LogLevel.Critical, new FeedbackSubmitted(isPositive, feedback), _activityId);
         _quickStartProject?.FeedbackHandler?.ProvideFeedback(isPositive, feedback);
     }
 
@@ -623,28 +633,28 @@ public class ExplorerItem : INotifyPropertyChanged
         get; set;
     }
 
-    private ObservableCollection<ExplorerItem>? children;
+    private ObservableCollection<ExplorerItem>? _children;
 
     public ObservableCollection<ExplorerItem> Children
     {
         get
         {
-            children ??= new ObservableCollection<ExplorerItem>();
-            return children;
+            _children ??= new ObservableCollection<ExplorerItem>();
+            return _children;
         }
-        set => children = value;
+        set => _children = value;
     }
 
-    private bool isExpanded;
+    private bool _isExpanded;
 
     public bool IsExpanded
     {
-        get => isExpanded;
+        get => _isExpanded;
         set
         {
-            if (isExpanded != value)
+            if (_isExpanded != value)
             {
-                isExpanded = value;
+                _isExpanded = value;
                 NotifyPropertyChanged(nameof(IsExpanded));
             }
         }

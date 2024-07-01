@@ -188,7 +188,7 @@ public sealed partial class QuickstartPlaygroundView : UserControl
     {
         if (ViewModel.ActiveQuickstartSelection is not null)
         {
-            var adaptiveCardSessionResult = ViewModel.ActiveQuickstartSelection.CreateAdaptiveCardSessionForExtensionInitialization();
+            var adaptiveCardSessionResult = ViewModel.ActiveQuickstartSelection.CreateAdaptiveCardSessionForExtensionInitialization(ViewModel.ActivityId);
             await ShowAdaptiveCardOnContentDialog(adaptiveCardSessionResult);
         }
     }
