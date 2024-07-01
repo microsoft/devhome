@@ -9,7 +9,7 @@
     xmlns:controls="using:DevHome.PI.Controls"
     xmlns:helpers="using:DevHome.PI.Helpers"
     mc:Ignorable="d"
-    Title="" MinHeight="72" MinWidth="700" Height="100" Width="700" MaxHeight="100"
+    Title="" MinHeight="72" MinWidth="700" Height="105" Width="700" MaxHeight="105"
     TaskBarIcon="Images/pi.ico"
     Activated="Window_Activated"
     Closed="WindowEx_Closed">

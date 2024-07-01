@@ -154,6 +154,14 @@ public partial class BarWindowHorizontal : WindowEx
 
             button.Click += _viewModel.ExternalToolButton_Click;
             MyCommandBar.PrimaryCommands.Add(button);
+
+            tool.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName == nameof(ExternalTool.MenuIcon))
+                {
+                    button.Icon = tool.MenuIcon;
+                }
+            };
         }
     }
 
