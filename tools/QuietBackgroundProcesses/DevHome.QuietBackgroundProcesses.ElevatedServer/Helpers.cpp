@@ -131,7 +131,7 @@ void UploadPerformanceDataTelemetry(std::chrono::milliseconds samplingPeriod, co
 
     // Upload computer information
     auto computerInformation = GetComputerInformation();
-    activity.ComputerInfo(
+    activity.QuietBackgroundProcesses_ComputerInfo(
         computerInformation.processorCount,
         computerInformation.processor.c_str(),
         computerInformation.motherboard.c_str(),
@@ -147,7 +147,7 @@ void UploadPerformanceDataTelemetry(std::chrono::milliseconds samplingPeriod, co
     }
 
     // Upload category metrics
-    activity.SessionCategoryMetrics(
+    activity.QuietBackgroundProcesses_SessionCategoryMetrics(
         numProcesses[0],
         numProcesses[1],
         numProcesses[2],
@@ -198,10 +198,17 @@ void UploadPerformanceDataTelemetry(std::chrono::milliseconds samplingPeriod, co
             continue;
         }
 
-        activity.ProcessInfo(
+        // Report process name with service name in telemetry
+        auto processNameTelemetry = std::wstring(item.name);
+        if (item.serviceName)
+        {
+            processNameTelemetry += std::wstring{} + L" (" + item.serviceName + L")";
+        }
+
+        activity.QuietBackgroundProcesses_ProcessInfo(
             reason,
             wil::compare_string_ordinal(item.path, system32Path, true) == 0,
-            item.name,
+            processNameTelemetry.c_str(),
             item.category,
             item.packageFullName,
 
