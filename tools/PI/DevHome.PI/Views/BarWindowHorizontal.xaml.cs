@@ -39,6 +39,11 @@ public partial class BarWindowHorizontal : WindowEx
     private readonly BarWindowViewModel _viewModel;
     private readonly UISettings _uiSettings = new();
 
+    private readonly SolidColorBrush _darkModeActiveCaptionBrush;
+    private readonly SolidColorBrush _darkModeDeactiveCaptionBrush;
+    private readonly SolidColorBrush _nonDarkModeActiveCaptionBrush;
+    private readonly SolidColorBrush _nonDarkModeDeactiveCaptionBrush;
+
     private bool _isClosing;
     private WindowActivationState _currentActivationState = WindowActivationState.Deactivated;
 
@@ -86,6 +91,19 @@ public partial class BarWindowHorizontal : WindowEx
         _restoreState.Height = settingSize.Height;
         _restoreState.Width = settingSize.Width;
         ExpandCollapseLayoutButtonText.Text = _viewModel.ShowingExpandedContent ? CollapseButtonText : ExpandButtonText;
+
+        // Precreate the brushes for the caption buttons
+        // In Dark Mode, the active state is white, and the deactive state is translucent white
+        // In Light Mode, the active state is black, and the deactive state is translucent black
+        Windows.UI.Color color = Colors.White;
+        _darkModeActiveCaptionBrush = new SolidColorBrush(color);
+        color.A = 0x66;
+        _darkModeDeactiveCaptionBrush = new SolidColorBrush(color);
+
+        color = Colors.Black;
+        _nonDarkModeActiveCaptionBrush = new SolidColorBrush(color);
+        color.A = 0x66;
+        _nonDarkModeDeactiveCaptionBrush = new SolidColorBrush(color);
 
         _uiSettings.ColorValuesChanged += (sender, args) =>
         {
@@ -368,21 +386,9 @@ public partial class BarWindowHorizontal : WindowEx
         FrameworkElement? rootElement = Content as FrameworkElement;
         Debug.Assert(rootElement != null, "Expected Content to be a FrameworkElement");
 
-        Windows.UI.Color color;
-        if (rootElement.ActualTheme == ElementTheme.Dark)
-        {
-            color = Colors.White;
-        }
-        else
-        {
-            color = Colors.Black;
-        }
-
         if (_currentActivationState == WindowActivationState.Deactivated)
         {
-            // Deactivated state has a translucent brush
-            color.A = 0x66;
-            SolidColorBrush brush = new(color);
+            SolidColorBrush brush = (rootElement.ActualTheme == ElementTheme.Dark) ? _darkModeDeactiveCaptionBrush : _nonDarkModeDeactiveCaptionBrush;
 
             SnapButtonText.Foreground = brush;
             ExpandCollapseLayoutButtonText.Foreground = brush;
@@ -390,7 +396,7 @@ public partial class BarWindowHorizontal : WindowEx
         }
         else
         {
-            SolidColorBrush brush = new(color);
+            SolidColorBrush brush = (rootElement.ActualTheme == ElementTheme.Dark) ? _darkModeActiveCaptionBrush : _nonDarkModeActiveCaptionBrush;
 
             SnapButtonText.Foreground = brush;
             ExpandCollapseLayoutButtonText.Foreground = brush;
