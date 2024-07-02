@@ -2,55 +2,82 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.Json;
+using Serilog;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using WSLExtension.ClassExtensions;
+using WSLExtension.Contracts;
+using WSLExtension.Helpers;
 using YamlDotNet.Serialization;
 using static WSLExtension.Constants;
 
 namespace WSLExtension.DistributionDefinitions;
 
-public static class DistributionDefinitionHelper
+/// <summary>
+/// Provides definition information about all the WSL distributions that can be found at
+/// <see cref="Constants.KnownDistributionsWebJsonLocation"/>.
+/// </summary>
+public class DistributionDefinitionHelper : IDistributionDefinitionHelper
 {
-    private static readonly JsonSerializerOptions _jsonOptions = new()
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DistributionDefinitionHelper));
+
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    private readonly PackageHelper _packageHelper = new();
+
+    private readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
 
-    public static async Task<Dictionary<string, DistributionDefinition>> GetDistributionDefinitionsAsync()
+    public DistributionDefinitionHelper(IHttpClientFactory httpClientFactory)
+    {
+        _httpClientFactory = httpClientFactory;
+    }
+
+    /// <inheritdoc cref="IDistributionDefinitionHelper.GetDistributionDefinitionsAsync"/>
+    public async Task<Dictionary<string, DistributionDefinition>> GetDistributionDefinitionsAsync()
     {
         try
         {
-            // Get the update to date distribution information from WSL GitHub repository.
-            using var client = new HttpClient();
+            // Get the update to date distribution definitions from WSL GitHub repository.
+            var client = _httpClientFactory.CreateClient();
             var distributionDefinitionsJson = await client.GetStringAsync(KnownDistributionsWebJsonLocation);
             var webDefinitions = JsonSerializer.Deserialize<DistributionDefinitions>(distributionDefinitionsJson, _jsonOptions);
             var distributionDefinitionsMap = new Dictionary<string, DistributionDefinition>();
 
-            foreach (var distributionInfo in webDefinitions!.Values)
+            foreach (var definition in webDefinitions!.Values)
             {
-                // filter out unsupported distributions for this machine.
-                if (ShouldAddDistribution(distributionInfo))
+                // Only supported distributions for this machine.
+                if (ShouldAddDistribution(definition))
                 {
-                    distributionDefinitionsMap.Add(distributionInfo.Name, distributionInfo);
+                    distributionDefinitionsMap.Add(definition.Name, definition);
                 }
             }
 
             // Merge the local distribution information we have stored in DistributionDefinition.yaml with the one above.
             var uri = new Uri(KnownDistributionsLocalYamlLocation);
             var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
-            var yamlDefinitions = await FileIO.ReadTextAsync(storageFile);
-            var localDefinitions = BuildDeserializer().Deserialize<List<DistributionDefinition>>(yamlDefinitions);
-            foreach (var localDistributionInfo in localDefinitions)
+            var localYamlDefinitionsFile = await FileIO.ReadTextAsync(storageFile);
+            var localYamlDefinitions = BuildYamlDeserializer().Deserialize<List<DistributionDefinition>>(localYamlDefinitionsFile);
+            foreach (var localYamlDefinition in localYamlDefinitions)
             {
-                if (distributionDefinitionsMap.TryGetValue(localDistributionInfo.Name, out var distributionInfo))
+                // Ignore distributions that we have in the local yaml file but are no longer present in the web file.
+                if (!distributionDefinitionsMap.TryGetValue(localYamlDefinition.Name, out var definitionFromWeb))
+                {
+                    continue;
+                }
+
+                definitionFromWeb.Publisher = localYamlDefinition.Publisher;
+                definitionFromWeb.WindowsTerminalProfileGuid = localYamlDefinition.WindowsTerminalProfileGuid;
+
+                // Ignore distributions in the local file like oracle Linux without an image.
+                if (!string.IsNullOrEmpty(localYamlDefinition.LogoFile))
                 {
                     // Update the logo with the base64 string representation so we can show it as a thumbnail.
-                    var logoFilePath = WslLogoPathFormat.FormatArgs(localDistributionInfo.LogoFile);
-                    distributionInfo.Base64StringLogo = await GetBase64StringFromLogoPathAsync(logoFilePath);
+                    var logoFilePath = WslLogoPathFormat.FormatArgs(localYamlDefinition.LogoFile);
+                    definitionFromWeb.Base64StringLogo = await _packageHelper.GetBase64StringFromLogoPathAsync(logoFilePath);
                 }
             }
 
@@ -58,12 +85,12 @@ public static class DistributionDefinitionHelper
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.ToString());
+            _log.Error(ex, "Unable to retrieve all definitions for known distributions");
             return new Dictionary<string, DistributionDefinition>();
         }
     }
 
-    private static bool ShouldAddDistribution(DistributionDefinition distribution)
+    private bool ShouldAddDistribution(DistributionDefinition distribution)
     {
         var arch = RuntimeInformation.OSArchitecture;
         if (arch == Architecture.Arm64)
@@ -78,32 +105,8 @@ public static class DistributionDefinitionHelper
         return false;
     }
 
-    private static IDeserializer BuildDeserializer()
+    private IDeserializer BuildYamlDeserializer()
     {
-        var deserializer = new DeserializerBuilder()
-            .IgnoreUnmatchedProperties()
-            .Build();
-        return deserializer;
-    }
-
-    public static async Task<string> GetBase64StringFromLogoPathAsync(string logoFilePath)
-    {
-        try
-        {
-            var uri = new Uri(logoFilePath);
-            var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
-            var randomAccessStream = await storageFile.OpenReadAsync();
-
-            // Convert the stream to a byte array
-            var bytes = new byte[randomAccessStream.Size];
-            await randomAccessStream.ReadAsync(bytes.AsBuffer(), (uint)randomAccessStream.Size, InputStreamOptions.None);
-
-            return Convert.ToBase64String(bytes);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.ToString(), logoFilePath);
-            return string.Empty;
-        }
+        return new DeserializerBuilder().IgnoreUnmatchedProperties().Build();
     }
 }

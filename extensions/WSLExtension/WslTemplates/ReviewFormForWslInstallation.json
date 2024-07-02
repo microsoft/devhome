@@ -14,6 +14,12 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": "${ExtensionLabel}",
+              "wrap": true,
+              "size": "medium"
+            },
+            {
+              "type": "TextBlock",
               "text": "${ProviderName}",
               "wrap": true,
               "size": "medium"
@@ -27,14 +33,28 @@
           "verticalContentAlignment": "center",
           "items": [
             {
+              "type": "Image",
+              "url": "${DistributionImage}",
+              "altText": "${DistributionImageLogoAltText}",
+              "height": "48px"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "medium",
+          "verticalContentAlignment": "center",
+          "items": [
+            {
               "type": "TextBlock",
-              "text": "Name",
+              "text": "${ReviewPagePublisherLabel}",
               "wrap": true,
               "size": "medium"
             },
             {
               "type": "TextBlock",
-              "text": "${NewEnvironmentName}",
+              "text": "${PublisherName}",
               "wrap": true,
               "size": "medium"
             }
@@ -47,21 +67,14 @@
           "verticalContentAlignment": "center",
           "items": [
             {
-              "type": "Image",
-              "url": "${DiskImageUrl}",
-              "height": "32px"
-            }
-          ]
-        },
-        {
-          "type": "Column",
-          "width": "auto",
-          "spacing": "medium",
-          "verticalContentAlignment": "center",
-          "items": [
+              "type": "TextBlock",
+              "text": "${DistributionNameLabel}",
+              "wrap": true,
+              "size": "medium"
+            },
             {
               "type": "TextBlock",
-              "text": "${DisplayName}",
+              "text": "${NewEnvironmentName}",
               "wrap": true,
               "size": "medium"
             }

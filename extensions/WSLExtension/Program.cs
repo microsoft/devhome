@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Services.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,9 +8,9 @@ using Microsoft.Windows.AppLifecycle;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.ApplicationModel.Activation;
-using Windows.Storage;
 using WSLExtension.ClassExtensions;
 using WSLExtension.Services;
+using static WSLExtension.Helpers.Logging;
 
 namespace WSLExtension;
 
@@ -23,7 +22,7 @@ public sealed class Program
     public static void Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
     {
         // Set up Logging
-        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", ApplicationData.Current.TemporaryFolder.Path);
+        Environment.SetEnvironmentVariable("WSL_LOGS_ROOT", PathToWslLogFolder);
         var configuration = new ConfigurationBuilder().AddJsonFile("wsl_appsettings.json").Build();
         Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
 
@@ -93,8 +92,8 @@ public sealed class Program
             ConfigureServices((context, services) =>
             {
                 // Services
-                services.AddWslExtensionServices(context);
-                services.AddCore();
+                services.AddHttpClient();
+                services.AddWslExtensionServices();
             }).
             Build();
     }

@@ -41,7 +41,6 @@ internal sealed class WinGetPackage : IWinGetPackage
         PublisherUrl = GetMetadataValue(package, metadata => new Uri(metadata.PublisherUrl), nameof(CatalogPackageMetadata.PublisherUrl), null);
         PublisherName = GetMetadataValue(package, metadata => metadata.Publisher, nameof(CatalogPackageMetadata.Publisher), null);
         InstallationNotes = GetMetadataValue(package, metadata => metadata.InstallationNotes, nameof(CatalogPackageMetadata.InstallationNotes), null);
-        Description = GetMetadataValue(package, metadata => metadata.Description, nameof(CatalogPackageMetadata.Description), null);
     }
 
     public string Id { get; }
@@ -75,8 +74,6 @@ internal sealed class WinGetPackage : IWinGetPackage
     public string InstallationNotes { get; }
 
     public bool IsElevationRequired { get; }
-
-    public string Description { get; }
 
     public WinGetPackageUri GetUri(string installVersion = null)
     {

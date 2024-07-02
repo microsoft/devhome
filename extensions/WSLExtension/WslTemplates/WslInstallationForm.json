@@ -4,17 +4,41 @@
   "version": "1.5",
   "body": [
     {
-      "type": "DevHome.SettingsCardChoiceSet",
-      "id": "SelectedDistroListIndex",
-      "label": "${SettingsCardLabel}",
-      "isRequired": true,
-      "devHomeSettingsCards": [
+      "type": "Container",
+      "items": [
         {
-          "type": "DevHome.SettingsCard",
-          "$data": "${AvailableDistros}",
-          "devHomeSettingsCardDescription": "",
-          "devHomeSettingsCardHeader": "${Header}",
-          "devHomeSettingsCardHeaderIcon": "${HeaderIcon}"
+          "type": "DevHome.SettingsCardChoiceSet",
+          "id": "SelectedDistributionIndex",
+          "label": "${SettingsCardLabel}",
+          "isRequired": true,
+          "devHomeSettingsCards": [
+            {
+              "type": "DevHome.SettingsCard",
+              "$data": "${AvailableDistributions}",
+              "devHomeSettingsCardDescription": "${PublisherName}",
+              "devHomeSettingsCardHeader": "${Header}",
+              "devHomeSettingsCardHeaderIcon": "${HeaderIcon}"
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "$data": "${NoDistributionErrorData}",
+          "isVisible": "${NoDistributionsFoundErrorVisibility}",
+          "verticalContentAlignment": "center",
+          "spacing": "extraLarge",
+          "height": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "${NoDistributionsFoundError}",
+              "size": "large",
+              "weight": "bolder",
+              "wrap": true,
+              "horizontalAlignment": "center",
+              "height": "stretch"
+            }
+          ]
         }
       ]
     },

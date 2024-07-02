@@ -1,72 +1,74 @@
-# For any distribution not listed here. We'll use the icons its package family as the thumbnail
-# for the distribution on the environments page.
+# This yaml file is used to map a distributions name to it logo file in the WslAssets folder. These distribution names
+# should be kept in sync with the distributionInfo.json file here: https://aka.ms/wsldistributionsjson.
+# Note: Cela has approved the usage of these image assets in Dev Home as they are used for non-marketing purposes.
 ---
-# logo can be found: https://gitlab.com/kalilinux/documentation/press-pack/-/blob/main/Kali/Logomark_and_Wordmark/kali-logo-dragon-white-black.jpg
-# See: https://www.debian.org/logos/for trademark information.
+# See: https://www.debian.org/logos/ for trademark information.
 - Name: Debian
   LogoFile: debian.png
+  Publisher: The Debian Project
 
-# logo can be found: https://gitlab.com/kalilinux/documentation/press-pack/-/blob/main/Kali/Logomark_and_Wordmark/kali-logo-dragon-white-black.jpg
 # See: https://www.kali.org/docs/policy/trademark/ for trademark information.
 - Name: kali-linux
-  LogoFile: kali.jpg
+  LogoFile: kali.png
+  Publisher: Kali Linux
 
-# logo can be found: https://github.com/openSUSE/artwork/blob/master/logos/buttons/button-filled-colour.png
 # See: https://en.opensuse.org/openSUSE:Trademark_guidelines#Redistributing_openSUSE_Without_Modifications for trademark information.
 - Name: openSUSE-Leap-15.5
   LogoFile: opensuse.png
+  Publisher: SUSE
 
-# logo can be found: https://github.com/openSUSE/artwork/blob/master/logos/buttons/button-filled-colour.png
 # See: https://en.opensuse.org/openSUSE:Trademark_guidelines#Redistributing_openSUSE_Without_Modifications for trademark information.
 - Name: openSUSE-Tumbleweed
   LogoFile: opensuse.png
+  Publisher: SUSE
 
-  # Don't use oracle logos.
+  # We don't store oracle logos in Dev Home.
 - Name: OracleLinux_7_9
-  LogoFile: wslLinux.png
+  Publisher: Oracle America, Inc.
 
 - Name: OracleLinux_8_7
-  LogoFile: wslLinux.png
+  Publisher: Oracle America, Inc.
 
 - Name: OracleLinux_9_1
-  LogoFile: wslLinux.png
+  Publisher: Oracle America, Inc.
 
-# logo can be found: https://github.com/openSUSE/artwork/blob/master/logos/buttons/button-colour.png
 # See: https://en.opensuse.org/openSUSE:Trademark_guidelines#Redistributing_openSUSE_Without_Modifications for trademark information.
 - Name: SUSE-Linux-Enterprise-Server-15-SP4
   LogoFile: openuse-enterprise.png
+  Publisher: SUSE
 
 # logo can be found: https://github.com/openSUSE/artwork/blob/master/logos/buttons/button-colour.png
 # See: https://en.opensuse.org/openSUSE:Trademark_guidelines#Redistributing_openSUSE_Without_Modifications for trademark information.
 - Name: SUSE-Linux-Enterprise-15-SP5
   LogoFile: openuse-enterprise.png
+  Publisher: SUSE
 
-# logo can be found: https://assets.ubuntu.com/v1/a7e3c509-Canonical%20Ubuntu.svg
 # See heading 6 at: https://ubuntu.com/legal/intellectual-property-policy for trademark information.
 - Name: Ubuntu
   WindowsTerminalProfileGuid: "{51855cb2-8cce-5362-8f54-464b92b32386}"
   LogoFile: ubuntu.png
+  Publisher: Canonical Group Limited
 
-# logo can be found: https://assets.ubuntu.com/v1/a7e3c509-Canonical%20Ubuntu.svg
 # See heading 6 at: https://ubuntu.com/legal/intellectual-property-policy for trademark information.
 - Name: Ubuntu-18.04
   WindowsTerminalProfileGuid: "{24a0533e-913b-5f8c-a5cb-6be85a4c9e70}"
   LogoFile: ubuntu.png
+  Publisher: Canonical Group Limited
 
-# logo can be found: https://assets.ubuntu.com/v1/a7e3c509-Canonical%20Ubuntu.svg
 # See heading 6 at: https://ubuntu.com/legal/intellectual-property-policy for trademark information.
 - Name: Ubuntu-20.04
   WindowsTerminalProfileGuid: "{4dd1e689-b517-5f39-947d-78e8a8bdf958}"
   LogoFile: ubuntu.png
+  Publisher: Canonical Group Limited
 
-# logo can be found: https://assets.ubuntu.com/v1/a7e3c509-Canonical%20Ubuntu.svg
 # See heading 6 at: https://ubuntu.com/legal/intellectual-property-policy for trademark information.
 - Name: Ubuntu-22.04
   WindowsTerminalProfileGuid: "{e5a83caa-4c73-52b3-ae6b-bc438d721ef9}"
   LogoFile: ubuntu.png
+  Publisher: Canonical Group Limited
 
-# logo can be found: https://assets.ubuntu.com/v1/a7e3c509-Canonical%20Ubuntu.svg
 # See heading 6 at: https://ubuntu.com/legal/intellectual-property-policy for trademark information.
 - Name: Ubuntu-24.04
   WindowsTerminalProfileGuid: "{acbafd15-cbbb-5bb3-8a61-bed446ff4b83}"
   LogoFile: ubuntu.png
+  Publisher: Canonical Group Limited

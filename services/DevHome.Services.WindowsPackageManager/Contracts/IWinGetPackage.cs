@@ -144,11 +144,6 @@ public interface IWinGetPackage
         get;
     }
 
-    public string Description
-    {
-        get;
-    }
-
     /// <summary>
     /// Gets the package uri of this package
     /// </summary>

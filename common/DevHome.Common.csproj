@@ -15,6 +15,7 @@
     <None Remove="Environments\CustomControls\CardHeader.xaml" />
     <None Remove="Environments\Styles\HorizontalCardStyles.xaml" />
     <None Remove="Environments\Templates\EnvironmentsTemplates.xaml" />
+    <None Remove="Views\AdaptiveCardViews\EnvironmentsSettingsCard.xaml" />
     <None Remove="Views\AddCreateButton.xaml" />
     <None Remove="Views\AddCreateHyperlinkButton.xaml" />
     <None Remove="Views\Banner.xaml" />
@@ -111,6 +112,12 @@
     <Content Update="Assets\BannerBackgroundLight.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\AdaptiveCardViews\EnvironmentsSettingsCard.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <PropertyGroup>

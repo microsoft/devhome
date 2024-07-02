@@ -10,6 +10,7 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
+    xmlns:cardViews="using:DevHome.Common.Views.AdaptiveCardViews"
     Loaded="OnLoaded">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -23,11 +24,11 @@
                 <ItemContainer
                     AutomationProperties.Name="{x:Bind DisplayName, Mode=OneWay}"
                     IsSelected="{x:Bind IsSelected}">
-                    <toolKit:SettingsCard
+                    <cardViews:EnvironmentsSettingsCard
                         HorizontalAlignment="Stretch"
                         HeaderIcon="{x:Bind Icon}"
                         Header="{x:Bind DisplayName}">
-                    </toolKit:SettingsCard>
+                    </cardViews:EnvironmentsSettingsCard>
                 </ItemContainer>
             </DataTemplate>
         </ResourceDictionary>

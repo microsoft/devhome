@@ -14,12 +14,13 @@ namespace WSLExtension.Services;
 [ComDefaultInterface(typeof(IExtension))]
 public sealed class WslExtension : IExtension, IDisposable
 {
-    private readonly IHost _host;
+    private readonly IComputeSystemProvider _computeSystemProvider;
+
     private bool _disposed;
 
-    public WslExtension(IHost host)
+    public WslExtension(IComputeSystemProvider computeSystemProvider)
     {
-        _host = host;
+        _computeSystemProvider = computeSystemProvider;
     }
 
     /// <summary>
@@ -48,7 +49,7 @@ public sealed class WslExtension : IExtension, IDisposable
             switch (providerType)
             {
                 case ProviderType.ComputeSystem:
-                    provider = _host.GetService<IComputeSystemProvider>();
+                    provider = _computeSystemProvider;
                     break;
                 default:
                     log.Information($"Unsupported provider: {providerType}");

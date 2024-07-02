@@ -23,8 +23,8 @@
     </PropertyGroup>
     <PropertyGroup>
         <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
-        <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
-        <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
+		<DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
+		<DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -44,6 +44,7 @@
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
         <PackageReference Include="System.Security.Principal.Windows" Version="5.0.0" />
         <PackageReference Include="YamlDotNet" Version="15.1.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -57,14 +58,10 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-	
-	<ItemGroup>
-	    <ProjectReference Include="..\..\services\DevHome.Services.Core\DevHome.Services.Core.csproj" />
-	</ItemGroup>
+
     <ItemGroup>
         <None Update="wsl_appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
-
 </Project>

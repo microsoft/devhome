@@ -1,169 +1,75 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Microsoft.Windows.DevHome.SDK;
-using Serilog;
-using Windows.Foundation;
-using WSLExtension.Contracts;
-using WSLExtension.Exceptions;
-using WSLExtension.Helpers;
+using WSLExtension.DistributionDefinitions;
+using static Microsoft.Win32.Registry;
 using static WSLExtension.Constants;
 
 namespace WSLExtension.Models;
 
-public class WslRegisteredDistribution : IComputeSystem
+/// <summary>
+/// Represents information about a registered WSL distribution
+/// </summary>
+public class WslRegisteredDistribution
 {
-    private readonly IStringResource _stringResource;
+    private const int InstalledState = 1;
 
-    private readonly PackageHelper _packageHelper = new();
+    public string FriendlyName { get; set; } = string.Empty;
 
-    private readonly IWslManager _wslManager;
+    public string Name { get; set; } = string.Empty;
 
-    private readonly WslDistributionInfo _distributionInfo;
+    public bool? Version2 { get; set; }
 
-    public IDeveloperId AssociatedDeveloperId { get; set; } = null!;
+    public string? SubKeyName { get; set; }
 
-    public string AssociatedProviderId { get; set; } = WslProviderId;
+    public string? PackageFamilyName { get; set; }
 
-    public string DisplayName { get; set; } = null!;
+    public string? Base64StringLogo { get; set; }
 
-    public string Id { get; set; }
+    public bool IsDefaultDistribution { get; set; }
 
-    public string SupplementalDisplayName { get; set; } = string.Empty;
+    public string Publisher { get; set; } = string.Empty;
 
-    public ComputeSystemOperations SupportedOperations =>
-        ComputeSystemOperations.Delete;
+    public string? AssociatedTerminalProfileGuid { get; set; } = string.Empty;
 
-    public bool? Running { get; set; }
-
-    public bool? IsDefault { get; set; }
-
-    public event TypedEventHandler<IComputeSystem, ComputeSystemState>? StateChanged = (s, e) => { };
-
-    public WslRegisteredDistribution(IStringResource stringResource, WslDistributionInfo distributionInfo, IWslManager wslManager)
+    public WslRegisteredDistribution(string distributionName)
     {
-        _stringResource = stringResource;
-        _distributionInfo = distributionInfo;
-        _wslManager = wslManager;
-        DisplayName = distributionInfo.FriendlyName;
-        SupplementalDisplayName = distributionInfo.Name;
-        Id = distributionInfo.Name;
+        Name = distributionName;
     }
 
-    public IAsyncOperation<ComputeSystemStateResult> GetStateAsync()
+    public WslRegisteredDistribution(DistributionDefinition distributionDistribution)
     {
-        return Task.Run(() =>
+        Name = distributionDistribution.Name;
+        FriendlyName = distributionDistribution.FriendlyName;
+        Base64StringLogo = distributionDistribution.Base64StringLogo;
+        AssociatedTerminalProfileGuid = distributionDistribution.WindowsTerminalProfileGuid;
+    }
+
+    public WslRegisteredDistribution(string distributionName, string? subkeyName, string? packageFamilyName, bool isVersion2)
+    {
+        Name = distributionName;
+        FriendlyName = Name;
+        SubKeyName = subkeyName;
+        Version2 = isVersion2;
+        PackageFamilyName = packageFamilyName;
+    }
+
+    /// <summary>
+    /// Uses the registry information about the distribution to determine if its fully registered or not.
+    /// </summary>
+    /// <returns>True only when distribution is fully registered. False otherwise.</returns>
+    public virtual bool IsDistributionFullyRegistered()
+    {
+        var distributionKey = CurrentUser.OpenSubKey($@"{WslRegistryLocation}\{SubKeyName}", false);
+
+        if (distributionKey == null)
         {
-            if (Running != null && Running.Value)
-            {
-                return new ComputeSystemStateResult(ComputeSystemState.Running);
-            }
+            return false;
+        }
 
-            return new ComputeSystemStateResult(ComputeSystemState.Stopped);
-        }).AsAsyncOperation();
+        var state = distributionKey?.GetValue(WslState) as int?;
+
+        // Any other state other than a 1 means the distribution is not fully installed yet.
+        return state == InstalledState;
     }
-
-    public IAsyncOperation<ComputeSystemOperationResult> TerminateAsync(string options) => Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> DeleteAsync(string options)
-    {
-        return Task.Run(() =>
-        {
-            try
-            {
-                StateChanged?.Invoke(this, ComputeSystemState.Deleting);
-                Running = false;
-                _wslManager.UnregisterDistribution(Id);
-                StateChanged?.Invoke(this, ComputeSystemState.Deleted);
-                return new ComputeSystemOperationResult();
-            }
-            catch (WslManagerException e)
-            {
-                StateChanged?.Invoke(this, ComputeSystemState.Unknown);
-                return new ComputeSystemOperationResult(e, e.Message, e.Message);
-            }
-        }).AsAsyncOperation();
-    }
-
-    public IAsyncOperation<ComputeSystemThumbnailResult> GetComputeSystemThumbnailAsync(string options)
-    {
-        return Task.Run(() =>
-        {
-            try
-            {
-                var convertedArray = Convert.FromBase64String(_distributionInfo.Base64StringLogo!);
-                return new ComputeSystemThumbnailResult(convertedArray);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString() + $"        {_distributionInfo.PackageFamilyName!}");
-                return new ComputeSystemThumbnailResult(new InvalidDataException(), "error with thumbnail", "error with thumbnail");
-            }
-        }).AsAsyncOperation();
-    }
-
-    public IAsyncOperation<IEnumerable<ComputeSystemProperty>> GetComputeSystemPropertiesAsync(string options)
-    {
-        return Task.Run(() =>
-        {
-            var properties = new List<ComputeSystemProperty>();
-
-            if (_distributionInfo.Version2 != null)
-            {
-                properties.Add(ComputeSystemProperty.CreateCustom(_distributionInfo.Version2.Value ? "2" : "1", "WSL", null));
-            }
-
-            if (IsDefault != null && IsDefault.Value)
-            {
-                properties.Add(ComputeSystemProperty.CreateCustom("Yes", "Default", null));
-            }
-
-            return properties.AsEnumerable();
-        }).AsAsyncOperation();
-    }
-
-    public IAsyncOperation<ComputeSystemOperationResult> ConnectAsync(string options)
-    {
-        return Task.Run(() =>
-        {
-            StateChanged?.Invoke(this, ComputeSystemState.Starting);
-            _wslManager.LaunchDistribution(Id);
-            Running = true;
-            StateChanged?.Invoke(this, ComputeSystemState.Running);
-            return new ComputeSystemOperationResult();
-        }).AsAsyncOperation();
-    }
-
-    public IApplyConfigurationOperation CreateApplyConfigurationOperation(string configuration) =>
-        throw new NotImplementedException();
-
-    public IAsyncOperation<ComputeSystemOperationResult> SaveAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> PauseAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> ResumeAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> CreateSnapshotAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> RevertSnapshotAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> DeleteSnapshotAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(string inputJson) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> StartAsync(string options) =>
-    Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> ShutDownAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
-
-    public IAsyncOperation<ComputeSystemOperationResult> RestartAsync(string options) =>
-        Task.FromResult(new ComputeSystemOperationResult()).AsAsyncOperation();
 }
