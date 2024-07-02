@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -138,30 +139,155 @@ public partial class BarWindowHorizontal : WindowEx
         SetRegionsForTitleBar();
 
         PopulateCommandBar();
+        ((INotifyCollectionChanged)ExternalToolsHelper.Instance.AllExternalTools).CollectionChanged += AllExternalTools_CollectionChanged;
     }
 
     public void PopulateCommandBar()
     {
-        foreach (ExternalTool tool in ExternalToolsHelper.Instance.FilteredExternalTools)
+        // Put in the "manage tools" button
+        AppBarButton manageToolsButton = new AppBarButton
         {
-            AppBarButton button = new AppBarButton
+            Label = "Manage Tools",
+            Icon = new FontIcon() { Glyph = "\uEC7A" },
+            Command = _viewModel.ManageExternalToolsButtonCommand,
+        };
+
+        if (ExternalToolsHelper.Instance.FilteredExternalTools.Count == 0)
+        {
+            MyCommandBar.PrimaryCommands.Add(manageToolsButton);
+        }
+        else
+        {
+            MyCommandBar.SecondaryCommands.Add(manageToolsButton);
+            MyCommandBar.SecondaryCommands.Add(new AppBarSeparator());
+        }
+
+        foreach (ExternalTool tool in ExternalToolsHelper.Instance.AllExternalTools)
+        {
+            AddToolToCommandBar(tool);
+        }
+    }
+
+    private void AddToolToCommandBar(ExternalTool tool)
+    {
+        AppBarButton button = new AppBarButton
+        {
+            Label = tool.Name,
+            Tag = tool,
+        };
+
+        button.Icon = tool.MenuIcon;
+
+        button.Click += _viewModel.ExternalToolButton_Click;
+
+        MenuFlyout menu = new MenuFlyout();
+
+        if (tool.IsPinned)
+        {
+            MenuFlyoutItem unpin = new MenuFlyoutItem
             {
-                Label = tool.Name,
-                Tag = tool,
+                Text = "Unpin",
+                Command = tool.TogglePinnedStateCommand,
+                Icon = new FontIcon() { Glyph = tool.PinGlyph },
             };
+            menu.Items.Add(unpin);
+        }
+        else
+        {
+            MenuFlyoutItem pin = new MenuFlyoutItem
+            {
+                Text = "Pin",
+                Command = tool.TogglePinnedStateCommand,
+                Icon = new FontIcon() { Glyph = tool.PinGlyph },
+            };
+            menu.Items.Add(pin);
+        }
 
-            button.Icon = tool.MenuIcon;
+        MenuFlyoutItem unRegister = new MenuFlyoutItem
+        {
+            Text = "UnRegister",
+            Command = tool.UnregisterToolCommand,
+            Icon = new FontIcon() { Glyph = "\uECC9" },
+        };
 
-            button.Click += _viewModel.ExternalToolButton_Click;
+        menu.Items.Add(unRegister);
+        button.ContextFlyout = menu;
+
+        if (tool.IsPinned)
+        {
             MyCommandBar.PrimaryCommands.Add(button);
+        }
+        else
+        {
+            MyCommandBar.SecondaryCommands.Add(button);
+        }
 
-            tool.PropertyChanged += (sender, args) =>
+        tool.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(ExternalTool.MenuIcon))
             {
-                if (args.PropertyName == nameof(ExternalTool.MenuIcon))
+                button.Icon = tool.MenuIcon;
+            }
+            else if (args.PropertyName == nameof(ExternalTool.IsPinned))
+            {
+                if (tool.IsPinned)
                 {
-                    button.Icon = tool.MenuIcon;
+                    MyCommandBar.SecondaryCommands.Remove(button);
+                    MyCommandBar.PrimaryCommands.Add(button);
                 }
-            };
+                else
+                {
+                    MyCommandBar.PrimaryCommands.Remove(button);
+                    MyCommandBar.SecondaryCommands.Add(button);
+                }
+            }
+        };
+    }
+
+    private void AllExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
+            {
+                if (e.NewItems is not null)
+                {
+                    foreach (ExternalTool newItem in e.NewItems)
+                    {
+                        AddToolToCommandBar(newItem);
+                    }
+                }
+
+                break;
+            }
+
+            case NotifyCollectionChangedAction.Remove:
+            {
+                Debug.Assert(e.OldItems is not null, "Why is old items null");
+                foreach (ExternalTool oldItem in e.OldItems)
+                {
+                    // Find this item in the command bar
+                    AppBarButton? button = MyCommandBar.PrimaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
+                    if (button is not null)
+                    {
+                        MyCommandBar.PrimaryCommands.Remove(button);
+                    }
+                    else
+                    {
+                        button = MyCommandBar.SecondaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
+                        if (button is not null)
+                        {
+                            MyCommandBar.SecondaryCommands.Remove(button);
+                        }
+                        else
+                        {
+                            Debug.Assert(false, "Could not find button for tool");
+                        }
+                    }
+                }
+
+                break;
+            }
         }
     }
 
@@ -351,7 +477,7 @@ public partial class BarWindowHorizontal : WindowEx
         SetRegionsForTitleBar();
         Debug.WriteLine(ToolColumn.ActualWidth);
 
-        MyCommandBar.Width = ToolColumn.ActualWidth;
+        // MyCommandBar.Width = ToolColumn.ActualWidth;
     }
 
     // workaround as AppWindow TitleBar doesn't update caption button colors correctly when changed while app is running
@@ -403,6 +529,27 @@ public partial class BarWindowHorizontal : WindowEx
             SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
             ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
             RotateLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
+        }
+    }
+
+    private void MyCommandBar_Opening(object sender, object e)
+    {
+        if (!_viewModel.ShowingExpandedContent)
+        {
+            this.Height = 130;
+            this.MaxHeight = 130;
+            this.MinHeight = 130;
+        }
+    }
+
+    private void MyCommandBar_Closing(object sender, object e)
+    {
+        if (!_viewModel.ShowingExpandedContent)
+        {
+            this.Height = 90;
+            this.MaxHeight = 90;
+            this.MinHeight = 90;
+            this.AppWindow.Resize(new Windows.Graphics.SizeInt32(this.AppWindow.Size.Width, 90));
         }
     }
 }
