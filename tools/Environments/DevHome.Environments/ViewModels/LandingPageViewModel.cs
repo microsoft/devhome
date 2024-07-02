@@ -435,12 +435,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("Name", SortDirection.Descending));
                 break;
             case 2:
-                ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("AlternativeName", SortDirection.Ascending));
-                break;
-            case 3:
-                ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("AlternativeName", SortDirection.Descending));
-                break;
-            case 4:
                 ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("LastConnected", SortDirection.Ascending));
                 break;
         }

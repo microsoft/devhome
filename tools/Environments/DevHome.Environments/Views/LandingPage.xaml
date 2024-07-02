@@ -257,8 +257,6 @@
                           SelectedIndex="{x:Bind ViewModel.SelectedSortIndex, Mode=TwoWay}">
                     <ComboBoxItem x:Uid="SortByName"/>
                     <ComboBoxItem x:Uid="SortByNameDesc"/>
-                    <ComboBoxItem x:Uid="SortByAltName"/>
-                    <ComboBoxItem x:Uid="SortByAltNameDesc"/>
                     <ComboBoxItem x:Uid="SortByLastConnected"/>
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="SelectionChanged">
