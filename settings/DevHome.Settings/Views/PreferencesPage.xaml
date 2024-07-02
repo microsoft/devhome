@@ -1,4 +1,4 @@
-<views:DevHomePage
+<views:ToolPage
     x:Class="DevHome.Settings.Views.PreferencesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -33,4 +33,4 @@
             </ctControls:SettingsCard>
         </StackPanel>
     </ScrollViewer>
-</views:DevHomePage>
+</views:ToolPage>

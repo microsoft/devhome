@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.Views;
 
-public sealed partial class ExperimentalFeaturesPage : DevHomePage
+public sealed partial class ExperimentalFeaturesPage : ToolPage
 {
     public ExperimentalFeaturesViewModel ViewModel { get; }
 

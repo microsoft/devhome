@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Customization.Views;
 
-public sealed partial class FileExplorerPage : DevHomePage
+public sealed partial class FileExplorerPage : ToolPage
 {
     public FileExplorerViewModel ViewModel
     {

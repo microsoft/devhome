@@ -1,4 +1,4 @@
-﻿<commonviews:DevHomePage
+﻿<commonviews:ToolPage
     x:Class="DevHome.Views.WhatsNewPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -318,4 +318,4 @@
             </Grid>
         </RelativePanel>
     </ScrollViewer>
-</commonviews:DevHomePage>
+</commonviews:ToolPage>

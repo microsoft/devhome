@@ -18,7 +18,7 @@ using Windows.System;
 
 namespace DevHome.Views;
 
-public sealed partial class WhatsNewPage : DevHomePage
+public sealed partial class WhatsNewPage : ToolPage
 {
     private readonly Uri _devDrivePageKeyUri = new("ms-settings:disksandvolumes");
     private readonly Uri _devDriveLearnMoreLinkUri = new("https://go.microsoft.com/fwlink/?linkid=2236041");

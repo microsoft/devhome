@@ -9,6 +9,9 @@
     xmlns:xaml="using:Microsoft.UI.Xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     Loaded="Page_Loaded">
+    <i:Interaction.Behaviors >
+        <behaviors:AutoFocusBehavior />
+    </i:Interaction.Behaviors>
 
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
         <StackPanel>
