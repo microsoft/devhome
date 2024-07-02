@@ -90,6 +90,9 @@ public partial class BarWindowViewModel : ObservableObject
     [ObservableProperty]
     private PointInt32 _windowPosition;
 
+    [ObservableProperty]
+    private SizeInt32 _requestedWindowSize;
+
     internal HWND? ApplicationHwnd { get; private set; }
 
     public BarWindowViewModel()

@@ -80,6 +80,10 @@ public partial class BarWindowVertical : WindowEx
         {
             this.Move(_viewModel.WindowPosition.X, _viewModel.WindowPosition.Y);
         }
+        else if (string.Equals(e.PropertyName, nameof(BarWindowViewModel.RequestedWindowSize), StringComparison.OrdinalIgnoreCase))
+        {
+            Height = _viewModel.RequestedWindowSize.Height;
+        }
     }
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)

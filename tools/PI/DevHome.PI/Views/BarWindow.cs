@@ -156,6 +156,11 @@ public partial class BarWindow
         _viewModel.WindowPosition = position;
     }
 
+    public void UpdateBarWindowSize(SizeInt32 size)
+    {
+        _viewModel.RequestedWindowSize = size;
+    }
+
     public void ResetBarWindowOnTop()
     {
         _viewModel.ResetBarWindowOnTop();
