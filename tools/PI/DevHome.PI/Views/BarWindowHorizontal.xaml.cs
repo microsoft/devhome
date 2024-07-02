@@ -35,6 +35,12 @@ public partial class BarWindowHorizontal : WindowEx
 {
     private const string ExpandButtonText = "\ue70d"; // ChevronDown
     private const string CollapseButtonText = "\ue70e"; // ChevronUp
+    private const string ManageToolsButtonText = "\uec7a"; // ChevronUp
+
+    private readonly string _pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
+    private readonly string _unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemRawText");
+    private readonly string _unregisterMenuItemText = CommonHelper.GetLocalizedString("UnregisterMenuItemRawText");
+    private readonly string _manageToolsMenuItemText = CommonHelper.GetLocalizedString("ManageExternalToolsMenuText");
 
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowViewModel _viewModel;
@@ -45,7 +51,8 @@ public partial class BarWindowHorizontal : WindowEx
 
     // Constants that control window sizes
     private const int WindowPositionOffsetY = 30;
-    private const int FloatingHorizontalBarHeight = 70;
+    private const int FloatingHorizontalBarHeight = 90;
+    private const int FloatingHorizontalBarHeightWithExpandedCommandBar = 130;
     private const int DefaultExpandedViewTop = 30;
     private const int DefaultExpandedViewLeft = 100;
     private const int RightSideGap = 10;
@@ -144,23 +151,7 @@ public partial class BarWindowHorizontal : WindowEx
 
     public void PopulateCommandBar()
     {
-        // Put in the "manage tools" button
-        AppBarButton manageToolsButton = new AppBarButton
-        {
-            Label = "Manage Tools",
-            Icon = new FontIcon() { Glyph = "\uEC7A" },
-            Command = _viewModel.ManageExternalToolsButtonCommand,
-        };
-
-        if (ExternalToolsHelper.Instance.FilteredExternalTools.Count == 0)
-        {
-            MyCommandBar.PrimaryCommands.Add(manageToolsButton);
-        }
-        else
-        {
-            MyCommandBar.SecondaryCommands.Add(manageToolsButton);
-            MyCommandBar.SecondaryCommands.Add(new AppBarSeparator());
-        }
+        AddManageToolsOptionToCommandBar();
 
         foreach (ExternalTool tool in ExternalToolsHelper.Instance.AllExternalTools)
         {
@@ -182,35 +173,9 @@ public partial class BarWindowHorizontal : WindowEx
 
         MenuFlyout menu = new MenuFlyout();
 
-        if (tool.IsPinned)
-        {
-            MenuFlyoutItem unpin = new MenuFlyoutItem
-            {
-                Text = "Unpin",
-                Command = tool.TogglePinnedStateCommand,
-                Icon = new FontIcon() { Glyph = tool.PinGlyph },
-            };
-            menu.Items.Add(unpin);
-        }
-        else
-        {
-            MenuFlyoutItem pin = new MenuFlyoutItem
-            {
-                Text = "Pin",
-                Command = tool.TogglePinnedStateCommand,
-                Icon = new FontIcon() { Glyph = tool.PinGlyph },
-            };
-            menu.Items.Add(pin);
-        }
+        menu.Items.Add(tool.IsPinned ? CreateUnPinMenuItem(tool) : CreatePinMenuItem(tool));
+        menu.Items.Add(CreateUnregisterMenuItem(tool));
 
-        MenuFlyoutItem unRegister = new MenuFlyoutItem
-        {
-            Text = "UnRegister",
-            Command = tool.UnregisterToolCommand,
-            Icon = new FontIcon() { Glyph = "\uECC9" },
-        };
-
-        menu.Items.Add(unRegister);
         button.ContextFlyout = menu;
 
         if (tool.IsPinned)
@@ -230,6 +195,15 @@ public partial class BarWindowHorizontal : WindowEx
             }
             else if (args.PropertyName == nameof(ExternalTool.IsPinned))
             {
+                // The command bar does not like to be updated when the overflow menu is open, so be sure to close it before manipulating elements.
+                MyCommandBar.IsOpen = false;
+
+                // Flip the menu item from pin to unpin (or vice versa)
+                MenuFlyout menu = new MenuFlyout();
+                menu.Items.Add(tool.IsPinned ? CreateUnPinMenuItem(tool) : CreatePinMenuItem(tool));
+                menu.Items.Add(CreateUnregisterMenuItem(tool));
+                button.ContextFlyout = menu;
+
                 if (tool.IsPinned)
                 {
                     MyCommandBar.SecondaryCommands.Remove(button);
@@ -240,8 +214,93 @@ public partial class BarWindowHorizontal : WindowEx
                     MyCommandBar.PrimaryCommands.Remove(button);
                     MyCommandBar.SecondaryCommands.Add(button);
                 }
+
+                EvaluateLocationOfManageToolsButton();
             }
         };
+    }
+
+    private void EvaluateLocationOfManageToolsButton()
+    {
+        // If there are pinned tools (registered as primary commands), then move the Manage Tools button to the secondary command list
+        if (MyCommandBar.PrimaryCommands.Count > 1 &&
+            MyCommandBar.PrimaryCommands[0] is AppBarButton button &&
+            button.Command == _viewModel.ManageExternalToolsButtonCommand)
+        {
+            MyCommandBar.PrimaryCommands.Remove(button);
+            AddManageToolsOptionToCommandBar();
+        }
+
+        // If we don't have any more primary commands, move the Manage Tools Option from the secondary commands to the primary commands
+        else if (MyCommandBar.PrimaryCommands.Count == 0)
+        {
+            // The first two items in the secondary commands list should be the app management button and a separator
+            Debug.Assert(MyCommandBar.SecondaryCommands.Count >= 2 && MyCommandBar.SecondaryCommands[0] is AppBarButton toolsBtn && toolsBtn.Command == _viewModel.ManageExternalToolsButtonCommand, "Where did tools button go?");
+            Debug.Assert(MyCommandBar.SecondaryCommands.Count >= 2 && MyCommandBar.SecondaryCommands[1] is AppBarSeparator, "Where did the separator go?");
+
+            MyCommandBar.SecondaryCommands.RemoveAt(1);
+            MyCommandBar.SecondaryCommands.RemoveAt(0);
+            AddManageToolsOptionToCommandBar();
+        }
+    }
+
+    private void AddManageToolsOptionToCommandBar()
+    {
+        // Put in the "manage tools" button
+        AppBarButton manageToolsButton = new AppBarButton
+        {
+            Label = _manageToolsMenuItemText,
+            Icon = new FontIcon() { Glyph = ManageToolsButtonText },
+            Command = _viewModel.ManageExternalToolsButtonCommand,
+        };
+
+        // If there aren't any pinned tools, then put this in as a primary command
+        if (ExternalToolsHelper.Instance.FilteredExternalTools.Count == 0)
+        {
+            MyCommandBar.PrimaryCommands.Add(manageToolsButton);
+        }
+        else
+        {
+            // Otherwise, put this at the at the top of the secondary command list
+            MyCommandBar.SecondaryCommands.Insert(0, manageToolsButton);
+            MyCommandBar.SecondaryCommands.Insert(1, new AppBarSeparator());
+        }
+    }
+
+    private MenuFlyoutItem CreatePinMenuItem(ExternalTool tool)
+    {
+        MenuFlyoutItem pin = new MenuFlyoutItem
+        {
+            Text = _pinMenuItemText,
+            Command = tool.TogglePinnedStateCommand,
+            Icon = new FontIcon() { Glyph = tool.PinGlyph },
+        };
+
+        return pin;
+    }
+
+    private MenuFlyoutItem CreateUnPinMenuItem(ExternalTool tool)
+    {
+        MenuFlyoutItem unpin = new MenuFlyoutItem
+        {
+            Text = _unpinMenuItemText,
+            Command = tool.TogglePinnedStateCommand,
+            Icon = new FontIcon() { Glyph = tool.PinGlyph },
+        };
+
+        return unpin;
+    }
+
+    private MenuFlyoutItem CreateUnregisterMenuItem(ExternalTool tool)
+    {
+        MenuFlyoutItem unRegister = new MenuFlyoutItem
+        {
+            Text = _unregisterMenuItemText,
+            Command = tool.UnregisterToolCommand,
+            Icon = new FontIcon() { Glyph = "\uECC9" },
+        };
+
+        return unRegister;
     }
 
     private void AllExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -289,6 +348,8 @@ public partial class BarWindowHorizontal : WindowEx
                 break;
             }
         }
+
+        EvaluateLocationOfManageToolsButton();
     }
 
     public void SetRegionsForTitleBar()
@@ -452,7 +513,7 @@ public partial class BarWindowHorizontal : WindowEx
         // Make sure we cache the state before switching to collapsed bar.
         CacheRestoreState();
         LargeContentPanel.Visibility = Visibility.Collapsed;
-        MaxHeight = FloatingHorizontalBarHeight;
+        SetBarToDefaultHeight();
     }
 
     internal void NavigateTo(Type viewModelType)
@@ -475,9 +536,6 @@ public partial class BarWindowHorizontal : WindowEx
     private void MainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         SetRegionsForTitleBar();
-        Debug.WriteLine(ToolColumn.ActualWidth);
-
-        // MyCommandBar.Width = ToolColumn.ActualWidth;
     }
 
     // workaround as AppWindow TitleBar doesn't update caption button colors correctly when changed while app is running
@@ -532,24 +590,33 @@ public partial class BarWindowHorizontal : WindowEx
         }
     }
 
+    private void SetBarToDefaultHeight()
+    {
+        if (!_viewModel.ShowingExpandedContent)
+        {
+            this.Height = FloatingHorizontalBarHeight;
+            this.MaxHeight = FloatingHorizontalBarHeight;
+            this.MinHeight = FloatingHorizontalBarHeight;
+            this.AppWindow.Resize(new Windows.Graphics.SizeInt32(this.AppWindow.Size.Width, FloatingHorizontalBarHeight));
+        }
+    }
+
+    // CommandBar has an issue where, if the overflow menu opens and the app's window size is too small,
+    // the overflow menu will always appear above the app window and will go off screen. Bug has been filed,
+    // but in the meantime, we'll adjust our window's size to when the overflow menu opens, and set it back
+    // to default after it is closed in order to work around this issue.
     private void MyCommandBar_Opening(object sender, object e)
     {
         if (!_viewModel.ShowingExpandedContent)
         {
-            this.Height = 130;
-            this.MaxHeight = 130;
-            this.MinHeight = 130;
+            this.Height = FloatingHorizontalBarHeightWithExpandedCommandBar;
+            this.MaxHeight = FloatingHorizontalBarHeightWithExpandedCommandBar;
+            this.MinHeight = FloatingHorizontalBarHeightWithExpandedCommandBar;
         }
     }
 
     private void MyCommandBar_Closing(object sender, object e)
     {
-        if (!_viewModel.ShowingExpandedContent)
-        {
-            this.Height = 90;
-            this.MaxHeight = 90;
-            this.MinHeight = 90;
-            this.AppWindow.Resize(new Windows.Graphics.SizeInt32(this.AppWindow.Size.Width, 90));
-        }
+        SetBarToDefaultHeight();
     }
 }
