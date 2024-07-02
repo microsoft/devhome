@@ -151,6 +151,12 @@ public class DataExtractor
                 _stringResource.GetLocalized("Operations_Terminate"), "\uEE95", computeSystem.TerminateAsync, ComputeSystemOperations.Terminate));
         }
 
+        if (supportedOperations.HasFlag(ComputeSystemOperations.ApplyConfiguration))
+        {
+            operations.Add(new OperationsViewModel(
+                _stringResource.GetLocalized("Operations_ApplyConfiguration"), "\uE7C6", computeSystem.ApplyConfigurationAsync, ComputeSystemOperations.ApplyConfiguration));
+        }
+
         return operations;
     }
 }

@@ -146,6 +146,12 @@ public class ComputeSystemCache
         return await ComputeSystem.ModifyPropertiesAsync(options);
     }
 
+    public async Task<ComputeSystemOperationResult> ApplyConfigurationAsync(string options)
+    {
+        // To Do: Change this
+        return await ComputeSystem.ModifyPropertiesAsync(options);
+    }
+
     public async Task<ComputeSystemThumbnailResult> GetComputeSystemThumbnailAsync(string options)
     {
         _thumbnailParameter = options;
