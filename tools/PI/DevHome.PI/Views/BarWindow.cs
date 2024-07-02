@@ -85,8 +85,6 @@ public partial class BarWindow
         {
             PerfCounters.Instance.Start();
         }
-
-        _horizontalWindow.Show();
     }
 
     private void Window_Closed(object sender, WindowEventArgs args)
@@ -141,11 +139,14 @@ public partial class BarWindow
     {
         if (_horizontalWindow.Visible)
         {
+            _verticalWindow.UpdatePositionFromHwnd(CurrentHwnd);
+
             _horizontalWindow.Hide();
             _verticalWindow.Show();
         }
         else
         {
+            _horizontalWindow.UpdatePositionFromHwnd(CurrentHwnd);
             _verticalWindow.Hide();
             _horizontalWindow.Show();
         }
