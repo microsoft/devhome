@@ -1,0 +1,87 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "DevHome.SettingsCardChoiceSet",
+          "id": "SelectedDistributionIndex",
+          "label": "${SettingsCardLabel}",
+          "isRequired": true,
+          "devHomeSettingsCards": [
+            {
+              "type": "DevHome.SettingsCard",
+              "$data": "${AvailableDistributions}",
+              "devHomeSettingsCardDescription": "${Publisher}",
+              "devHomeSettingsCardHeader": "${Header}",
+              "devHomeSettingsCardHeaderIcon": "${HeaderIcon}",
+              "devHomeSettingsCardActionElement": {
+                "type": "DevHome.LaunchContentDialogButton",
+                "devHomeActionText": "${ButtonToLaunchContentDialogLabel}",
+                "devHomeContentDialogContent": {
+                  "devHomeContentDialogTitle": "${Header}",
+                  "devHomeContentDialogBodyAdaptiveCard": {
+                    "type": "AdaptiveCard",
+                    "version": "1.5",
+                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                    "body": [
+                      {
+                        "type": "Container",
+                        "$data": "${ContentDialogInfo}",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "${distributionDescription}",
+                            "isMultiline": true,
+                            "Spacing": "Medium",
+                            "size": "Medium",
+                            "wrap": true
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "devHomeContentDialogSecondaryButtonText": "${SecondaryButtonForContentDialogText}"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "$data": "${AvailableDistributions}",
+          "isVisible": "${NoDistributionsFoundErrorVisibility}",
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "${NoDistributionsFoundError}",
+              "size": "large",
+              "weight": "bolder",
+              "wrap": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "id": "DevHomeTopLevelActionSet",
+      "actions": [
+        {
+          "id": "DevHomeMachineConfigurationNextButton",
+          "type": "Action.Submit",
+          "title": "${PrimaryButtonLabelForCreationFlow}"
+        },
+        {
+          "id": "DevHomeMachineConfigurationPreviousButton",
+          "type": "Action.Submit",
+          "title": "${SecondaryButtonLabelForCreationFlow}"
+        }
+      ]
+    }
+  ]
+}
