@@ -61,13 +61,6 @@
     <ProjectReference Include="..\Telemetry\HyperVExtension.Telemetry.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
   <!--
     Copy DevSetupAgent_<Patform>.zip to the output directory so it picked up by MSIX packaging.
     If building from the build script the zip file should exist as it's created as part of the script execution.
