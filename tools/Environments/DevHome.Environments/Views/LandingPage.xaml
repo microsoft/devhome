@@ -61,7 +61,7 @@
                 </Grid>
             </DataTemplate>
 
-            <!-- Three Dot Button For create compute system operation template -->
+            <!-- Three Dot Button for create compute system operation template -->
             <DataTemplate x:Key="ThreeDotsButtonForCreation" x:DataType="vm:CreateComputeSystemOperationViewModel">
                 <Grid>
                     <Button
@@ -74,7 +74,7 @@
                 </Grid>
             </DataTemplate>
 
-            <!-- Properties template for the compute system properties that appear within a horizontal card.-->
+            <!-- Properties template for the compute system properties that appear within a horizontal card -->
             <DataTemplate x:Key="BottomRowProperties" x:DataType="commonModels:CardProperty">
                 <Grid
                     HorizontalAlignment="Stretch"
@@ -159,6 +159,41 @@
                 </Grid>
             </DataTemplate>
 
+            <!-- Per Provider Card Template -->
+            <DataTemplate x:Key="PerProviderComputeSystemTemplate" x:DataType="vm:PerProviderViewModel">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <TextBlock
+                            Text="{x:Bind ProviderName, Mode=OneWay}"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Margin="0 0 0 3"
+                            IsTextSelectionEnabled="True"/>
+                        <TextBlock
+                            Text="{x:Bind DecoratedDevID, Mode=OneWay}"
+                            Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                            Margin="5 0 0 3"
+                            IsTextSelectionEnabled="True"/>
+                    </StackPanel>
+                    <Grid Grid.Row="1">
+                        <ListView
+                            ItemsSource="{x:Bind ComputeSystems, Mode=OneWay}"
+                            SelectionMode="None"
+                            ItemTemplate="{StaticResource ComputeSystemTemplate}"
+                            ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel></StackPanel>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                        </ListView>
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+
             <DataTemplate x:Key="CreateComputeSystemOperationTemplate" x:DataType="vm:CreateComputeSystemOperationViewModel">
                 <Grid Style="{StaticResource HorizontalCardRootForEnvironmentsPage}">
                     <Grid.RowDefinitions>
@@ -184,7 +219,7 @@
             </DataTemplate>
 
             <selectors:CardItemTemplateSelector x:Key="CardItemTemplateSelector"
-                ComputeSystemTemplate="{StaticResource ComputeSystemTemplate}"
+                PerProviderComputeSystemTemplate="{StaticResource PerProviderComputeSystemTemplate}"
                 CreateComputeSystemOperationTemplate="{StaticResource CreateComputeSystemOperationTemplate}"/>
 
         </Grid.Resources>
@@ -296,7 +331,7 @@
                 <StackPanel>
                     <ListView
                         MaxWidth="{ThemeResource MaxPageContentWidth}"
-                        ItemsSource="{x:Bind ViewModel.ComputeSystemCardsView}" SelectionMode="None"
+                        ItemsSource="{x:Bind ViewModel.PerProviderViewModels}" SelectionMode="None"
                         ItemTemplateSelector="{StaticResource CardItemTemplateSelector}"
                         ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
                         <ListView.ItemsPanel>
