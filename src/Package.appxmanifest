@@ -129,7 +129,7 @@
                   <CreateInstance ClassId="BDA76685-E749-4f09-8F13-C466D0802DA1" />
                 </Activation>
                 <SupportedInterfaces>
-                  <SourceControlIntegration />
+                  <LocalRepository />
                 </SupportedInterfaces>
               </DevHomeProvider>
             </uap3:Properties>

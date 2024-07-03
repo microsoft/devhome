@@ -3,7 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using DevHome.Customization.Views;
+using DevHome.Customization.Helpers;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Win32;
@@ -15,17 +15,19 @@ public class SourceControlIntegration
 {
     private static readonly Serilog.ILogger Log = Serilog.Log.ForContext("SourceContext", nameof(Models.SourceControlIntegration));
 
-    public static bool ValidateSourceControlExtension(string extensionCLSID, string rootPath)
+    public static SourceControlValidationResult ValidateSourceControlExtension(string extensionCLSID, string rootPath)
     {
         var providerPtr = IntPtr.Zero;
         try
         {
+            Log.Information("Validating source control extension with arguments: extensionCLSID = {extensionCLSID}, rootPath = {rootPath}", extensionCLSID, rootPath);
+
             var hr = PInvoke.CoCreateInstance(Guid.Parse(extensionCLSID), null, Windows.Win32.System.Com.CLSCTX.CLSCTX_LOCAL_SERVER, typeof(ILocalRepositoryProvider).GUID, out var extensionObj);
             providerPtr = Marshal.GetIUnknownForObject(extensionObj);
             if (hr < 0)
             {
                 Log.Error(hr.ToString(), "Failure occurred while creating instance of repository provider");
-                return false;
+                return new SourceControlValidationResult(ResultType.Failure, ErrorType.RepositoryProvderCreationFailed, null);
             }
 
             ILocalRepositoryProvider provider = MarshalInterface<ILocalRepositoryProvider>.FromAbi(providerPtr);
@@ -35,7 +37,7 @@ public class SourceControlIntegration
             {
                 Log.Error("Could not open local repository.");
                 Log.Error(result.Result.DisplayMessage);
-                return false;
+                return new SourceControlValidationResult(ResultType.Failure, ErrorType.OpenRepositoryFailed, null);
             }
             else
             {
@@ -45,7 +47,7 @@ public class SourceControlIntegration
         catch (Exception ex)
         {
             Log.Error(ex, "An exception occurred while validating source control extension.");
-            return false;
+            return new SourceControlValidationResult(ResultType.Failure, ErrorType.SourceControlExtensionValidationFailed, ex);
         }
         finally
         {
@@ -55,6 +57,6 @@ public class SourceControlIntegration
             }
         }
 
-        return true;
+        return new SourceControlValidationResult();
     }
 }

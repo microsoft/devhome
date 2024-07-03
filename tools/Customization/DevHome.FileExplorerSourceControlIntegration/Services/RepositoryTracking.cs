@@ -31,6 +31,8 @@ public class RepositoryTracking
 
     public event Windows.Foundation.TypedEventHandler<string, RepositoryChange>? RepositoryChanged;
 
+    public DateTime LastRestore { get; set; }
+
     public RepositoryTracking(string? path)
     {
         if (RuntimeHelper.IsMSIX)
@@ -63,8 +65,10 @@ public class RepositoryTracking
             if (TrackedRepositories == null)
             {
                 TrackedRepositories = new Dictionary<string, string>();
-                log.Debug("Repo store has just been created with the first registered repository root path");
+                log.Debug("Repo store cache has just been created");
             }
+
+            LastRestore = DateTime.Now;
         }
 
         log.Information($"Repositories retrieved from Repo Store, number of registered repositories: {TrackedRepositories.Count}");
@@ -152,6 +156,17 @@ public class RepositoryTracking
                 log.Error("The root path is not registered for File Explorer Source Control Integration");
                 return string.Empty;
             }
+        }
+    }
+
+    public void ReloadRepositoryStoreIfChangesDetected()
+    {
+        var lastTimeModified = System.IO.File.GetLastWriteTime(Path.Combine(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName));
+        log.Information("Last Time Modified: {0}", lastTimeModified);
+        if (DateTime.Compare(LastRestore, lastTimeModified) < 0)
+        {
+            RestoreTrackedRepositoriesFomJson();
+            log.Information("Tracked repositories restored from JSON at {0}", DateTime.Now);
         }
     }
 }

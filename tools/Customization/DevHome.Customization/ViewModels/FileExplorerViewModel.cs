@@ -74,13 +74,14 @@ public partial class FileExplorerViewModel : ObservableObject
         }
     }
 
-    public bool AddRepositoryPath(string extension, string rootPath)
+    public bool AddRepositoryPath(string extensionCLSID, string rootPath)
     {
         var normalizedPath = rootPath.ToUpper(CultureInfo.InvariantCulture).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        if (SourceControlIntegration.ValidateSourceControlExtension(extension, normalizedPath))
+        var result = SourceControlIntegration.ValidateSourceControlExtension(extensionCLSID, normalizedPath);
+        if (result.Result == Helpers.ResultType.Success)
         {
-             RepoTracker.AddRepositoryPath(extension, normalizedPath);
-             return true;
+            RepoTracker.AddRepositoryPath(extensionCLSID, normalizedPath);
+            return true;
         }
 
         return false;
