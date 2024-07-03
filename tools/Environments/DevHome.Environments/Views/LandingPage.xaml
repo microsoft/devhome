@@ -289,7 +289,7 @@
                 <ComboBox x:Uid="SortSelectionComboBox"
                           x:Name="SortSelectionComboBox"
                           Margin="0 3 0 0"
-                          MinWidth="236"
+                          MinWidth="167"
                           SelectedIndex="{x:Bind ViewModel.SelectedSortIndex, Mode=TwoWay}">
                     <ComboBoxItem x:Uid="SortByName"/>
                     <ComboBoxItem x:Uid="SortByNameDesc"/>

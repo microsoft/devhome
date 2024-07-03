@@ -79,7 +79,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
-    private const int SortUnselected = -1;
+    private const int DefaultSortIndex = 2;
 
     public ObservableCollection<string> Providers { get; set; }
 
@@ -98,7 +98,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
-        SelectedSortIndex = SortUnselected;
+        SelectedSortIndex = DefaultSortIndex;
         Providers = new() { _stringResource.GetLocalized("AllProviders") };
         _lastSyncTime = _stringResource.GetLocalized("MomentsAgo");
     }
@@ -112,7 +112,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public async Task SyncButton()
     {
         // Reset the sort and filter
-        SelectedSortIndex = SortUnselected;
+        SelectedSortIndex = DefaultSortIndex;
         Providers = new ObservableCollection<string> { _stringResource.GetLocalized("AllProviders") };
         SelectedProviderIndex = 0;
         _wasSyncButtonClicked = true;

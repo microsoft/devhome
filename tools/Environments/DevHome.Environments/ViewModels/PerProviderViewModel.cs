@@ -26,8 +26,6 @@ public partial class PerProviderViewModel : ObservableObject
 
     private readonly StringResource _stringResource;
 
-    private const int SortUnselected = -1;
-
     private readonly Window _mainWindow;
 
     [ObservableProperty]
@@ -89,12 +87,6 @@ public partial class PerProviderViewModel : ObservableObject
     public void SortHandler(int selectedSortIndex)
     {
         ComputeSystemAdvancedView.SortDescriptions.Clear();
-
-        if (selectedSortIndex == SortUnselected)
-        {
-            ComputeSystemAdvancedView.SortDescriptions.Add(new SortDescription("LastConnected", SortDirection.Ascending));
-        }
-
         switch (selectedSortIndex)
         {
             case 0:
