@@ -354,7 +354,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                     tempComputeSystemViewModels.Add(computeSystemViewModel);
                 }
 
-                PerProviderViewModels.Add(new PerProviderViewModel(provider.DisplayName, loginId ?? string.Empty, tempComputeSystemViewModels));
+                PerProviderViewModels.Add(new PerProviderViewModel(provider.DisplayName, loginId ?? string.Empty, tempComputeSystemViewModels, _mainWindow));
             }
             catch (Exception ex)
             {

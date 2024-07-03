@@ -5,13 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Services;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.Environments.ViewModels;
 
 // View model representing a compute system provider and its associated compute systems.
-public class PerProviderViewModel
+public partial class PerProviderViewModel : ObservableObject
 {
     public string ProviderName { get; }
 
@@ -25,11 +28,17 @@ public class PerProviderViewModel
 
     private const int SortUnselected = -1;
 
-    public PerProviderViewModel(string providerName, string associatedDevID, List<ComputeSystemCardBase> computeSystems)
+    private readonly Window _mainWindow;
+
+    [ObservableProperty]
+    private bool _isVisible = true;
+
+    public PerProviderViewModel(string providerName, string associatedDevID, List<ComputeSystemCardBase> computeSystems, Window mainWindow)
     {
         ProviderName = providerName;
         DecoratedDevID = associatedDevID.Length > 0 ? '(' + associatedDevID + ')' : string.Empty;
         ComputeSystems = new ObservableCollection<ComputeSystemCardBase>(computeSystems);
+        _mainWindow = mainWindow;
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
         ComputeSystemAdvancedView = new AdvancedCollectionView(ComputeSystems);
@@ -57,6 +66,18 @@ public class PerProviderViewModel
 
             return false;
         };
+
+        _mainWindow.DispatcherQueue.EnqueueAsync(() =>
+        {
+            if (ComputeSystemAdvancedView.Count == 0)
+            {
+                IsVisible = false;
+            }
+            else
+            {
+                IsVisible = true;
+            }
+        });
     }
 
     /// <summary>
