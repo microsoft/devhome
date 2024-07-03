@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="$(SolutionDir)ToolingVersions.props" />
+    <PropertyGroup>
+        <RootNamespace>DevHome.Services.DesiredStateConfiguration</RootNamespace>
+        <Platforms>x86;x64;arm64</Platforms>
+        <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="$(TargetDir)\Microsoft.Management.Configuration.dll" Link="Microsoft.Management.Configuration.dll" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="$(TargetDir)\Microsoft.Management.Configuration.winmd" Link="Microsoft.Management.Configuration.winmd" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.WindowsPackageManager.Configuration.OutOfProc" Version="1.7.10091-preview" GeneratePathProperty="True" />
+        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DevHome.Services.Core\DevHome.Services.Core.csproj" />
+    </ItemGroup>
+    <Target Name="CopyWinmdToTargetDir" BeforeTargets="BeforeBuild">
+        <Copy SourceFiles="$(PkgMicrosoft_WindowsPackageManager_Configuration_OutOfProc)\runtimes\win10-$(Platform)\native\Microsoft.Management.Configuration.dll" DestinationFolder="$(TargetDir)" />
+        <Copy SourceFiles="$(PkgMicrosoft_WindowsPackageManager_Configuration_OutOfProc)\runtimes\win10-$(Platform)\native\Microsoft.Management.Configuration.winmd" DestinationFolder="$(TargetDir)" />
+    </Target>
+</Project>

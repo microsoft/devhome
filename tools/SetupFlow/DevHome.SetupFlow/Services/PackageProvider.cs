@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
 using Serilog;

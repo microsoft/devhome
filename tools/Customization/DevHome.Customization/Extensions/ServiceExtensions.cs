@@ -28,6 +28,12 @@ public static class ServiceExtensions
 
         services.AddTransient<QuietBackgroundProcessesViewModel>();
 
+        services.AddSingleton<VirtualizationFeatureManagementViewModel>();
+        services.AddTransient<VirtualizationFeatureManagementPage>();
+
+        services.AddSingleton<GeneralSystemViewModel>();
+        services.AddTransient<GeneralSystemPage>();
+
         return services;
     }
 }

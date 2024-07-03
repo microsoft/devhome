@@ -30,13 +30,10 @@ public class WinLogsHelper : IDisposable
     private Thread? debugMonitorThread;
     private Thread? eventViewerThread;
 
-    public bool IsETWEnabled { get; }
-
     public WinLogsHelper(Process targetProcess, ObservableCollection<WinLogsEntry> output)
     {
         this.targetProcess = targetProcess;
         this.output = output;
-        IsETWEnabled = ETWHelper.IsUserInPerformanceLogUsersGroup();
 
         // Initialize ETW logs
         etwHelper = new ETWHelper(targetProcess, output);
@@ -46,20 +43,29 @@ public class WinLogsHelper : IDisposable
 
         // Initialize EventViewer
         eventViewerHelper = new EventViewerHelper(targetProcess, output);
-
-        Start();
     }
 
-    public void Start()
+    public void Start(bool isEtwEnabled, bool isDebugOutputEnabled, bool isEventViewerEnabled, bool isWatsonEnabled)
     {
-        if (IsETWEnabled)
+        if (isEtwEnabled)
         {
             StartETWLogsThread();
         }
 
-        StartEventViewerThread();
+        if (isDebugOutputEnabled)
+        {
+            StartDebugOutputsThread();
+        }
 
-        ((INotifyCollectionChanged)WatsonHelper.Instance.WatsonReports).CollectionChanged += WatsonEvents_CollectionChanged;
+        if (isEventViewerEnabled)
+        {
+            StartEventViewerThread();
+        }
+
+        if (isWatsonEnabled)
+        {
+            ((INotifyCollectionChanged)WatsonHelper.Instance.WatsonReports).CollectionChanged += WatsonEvents_CollectionChanged;
+        }
     }
 
     public void Stop()

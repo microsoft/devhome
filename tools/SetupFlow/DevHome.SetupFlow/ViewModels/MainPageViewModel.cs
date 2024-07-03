@@ -12,6 +12,8 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
+using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -37,8 +39,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     private const string QuickstartPlaygroundFlowFeatureName = "QuickstartPlayground";
 
     private readonly IHost _host;
-    private readonly IWindowsPackageManager _wpm;
-    private readonly IDesiredStateConfiguration _dsc;
+    private readonly IWinGet _winget;
+    private readonly IDSC _dsc;
     private readonly IExperimentationService _experimentationService;
 
     public MainPageBannerViewModel BannerViewModel { get; }
@@ -74,15 +76,15 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     public MainPageViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        IWindowsPackageManager wpm,
-        IDesiredStateConfiguration dsc,
+        IWinGet winget,
+        IDSC dsc,
         IHost host,
         MainPageBannerViewModel bannerViewModel,
         IExperimentationService experimentationService)
         : base(stringResource, orchestrator)
     {
         _host = host;
-        _wpm = wpm;
+        _winget = winget;
         _dsc = dsc;
         _experimentationService = experimentationService;
 
@@ -157,12 +159,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     {
         if (await ValidateAppInstallerAsync())
         {
-            _log.Information($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");
-            ShowAppInstallerUpdateNotification = await _wpm.IsUpdateAvailableAsync();
+            _log.Information($"{nameof(IWinGet)} COM Server is available. Showing package install item");
+            ShowAppInstallerUpdateNotification = await _winget.IsUpdateAvailableAsync();
         }
         else
         {
-            _log.Warning($"{nameof(WindowsPackageManager)} COM Server is not available. Package install item is hidden.");
+            _log.Warning($"{nameof(IWinGet)} COM Server is not available. Package install item is hidden.");
         }
     }
 
@@ -329,7 +331,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     {
         HideAppInstallerUpdateNotification();
         _log.Information("Opening AppInstaller in the Store app");
-        await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?productid={WindowsPackageManager.AppInstallerProductId}"));
+        await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?productid={IWinGet.AppInstallerProductId}"));
     }
 
     [RelayCommand]
@@ -345,6 +347,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
 
     private async Task<bool> ValidateAppInstallerAsync()
     {
-        return EnablePackageInstallerItem = await _wpm.IsAvailableAsync();
+        return EnablePackageInstallerItem = await _winget.IsAvailableAsync();
     }
 }

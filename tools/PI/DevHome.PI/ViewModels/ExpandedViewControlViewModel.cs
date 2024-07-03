@@ -200,6 +200,8 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         if (!Links.Contains(processListNavLink))
         {
             Links.Add(processListNavLink);
+            Links.Add(watsonNavLink);
+            Links.Add(insightsNavLink);
         }
 
         // If App Details is missing, add all other pages.
@@ -210,9 +212,12 @@ public partial class ExpandedViewControlViewModel : ObservableObject
                 Links.Insert(0, appDetailsNavLink);
                 Links.Insert(1, resourceUsageNavLink);
                 Links.Insert(2, modulesNavLink);
-                Links.Insert(3, watsonNavLink);
-                Links.Insert(4, winLogsNavLink);
-                Links.Insert(6, insightsNavLink);
+
+                // Process List #3
+                // Watson #4
+                Links.Insert(5, winLogsNavLink);
+
+                // Insights #6;
             }
         }
     }
@@ -225,9 +230,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         Links.Remove(appDetailsNavLink);
         Links.Remove(resourceUsageNavLink);
         Links.Remove(modulesNavLink);
-        Links.Remove(watsonNavLink);
         Links.Remove(winLogsNavLink);
-        Links.Remove(insightsNavLink);
     }
 
     public void NavigateTo(Type viewModelType)

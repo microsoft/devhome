@@ -2,14 +2,15 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Contracts;
-using DevHome.Common.Services;
+using DevHome.Services.Core.Contracts;
 using Serilog;
 
 namespace DevHome.Services;
 
-public class QuickstartSetupService(IAppInstallManagerService appInstallManagerService, IPackageDeploymentService packageDeploymentService) : IQuickstartSetupService
+public class QuickstartSetupService(IMicrosoftStoreService msStoreService, IPackageDeploymentService packageDeploymentService) : IQuickstartSetupService
 {
 #if CANARY_BUILD
     private const string AzureExtensionStorePackageId = "9NBVFRMSFXHW";
@@ -24,7 +25,7 @@ public class QuickstartSetupService(IAppInstallManagerService appInstallManagerS
 
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(QuickstartSetupService));
 
-    private readonly IAppInstallManagerService _appInstallManagerService = appInstallManagerService;
+    private readonly IMicrosoftStoreService _msStoreService = msStoreService;
     private readonly IPackageDeploymentService _packageDeploymentService = packageDeploymentService;
 
     public bool IsDevHomeAzureExtensionInstalled()
@@ -42,7 +43,7 @@ public class QuickstartSetupService(IAppInstallManagerService appInstallManagerS
         try
         {
             _log.Information("Installing DevHomeAzureExtension");
-            await _appInstallManagerService.TryInstallPackageAsync(AzureExtensionStorePackageId);
+            await _msStoreService.TryInstallPackageAsync(AzureExtensionStorePackageId);
         }
         catch (Exception ex)
         {
