@@ -29,14 +29,17 @@ public class UtilitiesLaunchEvent : EventBase
 
     public Phase LaunchPhase { get; }
 
+    public int ErrorCode { get; }
+
     public string ErrorString { get; }
 
-    public UtilitiesLaunchEvent(Guid activityId, string utilityName, bool launchedAsAdmin, Phase phase, string errorString = "")
+    public UtilitiesLaunchEvent(Guid activityId, string utilityName, bool launchedAsAdmin, Phase phase, int errorCode = 0, string errorString = "")
     {
         ActivityId = activityId.ToString();
         UtilityName = utilityName;
         LaunchedAsAdmin = launchedAsAdmin;
         LaunchPhase = phase;
+        ErrorCode = errorCode;
         ErrorString = errorString;
     }
 

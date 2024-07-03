@@ -28,6 +28,7 @@ using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.System.SystemInformation;
 using Windows.Win32.System.Threading;
 using Windows.Win32.UI.Accessibility;
+using Windows.Win32.UI.Shell.Common;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace DevHome.PI.Helpers;
@@ -596,6 +597,13 @@ public class WindowHelper
         PInvoke.GetMonitorInfo(monitor, ref monitorInfo);
         var screenBounds = monitorInfo.rcMonitor;
         return screenBounds;
+    }
+
+    internal static double GetDpiScaleForWindow(HWND hWnd)
+    {
+        var monitor = PInvoke.MonitorFromWindow(hWnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+        PInvoke.GetScaleFactorForMonitor(monitor, out DEVICE_SCALE_FACTOR scaleFactor).ThrowOnFailure();
+        return (double)scaleFactor / 100;
     }
 
     internal static void GetAppInfoUnderMouseCursor(out Process? process, out HWND hwnd)

@@ -27,6 +27,7 @@ using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.Shell.Common;
 using WinRT.Interop;
 using WinUIEx;
+using static DevHome.PI.Helpers.CommonHelper;
 using static DevHome.PI.Helpers.WindowHelper;
 
 namespace DevHome.PI;
@@ -45,6 +46,11 @@ public partial class BarWindowHorizontal : WindowEx
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowViewModel _viewModel;
     private readonly UISettings _uiSettings = new();
+
+    private readonly SolidColorBrush _darkModeActiveCaptionBrush;
+    private readonly SolidColorBrush _darkModeDeactiveCaptionBrush;
+    private readonly SolidColorBrush _nonDarkModeActiveCaptionBrush;
+    private readonly SolidColorBrush _nonDarkModeDeactiveCaptionBrush;
 
     private bool _isClosing;
     private WindowActivationState _currentActivationState = WindowActivationState.Deactivated;
@@ -95,6 +101,19 @@ public partial class BarWindowHorizontal : WindowEx
         _restoreState.Width = settingSize.Width;
         ExpandCollapseLayoutButtonText.Text = _viewModel.ShowingExpandedContent ? CollapseButtonText : ExpandButtonText;
 
+        // Precreate the brushes for the caption buttons
+        // In Dark Mode, the active state is white, and the deactive state is translucent white
+        // In Light Mode, the active state is black, and the deactive state is translucent black
+        Windows.UI.Color color = Colors.White;
+        _darkModeActiveCaptionBrush = new SolidColorBrush(color);
+        color.A = 0x66;
+        _darkModeDeactiveCaptionBrush = new SolidColorBrush(color);
+
+        color = Colors.Black;
+        _nonDarkModeActiveCaptionBrush = new SolidColorBrush(color);
+        color.A = 0x66;
+        _nonDarkModeDeactiveCaptionBrush = new SolidColorBrush(color);
+
         _uiSettings.ColorValuesChanged += (sender, args) =>
         {
             _dispatcher.TryEnqueue(() =>
@@ -137,9 +156,7 @@ public partial class BarWindowHorizontal : WindowEx
         SetRequestedTheme(t.Theme);
 
         // Calculate the DPI scale.
-        var monitor = PInvoke.MonitorFromWindow(ThisHwnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        PInvoke.GetScaleFactorForMonitor(monitor, out DEVICE_SCALE_FACTOR scaleFactor).ThrowOnFailure();
-        _dpiScale = (double)scaleFactor / 100;
+        _dpiScale = GetDpiScaleForWindow(ThisHwnd);
 
         SetDefaultPosition();
 
@@ -147,6 +164,9 @@ public partial class BarWindowHorizontal : WindowEx
 
         PopulateCommandBar();
         ((INotifyCollectionChanged)ExternalToolsHelper.Instance.AllExternalTools).CollectionChanged += AllExternalTools_CollectionChanged;
+
+        // Now that the position is set correctly show the window
+        this.Show();
     }
 
     public void PopulateCommandBar()
@@ -373,11 +393,11 @@ public partial class BarWindowHorizontal : WindowEx
     private void SetDefaultPosition()
     {
         // If attached to an app it should show up on the monitor that the app is on
-        _monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? ThisHwnd);
+        _monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
         var screenWidth = _monitorRect.right - _monitorRect.left;
         this.Move(
             (int)((screenWidth - (Width * _dpiScale)) / 2) + _monitorRect.left,
-            (int)WindowPositionOffsetY);
+            (int)WindowPositionOffsetY + _monitorRect.top);
 
         // Get the saved settings for the ExpandedView size. On first run, this will be
         // the default 0,0, so we'll set the size proportional to the monitor size.
@@ -401,6 +421,13 @@ public partial class BarWindowHorizontal : WindowEx
         _restoreState.Width = settingSize.Width;
     }
 
+    internal void UpdatePositionFromHwnd(HWND hwnd)
+    {
+        RECT rect;
+        PInvoke.GetWindowRect(hwnd, out rect);
+        this.Move(rect.left, rect.top);
+    }
+
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
         ClipboardMonitor.Instance.Stop();
@@ -419,6 +446,9 @@ public partial class BarWindowHorizontal : WindowEx
             barWindow?.Close();
             _isClosing = false;
         }
+
+        // Unsubscribe from the activation handler
+        Activated -= Window_Activated;
     }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -479,33 +509,22 @@ public partial class BarWindowHorizontal : WindowEx
         LargeContentPanel.Visibility = Visibility.Visible;
         MaxHeight = double.NaN;
 
-        // If they expand to ExpandedView and they're not snapped, we can use the
-        // RestoreState size & position.
-        if (!_viewModel.IsSnapped)
-        {
-            this.MoveAndResize(
-                _restoreState.Left, _restoreState.Top, _restoreState.Width, _restoreState.Height);
-        }
-        else
-        {
-            // Conversely if they're snapped, the position is determined by the snap,
-            // and we potentially adjust the size to ensure it doesn't extend beyond the screen.
-            var availableWidth = _monitorRect.Width - Math.Abs(AppWindow.Position.X) - RightSideGap;
-            if (availableWidth < _restoreState.Width)
-            {
-                _restoreState.Width = availableWidth;
-            }
+        var monitorRect = GetMonitorRectForWindow(ThisHwnd);
+        var dpiScale = GetDpiScaleForWindow(ThisHwnd);
 
-            Width = _restoreState.Width;
+        // Expand the window but keep the x,y coordinates of top-left most corner of the window the same so it doesn't
+        // jump around the screen.
+        var availableWidth = monitorRect.Width - Math.Abs(AppWindow.Position.X - monitorRect.left) - RightSideGap;
+        _restoreState.Width = (int)((double)availableWidth / dpiScale);
 
-            var availableHeight = _monitorRect.Height - Math.Abs(AppWindow.Position.Y);
-            if (availableHeight < _restoreState.Height)
-            {
-                _restoreState.Height = availableHeight;
-            }
+        Width = _restoreState.Width;
 
-            Height = _restoreState.Height;
-        }
+        var availableHeight = monitorRect.Height - Math.Abs(AppWindow.Position.Y - monitorRect.top);
+
+        _restoreState.Height = (int)((double)availableHeight / dpiScale);
+
+        this.MoveAndResize(
+            AppWindow.Position.X, AppWindow.Position.Y, _restoreState.Width, _restoreState.Height);
     }
 
     private void CollapseLargeContentPanel()
@@ -576,17 +595,24 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void UpdateCustomTitleBarButtonsTextColor()
     {
+        FrameworkElement? rootElement = Content as FrameworkElement;
+        Debug.Assert(rootElement != null, "Expected Content to be a FrameworkElement");
+
         if (_currentActivationState == WindowActivationState.Deactivated)
         {
-            SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
-            ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
-            RotateLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
+            SolidColorBrush brush = (rootElement.ActualTheme == ElementTheme.Dark) ? _darkModeDeactiveCaptionBrush : _nonDarkModeDeactiveCaptionBrush;
+
+            SnapButtonText.Foreground = brush;
+            ExpandCollapseLayoutButtonText.Foreground = brush;
+            RotateLayoutButtonText.Foreground = brush;
         }
         else
         {
-            SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
-            ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
-            RotateLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
+            SolidColorBrush brush = (rootElement.ActualTheme == ElementTheme.Dark) ? _darkModeActiveCaptionBrush : _nonDarkModeActiveCaptionBrush;
+
+            SnapButtonText.Foreground = brush;
+            ExpandCollapseLayoutButtonText.Foreground = brush;
+            RotateLayoutButtonText.Foreground = brush;
         }
     }
 
