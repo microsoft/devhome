@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices.WindowsRuntime;
+using Serilog;
 using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Management.Deployment;
@@ -12,6 +13,8 @@ namespace WSLExtension.Helpers;
 
 public class PackageHelper
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(PackageHelper));
+
     // Using 256 because the thumbnail in Dev Homes environments page
     // is 64x64 but Windows packaged app logo sizes go up to 256.
     // Getting the 256px image helps as it will mean the image will be rounded down instead
@@ -66,7 +69,7 @@ public class PackageHelper
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.ToString(), logoFilePath);
+            _log.Error(ex, $"Unable to get base64 string from logo file path: {logoFilePath}");
             return string.Empty;
         }
     }
