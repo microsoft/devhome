@@ -47,31 +47,31 @@ public sealed class QuickStartProjectProvider
         SamplePrompts = quickStartProjectProvider.SamplePrompts;
     }
 
-    public QuickStartProjectAdaptiveCardResult CreateAdaptiveCardSessionForExtensionInitialization()
+    public QuickStartProjectAdaptiveCardResult CreateAdaptiveCardSessionForExtensionInitialization(Guid activityId)
     {
         try
         {
-            TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundExtensionInitialization");
+            TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundExtensionInitialization", relatedActivityId: activityId);
             return _quickStartProjectProvider.CreateAdaptiveCardSessionForExtensionInitialization();
         }
         catch (Exception ex)
         {
             _log.Error(ex, $"CreateAdaptiveCardSessionForExtensionInitialization for: {this} failed due to exception");
-            TelemetryFactory.Get<ITelemetry>().LogException("CreateAdaptiveCardSessionForExtensionInitialization", ex);
+            TelemetryFactory.Get<ITelemetry>().LogException("CreateAdaptiveCardSessionForExtensionInitialization", ex, activityId);
             return new QuickStartProjectAdaptiveCardResult(ex, ex.Message, ex.Message);
         }
     }
 
-    public IQuickStartProjectGenerationOperation CreateProjectGenerationOperation(string prompt, StorageFolder outputFolder)
+    public IQuickStartProjectGenerationOperation CreateProjectGenerationOperation(string prompt, StorageFolder outputFolder, Guid activityId)
     {
         try
         {
-            TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundProjectGenerationOperation");
+            TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundProjectGenerationOperation", relatedActivityId: activityId);
             return _quickStartProjectProvider.CreateProjectGenerationOperation(prompt, outputFolder);
         }
         catch (Exception ex)
         {
-            TelemetryFactory.Get<ITelemetry>().LogException("QuickstartPlaygroundProjectGenerationOperation", ex);
+            TelemetryFactory.Get<ITelemetry>().LogException("QuickstartPlaygroundProjectGenerationOperation", ex, activityId);
             _log.Error(ex, $"CreateProjectGenerationOperation for: {this} failed due to exception");
             return null;
         }
