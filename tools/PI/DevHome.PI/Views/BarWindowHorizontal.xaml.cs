@@ -172,12 +172,11 @@ public partial class BarWindowHorizontal : WindowEx
         button.Click += _viewModel.ExternalToolButton_Click;
 
         MenuFlyout menu = new MenuFlyout();
-
         menu.Items.Add(tool.IsPinned ? CreateUnPinMenuItem(tool) : CreatePinMenuItem(tool));
         menu.Items.Add(CreateUnregisterMenuItem(tool));
-
         button.ContextFlyout = menu;
 
+        // If a tool is pinned, we'll add it to the primary commands list, otherwise the secondary commands list
         if (tool.IsPinned)
         {
             MyCommandBar.PrimaryCommands.Add(button);
@@ -204,6 +203,7 @@ public partial class BarWindowHorizontal : WindowEx
                 menu.Items.Add(CreateUnregisterMenuItem(tool));
                 button.ContextFlyout = menu;
 
+                // If a tool is pinned, we'll add it to the primary commands list, otherwise the secondary commands list
                 if (tool.IsPinned)
                 {
                     MyCommandBar.SecondaryCommands.Remove(button);
@@ -234,7 +234,7 @@ public partial class BarWindowHorizontal : WindowEx
         // If we don't have any more primary commands, move the Manage Tools Option from the secondary commands to the primary commands
         else if (MyCommandBar.PrimaryCommands.Count == 0)
         {
-            // The first two items in the secondary commands list should be the app management button and a separator
+            // The first two items in the secondary commands list should be the tool management button and a separator
             Debug.Assert(MyCommandBar.SecondaryCommands.Count >= 2 && MyCommandBar.SecondaryCommands[0] is AppBarButton toolsBtn && toolsBtn.Command == _viewModel.ManageExternalToolsButtonCommand, "Where did tools button go?");
             Debug.Assert(MyCommandBar.SecondaryCommands.Count >= 2 && MyCommandBar.SecondaryCommands[1] is AppBarSeparator, "Where did the separator go?");
 
