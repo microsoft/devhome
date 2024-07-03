@@ -53,8 +53,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<PerProviderViewModel> PerProviderViewModels { get; set; } = new();
 
-    public AdvancedCollectionView ComputeSystemCardsView { get; set; }
-
     public bool HasPageLoadedForTheFirstTime { get; set; }
 
     [ObservableProperty]
@@ -103,9 +101,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         SelectedSortIndex = SortUnselected;
         Providers = new() { _stringResource.GetLocalized("AllProviders") };
         _lastSyncTime = _stringResource.GetLocalized("MomentsAgo");
-
-        ComputeSystemCardsView = new AdvancedCollectionView();
-        ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
     }
 
     public void Initialize(StackedNotificationsBehavior notificationQueue)
@@ -226,7 +221,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             await RunSyncTimmer();
         });
 
-        Parallel.ForEach(PerProviderViewModels, (providerViewModel, token) =>
+        foreach (var providerViewModel in PerProviderViewModels)
         {
             var computeSystemCards = providerViewModel.ComputeSystems;
             lock (computeSystemCards)
@@ -241,8 +236,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                     }
                 }
             }
-        });
+        }
 
+        PerProviderViewModels.Clear();
         _notificationsHelper?.ClearNotifications();
         CallToActionText = null;
         CallToActionHyperLinkButtonText = null;
@@ -305,7 +301,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
             }
 
-            ComputeSystemCardsView.Refresh();
+            providerViewModel.ComputeSystemAdvancedView.Refresh();
             UpdateCallToActionText();
         }
     }
@@ -375,22 +371,10 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void SearchHandler(string query)
     {
-        ComputeSystemCardsView.Filter = system =>
+        foreach (var providerViewModel in PerProviderViewModels)
         {
-            if (system is CreateComputeSystemOperationViewModel createComputeSystemOperationViewModel)
-            {
-                return createComputeSystemOperationViewModel.EnvironmentName.Contains(query, StringComparison.OrdinalIgnoreCase);
-            }
-
-            if (system is ComputeSystemViewModel computeSystemViewModel)
-            {
-                var systemName = computeSystemViewModel.ComputeSystem!.DisplayName.Value;
-                var systemAltName = computeSystemViewModel.ComputeSystem.SupplementalDisplayName.Value;
-                return systemName.Contains(query, StringComparison.OrdinalIgnoreCase) || systemAltName.Contains(query, StringComparison.OrdinalIgnoreCase);
-            }
-
-            return false;
-        };
+            providerViewModel.SearchHandler(query);
+        }
     }
 
     /// <summary>
@@ -399,27 +383,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void ProviderHandler(int selectedIndex)
     {
-        SelectedProviderIndex = selectedIndex;
-        var currentProvider = Providers[SelectedProviderIndex];
-        ComputeSystemCardsView.Filter = system =>
+        var currentProvider = Providers[selectedIndex];
+        foreach (var providerViewModel in PerProviderViewModels)
         {
-            if (currentProvider.Equals(_stringResource.GetLocalized("AllProviders"), StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            if (system is CreateComputeSystemOperationViewModel createComputeSystemOperationViewModel)
-            {
-                return createComputeSystemOperationViewModel.ProviderDisplayName.Equals(currentProvider, StringComparison.OrdinalIgnoreCase);
-            }
-
-            if (system is ComputeSystemViewModel computeSystemViewModel)
-            {
-                return computeSystemViewModel.ProviderDisplayName.Equals(currentProvider, StringComparison.OrdinalIgnoreCase);
-            }
-
-            return false;
-        };
+            providerViewModel.ProviderHandler(currentProvider);
+        }
     }
 
     /// <summary>
@@ -431,24 +399,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void SortHandler()
     {
-        ComputeSystemCardsView.SortDescriptions.Clear();
-
-        if (SelectedSortIndex == SortUnselected)
+        foreach (var providerViewModel in PerProviderViewModels)
         {
-            ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
-        }
-
-        switch (SelectedSortIndex)
-        {
-            case 0:
-                ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("Name", SortDirection.Ascending));
-                break;
-            case 1:
-                ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("Name", SortDirection.Descending));
-                break;
-            case 2:
-                ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("LastConnected", SortDirection.Ascending));
-                break;
+            providerViewModel.SortHandler(SelectedSortIndex);
         }
     }
 
@@ -481,7 +434,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                             computeSystemCards.Insert(0, computeSystemViewModel);
                         }
 
-                        ComputeSystemCardsView.Refresh();
+                        providerViewModel.ComputeSystemAdvancedView.Refresh();
                     });
                 }
             }

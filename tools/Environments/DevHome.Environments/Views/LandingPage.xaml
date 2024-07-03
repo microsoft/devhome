@@ -180,7 +180,7 @@
                     </StackPanel>
                     <Grid Grid.Row="1">
                         <ListView
-                            ItemsSource="{x:Bind ComputeSystems, Mode=OneWay}"
+                            ItemsSource="{x:Bind ComputeSystemAdvancedView, Mode=OneWay}"
                             SelectionMode="None"
                             ItemTemplate="{StaticResource ComputeSystemTemplate}"
                             ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
