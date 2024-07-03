@@ -7,11 +7,16 @@
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
     xmlns:models="using:DevHome.Models"
     xmlns:commonviews="using:DevHome.Common.Views"
-    xmlns:behaviors="using:DevHome.Common.Behaviors" 
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="OnLoaded"
     SizeChanged="OnSizeChanged"
     mc:Ignorable="d">
+
+    <i:Interaction.Behaviors >
+        <behaviors:AutoFocusBehavior />
+    </i:Interaction.Behaviors>
 
     <Page.Resources>
         <ResourceDictionary>
