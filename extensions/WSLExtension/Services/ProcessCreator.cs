@@ -19,6 +19,7 @@ public class ProcessCreator : IProcessCreator
             {
                 FileName = fileName,
                 Arguments = arguments,
+                UseShellExecute = true,
             },
         };
 

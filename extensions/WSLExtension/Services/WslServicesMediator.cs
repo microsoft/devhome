@@ -135,7 +135,7 @@ public class WslServicesMediator : IWslServicesMediator
     {
         var processData = _processCreator.CreateProcessWithoutWindow(WslExe, UnregisterDistributionArgs.FormatArgs(distributionName));
 
-        if (!processData.ExitedSuccessfully() || string.IsNullOrEmpty(processData.StdOutput))
+        if (!processData.ExitedSuccessfully())
         {
             throw new WslServicesMediatorException($"Unable to launch distribution {distributionName} : {processData}");
         }
@@ -146,16 +146,32 @@ public class WslServicesMediator : IWslServicesMediator
     {
         var executable = GetFileNameForProcessLaunch();
 
-        // Only launch with terminal profile if one is known
-        if (executable.Equals(WindowsTerminalShimExe, StringComparison.OrdinalIgnoreCase) &&
-            !string.IsNullOrEmpty(windowsTerminalProfile))
+        // Only launch with terminal if its installed
+        if (executable.Equals(WindowsTerminalShimExe, StringComparison.OrdinalIgnoreCase))
         {
-            var terminalArgs = LaunchDistributionProfileArgs.FormatArgs(windowsTerminalProfile, distributionName);
-            _processCreator.CreateProcessWithWindow(GetFileNameForProcessLaunch(), terminalArgs);
+            LaunchDistributionUsingTerminal(distributionName, windowsTerminalProfile);
             return;
         }
 
-        _processCreator.CreateProcessWithWindow(executable, LaunchDistributionNoProfileArgs.FormatArgs(distributionName));
+        // Default to starting the wsl process directly and passing in its command line args
+        _processCreator.CreateProcessWithWindow(executable, LaunchDistributionWithoutTerminal.FormatArgs(distributionName));
+    }
+
+    private void LaunchDistributionUsingTerminal(string distributionName, string? windowsTerminalProfile)
+    {
+        var terminalArgs = LaunchDistributionInTerminalWithNoProfile.FormatArgs(distributionName);
+
+        if (!string.IsNullOrEmpty(windowsTerminalProfile))
+        {
+            // Launch into terminal with the specified profile and run wsl.exe in the console window
+            terminalArgs = LaunchDistributionInTerminalWithProfile.FormatArgs(windowsTerminalProfile, distributionName);
+            _processCreator.CreateProcessWithWindow(WindowsTerminalShimExe, terminalArgs);
+        }
+        else
+        {
+            // Launch into terminal and run wsl.exe in the console window without a profile
+            _processCreator.CreateProcessWithWindow(WindowsTerminalShimExe, terminalArgs);
+        }
     }
 
     /// <inheritdoc cref="IWslServicesMediator.TerminateDistribution"/>
@@ -163,7 +179,7 @@ public class WslServicesMediator : IWslServicesMediator
     {
         var processData = _processCreator.CreateProcessWithoutWindow(WslExe, TerminateDistributionArgs.FormatArgs(distributionName));
 
-        if (!processData.ExitedSuccessfully() || string.IsNullOrEmpty(processData.StdOutput))
+        if (!processData.ExitedSuccessfully())
         {
             throw new WslServicesMediatorException($"Unable to terminate distribution {distributionName} : {processData}");
         }
@@ -172,11 +188,21 @@ public class WslServicesMediator : IWslServicesMediator
     /// <inheritdoc cref="IWslServicesMediator.InstallDistribution"/>
     public void InstallDistribution(string distributionName)
     {
-        _processCreator.CreateProcessWithWindow(GetFileNameForProcessLaunch(), InstallDistributionArgs.FormatArgs(distributionName));
+        var executable = GetFileNameForProcessLaunch();
+
+        // Launch into terminal if its installed and run wsl.exe in the console window
+        if (executable.Equals(WindowsTerminalShimExe, StringComparison.OrdinalIgnoreCase))
+        {
+            _processCreator.CreateProcessWithWindow(executable, InstallDistributionWithTerminal.FormatArgs(distributionName));
+            return;
+        }
+
+        // Default to starting the wsl process directly and passing in its command line args
+        _processCreator.CreateProcessWithWindow(executable, InstallDistributionWithoutTerminal.FormatArgs(distributionName));
     }
 
     private string GetFileNameForProcessLaunch()
     {
-        return _packageHelper.IsPackageInstalled(WindowsTerminalPackageFamilyName) ? WindowsTerminalShimExe : CommandPromptExe;
+        return _packageHelper.IsPackageInstalled(WindowsTerminalPackageFamilyName) ? WindowsTerminalShimExe : WslExe;
     }
 }
