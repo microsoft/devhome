@@ -9,7 +9,7 @@
     xmlns:controls="using:DevHome.PI.Controls"
     xmlns:helpers="using:DevHome.PI.Helpers"
     mc:Ignorable="d"
-    Title="" MinHeight="700" MinWidth="72" MaxWidth="72" Width="72" Height="700"
+    Title="" MinHeight="500" MinWidth="72" MaxWidth="72" Width="72" Height="700"
     TaskBarIcon="Images/pi.ico" IsTitleBarVisible="False"
     IsAlwaysOnTop="{x:Bind _viewModel.IsAlwaysOnTop, Mode=OneWay}"
     Closed="WindowEx_Closed">

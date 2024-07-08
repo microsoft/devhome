@@ -101,6 +101,10 @@ public partial class BarWindowVertical : WindowEx
         {
             this.Move(_viewModel.WindowPosition.X, _viewModel.WindowPosition.Y);
         }
+        else if (string.Equals(e.PropertyName, nameof(BarWindowViewModel.RequestedWindowSize), StringComparison.OrdinalIgnoreCase))
+        {
+            Height = _viewModel.RequestedWindowSize.Height - 6; // 6 is a magic number that we lose due to removing the Thick Frame attribute
+        }
     }
 
     private void WindowEx_Closed(object sender, WindowEventArgs args)
