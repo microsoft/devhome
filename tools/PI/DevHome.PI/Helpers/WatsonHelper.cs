@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
+using System.Security.Principal;
 using System.Threading;
 using DevHome.PI.Models;
 using Microsoft.Win32;
@@ -77,6 +78,112 @@ internal sealed class WatsonHelper : IDisposable
     {
         _eventLogWatcher.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    public bool IsGlobalCollectionEnabled()
+    {
+        RegistryKey? key = Registry.LocalMachine.OpenSubKey(LocalWatsonRegistryKey, false);
+
+        // If the local dump key doesn't exist, then global collection is disabled
+        if (key is null)
+        {
+            return false;
+        }
+
+        // If the key exists, but dumpcount is set to 0, it's also disabled
+        if (key.GetValue("DumpCount") is int dumpCount && dumpCount == 0)
+        {
+            return false;
+        }
+
+        // Otherwise it's enabled
+        return true;
+    }
+
+    public bool IsCollectionEnabledForApp(string appName)
+    {
+        RegistryKey? key = Registry.LocalMachine.OpenSubKey(LocalWatsonRegistryKey, false);
+
+        // If the local dump key doesn't exist, then app collection is disabled
+        if (key is null)
+        {
+            return false;
+        }
+
+        RegistryKey? appKey = key.OpenSubKey(appName, false);
+
+        // If the app key doesn't exist, then see if the app collection is enabled globally
+        if (appKey is null)
+        {
+            return IsGlobalCollectionEnabled();
+        }
+
+        // If the key exists, but dumpcount is set to 0, it's also disabled
+        if (appKey.GetValue("DumpCount") is int dumpCount && dumpCount == 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void CheckElevated()
+    {
+        bool isElevated = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+
+        // Need to run as admin to enable collection
+        if (!isElevated)
+        {
+            throw new UnauthorizedAccessException("Need to run as admin to enable collection");
+        }
+    }
+
+    public void EnableCollectionForApp(string appname)
+    {
+        CheckElevated();
+
+        RegistryKey? globalKey = Registry.LocalMachine.OpenSubKey(LocalWatsonRegistryKey, true);
+
+        if (globalKey is null)
+        {
+            // Need to create the key, and set the global dump collection count to 0 to prevent all apps from generating local dumps
+            globalKey = Registry.LocalMachine.CreateSubKey(LocalWatsonRegistryKey);
+            globalKey.SetValue("DumpCount", 0);
+        }
+
+        Debug.Assert(globalKey is not null, "Global key is null");
+
+        RegistryKey? appKey = globalKey.CreateSubKey(appname);
+        Debug.Assert(appKey is not null, "App key is null");
+
+        // If dumpcount is set to 0, delete it to enable collection
+        if (appKey.GetValue("DumpCount") is int dumpCount && dumpCount == 0)
+        {
+            appKey.DeleteValue("DumpCount");
+        }
+
+        return;
+    }
+
+    public void DisableCollectionForApp(string appname)
+    {
+        CheckElevated();
+
+        RegistryKey? globalKey = Registry.LocalMachine.OpenSubKey(LocalWatsonRegistryKey, true);
+
+        if (globalKey is null)
+        {
+            // Local collection isn't enabled
+            return;
+        }
+
+        RegistryKey? appKey = globalKey.CreateSubKey(appname);
+        Debug.Assert(appKey is not null, "App key is null");
+
+        // Set the DumpCount value to 0 to disable collection
+        appKey.SetValue("DumpCount", 0);
+
+        return;
     }
 
     public void EventLogEventRead(object? obj, EventRecordWrittenEventArgs eventArg)
