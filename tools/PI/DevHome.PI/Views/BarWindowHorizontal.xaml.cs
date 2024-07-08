@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
@@ -38,6 +39,11 @@ public partial class BarWindowHorizontal : WindowEx
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowViewModel _viewModel;
     private readonly UISettings _uiSettings = new();
+
+    private readonly SolidColorBrush _darkModeActiveCaptionBrush;
+    private readonly SolidColorBrush _darkModeDeactiveCaptionBrush;
+    private readonly SolidColorBrush _nonDarkModeActiveCaptionBrush;
+    private readonly SolidColorBrush _nonDarkModeDeactiveCaptionBrush;
 
     private bool _isClosing;
     private WindowActivationState _currentActivationState = WindowActivationState.Deactivated;
@@ -86,6 +92,19 @@ public partial class BarWindowHorizontal : WindowEx
         _restoreState.Height = settingSize.Height;
         _restoreState.Width = settingSize.Width;
         ExpandCollapseLayoutButtonText.Text = _viewModel.ShowingExpandedContent ? CollapseButtonText : ExpandButtonText;
+
+        // Precreate the brushes for the caption buttons
+        // In Dark Mode, the active state is white, and the deactive state is translucent white
+        // In Light Mode, the active state is black, and the deactive state is translucent black
+        Windows.UI.Color color = Colors.White;
+        _darkModeActiveCaptionBrush = new SolidColorBrush(color);
+        color.A = 0x66;
+        _darkModeDeactiveCaptionBrush = new SolidColorBrush(color);
+
+        color = Colors.Black;
+        _nonDarkModeActiveCaptionBrush = new SolidColorBrush(color);
+        color.A = 0x66;
+        _nonDarkModeDeactiveCaptionBrush = new SolidColorBrush(color);
 
         _uiSettings.ColorValuesChanged += (sender, args) =>
         {
@@ -213,6 +232,9 @@ public partial class BarWindowHorizontal : WindowEx
             barWindow?.Close();
             _isClosing = false;
         }
+
+        // Unsubscribe from the activation handler
+        Activated -= Window_Activated;
     }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -359,17 +381,24 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void UpdateCustomTitleBarButtonsTextColor()
     {
+        FrameworkElement? rootElement = Content as FrameworkElement;
+        Debug.Assert(rootElement != null, "Expected Content to be a FrameworkElement");
+
         if (_currentActivationState == WindowActivationState.Deactivated)
         {
-            SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
-            ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
-            RotateLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
+            SolidColorBrush brush = (rootElement.ActualTheme == ElementTheme.Dark) ? _darkModeDeactiveCaptionBrush : _nonDarkModeDeactiveCaptionBrush;
+
+            SnapButtonText.Foreground = brush;
+            ExpandCollapseLayoutButtonText.Foreground = brush;
+            RotateLayoutButtonText.Foreground = brush;
         }
         else
         {
-            SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
-            ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
-            RotateLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
+            SolidColorBrush brush = (rootElement.ActualTheme == ElementTheme.Dark) ? _darkModeActiveCaptionBrush : _nonDarkModeActiveCaptionBrush;
+
+            SnapButtonText.Foreground = brush;
+            ExpandCollapseLayoutButtonText.Foreground = brush;
+            RotateLayoutButtonText.Foreground = brush;
         }
     }
 }

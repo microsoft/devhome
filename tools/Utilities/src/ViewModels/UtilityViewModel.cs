@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -88,14 +89,20 @@ public partial class UtilityViewModel : ObservableObject
             if (process is null)
             {
                 _log.Error($"Failed to start process {_exeName}");
-                TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Error));
+                TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Error, -2147467259 /* E_FAIL */));
                 throw new InvalidOperationException("Failed to start process");
             }
         }
         catch (Exception ex)
         {
+            int errorCode = ex.HResult;
+            if (ex.GetType() == typeof(Win32Exception))
+            {
+                errorCode = ((Win32Exception)ex).NativeErrorCode;
+            }
+
             _log.Error(ex, $"Failed to start process {_exeName}");
-            TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Error, ex.ToString()));
+            TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Error, errorCode, ex.ToString()));
         }
 
         TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Complete), null);
