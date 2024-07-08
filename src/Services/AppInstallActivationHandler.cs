@@ -108,7 +108,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
     private string[] SplitAndTrimIdentifiers(string query)
     {
         return query.Split(_separator, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(id => id.Trim(' ', '"'))
+                    .Select(id => id.Trim(' ', '"', '\''))
                     .ToArray();
     }
 
