@@ -264,7 +264,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _log.Information($"Adding any new create compute system operations to computeSystemCards list");
         var curOperations = _computeSystemManager.GetRunningOperationsForCreation();
 
-        var providerViewModel = PerProviderViewModels.FirstOrDefault(provider => provider.ProviderName.Equals(_computeSystemManager.ComputeSystemSetupItem?.AssociatedProvider.DisplayName, StringComparison.OrdinalIgnoreCase));
+        var providerViewModel = PerProviderViewModels.FirstOrDefault(provider => provider.ProviderID.Equals(_computeSystemManager.ComputeSystemSetupItem?.AssociatedProvider.Id, StringComparison.OrdinalIgnoreCase));
 
         if (providerViewModel == null)
         {
@@ -354,7 +354,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                     tempComputeSystemViewModels.Add(computeSystemViewModel);
                 }
 
-                PerProviderViewModels.Add(new PerProviderViewModel(provider.DisplayName, loginId ?? string.Empty, tempComputeSystemViewModels, _mainWindow));
+                PerProviderViewModels.Add(new PerProviderViewModel(provider.DisplayName, provider.Id, loginId ?? string.Empty, tempComputeSystemViewModels, _mainWindow));
             }
             catch (Exception ex)
             {
@@ -415,7 +415,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             }
 
             ComputeSystemCardBase? viewModel = default;
-            var providerViewModel = PerProviderViewModels.FirstOrDefault(provider => provider.ProviderName.Equals(computeSystemViewModel.ProviderDisplayName, StringComparison.OrdinalIgnoreCase));
+            var providerViewModel = PerProviderViewModels.FirstOrDefault(provider => provider.ProviderID.Equals(computeSystemViewModel.AssociatedProviderId, StringComparison.OrdinalIgnoreCase));
             if (providerViewModel != null)
             {
                 var computeSystemCards = providerViewModel.ComputeSystems;
@@ -443,7 +443,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private bool RemoveComputeSystemCard(ComputeSystemCardBase computeSystemCard)
     {
-        var providerViewModel = PerProviderViewModels.FirstOrDefault(provider => provider.ProviderName.Equals(computeSystemCard.ProviderDisplayName, StringComparison.OrdinalIgnoreCase));
+        var providerViewModel = PerProviderViewModels.FirstOrDefault(provider => provider.ProviderID.Equals(computeSystemCard.AssociatedProviderId, StringComparison.OrdinalIgnoreCase));
 
         if (providerViewModel == null)
         {

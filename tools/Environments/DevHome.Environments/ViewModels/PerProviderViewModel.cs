@@ -18,6 +18,8 @@ public partial class PerProviderViewModel : ObservableObject
 {
     public string ProviderName { get; }
 
+    public string ProviderID { get; }
+
     public string DecoratedDevID { get; }
 
     public ObservableCollection<ComputeSystemCardBase> ComputeSystems { get; }
@@ -31,9 +33,10 @@ public partial class PerProviderViewModel : ObservableObject
     [ObservableProperty]
     private bool _isVisible = true;
 
-    public PerProviderViewModel(string providerName, string associatedDevID, List<ComputeSystemCardBase> computeSystems, Window mainWindow)
+    public PerProviderViewModel(string name, string id, string associatedDevID, List<ComputeSystemCardBase> computeSystems, Window mainWindow)
     {
-        ProviderName = providerName;
+        ProviderName = name;
+        ProviderID = id;
         DecoratedDevID = associatedDevID.Length > 0 ? '(' + associatedDevID + ')' : string.Empty;
         ComputeSystems = new ObservableCollection<ComputeSystemCardBase>(computeSystems);
         _mainWindow = mainWindow;
