@@ -1,9 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Management.Automation;
 using FileExplorerGitIntegration.Models;
 using LibGit2Sharp;
+using Microsoft.Win32;
 
 namespace FileExplorerGitIntegration.UnitTest;
 
@@ -101,5 +104,43 @@ public class GitLocalRepositoryProviderUnitTests
         Assert.AreEqual(result["System.VersionControl.LastChangeAuthorName"], "A U Thor");
         Assert.AreEqual(result["System.VersionControl.LastChangeID"], "d0114ab8ac326bab30e3a657a0397578c5a1af88");
         Assert.AreEqual(result["System.VersionControl.CurrentFolderStatus"], "master AheadBy: 0 BehindBy: 0");
+    }
+
+    [TestMethod]
+    public void DetectAndInvokeGit()
+    {
+        Assert.IsTrue(IsGitInstalled());
+        PowerShell git = PowerShell.Create();
+        git.AddScript("cd /");
+        git.AddScript($"cd {RepoPath}");
+        git.AddScript("git status");
+        var output = git.Invoke();
+        var branchName = ParseBranchName(output);
+        Assert.IsNotNull(branchName);
+        Assert.AreEqual(branchName, "master");
+    }
+
+    private string? ParseBranchName(Collection<PSObject> output)
+    {
+        string? branchName = null;
+        foreach (var line in output)
+        {
+            if (line.BaseObject is string outputLine && outputLine.StartsWith("On branch ", StringComparison.Ordinal))
+            {
+                branchName = outputLine.Substring("On branch ".Length);
+                break;
+            }
+        }
+
+        return branchName;
+    }
+
+    private bool IsGitInstalled()
+    {
+        // const string registryKeyPath = @"HKEY_CURRENT_USER\Console\Git CMD";
+        using var registryKey = Registry.CurrentUser.OpenSubKey("Console");
+        var isInstalled = registryKey?.OpenSubKey("Git CMD") != null;
+        registryKey!.Close();
+        return isInstalled;
     }
 }
