@@ -26,6 +26,8 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemCardViewModel));
 
+    private readonly StringResource _stringResourceCommon = new("DevHome.Common.pri", "DevHome.Common/Resources");
+
     private readonly DispatcherQueue _dispatcherQueue;
 
     private readonly IComputeSystemManager _computeSystemManager;
@@ -59,8 +61,6 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     [ObservableProperty]
     private Lazy<string> _accessibilityName;
-
-    private readonly StringResource _stringResourceCommon = new("DevHome.Common.pri", "DevHome.Common/Resources");
 
     public ObservableCollection<CardProperty> ComputeSystemProperties { get; set; }
 
