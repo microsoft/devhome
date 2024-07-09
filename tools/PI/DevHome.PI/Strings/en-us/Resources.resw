@@ -1045,4 +1045,24 @@
     <value>Manage Tools</value>
     <comment>Label for a button to allow users to manage external tools</comment>
   </data>
+  <data name="LocalWatsonCollectionLabel.Text" xml:space="preserve">
+    <value>Local WER collection for app</value>
+    <comment>Label for Windows Error reporting toggle switch</comment>
+  </data>
+  <data name="LocalWatsonCollectionToggle.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Toggle settings to allow capture of Windows Error Reporting dumps for offline analysis</value>
+    <comment>Tooltip for Windows Error reporting toggle switch</comment>
+  </data>
+  <data name="LocalWatsonMoreInfo.Content" xml:space="preserve">
+    <value>More</value>
+    <comment>Label for a link that navigates the user to a location to learn more about WER local dumps</comment>
+  </data>
+  <data name="RunElevatedButtonForWatson.Content" xml:space="preserve">
+    <value>Run Project Ironsides as Admin to change settings</value>
+    <comment>{Locked="Ironsides"} When the user clicks this button we relaunch Project Ironsides as admin to change Watson settings</comment>
+  </data>
+  <data name="RunElevatedButtonForWatson.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Project Ironsides needs to run as Admin in order to modify WER collection for an app.</value>
+    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Project Ironsides as admin to change Watson settings</comment>
+  </data>
 </root>

@@ -11,7 +11,9 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
+using DevHome.PI.Properties;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.PI.ViewModels;
 
@@ -64,6 +66,9 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     [ObservableProperty]
     private Visibility appSettingsVisibility = Visibility.Collapsed;
 
+    [ObservableProperty]
+    private bool _applyAppFiltering;
+
     public INavigationService NavigationService { get; }
 
     private readonly PageNavLink appDetailsNavLink;
@@ -90,6 +95,8 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         insightsNavLink = new PageNavLink("\uE946", CommonHelper.GetLocalizedString("InsightsHeaderTextBlock/Text"), typeof(InsightsPageViewModel));
 
         links = new();
+
+        _applyAppFiltering = Settings.Default.ApplyAppFilteringToData;
 
         appSettingsVisibility = TargetAppData.Instance.TargetProcess is not null ? Visibility.Visible : Visibility.Collapsed;
 
@@ -275,5 +282,13 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     public void DetachFromProcess()
     {
         TargetAppData.Instance.ClearAppData();
+    }
+
+    public void ApplyAppFilteringToData_Toggled(object sender, RoutedEventArgs e)
+    {
+        ToggleSwitch? switchControl = sender as ToggleSwitch;
+        Debug.Assert(switchControl is not null, "What is the sender?");
+        Settings.Default.ApplyAppFilteringToData = switchControl.IsOn;
+        Settings.Default.Save();
     }
 }

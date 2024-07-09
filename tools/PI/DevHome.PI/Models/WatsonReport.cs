@@ -37,6 +37,9 @@ public partial class WatsonReport : ObservableObject
     [ObservableProperty]
     private string _crashDumpPath = string.Empty;
 
+    [ObservableProperty]
+    private string _failureBucket = string.Empty;
+
     public WatsonReport()
     {
     }

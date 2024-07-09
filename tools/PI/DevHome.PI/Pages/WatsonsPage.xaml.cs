@@ -106,4 +106,20 @@ public sealed partial class WatsonsPage : Page
             }
         }
     }
+
+    private void LocalWatsonCollection_Toggled(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ChangeLocalCollectionForApp(LocalWatsonCollectionToggle.IsOn);
+    }
+
+    private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+    {
+        HyperlinkButton? hyperlinkButton = sender as HyperlinkButton;
+        Debug.Assert(hyperlinkButton is not null, "Who called HyperlinkButton_Click that wasn't a hyperlink button?");
+
+        WatsonDisplayInfo? info = hyperlinkButton.Tag as WatsonDisplayInfo;
+        Debug.Assert(info is not null, "This object should have a Tag with a WatsonDisplayInfo");
+
+        ViewModel.OpenCab(info.Report.CrashDumpPath);
+    }
 }

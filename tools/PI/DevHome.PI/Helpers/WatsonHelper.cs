@@ -10,6 +10,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Security.Principal;
 using System.Threading;
+using DevHome.Common.Helpers;
 using DevHome.PI.Models;
 using Microsoft.Win32;
 
@@ -22,6 +23,7 @@ internal sealed class WatsonHelper : IDisposable
     private const string DefaultDumpPath = "%LOCALAPPDATA%\\CrashDumps";
     private const string LocalWatsonRegistryKey = "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\LocalDumps";
 
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly EventLogWatcher _eventLogWatcher;
     private readonly List<FileSystemWatcher> _filesystemWatchers = [];
     private readonly ObservableCollection<WatsonReport> _watsonReports = [];
@@ -36,6 +38,8 @@ internal sealed class WatsonHelper : IDisposable
 
     public WatsonHelper()
     {
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
         WatsonReports = new(_watsonReports);
 
         // Subscribe for Application events matching the processName.
@@ -80,11 +84,9 @@ internal sealed class WatsonHelper : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public bool IsGlobalCollectionEnabled()
+    private bool IsCollectionEnabledForKey(RegistryKey? key)
     {
-        RegistryKey? key = Registry.LocalMachine.OpenSubKey(LocalWatsonRegistryKey, false);
-
-        // If the local dump key doesn't exist, then global collection is disabled
+        // If the key doesn't exist, then collection is disabled
         if (key is null)
         {
             return false;
@@ -96,8 +98,23 @@ internal sealed class WatsonHelper : IDisposable
             return false;
         }
 
+        // Collection is enabled enabled, but if we're not getting full memory dumps, so cabs may not be
+        // useful. In this case, report that collection is disabled.
+        var dumpType = key.GetValue("DumpType") as int?;
+        if (dumpType is null || dumpType != 2)
+        {
+            return false;
+        }
+
         // Otherwise it's enabled
         return true;
+    }
+
+    public bool IsGlobalCollectionEnabled()
+    {
+        RegistryKey? key = Registry.LocalMachine.OpenSubKey(LocalWatsonRegistryKey, false);
+
+        return IsCollectionEnabledForKey(key);
     }
 
     public bool IsCollectionEnabledForApp(string appName)
@@ -112,27 +129,19 @@ internal sealed class WatsonHelper : IDisposable
 
         RegistryKey? appKey = key.OpenSubKey(appName, false);
 
-        // If the app key doesn't exist, then see if the app collection is enabled globally
+        // If the app key doesn't exist, per-app collection isn't enabled. Check the global setting
         if (appKey is null)
         {
             return IsGlobalCollectionEnabled();
         }
 
-        // If the key exists, but dumpcount is set to 0, it's also disabled
-        if (appKey.GetValue("DumpCount") is int dumpCount && dumpCount == 0)
-        {
-            return false;
-        }
-
-        return true;
+        return IsCollectionEnabledForKey(appKey);
     }
 
     public void CheckElevated()
     {
-        bool isElevated = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-
         // Need to run as admin to enable collection
-        if (!isElevated)
+        if (!RuntimeHelper.IsCurrentProcessRunningAsAdmin())
         {
             throw new UnauthorizedAccessException("Need to run as admin to enable collection");
         }
@@ -161,6 +170,9 @@ internal sealed class WatsonHelper : IDisposable
         {
             appKey.DeleteValue("DumpCount");
         }
+
+        // Make sure the cabs being collected are useful. Go for the full dumps instead of the mini dumps
+        appKey.SetValue("DumpType", 2);
 
         return;
     }
@@ -238,21 +250,77 @@ internal sealed class WatsonHelper : IDisposable
             // Do we have an entry for this item already (created from the Watson files on disk)
             WatsonReport? watsonReport = FindMatchingReport(timeGenerated, executable, pid);
 
-            if (watsonReport is null)
+            _dispatcher.TryEnqueue(() =>
             {
-                watsonReport = new WatsonReport();
-                watsonReport.TimeStamp = timeGenerated;
-                watsonReport.Executable = executable;
-                watsonReport.Pid = pid ?? 0;
-                _watsonReports.Add(watsonReport);
-            }
+                if (watsonReport is null)
+                {
+                    watsonReport = new WatsonReport();
+                    watsonReport.TimeStamp = timeGenerated;
+                    watsonReport.Executable = executable;
+                    watsonReport.Pid = pid ?? 0;
+                    _watsonReports.Add(watsonReport);
+                }
 
-            // Populate the report
-            watsonReport.FilePath = filepath;
-            watsonReport.Module = moduleName;
-            watsonReport.EventGuid = eventGuid;
-            watsonReport.Description = description;
+                // Populate the report
+                watsonReport.FilePath = filepath;
+                watsonReport.Module = moduleName;
+                watsonReport.EventGuid = eventGuid;
+                watsonReport.Description = description;
+                watsonReport.FailureBucket = GenerateFailureBucketFromDescription(description);
+            });
         }
+    }
+
+    private string GenerateFailureBucketFromDescription(string description)
+    {
+        /* The description can look like this
+
+        Faulting application name: DevHome.PI.exe, version: 1.0.0.0, time stamp: 0x66470000
+        Faulting module name: KERNELBASE.dll, version: 10.0.22621.3810, time stamp: 0x10210ca8
+        Exception code: 0xe0434352
+        Fault offset: 0x000000000005f20c
+        Faulting process id: 0x0xa078
+        Faulting application start time: 0x0x1dad175bd05dea9
+        Faulting application path: E:\devhome\src\bin\x64\Debug\net8.0-windows10.0.22621.0\AppX\DevHome.PI.exe
+        Faulting module path: C:\WINDOWS\System32\KERNELBASE.dll
+        Report Id: 7a4cd0a8-f65b-4f27-b250-cc5bd57e39d6
+        Faulting package full name: Microsoft.Windows.DevHome.Dev_0.0.0.0_x64__8wekyb3d8bbwe
+        Faulting package-relative application ID: Devhome.PI
+
+        Let's create a placeholder failure bucket based on the module name, offsert, and exception code. In the above example,
+        we'll generate a bucket "KERNELBASE.dll+0x000000000005f20c 0xe0434352"
+        */
+
+        string[] lines = description.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        string? moduleName = null;
+        string? exceptionCode = null;
+        string? faultOffset = null;
+
+        foreach (string line in lines)
+        {
+            if (line.Contains("Fault offset:"))
+            {
+                faultOffset = line.Substring(line.IndexOf(':') + 1).Trim();
+            }
+            else if (line.Contains("Exception code:"))
+            {
+                exceptionCode = line.Substring(line.IndexOf(':') + 1).Trim();
+            }
+            else if (line.Contains("Faulting module name:"))
+            {
+                int startIndex = line.IndexOf(':') + 1;
+                int endIndex = line.IndexOf(',') - 1;
+
+                moduleName = line.Substring(startIndex, endIndex - startIndex + 1).Trim();
+            }
+        }
+
+        if (moduleName is not null && exceptionCode is not null && faultOffset is not null)
+        {
+            return $"{moduleName}+{faultOffset} {exceptionCode}";
+        }
+
+        return string.Empty;
     }
 
     private void FindOrCreateWatsonEntry(string crashDumpFile)
@@ -301,17 +369,20 @@ internal sealed class WatsonHelper : IDisposable
             // Do we have an entry for this item already (created from the Watson files on disk)
             WatsonReport? watsonReport = FindMatchingReport(timeGenerated, fileInfo.Name, pid);
 
-            if (watsonReport is null)
+            _dispatcher.TryEnqueue(() =>
             {
-                watsonReport = new WatsonReport();
-                watsonReport.TimeStamp = timeGenerated;
-                watsonReport.Executable = fileInfo.Name;
-                watsonReport.Pid = pid ?? 0;
-                _watsonReports.Add(watsonReport);
-            }
+                if (watsonReport is null)
+                {
+                    watsonReport = new WatsonReport();
+                    watsonReport.TimeStamp = timeGenerated;
+                    watsonReport.Executable = fileInfo.Name;
+                    watsonReport.Pid = pid ?? 0;
+                    _watsonReports.Add(watsonReport);
+                }
 
-            // Populate the report
-            watsonReport.CrashDumpPath = crashDumpFile;
+                // Populate the report
+                watsonReport.CrashDumpPath = crashDumpFile;
+            });
         }
 
         return;

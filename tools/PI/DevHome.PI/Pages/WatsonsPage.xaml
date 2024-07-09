@@ -22,32 +22,27 @@
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
 
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="2*"/>
-            </Grid.RowDefinitions>
-            
-            <TextBlock x:Uid="WatsonsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+        <StackPanel Orientation="Vertical">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock x:Uid="WatsonsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" Grid.ColumnSpan="2"/>
 
-            <StackPanel Orientation="Horizontal" Spacing="5" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right">
-                <TextBlock VerticalAlignment="Center">Show only Watsons for target app</TextBlock>
-                <ToggleSwitch x:Name="FilterWatsonsToggle" IsOn="{x:Bind ViewModel.ApplyFilter, Mode=TwoWay}"/>
-            </StackPanel>
+                <StackPanel x:Name="AppLocalWatsonCollection" Visibility="{x:Bind ViewModel.AttachedToApp, Mode=OneWay}" Orientation="Horizontal" Spacing="5" Grid.Row="1" Grid.Column="1">
+                    <Button x:Uid="RunElevatedButtonForWatson" Visibility="{x:Bind ViewModel.AllowElevationOption}" Command="{x:Bind ViewModel.RunAsAdminCommand}" />
+                    <TextBlock x:Uid="LocalWatsonCollectionLabel" VerticalAlignment="Center" />
+                    <ToggleSwitch x:Uid="LocalWatsonCollectionToggle" x:Name="LocalWatsonCollectionToggle" IsOn="{x:Bind ViewModel.LocalCollectionEnabledForApp, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.RunningAsAdmin}" Toggled="LocalWatsonCollection_Toggled"/>
+                    <HyperlinkButton x:Uid="LocalWatsonMoreInfo" NavigateUri="https://learn.microsoft.com/windows/win32/wer/collecting-user-mode-dumps" />
+                </StackPanel>
+            </Grid>
+        </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Spacing="5" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
-                <TextBlock VerticalAlignment="Center">Local Watson collection for app</TextBlock>
-                <ToggleSwitch x:Name="LocalWatsonCollection" IsOn="{x:Bind ViewModel.ApplyFilter, Mode=TwoWay}"/>
-            </StackPanel>
-            <HyperlinkButton Content="More" Grid.Row="1" Grid.Column="2"/>
-        </Grid>
-
-        
 
         <controls:DataGrid
             x:Name="WatsonsDataGrid" Grid.Row="1" Margin="0,6,0,0"
@@ -70,8 +65,14 @@
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Tag="DateTime" x:Uid="WatsonTimeGeneratedColumn" Binding="{Binding Report.TimeGenerated}" Width="180"/>
                 <controls:DataGridTextColumn Tag="FaultingExecutable" x:Uid="WatsonFaultingExecutableColumn" Binding="{Binding Report.Executable}" Width="180"/>
-                <controls:DataGridTextColumn Tag="WatsonBucket" x:Uid="WatsonBucketColumn" Binding="{Binding FailureBucket}" Width="240"/>
-                <controls:DataGridTextColumn Tag="CrashDumpPath" x:Uid="WatsonCabColumn" Binding="{Binding Report.CrashDumpPath}" Width="*" Foreground="Blue"/>
+                <controls:DataGridTextColumn Tag="WatsonBucket" x:Uid="WatsonBucketColumn" Binding="{Binding FailureBucket, Mode=OneWay}" Width="240"/>
+                <controls:DataGridTemplateColumn Tag="CrashDumpPath" x:Uid="WatsonCabColumn" Width="*">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton Content="{Binding Report.CrashDumpPath, Mode=OneWay}" Click="HyperlinkButton_Click" Tag="{Binding}"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
