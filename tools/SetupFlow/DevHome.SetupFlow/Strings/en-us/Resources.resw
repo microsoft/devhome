@@ -807,7 +807,7 @@
   </data>
   <data name="CloneRepoDialog.Title" xml:space="preserve">
     <value>Clone repository</value>
-    <comment>Header for the dialog bos to clone repositories</comment>
+    <comment>Header for the dialog box to clone repositories</comment>
   </data>
   <data name="NewDevDriveComboBox.Content" xml:space="preserve">
     <value>Create a Dev Drive to optimize performance</value>
@@ -926,7 +926,7 @@
   </data>
   <data name="DevDriveReviewPageNumberOfDevDrivesTitle" xml:space="preserve">
     <value>Dev Drive creation</value>
-    <comment>Test that will be the decription to a section of the review page where the user will see the number of Dev Drives they are about to create</comment>
+    <comment>Text that will be the description to a section of the review page where the user will see the number of Dev Drives they are about to create</comment>
   </data>
   <data name="PathWithColon.Text" xml:space="preserve">
     <value>Path:</value>
@@ -942,7 +942,7 @@
   </data>
   <data name="DevDriveInvalidDriveLabel" xml:space="preserve">
     <value>The file name must be 32 characters or less and can't include any of the following \ / : * ? " &lt; &gt; |</value>
-    <comment>Tells the user which characters are invalid for the Dev Drive file name. Should show, A file name can't include any of the followingspecial characters \ / : * ? "&lt; &gt; |</comment>
+    <comment>Tells the user which characters are invalid for the Dev Drive file name. Should show, A file name can't include any of the following special characters \ / : * ? "&lt; &gt; |</comment>
   </data>
   <data name="DevDriveInvalidDriveSize" xml:space="preserve">
     <value>A Dev Drive must be at least 50 GB and at most 64 TB.</value>
@@ -1034,7 +1034,7 @@
   </data>
   <data name="DownloadAppRestart" xml:space="preserve">
     <value>Downloaded {0} (restart required)</value>
-    <comment>Message when an app downloaded and needs to reboot the comuter. Param: App name</comment>
+    <comment>Message when an app downloaded and needs to reboot the computer. Param: App name</comment>
   </data>
   <data name="LoadingPageSteps" xml:space="preserve">
     <value>Step {0} of {1}</value>
@@ -1157,7 +1157,7 @@
   </data>
   <data name="RepoAccountPagePrimaryButtonText" xml:space="preserve">
     <value>Connect</value>
-    <comment>Text to show the user when selecting a provder</comment>
+    <comment>Text to show the user when selecting a provider</comment>
   </data>
   <data name="RepoEverythingElsePrimaryButtonText" xml:space="preserve">
     <value>Add</value>
@@ -1585,12 +1585,12 @@
     <comment>Generic text for when  all of the configurations we're attempting to apply on a remote computer is unknown.</comment>
   </data>
   <data name="SetupTargetConfigurationWaitingForAdminUserLogon" xml:space="preserve">
-    <value>We're currently waiting for an admin to logon</value>
-    <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for a user with administrator privileges to logon to the machine</comment>
+    <value>We're currently waiting for an admin to log on</value>
+    <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for a user with administrator privileges to log on to the machine</comment>
   </data>
   <data name="SetupTargetConfigurationWaitingForUserLogon" xml:space="preserve">
-    <value>We're currently waiting for the user to logon</value>
-    <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for the current user to logon to the machine</comment>
+    <value>We're currently waiting for the user to log on</value>
+    <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for the current user to log on to the machine</comment>
   </data>
   <data name="SetupTargetConfigurationSkipped" xml:space="preserve">
     <value>WinGet skipped this unit</value>
@@ -1809,7 +1809,7 @@
     <comment>Description for the configure environment page</comment>
   </data>
   <data name="ErrorRetrievingAdaptiveCardSession.Title" xml:space="preserve">
-    <value>There was an error retreiving the adaptive card session from the extension</value>
+    <value>There was an error retrieving the adaptive card session from the extension</value>
     <comment>Error text display when we are unable to retrieve the adaptive card information from an extension</comment>
   </data>
   <data name="EnvironmentCreationReviewTabTitle" xml:space="preserve">
