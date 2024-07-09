@@ -17,7 +17,17 @@ public class SourceControlValidationResult
 
     public Exception? Exception
     {
-        get; private set;
+        get; set;
+    }
+
+    public string? DisplayMessage
+    {
+        get; set;
+    }
+
+    public string? DiagnosticText
+    {
+        get; set;
     }
 
     public SourceControlValidationResult()
@@ -26,7 +36,7 @@ public class SourceControlValidationResult
         Error = ErrorType.None;
     }
 
-    public SourceControlValidationResult(ResultType result, ErrorType error, Exception? exception)
+    public SourceControlValidationResult(ResultType result, ErrorType error, Exception? exception, string? displayMessage, string? diagnosticText)
     {
         Result = result;
         Error = error;

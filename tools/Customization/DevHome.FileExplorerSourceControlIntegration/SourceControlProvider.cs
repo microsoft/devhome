@@ -49,7 +49,6 @@ public class SourceControlProvider :
         var providerPtr = IntPtr.Zero;
         try
         {
-            repositoryTracker.ReloadRepositoryStoreIfChangesDetected();
             var activationGUID = repositoryTracker.GetSourceControlProviderForRootPath(rootPath);
 
             var hr = PInvoke.CoCreateInstance(Guid.Parse(activationGUID), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(ILocalRepositoryProvider).GUID, out var extensionObj);

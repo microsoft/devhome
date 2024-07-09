@@ -27,7 +27,7 @@ public class SourceControlIntegration
             if (hr < 0)
             {
                 Log.Error(hr.ToString(), "Failure occurred while creating instance of repository provider");
-                return new SourceControlValidationResult(ResultType.Failure, ErrorType.RepositoryProvderCreationFailed, null);
+                return new SourceControlValidationResult(ResultType.Failure, ErrorType.RepositoryProvderCreationFailed, null, null, null);
             }
 
             ILocalRepositoryProvider provider = MarshalInterface<ILocalRepositoryProvider>.FromAbi(providerPtr);
@@ -37,7 +37,7 @@ public class SourceControlIntegration
             {
                 Log.Error("Could not open local repository.");
                 Log.Error(result.Result.DisplayMessage);
-                return new SourceControlValidationResult(ResultType.Failure, ErrorType.OpenRepositoryFailed, null);
+                return new SourceControlValidationResult(ResultType.Failure, ErrorType.OpenRepositoryFailed, result.Result.ExtendedError, result.Result.DisplayMessage, result.Result.DiagnosticText);
             }
             else
             {
@@ -47,7 +47,7 @@ public class SourceControlIntegration
         catch (Exception ex)
         {
             Log.Error(ex, "An exception occurred while validating source control extension.");
-            return new SourceControlValidationResult(ResultType.Failure, ErrorType.SourceControlExtensionValidationFailed, ex);
+            return new SourceControlValidationResult(ResultType.Failure, ErrorType.SourceControlExtensionValidationFailed, ex, null, null);
         }
         finally
         {

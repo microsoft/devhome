@@ -82,7 +82,7 @@ public sealed partial class FileExplorerPage : Page
 
     private void AddRepository_Click(object sender, RoutedEventArgs e)
     {
-        if (sender as Button is Button registerRepoButton)
+        if (sender is Button registerRepoButton)
         {
             if (registerRepoButton.Tag is FileExplorerSourceControlIntegrationViewModel fileExplorerSourceControlIntegrationViewModel)
             {

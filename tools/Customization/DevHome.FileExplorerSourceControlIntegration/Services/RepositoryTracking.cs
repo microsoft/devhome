@@ -145,6 +145,7 @@ public class RepositoryTracking
     {
         lock (trackRepoLock)
         {
+            ReloadRepositoryStoreIfChangesDetected();
             var rootPathRegistered = TrackedRepositories.Keys.FirstOrDefault(key => StringComparer.OrdinalIgnoreCase.Equals(key, rootPath));
             if (rootPathRegistered != null)
             {
