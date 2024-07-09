@@ -1057,12 +1057,16 @@
     <value>More</value>
     <comment>Label for a link that navigates the user to a location to learn more about WER local dumps</comment>
   </data>
-  <data name="RunElevatedButtonForWatson.Content" xml:space="preserve">
-    <value>Run Project Ironsides as Admin to change settings</value>
-    <comment>{Locked="Ironsides"} When the user clicks this button we relaunch Project Ironsides as admin to change Watson settings</comment>
+  <data name="RunElevatedButtonForWatson.Text" xml:space="preserve">
+    <value>Change</value>
+    <comment>The contents of a button to allow the user to trigger elevation to change WER settings</comment>
   </data>
   <data name="RunElevatedButtonForWatson.ToolTipService.ToolTip" xml:space="preserve">
     <value>Project Ironsides needs to run as Admin in order to modify WER collection for an app.</value>
     <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Project Ironsides as admin to change Watson settings</comment>
+  </data>
+  <data name="DumpInfoSelectorItem.Text" xml:space="preserve">
+    <value>Dump Info</value>
+    <comment>Selector Pivot that shows information about a Dump File</comment>
   </data>
 </root>
