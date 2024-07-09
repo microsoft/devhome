@@ -662,11 +662,11 @@
     <comment>Text for a generating configuration file button</comment>
   </data>
   <data name="Review_DownloadFileTooltip.Subtitle" xml:space="preserve">
-    <value>Generate a WinGet Configuration file (.winget) to repeat this set up in the future or share it with others.</value>
+    <value>Generate a WinGet Configuration file (.winget) to repeat this setup in the future or share it with others.</value>
     <comment>{Locked="WinGet",".winget"}Tooltip text about the generated configuration file</comment>
   </data>
   <data name="ReviewExpanderDescription" xml:space="preserve">
-    <value>Set up details</value>
+    <value>Setup details</value>
     <comment>Header for a section detailing the set up steps to be performed. "Set up" is the noun</comment>
   </data>
   <data name="Review_ReadAndAgree.Content" xml:space="preserve">
@@ -734,7 +734,7 @@
     <comment>Description for the setup target page</comment>
   </data>
   <data name="SetupShellReviewPageDescription" xml:space="preserve">
-    <value>Review your set up details and our terms below, then apply these changes to your environment.</value>
+    <value>Review your setup details and our terms below, then apply these changes to your environment.</value>
     <comment>Description for the review page</comment>
   </data>
   <data name="SetupShellReviewPageDescriptionForEnvironmentCreation" xml:space="preserve">
@@ -1505,7 +1505,7 @@
     <comment>The operating system version of the compute system.</comment>
   </data>
   <data name="SetupTargetReviewPageDefaultInfoBarMessage" xml:space="preserve">
-    <value>Proceeding with the set up may result in the environment being rebooted and log in may be required. App installation may show Windows UAC prompts in the environment that will require your attention.</value>
+    <value>Proceeding with the setup may result in the environment being rebooted and log in may be required. App installation may show Windows UAC prompts in the environment that will require your attention.</value>
     <comment>Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
   </data>
   <data name="SetupTargetReviewPageDefaultInfoBarTitle" xml:space="preserve">
@@ -1513,7 +1513,7 @@
     <comment>Title for info bar that will warn users that proceeding with the setup may result in the restart and re-login of the targeted remote machine or virtual machine.</comment>
   </data>
   <data name="SetupTargetReviewPageHyperVInfoBarMessage" xml:space="preserve">
-    <value>Proceeding with the set up may result in the environment being rebooted and log in may be required. Dev Home's DevSetupAgent service will be installed to configure a Hyper-V virtual machine. App installation may show Windows UAC prompts in the environment that will require your attention.</value>
+    <value>Proceeding with the setup may result in the environment being rebooted and log in may be required. Dev Home's DevSetupAgent service will be installed to configure a Hyper-V virtual machine. App installation may show Windows UAC prompts in the environment that will require your attention.</value>
     <comment>{Locked="DevSetupAgent"} Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
   </data>
   <data name="SetupTargetUnknownStatus" xml:space="preserve">
