@@ -60,7 +60,9 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
 
     public string ComputeSystemId { get; protected set; } = string.Empty;
 
-    private StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
+    private readonly StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
+
+    private readonly StringResource _stringResourceCommon = new("DevHome.Common.pri", "DevHome.Common/Resources");
 
     [ObservableProperty]
     private string _uiMessageToDisplay = string.Empty;
@@ -72,17 +74,14 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
 
     public override string ToString()
     {
-        StringBuilder description = new(_stringResource.GetLocalized("EnvironmentName"));
-        description.Append(Name);
+        StringBuilder description = new(Name);
 
         if (!string.IsNullOrEmpty(AlternativeName))
         {
-            description.Append(_stringResource.GetLocalized("EnvironmentAlternativeName"));
             description.Append(AlternativeName);
         }
 
-        description.Append(_stringResource.GetLocalized("EnvironmentState"));
-        description.Append(State.ToString());
+        description.Append(_stringResourceCommon.GetLocalized($"ComputeSystem{State}"));
         return description.ToString();
     }
 

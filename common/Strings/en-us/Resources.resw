@@ -359,16 +359,4 @@
     <value>Provides services and environments for running native user-mode Linux shells and tools on Windows.</value>
     <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
   </data>
-  <data name="EnvironmentAlternativeName" xml:space="preserve">
-    <value>Environment Alternative Name</value>
-    <comment>Narrator's text to read out for environment's alternative name</comment>
-  </data>
-  <data name="EnvironmentName" xml:space="preserve">
-    <value>Environment Name</value>
-    <comment>Narrator's text to read out for environment's name</comment>
-  </data>
-  <data name="EnvironmentState" xml:space="preserve">
-    <value>Environment Current State</value>
-    <comment>Narrator's text to read out for environment's current state</comment>
-  </data>
 </root>

@@ -70,14 +70,7 @@ public partial class PerProviderViewModel : ObservableObject
 
         _mainWindow.DispatcherQueue.EnqueueAsync(() =>
         {
-            if (ComputeSystemAdvancedView.Count == 0)
-            {
-                IsVisible = false;
-            }
-            else
-            {
-                IsVisible = true;
-            }
+            IsVisible = ComputeSystemAdvancedView.Count > 0;
         });
     }
 
