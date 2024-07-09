@@ -177,7 +177,7 @@ public sealed partial class WidgetControl : UserControl
                 _log.Debug($"User removed widget, delete widget {widgetIdToDelete}");
                 var stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
                 Application.Current.GetService<IScreenReaderService>().Announce(stringResource.GetLocalized("WidgetRemoved"));
-                await Application.Current.GetService<DispatcherQueue>().EnqueueAsync(() =>
+                Application.Current.GetService<DispatcherQueue>().TryEnqueue(() =>
                 {
                     Application.Current.GetService<DashboardViewModel>().PinnedWidgets.Remove(widgetViewModel);
                 });
