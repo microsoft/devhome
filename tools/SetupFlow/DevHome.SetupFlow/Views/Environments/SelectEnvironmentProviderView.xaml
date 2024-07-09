@@ -10,7 +10,6 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
-    xmlns:cardViews="using:DevHome.Common.Views.AdaptiveCardViews"
     Loaded="OnLoaded">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -19,16 +18,24 @@
             </ResourceDictionary.MergedDictionaries>
             <converters:BoolToVisibilityConverter x:Key="CollapsedWhenTrueBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
 
+            <!-- 
+                Override SettingsCard default resources. This is used because the default
+                SettingsCardHeaderIconMaxSize value for settings cards is 20. This makes
+                the icons sent from extensions in the creation flow appear too small and pixelated.
+                So we override it here, to make sure they are bigger.
+            -->
+            <x:Double x:Key="SettingsCardHeaderIconMaxSize">40</x:Double>
+
             <!-- Template for the compute system providers that we were able to retrieve from all the extensions -->
             <DataTemplate x:Key="ProviderItemTemplate" x:DataType="EnvironmentViewModels:ComputeSystemProviderViewModel">
                 <ItemContainer
                     AutomationProperties.Name="{x:Bind DisplayName, Mode=OneWay}"
                     IsSelected="{x:Bind IsSelected}">
-                    <cardViews:EnvironmentsSettingsCard
+                    <toolKit:SettingsCard
                         HorizontalAlignment="Stretch"
                         HeaderIcon="{x:Bind Icon}"
                         Header="{x:Bind DisplayName}">
-                    </cardViews:EnvironmentsSettingsCard>
+                    </toolKit:SettingsCard>
                 </ItemContainer>
             </DataTemplate>
         </ResourceDictionary>

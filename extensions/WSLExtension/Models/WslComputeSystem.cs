@@ -242,11 +242,9 @@ public class WslComputeSystem : IComputeSystem
             try
             {
                 var properties = new List<ComputeSystemProperty>();
-                if (_distribution.Version2 != null)
+                if (_distribution.Version != null)
                 {
-                    // There are only 2 versions of WSL. Version 1 and version 2.
-                    var versionNumber = _distribution.Version2.Value ? WslVersion2 : WslVersion1;
-                    properties.Add(ComputeSystemProperty.CreateCustom(versionNumber, _versionLabel, null));
+                    properties.Add(ComputeSystemProperty.CreateCustom(_distribution.Version.Value, _versionLabel, null));
                 }
 
                 if (_distribution.IsDefaultDistribution)

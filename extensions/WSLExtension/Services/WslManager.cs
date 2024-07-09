@@ -50,11 +50,8 @@ public class WslManager : IWslManager
     {
         // The list of compute systems in Dev Home is being refreshed, so remove any old
         // subscriptions
-        for (var i = _registeredWslDistributions.Count - 1; i >= 0; i--)
-        {
-            _registeredWslDistributions[i].RemoveSubscriptions();
-            _registeredWslDistributions.RemoveAt(i);
-        }
+        _registeredWslDistributions.ForEach(distribution => distribution.RemoveSubscriptions());
+        _registeredWslDistributions.Clear();
 
         foreach (var distribution in await GetInformationOnAllRegisteredDistributionsAsync())
         {
@@ -132,7 +129,7 @@ public class WslManager : IWslManager
 
     /// <summary>
     /// Retrieves information about all registered distributions on the machine and fills in any missing data
-    /// that might be needed to show the in Dev Homes UI. E.g logo images.
+    /// that is needed for them to be shown in Dev Home's UI. E.g logo images.
     /// </summary>
     private async Task<Dictionary<string, WslRegisteredDistribution>> GetInformationOnAllRegisteredDistributionsAsync()
     {

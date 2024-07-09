@@ -26,8 +26,8 @@ public class ProcessCreator : IProcessCreator
         process.Start();
     }
 
-    /// <inheritdoc cref="IProcessCreator.CreateProcessWithoutWindow"/>
-    public WslProcessData CreateProcessWithoutWindow(string fileName, string arguments)
+    /// <inheritdoc cref="IProcessCreator.CreateProcessWithoutWindowAndWaitForExit"/>
+    public WslProcessData CreateProcessWithoutWindowAndWaitForExit(string fileName, string arguments)
     {
         var process = new Process
         {

@@ -15,10 +15,10 @@ public class PackageHelper
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(PackageHelper));
 
-    // Using 256 because the thumbnail in Dev Homes environments page
+    // Using 256 because the thumbnail in Dev Home's environments page
     // is 64x64 but Windows packaged app logo sizes go up to 256.
     // Getting the 256px image helps as it will mean the image will be rounded down instead
-    // of up, if there are any scaling change.
+    // of up, if there is a scaling change.
     // See: https://learn.microsoft.com/windows/apps/design/style/iconography/app-icon-construction
     private readonly Size _logoDimensions = new(256, 256);
 

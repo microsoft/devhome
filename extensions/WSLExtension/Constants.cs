@@ -13,7 +13,7 @@ public static class Constants
     public const string ExtensionIcon = "ms-resource://Microsoft.Windows.DevHome.Dev/Files/WslAssets/wslLinux.png";
 #endif
 
-    // Common strings used for WSL extension
+    // Common unlocalized strings used for WSL extension
     public const string WslProviderDisplayName = "Microsoft WSL";
     public const string WslProviderId = "Microsoft.WSL";
     public const string WindowsTerminalShimExe = "wt.exe";

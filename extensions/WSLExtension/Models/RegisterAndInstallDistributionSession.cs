@@ -46,7 +46,7 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
 
     private string? _defaultWslLogo;
 
-    private IExtensionAdaptiveCard? _availableDistrosAdaptiveCard;
+    private IExtensionAdaptiveCard? _availableDistributionsAdaptiveCard;
 
     public event TypedEventHandler<IExtensionAdaptiveCardSession2, ExtensionAdaptiveCardSessionStoppedEventArgs>? Stopped;
 
@@ -60,7 +60,7 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
 
     public ProviderOperationResult Initialize(IExtensionAdaptiveCard extensionUI)
     {
-        _availableDistrosAdaptiveCard = extensionUI;
+        _availableDistributionsAdaptiveCard = extensionUI;
         _defaultWslLogo ??= _packageHelper.GetBase64StringFromLogoPathAsync(DefaultWslLogoPath).GetAwaiter().GetResult();
 
         return GetWslInstallationFormAdaptiveCard();
@@ -81,15 +81,10 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
                 {
                     _log.Error($"Actions in Adaptive card action Json not recognized: {action}");
                     var creationFormGenerationError = _stringResource.GetLocalized("AdaptiveCardUnRecognizedAction");
-                    var exception = new AdaptiveCardInvalidActionException(creationFormGenerationError);
-                    return new ProviderOperationResult(
-                        ProviderOperationStatus.Failure,
-                        exception,
-                        creationFormGenerationError,
-                        creationFormGenerationError);
+                    throw new AdaptiveCardInvalidActionException(creationFormGenerationError);
                 }
 
-                switch (_availableDistrosAdaptiveCard?.State)
+                switch (_availableDistributionsAdaptiveCard?.State)
                 {
                     case "wslInstallationForm":
                         operationResult = HandleActionWhenFormInInitialState(actionPayload, inputs);
@@ -98,12 +93,9 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
                         (operationResult, shouldEndSession) = HandleActionWhenFormInReviewState(actionPayload);
                         break;
                     default:
-                        shouldEndSession = true;
-                        operationResult = new ProviderOperationResult(
-                            ProviderOperationStatus.Failure,
-                            new InvalidOperationException(nameof(action)),
-                            adaptiveCardStateNotRecognizedError,
-                            $"Unexpected state:{_availableDistrosAdaptiveCard?.State}");
+                        _log.Error($"No matching state found for: '{_availableDistributionsAdaptiveCard?.State}'." +
+                            $"resetting state of adaptive card back to default.");
+                        operationResult = GetWslInstallationFormAdaptiveCard();
                         break;
                 }
 
@@ -239,7 +231,7 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
 
             var template = LoadTemplate(SessionState.WslInstallationForm);
 
-            return _availableDistrosAdaptiveCard!.Update(template, templateData, "wslInstallationForm");
+            return _availableDistributionsAdaptiveCard!.Update(template, templateData, "wslInstallationForm");
         }
         catch (Exception ex)
         {
@@ -295,7 +287,7 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
                 { "SelectedDistributionIndex", $"{inputForWslInstallation.SelectedDistributionIndex}" },
             }.ToJsonString();
 
-            return _availableDistrosAdaptiveCard!.Update(
+            return _availableDistributionsAdaptiveCard!.Update(
                 LoadTemplate(SessionState.ReviewForm),
                 reviewFormData.ToJsonString(),
                 "reviewForm");

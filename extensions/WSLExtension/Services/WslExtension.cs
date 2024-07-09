@@ -33,7 +33,7 @@ public sealed class WslExtension : IExtension, IDisposable
     /// Gets provider object for the specified provider type.
     /// </summary>
     /// <param name="providerType">
-    /// The provider type that the Hyper-V extension may support. This is used to query the Hyper-V
+    /// The provider type that the WSL extension may support. This is used to query the WSL
     /// extension for whether it supports the provider type.
     /// </param>
     /// <returns>
@@ -58,7 +58,7 @@ public sealed class WslExtension : IExtension, IDisposable
         }
         catch (Exception ex)
         {
-            log.Error($"Failed to get provider for provider type {providerType}", ex);
+            log.Error(ex, $"Failed to get provider for provider type {providerType}");
         }
 
         return provider;

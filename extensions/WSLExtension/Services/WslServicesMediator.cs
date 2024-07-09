@@ -33,7 +33,7 @@ public class WslServicesMediator : IWslServicesMediator
     /// <inheritdoc cref="IWslServicesMediator.GetAllNamesOfRunningDistributions"/>
     public HashSet<string> GetAllNamesOfRunningDistributions()
     {
-        var processData = _processCreator.CreateProcessWithoutWindow(WslExe, ListAllRunningDistributions);
+        var processData = _processCreator.CreateProcessWithoutWindowAndWaitForExit(WslExe, ListAllRunningDistributions);
 
         // wsl.exe returns an error code when there are no distributions running. But in that case
         // it will send at least one line to standard output e.g "There are no running distributions."
@@ -124,16 +124,22 @@ public class WslServicesMediator : IWslServicesMediator
     private WslRegisteredDistribution BuildDistributionInfoFromRegistry(RegistryKey registryKey)
     {
         var regDistributionName = registryKey.GetValue(DistributionRegistryName) as string ?? string.Empty;
-        var subkeyName = registryKey.Name.Split('\\').LastOrDefault();
-        var isVersion2 = registryKey.GetValue(WslVersion) as int? == WslVersion2;
+
+        // The registry key name will be in the form of e.g:
+        // HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Lxss\{387ef692-f68f-4f83-a1f1-30c891257bb6}
+        // We need the last segment {387ef692-f68f-4f83-a1f1-30c891257bb6}. Each guid subkey under Lxss is a
+        // registered WSL distribution and the WSL service uses these subkeys to store information about the
+        // distribution.
+        var lastSegmentOfRegistryKeyName = registryKey.Name.Split('\\').LastOrDefault();
+        var version = registryKey.GetValue(WslVersion) as int?;
         var packageFamilyName = registryKey.GetValue(PackageFamilyRegistryName) as string;
-        return new WslRegisteredDistribution(regDistributionName, subkeyName, packageFamilyName, isVersion2);
+        return new WslRegisteredDistribution(regDistributionName, lastSegmentOfRegistryKeyName, packageFamilyName, version);
     }
 
     /// <inheritdoc cref="IWslServicesMediator.UnregisterDistribution"/>
     public void UnregisterDistribution(string distributionName)
     {
-        var processData = _processCreator.CreateProcessWithoutWindow(WslExe, UnregisterDistributionArgs.FormatArgs(distributionName));
+        var processData = _processCreator.CreateProcessWithoutWindowAndWaitForExit(WslExe, UnregisterDistributionArgs.FormatArgs(distributionName));
 
         if (!processData.ExitedSuccessfully())
         {
@@ -177,7 +183,7 @@ public class WslServicesMediator : IWslServicesMediator
     /// <inheritdoc cref="IWslServicesMediator.TerminateDistribution"/>
     public void TerminateDistribution(string distributionName)
     {
-        var processData = _processCreator.CreateProcessWithoutWindow(WslExe, TerminateDistributionArgs.FormatArgs(distributionName));
+        var processData = _processCreator.CreateProcessWithoutWindowAndWaitForExit(WslExe, TerminateDistributionArgs.FormatArgs(distributionName));
 
         if (!processData.ExitedSuccessfully())
         {

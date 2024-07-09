@@ -21,11 +21,9 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
 
     private readonly string _installationSuccessful;
 
-    private readonly TimeSpan _tenMinuteTimeout = TimeSpan.FromMinutes(10);
-
     private readonly TimeSpan _threeSecondDelayInSeconds = TimeSpan.FromSeconds(3);
 
-    private readonly DistributionDefinition _definiton;
+    private readonly DistributionDefinition _definition;
 
     private readonly IStringResource _stringResource;
 
@@ -36,15 +34,15 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
         IStringResource stringResource,
         IWslManager wslManager)
     {
-        _definiton = distributionDefinition;
+        _definition = distributionDefinition;
         _stringResource = stringResource;
         _wslManager = wslManager;
-        _preparingToInstall = GetLocalizedString("WSLPrepareInstall", _definiton.FriendlyName);
-        _waitingToComplete = GetLocalizedString("WSLWaitingToCompleteInstallation", _definiton.FriendlyName);
+        _preparingToInstall = GetLocalizedString("WSLPrepareInstall", _definition.FriendlyName);
+        _waitingToComplete = GetLocalizedString("WSLWaitingToCompleteInstallation", _definition.FriendlyName);
 
-        _installationFailedTimeout = GetLocalizedString("WSLInstallationFailedTimeOut", _definiton.FriendlyName);
+        _installationFailedTimeout = GetLocalizedString("WSLInstallationFailedTimeOut", _definition.FriendlyName);
 
-        _installationSuccessful = GetLocalizedString("WSLInstallationCompletedSuccessfully", _definiton.FriendlyName);
+        _installationSuccessful = GetLocalizedString("WSLInstallationCompletedSuccessfully", _definition.FriendlyName);
     }
 
     private string GetLocalizedString(string resourcekey, string value)
@@ -59,13 +57,13 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
             try
             {
                 var startTime = DateTime.UtcNow;
-                _log.Information($"Starting installation for {_definiton.Name}");
+                _log.Information($"Starting installation for {_definition.Name}");
                 Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(_preparingToInstall, 0));
-                _wslManager.InstallDistribution(_definiton.Name);
+                _wslManager.InstallDistribution(_definition.Name);
 
                 // Cancel waiting for install if the distribution hasn't been installed after 10 minutes.
                 CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(_tenMinuteTimeout);
+                cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(10));
                 WslRegisteredDistribution? registeredDistribution = null;
                 var distributionInstalledSuccessfully = false;
 
@@ -75,7 +73,7 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
                     // Wait in 3 second intervals before checking. Unfortunately there are no APIs to check for
                     // installation so we need to keep checking for its completion.
                     await Task.Delay(_threeSecondDelayInSeconds);
-                    registeredDistribution = await _wslManager.GetInformationOnRegisteredDistributionAsync(_definiton.Name);
+                    registeredDistribution = await _wslManager.GetInformationOnRegisteredDistributionAsync(_definition.Name);
 
                     if ((registeredDistribution != null) &&
                         (distributionInstalledSuccessfully = registeredDistribution.IsDistributionFullyRegistered()))
@@ -84,7 +82,7 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
                     }
                 }
 
-                _log.Information($"Ending installation for {_definiton.Name}. Operation took: {DateTime.UtcNow - startTime}");
+                _log.Information($"Ending installation for {_definition.Name}. Operation took: {DateTime.UtcNow - startTime}");
                 if (distributionInstalledSuccessfully)
                 {
                     Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(_installationSuccessful, 100));
@@ -95,7 +93,7 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
             }
             catch (Exception ex)
             {
-                var errorMsg = _stringResource.GetLocalized("WSLInstallationFailedWithException", _definiton.FriendlyName, ex.Message);
+                var errorMsg = _stringResource.GetLocalized("WSLInstallationFailedWithException", _definition.FriendlyName, ex.Message);
                 return new CreateComputeSystemResult(ex, errorMsg, ex.Message);
             }
         }).AsAsyncOperation();

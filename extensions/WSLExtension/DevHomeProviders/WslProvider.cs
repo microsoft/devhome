@@ -84,7 +84,7 @@ public class WslProvider : IComputeSystemProvider
             }
             catch (Exception ex)
             {
-                _log.Error($"Failed to retrieve all wsl distributions", ex);
+                _log.Error(ex, $"Failed to retrieve all wsl distributions");
                 return new ComputeSystemsResult(ex, ex.Message, ex.Message);
             }
         }).AsAsyncOperation();

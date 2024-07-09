@@ -18,7 +18,7 @@ public class WslRegisteredDistribution
 
     public string Name { get; set; } = string.Empty;
 
-    public bool? Version2 { get; set; }
+    public int? Version { get; set; }
 
     public string? SubKeyName { get; set; }
 
@@ -45,12 +45,12 @@ public class WslRegisteredDistribution
         AssociatedTerminalProfileGuid = distributionDistribution.WindowsTerminalProfileGuid;
     }
 
-    public WslRegisteredDistribution(string distributionName, string? subkeyName, string? packageFamilyName, bool isVersion2)
+    public WslRegisteredDistribution(string distributionName, string? subKeyName, string? packageFamilyName, int? version)
     {
         Name = distributionName;
         FriendlyName = Name;
-        SubKeyName = subkeyName;
-        Version2 = isVersion2;
+        SubKeyName = subKeyName;
+        Version = version;
         PackageFamilyName = packageFamilyName;
     }
 

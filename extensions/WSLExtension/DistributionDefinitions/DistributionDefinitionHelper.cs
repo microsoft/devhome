@@ -25,6 +25,8 @@ public class DistributionDefinitionHelper : IDistributionDefinitionHelper
 
     private readonly PackageHelper _packageHelper = new();
 
+    private readonly Architecture _osArchitecture;
+
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -34,6 +36,7 @@ public class DistributionDefinitionHelper : IDistributionDefinitionHelper
     public DistributionDefinitionHelper(IHttpClientFactory httpClientFactory)
     {
         _httpClientFactory = httpClientFactory;
+        _osArchitecture = RuntimeInformation.OSArchitecture;
     }
 
     /// <inheritdoc cref="IDistributionDefinitionHelper.GetDistributionDefinitionsAsync"/>
@@ -72,7 +75,8 @@ public class DistributionDefinitionHelper : IDistributionDefinitionHelper
                 definitionFromWeb.Publisher = localYamlDefinition.Publisher;
                 definitionFromWeb.WindowsTerminalProfileGuid = localYamlDefinition.WindowsTerminalProfileGuid;
 
-                // Ignore distributions in the local file like oracle Linux without an image.
+                // Only add a logo to the definition we got from the web if the definition in the local yaml file
+                // has one.
                 if (!string.IsNullOrEmpty(localYamlDefinition.LogoFile))
                 {
                     // Update the logo with the base64 string representation so we can show it as a thumbnail.
@@ -92,12 +96,11 @@ public class DistributionDefinitionHelper : IDistributionDefinitionHelper
 
     private bool ShouldAddDistribution(DistributionDefinition distribution)
     {
-        var arch = RuntimeInformation.OSArchitecture;
-        if (arch == Architecture.Arm64)
+        if (_osArchitecture == Architecture.Arm64)
         {
             return distribution.IsArm64Supported;
         }
-        else if (arch == Architecture.X64)
+        else if (_osArchitecture == Architecture.X64)
         {
             return distribution.IsAmd64Supported;
         }
