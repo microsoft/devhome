@@ -1,4 +1,4 @@
-# This yaml file is used to map a distributions name to it logo file in the WslAssets folder. These distribution names
+# This is used to map a distributions name to it logo file in the WslAssets folder. These distribution names
 # should be kept in sync with the distributionInfo.json file here: https://aka.ms/wsldistributionsjson.
 # Note: Cela has approved the usage of these image assets in Dev Home as they are used for non-marketing purposes.
 ---

@@ -6,13 +6,14 @@ using WSLExtension.Models;
 namespace WSLExtension.Contracts;
 
 /// <summary>
-/// Abstraction used to create processes throughout the WSL extension.
+/// Interface used to create processes throughout the WSL extension.
 /// </summary>
 public interface IProcessCreator
 {
     /// <summary>
     /// Creates and starts a new process that opens in a new Window. Note:
-    /// Execution does not block on Starting the process.
+    /// The process is started and the method does not wait until the process
+    /// has exited before returning.
     /// </summary>
     /// <param name="fileName">The name of the executable to start</param>
     /// <param name="arguments">The arguments that will be passed to the executable at process startup</param>

@@ -146,12 +146,7 @@ public class WslComputeSystem : IComputeSystem
         {
             try
             {
-                if (GetState() == ComputeSystemState.Running)
-                {
-                    return new ComputeSystemStateResult(ComputeSystemState.Running);
-                }
-
-                return new ComputeSystemStateResult(ComputeSystemState.Stopped);
+                return new ComputeSystemStateResult(GetState());
             }
             catch (Exception ex)
             {

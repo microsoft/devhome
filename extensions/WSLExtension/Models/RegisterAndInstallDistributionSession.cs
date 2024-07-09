@@ -211,7 +211,6 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
             }
 
             // Make sure we show the error message for when there are no distributions available to install
-            var shouldShowNoDistributionError = _availableDistributionsToInstall.Count == 0;
             var noDistributionErrorData = new JsonArray
             {
                 new JsonObject
