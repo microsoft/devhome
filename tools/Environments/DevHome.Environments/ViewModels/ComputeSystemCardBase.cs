@@ -74,7 +74,7 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
 
     public override string ToString()
     {
-        StringBuilder description = new(Name);
+        var description = new StringBuilder(Name);
 
         if (!string.IsNullOrEmpty(AlternativeName))
         {
