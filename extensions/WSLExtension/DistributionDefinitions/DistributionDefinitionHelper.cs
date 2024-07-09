@@ -17,7 +17,7 @@ namespace WSLExtension.DistributionDefinitions;
 /// Provides definition information about all the WSL distributions that can be found at
 /// <see cref="Constants.KnownDistributionsWebJsonLocation"/>.
 /// </summary>
-public class DistributionDefinitionHelper : IDistributionDefinitionHelper
+public class DistributionDefinitionHelper : IDistributionDefinitionHelper, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DistributionDefinitionHelper));
 
@@ -27,11 +27,17 @@ public class DistributionDefinitionHelper : IDistributionDefinitionHelper
 
     private readonly Architecture _osArchitecture;
 
+    private readonly SemaphoreSlim _definitionsLock = new(1, 1);
+
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
+
+    private readonly Dictionary<string, DistributionDefinition> _distributionDefinitionsMap = new();
+
+    private bool _disposedValue;
 
     public DistributionDefinitionHelper(IHttpClientFactory httpClientFactory)
     {
@@ -42,20 +48,23 @@ public class DistributionDefinitionHelper : IDistributionDefinitionHelper
     /// <inheritdoc cref="IDistributionDefinitionHelper.GetDistributionDefinitionsAsync"/>
     public async Task<Dictionary<string, DistributionDefinition>> GetDistributionDefinitionsAsync()
     {
+        await _definitionsLock.WaitAsync();
+
         try
         {
             // Get the update to date distribution definitions from WSL GitHub repository.
+            // We use definitions from the web as our single source of truth, these web definitions are the
+            // same that are used in the command wsl.exe --list --online.
             var client = _httpClientFactory.CreateClient();
             var distributionDefinitionsJson = await client.GetStringAsync(KnownDistributionsWebJsonLocation);
             var webDefinitions = JsonSerializer.Deserialize<DistributionDefinitions>(distributionDefinitionsJson, _jsonOptions);
-            var distributionDefinitionsMap = new Dictionary<string, DistributionDefinition>();
 
             foreach (var definition in webDefinitions!.Values)
             {
                 // Only supported distributions for this machine.
                 if (ShouldAddDistribution(definition))
                 {
-                    distributionDefinitionsMap.Add(definition.Name, definition);
+                    _distributionDefinitionsMap[definition.Name] = definition;
                 }
             }
 
@@ -67,7 +76,7 @@ public class DistributionDefinitionHelper : IDistributionDefinitionHelper
             foreach (var localYamlDefinition in localYamlDefinitions)
             {
                 // Ignore distributions that we have in the local yaml file but are no longer present in the web file.
-                if (!distributionDefinitionsMap.TryGetValue(localYamlDefinition.Name, out var definitionFromWeb))
+                if (!_distributionDefinitionsMap.TryGetValue(localYamlDefinition.Name, out var definitionFromWeb))
                 {
                     continue;
                 }
@@ -84,14 +93,13 @@ public class DistributionDefinitionHelper : IDistributionDefinitionHelper
                     definitionFromWeb.Base64StringLogo = await _packageHelper.GetBase64StringFromLogoPathAsync(logoFilePath);
                 }
             }
-
-            return distributionDefinitionsMap;
         }
         catch (Exception ex)
         {
             _log.Error(ex, "Unable to retrieve all definitions for known distributions");
-            return new Dictionary<string, DistributionDefinition>();
         }
+
+        return _distributionDefinitionsMap;
     }
 
     private bool ShouldAddDistribution(DistributionDefinition distribution)
@@ -111,5 +119,24 @@ public class DistributionDefinitionHelper : IDistributionDefinitionHelper
     private IDeserializer BuildYamlDeserializer()
     {
         return new DeserializerBuilder().IgnoreUnmatchedProperties().Build();
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _definitionsLock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
     }
 }
