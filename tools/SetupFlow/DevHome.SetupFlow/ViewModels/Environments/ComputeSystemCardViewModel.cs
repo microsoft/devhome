@@ -11,6 +11,7 @@ using CommunityToolkit.WinUI;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
+using DevHome.Common.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
@@ -58,6 +59,8 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     [ObservableProperty]
     private Lazy<string> _accessibilityName;
+
+    private readonly StringResource _stringResourceCommon = new("DevHome.Common.pri", "DevHome.Common/Resources");
 
     public ObservableCollection<CardProperty> ComputeSystemProperties { get; set; }
 
@@ -129,7 +132,8 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     {
         var stringBuilder = new StringBuilder();
         stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{ComputeSystemTitle}");
-        stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{CardState}");
+        var state = _stringResourceCommon.GetLocalized($"ComputeSystem{CardState}");
+        stringBuilder.AppendLine(string.Format(CultureInfo.CurrentCulture, "{0}", state));
 
         foreach (var property in ComputeSystemProperties)
         {

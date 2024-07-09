@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
+using System.Xml.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Collections;
@@ -121,5 +123,17 @@ public partial class PerProviderViewModel : ObservableObject
 
             return false;
         };
+    }
+
+    public override string ToString()
+    {
+        StringBuilder description = new(ProviderName);
+
+        if (!string.IsNullOrEmpty(DecoratedDevID))
+        {
+            description.Append(DecoratedDevID);
+        }
+
+        return description.ToString();
     }
 }
