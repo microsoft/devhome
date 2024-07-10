@@ -79,7 +79,14 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
-    private const int DefaultSortIndex = 2;
+    private enum SortOptions
+    {
+        Alphabetical,
+        AlphabeticalDescending,
+        LastConnected,
+    }
+
+    private const int DefaultSortIndex = (int)SortOptions.LastConnected;
 
     public ObservableCollection<string> Providers { get; set; }
 
@@ -371,24 +378,31 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void SearchHandler(string query)
     {
-        var dontShow = new List<int>();
-        for (var i = 0; i < PerProviderViewModels.Count; i++)
+        var currentProviders = PerProviderViewModels.ToList();
+        PerProviderViewModels.Clear();
+
+        var dontShowIndices = new List<int>();
+        for (var i = 0; i < currentProviders.Count; i++)
         {
-            var providerViewModel = PerProviderViewModels[i];
+            var providerViewModel = currentProviders[i];
             providerViewModel.SearchHandler(query);
+
             if (!providerViewModel.IsVisible)
             {
-                dontShow.Add(i);
+                dontShowIndices.Add(i);
+            }
+            else
+            {
+                PerProviderViewModels.Add(providerViewModel);
             }
         }
 
-        // Move all dontShow indexes to the end of the list
+        // Move all don't show indices to the end of the list
         // so that the visible providers are only shown.
-        foreach (var index in dontShow)
+        // Add all the hidden providers
+        foreach (var index in dontShowIndices)
         {
-            var temp = PerProviderViewModels[index];
-            PerProviderViewModels.RemoveAt(index);
-            PerProviderViewModels.Add(temp);
+            PerProviderViewModels.Add(currentProviders[index]);
         }
     }
 
