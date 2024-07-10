@@ -13,7 +13,7 @@ public static class ServiceExtensions
     public static IServiceCollection AddDashboard(this IServiceCollection services, HostBuilderContext context)
     {
         // View-models
-        services.AddTransient<DashboardViewModel>();
+        services.AddSingleton<DashboardViewModel>();
         services.AddTransient<DashboardBannerViewModel>();
         services.AddTransient<AddWidgetViewModel>();
 

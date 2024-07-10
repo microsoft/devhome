@@ -35,11 +35,12 @@ public static class HyperVSetupScript
         {
             $featureEnablementResult = [OperationStatus]::OperationNotRun
             $adminGroupResult = [OperationStatus]::OperationNotRun
+            $hyperVGroupSid = 'S-1-5-32-578'
 
             # Check the security token the user logged on with contains the Hyper-V Administrators group SID (S-1-5-32-578). This can only be updated,
             # once the user logs off and on again. Even if we add the user to the group later on in the script.
-            $foundSecurityTokenString = [System.Security.Principal.WindowsIdentity]::GetCurrent().Groups.Value | Where-Object { $_ -eq 'S-1-5-32-578' }
-            $doesUserSecurityTokenContainHyperAdminGroup = $foundSecurityTokenString -eq 'S-1-5-32-578'
+            $foundSecurityTokenString = [System.Security.Principal.WindowsIdentity]::GetCurrent().Groups.Value | Where-Object { $_ -eq $hyperVGroupSid }
+            $doesUserSecurityTokenContainHyperAdminGroup = $foundSecurityTokenString -eq $hyperVGroupSid
 
             # Check if the Hyper-V feature is enabled
             $featureState = Get-WindowsOptionalFeature -FeatureName 'Microsoft-Hyper-V' -Online | Select-Object -ExpandProperty State
@@ -70,13 +71,13 @@ public static class HyperVSetupScript
             }
 
             # Check the Hyper-V Administrators group to see if the user is inside the group
-            $userGroupObject = Get-LocalGroupMember -Group 'Hyper-V Administrators' | Where-Object { $_.Name -eq ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) }
+            $userGroupObject = Get-LocalGroupMember -Sid $hyperVGroupSid | Where-Object { $_.Name -eq ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) }
             $isUserInGroup = $null -ne $userGroupObject
             
             # Add user to Hyper-v Administrators group if they aren't already in the group
             if (-not $isUserInGroup) 
             {
-                Add-LocalGroupMember -Group 'Hyper-V Administrators' -Member ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)
+                Add-LocalGroupMember -Sid $hyperVGroupSid -Member ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)
 
                 # Check if the last command succeeded
                 if ($?)
