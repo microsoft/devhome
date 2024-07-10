@@ -29,6 +29,11 @@ public sealed class GitLocalRepository : ILocalRepository
 
     internal GitLocalRepository(string rootFolder, RepositoryCache? cache)
     {
+        if (!Repository.IsValid(rootFolder))
+        {
+            throw new ArgumentException("Invalid repository path");
+        }
+
         RootFolder = rootFolder;
         _repositoryCache = cache;
     }

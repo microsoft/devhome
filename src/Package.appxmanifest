@@ -122,6 +122,20 @@
           </uap3:AppExtension>
         </uap3:Extension>
         <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID3" PublicFolder="Public" DisplayName="Git" Description="ms-resource:AppDescriptionGitExt">
+            <uap3:Properties>
+              <DevHomeProvider>
+                <Activation>
+                  <CreateInstance ClassId="BDA76685-E749-4f09-8F13-C466D0802DA1" />
+                </Activation>
+                <SupportedInterfaces>
+                  <LocalRepository />
+                </SupportedInterfaces>
+              </DevHomeProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="ms-resource:WidgetProviderDisplayNameDev" Id="CoreWidgetProvider" PublicFolder="Public">
             <uap3:Properties>
               <WidgetProvider>

@@ -6,8 +6,6 @@ using System.IO;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Customization.ViewModels;
-using DevHome.FileExplorerSourceControlIntegration.Services;
-using FileExplorerSourceControlIntegration;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
@@ -26,7 +24,7 @@ public sealed partial class FileExplorerPage : Page
         get; set;
     }
 
-    private static readonly System.Buffers.SearchValues<char> InvalidChars = System.Buffers.SearchValues.Create("<>*?|.");
+    private static readonly System.Buffers.SearchValues<char> InvalidChars = System.Buffers.SearchValues.Create("<>*?|");
 
     private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(FileExplorerPage));
 
@@ -44,16 +42,15 @@ public sealed partial class FileExplorerPage : Page
 
     public void AddButton_Click(object sender, RoutedEventArgs e)
     {
-        RootPath = RootPathTextBox.Text;
-
-        if (ValidateRepositoryPath(RootPath))
+        var numProviders = ViewModel.LocalRepositoryProviders.Count;
+        if (numProviders == 1)
         {
-            // TODO: Determine if the extension GUID should be stored instead of name as it is more identifiable and/or determine any other unique property to use for
-            // mapping here
-            ViewModel.AddRepositoryPath("git", RootPath);
+            RegisterRepository(ViewModel.LocalRepositoryProviders[0].LocalRepositoryProvider, RootPathTextBox.Text);
         }
-
-        ViewModel.RefreshTrackedRepositories();
+        else if (numProviders > 1)
+        {
+            LocalRepositoryProvidersFlyout.ShowAt(sender as Button);
+        }
     }
 
     public bool ValidateRepositoryPath(string rootPath)
@@ -81,5 +78,34 @@ public sealed partial class FileExplorerPage : Page
         }
 
         return true;
+    }
+
+    private void AddRepository_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button registerRepoButton)
+        {
+            if (registerRepoButton.Tag is FileExplorerSourceControlIntegrationViewModel fileExplorerSourceControlIntegrationViewModel)
+            {
+                RegisterRepository(fileExplorerSourceControlIntegrationViewModel.LocalRepositoryProvider, RootPathTextBox.Text);
+            }
+            else
+            {
+                log.Information($"AddRepository_Click(): registerRepoButton.Tag is not FileExplorerSourceControlIntegrationViewModel - Sender: {sender} RoutedEventArgs: {e}");
+                return;
+            }
+        }
+    }
+
+    public void RegisterRepository(IExtensionWrapper localRepositoryProvider, string rootPath)
+    {
+        if (ValidateRepositoryPath(rootPath))
+        {
+            if (!ViewModel.AddRepositoryPath(localRepositoryProvider.ExtensionClassId, RootPathTextBox.Text))
+            {
+                RootPathErrorBar.IsOpen = true;
+            }
+        }
+
+        ViewModel.RefreshTrackedRepositories();
     }
 }
