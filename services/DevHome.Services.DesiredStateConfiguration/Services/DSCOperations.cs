@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Services.DesiredStateConfiguration.Contracts;
 using DevHome.Services.DesiredStateConfiguration.Exceptions;
@@ -44,8 +45,41 @@ internal sealed class DSCOperations : IDSCOperations
         var configSet = await OpenConfigurationSetAsync(file, processor);
 
         _logger.LogInformation("Getting configuration unit details");
-        await processor.GetSetDetailsAsync(configSet, ConfigurationUnitDetailFlags.ReadOnly);
-        return new DSCSet(configSet);
+        var detailsOperation = processor.GetSetDetailsAsync(configSet, ConfigurationUnitDetailFlags.ReadOnly);
+        var detailsOperationTask = detailsOperation.AsTask();
+
+        var set = new DSCSet(configSet);
+        foreach (var unit in set.UnitsInternal)
+        {
+            unit.SetLoadDetailsTask(Task.Run<IDSCUnitDetails>(async () =>
+            {
+                try
+                {
+                    await detailsOperationTask;
+                    var unitFound = configSet.Units.FirstOrDefault(u => u.InstanceIdentifier == unit.InstanceId);
+                    if (unitFound == null)
+                    {
+                        _logger.LogWarning("Unit not found in the configuration set");
+                        return null;
+                    }
+
+                    if (unitFound.Details == null)
+                    {
+                        _logger.LogWarning($"Unit details not found");
+                        return null;
+                    }
+
+                    return new DSCUnitDetails(unitFound.Details);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to get configuration unit details");
+                    return null;
+                }
+            }));
+        }
+
+        return set;
     }
 
     /// <inheritdoc />

@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DevHome.Services.DesiredStateConfiguration.Contracts;
 using Microsoft.Management.Configuration;
 
@@ -12,6 +14,26 @@ internal sealed class DSCUnit : IDSCUnit
 {
     private const string DescriptionMetadataKey = "description";
     private const string ModuleMetadataKey = "module";
+    private readonly IDSCUnitDetails _defaultDetails;
+    private Task<IDSCUnitDetails> _loadDetailsTask;
+
+    public string Type { get; }
+
+    public string Id { get; }
+
+    public Guid InstanceId { get; }
+
+    public string Description { get; }
+
+    public string Intent { get; }
+
+    public string ModuleName { get; }
+
+    public IList<string> Dependencies { get; }
+
+    public IList<KeyValuePair<string, string>> Settings { get; }
+
+    public IList<KeyValuePair<string, string>> Metadata { get; }
 
     public DSCUnit(ConfigurationUnit unit)
     {
@@ -21,6 +43,7 @@ internal sealed class DSCUnit : IDSCUnit
         // longer available (e.g. AppInstaller service is no longer running).
         Type = unit.Type;
         Id = unit.Identifier;
+        InstanceId = unit.InstanceIdentifier;
         Intent = unit.Intent.ToString();
         Dependencies = [.. unit.Dependencies];
 
@@ -32,33 +55,23 @@ internal sealed class DSCUnit : IDSCUnit
         Settings = unit.Settings.Select(s => new KeyValuePair<string, string>(s.Key, s.Value.ToString())).ToList();
         Metadata = unit.Metadata.Select(m => new KeyValuePair<string, string>(m.Key, m.Value.ToString())).ToList();
 
-        // Load details if available, otherwise create empty details with just
-        // the module name if available
-        if (unit.Details == null)
-        {
-            // Get module name from metadata
-            unit.Metadata.TryGetValue(ModuleMetadataKey, out var moduleObj);
-            Details = new DSCUnitDetails(moduleObj?.ToString() ?? string.Empty);
-        }
-        else
-        {
-            Details = new DSCUnitDetails(unit.Details);
-        }
+        // Get module name from metadata
+        ModuleName = Metadata.FirstOrDefault(m => m.Key == ModuleMetadataKey).Value?.ToString() ?? string.Empty;
+
+        // Build default details
+        _defaultDetails = unit.Details == null ? new DSCUnitDetails(ModuleName) : new DSCUnitDetails(unit.Details);
+        _loadDetailsTask = Task.FromResult(_defaultDetails);
     }
 
-    public string Type { get; }
+    /// <inheritdoc/>
+    public async Task<IDSCUnitDetails> GetDetailsAsync()
+    {
+        var loadedDetails = await _loadDetailsTask;
+        return loadedDetails ?? _defaultDetails;
+    }
 
-    public string Id { get; }
-
-    public string Description { get; }
-
-    public string Intent { get; }
-
-    public IList<string> Dependencies { get; }
-
-    public IList<KeyValuePair<string, string>> Settings { get; }
-
-    public IList<KeyValuePair<string, string>> Metadata { get; }
-
-    public IDSCUnitDetails Details { get; }
+    internal void SetLoadDetailsTask(Task<IDSCUnitDetails> loadDetailsTask)
+    {
+        _loadDetailsTask = loadDetailsTask;
+    }
 }

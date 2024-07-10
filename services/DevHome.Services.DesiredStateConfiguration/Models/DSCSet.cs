@@ -11,6 +11,14 @@ namespace DevHome.Services.DesiredStateConfiguration.Models;
 
 internal sealed class DSCSet : IDSCSet
 {
+    public Guid InstanceIdentifier { get; }
+
+    public string Name { get; }
+
+    public IReadOnlyList<IDSCUnit> Units => UnitsInternal.AsReadOnly();
+
+    internal IList<DSCUnit> UnitsInternal { get; }
+
     public DSCSet(ConfigurationSet configSet)
     {
         // Constructor copies all the required data from the out-of-proc COM
@@ -19,12 +27,6 @@ internal sealed class DSCSet : IDSCSet
         // longer available (e.g. AppInstaller service is no longer running).
         InstanceIdentifier = configSet.InstanceIdentifier;
         Name = configSet.Name;
-        Units = configSet.Units.Select(unit => new DSCUnit(unit)).ToList();
+        UnitsInternal = configSet.Units.Select(unit => new DSCUnit(unit)).ToList();
     }
-
-    public Guid InstanceIdentifier { get; }
-
-    public string Name { get; }
-
-    public IReadOnlyList<IDSCUnit> Units { get; }
 }
