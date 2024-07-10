@@ -148,7 +148,7 @@
 
                 <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal" Spacing="10" >
-                        <TextBlock VerticalAlignment="Center">Filter Data To Target App</TextBlock>
+                        <TextBlock x:Uid="FilterDataToTargetAppToggleLabel" VerticalAlignment="Center"/>
                         <ToggleSwitch x:Name="ApplyAppFilteringToData" IsOn="{x:Bind viewModel.ApplyAppFiltering, Mode=TwoWay}" Toggled="viewModel.ApplyAppFilteringToData_Toggled"/>
                     </StackPanel>
 

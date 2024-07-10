@@ -7,10 +7,9 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Helpers;
@@ -43,6 +42,11 @@ public partial class WatsonPageViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _allowElevationOption;
+
+    private delegate int WatsonCompareFunction(WatsonDisplayInfo info1, WatsonDisplayInfo info2, bool sortAscending);
+
+    private WatsonCompareFunction? _currentCompareFunction;
+    private bool? _currentSortAscending;
 
     public WatsonPageViewModel()
     {
@@ -122,7 +126,26 @@ public partial class WatsonPageViewModel : ObservableObject
                 (TargetAppData.Instance.TargetProcess is not null &&
                 report.FilePath.Contains(TargetAppData.Instance.TargetProcess.ProcessName, StringComparison.OrdinalIgnoreCase)))
             {
-                DisplayedReports.Add(new WatsonDisplayInfo(report));
+                WatsonDisplayInfo displayInfo = new WatsonDisplayInfo(report);
+
+                // Add the item in appropriate spot
+                if (_currentCompareFunction is not null)
+                {
+                    int i = 0;
+                    Debug.Assert(_currentSortAscending is not null, "Compare function is not null, but order is?");
+
+                    // Add the item in appropriate spot
+                    while (i < DisplayedReports.Count && _currentCompareFunction(DisplayedReports[i], displayInfo, _currentSortAscending ?? true) < 0)
+                    {
+                        i++;
+                    }
+
+                    DisplayedReports.Insert(i, new WatsonDisplayInfo(report));
+                }
+                else
+                {
+                    DisplayedReports.Add(new WatsonDisplayInfo(report));
+                }
             }
         }
     }
@@ -141,6 +164,21 @@ public partial class WatsonPageViewModel : ObservableObject
         }
 
         DisplayedReports = sortedCollection;
+
+        _currentCompareFunction = CompareByFaultingExecutable;
+        _currentSortAscending = sortAscending;
+    }
+
+    internal int CompareByFaultingExecutable(WatsonDisplayInfo info1, WatsonDisplayInfo info2, bool sortAscending)
+    {
+        if (sortAscending)
+        {
+            return string.Compare(info1.Report.Executable, info2.Report.Executable, StringComparison.OrdinalIgnoreCase);
+        }
+        else
+        {
+            return string.Compare(info2.Report.Executable, info1.Report.Executable, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     internal void SortByDateTime(bool sortAscending)
@@ -157,6 +195,21 @@ public partial class WatsonPageViewModel : ObservableObject
         }
 
         DisplayedReports = sortedCollection;
+
+        _currentCompareFunction = CompareByDateTime;
+        _currentSortAscending = sortAscending;
+    }
+
+    internal int CompareByDateTime(WatsonDisplayInfo info1, WatsonDisplayInfo info2, bool sortAscending)
+    {
+        if (sortAscending)
+        {
+            return string.Compare(info1.Report.TimeGenerated, info2.Report.TimeGenerated, StringComparison.OrdinalIgnoreCase);
+        }
+        else
+        {
+            return string.Compare(info2.Report.TimeGenerated, info1.Report.TimeGenerated, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     internal void SortByWatsonBucket(bool sortAscending)
@@ -173,6 +226,21 @@ public partial class WatsonPageViewModel : ObservableObject
         }
 
         DisplayedReports = sortedCollection;
+
+        _currentCompareFunction = CompareByWatsonBucket;
+        _currentSortAscending = sortAscending;
+    }
+
+    internal int CompareByWatsonBucket(WatsonDisplayInfo info1, WatsonDisplayInfo info2, bool sortAscending)
+    {
+        if (sortAscending)
+        {
+            return string.Compare(info1.FailureBucket, info2.FailureBucket, StringComparison.OrdinalIgnoreCase);
+        }
+        else
+        {
+            return string.Compare(info2.FailureBucket, info1.FailureBucket, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     internal void SortByCrashDumpPath(bool sortAscending)
@@ -189,6 +257,21 @@ public partial class WatsonPageViewModel : ObservableObject
         }
 
         DisplayedReports = sortedCollection;
+
+        _currentCompareFunction = CompareByCrashDumpPath;
+        _currentSortAscending = sortAscending;
+    }
+
+    internal int CompareByCrashDumpPath(WatsonDisplayInfo info1, WatsonDisplayInfo info2, bool sortAscending)
+    {
+        if (sortAscending)
+        {
+            return string.Compare(info1.Report.CrashDumpPath, info2.Report.CrashDumpPath, StringComparison.OrdinalIgnoreCase);
+        }
+        else
+        {
+            return string.Compare(info2.Report.CrashDumpPath, info1.Report.CrashDumpPath, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     [RelayCommand]
@@ -233,7 +316,6 @@ public partial class WatsonPageViewModel : ObservableObject
     {
         if (File.Exists(file))
         {
-            // Process.Start(file);
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = file,

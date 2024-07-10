@@ -1069,4 +1069,12 @@
     <value>Dump Info</value>
     <comment>Selector Pivot that shows information about a Dump File</comment>
   </data>
+  <data name="FilterDataToTargetAppToggleLabel.Text" xml:space="preserve">
+    <value>Filter Data to Target App</value>
+    <comment>Label on a toggle button that controls whether presented data is filtered to the selected app</comment>
+  </data>
+  <data name="FilterDataToTargetAppToggleLabel.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Controls whether data presented is for the entire system or filtered to the selected app</value>
+    <comment>Tooltip for the FilterDataToTargetApp toggle</comment>
+  </data>
 </root>

@@ -171,7 +171,7 @@ public class WinLogsHelper : IDisposable
         {
             foreach (WatsonReport report in e.NewItems)
             {
-                var filePath = report.FilePath ?? string.Empty;
+                var filePath = report.Executable ?? string.Empty;
 
                 // Filter Watson events based on the process we're targeting
                 if (filePath.Contains(targetProcess.ProcessName, StringComparison.OrdinalIgnoreCase))
