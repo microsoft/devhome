@@ -57,7 +57,7 @@ The Dev Home dashboard displays Windows widgets. These widgets are built using t
 
 ### Machine configuration
 
-The machine configuration tool utilizes the Dev Home GitHub Extension but isn't required to clone and install apps. The app installation tool is powered by Winget.
+The machine configuration tool utilizes the Dev Home GitHub Extension but isn't required to clone and install apps. The app installation tool is powered by WinGet.
 
 #### Popular apps
 
@@ -81,7 +81,7 @@ We are excited to work alongside you, our amazing community, to build and enhanc
 
 The easiest way to communicate with the team is via GitHub issues.
 
-Please file new issues, feature requests, and suggestions but **search for similar open/closed preexisting issues before creating a new issue.**
+Please file new issues, feature requests, and suggestions but **DO search for similar open/closed preexisting issues before creating a new issue.**
 
 If you would like to ask a question that you feel doesn't warrant an issue (yet), please reach out to us via Twitter:
 
