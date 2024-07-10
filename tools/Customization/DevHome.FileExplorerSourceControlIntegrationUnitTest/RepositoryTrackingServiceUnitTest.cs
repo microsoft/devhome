@@ -18,6 +18,8 @@ public class RepositoryTrackingServiceUnitTest
 
     private readonly string _caseAlteredRootPath = "C:\\TEST\\ROOTPATH";
 
+    private readonly string caseAlteredRootPath = "C:\\TEST\\ROOTPATH";
+
     [TestMethod]
     public void AddRepository()
     {
@@ -95,6 +97,24 @@ public class RepositoryTrackingServiceUnitTest
         Assert.IsTrue(result.ContainsValue(_extension));
 
         RepoTracker.RemoveRepositoryPath(_rootPath);
+    }
+
+    [TestMethod]
+    public void AddRepository_DoesNotAddDuplicateValues()
+    {
+        RepoTracker.AddRepositoryPath(extension, rootPath);
+
+        // Atempt to add duplicate entry that is altered in case
+        RepoTracker.AddRepositoryPath(extension, caseAlteredRootPath);
+
+        // Ensure duplicate is not added and count is 1
+        var result = RepoTracker.GetAllTrackedRepositories();
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.ContainsKey(rootPath));
+        Assert.IsTrue(result.ContainsValue(extension));
+
+        RepoTracker.RemoveRepositoryPath(rootPath);
     }
 
     [TestCleanup]
