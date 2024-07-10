@@ -27,6 +27,7 @@ public class ExtensionWrapper : IExtensionWrapper
         [typeof(IFeaturedApplicationsProvider)] = ProviderType.FeaturedApplications,
         [typeof(IComputeSystemProvider)] = ProviderType.ComputeSystem,
         [typeof(IQuickStartProjectProvider)] = ProviderType.QuickStartProject,
+        [typeof(ILocalRepositoryProvider)] = ProviderType.LocalRepository,
     };
 
     private IExtension? _extensionObject;
