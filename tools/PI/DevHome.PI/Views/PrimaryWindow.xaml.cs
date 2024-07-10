@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
@@ -22,6 +23,9 @@ public sealed partial class PrimaryWindow : WindowEx
     private const VirtualKey HotKey = VirtualKey.F12;
 
     private const HOT_KEY_MODIFIERS KeyModifier = HOT_KEY_MODIFIERS.MOD_WIN;
+
+    private readonly WERHelper _werHelper;
+
     private HotKeyHelper? _hotKeyHelper;
 
     public BarWindow? DBarWindow { get; private set; }
@@ -30,7 +34,8 @@ public sealed partial class PrimaryWindow : WindowEx
     {
         InitializeComponent();
         ExternalToolsHelper.Instance.Init();
-        WERHelper.Instance.Start();
+        _werHelper = Application.Current.GetService<WERHelper>();
+        _werHelper.Start();
     }
 
     public void ShowBarWindow()

@@ -7,8 +7,11 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Threading;
+using DevHome.Common.Extensions;
 using DevHome.PI.Models;
+using DevHome.PI.ViewModels;
 using Microsoft.Diagnostics.Tracing;
+using Microsoft.UI.Xaml;
 using TraceReloggerLib;
 
 namespace DevHome.PI.Helpers;
@@ -25,6 +28,7 @@ public class WinLogsHelper : IDisposable
     private readonly EventViewerHelper eventViewerHelper;
     private readonly ObservableCollection<WinLogsEntry> output;
     private readonly Process targetProcess;
+    private readonly WERHelper _werHelper;
 
     private Thread? etwThread;
     private Thread? debugMonitorThread;
@@ -43,6 +47,8 @@ public class WinLogsHelper : IDisposable
 
         // Initialize EventViewer
         eventViewerHelper = new EventViewerHelper(targetProcess, output);
+
+        _werHelper = Application.Current.GetService<WERHelper>();
     }
 
     public void Start(bool isEtwEnabled, bool isDebugOutputEnabled, bool isEventViewerEnabled, bool isWEREnabled)
@@ -64,7 +70,7 @@ public class WinLogsHelper : IDisposable
 
         if (isWEREnabled)
         {
-            ((INotifyCollectionChanged)WERHelper.Instance.WERReports).CollectionChanged += WEREvents_CollectionChanged;
+            ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged += WEREvents_CollectionChanged;
         }
     }
 
@@ -80,7 +86,7 @@ public class WinLogsHelper : IDisposable
         StopEventViewerThread();
 
         // Stop WER
-        ((INotifyCollectionChanged)WERHelper.Instance.WERReports).CollectionChanged -= WEREvents_CollectionChanged;
+        ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged -= WEREvents_CollectionChanged;
     }
 
     public void Dispose()
@@ -199,7 +205,7 @@ public class WinLogsHelper : IDisposable
                     StartEventViewerThread();
                     break;
                 case WinLogsTool.WER:
-                    ((INotifyCollectionChanged)WERHelper.Instance.WERReports).CollectionChanged += WEREvents_CollectionChanged;
+                    ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged += WEREvents_CollectionChanged;
                     break;
             }
         }
@@ -217,7 +223,7 @@ public class WinLogsHelper : IDisposable
                     StopEventViewerThread();
                     break;
                 case WinLogsTool.WER:
-                    ((INotifyCollectionChanged)WERHelper.Instance.WERReports).CollectionChanged -= WEREvents_CollectionChanged;
+                    ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged -= WEREvents_CollectionChanged;
                     break;
             }
         }

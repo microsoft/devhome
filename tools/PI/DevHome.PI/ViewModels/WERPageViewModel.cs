@@ -12,16 +12,19 @@ using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.PI.ViewModels;
 
 public partial class WERPageViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly WERHelper _werHelper;
 
     [ObservableProperty]
     private ObservableCollection<WERDisplayInfo> _displayedReports = [];
@@ -57,14 +60,16 @@ public partial class WERPageViewModel : ObservableObject
         _applyFilter = Settings.Default.ApplyAppFilteringToData;
         Settings.Default.PropertyChanged += Settings_PropertyChanged;
 
+        _werHelper = Application.Current.GetService<WERHelper>();
+
         RunningAsAdmin = RuntimeHelper.IsCurrentProcessRunningAsAdmin();
         AllowElevationOption = !RunningAsAdmin;
 
         string? attachedApp = TargetAppData.Instance?.TargetProcess?.ProcessName ?? null;
         AttachedToApp = attachedApp is not null;
-        LocalCollectionEnabledForApp = attachedApp is not null ? WERHelper.Instance.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
+        LocalCollectionEnabledForApp = attachedApp is not null ? _werHelper.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
 
-        ((INotifyCollectionChanged)WERHelper.Instance.WERReports).CollectionChanged += WER_CollectionChanged;
+        ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged += WER_CollectionChanged;
 
         PopulateCurrentLogs();
     }
@@ -86,7 +91,7 @@ public partial class WERPageViewModel : ObservableObject
 
             string? attachedApp = TargetAppData.Instance?.TargetProcess?.ProcessName ?? null;
             AttachedToApp = attachedApp is not null;
-            LocalCollectionEnabledForApp = attachedApp is not null ? WERHelper.Instance.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
+            LocalCollectionEnabledForApp = attachedApp is not null ? _werHelper.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
         }
     }
 
@@ -107,7 +112,7 @@ public partial class WERPageViewModel : ObservableObject
         {
             DisplayedReports.Clear();
 
-            FilterWERReportList(WERHelper.Instance.WERReports.ToList<WERReport>());
+            FilterWERReportList(_werHelper.WERReports.ToList<WERReport>());
         });
     }
 
@@ -294,7 +299,7 @@ public partial class WERPageViewModel : ObservableObject
 
         string app = process.ProcessName + ".exe";
 
-        if (enable == WERHelper.Instance.IsCollectionEnabledForApp(app))
+        if (enable == _werHelper.IsCollectionEnabledForApp(app))
         {
             // No change, could be initialization of the UI
             return;
@@ -304,11 +309,11 @@ public partial class WERPageViewModel : ObservableObject
 
         if (enable)
         {
-            WERHelper.Instance.EnableCollectionForApp(app);
+            _werHelper.EnableCollectionForApp(app);
         }
         else
         {
-            WERHelper.Instance.DisableCollectionForApp(app);
+            _werHelper.DisableCollectionForApp(app);
         }
     }
 

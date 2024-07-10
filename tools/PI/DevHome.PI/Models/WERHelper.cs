@@ -36,7 +36,6 @@ internal sealed class WERHelper : IDisposable
     private readonly EventLogWatcher _eventLogWatcher;
     private readonly List<FileSystemWatcher> _filesystemWatchers = [];
     private readonly ObservableCollection<WERReport> _werReports = [];
-    public static readonly WERHelper Instance = new();
 
     private List<string> _werLocations = [];
     private bool _isRunning;

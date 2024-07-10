@@ -4,6 +4,7 @@
 using System;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.PI.Models;
 using DevHome.PI.Pages;
 using DevHome.PI.Services;
 using DevHome.PI.Telemetry;
@@ -45,11 +46,10 @@ public partial class App : Application, IApp
                 services.AddSingleton<INavigationService, PINavigationService>();
                 services.AddSingleton<TelemetryReporter>();
                 services.AddSingleton<PIAppInfoService>();
+                services.AddSingleton<WERHelper>();
 
                 // Window
-                // Provide an explicit implementationInstance otherwise AddSingleton does not create a new instance immediately.
-                // It will lazily init when the first component requires it but the hotkey helper needs to be registered immediately.
-                services.AddSingleton<PrimaryWindow>(new PrimaryWindow());
+                services.AddSingleton<PrimaryWindow>();
 
                 // Views and ViewModels
                 services.AddSingleton<AppDetailsPage>();
@@ -79,6 +79,10 @@ public partial class App : Application, IApp
                 services.AddTransient<AboutViewModel>();
                 services.AddTransient<AboutPage>();
             }).Build();
+
+        // Provide an explicit implementationInstance otherwise AddSingleton does not create a new instance immediately.
+        // It will lazily init when the first component requires it but the hotkey helper needs to be registered immediately.
+        Application.Current.GetService<PrimaryWindow>();
     }
 
     internal static bool IsFeatureEnabled()
