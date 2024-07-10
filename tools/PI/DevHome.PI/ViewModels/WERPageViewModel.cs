@@ -133,7 +133,7 @@ public partial class WERPageViewModel : ObservableObject
             {
                 WERDisplayInfo displayInfo = new WERDisplayInfo(report);
 
-                // Add the item in appropriate spot
+                // If the list is currently being sorted, add the item in appropriate spot
                 if (_currentCompareFunction is not null)
                 {
                     int i = 0;

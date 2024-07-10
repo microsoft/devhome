@@ -9,10 +9,8 @@ using System.Diagnostics.Eventing.Reader;
 using System.Threading;
 using DevHome.Common.Extensions;
 using DevHome.PI.Models;
-using DevHome.PI.ViewModels;
 using Microsoft.Diagnostics.Tracing;
 using Microsoft.UI.Xaml;
-using TraceReloggerLib;
 
 namespace DevHome.PI.Helpers;
 
