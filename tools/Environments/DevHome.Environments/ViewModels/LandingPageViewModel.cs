@@ -371,9 +371,24 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void SearchHandler(string query)
     {
-        foreach (var providerViewModel in PerProviderViewModels)
+        var dontShow = new List<int>();
+        for (var i = 0; i < PerProviderViewModels.Count; i++)
         {
+            var providerViewModel = PerProviderViewModels[i];
             providerViewModel.SearchHandler(query);
+            if (!providerViewModel.IsVisible)
+            {
+                dontShow.Add(i);
+            }
+        }
+
+        // Move all dontShow indexes to the end of the list
+        // so that the visible providers are only shown.
+        foreach (var index in dontShow)
+        {
+            var temp = PerProviderViewModels[index];
+            PerProviderViewModels.RemoveAt(index);
+            PerProviderViewModels.Add(temp);
         }
     }
 
@@ -383,6 +398,26 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void ProviderHandler(int selectedIndex)
     {
+        // Swap positions of the selected provider and the first provider in the list
+        // so that the selected provider is always at the top of the list and no extra
+        // UI space is shown.
+        if (selectedIndex != 0)
+        {
+            var actualIndex = -1;
+            for (var i = 0; i < PerProviderViewModels.Count; i++)
+            {
+                if (PerProviderViewModels[i].ProviderName.Equals(Providers[selectedIndex], StringComparison.OrdinalIgnoreCase))
+                {
+                    actualIndex = i;
+                    break;
+                }
+            }
+
+            var temp = PerProviderViewModels[0];
+            PerProviderViewModels[0] = PerProviderViewModels[actualIndex];
+            PerProviderViewModels[actualIndex] = temp;
+        }
+
         var currentProvider = Providers[selectedIndex];
         foreach (var providerViewModel in PerProviderViewModels)
         {

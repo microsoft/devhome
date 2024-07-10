@@ -123,6 +123,11 @@ public partial class PerProviderViewModel : ObservableObject
 
             return false;
         };
+
+        _mainWindow.DispatcherQueue.EnqueueAsync(() =>
+        {
+            IsVisible = ComputeSystemAdvancedView.Count > 0;
+        });
     }
 
     public override string ToString()
