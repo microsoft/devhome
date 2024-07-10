@@ -25,7 +25,7 @@ public class RepositoryTracking
 
     private readonly object trackRepoLock = new();
 
-    private Dictionary<string, string> TrackedRepositories { get; set; } = new Dictionary<string, string>();
+    private Dictionary<string, string> TrackedRepositories { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
     private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(RepositoryTracking));
 
@@ -59,13 +59,18 @@ public class RepositoryTracking
     {
         lock (trackRepoLock)
         {
-            TrackedRepositories = fileService.Read<Dictionary<string, string>>(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName);
+            Dictionary<string, string> caseSensitiveDictionary = new Dictionary<string, string>();
+            caseSensitiveDictionary = fileService.Read<Dictionary<string, string>>(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName);
 
             // No repositories are currently being tracked. The file will be created on first add to repository tracking.
-            if (TrackedRepositories == null)
+            if (caseSensitiveDictionary == null)
             {
-                TrackedRepositories = new Dictionary<string, string>();
+                TrackedRepositories = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 log.Debug("Repo store cache has just been created");
+            }
+            else
+            {
+                TrackedRepositories = caseSensitiveDictionary.ToDictionary(entry => entry.Key, entry => entry.Value, StringComparer.OrdinalIgnoreCase);
             }
 
             LastRestore = DateTime.Now;
@@ -78,7 +83,7 @@ public class RepositoryTracking
     {
         lock (trackRepoLock)
         {
-            if (TrackedRepositories.Keys.FirstOrDefault(key => StringComparer.OrdinalIgnoreCase.Equals(key, rootPath)) == null)
+            if (!TrackedRepositories.ContainsKey(rootPath))
             {
                 TrackedRepositories[rootPath] = extensionCLSID!;
                 fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
@@ -103,25 +108,17 @@ public class RepositoryTracking
     {
         lock (trackRepoLock)
         {
-            var rootPathRegistered = TrackedRepositories.Keys.FirstOrDefault(key => StringComparer.OrdinalIgnoreCase.Equals(key, rootPath));
-            if (rootPathRegistered != null)
+            TrackedRepositories.TryGetValue(rootPath, out var extensionCLSID);
+            TrackedRepositories.Remove(rootPath);
+            fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
+            log.Information("Repository removed from repo store");
+            try
             {
-                TrackedRepositories.TryGetValue(rootPathRegistered, out var extensionCLSID);
-                TrackedRepositories.Remove(rootPathRegistered);
-                fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
-                log.Information("Repository removed from repo store");
-                try
-                {
-                    RepositoryChanged?.Invoke(extensionCLSID ??= string.Empty, RepositoryChange.Removed);
-                }
-                catch (Exception ex)
-                {
-                    log.Error(ex, $"Removed event signaling failed: ");
-                }
+                RepositoryChanged?.Invoke(extensionCLSID ??= string.Empty, RepositoryChange.Removed);
             }
-            else
+            catch (Exception ex)
             {
-                log.Error("The root path is not registered for File Explorer Source Control Integration");
+                log.Error(ex, $"Removed event signaling failed: ");
             }
         }
     }
@@ -130,12 +127,7 @@ public class RepositoryTracking
     {
         lock (trackRepoLock)
         {
-            if (TrackedRepositories == null)
-            {
-                TrackedRepositories = fileService.Read<Dictionary<string, string>>(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName);
-                TrackedRepositories ??= new Dictionary<string, string>();
-            }
-
+            ReloadRepositoryStoreIfChangesDetected();
             log.Information("All repositories retrieved from repo store");
             return TrackedRepositories;
         }
@@ -146,11 +138,10 @@ public class RepositoryTracking
         lock (trackRepoLock)
         {
             ReloadRepositoryStoreIfChangesDetected();
-            var rootPathRegistered = TrackedRepositories.Keys.FirstOrDefault(key => StringComparer.OrdinalIgnoreCase.Equals(key, rootPath));
-            if (rootPathRegistered != null)
+            if (TrackedRepositories.TryGetValue(rootPath, out var value))
             {
                 log.Information("Source Control Provider returned for root path");
-                return TrackedRepositories[rootPathRegistered];
+                return TrackedRepositories[rootPath];
             }
             else
             {
