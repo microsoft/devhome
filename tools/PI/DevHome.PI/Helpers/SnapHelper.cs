@@ -139,7 +139,12 @@ public class SnapHelper
         }
 
         PInvoke.GetWindowRect(TargetAppData.Instance.HWnd, out var rect);
+
+        int width = rect.right - rect.left;
+        int height = rect.bottom - rect.top;
+
         barWindow.UpdateBarWindowPosition(new PointInt32(rect.right - SnapOffsetHorizontal, rect.top));
+        barWindow.UpdateBarWindowSize(new SizeInt32(width, height));
 
         // Only reset BarWindow on top, if TargetApp is in foreground.
         if (TargetAppData.Instance.HWnd == PInvoke.GetForegroundWindow())

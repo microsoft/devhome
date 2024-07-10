@@ -53,6 +53,9 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     [ObservableProperty]
     private bool _shouldShowDotOperations;
 
+    [ObservableProperty]
+    private bool _shouldShowSplitButton;
+
     private bool _disposedValue;
 
     /// <summary>
@@ -128,6 +131,8 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         try
         {
             ShouldShowDotOperations = false;
+            ShouldShowSplitButton = false;
+
             RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _mainWindow), DataExtractor.FillLaunchButtonOperations(ComputeSystem));
 
             _ = Task.Run(async () =>
@@ -157,7 +162,11 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                         DotOperations.Add(data);
                     }
 
-                    ShouldShowDotOperations = true;
+                    // Only show dot operations when there are items in the list.
+                    ShouldShowDotOperations = DotOperations.Count > 0;
+
+                    // Only show Launch split button with operations when there are items in the list.
+                    ShouldShowSplitButton = LaunchOperations.Count > 0;
                 });
             });
 

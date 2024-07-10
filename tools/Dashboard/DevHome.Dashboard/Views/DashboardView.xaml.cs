@@ -379,6 +379,8 @@ public partial class DashboardView : ToolPage, IDisposable
         {
             await WidgetHelpers.SetPositionCustomStateAsync(widget.Widget, updatedPlace++);
         }
+
+        _log.Information($"Done restoring pinned widgets");
     }
 
     private async Task DeleteAbandonedWidgetAsync(ComSafeWidget widget)

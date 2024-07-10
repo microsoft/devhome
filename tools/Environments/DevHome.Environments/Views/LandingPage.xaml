@@ -36,16 +36,29 @@
 
             <!-- Launch Button template -->
             <DataTemplate x:Key="LaunchButton" x:DataType="vm:ComputeSystemViewModel">
-                <SplitButton
-                    Visibility="{x:Bind ShouldShowLaunchOperation, Mode=OneWay}"
-                    VerticalAlignment="Top"
-                    Command="{x:Bind LaunchActionCommand}"
-                    x:Uid="ms-resource:///DevHome.Environments/Resources/LaunchButton"
-                    Style="{StaticResource CardBodySplitButtonStyle}">
-                    <SplitButton.Flyout>
-                        <customControls:CardFlyout ItemsViewModels="{x:Bind LaunchOperations, Mode=OneWay}"/>
-                    </SplitButton.Flyout>
-                </SplitButton>
+                <StackPanel
+                    Visibility="{x:Bind ShouldShowLaunchOperation, Mode=OneWay}">
+                    <!-- The split button with a menu flyout is only shown when there are other operations the extension supports other than launching -->
+                    <SplitButton
+                        Visibility="{x:Bind ShouldShowSplitButton, Mode=OneWay}"
+                        VerticalAlignment="Top"
+                        Command="{x:Bind LaunchActionCommand}"
+                        x:Uid="LaunchButton"
+                        Style="{StaticResource CardBodySplitButtonStyle}">
+                        <SplitButton.Flyout>
+                            <customControls:CardFlyout ItemsViewModels="{x:Bind LaunchOperations, Mode=OneWay}"/>
+                        </SplitButton.Flyout>
+                    </SplitButton>
+
+                    <!-- A single button template is shown when the extension only supports launching from the launch button.-->
+                    <Button
+                        Visibility="{x:Bind ShouldShowSplitButton, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
+                        VerticalAlignment="Top"
+                        Command="{x:Bind LaunchActionCommand}"
+                        x:Uid="LaunchButton"
+                        Style="{StaticResource CardBodyLaunchButtonStyle}">
+                    </Button>
+                </StackPanel>
             </DataTemplate>
 
             <!-- Three Dot Button template -->
