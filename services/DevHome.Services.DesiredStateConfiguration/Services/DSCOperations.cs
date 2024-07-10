@@ -49,6 +49,9 @@ internal sealed class DSCOperations : IDSCOperations
         var detailsOperationTask = detailsOperation.AsTask();
 
         var set = new DSCSet(configSet);
+
+        // For each DSC unit, create a task to get the details asynchronously
+        // in the background
         foreach (var unit in set.UnitsInternal)
         {
             unit.SetLoadDetailsTask(Task.Run<IDSCUnitDetails>(async () =>
@@ -56,11 +59,12 @@ internal sealed class DSCOperations : IDSCOperations
                 try
                 {
                     await detailsOperationTask;
+                    _logger.LogInformation($"Settings details for unit {unit.InstanceId}");
                     return GetCompleteUnitDetails(configSet, unit.InstanceId);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to get configuration unit details");
+                    _logger.LogError(ex, $"Failed to get details for unit {unit.InstanceId}");
                     return null;
                 }
             }));

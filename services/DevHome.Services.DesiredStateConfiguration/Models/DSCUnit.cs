@@ -17,22 +17,31 @@ internal sealed class DSCUnit : IDSCUnit
     private readonly IDSCUnitDetails _defaultDetails;
     private Task<IDSCUnitDetails> _loadDetailsTask;
 
+    /// <inheritdoc/>
     public string Type { get; }
 
+    /// <inheritdoc/>
     public string Id { get; }
 
+    /// <inheritdoc/>
     public Guid InstanceId { get; }
 
+    /// <inheritdoc/>
     public string Description { get; }
 
+    /// <inheritdoc/>
     public string Intent { get; }
 
+    /// <inheritdoc/>
     public string ModuleName { get; }
 
+    /// <inheritdoc/>
     public IList<string> Dependencies { get; }
 
+    /// <inheritdoc/>
     public IList<KeyValuePair<string, string>> Settings { get; }
 
+    /// <inheritdoc/>
     public IList<KeyValuePair<string, string>> Metadata { get; }
 
     public DSCUnit(ConfigurationUnit unit)
@@ -74,7 +83,7 @@ internal sealed class DSCUnit : IDSCUnit
     /// Set an asynchronous task to load the details for the unit in the background.
     /// </summary>
     /// <param name="loadDetailsTask">Task to load the details</param>
-    public void SetLoadDetailsTask(Task<IDSCUnitDetails> loadDetailsTask)
+    internal void SetLoadDetailsTask(Task<IDSCUnitDetails> loadDetailsTask)
     {
         _loadDetailsTask = loadDetailsTask;
     }

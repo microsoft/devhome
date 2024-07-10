@@ -15,7 +15,7 @@ public interface IDSCUnit
     public string Type { get; }
 
     /// <summary>
-    /// Gets an identifier used to uniquely identify the instance of a configuration unit on the system.
+    /// Gets the identifier name of this instance within the set.
     /// </summary>
     public string Id { get; }
 

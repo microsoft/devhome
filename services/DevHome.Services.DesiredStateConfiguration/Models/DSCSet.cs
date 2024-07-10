@@ -11,12 +11,22 @@ namespace DevHome.Services.DesiredStateConfiguration.Models;
 
 internal sealed class DSCSet : IDSCSet
 {
+    /// <inheritdoc/>
     public Guid InstanceIdentifier { get; }
 
+    /// <inheritdoc/>
     public string Name { get; }
 
+    /// <inheritdoc />
     public IReadOnlyList<IDSCUnit> Units => UnitsInternal.AsReadOnly();
 
+    /// <summary>
+    /// Gets the list of units in this set.
+    /// </summary>
+    /// <remarks>
+    /// This list maintains the concrete type of the objects which is internal
+    /// to this service project.
+    /// </remarks>
     internal IList<DSCUnit> UnitsInternal { get; }
 
     public DSCSet(ConfigurationSet configSet)
