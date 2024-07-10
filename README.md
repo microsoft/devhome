@@ -61,7 +61,7 @@ The machine configuration tool utilizes the Dev Home GitHub Extension but isn't 
 
 #### Popular apps
 
-The machine configuration tool provides a list of popular apps when selecting applications to install. This is currently a hard-coded list of applications that have been popular with developers on Windows. Popularity was determined by high levels of installation and usage. As this is a moment in time, we are not accepting submissions for this list. We're looking to improve the experience with [Suggested Apps](https://github.com/microsoft/devhome/issues/375) so the list can be optimized for developers.
+The machine configuration tool lists popular apps when selecting applications to install. This is currently a hard-coded list of applications that have been popular with developers on Windows. High levels of installation and usage determined popularity. As this is a moment, we are not accepting submissions for this list. We're looking to improve the experience with [Suggested Apps](https://github.com/microsoft/devhome/issues/375) so the list can be optimized for developers.
 
 ---
 
@@ -75,7 +75,7 @@ Documentation for Dev Home can be found at https://aka.ms/devhomedocs.
 
 We are excited to work alongside you, our amazing community, to build and enhance Dev Home!
 
-***BEFORE you start work on a feature/fix,*** please read & follow our [Contributor's Guide](CONTRIBUTING.md) to help avoid any wasted or duplicate effort.
+***BEFORE you start to work on a feature/fix,*** please read & follow our [Contributor's Guide](CONTRIBUTING.md) to help avoid any wasted or duplicate effort.
 
 ## Communicating with the team
 
@@ -98,7 +98,7 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
 
 ## Code of conduct
 
-We welcome contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and do actually grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+We welcome contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to and do actually grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
 When you submit a pull request, a CLA bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
 
