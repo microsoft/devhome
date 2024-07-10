@@ -9,7 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DevHome.PI.Models;
 
-public partial class WatsonReport : ObservableObject
+public partial class WERReport : ObservableObject
 {
     [ObservableProperty]
     private DateTime _timeStamp;
@@ -40,7 +40,7 @@ public partial class WatsonReport : ObservableObject
     [ObservableProperty]
     private string _failureBucket = string.Empty;
 
-    public WatsonReport()
+    public WERReport()
     {
     }
 }

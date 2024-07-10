@@ -18,7 +18,7 @@ public class WinLogsHelper : IDisposable
     public const string EtwLogsName = "ETW Logs";
     public const string DebugOutputLogsName = "DebugOutput";
     public const string EventViewerName = "EventViewer";
-    public const string WatsonName = "Watson";
+    public const string WERName = "WER";
 
     private readonly ETWHelper etwHelper;
     private readonly DebugMonitor debugMonitor;
@@ -45,7 +45,7 @@ public class WinLogsHelper : IDisposable
         eventViewerHelper = new EventViewerHelper(targetProcess, output);
     }
 
-    public void Start(bool isEtwEnabled, bool isDebugOutputEnabled, bool isEventViewerEnabled, bool isWatsonEnabled)
+    public void Start(bool isEtwEnabled, bool isDebugOutputEnabled, bool isEventViewerEnabled, bool isWEREnabled)
     {
         if (isEtwEnabled)
         {
@@ -62,9 +62,9 @@ public class WinLogsHelper : IDisposable
             StartEventViewerThread();
         }
 
-        if (isWatsonEnabled)
+        if (isWEREnabled)
         {
-            ((INotifyCollectionChanged)WatsonHelper.Instance.WatsonReports).CollectionChanged += WatsonEvents_CollectionChanged;
+            ((INotifyCollectionChanged)WERHelper.Instance.WERReports).CollectionChanged += WEREvents_CollectionChanged;
         }
     }
 
@@ -79,8 +79,8 @@ public class WinLogsHelper : IDisposable
         // Stop Event Viewer
         StopEventViewerThread();
 
-        // Stop Watson
-        ((INotifyCollectionChanged)WatsonHelper.Instance.WatsonReports).CollectionChanged -= WatsonEvents_CollectionChanged;
+        // Stop WER
+        ((INotifyCollectionChanged)WERHelper.Instance.WERReports).CollectionChanged -= WEREvents_CollectionChanged;
     }
 
     public void Dispose()
@@ -165,18 +165,18 @@ public class WinLogsHelper : IDisposable
         }
     }
 
-    private void WatsonEvents_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    private void WEREvents_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
-            foreach (WatsonReport report in e.NewItems)
+            foreach (WERReport report in e.NewItems)
             {
                 var filePath = report.Executable ?? string.Empty;
 
-                // Filter Watson events based on the process we're targeting
+                // Filter WER events based on the process we're targeting
                 if (filePath.Contains(targetProcess.ProcessName, StringComparison.OrdinalIgnoreCase))
                 {
-                    WinLogsEntry entry = new(report.TimeStamp, WinLogCategory.Error, report.Description, WinLogsHelper.WatsonName);
+                    WinLogsEntry entry = new(report.TimeStamp, WinLogCategory.Error, report.Description, WinLogsHelper.WERName);
                     output.Add(entry);
                 }
             }
@@ -198,8 +198,8 @@ public class WinLogsHelper : IDisposable
                 case WinLogsTool.EventViewer:
                     StartEventViewerThread();
                     break;
-                case WinLogsTool.Watson:
-                    ((INotifyCollectionChanged)WatsonHelper.Instance.WatsonReports).CollectionChanged += WatsonEvents_CollectionChanged;
+                case WinLogsTool.WER:
+                    ((INotifyCollectionChanged)WERHelper.Instance.WERReports).CollectionChanged += WEREvents_CollectionChanged;
                     break;
             }
         }
@@ -216,8 +216,8 @@ public class WinLogsHelper : IDisposable
                 case WinLogsTool.EventViewer:
                     StopEventViewerThread();
                     break;
-                case WinLogsTool.Watson:
-                    ((INotifyCollectionChanged)WatsonHelper.Instance.WatsonReports).CollectionChanged -= WatsonEvents_CollectionChanged;
+                case WinLogsTool.WER:
+                    ((INotifyCollectionChanged)WERHelper.Instance.WERReports).CollectionChanged -= WEREvents_CollectionChanged;
                     break;
             }
         }

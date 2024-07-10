@@ -62,8 +62,8 @@ public partial class App : Application, IApp
                 services.AddSingleton<ProcessListPageViewModel>();
                 services.AddSingleton<ResourceUsagePage>();
                 services.AddSingleton<ResourceUsagePageViewModel>();
-                services.AddSingleton<WatsonsPage>();
-                services.AddSingleton<WatsonPageViewModel>();
+                services.AddSingleton<WERPage>();
+                services.AddSingleton<WERPageViewModel>();
                 services.AddSingleton<WinLogsPage>();
                 services.AddSingleton<WinLogsPageViewModel>();
                 services.AddSingleton<SettingsPage>();

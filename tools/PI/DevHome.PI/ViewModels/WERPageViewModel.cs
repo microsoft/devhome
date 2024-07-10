@@ -19,15 +19,15 @@ using DevHome.PI.Properties;
 
 namespace DevHome.PI.ViewModels;
 
-public partial class WatsonPageViewModel : ObservableObject
+public partial class WERPageViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     [ObservableProperty]
-    private ObservableCollection<WatsonDisplayInfo> _displayedReports = [];
+    private ObservableCollection<WERDisplayInfo> _displayedReports = [];
 
     [ObservableProperty]
-    private string _watsonInfoText;
+    private string _werInfoText;
 
     private bool _applyFilter = true;
 
@@ -43,17 +43,17 @@ public partial class WatsonPageViewModel : ObservableObject
     [ObservableProperty]
     private bool _allowElevationOption;
 
-    private delegate int WatsonCompareFunction(WatsonDisplayInfo info1, WatsonDisplayInfo info2, bool sortAscending);
+    private delegate int WERCompareFunction(WERDisplayInfo info1, WERDisplayInfo info2, bool sortAscending);
 
-    private WatsonCompareFunction? _currentCompareFunction;
+    private WERCompareFunction? _currentCompareFunction;
     private bool? _currentSortAscending;
 
-    public WatsonPageViewModel()
+    public WERPageViewModel()
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
-        _watsonInfoText = string.Empty;
+        _werInfoText = string.Empty;
         _applyFilter = Settings.Default.ApplyAppFilteringToData;
         Settings.Default.PropertyChanged += Settings_PropertyChanged;
 
@@ -62,9 +62,9 @@ public partial class WatsonPageViewModel : ObservableObject
 
         string? attachedApp = TargetAppData.Instance?.TargetProcess?.ProcessName ?? null;
         AttachedToApp = attachedApp is not null;
-        LocalCollectionEnabledForApp = attachedApp is not null ? WatsonHelper.Instance.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
+        LocalCollectionEnabledForApp = attachedApp is not null ? WERHelper.Instance.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
 
-        ((INotifyCollectionChanged)WatsonHelper.Instance.WatsonReports).CollectionChanged += WatsonOutput_CollectionChanged;
+        ((INotifyCollectionChanged)WERHelper.Instance.WERReports).CollectionChanged += WER_CollectionChanged;
 
         PopulateCurrentLogs();
     }
@@ -86,17 +86,17 @@ public partial class WatsonPageViewModel : ObservableObject
 
             string? attachedApp = TargetAppData.Instance?.TargetProcess?.ProcessName ?? null;
             AttachedToApp = attachedApp is not null;
-            LocalCollectionEnabledForApp = attachedApp is not null ? WatsonHelper.Instance.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
+            LocalCollectionEnabledForApp = attachedApp is not null ? WERHelper.Instance.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
         }
     }
 
-    private void WatsonOutput_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    private void WER_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
             _dispatcher.TryEnqueue(() =>
             {
-                FilterWatsonReportList(e.NewItems);
+                FilterWERReportList(e.NewItems);
             });
         }
     }
@@ -107,11 +107,11 @@ public partial class WatsonPageViewModel : ObservableObject
         {
             DisplayedReports.Clear();
 
-            FilterWatsonReportList(WatsonHelper.Instance.WatsonReports.ToList<WatsonReport>());
+            FilterWERReportList(WERHelper.Instance.WERReports.ToList<WERReport>());
         });
     }
 
-    private void FilterWatsonReportList(System.Collections.IList? reportList)
+    private void FilterWERReportList(System.Collections.IList? reportList)
     {
         if (reportList is null)
         {
@@ -119,14 +119,14 @@ public partial class WatsonPageViewModel : ObservableObject
         }
 
         // Get all existing reports
-        foreach (WatsonReport report in reportList)
+        foreach (WERReport report in reportList)
         {
             // Provide filtering if needed
             if (!_applyFilter ||
                 (TargetAppData.Instance.TargetProcess is not null &&
                 report.FilePath.Contains(TargetAppData.Instance.TargetProcess.ProcessName, StringComparison.OrdinalIgnoreCase)))
             {
-                WatsonDisplayInfo displayInfo = new WatsonDisplayInfo(report);
+                WERDisplayInfo displayInfo = new WERDisplayInfo(report);
 
                 // Add the item in appropriate spot
                 if (_currentCompareFunction is not null)
@@ -140,11 +140,11 @@ public partial class WatsonPageViewModel : ObservableObject
                         i++;
                     }
 
-                    DisplayedReports.Insert(i, new WatsonDisplayInfo(report));
+                    DisplayedReports.Insert(i, new WERDisplayInfo(report));
                 }
                 else
                 {
-                    DisplayedReports.Add(new WatsonDisplayInfo(report));
+                    DisplayedReports.Add(new WERDisplayInfo(report));
                 }
             }
         }
@@ -152,15 +152,15 @@ public partial class WatsonPageViewModel : ObservableObject
 
     internal void SortByFaultingExecutable(bool sortAscending)
     {
-        ObservableCollection<WatsonDisplayInfo> sortedCollection;
+        ObservableCollection<WERDisplayInfo> sortedCollection;
 
         if (sortAscending)
         {
-            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderBy(x => x.Report.Executable));
+            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderBy(x => x.Report.Executable));
         }
         else
         {
-            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderByDescending(x => x.Report.Executable));
+            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderByDescending(x => x.Report.Executable));
         }
 
         DisplayedReports = sortedCollection;
@@ -169,7 +169,7 @@ public partial class WatsonPageViewModel : ObservableObject
         _currentSortAscending = sortAscending;
     }
 
-    internal int CompareByFaultingExecutable(WatsonDisplayInfo info1, WatsonDisplayInfo info2, bool sortAscending)
+    internal int CompareByFaultingExecutable(WERDisplayInfo info1, WERDisplayInfo info2, bool sortAscending)
     {
         if (sortAscending)
         {
@@ -183,15 +183,15 @@ public partial class WatsonPageViewModel : ObservableObject
 
     internal void SortByDateTime(bool sortAscending)
     {
-        ObservableCollection<WatsonDisplayInfo> sortedCollection;
+        ObservableCollection<WERDisplayInfo> sortedCollection;
 
         if (sortAscending)
         {
-            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderBy(x => x.Report.TimeGenerated));
+            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderBy(x => x.Report.TimeGenerated));
         }
         else
         {
-            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderByDescending(x => x.Report.TimeGenerated));
+            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderByDescending(x => x.Report.TimeGenerated));
         }
 
         DisplayedReports = sortedCollection;
@@ -200,7 +200,7 @@ public partial class WatsonPageViewModel : ObservableObject
         _currentSortAscending = sortAscending;
     }
 
-    internal int CompareByDateTime(WatsonDisplayInfo info1, WatsonDisplayInfo info2, bool sortAscending)
+    internal int CompareByDateTime(WERDisplayInfo info1, WERDisplayInfo info2, bool sortAscending)
     {
         if (sortAscending)
         {
@@ -212,26 +212,26 @@ public partial class WatsonPageViewModel : ObservableObject
         }
     }
 
-    internal void SortByWatsonBucket(bool sortAscending)
+    internal void SortByWERBucket(bool sortAscending)
     {
-        ObservableCollection<WatsonDisplayInfo> sortedCollection;
+        ObservableCollection<WERDisplayInfo> sortedCollection;
 
         if (sortAscending)
         {
-            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderBy(x => x.FailureBucket));
+            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderBy(x => x.FailureBucket));
         }
         else
         {
-            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderByDescending(x => x.FailureBucket));
+            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderByDescending(x => x.FailureBucket));
         }
 
         DisplayedReports = sortedCollection;
 
-        _currentCompareFunction = CompareByWatsonBucket;
+        _currentCompareFunction = CompareByWERBucket;
         _currentSortAscending = sortAscending;
     }
 
-    internal int CompareByWatsonBucket(WatsonDisplayInfo info1, WatsonDisplayInfo info2, bool sortAscending)
+    internal int CompareByWERBucket(WERDisplayInfo info1, WERDisplayInfo info2, bool sortAscending)
     {
         if (sortAscending)
         {
@@ -245,15 +245,15 @@ public partial class WatsonPageViewModel : ObservableObject
 
     internal void SortByCrashDumpPath(bool sortAscending)
     {
-        ObservableCollection<WatsonDisplayInfo> sortedCollection;
+        ObservableCollection<WERDisplayInfo> sortedCollection;
 
         if (sortAscending)
         {
-            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderBy(x => x.Report.CrashDumpPath));
+            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderBy(x => x.Report.CrashDumpPath));
         }
         else
         {
-            sortedCollection = new ObservableCollection<WatsonDisplayInfo>(DisplayedReports.OrderByDescending(x => x.Report.CrashDumpPath));
+            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderByDescending(x => x.Report.CrashDumpPath));
         }
 
         DisplayedReports = sortedCollection;
@@ -262,7 +262,7 @@ public partial class WatsonPageViewModel : ObservableObject
         _currentSortAscending = sortAscending;
     }
 
-    internal int CompareByCrashDumpPath(WatsonDisplayInfo info1, WatsonDisplayInfo info2, bool sortAscending)
+    internal int CompareByCrashDumpPath(WERDisplayInfo info1, WERDisplayInfo info2, bool sortAscending)
     {
         if (sortAscending)
         {
@@ -279,7 +279,7 @@ public partial class WatsonPageViewModel : ObservableObject
     {
         if (TargetAppData.Instance.TargetProcess is not null)
         {
-            CommonHelper.RunAsAdmin(TargetAppData.Instance.TargetProcess.Id, nameof(WatsonPageViewModel));
+            CommonHelper.RunAsAdmin(TargetAppData.Instance.TargetProcess.Id, nameof(WERPageViewModel));
         }
     }
 
@@ -294,21 +294,21 @@ public partial class WatsonPageViewModel : ObservableObject
 
         string app = process.ProcessName + ".exe";
 
-        if (enable == WatsonHelper.Instance.IsCollectionEnabledForApp(app))
+        if (enable == WERHelper.Instance.IsCollectionEnabledForApp(app))
         {
             // No change, could be initialization of the UI
             return;
         }
 
-        Debug.Assert(RuntimeHelper.IsCurrentProcessRunningAsAdmin(), "Changing the local Watson dump collection for an app can only happen when running as admin.");
+        Debug.Assert(RuntimeHelper.IsCurrentProcessRunningAsAdmin(), "Changing the local dump collection for an app can only happen when running as admin.");
 
         if (enable)
         {
-            WatsonHelper.Instance.EnableCollectionForApp(app);
+            WERHelper.Instance.EnableCollectionForApp(app);
         }
         else
         {
-            WatsonHelper.Instance.DisableCollectionForApp(app);
+            WERHelper.Instance.DisableCollectionForApp(app);
         }
     }
 

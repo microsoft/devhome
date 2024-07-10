@@ -13,9 +13,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DevHome.PI.Models;
 
-public partial class WatsonDisplayInfo : ObservableObject
+public partial class WERDisplayInfo : ObservableObject
 {
-    public WatsonReport Report { get; }
+    public WERReport Report { get; }
 
     [ObservableProperty]
     private string _failureBucket;
@@ -23,7 +23,7 @@ public partial class WatsonDisplayInfo : ObservableObject
     [ObservableProperty]
     private string _analyzeResults;
 
-    public WatsonDisplayInfo(WatsonReport report)
+    public WERDisplayInfo(WERReport report)
     {
         Report = report;
         AnalyzeResults = InitializeAnalyzeResults();
@@ -33,12 +33,12 @@ public partial class WatsonDisplayInfo : ObservableObject
 
     private void Report_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(WatsonReport.CrashDumpPath))
+        if (e.PropertyName == nameof(WERReport.CrashDumpPath))
         {
             AnalyzeResults = InitializeAnalyzeResults();
             FailureBucket = UpdateFailureBucket();
         }
-        else if (e.PropertyName == nameof(WatsonReport.FailureBucket))
+        else if (e.PropertyName == nameof(WERReport.FailureBucket))
         {
             FailureBucket = UpdateFailureBucket();
         }
@@ -61,7 +61,7 @@ public partial class WatsonDisplayInfo : ObservableObject
             }
         }
 
-        // If we weren't able to get a failure bucket from !analyze results, return the one from the Watson data
+        // If we weren't able to get a failure bucket from !analyze results, return the one from the WER data
         return Report.FailureBucket;
     }
 

@@ -74,7 +74,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     private readonly PageNavLink appDetailsNavLink;
     private readonly PageNavLink resourceUsageNavLink;
     private readonly PageNavLink modulesNavLink;
-    private readonly PageNavLink watsonNavLink;
+    private readonly PageNavLink werNavLink;
     private readonly PageNavLink winLogsNavLink;
     private readonly PageNavLink processListNavLink;
     private readonly PageNavLink insightsNavLink;
@@ -89,7 +89,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         appDetailsNavLink = new PageNavLink("\uE71D", CommonHelper.GetLocalizedString("AppDetailsTextBlock/Text"), typeof(AppDetailsPageViewModel));
         resourceUsageNavLink = new PageNavLink("\uE950", CommonHelper.GetLocalizedString("ResourceUsageHeaderTextBlock/Text"), typeof(ResourceUsagePageViewModel));
         modulesNavLink = new PageNavLink("\uE74C", CommonHelper.GetLocalizedString("ModulesHeaderTextBlock/Text"), typeof(ModulesPageViewModel));
-        watsonNavLink = new PageNavLink("\uE7BA", CommonHelper.GetLocalizedString("WatsonsHeaderTextBlock/Text"), typeof(WatsonPageViewModel));
+        werNavLink = new PageNavLink("\uE7BA", CommonHelper.GetLocalizedString("WERHeaderTextBlock/Text"), typeof(WERPageViewModel));
         winLogsNavLink = new PageNavLink("\uE7C4", CommonHelper.GetLocalizedString("WinLogsHeaderTextBlock/Text"), typeof(WinLogsPageViewModel));
         processListNavLink = new PageNavLink("\uE8FD", CommonHelper.GetLocalizedString("ProcessListHeaderTextBlock/Text"), typeof(ProcessListPageViewModel));
         insightsNavLink = new PageNavLink("\uE946", CommonHelper.GetLocalizedString("InsightsHeaderTextBlock/Text"), typeof(InsightsPageViewModel));
@@ -207,7 +207,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         if (!Links.Contains(processListNavLink))
         {
             Links.Add(processListNavLink);
-            Links.Add(watsonNavLink);
+            Links.Add(werNavLink);
             Links.Add(insightsNavLink);
         }
 
@@ -221,7 +221,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
                 Links.Insert(2, modulesNavLink);
 
                 // Process List #3
-                // Watson #4
+                // WER #4
                 Links.Insert(5, winLogsNavLink);
 
                 // Insights #6;

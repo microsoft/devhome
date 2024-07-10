@@ -30,7 +30,7 @@ public sealed partial class PrimaryWindow : WindowEx
     {
         InitializeComponent();
         ExternalToolsHelper.Instance.Init();
-        WatsonHelper.Instance.Start();
+        WERHelper.Instance.Start();
     }
 
     public void ShowBarWindow()
