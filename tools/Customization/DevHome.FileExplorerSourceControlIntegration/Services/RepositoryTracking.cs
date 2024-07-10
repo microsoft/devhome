@@ -59,8 +59,7 @@ public class RepositoryTracking
     {
         lock (trackRepoLock)
         {
-            Dictionary<string, string> caseSensitiveDictionary = new Dictionary<string, string>();
-            caseSensitiveDictionary = fileService.Read<Dictionary<string, string>>(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName);
+            var caseSensitiveDictionary = fileService.Read<Dictionary<string, string>>(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName);
 
             // No repositories are currently being tracked. The file will be created on first add to repository tracking.
             if (caseSensitiveDictionary == null)
