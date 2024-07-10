@@ -9,6 +9,7 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
@@ -197,11 +198,13 @@ public partial class ExternalTool : ObservableObject
         return result;
     }
 
+    [RelayCommand]
     public void TogglePinnedState()
     {
         IsPinned = !IsPinned;
     }
 
+    [RelayCommand]
     public void UnregisterTool()
     {
         ExternalToolsHelper.Instance.RemoveExternalTool(this);

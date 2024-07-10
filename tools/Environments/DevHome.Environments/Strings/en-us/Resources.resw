@@ -179,7 +179,7 @@
   </data>
   <data name="SortByTextBlock.Text" xml:space="preserve">
     <value>Sort:</value>
-    <comment>Text labelling sort by text block</comment>
+    <comment>Text labeling sort by text block</comment>
   </data>
   <data name="SyncButtonTextBlock.Text" xml:space="preserve">
     <value>Sync</value>
@@ -211,7 +211,7 @@
   </data>
   <data name="ProviderTextBlock.Text" xml:space="preserve">
     <value>Provider:</value>
-    <comment>Text labelling provider text block</comment>
+    <comment>Text labeling provider text block</comment>
   </data>
   <data name="ProviderSelectionComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Provider</value>
@@ -259,7 +259,7 @@
   </data>
   <data name="FailureMessageForCreateComputeSystem" xml:space="preserve">
     <value>Failed to create environment due to error: {0}</value>
-    <comment>Locked="{0}" Text to show the the user when Dev Home receives the notification that the creation of the new environment has failed. {0} is the error that is displayed to the user</comment>
+    <comment>Locked="{0}" Text to show the user when Dev Home receives the notification that the creation of the new environment has failed. {0} is the error that is displayed to the user</comment>
   </data>
   <data name="CreationStatusTextForCreateEnvironmentFlow" xml:space="preserve">
     <value>Status: {0}</value>

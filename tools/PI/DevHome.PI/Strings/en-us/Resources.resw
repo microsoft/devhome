@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Microsoft ResX Schema
-
+  <!-- 
+    Microsoft ResX Schema 
+    
     Version 2.0
-
-    The primary goals of this format is to allow a simple XML format
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
     associated with the data types.
-
+    
     Example:
-
+    
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-
-    There are any number of "resheader" rows that contain simple
+                
+    There are any number of "resheader" rows that contain simple 
     name/value pairs.
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support
-    text/value conversion through the TypeConverter architecture.
-    Classes that don't support this are serialized and stored with the
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
     mimetype set.
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format
-    that the ResXResourceWriter will generate, however the reader can
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
     read any of the formats listed below.
-
+    
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-
+    
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array
+    value   : The object must be serialized into a byte array 
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -127,7 +127,7 @@
   </data>
   <data name="PinMenuItemText" xml:space="preserve">
     <value>Pin</value>
-    <comment>A label for the menuitem to pin a tool on the bar.</comment>
+    <comment>A label for the menu item to pin a tool on the bar.</comment>
   </data>
   <data name="UnregisterMenuItem.Text" xml:space="preserve">
     <value>Unregister</value>
@@ -167,19 +167,19 @@
   </data>
   <data name="AppDetailsTextBlock.Text" xml:space="preserve">
     <value>App details</value>
-    <comment>The contents of a text block refering to details about an application.</comment>
+    <comment>The contents of a text block referring to details about an application.</comment>
   </data>
   <data name="IDTextBlock.Text" xml:space="preserve">
     <value>ID</value>
-    <comment>The contents of a text block refering to identity (ID) of an application.</comment>
+    <comment>The contents of a text block referring to identity (ID) of an application.</comment>
   </data>
   <data name="BasePriorityTextBlock.Text" xml:space="preserve">
     <value>Base priority</value>
-    <comment>The contents of a text block refering to base CPU priority of an application.</comment>
+    <comment>The contents of a text block referring to base CPU priority of an application.</comment>
   </data>
   <data name="PriorityClassTextBlock.Text" xml:space="preserve">
     <value>Priority class</value>
-    <comment>The contents of a text block refering to scheduling priority of an application.</comment>
+    <comment>The contents of a text block referring to scheduling priority of an application.</comment>
   </data>
   <data name="MainModuleTextBlock.Text" xml:space="preserve">
     <value>Main module</value>
@@ -199,15 +199,15 @@
   </data>
   <data name="ModulesHeaderTextBlock.Text" xml:space="preserve">
     <value>Loaded modules</value>
-    <comment>The contents of a text block refering to loaded application modules.</comment>
+    <comment>The contents of a text block referring to loaded application modules.</comment>
   </data>
   <data name="FileVersionInfoTextBlock.Text" xml:space="preserve">
     <value>File Version Info</value>
-    <comment>The contents of a text block refering to version of the module file loaded by an application.</comment>
+    <comment>The contents of a text block referring to version of the module file loaded by an application.</comment>
   </data>
   <data name="MemorySizeTextBlock.Text" xml:space="preserve">
     <value>Memory Size</value>
-    <comment>The contents of a text block refering to size in memory of the module.</comment>
+    <comment>The contents of a text block referring to size in memory of the module.</comment>
   </data>
   <data name="FilterDropDown.Text" xml:space="preserve">
     <value>Filter...</value>
@@ -259,7 +259,7 @@
   </data>
   <data name="ResourceUsageHeaderTextBlock.Text" xml:space="preserve">
     <value>Resource usage</value>
-    <comment>The contents of a text block refering to process resource usage information.</comment>
+    <comment>The contents of a text block referring to process resource usage information.</comment>
   </data>
   <data name="IsRespondingTextblock.Text" xml:space="preserve">
     <value>Is responding</value>
@@ -287,7 +287,7 @@
   </data>
   <data name="TimeGeneratedColumn.Header" xml:space="preserve">
     <value>Time generated</value>
-    <comment>The time at which the watson report was generated.</comment>
+    <comment>The time at which the Watson report was generated.</comment>
   </data>
   <data name="FaultingExecutableColumn.Header" xml:space="preserve">
     <value>Faulting executable</value>
@@ -299,7 +299,7 @@
   </data>
   <data name="WinLogsHeaderTextBlock.Text" xml:space="preserve">
     <value>Windows logs</value>
-    <comment>The contents of a text block refering to Windows logs.</comment>
+    <comment>The contents of a text block referring to Windows logs.</comment>
   </data>
   <data name="EtwCheckbox.ToolTipService.ToolTip" xml:space="preserve">
     <value>Event Tracing for Windows (ETW) logs</value>
@@ -315,7 +315,7 @@
   </data>
   <data name="WatsonCheckbox.ToolTipService.ToolTip" xml:space="preserve">
     <value>Entries from the event log for the target app</value>
-    <comment>Tooltip for whether to watson report logs in the log view output.</comment>
+    <comment>Tooltip for whether to Watson report logs in the log view output.</comment>
   </data>
   <data name="ClearWinLogsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Clear the list</value>
@@ -1036,5 +1036,9 @@
   <data name="ProcessesLabel.Text" xml:space="preserve">
     <value>Processes</value>
     <comment>A text label for the Processes button</comment>
+  </data>
+  <data name="ManageExternalToolsMenuText" xml:space="preserve">
+    <value>Manage Tools</value>
+    <comment>Label for a button to allow users to manage external tools</comment>
   </data>
 </root>
