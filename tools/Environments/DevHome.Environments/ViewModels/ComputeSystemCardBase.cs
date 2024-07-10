@@ -81,7 +81,7 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
             description.Append(AlternativeName);
         }
 
-        description.Append(_stringResourceCommon.GetLocalized($"ComputeSystem {State}"));
+        description.Append(_stringResourceCommon.GetLocalized($"ComputeSystem{State}"));
         return description.ToString();
     }
 
