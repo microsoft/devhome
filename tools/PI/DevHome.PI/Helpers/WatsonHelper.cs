@@ -12,6 +12,7 @@ using System.Threading;
 using DevHome.Common.Helpers;
 using DevHome.PI.Models;
 using Microsoft.Win32;
+using Serilog;
 
 namespace DevHome.PI.Helpers;
 
@@ -21,6 +22,8 @@ internal sealed class WatsonHelper : IDisposable
     private const string WatsonReceiveQuery = "(*[System[Provider[@Name=\"Application Error\"]]] and *[System[EventID=1001]])";
     private const string DefaultDumpPath = "%LOCALAPPDATA%\\CrashDumps";
     private const string LocalWatsonRegistryKey = "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\LocalDumps";
+
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WatsonHelper));
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly EventLogWatcher _eventLogWatcher;
@@ -293,7 +296,7 @@ internal sealed class WatsonHelper : IDisposable
         int dmpExtensionIndex = crashDumpFile.LastIndexOf('.');
         if (dmpExtensionIndex == -1)
         {
-            Trace.WriteLine("Unexpected crash dump filename: " + crashDumpFile);
+            _log.Information("Unexpected crash dump filename: " + crashDumpFile);
             return;
         }
 
@@ -304,7 +307,7 @@ internal sealed class WatsonHelper : IDisposable
         int pidIndex = filenameWithNoDmp.LastIndexOf('.');
         if (pidIndex == -1)
         {
-            Trace.WriteLine("Unexpected crash dump filename: " + crashDumpFile);
+            _log.Information("Unexpected crash dump filename: " + crashDumpFile);
             return;
         }
 
@@ -320,7 +323,7 @@ internal sealed class WatsonHelper : IDisposable
 
         lock (_watsonReports)
         {
-            // Do we have an entry for this item already (created from the Watson files on disk)
+            // Do we have an entry for this item already (created from the event log entry)
             WatsonReport? watsonReport = FindMatchingReport(timeGenerated, fileInfo.Name, pid);
 
             _dispatcher.TryEnqueue(() =>
@@ -366,7 +369,7 @@ internal sealed class WatsonHelper : IDisposable
             if (report.Executable == executable && report.Pid == pid)
             {
                 // See if the timestamps are "close enough"
-                Debug.Assert(report.TimeStamp.Kind == DateTimeKind.Local, "TimeGenerated is not in local time");
+                Debug.Assert(report.TimeStamp.Kind == DateTimeKind.Local, "TimeGenerated should be in local time");
                 long ticksDiff = Math.Abs(report.TimeStamp.Ticks - timestampIndex);
 
                 if (ticksDiff < ticksWindow)
@@ -396,7 +399,7 @@ internal sealed class WatsonHelper : IDisposable
         Faulting package full name: Microsoft.Windows.DevHome.Dev_0.0.0.0_x64__8wekyb3d8bbwe
         Faulting package-relative application ID: Devhome.PI
 
-        Let's create a placeholder failure bucket based on the module name, offsert, and exception code. In the above example,
+        Let's create a placeholder failure bucket based on the module name, offset, and exception code. In the above example,
         we'll generate a bucket "KERNELBASE.dll+0x000000000005f20c 0xe0434352"
         */
 
@@ -446,11 +449,12 @@ internal sealed class WatsonHelper : IDisposable
             }
             catch
             {
-                Trace.WriteLine("Error enumerating directory " + dumpLocation);
+                _log.Error("Error enumerating directory " + dumpLocation);
             }
         }
     }
 
+    // Generate a list of all of the locations on disk where local WER dumps are stored
     private List<string> GetWatsonLocations()
     {
         List<string> list = new List<string>();
@@ -499,6 +503,7 @@ internal sealed class WatsonHelper : IDisposable
         return null;
     }
 
+    // Enable watchers to catch new WER dumps as they are generated
     private void EnableFileSystemWatchers()
     {
         _filesystemWatchers.Clear();
@@ -511,7 +516,7 @@ internal sealed class WatsonHelper : IDisposable
                 var watcher = new FileSystemWatcher(path);
                 watcher.Created += (sender, e) =>
                 {
-                    Trace.WriteLine($"New dump file: {e.FullPath}");
+                    _log.Information($"New dump file: {e.FullPath}");
                     FindOrCreateWatsonEntryFromLocalDumpFile(e.FullPath);
                 };
 
