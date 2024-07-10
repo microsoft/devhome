@@ -56,20 +56,7 @@ internal sealed class DSCOperations : IDSCOperations
                 try
                 {
                     await detailsOperationTask;
-                    var unitFound = configSet.Units.FirstOrDefault(u => u.InstanceIdentifier == unit.InstanceId);
-                    if (unitFound == null)
-                    {
-                        _logger.LogWarning("Unit not found in the configuration set");
-                        return null;
-                    }
-
-                    if (unitFound.Details == null)
-                    {
-                        _logger.LogWarning($"Unit details not found");
-                        return null;
-                    }
-
-                    return new DSCUnitDetails(unitFound.Details);
+                    return GetCompleteUnitDetails(configSet, unit.InstanceId);
                 }
                 catch (Exception ex)
                 {
@@ -190,5 +177,31 @@ internal sealed class DSCOperations : IDSCOperations
 
         result.Seek(0);
         return result;
+    }
+
+    /// <summary>
+    /// Gets the complete details for a unit if available.
+    /// </summary>
+    /// <param name="configSet">Configuration set</param>
+    /// <param name="instanceId">Unit instance ID</param>
+    /// <returns>Complete unit details if available, otherwise null</returns>
+    private DSCUnitDetails GetCompleteUnitDetails(ConfigurationSet configSet, Guid instanceId)
+    {
+        var unitFound = configSet.Units.FirstOrDefault(u => u.InstanceIdentifier == instanceId);
+        if (unitFound == null)
+        {
+            _logger.LogWarning($"Unit {instanceId} not found in the configuration set. No further details will be available to the unit.");
+            return null;
+        }
+
+        if (unitFound.Details == null)
+        {
+            _logger.LogWarning($"Details for unit {instanceId} not found. No further details will be available to the unit.");
+            return null;
+        }
+
+        // After GetSetDetailsAsync completes, the Details property will be
+        // populated if the details were found.
+        return new DSCUnitDetails(unitFound.Details);
     }
 }

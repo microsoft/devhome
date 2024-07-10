@@ -37,6 +37,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:StringVisibilityConverter x:Key="StringVisibilityConverter"/>
+            <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
             <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
             <converters:CollectionVisibilityConverter x:Key="CollectionNegativeVisibilityConverter" EmptyValue="Visible"  NotEmptyValue="Collapsed"/>
             <DataTemplate x:Key="KeyValueTemplate">
@@ -194,6 +195,23 @@
                                         <!-- Details -->
                                         <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
                                             <TextBlock x:Uid="ConfigurationUnit_Details" Style="{ThemeResource BodyStrongTextBlockStyle}" />
+
+                                            <!-- Shimmers -->
+                                            <StackPanel Visibility="{x:Bind Details, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
+                                                <StackPanel.Resources>
+                                                    <Style TargetType="labs:Shimmer">
+                                                        <Setter Property="Margin" Value="5" />
+                                                        <Setter Property="Height" Value="{ThemeResource BodyTextBlockFontSize}" />
+                                                    </Style>
+                                                </StackPanel.Resources>
+                                                <labs:Shimmer />
+                                                <labs:Shimmer />
+                                                <labs:Shimmer />
+                                                <labs:Shimmer />
+                                                <labs:Shimmer />
+                                            </StackPanel>
+
+                                            <!-- Loaded details -->
                                             <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{StaticResource KeyValueTemplate}">
                                                 <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitType" Value="{x:Bind Details.UnitType, Mode=OneWay}" />
                                                 <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitDescription" Value="{x:Bind Details.UnitDescription, Mode=OneWay}" />

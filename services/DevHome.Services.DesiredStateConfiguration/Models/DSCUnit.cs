@@ -70,7 +70,11 @@ internal sealed class DSCUnit : IDSCUnit
         return loadedDetails ?? _defaultDetails;
     }
 
-    internal void SetLoadDetailsTask(Task<IDSCUnitDetails> loadDetailsTask)
+    /// <summary>
+    /// Set an asynchronous task to load the details for the unit in the background.
+    /// </summary>
+    /// <param name="loadDetailsTask">Task to load the details</param>
+    public void SetLoadDetailsTask(Task<IDSCUnitDetails> loadDetailsTask)
     {
         _loadDetailsTask = loadDetailsTask;
     }
