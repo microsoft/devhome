@@ -34,7 +34,7 @@ Please follow this simple rule to help us eliminate any unnecessary wasted effor
 
 ### Search existing issues first
 
-Before filing a new issue, search existing open and closed issues first: This project is moving fast! Someone else has likely found the problem you're seeing, and someone may be working on or have already contributed a fix!
+Before filing a new issue, search existing open and closed issues first: This project is moving fast! It is likely that someone found the problem you're seeing, and someone may be working on or have already contributed a fix!
 
 If no existing item describes your issue/feature, great - please file a new issue:
 
