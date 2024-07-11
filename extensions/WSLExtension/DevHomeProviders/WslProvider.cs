@@ -21,7 +21,7 @@ public class WslProvider : IComputeSystemProvider
 
     private readonly IWslManager _wslManager;
 
-    private readonly string _wslEnablementError;
+    private readonly string? _wslEnablementError;
 
     private const uint FeatureEnabledState = 1;
 
@@ -38,7 +38,11 @@ public class WslProvider : IComputeSystemProvider
         _stringResource = stringResource;
         _wslManager = wslManager;
         Icon = new(ExtensionIcon);
-        _wslEnablementError = GetErrorStringForWhenFeatureNotEnabled();
+
+        if (!IsVirtualMachinePlatformFeatureEnabled())
+        {
+            _wslEnablementError = _stringResource.GetLocalized("VirtualMachinePlatformNotInstalled");
+        }
     }
 
     /// <summary>
@@ -111,13 +115,10 @@ public class WslProvider : IComputeSystemProvider
     }
 
     /// <summary>
-    /// Gets the localized error message for when the virtual machine platform Windows optional component
-    /// is not enabled.
+    /// Gets a boolean indicating whether the Virtual Machine Platform feature is enabled.
     /// </summary>
-    /// <returns>
-    /// Returns the error message for when the feature is not enabled and returns an empty string when the feature is enabled.
-    /// </returns>
-    private string GetErrorStringForWhenFeatureNotEnabled()
+    /// <returns>True only when the feature is enabled. False otherwise.</returns>
+    private bool IsVirtualMachinePlatformFeatureEnabled()
     {
         var searcher = new ManagementObjectSearcher($"SELECT InstallState FROM Win32_OptionalFeature WHERE Name = 'VirtualMachinePlatform'");
         var collection = searcher.Get();
@@ -127,13 +128,10 @@ public class WslProvider : IComputeSystemProvider
             var enablementState = instance?.GetPropertyValue("InstallState") as uint?;
             _log.Information($"Found VirtualMachinePlatform feature with enablement state: '{enablementState}'");
 
-            if (enablementState != FeatureEnabledState)
-            {
-                return _stringResource.GetLocalized("VirtualMachinePlatformNotInstalled");
-            }
+            return enablementState == FeatureEnabledState;
         }
 
-        // VirtualMachinePlatform feature enabled, no error message to send.
-        return string.Empty;
+        _log.Error($"The VirtualMachinePlatform feature wasn't found on the machine");
+        return false;
     }
 }
