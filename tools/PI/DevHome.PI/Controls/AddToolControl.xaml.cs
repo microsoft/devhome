@@ -84,7 +84,12 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
     {
         // WinUI3's OpenFileDialog does not work if we're running elevated. So we have to use the old Win32 API.
         var fileName = string.Empty;
-        var filter = "Executables (*.exe)\0*.exe\0Batch Files (*.bat)\0*.bat\0\0";
+        var filter = "Executables (*.exe)\0*.exe\0" +
+             "Batch Files (*.bat)\0*.bat\0" +
+             "Command Files (*.cmd)\0*.cmd\0" +
+             "Management Console Files (*.msc)\0*.msc\0" +
+             "PowerShell Scripts (*.ps1)\0*.ps1\0" +
+             "All Files (*.*)\0*.*\0\0";
         var filterarray = filter.ToCharArray();
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
 
