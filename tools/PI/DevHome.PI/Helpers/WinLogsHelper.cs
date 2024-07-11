@@ -3,11 +3,14 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Threading;
+using DevHome.Common.Extensions;
 using DevHome.PI.Models;
 using Microsoft.Diagnostics.Tracing;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.PI.Helpers;
 
@@ -16,19 +19,18 @@ public class WinLogsHelper : IDisposable
     public const string EtwLogsName = "ETW Logs";
     public const string DebugOutputLogsName = "DebugOutput";
     public const string EventViewerName = "EventViewer";
-    public const string WatsonName = "Watson";
+    public const string WERName = "WER";
 
     private readonly ETWHelper etwHelper;
     private readonly DebugMonitor debugMonitor;
     private readonly EventViewerHelper eventViewerHelper;
-    private readonly WatsonHelper watsonHelper;
     private readonly ObservableCollection<WinLogsEntry> output;
     private readonly Process targetProcess;
+    private readonly WERHelper _werHelper;
 
     private Thread? etwThread;
     private Thread? debugMonitorThread;
     private Thread? eventViewerThread;
-    private Thread? watsonThread;
 
     public WinLogsHelper(Process targetProcess, ObservableCollection<WinLogsEntry> output)
     {
@@ -44,11 +46,10 @@ public class WinLogsHelper : IDisposable
         // Initialize EventViewer
         eventViewerHelper = new EventViewerHelper(targetProcess, output);
 
-        // Initialize Watson
-        watsonHelper = new WatsonHelper(targetProcess, null, output);
+        _werHelper = Application.Current.GetService<WERHelper>();
     }
 
-    public void Start(bool isEtwEnabled, bool isDebugOutputEnabled, bool isEventViewerEnabled, bool isWatsonEnabled)
+    public void Start(bool isEtwEnabled, bool isDebugOutputEnabled, bool isEventViewerEnabled, bool isWEREnabled)
     {
         if (isEtwEnabled)
         {
@@ -65,9 +66,9 @@ public class WinLogsHelper : IDisposable
             StartEventViewerThread();
         }
 
-        if (isWatsonEnabled)
+        if (isWEREnabled)
         {
-            StartWatsonThread();
+            ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged += WEREvents_CollectionChanged;
         }
     }
 
@@ -82,8 +83,8 @@ public class WinLogsHelper : IDisposable
         // Stop Event Viewer
         StopEventViewerThread();
 
-        // Stop Watson
-        StopWatsonThread();
+        // Stop WER
+        ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged -= WEREvents_CollectionChanged;
     }
 
     public void Dispose()
@@ -91,7 +92,6 @@ public class WinLogsHelper : IDisposable
         etwHelper.Dispose();
         debugMonitor.Dispose();
         eventViewerHelper.Dispose();
-        watsonHelper.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -169,28 +169,21 @@ public class WinLogsHelper : IDisposable
         }
     }
 
-    private void StartWatsonThread()
+    private void WEREvents_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        // Stop and close existing thread if any
-        StopWatsonThread();
-
-        // Start a new thread
-        watsonThread = new Thread(() =>
+        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
-            // Start Watson logs
-            watsonHelper.Start();
-        });
-        watsonThread.Name = WatsonName + " Thread";
-        watsonThread.Start();
-    }
+            foreach (WERReport report in e.NewItems)
+            {
+                var filePath = report.Executable ?? string.Empty;
 
-    private void StopWatsonThread()
-    {
-        watsonHelper.Stop();
-
-        if (Thread.CurrentThread != watsonThread)
-        {
-            watsonThread?.Join();
+                // Filter WER events based on the process we're targeting
+                if (filePath.Contains(targetProcess.ProcessName, StringComparison.OrdinalIgnoreCase))
+                {
+                    WinLogsEntry entry = new(report.TimeStamp, WinLogCategory.Error, report.Description, WinLogsHelper.WERName);
+                    output.Add(entry);
+                }
+            }
         }
     }
 
@@ -209,8 +202,8 @@ public class WinLogsHelper : IDisposable
                 case WinLogsTool.EventViewer:
                     StartEventViewerThread();
                     break;
-                case WinLogsTool.Watson:
-                    StartWatsonThread();
+                case WinLogsTool.WER:
+                    ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged += WEREvents_CollectionChanged;
                     break;
             }
         }
@@ -227,8 +220,8 @@ public class WinLogsHelper : IDisposable
                 case WinLogsTool.EventViewer:
                     StopEventViewerThread();
                     break;
-                case WinLogsTool.Watson:
-                    StopWatsonThread();
+                case WinLogsTool.WER:
+                    ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged -= WEREvents_CollectionChanged;
                     break;
             }
         }

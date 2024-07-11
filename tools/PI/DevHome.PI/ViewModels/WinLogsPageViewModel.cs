@@ -50,7 +50,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     private bool isEventViewerEnabled = true;
 
     [ObservableProperty]
-    private bool isWatsonEnabled = true;
+    private bool isWEREnabled = true;
 
     private Process? targetProcess;
     private WinLogsHelper? winLogsHelper;
@@ -90,7 +90,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
                 {
                     IsETWLogsEnabled = ETWHelper.IsUserInPerformanceLogUsersGroup();
                     winLogsHelper = new WinLogsHelper(targetProcess, winLogsOutput);
-                    winLogsHelper.Start(IsETWLogsEnabled, IsDebugOutputEnabled, IsEventViewerEnabled, IsWatsonEnabled);
+                    winLogsHelper.Start(IsETWLogsEnabled, IsDebugOutputEnabled, IsEventViewerEnabled, IsWEREnabled);
                 }
             }
             catch (Win32Exception ex)

@@ -5,6 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:controls="using:DevHome.PI.Controls"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
@@ -146,9 +148,22 @@
                     <TextBlock x:Uid="ExpandedViewAppDiskPerf" Text="{x:Bind viewModel.DiskUsage, Mode=OneWay}"/>
                 </StackPanel>
 
-                <Button HorizontalAlignment="Right" Grid.Column="1" Click="SettingsButton_Click">
-                    <TextBlock Text="&#xe713;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource CaptionTextBlockFontSize}" />
-                </Button>
+                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal" Spacing="10" >
+                        <TextBlock x:Uid="FilterDataToTargetAppToggleLabel" VerticalAlignment="Center"/>
+                        <ToggleSwitch x:Name="ApplyAppFilteringToData" IsOn="{x:Bind viewModel.ApplyAppFiltering, Mode=TwoWay}" MinWidth="0">
+                            <i:Interaction.Behaviors>
+                                <ic:EventTriggerBehavior EventName="Toggled">
+                                    <ic:InvokeCommandAction Command="{x:Bind viewModel.ApplyAppFilteringToDataCommand}" />
+                                </ic:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
+                        </ToggleSwitch>
+                    </StackPanel>
+
+                    <Button Click="SettingsButton_Click">
+                        <TextBlock Text="&#xe713;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource CaptionTextBlockFontSize}" />
+                    </Button>
+                </StackPanel>
             </Grid>
         </StackPanel>
     </Grid>
