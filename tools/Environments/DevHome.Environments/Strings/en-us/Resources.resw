@@ -173,10 +173,6 @@
     <value>Name: Ascending</value>
     <comment>Text for sorting in ascending order of name</comment>
   </data>
-  <data name="SortByAltName.Content" xml:space="preserve">
-    <value>Secondary Name: Ascending</value>
-    <comment>Text for sorting by secondary name</comment>
-  </data>
   <data name="SortByTextBlock.Text" xml:space="preserve">
     <value>Sort:</value>
     <comment>Text labeling sort by text block</comment>
@@ -224,10 +220,6 @@
   <data name="SortByNameDesc.Content" xml:space="preserve">
     <value>Name: Descending</value>
     <comment>Text for sorting in descending order of name</comment>
-  </data>
-  <data name="SortByAltNameDesc.Content" xml:space="preserve">
-    <value>Secondary Name: Descending</value>
-    <comment>Text for sorting by secondary name in descending order</comment>
   </data>
   <data name="SortByLastConnected.Content" xml:space="preserve">
     <value>Last Connected</value>
