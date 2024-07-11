@@ -36,7 +36,7 @@
 
                 <StackPanel x:Name="AppLocalDumpCollection" Visibility="{x:Bind ViewModel.AttachedToApp, Mode=OneWay}" Orientation="Horizontal" Spacing="5" Grid.Row="1" Grid.Column="1">
                     <TextBlock x:Uid="LocalDumpCollectionLabel" VerticalAlignment="Center" Margin="0 0 10 0"/>
-                    <ToggleSwitch x:Uid="LocalDumpCollectionToggle" x:Name="LocalDumpCollectionToggle" IsOn="{x:Bind ViewModel.LocalCollectionEnabledForApp, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.RunningAsAdmin}" Toggled="LocalDumpCollection_Toggled" Margin="0 0 -70 0" />
+                    <ToggleSwitch x:Uid="LocalDumpCollectionToggle" x:Name="LocalDumpCollectionToggle" IsOn="{x:Bind ViewModel.LocalCollectionEnabledForApp, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.RunningAsAdmin}" Toggled="LocalDumpCollection_Toggled" MinWidth="0"/>
                     <Button Visibility="{x:Bind ViewModel.AllowElevationOption}" Command="{x:Bind ViewModel.RunAsAdminCommand}">
                         <StackPanel Orientation="Horizontal" Spacing="10">
                             <SymbolIcon Symbol="Admin"/>

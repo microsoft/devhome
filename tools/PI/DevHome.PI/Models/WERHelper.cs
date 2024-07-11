@@ -253,39 +253,36 @@ internal sealed class WERHelper : IDisposable
         var converter = new Int32Converter();
         var pid = (int?)converter.ConvertFromString(processId);
 
-        lock (_werReports)
+        // When adding/updating a report, we need to do it on the dispatcher thread
+        _dispatcher.TryEnqueue(() =>
         {
             // Do we have an entry for this item already (created from the WER files on disk)
             var werReport = FindMatchingReport(timeGenerated, executable, pid);
 
-            // When adding/updating a report, we need to do it on the dispatcher thread
-            _dispatcher.TryEnqueue(() =>
+            var createdReport = false;
+
+            if (werReport is null)
             {
-                var createdReport = false;
+                werReport = new WERReport();
+                createdReport = true;
+                werReport.TimeStamp = timeGenerated;
+                werReport.Executable = executable;
+                werReport.Pid = pid ?? 0;
+            }
 
-                if (werReport is null)
-                {
-                    werReport = new WERReport();
-                    createdReport = true;
-                    werReport.TimeStamp = timeGenerated;
-                    werReport.Executable = executable;
-                    werReport.Pid = pid ?? 0;
-                }
+            // Populate the report
+            werReport.FilePath = filepath;
+            werReport.Module = moduleName;
+            werReport.EventGuid = eventGuid;
+            werReport.Description = description;
+            werReport.FailureBucket = GenerateFailureBucketFromEventLogDescription(description);
 
-                // Populate the report
-                werReport.FilePath = filepath;
-                werReport.Module = moduleName;
-                werReport.EventGuid = eventGuid;
-                werReport.Description = description;
-                werReport.FailureBucket = GenerateFailureBucketFromEventLogDescription(description);
-
-                // Don't add the report until it's fully populated so we have as much information as possible for our listeners
-                if (createdReport)
-                {
-                    _werReports.Add(werReport);
-                }
-            });
-        }
+            // Don't add the report until it's fully populated so we have as much information as possible for our listeners
+            if (createdReport)
+            {
+                _werReports.Add(werReport);
+            }
+        });
     }
 
     private void FindOrCreateWEREntryFromLocalDumpFile(string crashDumpFile)
@@ -329,52 +326,50 @@ internal sealed class WERHelper : IDisposable
         var converter = new Int32Converter();
         var pid = (int?)converter.ConvertFromString(processID);
 
-        lock (_werReports)
+        _dispatcher.TryEnqueue(() =>
         {
             // Do we have an entry for this item already (created from the event log entry)
             var werReport = FindMatchingReport(timeGenerated, fileInfo.Name, pid);
 
-            _dispatcher.TryEnqueue(() =>
+            var createdReport = false;
+
+            if (werReport is null)
             {
-                var createdReport = false;
+                werReport = new WERReport();
+                createdReport = true;
+                werReport.TimeStamp = timeGenerated;
+                werReport.Executable = fileInfo.Name;
+                werReport.Pid = pid ?? 0;
+            }
 
-                if (werReport is null)
-                {
-                    werReport = new WERReport();
-                    createdReport = true;
-                    werReport.TimeStamp = timeGenerated;
-                    werReport.Executable = fileInfo.Name;
-                    werReport.Pid = pid ?? 0;
-                }
+            // Populate the report
+            werReport.CrashDumpPath = crashDumpFile;
 
-                // Populate the report
-                werReport.CrashDumpPath = crashDumpFile;
-
-                // Don't add the report until it's fully populated so we have as much information as possible for our listeners
-                if (createdReport)
-                {
-                    _werReports.Add(werReport);
-                }
-            });
-        }
+            // Don't add the report until it's fully populated so we have as much information as possible for our listeners
+            if (createdReport)
+            {
+                _werReports.Add(werReport);
+            }
+        });
 
         return;
     }
 
     private WERReport? FindMatchingReport(DateTime timestamp, string executable, int? pid)
     {
+        Debug.Assert(_dispatcher.HasThreadAccess, "This method should only be called on the dispatcher thread");
         Debug.Assert(timestamp.Kind == DateTimeKind.Local, "TimeGenerated should be in local time");
         var timestampIndex = timestamp.Ticks;
 
-        // It's a match if the timestamp is within 1 minute of the event log entry
-        var ticksWindow = new TimeSpan(0, 1, 0).Ticks;
+        // It's a match if the timestamp is within 2 minute of the event log entry
+        var ticksWindow = new TimeSpan(0, 2, 0).Ticks;
 
         WERReport? werReport = null;
 
         // See if we can find a matching entry in the list
         foreach (var report in _werReports)
         {
-            if (report.Executable == executable && report.Pid == pid)
+            if (report.Executable.Equals(executable, StringComparison.OrdinalIgnoreCase) && report.Pid == pid)
             {
                 // See if the timestamps are "close enough"
                 Debug.Assert(report.TimeStamp.Kind == DateTimeKind.Local, "TimeGenerated should be in local time");

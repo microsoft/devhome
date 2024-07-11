@@ -15,13 +15,9 @@ public partial class WERDisplayInfo : ObservableObject
     [ObservableProperty]
     private string _failureBucket;
 
-    [ObservableProperty]
-    private string _analyzeResults;
-
     public WERDisplayInfo(WERReport report)
     {
         Report = report;
-        AnalyzeResults = InitializeAnalyzeResults();
         FailureBucket = UpdateFailureBucket();
         Report.PropertyChanged += Report_PropertyChanged;
     }
@@ -30,7 +26,6 @@ public partial class WERDisplayInfo : ObservableObject
     {
         if (e.PropertyName == nameof(WERReport.CrashDumpPath))
         {
-            AnalyzeResults = InitializeAnalyzeResults();
             FailureBucket = UpdateFailureBucket();
         }
         else if (e.PropertyName == nameof(WERReport.FailureBucket))
@@ -41,48 +36,7 @@ public partial class WERDisplayInfo : ObservableObject
 
     private string UpdateFailureBucket()
     {
-        if (string.IsNullOrEmpty(AnalyzeResults))
-        {
-            return Report.FailureBucket;
-        }
-
-        string[] lines = AnalyzeResults.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (string line in lines)
-        {
-            if (line.Contains("FAILURE_BUCKET_ID:"))
-            {
-                return line.Substring(line.IndexOf(':') + 1).Trim();
-            }
-        }
-
-        // If we weren't able to get a failure bucket from !analyze results, return the one from the WER data
+        // When we provide support for pluggable analysis of cabs, we should call the appropriate analysis tool here to create better failure buckets
         return Report.FailureBucket;
-    }
-
-    private string InitializeAnalyzeResults()
-    {
-        if (string.IsNullOrEmpty(Report.CrashDumpPath))
-        {
-            return string.Empty;
-        }
-
-        // Where the analysis file should be....
-        var analysisFile = Report.CrashDumpPath + ".analyze";
-
-        if (!File.Exists(analysisFile))
-        {
-            return "Cab has not been analyzed yet";
-        }
-
-        try
-        {
-            return File.ReadAllText(analysisFile);
-        }
-        catch
-        {
-        }
-
-        return "Unable to access data";
     }
 }
