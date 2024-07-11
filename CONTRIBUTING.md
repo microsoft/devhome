@@ -28,7 +28,7 @@ Therefore, if you do file issues or create PRs, please keep an eye on your GitHu
 
 ## Before you start, file an issue
 
-Please follow this simple rule to help us eliminate any unnecessary wasted effort & frustration, and ensure efficient and effective use of everyone's time - yours, ours, and other community members':
+Please follow this simple rule to help us eliminate any unnecessary wasted effort & frustration, and ensure an efficient and effective use of everyone's time - yours, ours, and other community members':
 
 > 👉 If you have a question, think you've discovered an issue, would like to propose a new feature, etc., then find/file an issue **BEFORE** starting work to fix/implement it.
 
