@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -153,7 +154,7 @@ public partial class ExternalTool : ObservableObject
                 // false otherwise. However, if there's no registered app for the protocol, it shows
                 // the "get an app from the store" dialog, and returns true. So we can't rely on the
                 // return value to know if the tool was actually launched.
-                var result = await Launcher.LaunchUriAsync(new Uri($"{parsedArguments}"));
+                var result = await Launcher.LaunchUriAsync(new Uri(parsedArguments));
                 if (result != true)
                 {
                     // We get here if the user supplied a valid registered protocol, but the app failed to launch.
@@ -170,18 +171,18 @@ public partial class ExternalTool : ObservableObject
                 }
                 else
                 {
-                    string finalExecutable;
-                    string finalArguments;
+                    var finalExecutable = string.Empty;
+                    var finalArguments = string.Empty;
 
-                    if (Executable.EndsWith(".msc", StringComparison.OrdinalIgnoreCase))
+                    if (Path.GetExtension(Executable).Equals(".msc", StringComparison.OrdinalIgnoreCase))
                     {
                         // Note: running most msc files requires elevation.
                         finalExecutable = "mmc.exe";
                         finalArguments = $"{Executable} {parsedArguments}";
                     }
-                    else if (Executable.EndsWith(".ps1", StringComparison.OrdinalIgnoreCase))
+                    else if (Path.GetExtension(Executable).Equals(".ps1", StringComparison.OrdinalIgnoreCase))
                     {
-                        // Note: running powershell scripts might need setting the execution policy.
+                        // Note: running powershell scripts might require setting the execution policy.
                         finalExecutable = "powershell.exe";
                         finalArguments = $"{Executable} {parsedArguments}";
                     }
