@@ -1808,9 +1808,9 @@
     <value>Add options to create your environment</value>
     <comment>Description for the configure environment page</comment>
   </data>
-  <data name="ErrorRetrievingAdaptiveCardSession.Title" xml:space="preserve">
-    <value>There was an error retrieving the adaptive card session from the extension</value>
-    <comment>Error text display when we are unable to retrieve the adaptive card information from an extension</comment>
+  <data name="ErrorLoadingCreationUITitle" xml:space="preserve">
+    <value>There was an error loading the data required to create {0} environments</value>
+    <comment>Locked={"{0}"} Error text display when we are unable to retrieve the creation data for a Dev Home provider. {0} is the name of the provider</comment>
   </data>
   <data name="EnvironmentCreationReviewTabTitle" xml:space="preserve">
     <value>Environment</value>
@@ -1867,9 +1867,9 @@
     <value>We've started creating your environment</value>
     <comment>Text to tell the user that an environment is being created. Environments can be local or cloud virtual machines</comment>
   </data>
-  <data name="EnvironmentCreationAdaptiveCardLoadingMessage" xml:space="preserve">
-    <value>Loading adaptive card from the {0} provider</value>
-    <comment>Text to tell the user that Dev Home is loading the adaptive card content from a specific Dev Home extension provider. {0} is the display name of the provider</comment>
+  <data name="EnvironmentCreationUILoadingMessage" xml:space="preserve">
+    <value>Loading data needed to create {0} environments</value>
+    <comment>Text to tell the user that Dev Home is loading the creation UX from a specific Dev Home extension provider. {0} is the display name of the provider</comment>
   </data>
   <data name="RepoToolNoRepositoriesMessage" xml:space="preserve">
     <value>Added repositories are found in your {0} account and will appear here.</value>
