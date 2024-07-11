@@ -281,21 +281,21 @@
     <value>Disk usage</value>
     <comment>Refers to how much disk storage (hard drive/solid state drive) the process is utilizing.</comment>
   </data>
-  <data name="WatsonsHeaderTextBlock.Text" xml:space="preserve">
+  <data name="WERHeaderTextBlock.Text" xml:space="preserve">
     <value>WER Reports</value>
     <comment>The contents of a WER crash dumps.</comment>
   </data>
-  <data name="TimeGeneratedColumn.Header" xml:space="preserve">
+  <data name="WERTimeGeneratedColumn.Header" xml:space="preserve">
     <value>Time generated</value>
-    <comment>The time at which the Watson report was generated.</comment>
+    <comment>The time at which the WER report was generated.</comment>
   </data>
-  <data name="FaultingExecutableColumn.Header" xml:space="preserve">
+  <data name="WERFaultingExecutableColumn.Header" xml:space="preserve">
     <value>Faulting executable</value>
     <comment>Refers to the process/application executable which caused the fault which generated the crash report</comment>
   </data>
-  <data name="WatsonInfoTextBox.Text" xml:space="preserve">
-    <value>Info about the Watson crash</value>
-    <comment>Refers to the Watson diagnostic information about a process crash.</comment>
+  <data name="WERInfoTextBox.Text" xml:space="preserve">
+    <value>Info about the Windows Error Report</value>
+    <comment>Refers to the WER diagnostic information about a process crash.</comment>
   </data>
   <data name="WinLogsHeaderTextBlock.Text" xml:space="preserve">
     <value>Windows logs</value>
@@ -313,9 +313,9 @@
     <value>Entries from the event log for the target app</value>
     <comment>Tooltip for whether to enable event viewer logs in the log view output.</comment>
   </data>
-  <data name="WatsonCheckbox.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="WERCheckbox.ToolTipService.ToolTip" xml:space="preserve">
     <value>Entries from the event log for the target app</value>
-    <comment>Tooltip for whether to Watson report logs in the log view output.</comment>
+    <comment>Tooltip for whether to WER report logs are shown in the log view output.</comment>
   </data>
   <data name="ClearWinLogsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Clear the list</value>
@@ -565,9 +565,9 @@
     <value>The app is trying to access the file '{0}', but this is locked by an unknown process</value>
     <comment>{Locked="{0}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name.</comment>
   </data>
-  <data name="WatsonStartErrorMessage" xml:space="preserve">
-    <value>Could not start Watson</value>
-    <comment>Refers to being unable to start monitoring the Watson error logs.</comment>
+  <data name="WERStartErrorMessage" xml:space="preserve">
+    <value>Could not start WER Monitoring</value>
+    <comment>Refers to being unable to start monitoring the WER error logs.</comment>
   </data>
   <data name="WinLogCategoryError" xml:space="preserve">
     <value>Error</value>
@@ -689,8 +689,8 @@
     <value>Security issue</value>
     <comment>Describes an issue related to security.</comment>
   </data>
-  <data name="FaultingModuleColumn.Header" xml:space="preserve">
-    <value>Faulting module</value>
+  <data name="WERBucketColumn.Header" xml:space="preserve">
+    <value>Failure Bucket ID</value>
     <comment>Refers to the module which caused the fault which generated the crash report</comment>
   </data>
   <data name="GenericInsightDescription" xml:space="preserve">
@@ -941,6 +941,10 @@
     <value>Detach the diagnostic bar from the target application</value>
     <comment>The tooltip text for a button that detaches the bar from the target application.</comment>
   </data>
+  <data name="WERDumpColumn.Header" xml:space="preserve">
+    <value>Dump file</value>
+    <comment>Header text for the link to a WER dump</comment>
+  </data>
   <data name="ActivationTextBlock.Text" xml:space="preserve">
     <value>Activation</value>
     <comment>Header text for a group of radio buttons indicating the activation type</comment>
@@ -1064,5 +1068,37 @@
   <data name="FileDialogFilterPowershell" xml:space="preserve">
     <value>PowerShell Scripts</value>
     <comment>Filter string to specify that the file dialog should include PowerShell files</comment>
+  </data>
+  <data name="LocalDumpCollectionLabel.Text" xml:space="preserve">
+    <value>Local WER collection for app</value>
+    <comment>Label for Windows Error reporting toggle switch</comment>
+  </data>
+  <data name="LocalDumpCollectionToggle.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Toggle settings to allow capture of Windows Error Reporting dumps for offline analysis</value>
+    <comment>Tooltip for Windows Error reporting toggle switch</comment>
+  </data>
+  <data name="LocalDumpMoreInfo.Content" xml:space="preserve">
+    <value>More</value>
+    <comment>Label for a link that navigates the user to a location to learn more about WER local dumps</comment>
+  </data>
+  <data name="RunElevatedButtonForWER.Text" xml:space="preserve">
+    <value>Change</value>
+    <comment>The contents of a button to allow the user to trigger elevation to change WER settings</comment>
+  </data>
+  <data name="RunElevatedButtonForWER.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Project Ironsides needs to run as Admin in order to modify WER collection for an app.</value>
+    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Project Ironsides as admin to change WER settings</comment>
+  </data>
+  <data name="DumpInfoSelectorItem.Text" xml:space="preserve">
+    <value>Dump Info</value>
+    <comment>Selector Pivot that shows information about a Dump File</comment>
+  </data>
+  <data name="FilterDataToTargetAppToggleLabel.Text" xml:space="preserve">
+    <value>Filter Data to Target App</value>
+    <comment>Label on a toggle button that controls whether presented data is filtered to the selected app</comment>
+  </data>
+  <data name="FilterDataToTargetAppToggleLabel.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Controls whether data presented is for the entire system or filtered to the selected app</value>
+    <comment>Tooltip for the FilterDataToTargetApp toggle</comment>
   </data>
 </root>
