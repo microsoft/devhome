@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Diagnostics;
+using CommunityToolkit.WinUI.UI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.PI.Models;
 using DevHome.PI.Telemetry;
@@ -59,11 +59,11 @@ public sealed partial class WERPage : Page
         }
     }
 
-    private void WERDataGrid_Sorting(object sender, CommunityToolkit.WinUI.UI.Controls.DataGridColumnEventArgs e)
+    private void WERDataGrid_Sorting(object sender, DataGridColumnEventArgs e)
     {
         if (e.Column.Tag is not null)
         {
-            bool sortAscending = e.Column.SortDirection == CommunityToolkit.WinUI.UI.Controls.DataGridSortDirection.Ascending;
+            bool sortAscending = e.Column.SortDirection == DataGridSortDirection.Ascending;
 
             // Flip the sort direction
             sortAscending = !sortAscending;
@@ -88,10 +88,10 @@ public sealed partial class WERPage : Page
                 ViewModel.SortByCrashDumpPath(sortAscending);
             }
 
-            e.Column.SortDirection = sortAscending ? CommunityToolkit.WinUI.UI.Controls.DataGridSortDirection.Ascending : CommunityToolkit.WinUI.UI.Controls.DataGridSortDirection.Descending;
+            e.Column.SortDirection = sortAscending ? DataGridSortDirection.Ascending : DataGridSortDirection.Descending;
 
             // Clear the sort direction for the other columns
-            foreach (CommunityToolkit.WinUI.UI.Controls.DataGridColumn column in WERDataGrid.Columns)
+            foreach (DataGridColumn column in WERDataGrid.Columns)
             {
                 if (column != e.Column)
                 {
