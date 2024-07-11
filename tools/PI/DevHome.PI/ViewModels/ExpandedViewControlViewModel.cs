@@ -96,7 +96,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
 
         links = new();
 
-        _applyAppFiltering = Settings.Default.ApplyAppFilteringToData;
+        ApplyAppFiltering = Settings.Default.ApplyAppFilteringToData;
 
         appSettingsVisibility = TargetAppData.Instance.TargetProcess is not null ? Visibility.Visible : Visibility.Collapsed;
 
@@ -284,11 +284,11 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         TargetAppData.Instance.ClearAppData();
     }
 
-    public void ApplyAppFilteringToData_Toggled(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    public void ApplyAppFilteringToData()
     {
-        ToggleSwitch? switchControl = sender as ToggleSwitch;
-        Debug.Assert(switchControl is not null, "What is the sender?");
-        Settings.Default.ApplyAppFilteringToData = switchControl.IsOn;
+        // This command is called before the control has had a chance to toggle the ApplyAppFiltering setting.
+        Settings.Default.ApplyAppFilteringToData = !ApplyAppFiltering;
         Settings.Default.Save();
     }
 }

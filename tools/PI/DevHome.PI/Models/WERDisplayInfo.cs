@@ -2,13 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DevHome.PI.Models;
@@ -46,7 +41,7 @@ public partial class WERDisplayInfo : ObservableObject
 
     private string UpdateFailureBucket()
     {
-        if (AnalyzeResults == string.Empty)
+        if (string.IsNullOrEmpty(AnalyzeResults))
         {
             return Report.FailureBucket;
         }
@@ -67,7 +62,7 @@ public partial class WERDisplayInfo : ObservableObject
 
     private string InitializeAnalyzeResults()
     {
-        if (Report.CrashDumpPath is null || Report.CrashDumpPath == string.Empty)
+        if (string.IsNullOrEmpty(Report.CrashDumpPath))
         {
             return string.Empty;
         }

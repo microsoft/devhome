@@ -43,7 +43,7 @@
                             <TextBlock x:Uid="RunElevatedButtonForWER" Margin="0"/>
                         </StackPanel>
                     </Button>
-                    <HyperlinkButton x:Uid="LocalDumpMoreInfo" NavigateUri="https://learn.microsoft.com/windows/win32/wer/collecting-user-mode-dumps" />
+                    <HyperlinkButton x:Uid="LocalDumpMoreInfo" NavigateUri="https://go.microsoft.com/fwlink/?linkid=2279804" />
                 </StackPanel>
             </Grid>
         </StackPanel>
@@ -81,11 +81,11 @@
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
-        <StackPanel Grid.Row="2" Orientation="Vertical">
+        <StackPanel Grid.Row="2" Orientation="Vertical" Spacing="10">
             <SelectorBar x:Name="InfoSelector" SelectionChanged="SelectorBar_SelectionChanged">
                 <SelectorBarItem x:Uid="DumpInfoSelectorItem" IsSelected="True"/>
             </SelectorBar>
-            <ScrollViewer Margin="0,10,0,0" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <TextBox
                     x:Uid="WERInfoTextBox" x:Name="WERInfo" IsReadOnly="True"
                     Text="{x:Bind ((models:WERDisplayInfo)WERDataGrid.SelectedItem).Report.Description, Mode=OneWay}"
