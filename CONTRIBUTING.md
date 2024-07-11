@@ -106,11 +106,11 @@ Generally, we categorize issues in the following way, which is largely derived f
 * ["Tasks"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Task%22+) are usually new pieces of functionality that aren't yet implemented for Dev Home. These are usually smaller features, which we believe
   - could be a single, atomic PR
   - don't require much design consideration, or we've already written the spec for the larger feature they belong to.
-* ["Features"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Feature%22+) are larger pieces of new functionality. These are usually things we believe would require larger discussion of how they should be implemented, or they'll require some complicated new settings. They might just be features that are composed of many individual tasks. Often times, with features, we like to have a spec written before development work is started, to make sure we're all on the same page (see below).
+* ["Features"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Feature%22+) are larger pieces of new functionality. These are usually things we believe would require a larger discussion of how they should be implemented, or they'll require some complicated new settings. They might just be features that are composed of many individual tasks. Oftentimes, with features, we like to have a spec written before development work is started, to make sure we're all on the same page (see below).
 
-Bugs and tasks are obviously the easiest to get started with, but don't feel afraid of features either!
+Bugs and tasks are the easiest to get started with, but don't feel afraid of features either!
 
-Generally, we like to assign issues that generally belong to somebody's area of expertise to the team member that owns that area. This doesn't mean the community can't jump in -- they should reach out and have a chat with the assignee to see if it'd okay to take. If an issue was assigned more than a month ago, there's a good chance it's fair game to try yourself.
+Generally, we like to assign issues that generally belong to somebody's area of expertise to the team member who owns that area. This doesn't mean the community can't jump in -- they should reach out and have a chat with the assignee to see if it'd be okay to take. If an issue was assigned more than a month ago, there's a good chance it's fair game to try yourself.
 
 ### Contributing to Windows Customization
 
