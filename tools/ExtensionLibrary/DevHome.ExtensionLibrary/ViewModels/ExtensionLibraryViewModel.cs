@@ -19,6 +19,7 @@ using Serilog;
 using Windows.ApplicationModel;
 using Windows.Data.Json;
 using Windows.Storage;
+using static DevHome.Common.Helpers.CommonConstants;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
 
@@ -35,7 +36,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     // their class Ids to this set.
     private readonly HashSet<string> _internalClassIdsToBeShownInExtensionsPage = new()
     {
-        CommonConstants.HyperVExtensionClassId,
+        HyperVExtensionClassId,
+        WSLExtensionClassId,
     };
 
     public ObservableCollection<StorePackageViewModel> StorePackagesList { get; set; }

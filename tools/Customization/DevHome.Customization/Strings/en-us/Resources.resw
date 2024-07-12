@@ -255,7 +255,7 @@
   </data>
   <data name="SettingsAutoSuggestBox.PlaceholderText" xml:space="preserve">
     <value>Search</value>
-    <comment>The placholder text for the settings auto suggest box</comment>
+    <comment>The placeholder text for the settings auto suggest box</comment>
   </data>
   <data name="ShowEmptyDrivesCard.Header" xml:space="preserve">
     <value>Show empty drives</value>

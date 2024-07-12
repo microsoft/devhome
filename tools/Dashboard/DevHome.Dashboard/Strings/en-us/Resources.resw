@@ -211,15 +211,15 @@
   </data>
   <data name="WidgetErrorCardCreate1Text" xml:space="preserve">
     <value>This widget cannot be created</value>
-    <comment>Message shown when the user tries to create a widet but the widget provider is not installed.</comment>
+    <comment>Message shown when the user tries to create a widget but the widget provider is not installed.</comment>
   </data>
   <data name="WidgetErrorCardCreate2Text" xml:space="preserve">
     <value>Please ensure the app that provides this widget is installed.</value>
-    <comment>Second part of message shown when the user tries to create a widet but the widget provider is not installed.</comment>
+    <comment>Second part of message shown when the user tries to create a widget but the widget provider is not installed.</comment>
   </data>
   <data name="WidgetErrorCardNoWidgetsText" xml:space="preserve">
     <value>There are no widgets available to add</value>
-    <comment>Message shown when the user tries to create a widet but there are no installed widgets.</comment>
+    <comment>Message shown when the user tries to create a widget but there are no installed widgets.</comment>
   </data>
   <data name="UpdateWebExpContent" xml:space="preserve">
     <value>Please ensure you have the latest version of the Windows Web Experience Pack installed.</value>
@@ -243,7 +243,7 @@
   </data>
   <data name="WidgetSizeSelected" xml:space="preserve">
     <value>Selected</value>
-    <comment>State of selected size for automatiom purposes</comment>
+    <comment>State of selected size for automation purposes</comment>
   </data>
   <data name="CouldNotCreateWidgetError" xml:space="preserve">
     <value>Dev Home encountered an error. The widget could not be created.</value>

@@ -36,9 +36,9 @@
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
                 Content="{x:Bind helpers:WinLogsHelper.EventViewerName}"/>
             <CheckBox
-                x:Uid="WatsonCheckbox" x:Name="WatsonCheckbox" IsChecked="{x:Bind ViewModel.IsWatsonEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.Watson}"
+                x:Uid="WERCheckbox" x:Name="WERCheckbox" IsChecked="{x:Bind ViewModel.IsWEREnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.WER}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
-                Content="{x:Bind helpers:WinLogsHelper.WatsonName}"/>
+                Content="{x:Bind helpers:WinLogsHelper.WERName}"/>
             <Button
                 x:Uid="ClearWinLogsButton" x:Name="ClearWinLogsButton"
                 BorderThickness="0" Command="{x:Bind ViewModel.ClearWinLogsCommand}">

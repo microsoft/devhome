@@ -59,12 +59,6 @@
     <ProjectReference Include="..\HyperVExtension.HostGuestCommunication\HyperVExtension.HostGuestCommunication.csproj" />
     <ProjectReference Include="..\Telemetry\HyperVExtension.Telemetry.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
 
   <ItemGroup>
     <ReferenceCopyLocalPaths Include="$(ProjectDir)..\DevSetupEngineIdl\bin\$(Platform)\$(Configuration)\\Microsoft.Windows.DevHome.DevSetupEngine.winmd" />
