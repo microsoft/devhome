@@ -55,7 +55,14 @@ public class WslManager : IWslManager
 
         foreach (var distribution in await GetInformationOnAllRegisteredDistributionsAsync())
         {
-            _registeredWslDistributions.Add(_wslRegisteredDistributionFactory(distribution.Value));
+            try
+            {
+                _registeredWslDistributions.Add(_wslRegisteredDistributionFactory(distribution.Value));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"Unable to add the distribution: {distribution.Key}");
+            }
         }
 
         return _registeredWslDistributions;
