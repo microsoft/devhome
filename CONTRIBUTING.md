@@ -4,9 +4,9 @@ Below is our guidance for how to report issues, propose new features, and submit
 
 ## Open development workflow
 
-The Dev Home team is VERY active in this GitHub Repo. We live in it all day long and carry out all our development in the open!
+The Dev Home team is VERY active in this GitHub Repo. In fact, we live in it all day long and carry out all our development in the open!
 
-When the team finds issues, we file them in the repo. When we propose new ideas or think up new features, we file new feature requests. When we work on fixes or features, we create branches and work on those improvements. And when PRs are reviewed, we review them in public - including all the good, the bad, and the ugly parts.
+When the team finds issues, we file them in the repo. When we propose new ideas or think up new features, we file new feature requests. When we work on fixes or features, we create branches and work on those improvements. And when PRs are reviewed, we review in public - including all the good, the bad, and the ugly parts.
 
 The point of doing all this work in public is to ensure that we are holding ourselves to a high degree of transparency, and so that the community sees that we apply the same processes and hold ourselves to the same quality bar as we do to community-submitted issues and PRs. We also want to make sure that we expose our team culture and "tribal knowledge" that is inherent in any closely-knit team, which often contains considerable value to those new to the project who are trying to figure out "why the heck does this thing look/work like this???"
 
@@ -28,13 +28,13 @@ Therefore, if you do file issues or create PRs, please keep an eye on your GitHu
 
 ## Before you start, file an issue
 
-Please follow this simple rule to help us eliminate any unnecessary wasted effort & frustration, and ensure efficient and effective use of everyone's time - yours, ours, and other community members:
+Please follow this simple rule to help us eliminate any unnecessary wasted effort & frustration, and ensure an efficient and effective use of everyone's time - yours, ours, and other community members':
 
 > 👉 If you have a question, think you've discovered an issue, would like to propose a new feature, etc., then find/file an issue **BEFORE** starting work to fix/implement it.
 
 ### Search existing issues first
 
-Before filing a new issue, search existing open and closed issues first: This project is moving fast! Someone else has likely found the problem you're seeing, and someone may be working on or have already contributed a fix!
+Before filing a new issue, search existing open and closed issues first: This project is moving fast! It is likely someone else has found the problem you're seeing, and someone may be working on or have already contributed a fix!
 
 If no existing item describes your issue/feature, great - please file a new issue:
 
@@ -106,11 +106,11 @@ Generally, we categorize issues in the following way, which is largely derived f
 * ["Tasks"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Task%22+) are usually new pieces of functionality that aren't yet implemented for Dev Home. These are usually smaller features, which we believe
   - could be a single, atomic PR
   - don't require much design consideration, or we've already written the spec for the larger feature they belong to.
-* ["Features"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Feature%22+) are larger pieces of new functionality. These are usually things we believe would require larger discussion of how they should be implemented, or they'll require some complicated new settings. They might just be features that are composed of many individual tasks. Often times, with features, we like to have a spec written before development work is started, to make sure we're all on the same page (see below).
+* ["Features"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Feature%22+) are larger pieces of new functionality. These are usually things we believe would require a larger discussion of how they should be implemented, or they'll require some complicated new settings. They might just be features that are composed of many individual tasks. Oftentimes, with features, we like to have a spec written before development work is started, to make sure we're all on the same page (see below).
 
-Bugs and tasks are obviously the easiest to get started with, but don't feel afraid of features either!
+Bugs and tasks are the easiest to get started with, but don't feel afraid of features either!
 
-Generally, we like to assign issues that generally belong to somebody's area of expertise to the team member that owns that area. This doesn't mean the community can't jump in -- they should reach out and have a chat with the assignee to see if it'd okay to take. If an issue was assigned more than a month ago, there's a good chance it's fair game to try yourself.
+Generally, we like to assign issues that generally belong to somebody's area of expertise to the team member who owns that area. This doesn't mean the community can't jump in -- they should reach out and have a chat with the assignee to see if it'd be okay to take. If an issue was assigned more than a month ago, there's a good chance it's fair game to try yourself.
 
 ### Contributing to Windows Customization
 
