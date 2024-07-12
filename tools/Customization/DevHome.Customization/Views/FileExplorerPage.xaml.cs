@@ -112,11 +112,7 @@ public sealed partial class FileExplorerPage : Page
 
     private void RemoveButton_Click(object sender, RoutedEventArgs e)
     {
-        if (ValidateRepositoryPath(RemovePathTextBox.Text))
-        {
-            ViewModel.RemoveRepositoryPath(RemovePathTextBox.Text);
-        }
-
+        ViewModel.RemoveRepositoryPath(RemovePathTextBox.Text);
         ViewModel.RefreshTrackedRepositories();
     }
 }
