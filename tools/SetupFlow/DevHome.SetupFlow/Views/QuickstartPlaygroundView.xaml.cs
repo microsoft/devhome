@@ -27,15 +27,15 @@ public sealed partial class QuickstartPlaygroundView : UserControl
     private ContentDialog? _adaptiveCardContentDialog;
 
     /// <summary>
-    /// Used to keep track of the current adaptice card session.
-    /// The session should not be reloaded in the same QSP instance.
+    /// Used to keep track of the current adaptive card session.
+    /// The session should not be reloaded in the same QSP instance with the same provider.
     /// If it is, Content of the content dialog might change depending on
     /// user actions between reloads of _adaptiveCardSession2.
     /// </summary>
     private IExtensionAdaptiveCardSession2? _adaptiveCardSession2;
 
     /// <summary>
-    ///  Because QSP can use different providers, the session should be reloaded
+    ///  Because QSP can use different providers, the session *should* be reloaded
     ///  if the provider changes.
     /// </summary>
     private bool _shouldReloadAdaptiveCardSession;
@@ -110,6 +110,7 @@ public sealed partial class QuickstartPlaygroundView : UserControl
         _shouldReloadAdaptiveCardSession = true;
         ViewModel.OnQuickstartSelectionChanged();
         await ShowExtensionInitializationUI();
+        _shouldReloadAdaptiveCardSession = false;
     }
 
     private void NegativeFeedbackConfirmation_Click(object sender, RoutedEventArgs e)
@@ -183,6 +184,8 @@ public sealed partial class QuickstartPlaygroundView : UserControl
         {
             XamlRoot = this.XamlRoot,
             Content = extensionAdaptiveCardPanel,
+
+            // Set the theme of the content dialog box
             RequestedTheme = _themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light,
         };
 
@@ -220,7 +223,7 @@ public sealed partial class QuickstartPlaygroundView : UserControl
     /// <summary>
     /// Changed the dialog theme if the windows theme changes.  This is done in 3 steps.
     /// 1. Reload the renderer.  This forces the renderer to use the correct host config file.
-    /// 2. Reload the adaptive card (Adaptive card content will not change themes)
+    /// 2. Reload the adaptive card (Adaptive card content will not change themes unless re-loaded)
     /// 3. Replace the Content of the content dialog.
     /// </summary>
     /// <param name="sender">Unused</param>
