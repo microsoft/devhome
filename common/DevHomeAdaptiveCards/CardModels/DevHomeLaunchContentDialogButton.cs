@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.DevHomeAdaptiveCards.CardInterfaces;
+using DevHome.Common.Extensions;
 using DevHome.Common.Views.AdaptiveCardViews;
+using DevHome.Contracts.Services;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
 
@@ -56,7 +59,8 @@ public partial class DevHomeLaunchContentDialogButton : IDevHomeSettingsCardNonS
             return;
         }
 
-        var dialog = new ContentDialogWithNonInteractiveContent(dialogContent);
+        var themeResource = Application.Current.GetService<IThemeSelectorService>();
+        var dialog = new ContentDialogWithNonInteractiveContent(dialogContent, themeResource);
 
         dialog.XamlRoot = senderObj.XamlRoot;
 

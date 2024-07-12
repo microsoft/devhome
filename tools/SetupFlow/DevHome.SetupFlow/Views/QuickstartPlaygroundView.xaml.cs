@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
+using DevHome.Contracts.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -21,7 +22,11 @@ public sealed partial class QuickstartPlaygroundView : UserControl
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(QuickstartPlaygroundView));
 
+    private readonly IThemeSelectorService _themeSelector;
+
     private ContentDialog? _adaptiveCardContentDialog;
+
+    private IExtensionAdaptiveCardSession2? _adaptiveCardSession2;
 
     public QuickstartPlaygroundViewModel ViewModel
     {
@@ -30,6 +35,8 @@ public sealed partial class QuickstartPlaygroundView : UserControl
 
     public QuickstartPlaygroundView()
     {
+        _themeSelector = Application.Current.GetService<IThemeSelectorService>();
+        _themeSelector.ThemeChanged += OnThemeChanged;
         ViewModel = Application.Current.GetService<QuickstartPlaygroundViewModel>();
         ViewModel.PropertyChanged += ViewModel_PropertyChanged;
         this.InitializeComponent();
@@ -148,11 +155,91 @@ public sealed partial class QuickstartPlaygroundView : UserControl
         }
     }
 
-    private async Task ShowAdaptiveCardOnContentDialog(QuickStartProjectAdaptiveCardResult adaptiveCardSessionResult)
+    private async Task ShowAdaptiveCardOnContentDialog()
     {
-        if (adaptiveCardSessionResult == null)
+        if (_adaptiveCardSession2 == null)
         {
             // No adaptive card to show (i.e. no dependencies or AI initialization).
+            return;
+        }
+
+        var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
+        var renderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
+        var renderer = await renderingService.GetRendererAsync();
+
+        extensionAdaptiveCardPanel.Bind(_adaptiveCardSession2, renderer);
+        extensionAdaptiveCardPanel.RequestedTheme = ActualTheme;
+
+        _adaptiveCardSession2.Stopped += OnAdaptiveCardSessionStopped;
+
+        _adaptiveCardContentDialog = new ContentDialog
+        {
+            XamlRoot = this.XamlRoot,
+            Content = extensionAdaptiveCardPanel,
+            RequestedTheme = _themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light,
+        };
+
+        await _adaptiveCardContentDialog.ShowAsync();
+
+        _adaptiveCardSession2.Dispose();
+        _adaptiveCardContentDialog = null;
+    }
+
+    private async Task<ExtensionAdaptiveCardPanel?> SetUpAdaptiveCardAsync()
+    {
+        if (_adaptiveCardSession2 == null)
+        {
+            return null;
+        }
+
+        var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
+        var renderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
+        var renderer = await renderingService.GetRendererAsync();
+
+        extensionAdaptiveCardPanel.Bind(_adaptiveCardSession2, renderer);
+        extensionAdaptiveCardPanel.RequestedTheme = _themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
+
+        return extensionAdaptiveCardPanel;
+    }
+
+    private async void OnThemeChanged(object? sender, ElementTheme newRequestedTheme)
+    {
+        RequestedTheme = newRequestedTheme;
+
+        if (_adaptiveCardContentDialog == null)
+        {
+            return;
+        }
+
+        if (_adaptiveCardSession2 == null)
+        {
+            return;
+        }
+
+        _adaptiveCardContentDialog.Content = await SetUpAdaptiveCardAsync();
+        _adaptiveCardContentDialog.RequestedTheme = _themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
+        _adaptiveCardSession2.Stopped += OnAdaptiveCardSessionStopped;
+    }
+
+    public async Task ShowExtensionInitializationUI()
+    {
+        if (ViewModel.ActiveQuickstartSelection is not null)
+        {
+            SaveAdaptiveCardSessionIfNotNull();
+            await ShowAdaptiveCardOnContentDialog();
+        }
+    }
+
+    private void SaveAdaptiveCardSessionIfNotNull()
+    {
+        if (_adaptiveCardSession2 != null)
+        {
+            return;
+        }
+
+        var adaptiveCardSessionResult = ViewModel.ActiveQuickstartSelection?.CreateAdaptiveCardSessionForExtensionInitialization(ViewModel.ActivityId);
+        if (adaptiveCardSessionResult == null)
+        {
             return;
         }
 
@@ -162,35 +249,7 @@ public sealed partial class QuickstartPlaygroundView : UserControl
             return;
         }
 
-        var adapativeCardController = adaptiveCardSessionResult.AdaptiveCardSession;
-        var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
-        var renderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
-        var renderer = await renderingService.GetRendererAsync();
-
-        extensionAdaptiveCardPanel.Bind(adapativeCardController, renderer);
-        extensionAdaptiveCardPanel.RequestedTheme = ActualTheme;
-
-        adapativeCardController.Stopped += OnAdaptiveCardSessionStopped;
-
-        _adaptiveCardContentDialog = new ContentDialog
-        {
-            XamlRoot = this.XamlRoot,
-            Content = extensionAdaptiveCardPanel,
-        };
-
-        await _adaptiveCardContentDialog.ShowAsync();
-
-        adapativeCardController.Dispose();
-        _adaptiveCardContentDialog = null;
-    }
-
-    public async Task ShowExtensionInitializationUI()
-    {
-        if (ViewModel.ActiveQuickstartSelection is not null)
-        {
-            var adaptiveCardSessionResult = ViewModel.ActiveQuickstartSelection.CreateAdaptiveCardSessionForExtensionInitialization(ViewModel.ActivityId);
-            await ShowAdaptiveCardOnContentDialog(adaptiveCardSessionResult);
-        }
+        _adaptiveCardSession2 = adaptiveCardSessionResult.AdaptiveCardSession;
     }
 
     public async Task ShowProgressAdaptiveCard()
@@ -206,7 +265,7 @@ public sealed partial class QuickstartPlaygroundView : UserControl
         var renderer = await renderingService.GetRendererAsync();
 
         extensionAdaptiveCardPanel.Bind(progressAdaptiveCardSession, renderer);
-        extensionAdaptiveCardPanel.RequestedTheme = ActualTheme;
+        extensionAdaptiveCardPanel.RequestedTheme = _themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
 
         extensionAdaptiveCardPanel.UiUpdate += (object? sender, FrameworkElement e) =>
         {

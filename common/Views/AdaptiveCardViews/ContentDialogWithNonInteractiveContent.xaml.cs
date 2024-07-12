@@ -4,6 +4,7 @@
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Contracts.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -15,7 +16,11 @@ namespace DevHome.Common.Views.AdaptiveCardViews;
 /// </summary>
 public sealed partial class ContentDialogWithNonInteractiveContent : ContentDialog
 {
-    public ContentDialogWithNonInteractiveContent(DevHomeContentDialogContent content)
+    private readonly IThemeSelectorService _themeSelector;
+
+    private readonly DevHomeContentDialogContent _content;
+
+    public ContentDialogWithNonInteractiveContent(DevHomeContentDialogContent content, IThemeSelectorService themeSelector)
     {
         this.InitializeComponent();
 
@@ -34,8 +39,27 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                 Content = card.FrameworkElement,
             };
+            RequestedTheme = themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
             SecondaryButtonText = content.SecondaryButtonText;
             this.Focus(FocusState.Programmatic);
         });
+
+        _themeSelector = themeSelector;
+        _themeSelector.ThemeChanged += OnThemeChanged;
+        _content = content;
+    }
+
+    private async void OnThemeChanged(object? sender, ElementTheme newRequestedTheme)
+    {
+        RequestedTheme = newRequestedTheme;
+        var rendererService = Application.Current.GetService<AdaptiveCardRenderingService>();
+        var renderer = await rendererService.GetRendererAsync();
+        renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+        var card = renderer.RenderAdaptiveCardFromJsonString(_content.ContentDialogInternalAdaptiveCardJson?.Stringify() ?? string.Empty);
+        Content = new ScrollViewer
+        {
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            Content = card.FrameworkElement,
+        };
     }
 }
