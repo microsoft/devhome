@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Threading.Tasks;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
@@ -30,15 +31,14 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
         {
             Title = content.Title;
             PrimaryButtonText = content.PrimaryButtonText;
-            var rendererService = Application.Current.GetService<AdaptiveCardRenderingService>();
-            var renderer = await rendererService.GetRendererAsync();
-            renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
-            var card = renderer.RenderAdaptiveCardFromJsonString(content.ContentDialogInternalAdaptiveCardJson?.Stringify() ?? string.Empty);
+            var cardContent = await MakeCardContentAsync();
             Content = new ScrollViewer
             {
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                Content = card.FrameworkElement,
+                Content = cardContent,
             };
+
+            // Set the theme of the content dialog box
             RequestedTheme = themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
             SecondaryButtonText = content.SecondaryButtonText;
             this.Focus(FocusState.Programmatic);
@@ -51,15 +51,22 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
 
     private async void OnThemeChanged(object? sender, ElementTheme newRequestedTheme)
     {
+        // set the theme of the content dialog box.
         RequestedTheme = newRequestedTheme;
+        var cardContent = await MakeCardContentAsync();
+        Content = new ScrollViewer
+        {
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            Content = cardContent,
+        };
+    }
+
+    private async Task<FrameworkElement> MakeCardContentAsync()
+    {
         var rendererService = Application.Current.GetService<AdaptiveCardRenderingService>();
         var renderer = await rendererService.GetRendererAsync();
         renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
         var card = renderer.RenderAdaptiveCardFromJsonString(_content.ContentDialogInternalAdaptiveCardJson?.Stringify() ?? string.Empty);
-        Content = new ScrollViewer
-        {
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            Content = card.FrameworkElement,
-        };
+        return card.FrameworkElement;
     }
 }

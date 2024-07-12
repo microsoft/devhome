@@ -26,7 +26,19 @@ public sealed partial class QuickstartPlaygroundView : UserControl
 
     private ContentDialog? _adaptiveCardContentDialog;
 
+    /// <summary>
+    /// Used to keep track of the current adaptice card session.
+    /// The session should not be reloaded in the same QSP instance.
+    /// If it is, Content of the content dialog might change depending on
+    /// user actions between reloads of _adaptiveCardSession2.
+    /// </summary>
     private IExtensionAdaptiveCardSession2? _adaptiveCardSession2;
+
+    /// <summary>
+    ///  Because QSP can use different providers, the session should be reloaded
+    ///  if the provider changes.
+    /// </summary>
+    private bool _shouldReloadAdaptiveCardSession;
 
     public QuickstartPlaygroundViewModel ViewModel
     {
@@ -95,6 +107,7 @@ public sealed partial class QuickstartPlaygroundView : UserControl
 
     private async void ExtensionProviderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        _shouldReloadAdaptiveCardSession = true;
         ViewModel.OnQuickstartSelectionChanged();
         await ShowExtensionInitializationUI();
     }
@@ -157,18 +170,12 @@ public sealed partial class QuickstartPlaygroundView : UserControl
 
     private async Task ShowAdaptiveCardOnContentDialog()
     {
-        if (_adaptiveCardSession2 == null)
+        var extensionAdaptiveCardPanel = await SetUpAdaptiveCardAsync();
+        if (extensionAdaptiveCardPanel == null || _adaptiveCardSession2 == null)
         {
             // No adaptive card to show (i.e. no dependencies or AI initialization).
             return;
         }
-
-        var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
-        var renderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
-        var renderer = await renderingService.GetRendererAsync();
-
-        extensionAdaptiveCardPanel.Bind(_adaptiveCardSession2, renderer);
-        extensionAdaptiveCardPanel.RequestedTheme = ActualTheme;
 
         _adaptiveCardSession2.Stopped += OnAdaptiveCardSessionStopped;
 
@@ -185,16 +192,24 @@ public sealed partial class QuickstartPlaygroundView : UserControl
         _adaptiveCardContentDialog = null;
     }
 
+    /// <summary>
+    /// Makes the adaptive card panel to use in the content dialog.  Will check if
+    /// an adaptive card session is made and if not, make one.
+    /// </summary>
+    /// <returns>An awatible task that has an ExtensionAdaptiveCardPanel.  Returns null if
+    /// the session can not be made.</returns>
     private async Task<ExtensionAdaptiveCardPanel?> SetUpAdaptiveCardAsync()
     {
+        var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
+        var renderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
+        var renderer = await renderingService.GetRendererAsync();
+
+        // Make the session if not already.
+        SaveAdaptiveCardSession();
         if (_adaptiveCardSession2 == null)
         {
             return null;
         }
-
-        var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
-        var renderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
-        var renderer = await renderingService.GetRendererAsync();
 
         extensionAdaptiveCardPanel.Bind(_adaptiveCardSession2, renderer);
         extensionAdaptiveCardPanel.RequestedTheme = _themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
@@ -202,6 +217,14 @@ public sealed partial class QuickstartPlaygroundView : UserControl
         return extensionAdaptiveCardPanel;
     }
 
+    /// <summary>
+    /// Changed the dialog theme if the windows theme changes.  This is done in 3 steps.
+    /// 1. Reload the renderer.  This forces the renderer to use the correct host config file.
+    /// 2. Reload the adaptive card (Adaptive card content will not change themes)
+    /// 3. Replace the Content of the content dialog.
+    /// </summary>
+    /// <param name="sender">Unused</param>
+    /// <param name="newRequestedTheme">The new theme</param>
     private async void OnThemeChanged(object? sender, ElementTheme newRequestedTheme)
     {
         RequestedTheme = newRequestedTheme;
@@ -216,8 +239,16 @@ public sealed partial class QuickstartPlaygroundView : UserControl
             return;
         }
 
-        _adaptiveCardContentDialog.Content = await SetUpAdaptiveCardAsync();
+        var extensionPanel = await SetUpAdaptiveCardAsync();
+        if (extensionPanel == null)
+        {
+            return;
+        }
+
+        _adaptiveCardContentDialog.Content = extensionPanel;
         _adaptiveCardContentDialog.RequestedTheme = _themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
+
+        // Resetting Content breaks all events.  Re-hook the close button event.
         _adaptiveCardSession2.Stopped += OnAdaptiveCardSessionStopped;
     }
 
@@ -225,14 +256,19 @@ public sealed partial class QuickstartPlaygroundView : UserControl
     {
         if (ViewModel.ActiveQuickstartSelection is not null)
         {
-            SaveAdaptiveCardSessionIfNotNull();
             await ShowAdaptiveCardOnContentDialog();
         }
     }
 
-    private void SaveAdaptiveCardSessionIfNotNull()
+    /// <summary>
+    /// Gets the adaptive card session from the provider and saves it.
+    /// Session will not reload if
+    /// 1. The provider did not change.
+    /// 2. The session is not null.
+    /// </summary>
+    private void SaveAdaptiveCardSession()
     {
-        if (_adaptiveCardSession2 != null)
+        if (!_shouldReloadAdaptiveCardSession || _adaptiveCardSession2 is not null)
         {
             return;
         }
@@ -240,12 +276,14 @@ public sealed partial class QuickstartPlaygroundView : UserControl
         var adaptiveCardSessionResult = ViewModel.ActiveQuickstartSelection?.CreateAdaptiveCardSessionForExtensionInitialization(ViewModel.ActivityId);
         if (adaptiveCardSessionResult == null)
         {
+            _adaptiveCardSession2 = null;
             return;
         }
 
         if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
         {
             _log.Error($"Failed to show adaptive card. {adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+            _adaptiveCardSession2 = null;
             return;
         }
 
