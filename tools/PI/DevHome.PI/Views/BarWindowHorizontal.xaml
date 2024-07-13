@@ -122,8 +122,7 @@
                 </CommandBar>
             </StackPanel>
 
-            <CommandBar x:Name="MyCommandBar" HorizontalAlignment="Left" IsDynamicOverflowEnabled="True" Grid.Column="1" Opening="MyCommandBar_Opening" Closed="MyCommandBar_Closing" />
-
+            <CommandBar x:Name="MyCommandBar" HorizontalAlignment="Left" IsDynamicOverflowEnabled="False" DefaultLabelPosition="Collapsed" Grid.Column="1" />
 
             <CommandBar Grid.Column="2">
                 <AppBarSeparator/>

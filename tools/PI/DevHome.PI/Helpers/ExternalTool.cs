@@ -62,10 +62,6 @@ public partial class ExternalTool : ObservableObject
     [property: JsonIgnore]
     private SoftwareBitmapSource? _toolIcon;
 
-    [ObservableProperty]
-    [property: JsonIgnore]
-    private ImageIcon? _menuIcon;
-
     public ExternalTool(
         string name,
         string executable,
@@ -113,11 +109,6 @@ public partial class ExternalTool : ObservableObject
                     ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmapAsync(softwareBitmap);
                 }
             }
-
-            MenuIcon = new ImageIcon
-            {
-                Source = ToolIcon,
-            };
         }
         catch (Exception ex)
         {

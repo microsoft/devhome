@@ -23,8 +23,6 @@ using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.Graphics.Gdi;
-using Windows.Win32.UI.Shell.Common;
 using WinRT.Interop;
 using WinUIEx;
 using static DevHome.PI.Helpers.CommonHelper;
@@ -34,6 +32,12 @@ namespace DevHome.PI;
 
 public partial class BarWindowHorizontal : WindowEx
 {
+    private enum PinOption
+    {
+        Pin,
+        UnPin,
+    }
+
     private const string ExpandButtonText = "\ue70d"; // ChevronDown
     private const string CollapseButtonText = "\ue70e"; // ChevronUp
     private const string ManageToolsButtonText = "\uec7a"; // ChevronUp
@@ -179,7 +183,7 @@ public partial class BarWindowHorizontal : WindowEx
         }
     }
 
-    private void AddToolToCommandBar(ExternalTool tool)
+    private AppBarButton CreateAppBarButton(ExternalTool tool, PinOption pinOption)
     {
         AppBarButton button = new AppBarButton
         {
@@ -187,52 +191,71 @@ public partial class BarWindowHorizontal : WindowEx
             Tag = tool,
         };
 
-        button.Icon = tool.MenuIcon;
+        button.Icon = new ImageIcon
+        {
+            Source = tool.ToolIcon,
+        };
 
         button.Click += _viewModel.ExternalToolButton_Click;
+        button.ContextFlyout = CreateMenuFlyout(tool, pinOption);
 
+        ToolTipService.SetToolTip(button, tool.Name);
+
+        return button;
+    }
+
+    private MenuFlyout CreateMenuFlyout(ExternalTool tool, PinOption pinOption)
+    {
         MenuFlyout menu = new MenuFlyout();
-        menu.Items.Add(tool.IsPinned ? CreateUnPinMenuItem(tool) : CreatePinMenuItem(tool));
+        menu.Items.Add(CreatePinMenuItem(tool, pinOption));
         menu.Items.Add(CreateUnregisterMenuItem(tool));
-        button.ContextFlyout = menu;
 
-        // If a tool is pinned, we'll add it to the primary commands list, otherwise the secondary commands list
+        return menu;
+    }
+
+    private void AddToolToCommandBar(ExternalTool tool)
+    {
+        // We create 2 copies of the button, one for the primary commands list and one for the secondary commands list.
+        // We're not allowed to put the same button in both lists.
+        AppBarButton primaryCommandButton = CreateAppBarButton(tool, PinOption.UnPin); // The primary button should always have the unpin option
+        AppBarButton secondaryCommandButton = CreateAppBarButton(tool, tool.IsPinned ? PinOption.UnPin : PinOption.Pin); // The secondary button is dynamic
+
+        // If a tool is pinned, we'll add it to the primary commands list.
         if (tool.IsPinned)
         {
-            MyCommandBar.PrimaryCommands.Add(button);
+            MyCommandBar.PrimaryCommands.Add(primaryCommandButton);
         }
-        else
-        {
-            MyCommandBar.SecondaryCommands.Add(button);
-        }
+
+        // We'll always add all tools to the secondary commands list.
+        MyCommandBar.SecondaryCommands.Add(secondaryCommandButton);
 
         tool.PropertyChanged += (sender, args) =>
         {
-            if (args.PropertyName == nameof(ExternalTool.MenuIcon))
+            if (args.PropertyName == nameof(ExternalTool.ToolIcon))
             {
-                button.Icon = tool.MenuIcon;
+                // An ImageIcon can only be set once, so we can't share it with both buttons
+                primaryCommandButton.Icon = new ImageIcon
+                {
+                    Source = tool.ToolIcon,
+                };
+
+                secondaryCommandButton.Icon = new ImageIcon
+                {
+                    Source = tool.ToolIcon,
+                };
             }
             else if (args.PropertyName == nameof(ExternalTool.IsPinned))
             {
-                // The command bar does not like to be updated when the overflow menu is open, so be sure to close it before manipulating elements.
-                MyCommandBar.IsOpen = false;
-
-                // Flip the menu item from pin to unpin (or vice versa)
-                MenuFlyout menu = new MenuFlyout();
-                menu.Items.Add(tool.IsPinned ? CreateUnPinMenuItem(tool) : CreatePinMenuItem(tool));
-                menu.Items.Add(CreateUnregisterMenuItem(tool));
-                button.ContextFlyout = menu;
-
                 // If a tool is pinned, we'll add it to the primary commands list, otherwise the secondary commands list
+                secondaryCommandButton.ContextFlyout = CreateMenuFlyout(tool, tool.IsPinned ? PinOption.UnPin : PinOption.Pin);
+
                 if (tool.IsPinned)
                 {
-                    MyCommandBar.SecondaryCommands.Remove(button);
-                    MyCommandBar.PrimaryCommands.Add(button);
+                    MyCommandBar.PrimaryCommands.Add(primaryCommandButton);
                 }
                 else
                 {
-                    MyCommandBar.PrimaryCommands.Remove(button);
-                    MyCommandBar.SecondaryCommands.Add(button);
+                    MyCommandBar.PrimaryCommands.Remove(primaryCommandButton);
                 }
 
                 EvaluateLocationOfManageToolsButton();
@@ -287,28 +310,16 @@ public partial class BarWindowHorizontal : WindowEx
         }
     }
 
-    private MenuFlyoutItem CreatePinMenuItem(ExternalTool tool)
+    private MenuFlyoutItem CreatePinMenuItem(ExternalTool tool, PinOption pinOption)
     {
-        MenuFlyoutItem pin = new MenuFlyoutItem
+        MenuFlyoutItem item = new MenuFlyoutItem
         {
-            Text = _pinMenuItemText,
+            Text = pinOption == PinOption.Pin ? _pinMenuItemText : _unpinMenuItemText,
             Command = tool.TogglePinnedStateCommand,
             Icon = new FontIcon() { Glyph = tool.PinGlyph },
         };
 
-        return pin;
-    }
-
-    private MenuFlyoutItem CreateUnPinMenuItem(ExternalTool tool)
-    {
-        MenuFlyoutItem unpin = new MenuFlyoutItem
-        {
-            Text = _unpinMenuItemText,
-            Command = tool.TogglePinnedStateCommand,
-            Icon = new FontIcon() { Glyph = tool.PinGlyph },
-        };
-
-        return unpin;
+        return item;
     }
 
     private MenuFlyoutItem CreateUnregisterMenuItem(ExternalTool tool)
@@ -345,23 +356,28 @@ public partial class BarWindowHorizontal : WindowEx
                 Debug.Assert(e.OldItems is not null, "Why is old items null");
                 foreach (ExternalTool oldItem in e.OldItems)
                 {
-                    // Find this item in the command bar
-                    AppBarButton? button = MyCommandBar.PrimaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
-                    if (button is not null)
+                    if (oldItem.IsPinned)
                     {
-                        MyCommandBar.PrimaryCommands.Remove(button);
-                    }
-                    else
-                    {
-                        button = MyCommandBar.SecondaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
-                        if (button is not null)
+                        // Find this item in the command bar
+                        AppBarButton? pinnedButton = MyCommandBar.PrimaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
+                        if (pinnedButton is not null)
                         {
-                            MyCommandBar.SecondaryCommands.Remove(button);
+                            MyCommandBar.PrimaryCommands.Remove(pinnedButton);
                         }
                         else
                         {
                             Debug.Assert(false, "Could not find button for tool");
                         }
+                    }
+
+                    AppBarButton? button = MyCommandBar.SecondaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
+                    if (button is not null)
+                    {
+                        MyCommandBar.SecondaryCommands.Remove(button);
+                    }
+                    else
+                    {
+                        Debug.Assert(false, "Could not find button for tool");
                     }
                 }
 
@@ -532,7 +548,6 @@ public partial class BarWindowHorizontal : WindowEx
         // Make sure we cache the state before switching to collapsed bar.
         CacheRestoreState();
         LargeContentPanel.Visibility = Visibility.Collapsed;
-        SetBarToDefaultHeight();
     }
 
     internal void NavigateTo(Type viewModelType)
@@ -614,35 +629,5 @@ public partial class BarWindowHorizontal : WindowEx
             ExpandCollapseLayoutButtonText.Foreground = brush;
             RotateLayoutButtonText.Foreground = brush;
         }
-    }
-
-    private void SetBarToDefaultHeight()
-    {
-        if (!_viewModel.ShowingExpandedContent)
-        {
-            this.Height = FloatingHorizontalBarHeight;
-            this.MaxHeight = FloatingHorizontalBarHeight;
-            this.MinHeight = FloatingHorizontalBarHeight;
-            this.AppWindow.Resize(new Windows.Graphics.SizeInt32(this.AppWindow.Size.Width, FloatingHorizontalBarHeight));
-        }
-    }
-
-    // CommandBar has an issue where, if the overflow menu opens and the app's window size is too small,
-    // the overflow menu will always appear above the app window and will go off screen. Bug has been filed,
-    // but in the meantime, we'll adjust our window's size to when the overflow menu opens, and set it back
-    // to default after it is closed in order to work around this issue.
-    private void MyCommandBar_Opening(object sender, object e)
-    {
-        if (!_viewModel.ShowingExpandedContent)
-        {
-            this.Height = FloatingHorizontalBarHeightWithExpandedCommandBar;
-            this.MaxHeight = FloatingHorizontalBarHeightWithExpandedCommandBar;
-            this.MinHeight = FloatingHorizontalBarHeightWithExpandedCommandBar;
-        }
-    }
-
-    private void MyCommandBar_Closing(object sender, object e)
-    {
-        SetBarToDefaultHeight();
     }
 }
