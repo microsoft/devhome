@@ -294,7 +294,7 @@ public static class StringResourceKey
     public static readonly string EnvironmentCreationReviewExpanderDescription = nameof(EnvironmentCreationReviewExpanderDescription);
     public static readonly string CreateEnvironmentButtonText = nameof(CreateEnvironmentButtonText);
     public static readonly string SetupShellReviewPageDescriptionForEnvironmentCreation = nameof(SetupShellReviewPageDescriptionForEnvironmentCreation);
-    public static readonly string EnvironmentCreationAdaptiveCardLoadingMessage = nameof(EnvironmentCreationAdaptiveCardLoadingMessage);
+    public static readonly string EnvironmentCreationUILoadingMessage = nameof(EnvironmentCreationUILoadingMessage);
 
     // Summary page
     public static readonly string SummaryPageOpenDashboard = nameof(SummaryPageOpenDashboard);

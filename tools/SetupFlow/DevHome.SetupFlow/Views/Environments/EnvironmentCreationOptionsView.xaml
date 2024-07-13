@@ -41,7 +41,7 @@
                     Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
                     <InfoBar
                         IsOpen="True"
-                        x:Uid="ErrorRetrievingAdaptiveCardSession"
+                        Title="{x:Bind ViewModel.SessionErrorTitle, Mode=OneWay}"
                         Severity="Error"
                         Message="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay}" >
                     </InfoBar>

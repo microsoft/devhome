@@ -18,37 +18,37 @@ namespace DevHome.PI.Helpers;
 
 internal sealed class ExternalToolsHelper
 {
-    private readonly JsonSerializerOptions serializerOptions = new() { WriteIndented = true };
-    private readonly string toolInfoFileName;
+    private readonly JsonSerializerOptions _serializerOptions = new() { WriteIndented = true };
+    private readonly string _toolInfoFileName;
 
     public static readonly ExternalToolsHelper Instance = new();
 
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalToolsHelper));
 
-    private readonly ObservableCollection<ExternalTool> filteredExternalTools = [];
+    private readonly ObservableCollection<ExternalTool> _filteredExternalTools = [];
 
-    private ObservableCollection<ExternalTool> allExternalTools = [];
+    private ObservableCollection<ExternalTool> _allExternalTools = [];
 
     // The ExternalTools menu shows all registered tools.
     public ObservableCollection<ExternalTool> AllExternalTools
     {
-        get => allExternalTools;
+        get => _allExternalTools;
         set
         {
             // We're assigning the collection once, and this also covers the case where we reassign it again:
             // we need to unsubscribe from the old collection's events, subscribe to the new collection's events,
             // and initialize the filtered collection.
-            if (allExternalTools != value)
+            if (_allExternalTools != value)
             {
-                if (allExternalTools != null)
+                if (_allExternalTools != null)
                 {
-                    allExternalTools.CollectionChanged -= AllExternalTools_CollectionChanged;
+                    _allExternalTools.CollectionChanged -= AllExternalTools_CollectionChanged;
                 }
 
-                allExternalTools = value;
-                if (allExternalTools != null)
+                _allExternalTools = value;
+                if (_allExternalTools != null)
                 {
-                    allExternalTools.CollectionChanged += AllExternalTools_CollectionChanged;
+                    _allExternalTools.CollectionChanged += AllExternalTools_CollectionChanged;
                 }
 
                 // Synchronize the filtered collection with this unfiltered one.
@@ -76,30 +76,30 @@ internal sealed class ExternalToolsHelper
 
         // The file should be in this location:
         // %LocalAppData%\Packages\Microsoft.Windows.DevHome_8wekyb3d8bbwe\LocalState\externaltools.json
-        toolInfoFileName = Path.Combine(localFolder, "externaltools.json");
-        AllExternalTools = new(allExternalTools);
-        FilteredExternalTools = new(filteredExternalTools);
+        _toolInfoFileName = Path.Combine(localFolder, "externaltools.json");
+        AllExternalTools = new(_allExternalTools);
+        FilteredExternalTools = new(_filteredExternalTools);
     }
 
     internal void Init()
     {
-        allExternalTools.Clear();
-        if (File.Exists(toolInfoFileName))
+        _allExternalTools.Clear();
+        if (File.Exists(_toolInfoFileName))
         {
-            var jsonData = File.ReadAllText(toolInfoFileName);
+            var jsonData = File.ReadAllText(_toolInfoFileName);
             try
             {
                 var toolCollection = JsonSerializer.Deserialize<ExternalToolCollection>(jsonData);
                 var existingData = toolCollection?.ExternalTools ?? [];
                 foreach (var toolItem in existingData)
                 {
-                    allExternalTools.Add(toolItem);
+                    _allExternalTools.Add(toolItem);
                     toolItem.PropertyChanged += ToolItem_PropertyChanged;
                 }
             }
             catch (Exception ex)
             {
-                _log.Error(ex, $"Failed to parse {toolInfoFileName}, attempting migration");
+                _log.Error(ex, $"Failed to parse {_toolInfoFileName}, attempting migration");
                 MigrateOldTools(jsonData);
             }
         }
@@ -135,7 +135,7 @@ internal sealed class ExternalToolsHelper
                     string.Empty,
                     oldTool.IsPinned);
 
-                allExternalTools.Add(newTool);
+                _allExternalTools.Add(newTool);
                 newTool.PropertyChanged += ToolItem_PropertyChanged;
             }
 
@@ -155,14 +155,14 @@ internal sealed class ExternalToolsHelper
         {
             if (tool.IsPinned)
             {
-                if (!filteredExternalTools.Contains(tool))
+                if (!_filteredExternalTools.Contains(tool))
                 {
-                    filteredExternalTools.Add(tool);
+                    _filteredExternalTools.Add(tool);
                 }
             }
             else
             {
-                filteredExternalTools.Remove(tool);
+                _filteredExternalTools.Remove(tool);
             }
         }
 
@@ -192,14 +192,14 @@ internal sealed class ExternalToolsHelper
 
     public ExternalTool AddExternalTool(ExternalTool tool)
     {
-        allExternalTools.Add(tool);
+        _allExternalTools.Add(tool);
         WriteToolsJsonFile();
         return tool;
     }
 
     public void RemoveExternalTool(ExternalTool tool)
     {
-        if (allExternalTools.Remove(tool))
+        if (_allExternalTools.Remove(tool))
         {
             WriteToolsJsonFile();
         }
@@ -207,12 +207,12 @@ internal sealed class ExternalToolsHelper
 
     private void WriteToolsJsonFile()
     {
-        var toolCollection = new ExternalToolCollection(ToolsCollectionVersion, allExternalTools);
-        var updatedJson = JsonSerializer.Serialize(toolCollection, serializerOptions);
+        var toolCollection = new ExternalToolCollection(ToolsCollectionVersion, _allExternalTools);
+        var updatedJson = JsonSerializer.Serialize(toolCollection, _serializerOptions);
 
         try
         {
-            File.WriteAllText(toolInfoFileName, updatedJson);
+            File.WriteAllText(_toolInfoFileName, updatedJson);
         }
         catch (Exception ex)
         {
@@ -232,7 +232,7 @@ internal sealed class ExternalToolsHelper
                     {
                         if (newItem.IsPinned)
                         {
-                            filteredExternalTools.Add(newItem);
+                            _filteredExternalTools.Add(newItem);
                         }
 
                         newItem.PropertyChanged += ToolItem_PropertyChanged;
@@ -247,7 +247,7 @@ internal sealed class ExternalToolsHelper
                     foreach (ExternalTool oldItem in e.OldItems)
                     {
                         oldItem.PropertyChanged -= ToolItem_PropertyChanged;
-                        filteredExternalTools.Remove(oldItem);
+                        _filteredExternalTools.Remove(oldItem);
                     }
                 }
 
@@ -259,7 +259,7 @@ internal sealed class ExternalToolsHelper
                     foreach (ExternalTool oldItem in e.OldItems)
                     {
                         oldItem.PropertyChanged -= ToolItem_PropertyChanged;
-                        filteredExternalTools.Remove(oldItem);
+                        _filteredExternalTools.Remove(oldItem);
                     }
                 }
 
@@ -269,7 +269,7 @@ internal sealed class ExternalToolsHelper
                     {
                         if (newItem.IsPinned)
                         {
-                            filteredExternalTools.Add(newItem);
+                            _filteredExternalTools.Add(newItem);
                         }
 
                         newItem.PropertyChanged += ToolItem_PropertyChanged;
@@ -286,12 +286,12 @@ internal sealed class ExternalToolsHelper
 
     private void SynchronizeAllFilteredItems()
     {
-        filteredExternalTools.Clear();
+        _filteredExternalTools.Clear();
         foreach (var item in AllExternalTools)
         {
             if (item.IsPinned)
             {
-                filteredExternalTools.Add(item);
+                _filteredExternalTools.Add(item);
             }
         }
     }

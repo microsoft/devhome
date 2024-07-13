@@ -74,7 +74,7 @@
                 <Button 
                     x:Name="ToolBrowseButton" x:Uid="ToolBrowseButton" HorizontalAlignment="Left" MinWidth="100" Click="ToolBrowseButton_Click"/>
                 <TextBox 
-                    x:Name="ToolPathTextBox" Grid.Column="1" MinWidth="800" Margin="8,0,0,0" IsReadOnly="True" HorizontalAlignment="Stretch"/>
+                    x:Name="ToolPathTextBox" Grid.Column="1" MinWidth="800" Margin="8,0,0,0" HorizontalAlignment="Stretch"/>
             </Grid>
 
             <Grid Grid.Row="2" Margin="0,6,0,0">

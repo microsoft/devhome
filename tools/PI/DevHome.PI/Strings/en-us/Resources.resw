@@ -1045,6 +1045,30 @@
     <value>Manage Tools</value>
     <comment>Label for a button to allow users to manage external tools</comment>
   </data>
+  <data name="FileDialogFilterAllFiles" xml:space="preserve">
+    <value>All Files</value>
+    <comment>Filter string to specify that the file dialog should include all files</comment>
+  </data>
+  <data name="FileDialogFilterBatchFiles" xml:space="preserve">
+    <value>Batch Files</value>
+    <comment>Filter string to specify that the file dialog should include batch files</comment>
+  </data>
+  <data name="FileDialogFilterCommandFiles" xml:space="preserve">
+    <value>Command Files</value>
+    <comment>Filter string to specify that the file dialog should include command files</comment>
+  </data>
+  <data name="FileDialogFilterExecutables" xml:space="preserve">
+    <value>Executables</value>
+    <comment>Filter string to specify that the file dialog should include executable files</comment>
+  </data>
+  <data name="FileDialogFilterMmcFiles" xml:space="preserve">
+    <value>Management Console Files</value>
+    <comment>Filter string to specify that the file dialog should include Management Console files</comment>
+  </data>
+  <data name="FileDialogFilterPowershell" xml:space="preserve">
+    <value>PowerShell Scripts</value>
+    <comment>Filter string to specify that the file dialog should include PowerShell files</comment>
+  </data>
   <data name="LocalDumpCollectionLabel.Text" xml:space="preserve">
     <value>Local WER collection for app</value>
     <comment>Label for Windows Error reporting toggle switch</comment>
