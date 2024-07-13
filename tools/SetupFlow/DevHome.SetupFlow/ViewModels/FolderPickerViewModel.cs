@@ -6,10 +6,11 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
-using DevHome.Common.Windows.FileDialog;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
-using Serilog;
+using Windows.Storage.Pickers;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -18,8 +19,6 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class FolderPickerViewModel : ObservableObject
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(FolderPickerViewModel));
-
     private readonly ISetupFlowStringResource _stringResource;
 
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
@@ -78,13 +77,13 @@ public partial class FolderPickerViewModel : ObservableObject
 
     public void ShowFolderPicker()
     {
-        _log.Information("Showing folder picker");
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Showing folder picker");
         ShouldShowFolderPicker = true;
     }
 
     public void CloseFolderPicker()
     {
-        _log.Information("Closing folder picker");
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Closing folder picker");
         ShouldShowFolderPicker = false;
     }
 
@@ -126,25 +125,20 @@ public partial class FolderPickerViewModel : ObservableObject
     /// <returns>An awaitable task.</returns>
     private async Task<DirectoryInfo> PickCloneDirectoryAsync()
     {
-        try
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Opening folder picker to select clone directory");
+        var folderPicker = new FolderPicker();
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Application.Current.GetService<WindowEx>().GetWindowHandle());
+        folderPicker.FileTypeFilter.Add("*");
+
+        var locationToCloneTo = await folderPicker.PickSingleFolderAsync();
+        if (locationToCloneTo != null && locationToCloneTo.Path.Length > 0)
         {
-            _log.Information("Opening folder picker to select clone directory");
-            using var folderPicker = new WindowOpenFolderDialog();
-            var locationToCloneTo = await folderPicker.ShowAsync(Application.Current.GetService<Window>());
-            if (locationToCloneTo != null && locationToCloneTo.Path.Length > 0)
-            {
-                _log.Information($"Selected '{locationToCloneTo.Path}' as location to clone to");
-                return new DirectoryInfo(locationToCloneTo.Path);
-            }
-            else
-            {
-                _log.Information("Didn't select a location to clone to");
-                return null;
-            }
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Selected '{locationToCloneTo.Path}' as location to clone to");
+            return new DirectoryInfo(locationToCloneTo.Path);
         }
-        catch (Exception e)
+        else
         {
-            _log.Error(e, "Failed to open folder picker");
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Didn't select a location to clone to");
             return null;
         }
     }

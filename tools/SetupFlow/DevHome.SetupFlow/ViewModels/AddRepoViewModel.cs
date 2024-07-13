@@ -17,6 +17,8 @@ using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
+using DevHome.Logging;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.Views;
@@ -27,8 +29,8 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
-using Serilog;
 using Windows.Foundation;
+using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -40,8 +42,6 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class AddRepoViewModel : ObservableObject
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AddRepoViewModel));
-
     private readonly IHost _host;
 
     private readonly Guid _activityId;
@@ -52,7 +52,7 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     /// <summary>
     /// Holds all the currently executing tasks to GetRepositories.
@@ -140,62 +140,6 @@ public partial class AddRepoViewModel : ObservableObject
     /// The list of all repositories shown to the user on the repositories page.
     /// </summary>
     private IEnumerable<IRepository> _repositoriesForAccount;
-
-    /// <summary>
-    /// Used to figure out what button is pressed for the split button.
-    /// This determines the UI elements shown/hidden.
-    /// </summary>
-    private enum SegmentedItemTag
-    {
-        Account,
-        URL,
-    }
-
-    /// <summary>
-    /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
-    /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"
-    /// To prevent our EverythingToClone from changing this flag is used.
-    /// If true any removals caused by filtering are ignored.
-    /// Question.  If the items aren't "re-selected" how do they become selected?  The list view has SelectRange
-    /// that can be used to re-select items.  This is done in the view.
-    /// </summary>
-    private bool _isFiltering;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the SelectionChange event fired because SelectRange was called.
-    /// After filtering SelectRange is called to re-select all previously selected items.  This causes SelectionChanged
-    /// to be fired for each item.  Because EverythingToClone didn't change during filtering it contains every item to select.
-    /// This flag is to prevent adding duplicate items are being re-selected.
-    /// </summary>
-    public bool IsCallingSelectRange { get; set; }
-
-    /// <summary>
-    /// Gets a value indicating whether the UI can skip the account page and switch to the repo page.
-    /// </summary>
-    /// <remarks>
-    /// UI can skip the account tab and go to the repo page if the following conditions are met
-    /// 1. DevHome has only 1 provider installed.
-    /// 2. The provider has only 1 logged in account.
-    /// </remarks>
-    public bool CanSkipAccountConnection
-    {
-        get;
-        private set;
-    }
-
-    /// <summary>
-    /// Gets or sets what page the user is currently on.  Used to branch logic depending on the page.
-    /// </summary>
-    internal PageKind CurrentPage
-    {
-        get; set;
-    }
-
-    public bool IsSettingUpLocalMachine => _setupFlowOrchestrator.IsSettingUpLocalMachine;
-
-    private TypedEventHandler<IDeveloperIdProvider, IDeveloperId> _developerIdChangedEvent;
-
-    private string _selectedRepoProvider = string.Empty;
 
     /// <summary>
     /// Names of all providers.  This is shown to the user on the accounts page.
@@ -296,7 +240,7 @@ public partial class AddRepoViewModel : ObservableObject
     private bool _isFetchingRepos;
 
     /// <summary>
-    /// Primary button should not be enabled if not all information is entered.
+    /// PRimary button should not be enabled if not all information is entered.
     /// </summary>
     [ObservableProperty]
     private bool _shouldEnablePrimaryButton;
@@ -308,7 +252,7 @@ public partial class AddRepoViewModel : ObservableObject
     private Style _styleForPrimaryButton;
 
     /// <summary>
-    /// If a UI should be shown to ask the user to log in.
+    /// If a UI should be shown to ask theuser to log in.
     /// </summary>
     [ObservableProperty]
     private bool _shouldShowLoginUi;
@@ -328,7 +272,7 @@ public partial class AddRepoViewModel : ObservableObject
     private bool _isCancelling;
 
     /// <summary>
-    /// What to display to the left of the ComboBox.
+    /// What to display to the left of the combobox.
     /// </summary>
     [ObservableProperty]
     private string _selectionOptionsPrefix;
@@ -340,52 +284,20 @@ public partial class AddRepoViewModel : ObservableObject
     private ObservableCollection<string> _selectionOptions;
 
     /// <summary>
-    /// The placeholder text for the selection options ComboBox
+    /// The placeholder text for the selection options combobox
     /// </summary>
     [ObservableProperty]
     private string _selectionOptionsPlaceholderText;
 
     /// <summary>
-    /// The accounts the user is logged into is stored here.
+    /// Used to figure out what button is pressed for the split button.
+    /// This determines the UI elements shown/hidden.
     /// </summary>
-    [ObservableProperty]
-    private MenuFlyout _accountsToShow;
-
-    /// <summary>
-    /// Used to show the login UI.
-    /// </summary>
-    [ObservableProperty]
-    private Frame _loginUiContent;
-
-    /// <summary>
-    /// Solely used to reset the account drop down when the account page is navigated to.
-    /// </summary>
-    [ObservableProperty]
-    private int _accountIndex;
-
-    /// <summary>
-    /// Text that prompts the user if they want to add search inputs.
-    /// </summary>
-    [ObservableProperty]
-    private string _askToChangeLabel;
-
-    /// <summary>
-    /// If the extension allows users to further filter repo results.
-    /// </summary>
-    [ObservableProperty]
-    private bool _shouldShowGranularSearch;
-
-    /// <summary>
-    /// Controls if the hyperlink button that allows switching to the search terms page is visible.
-    /// </summary>
-    [ObservableProperty]
-    private bool _shouldShowChangeSearchTermsHyperlinkButton;
-
-    [ObservableProperty]
-    private bool _shouldShowNoRepoMessage;
-
-    [ObservableProperty]
-    private string _noRepositoriesMessage;
+    private enum SegmentedItemTag
+    {
+        Account,
+        URL,
+    }
 
     /// <summary>
     /// Hides/Shows UI elements for the selected button.
@@ -407,26 +319,12 @@ public partial class AddRepoViewModel : ObservableObject
         if (pageToGoTo == SegmentedItemTag.Account)
         {
             await ChangeToAccountPageAsync();
-
-            IsLoggingIn = false;
-            IsCancelling = true;
-            ShouldShowLoginUi = false;
-            ShouldShowXButtonInLoginUi = false;
-            ShouldShowNoRepoMessage = false;
-
             return;
         }
 
         if (pageToGoTo == SegmentedItemTag.URL)
         {
             ChangeToUrlPage();
-
-            IsLoggingIn = false;
-            IsCancelling = true;
-            ShouldShowLoginUi = false;
-            ShouldShowXButtonInLoginUi = false;
-            ShouldShowNoRepoMessage = false;
-
             return;
         }
 
@@ -434,34 +332,51 @@ public partial class AddRepoViewModel : ObservableObject
         return;
     }
 
-    [RelayCommand]
-    public async Task ShowCustomizeDevDriveWindow()
+    /// <summary>
+    /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
+    /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"
+    /// To prevent our EverythingToClone from changing this flag is used.
+    /// If true any removals caused by filtering are ignored.
+    /// Question.  If the items aren't "re-selected" how do they become selected?  The list view has SelectRange
+    /// that can be used to re-select items.  This is done in the view.
+    /// </summary>
+    private bool _isFiltering;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the SelectionChange event fired because SelectRange was called.
+    /// After filtering SelectRange is called to re-select all previously selected items.  This causes SelectionChanged
+    /// to be fired for each item.  Because EverythingToClone didn't change during filtering it contains every item to select.
+    /// This flag is to prevent adding duplicate items are being re-selected.
+    /// </summary>
+    public bool IsCallingSelectRange { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the UI can skip the account page and switch to the repo page.
+    /// </summary>
+    /// <remarks>
+    /// UI can skip the account tab and go to the repo page if the following conditions are met
+    /// 1. DevHome has only 1 provider installed.
+    /// 2. The provider has only 1 logged in account.
+    /// </remarks>
+    public bool CanSkipAccountConnection
     {
-        await EditDevDriveViewModel.PopDevDriveCustomizationAsync();
-        ToggleCloneButton();
+        get;
+        private set;
     }
 
-    [RelayCommand]
-    public void DevDriveCloneLocationChanged()
+    /// <summary>
+    /// Gets or sets what page the user is currently on.  Used to branch logic depending on the page.
+    /// </summary>
+    internal PageKind CurrentPage
     {
-        var location = (EditDevDriveViewModel.DevDrive != null) ? EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
-
-        if (!string.IsNullOrEmpty(location))
-        {
-            SaveCloneLocation(location);
-        }
+        get; set;
     }
 
-    [RelayCommand]
-    public void SaveCloneLocation(string location)
-    {
-        // In cases where location is empty don't update the cloneLocation. Only update when there are actual values.
-        FolderPickerViewModel.CloneLocation = location;
+    public bool IsSettingUpLocalMachine => _setupFlowOrchestrator.IsSettingUpLocalMachine;
 
-        FolderPickerViewModel.ValidateCloneLocation();
+    private TypedEventHandler<IDeveloperIdProvider, IDeveloperId> _developerIdChangedEvent;
 
-        ToggleCloneButton();
-    }
+    private string _selectedRepoProvider = string.Empty;
 
     /// <summary>
     /// Logs the user into the provider if they aren't already.
@@ -487,36 +402,48 @@ public partial class AddRepoViewModel : ObservableObject
         _selectedRepoProvider = repositoryProviderName;
     }
 
-    /// <summary>
-    /// Adds or removes the default dev drive.  This dev drive will be made at the loading screen.
-    /// </summary>
-    [RelayCommand]
-    private void MakeNewDevDrive(bool isCheckBoxChecked)
-    {
-        // Getting here means
-        // 1. The user does not have any existing dev drives
-        // 2. The user wants to clone to a new dev drive.
-        // 3. The user un-checked this and does not want a new dev drive.
-        if (isCheckBoxChecked)
-        {
-            UpdateDevDriveInfo();
-        }
-        else
-        {
-            FolderPickerViewModel.CloneLocationAlias = string.Empty;
-            FolderPickerViewModel.InDevDriveScenario = false;
-            EditDevDriveViewModel.RemoveNewDevDrive();
-            FolderPickerViewModel.EnableBrowseButton();
-            FolderPickerViewModel.CloneLocation = _addRepoDialog.OldCloneLocation;
-        }
-    }
-
     [RelayCommand]
     private void CancelButtonPressed()
     {
         IsLoggingIn = false;
         IsCancelling = true;
     }
+
+    /// <summary>
+    /// The accounts the user is logged into is stored here.
+    /// </summary>
+    [ObservableProperty]
+    private MenuFlyout _accountsToShow;
+
+    /// <summary>
+    /// Used to show the login UI.
+    /// </summary>
+    [ObservableProperty]
+    private Frame _loginUiContent;
+
+    /// <summary>
+    /// Soley used to reset the account drop down when the account page is navigated to.
+    /// </summary>
+    [ObservableProperty]
+    private int _accountIndex;
+
+    /// <summary>
+    /// Text that prompts the user if they want to add search inputs.
+    /// </summary>
+    [ObservableProperty]
+    private string _askToChangeLabel;
+
+    /// <summary>
+    /// If the extension allows users to further filter repo results.
+    /// </summary>
+    [ObservableProperty]
+    private bool _shouldShowGranularSearch;
+
+    /// <summary>
+    /// Controls if the hyperlink button that allows switching to the search terms page is visible.
+    /// </summary>
+    [ObservableProperty]
+    private bool _shouldShowChangeSearchTermsHyperlinkButton;
 
     /// <summary>
     /// Switches the repos shown to the account selected.
@@ -528,6 +455,20 @@ public partial class AddRepoViewModel : ObservableObject
         {
             SelectedAccount = selectedItemName;
             await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
+
+            var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
+            _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
+        });
+    }
+
+    /// <summary>
+    /// Uses search inputs to search for repos.
+    /// </summary>
+    private void SearchRepos()
+    {
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            await SearchForRepos(_selectedRepoProvider, SelectedAccount);
 
             var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
             _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
@@ -574,7 +515,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// The bottom of the MenuFlyout has a button to log into another account.  Handle logging the user in.
     /// </summary>
     /// <remarks>
-    /// This calls MenuItemClick to populate the list of repos if a new account is detected.
+    /// This calls MenuItemClick to poulate the list of repos if a new account is detected.
     /// </remarks>
     [RelayCommand]
     private async Task AddAccountClicked()
@@ -592,7 +533,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         // Store the logged in accounts to help figure out what account the user logged into.
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
-        await LogUserIn(_selectedRepoProvider);
+        await LogUserIn(_selectedRepoProvider, LoginUiContent, true);
         var loggedInAccountsWithNewAccount = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
 
         ShowRepoPage = true;
@@ -608,7 +549,7 @@ public partial class AddRepoViewModel : ObservableObject
             // Logging in should allow only one account to log in at a time.
             if (newAccount.Count() > 1)
             {
-                _log.Error($"{newAccount.Count()} accounts logged in at once.  Choosing the first alphabetically");
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"{newAccount.Count()} accounts logged in at once.  Choosing the first alphabetically");
             }
 
             if (newAccount.Any())
@@ -624,80 +565,6 @@ public partial class AddRepoViewModel : ObservableObject
             var firstItem = AccountsToShow.Items.FirstOrDefault(x => x.Name.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase));
             MenuItemClick((firstItem as MenuFlyoutItem).Text);
         }
-    }
-
-    [RelayCommand]
-    public void SaveRepoUrl(string repoUrl)
-    {
-        Url = repoUrl;
-
-        ToggleCloneButton();
-    }
-
-    public AddRepoViewModel(
-        SetupFlowOrchestrator setupFlowOrchestrator,
-        ISetupFlowStringResource stringResource,
-        List<CloningInformation> previouslySelectedRepos,
-        IHost host,
-        Guid activityId,
-        AddRepoDialog addRepoDialog,
-        IDevDriveManager devDriveManager)
-    {
-        _addRepoDialog = addRepoDialog;
-        _stringResource = stringResource;
-        _host = host;
-        _dispatcherQueue = host.GetService<DispatcherQueue>();
-        _loginUiContent = new Frame();
-        _setupFlowOrchestrator = setupFlowOrchestrator;
-
-        _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
-        EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
-        _activityId = activityId;
-        FolderPickerViewModel = new FolderPickerViewModel(stringResource, setupFlowOrchestrator);
-        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager, setupFlowOrchestrator);
-
-        EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
-        {
-            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-            FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
-        };
-
-        ChangeToUrlPage();
-
-        // override changes ChangeToUrlPage to correctly set the state.
-        UrlParsingError = string.Empty;
-        ShouldShowUrlError = false;
-        ShowErrorTextBox = false;
-        ShouldShowNoRepoMessage = false;
-        _accountIndex = -1;
-    }
-
-    /// <summary>
-    /// Update dialog to show Dev Drive information.
-    /// </summary>
-    public void UpdateDevDriveInfo()
-    {
-        EditDevDriveViewModel.MakeDefaultDevDrive();
-        FolderPickerViewModel.DisableBrowseButton();
-        _addRepoDialog.OldCloneLocation = FolderPickerViewModel.CloneLocation;
-        FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
-        FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-        FolderPickerViewModel.InDevDriveScenario = true;
-        EditDevDriveViewModel.IsDevDriveCheckboxChecked = true;
-    }
-
-    /// <summary>
-    /// Uses search inputs to search for repos.
-    /// </summary>
-    private void SearchRepos()
-    {
-        _dispatcherQueue.TryEnqueue(async () =>
-        {
-            await SearchForRepos(_selectedRepoProvider, SelectedAccount);
-
-            var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
-            _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
-        });
     }
 
     /// <summary>
@@ -727,11 +594,11 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Makes the MenuFlyout object used to display multiple accounts in the repo tool.
+    /// Makes the MenuFlyout object used to display multple accounts in the repo tool.
     /// </summary>
     /// <returns>The MenuFlyout to display.</returns>
     /// <remarks>
-    /// The layout is a list of added accounts.  A line separator.  One menu item to add an account.
+    /// The layout is a list of added accounts.  A line seperator.  One menu item to add an account.
     /// </remarks>
     private MenuFlyout ConstructFlyout()
     {
@@ -755,50 +622,41 @@ public partial class AddRepoViewModel : ObservableObject
         return newMenu;
     }
 
-    /// <summary>
-    /// Handles logic when the primary button is clicked.  Actions change depending on the screen
-    /// then user is on.
-    /// </summary>
-    /// <param name="searchTerms">The search terms for repositories.</param>
-    /// <returns>True if the close should be canceled.  Otherwise false and the dialog will close.</returns>
-    public async Task<bool> PrimaryButtonClick(Dictionary<string, string> searchTerms)
+    public AddRepoViewModel(
+        SetupFlowOrchestrator setupFlowOrchestrator,
+        ISetupFlowStringResource stringResource,
+        List<CloningInformation> previouslySelectedRepos,
+        IHost host,
+        Guid activityId,
+        AddRepoDialog addRepoDialog,
+        IDevDriveManager devDriveManager)
     {
-        if (CurrentPage == PageKind.AddViaUrl)
+        _addRepoDialog = addRepoDialog;
+        _stringResource = stringResource;
+        _host = host;
+        _dispatcherQueue = host.GetService<WindowEx>().DispatcherQueue;
+        _loginUiContent = new Frame();
+        _setupFlowOrchestrator = setupFlowOrchestrator;
+
+        _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
+        EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
+        _activityId = activityId;
+        FolderPickerViewModel = new FolderPickerViewModel(stringResource, setupFlowOrchestrator);
+        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager, setupFlowOrchestrator);
+
+        EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {
-            // Get the number of repos already selected to clone in a previous instance.
-            // Used to figure out if the repo was added after the user logged into an account.
-            var numberOfReposToCloneCount = EverythingToClone.Count;
+            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+            FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
+        };
 
-            await AddRepositoryViaUri(Url, FolderPickerViewModel.CloneLocation);
+        ChangeToUrlPage();
 
-            // If the repo was not added.
-            if (numberOfReposToCloneCount == EverythingToClone.Count)
-            {
-                ShouldEnablePrimaryButton = false;
-                return true;
-            }
-
-            return false;
-        }
-        else if (CurrentPage == PageKind.AddViaAccount)
-        {
-            if (!string.IsNullOrEmpty(_selectedRepoProvider))
-            {
-                await ChangeToRepoPageAsync();
-            }
-
-            return true;
-        }
-        else if (CurrentPage == PageKind.SearchFields)
-        {
-            // switching to the repo page causes repos to be queried.
-            await ChangeToRepoPageAsync();
-            SearchForRepos(searchTerms);
-
-            return true;
-        }
-
-        return false;
+        // override changes ChangeToUrlPage to correctly set the state.
+        UrlParsingError = string.Empty;
+        ShouldShowUrlError = false;
+        ShowErrorTextBox = false;
+        _accountIndex = -1;
     }
 
     /// <summary>
@@ -835,13 +693,13 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        _log.Information("Getting installed extensions with Repository and DevId providers");
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed extensions with Repository and DevId providers");
         var extensionService = _host.GetService<IExtensionService>();
         var extensionWrappers = extensionService.GetInstalledExtensionsAsync().Result;
 
         var extensions = extensionWrappers.Where(
             extension => extension.HasProviderType(ProviderType.Repository) &&
-            extension.HasProviderType(ProviderType.DeveloperId)).OrderBy(extensionWrapper => extensionWrapper.ExtensionDisplayName);
+            extension.HasProviderType(ProviderType.DeveloperId)).OrderBy(extensionWrapper => extensionWrapper.Name);
 
         _providers = new RepositoryProviders(extensions);
 
@@ -863,7 +721,7 @@ public partial class AddRepoViewModel : ObservableObject
     {
         FolderPickerViewModel.ShowFolderPicker();
         EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-        _log.Information("Changing to Url page");
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Url page");
         ShowUrlPage = true;
         ShowAccountPage = false;
         ShowRepoPage = false;
@@ -904,7 +762,7 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        _log.Information("Changing to Account page");
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Account page");
         ShouldShowUrlError = false;
         ShowUrlPage = false;
         ShowAccountPage = true;
@@ -919,28 +777,17 @@ public partial class AddRepoViewModel : ObservableObject
 
     public async Task ChangeToRepoPageAsync()
     {
-        var loggedInAccounts = await GetAccountsAsync(_selectedRepoProvider, LoginUiContent);
-
-        // At least with the GitHub extension, LoginId is the account name and does not include
-        // @github.com.  I could try parsing the host of the URL and append that to the login id.
-        // But, if other extensions included the @something.com to the LoginId, the solution mentioned above
-        // would produce [username]@[something.com]@[something.com].  Not good.
-        // To avoid this, just store the login id.
-        Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId));
-        AccountsToShow = ConstructFlyout();
-
-        if (!loggedInAccounts.Any())
+        await GetAccountsAsync(_selectedRepoProvider, LoginUiContent);
+        if (Accounts.Any())
         {
-            return;
+            FolderPickerViewModel.ShowFolderPicker();
+            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+            SelectedAccount = Accounts.First();
+            ShouldEnablePrimaryButton = false;
+            MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
         }
 
-        FolderPickerViewModel.ShowFolderPicker();
-        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-        SelectedAccount = Accounts.First();
-        ShouldEnablePrimaryButton = false;
-        MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
-
-        _log.Information("Changing to Repo page");
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
         ShowUrlPage = false;
         ShowAccountPage = false;
         ShowRepoPage = true;
@@ -972,7 +819,7 @@ public partial class AddRepoViewModel : ObservableObject
     {
         CurrentPage = PageKind.SearchFields;
         IsFetchingRepos = false;
-        _log.Information("Changing to select search terms page");
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to select search terms page");
         ShowUrlPage = false;
         ShowAccountPage = false;
         ShowRepoPage = false;
@@ -1059,41 +906,38 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
-    private async Task LogUserIn(string repositoryProviderName)
+    private async Task LogUserIn(string repositoryProviderName, Frame loginFrame, bool shouldShowXCancelButton = false)
     {
         IsLoggingIn = true;
         ShouldShowLoginUi = true;
-        IsCancelling = false;
 
-        // Store the close button text because it will change.
-        // The text of the secondary button of the content dialog changes to notify users
-        // to press the "X" button to cancel the login prompt.
-        // This is needed because the secondary button does not listen to events because
-        // the content dialog is in the middle of the Primary Button click event.
-        var closeButtonText = _addRepoDialog.CloseButtonText;
-        _addRepoDialog.CloseButtonText = _host.GetService<ISetupFlowStringResource>().GetLocalized(StringResourceKey.UrlCancelButtonText);
+        // AddRepoDialog can handle the close button click.  Don't show the x button.
+        ShouldShowXButtonInLoginUi = shouldShowXCancelButton;
+        InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), loginFrame);
 
-        await InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), LoginUiContent);
-
-        _addRepoDialog.CloseButtonText = closeButtonText;
+        // Wait 30 seconds for user to log in.
+        var maxIterationsToWait = 30;
+        var currentIteration = 0;
+        var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
+        while ((IsLoggingIn && !IsCancelling) && currentIteration++ <= maxIterationsToWait)
+        {
+            await Task.Delay(waitDelay);
+        }
 
         ShouldShowLoginUi = false;
-        IsLoggingIn = false;
-        IsCancelling = true;
     }
 
     /// <summary>
-    /// Gets all the accounts for a provider and will prompt the user to login if not accounts
-    /// are logged in to the provider.
+    /// Gets all the accounts for a provider and updates the UI.
     /// </summary>
     /// <param name="repositoryProviderName">The provider the user wants to use.</param>
-    public async Task<IEnumerable<IDeveloperId>> GetAccountsAsync(string repositoryProviderName, Frame loginFrame)
+    public async Task GetAccountsAsync(string repositoryProviderName, Frame loginFrame)
     {
         await Task.Run(() => _providers.StartIfNotRunning(repositoryProviderName));
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
-            await LogUserIn(repositoryProviderName);
+            await LogUserIn(repositoryProviderName, loginFrame);
             loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false), _activityId);
         }
@@ -1102,7 +946,13 @@ public partial class AddRepoViewModel : ObservableObject
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: true), _activityId);
         }
 
-        return loggedInAccounts;
+        // At least with the github extension, LoginId is the account name and does not include
+        // @github.com.  I could try parsing the host of the URL and append that to the login id.
+        // But, if other extensions included the @something.com to the loginid, the solution mentioned above
+        // would produce [username]@[something.com]@[something.com].  Not good.
+        // To avoid this, just store the login id.
+        Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId));
+        AccountsToShow = ConstructFlyout();
     }
 
     /// <summary>
@@ -1125,11 +975,11 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        _log.Information($"Adding and removing repositories");
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding and removing repositories");
         var developerId = _providers.GetAllLoggedInAccounts(_selectedRepoProvider).FirstOrDefault(x => x.LoginId == accountName);
         foreach (RepoViewListItem repositoryToRemove in repositoriesToRemove)
         {
-            _log.Information($"Removing repository {repositoryToRemove}");
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {repositoryToRemove}");
 
             var repoToRemove = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToRemove.RepoName, StringComparison.OrdinalIgnoreCase));
             if (repoToRemove == null)
@@ -1146,7 +996,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         foreach (RepoViewListItem repositoryToAdd in repositoriesToAdd)
         {
-            _log.Information($"Adding repository {repositoryToAdd}");
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository {repositoryToAdd}");
             var repoToAdd = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToAdd.RepoName, StringComparison.OrdinalIgnoreCase));
             if (repoToAdd == null)
             {
@@ -1157,9 +1007,8 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.RepositoryProvider = _providers.GetSDKProvider(_selectedRepoProvider);
             cloningInformation.ProviderName = _providers.DisplayName(_selectedRepoProvider);
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, Path.Join(_selectedRepoProvider, repositoryToAdd.RepoDisplayName));
-            cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, Path.Join(_selectedRepoProvider, repositoryToAdd.RepoDisplayName));
-            cloningInformation.RepoConfigAutomationName = Path.Join(_providers.DisplayName(_selectedRepoProvider), repositoryToAdd.RepoDisplayName);
+            cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{_selectedRepoProvider}/{repositoryToAdd}");
+            cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{_selectedRepoProvider}/{repositoryToAdd}");
             EverythingToClone.Add(cloningInformation);
         }
     }
@@ -1195,7 +1044,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                _log.Error(e, $"Invalid URL {uri.OriginalString}");
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Invalid URL {uri.OriginalString}", e);
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
                 ShouldShowUrlError = true;
                 return;
@@ -1206,15 +1055,16 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Adds a repository from the URL page.
+    /// Adds a repository from the URL page. Steps to determine what repoProvider to use.
+    /// 1. All providers are asked "Can you parse this into a URL you understand."  If yes, that provider to clone the repo.
+    /// 2. If no providers can parse the URL a fall back "GitProvider" is used that uses libgit2sharp to clone the repo.
     /// ShouldShowUrlError is set here.
     /// </summary>
     /// <remarks>
     /// If ShouldShowUrlError == Visible the repo is not added to the list of repos to clone.
     /// </remarks>
-    /// <param name="url">The url of the repo to clone.</param>
     /// <param name="cloneLocation">The location to clone the repo to</param>
-    public async Task AddRepositoryViaUri(string url, string cloneLocation)
+    public void AddRepositoryViaUri(string url, string cloneLocation)
     {
         ShouldEnablePrimaryButton = false;
         Uri uri = null;
@@ -1229,71 +1079,44 @@ public partial class AddRepoViewModel : ObservableObject
         // Causing GetCloningInformationFromURL to fall back to git.
         var provider = _providers?.CanAnyProviderSupportThisUri(uri);
 
-        // This code is duplicated once.  If cloningInformation is null the user is asked to log in.
-        // DevHome then makes another attempt to get the repo information from the URL.
-        var cloningInformation = MakeCloningInformationFromUrl(provider, cloneLocation, uri);
-        if (cloningInformation != null)
+        var cloningInformation = GetCloningInformationFromUrl(provider, cloneLocation, uri, LoginUiContent);
+        if (cloningInformation == null)
         {
-            ShouldShowUrlError = false;
-
-            // User could paste in a url of an already added repo.  Check for that here.
-            if (_previouslySelectedRepos.Any(x => x.RepositoryToClone.OwningAccountName.Equals(cloningInformation.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase)
-                && x.RepositoryToClone.DisplayName.Equals(cloningInformation.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase)))
-            {
-                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
-                ShouldShowUrlError = true;
-                _log.Information("Repository has already been added.");
-                TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RepoAlreadyAdded_Event", false, _activityId);
-                return;
-            }
-
-            _log.Information($"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
-
-            EverythingToClone.Add(cloningInformation);
-            ShouldEnablePrimaryButton = true;
-
+            // Error information is already set.
+            // Error string is visible
             return;
         }
 
-        // 2 reasons why the code is here.
-        // 1. The Url has a typo but is a valid URL.
-        // 2. The repo is not public and no logged iin accounts have access to the repo.
-        // Ask the user to log in and try again.
-        await LogUserIn(provider.ExtensionDisplayName);
+        ShouldShowUrlError = false;
 
-        cloningInformation = MakeCloningInformationFromUrl(provider, cloneLocation, uri);
-        if (cloningInformation != null)
+        // User could paste in a url of an already added repo.  Check for that here.
+        if (_previouslySelectedRepos.Any(x => x.RepositoryToClone.OwningAccountName.Equals(cloningInformation.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase)
+            && x.RepositoryToClone.DisplayName.Equals(cloningInformation.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase)))
         {
-            ShouldShowUrlError = false;
-
-            // User could paste in a url of an already added repo.  Check for that here.
-            if (_previouslySelectedRepos.Any(x => x.RepositoryToClone.OwningAccountName.Equals(cloningInformation.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase)
-                && x.RepositoryToClone.DisplayName.Equals(cloningInformation.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase)))
-            {
-                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
-                ShouldShowUrlError = true;
-                _log.Information("Repository has already been added.");
-                TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RepoAlreadyAdded_Event", false, _activityId);
-                return;
-            }
-
-            _log.Information($"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
-
-            EverythingToClone.Add(cloningInformation);
-            ShouldEnablePrimaryButton = true;
-
+            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
+            ShouldShowUrlError = true;
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repository has already been added.");
+            TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RepoAlreadyAdded_Event", false, _activityId);
             return;
         }
+
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
+
+        EverythingToClone.Add(cloningInformation);
+        ShouldEnablePrimaryButton = true;
+        ShouldShowUrlError = false;
     }
 
     /// <summary>
-    /// Uses the passed in provider to make a CloningInformation Object.
+    /// Tries to assign a provider to a validated uri.
     /// </summary>
-    /// <param name="provider">The provider that can handle the Url.  This can be null.</param>
-    /// <param name="cloneLocation">The location the user wants to clone the repo.</param>
+    /// <param name="provider">The provider to test with.</param>
+    /// <param name="cloneLocation">The location the user wnats to clone the repo.</param>
     /// <param name="uri">The uri to the repo (Should be a valid uri)</param>
-    /// <returns>non-null CloningInformation if any logged in account in the specified provider can clone the URL.</returns>
-    private CloningInformation MakeCloningInformationFromUrl(RepositoryProvider provider, string cloneLocation, Uri uri)
+    /// <param name="loginFrame">The frame to show OAUTH login if the user needs to log in.</param>
+    /// <returns>non-null cloning information if a provider is selected for cloning.  Null for all other cases.</returns>
+    /// <remarks>If the repo is either private, or does not exist, this will ask the user to log in.</remarks>
+    private CloningInformation GetCloningInformationFromUrl(RepositoryProvider provider, string cloneLocation, Uri uri, Frame loginFrame)
     {
         if (provider == null)
         {
@@ -1336,8 +1159,27 @@ public partial class AddRepoViewModel : ObservableObject
                     return cloningInformation;
                 }
             }
+
+            // In the case that no logged in accounts can access it, return null
+            // until DevHome can handle multiple accounts.
+            // Should have a better error string.
+            // TODO: Figure out a better error message?
+            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
+            ShouldShowUrlError = true;
+
+            InitiateAddAccountUserExperienceAsync(provider, loginFrame);
+            return null;
         }
 
+        // At this point one of three things are true
+        // 1. The repo is private and no accounts are logged in.
+        // 2. The repo does not exist (Might have been a typo in the name)
+        // Because DevHome cannot tell if a repo is private, or does not exist, prompt the user to log in.
+        // Only ask if DevHome hasn't asked already.
+        UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
+        ShouldShowUrlError = true;
+        IsLoggingIn = true;
+        InitiateAddAccountUserExperienceAsync(provider, loginFrame);
         return null;
     }
 
@@ -1364,7 +1206,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     /// <param name="provider">The provider used to log the user in.</param>
     /// <param name="loginFrame">The frame to use to display the OAUTH path</param>
-    private async Task InitiateAddAccountUserExperienceAsync(RepositoryProvider provider, Frame loginFrame)
+    private void InitiateAddAccountUserExperienceAsync(RepositoryProvider provider, Frame loginFrame)
     {
         TelemetryFactory.Get<ITelemetry>().Log(
                                                 "EntryPoint_DevId_Event",
@@ -1375,35 +1217,25 @@ public partial class AddRepoViewModel : ObservableObject
         var authenticationFlow = provider.GetAuthenticationExperienceKind();
         if (authenticationFlow == AuthenticationExperienceKind.CardSession)
         {
-            var loginUi = await _providers.GetLoginUiAsync(provider.ExtensionDisplayName);
+            var loginUi = _providers.GetLoginUi(provider.ExtensionDisplayName, SelectedTheme);
             loginFrame.Content = loginUi;
-
-            // Wait 30 seconds for user to log in.
-            var maxIterationsToWait = 30;
-            var currentIteration = 0;
-            var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
-            while ((IsLoggingIn && !IsCancelling) && currentIteration++ <= maxIterationsToWait)
-            {
-                await Task.Delay(waitDelay);
-            }
         }
         else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
         {
-            var windowHandle = _host.GetService<Window>().GetWindowHandle();
+            var windowHandle = _host.GetService<WindowEx>().GetWindowHandle();
             var windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
             try
             {
-                var developerIdResult = await provider.ShowLogonBehavior(windowPtr);
-
+                var developerIdResult = provider.ShowLogonBehavior(windowPtr).AsTask().Result;
                 if (developerIdResult.Result.Status == ProviderOperationStatus.Failure)
                 {
-                    _log.Error($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
+                    GlobalLog.Logger?.ReportError($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
                     return;
                 }
             }
             catch (Exception ex)
             {
-                _log.Error(ex, $"Exception thrown while calling show logon session");
+                GlobalLog.Logger?.ReportError($"Exception thrown while calling show logon session", ex);
             }
         }
     }
@@ -1490,7 +1322,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                _log.Error(ex, $"Exception thrown while selecting repositories from the return object");
+                GlobalLog.Logger?.ReportError($"Exception thrown while selecting repositories from the return object", ex);
                 _allRepositories = new();
             }
         }
@@ -1504,16 +1336,6 @@ public partial class AddRepoViewModel : ObservableObject
             SelectionOptionsPlaceholderText = repoSearchInformation.SelectionOptionsPlaceHolderText;
 
             IsFetchingRepos = false;
-
-            if (!_repositoriesForAccount.Any())
-            {
-                NoRepositoriesMessage = _stringResource.GetLocalized(StringResourceKey.RepoToolNoRepositoriesMessage, _providers.DisplayName(_selectedRepoProvider));
-                ShowRepoPage = false;
-                ShouldShowNoRepoMessage = true;
-                ShouldShowGranularSearch = false;
-                FolderPickerViewModel.ShouldShowFolderPicker = false;
-                EditDevDriveViewModel.ShowDevDriveInformation = false;
-            }
         });
     }
 
@@ -1535,7 +1357,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     /// <remarks>
     /// The side effect of this method is _repositoriesForAccount is populated with repositories.
-    /// If _isSearchingEnabled is true, the path string, and ComboBox will be populated with values.
+    /// If _isSearchingEnabled is true, the path string, and combobox will be populated with values.
     /// </remarks>
     /// <param name="repositoryProvider">The provider.  This should match the display name of the extension</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
@@ -1567,7 +1389,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="cloneLocation">The location to clone all repositories to.</param>
     public void SetCloneLocation(string cloneLocation)
     {
-        _log.Information($"Setting the clone location for all repositories to {cloneLocation}");
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Setting the clone location for all repositories to {cloneLocation}");
         foreach (var cloningInformation in EverythingToClone)
         {
             // N^2 algorithm.  Should change to something else when the number of repos is large.
