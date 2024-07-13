@@ -36,12 +36,41 @@ public sealed partial class WhatsNewPage : DevHomePage
     {
         await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstRun, true);
 
-        var whatsNewCards = FeaturesContainer.Resources
+        var whatsNewCardsRow1 = FeaturesContainerRow1.Resources
             .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
             .Select(card => card.Value as WhatsNewCard)
             .OrderBy(card => card?.Priority ?? 0);
 
-        foreach (var card in whatsNewCards)
+        foreach (var card in whatsNewCardsRow1)
+        {
+            if (card is null)
+            {
+                continue;
+            }
+
+            // When the Dev Drive feature is not enabled don't show the learn more uri link, but instead move the learn more text into the button content.
+            if (string.Equals(card.PageKey, _devDrivePageKeyUri.AbsoluteUri, StringComparison.OrdinalIgnoreCase))
+            {
+                if (!DevDriveUtil.IsDevDriveFeatureEnabled)
+                {
+                    card.Button = Application.Current.GetService<IStringResource>().GetLocalized(_devDriveLinkResourceKey);
+                    card.ShouldShowLink = false;
+                }
+            }
+            else
+            {
+                card.ShouldShowIcon = false;
+            }
+
+            ViewModel.AddCard(card);
+        }
+
+        var whatsNewCardsRow2 = FeaturesContainerRow2.Resources
+            .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
+            .Select(card => card.Value as WhatsNewCard)
+            .OrderBy(card => card?.Priority ?? 0);
+
+        foreach (var card in whatsNewCardsRow2)
         {
             if (card is null)
             {
