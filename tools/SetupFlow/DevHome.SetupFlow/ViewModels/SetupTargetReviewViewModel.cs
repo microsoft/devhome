@@ -1,12 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskGroups;
+using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -29,7 +34,7 @@ public partial class SetupTargetReviewViewModel : ReviewTabViewModelBase
 
     public ComputeSystemReviewItem ComputeSystemSetupItem => _computeSystemManager.ComputeSystemSetupItem;
 
-    public IEnumerable<ComputeSystemPropertyCache> ComputeSystemProperties { get; private set; }
+    public IEnumerable<ComputeSystemProperty> ComputeSystemProperties { get; private set; }
 
     [ObservableProperty]
     private string _infoBarMessage;
@@ -39,10 +44,13 @@ public partial class SetupTargetReviewViewModel : ReviewTabViewModelBase
     [ObservableProperty]
     private string _osName;
 
+    [ObservableProperty]
+    private bool _wasOsNameRetrieved;
+
     public SetupTargetReviewViewModel(ISetupFlowStringResource stringResource, IComputeSystemManager computeSystemManager)
     {
         _stringResource = stringResource;
-        TabTitle = stringResource.GetLocalized(StringResourceKey.SetupTargetReviewTabTitle);
+        TabTitle = stringResource.GetLocalized(StringResourceKey.SetupTargetPageTitle);
         _computeSystemManager = computeSystemManager;
     }
 
@@ -62,28 +70,31 @@ public partial class SetupTargetReviewViewModel : ReviewTabViewModelBase
     private async Task SetOsNameAsync()
     {
         var computeSystem = _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup;
-        ComputeSystemProperties = await computeSystem?.GetComputeSystemPropertiesAsync(string.Empty);
-        OsName = null;
+        ComputeSystemProperties ??= await computeSystem?.GetComputeSystemPropertiesAsync(string.Empty);
 
         if (ComputeSystemProperties == null)
         {
             return;
         }
 
-        var osName = string.Empty;
         foreach (var property in ComputeSystemProperties)
         {
             var lowerCasePropertyName = property.Name.ToLowerInvariant();
             if (_osPropertyNameValues.Contains(lowerCasePropertyName))
             {
-                osName = property.Value as string;
+                OsName = property.Value as string;
                 break;
             }
         }
 
-        if (!string.IsNullOrEmpty(osName))
+        if (!string.IsNullOrEmpty(OsName))
         {
-            OsName = osName;
+            WasOsNameRetrieved = true;
+        }
+        else
+        {
+            WasOsNameRetrieved = false;
+            OsName = _stringResource.GetLocalized(StringResourceKey.SetupTargetUnknownStatus);
         }
     }
 }

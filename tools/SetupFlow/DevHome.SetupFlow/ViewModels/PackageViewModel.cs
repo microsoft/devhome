@@ -3,14 +3,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
@@ -37,60 +39,59 @@ public partial class PackageViewModel : ObservableObject
 
     private readonly Lazy<BitmapImage> _packageDarkThemeIcon;
     private readonly Lazy<BitmapImage> _packageLightThemeIcon;
+    private readonly Lazy<InstallPackageTask> _installPackageTask;
 
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IWinGetPackage _package;
-    private readonly IWinGet _winget;
+    private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
     private readonly IScreenReaderService _screenReaderService;
-    private readonly SetupFlowOrchestrator _orchestrator;
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
 
     /// <summary>
     /// Occurs after the package selection changes
     /// </summary>
-    public event EventHandler<bool> SelectionChanged;
-
-    /// <summary>
-    /// Occurs after the package version has changed
-    /// </summary>
-    public event EventHandler<string> VersionChanged;
+    public event EventHandler<PackageViewModel> SelectionChanged;
 
     /// <summary>
     /// Indicates if a package is selected
     /// </summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ActionButtonDescription))]
-    [NotifyPropertyChangedFor(nameof(ButtonAutomationId))]
+    [NotifyPropertyChangedFor(nameof(ButtonAutomationName))]
     private bool _isSelected;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TooltipVersion))]
     [NotifyPropertyChangedFor(nameof(PackageFullDescription))]
+    [NotifyPropertyChangedFor(nameof(CanSelect))]
     private string _selectedVersion;
+
+    public bool CanSelect => IsSelectable();
 
     public bool ShowVersionList => IsVersioningSupported();
 
     public PackageViewModel(
         ISetupFlowStringResource stringResource,
-        IWinGet winget,
+        IWindowsPackageManager wpm,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
         IScreenReaderService screenReaderService,
+        IHost host,
         SetupFlowOrchestrator orchestrator)
     {
         _stringResource = stringResource;
-        _winget = winget;
+        _wpm = wpm;
         _package = package;
         _themeSelector = themeSelector;
         _screenReaderService = screenReaderService;
-        _orchestrator = orchestrator;
+        _setupFlowOrchestrator = orchestrator;
 
         // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
+        _installPackageTask = new Lazy<InstallPackageTask>(() => CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
 
         SelectedVersion = GetDefaultSelectedVersion();
-        InstallPackageTask = CreateInstallTask();
     }
 
     public PackageUniqueKey UniqueKey => _package.UniqueKey;
@@ -105,7 +106,8 @@ public partial class PackageViewModel : ObservableObject
 
     public IReadOnlyList<string> AvailableVersions => _package.AvailableVersions;
 
-    public bool IsInstalled => _package.IsInstalled;
+    // When in setup target flow don't disable installed packaged.
+    public bool IsInstalled => _setupFlowOrchestrator.IsSettingUpATargetMachine ? false : _package.IsInstalled;
 
     public string CatalogName => _package.CatalogName;
 
@@ -129,17 +131,11 @@ public partial class PackageViewModel : ObservableObject
 
     public string TooltipPublisher => _stringResource.GetLocalized(StringResourceKey.PackagePublisherNameTooltip, PublisherName);
 
-    public bool CanInstall => _orchestrator.IsSettingUpATargetMachine || !IsInstalled || _package.InstalledVersion != SelectedVersion;
-
-    public string ActionButtonDescription => IsSelected ?
+    public string ButtonAutomationName => IsSelected ?
         _stringResource.GetLocalized(StringResourceKey.RemoveApplication) :
         _stringResource.GetLocalized(StringResourceKey.AddApplication);
 
-    public string ButtonAutomationId => IsSelected ?
-        $"Remove_{_package.Id}" :
-        $"Add_{_package.Id}";
-
-    public InstallPackageTask InstallPackageTask { get; private set; }
+    public InstallPackageTask InstallPackageTask => _installPackageTask.Value;
 
     /// <summary>
     /// Gets the URI for the "Learn more" button
@@ -162,7 +158,7 @@ public partial class PackageViewModel : ObservableObject
             return _package.PackageUrl;
         }
 
-        if (_winget.IsMsStorePackage(_package))
+        if (_wpm.IsMsStorePackage(_package))
         {
             return new Uri($"ms-windows-store://pdp/?productid={_package.Id}");
         }
@@ -175,14 +171,16 @@ public partial class PackageViewModel : ObservableObject
         return new Uri("https://github.com/microsoft/winget-pkgs");
     }
 
-    partial void OnIsSelectedChanged(bool value) => SelectionChanged?.Invoke(this, value);
+    partial void OnIsSelectedChanged(bool value) => SelectionChanged?.Invoke(null, this);
 
     partial void OnSelectedVersionChanged(string value)
     {
-        // Update the install task with the new selected version
-        InstallPackageTask = CreateInstallTask();
-
-        VersionChanged?.Invoke(this, SelectedVersion);
+        // If the selected version changed to a version that cannot be selected
+        // (e.g. installed version) then unselect the package
+        if (IsSelected && !IsSelectable())
+        {
+            IsSelected = false;
+        }
     }
 
     /// <summary>
@@ -227,9 +225,9 @@ public partial class PackageViewModel : ObservableObject
         return bitmapImage;
     }
 
-    private InstallPackageTask CreateInstallTask()
+    private InstallPackageTask CreateInstallTask(Guid activityId)
     {
-        return new InstallPackageTask(_winget, _stringResource, _package, SelectedVersion, _orchestrator.ActivityId);
+        return _package.CreateInstallTask(_wpm, _stringResource, SelectedVersion, activityId);
     }
 
     private string GetPackageShortDescription()
@@ -247,13 +245,13 @@ public partial class PackageViewModel : ObservableObject
     private string GetPackageFullDescription()
     {
         // Version | Source | Publisher name
-        if (!_winget.IsMsStorePackage(_package) && !string.IsNullOrEmpty(_package.PublisherName))
+        if (!_wpm.IsMsStorePackage(_package) && !string.IsNullOrEmpty(_package.PublisherName))
         {
             return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, SelectedVersion, CatalogName, PublisherName);
         }
 
         // Version | Source
-        if (!_winget.IsMsStorePackage(_package))
+        if (!_wpm.IsMsStorePackage(_package))
         {
             return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, SelectedVersion, CatalogName);
         }
@@ -275,7 +273,29 @@ public partial class PackageViewModel : ObservableObject
     private bool IsVersioningSupported()
     {
         // Store packages have a single version
-        return !_winget.IsMsStorePackage(_package);
+        return !_wpm.IsMsStorePackage(_package);
+    }
+
+    /// <summary>
+    /// Checks if the package is selectable
+    /// </summary>
+    /// <returns>True if the package is selectable</returns>
+    /// <remarks>Allow selecting a different version to install if the package is installed</remarks>
+    private bool IsSelectable()
+    {
+        if (!IsInstalled)
+        {
+            return true;
+        }
+
+        if (!IsVersioningSupported())
+        {
+            return false;
+        }
+
+        var isValidSelectedVersion = AvailableVersions.Contains(SelectedVersion);
+        var isNotInstalledVersion = SelectedVersion != InstalledVersion;
+        return isValidSelectedVersion && isNotInstalledVersion;
     }
 
     /// <summary>

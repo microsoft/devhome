@@ -1,21 +1,25 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.Intrinsics.Arm;
 using System.Threading.Tasks;
+using CommunityToolkit.WinUI.Animations;
 using DevHome.Common.Environments.Models;
-using DevHome.Common.Services;
-using DevHome.Environments.Models;
 using DevHome.Environments.ViewModels;
-using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Graphics.Imaging;
+using Windows.Storage.Streams;
 
 namespace DevHome.Environments.Helpers;
 
 public class DataExtractor
 {
-    private static readonly StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
-
     /// <summary>
     /// Checks for supported operations and adds the text, icon, and function associated with the operation.
     /// Returns the list of operations to be added to the dot button.
@@ -23,74 +27,25 @@ public class DataExtractor
     /// ToDo: Add a pause after each operation
     /// </summary>
     /// <param name="computeSystem">Compute system used to fill OperationsViewModel's callback function.</param>
-    /// <param name="window">The window object used for operations that require presenting UI.</param>
-    public static List<OperationsViewModel> FillDotButtonOperations(ComputeSystemCache computeSystem, Window window)
+    public static List<OperationsViewModel> FillDotButtonOperations(ComputeSystem computeSystem)
     {
         var operations = new List<OperationsViewModel>();
-        var supportedOperations = computeSystem.SupportedOperations.Value;
+        var supportedOperations = computeSystem.SupportedOperations;
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Restart))
         {
-            operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_Restart"), "\uE777", computeSystem.RestartAsync, ComputeSystemOperations.Restart));
+            operations.Add(new OperationsViewModel("Restart", "\uE777", computeSystem.RestartAsync));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Delete))
         {
-            operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_Delete"), "\uE74D", computeSystem.DeleteAsync, ComputeSystemOperations.Delete, window));
+            operations.Add(new OperationsViewModel("Delete", "\uE74D", computeSystem.DeleteAsync));
         }
 
+        // ToDo: Correct the function used
+        // operations.Add(new OperationsViewModel("Pin To Taskbar", "\uE718", computeSystem.DeleteAsync));
+        // operations.Add(new OperationsViewModel("Add to Start Menu", "\uF0DF", computeSystem.DeleteAsync));
         return operations;
-    }
-
-    public static async Task<List<PinOperationData>> FillDotButtonPinOperationsAsync(ComputeSystemCache computeSystem)
-    {
-        var supportedOperations = computeSystem.SupportedOperations.Value;
-        var operationData = new List<PinOperationData>();
-        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToTaskbar))
-        {
-            var pinResultTaskbar = await computeSystem.GetIsPinnedToTaskbarAsync();
-            OperationsViewModel? operation = null;
-            if (pinResultTaskbar.Result.Status == ProviderOperationStatus.Success)
-            {
-                if (pinResultTaskbar.IsPinned)
-                {
-                    var itemText = _stringResource.GetLocalized("UnpinFromTaskbarButtonContextMenuItem");
-                    operation = new OperationsViewModel(itemText, "\uE77A", computeSystem.UnpinFromTaskbarAsync, ComputeSystemOperations.PinToTaskbar, "Unpin");
-                }
-                else
-                {
-                    var itemText = _stringResource.GetLocalized("PinToTaskbarButtonContextMenuItem");
-                    operation = new OperationsViewModel(itemText, "\uE718", computeSystem.PinToTaskbarAsync, ComputeSystemOperations.PinToTaskbar, "Pin");
-                }
-            }
-
-            operationData.Add(new(operation, pinResultTaskbar));
-        }
-
-        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToStartMenu))
-        {
-            var pinResultStartMenu = await computeSystem.GetIsPinnedToStartMenuAsync();
-            OperationsViewModel? operation = null;
-            if (pinResultStartMenu.Result.Status == ProviderOperationStatus.Success)
-            {
-                if (pinResultStartMenu.IsPinned)
-                {
-                    var itemText = _stringResource.GetLocalized("UnpinFromStartButtonContextMenuItem");
-                    operation = new OperationsViewModel(itemText, "\uE77A", computeSystem.UnpinFromStartMenuAsync, ComputeSystemOperations.PinToStartMenu, "Unpin");
-                }
-                else
-                {
-                    var itemText = _stringResource.GetLocalized("PinToStartButtonContextMenuItem");
-                    operation = new OperationsViewModel(itemText, "\uE718", computeSystem.PinToStartMenuAsync, ComputeSystemOperations.PinToStartMenu, "Pin");
-                }
-            }
-
-            operationData.Add(new(operation, pinResultStartMenu));
-        }
-
-        return operationData;
     }
 
     /// <summary>
@@ -98,57 +53,44 @@ public class DataExtractor
     /// Returns the list of operations to be added to the launch button.
     /// </summary>
     // <param name="computeSystem">Compute system used to fill OperationsViewModel's callback function.</param>
-    public static List<OperationsViewModel> FillLaunchButtonOperations(ComputeSystemCache computeSystem)
+    public static List<OperationsViewModel> FillLaunchButtonOperations(ComputeSystem computeSystem)
     {
         var operations = new List<OperationsViewModel>();
-        var supportedOperations = computeSystem.SupportedOperations.Value;
+        var supportedOperations = computeSystem.SupportedOperations;
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Start))
         {
-            operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_Start"), "\uE768", computeSystem.StartAsync, ComputeSystemOperations.Start));
+            operations.Add(new OperationsViewModel("Start", "\uE768", computeSystem.StartAsync));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.ShutDown))
         {
-            operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_ShutDown"), "\uE71A", computeSystem.ShutDownAsync, ComputeSystemOperations.ShutDown));
-        }
-
-        if (supportedOperations.HasFlag(ComputeSystemOperations.Save))
-        {
-            operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_Save"), "\uE74E", computeSystem.SaveAsync, ComputeSystemOperations.Save));
+            operations.Add(new OperationsViewModel("Stop", "\uE71A", computeSystem.TerminateAsync));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.CreateSnapshot))
         {
-            operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_CreateCheckpoint"), "\uE7C1", computeSystem.CreateSnapshotAsync, ComputeSystemOperations.CreateSnapshot));
+            operations.Add(new OperationsViewModel("Checkpoint", "\uE7C1", computeSystem.CreateSnapshotAsync));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.RevertSnapshot))
         {
-            operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_RevertCheckpoint"), "\uE7A7", computeSystem.RevertSnapshotAsync, ComputeSystemOperations.RevertSnapshot));
+            operations.Add(new OperationsViewModel("Revert", "\uE7A7", computeSystem.RevertSnapshotAsync));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Pause))
         {
-            operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_Pause"), "\uE769", computeSystem.PauseAsync, ComputeSystemOperations.Pause));
+            operations.Add(new OperationsViewModel("Pause", "\uE769", computeSystem.PauseAsync));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Resume))
         {
-            operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_Resume"), "\uE768", computeSystem.ResumeAsync, ComputeSystemOperations.Resume));
+            operations.Add(new OperationsViewModel("Resume", "\uF2C6", computeSystem.ResumeAsync));
         }
 
         if (supportedOperations.HasFlag(ComputeSystemOperations.Terminate))
         {
-            operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_Terminate"), "\uEE95", computeSystem.TerminateAsync, ComputeSystemOperations.Terminate));
+            operations.Add(new OperationsViewModel("Terminate", "\uE71A", computeSystem.TerminateAsync));
         }
 
         return operations;

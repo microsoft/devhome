@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models.WingetConfigure;

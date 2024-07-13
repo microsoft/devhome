@@ -12,18 +12,17 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.Common.TelemetryEvents.SetupFlow.SummaryPage;
 using DevHome.Contracts.Services;
+using DevHome.Dashboard.ViewModels;
+using DevHome.Settings.ViewModels;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
-using DevHome.SetupFlow.Views;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Serilog;
 using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -33,21 +32,13 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
     private static readonly BitmapImage LightError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
 
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SummaryViewModel));
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly SetupFlowViewModel _setupFlowViewModel;
     private readonly IHost _host;
+    private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
     private readonly PackageProvider _packageProvider;
     private readonly IAppManagementInitializer _appManagementInitializer;
-
-    private readonly List<UserControl> _cloneRepoNextSteps;
-
-    // Holds all the UI to display for "Next Steps".
-    public List<UserControl> NextSteps => _cloneRepoNextSteps;
-
-    [ObservableProperty]
-    private ObservableCollection<ISummaryInformationViewModel> _summaryInformation;
 
     [ObservableProperty]
     private List<SummaryErrorMessageViewModel> _failedTasks = new();
@@ -55,15 +46,12 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private Visibility _showRestartNeeded;
 
-    [ObservableProperty]
-    private string _targetFailedCountText;
-
     [RelayCommand]
     public async Task ShowLogFiles()
     {
         await Task.Run(() =>
         {
-            var folderToOpen = DevHome.Common.Logging.LogFolderRoot;
+            var folderToOpen = Log.Logger.Options.LogFileFolderPath;
             var startInfo = new ProcessStartInfo();
             startInfo.UseShellExecute = true;
             startInfo.FileName = folderToOpen;
@@ -78,25 +66,21 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         get
         {
             var repositoriesCloned = new ObservableCollection<RepoViewListItem>();
-            if (!IsSettingUpATargetMachine)
+            var taskGroup = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
+            var group = taskGroup.SingleOrDefault(x => x.GetType() == typeof(RepoConfigTaskGroup));
+            if (group is RepoConfigTaskGroup repoTaskGroup)
             {
-                var taskGroup = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
-                var group = taskGroup.SingleOrDefault(x => x.GetType() == typeof(RepoConfigTaskGroup));
-                if (group is RepoConfigTaskGroup repoTaskGroup)
+                foreach (var task in repoTaskGroup.SetupTasks)
                 {
-                    foreach (var task in repoTaskGroup.SetupTasks)
+                    if (task is CloneRepoTask repoTask && repoTask.WasCloningSuccessful)
                     {
-                        if (task is CloneRepoTask repoTask && repoTask.WasCloningSuccessful)
-                        {
-                            repositoriesCloned.Add(new(repoTask.RepositoryToClone));
-                        }
+                        repositoriesCloned.Add(new(repoTask.RepositoryToClone));
                     }
                 }
-
-                var localizedHeader = (repositoriesCloned.Count == 1) ? StringResourceKey.SummaryPageOneRepositoryCloned : StringResourceKey.SummaryPageReposClonedCount;
-                RepositoriesClonedText = StringResource.GetLocalized(localizedHeader);
             }
 
+            var localizedHeader = (repositoriesCloned.Count == 1) ? StringResourceKey.SummaryPageOneRepositoryCloned : StringResourceKey.SummaryPageReposClonedCount;
+            RepositoriesClonedText = StringResource.GetLocalized(localizedHeader);
             return repositoriesCloned;
         }
     }
@@ -106,60 +90,21 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         get
         {
             var packagesInstalled = new ObservableCollection<PackageViewModel>();
-            if (!IsSettingUpATargetMachine)
-            {
-                var packages = _packageProvider.SelectedPackages.Where(sp => sp.CanInstall && sp.InstallPackageTask.WasInstallSuccessful).ToList();
-                packages.ForEach(p => packagesInstalled.Add(p));
-                var localizedHeader = (packagesInstalled.Count == 1) ? StringResourceKey.SummaryPageOneApplicationInstalled : StringResourceKey.SummaryPageAppsDownloadedCount;
-                ApplicationsClonedText = StringResource.GetLocalized(localizedHeader);
-            }
-
+            var packages = _packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true).ToList();
+            packages.ForEach(p => packagesInstalled.Add(p));
+            var localizedHeader = (packagesInstalled.Count == 1) ? StringResourceKey.SummaryPageOneApplicationInstalled : StringResourceKey.SummaryPageAppsDownloadedCount;
+            ApplicationsClonedText = StringResource.GetLocalized(localizedHeader);
             return packagesInstalled;
-        }
-    }
-
-    public bool WasCreateEnvironmentOperationStarted
-    {
-        get
-        {
-            var taskGroup = Orchestrator.GetTaskGroup<EnvironmentCreationOptionsTaskGroup>();
-            if (taskGroup == null)
-            {
-                return false;
-            }
-
-            return taskGroup.CreateEnvironmentTask.CreationOperationStarted;
         }
     }
 
     public List<PackageViewModel> AppsDownloadedInstallationNotes => AppsDownloaded.Where(p => !string.IsNullOrEmpty(p.InstallationNotes)).ToList();
 
-    public List<ConfigurationUnitResultViewModel> ConfigurationUnitResults { get; private set; } = [];
+    public IList<ConfigurationUnitResultViewModel> ConfigurationUnitResults => _configurationUnitResults.Value;
 
-    public List<ConfigurationUnitResultViewModel> TargetCloneResults { get; private set; } = [];
+    public bool ShowConfigurationUnitResults => ConfigurationUnitResults.Any();
 
-    public List<ConfigurationUnitResultViewModel> TargetInstallResults { get; private set; } = [];
-
-    public List<ConfigurationUnitResultViewModel> TargetFailedResults { get; private set; } = [];
-
-    public bool IsSettingUpATargetMachine => _orchestrator.IsSettingUpATargetMachine;
-
-    /// <summary>
-    /// Gets a value indicating whether a configuration file was used.
-    /// </summary>
-    public bool ShowConfigurationUnitResults => ConfigurationUnitResults.Count > 0;
-
-    /// <summary>
-    /// Gets a value indicating whether to show results for setting up a target machine.
-    /// </summary>
-    public bool ShowTargetMachineSetupResults => IsSettingUpATargetMachine && ShowConfigurationUnitResults;
-
-    /// <summary>
-    /// Gets a value indicating whether the configuration file flow was used.
-    /// </summary>
-    public bool ShowConfigurationFileResults => ShowConfigurationUnitResults && !IsSettingUpATargetMachine;
-
-    public bool CompletedWithErrors => TargetFailedResults.Count > 0 || FailedTasks.Count > 0;
+    public bool CompletedWithErrors => ConfigurationUnitResults.Any(unitResult => unitResult.IsError);
 
     public int ConfigurationUnitSucceededCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsSuccess);
 
@@ -178,9 +123,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private string _applicationsClonedText;
-
-    [ObservableProperty]
-    private string _summaryPageEnvironmentCreatingText;
 
     [RelayCommand]
     public void RemoveRestartGrid()
@@ -205,38 +147,19 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToMainPage");
     }
 
+    [RelayCommand]
     public void GoToDashboard()
     {
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("Dashboard"), Orchestrator.ActivityId);
-        _host.GetService<INavigationService>().NavigateTo(KnownPageKeys.Dashboard);
+        _host.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToDashboard");
-    }
-
-    [RelayCommand]
-    public void RedirectToNextPage()
-    {
-        if (WasCreateEnvironmentOperationStarted)
-        {
-            GoToEnvironmentsPage();
-            return;
-        }
-
-        // Default behavior is to go to the dashboard
-        GoToDashboard();
-    }
-
-    public void GoToEnvironmentsPage()
-    {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("Environments"), Orchestrator.ActivityId);
-        _host.GetService<INavigationService>().NavigateTo(KnownPageKeys.Environments);
-        _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToEnvironments");
     }
 
     [RelayCommand]
     public void GoToDevHomeSettings()
     {
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("DevHomeSettings"), Orchestrator.ActivityId);
-        _host.GetService<INavigationService>().NavigateTo(KnownPageKeys.Settings);
+        _host.GetService<INavigationService>().NavigateTo(typeof(SettingsViewModel).FullName);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToSettings");
     }
 
@@ -246,12 +169,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("WindowsDeveloperSettings"), Orchestrator.ActivityId);
         Task.Run(() => Launcher.LaunchUriAsync(new Uri("ms-settings:developers"))).Wait();
     }
-
-    [ObservableProperty]
-    private string _pageRedirectButtonText;
-
-    [ObservableProperty]
-    private string _pageHeaderText;
 
     public SummaryViewModel(
         ISetupFlowStringResource stringResource,
@@ -268,12 +185,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _host = host;
         _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
         _packageProvider = packageProvider;
-
+        _configurationUnitResults = new(GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
         _appManagementInitializer = appManagementInitializer;
-        _cloneRepoNextSteps = new();
-        PageRedirectButtonText = StringResource.GetLocalized(StringResourceKey.SummaryPageOpenDashboard);
-        PageHeaderText = StringResource.GetLocalized(StringResourceKey.SummaryPageHeader);
 
         IsNavigationBarVisible = true;
         IsStepPage = false;
@@ -281,17 +195,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        ConfigurationUnitResults = GetConfigurationUnitResults();
-
-        TargetCloneResults = InitializeTargetResults(
-            unitResult => unitResult.IsCloneRepoUnit && unitResult.IsSuccess && !unitResult.IsSkipped);
-
-        TargetInstallResults = InitializeTargetResults(
-            unitResult => !unitResult.IsCloneRepoUnit && unitResult.IsSuccess && !unitResult.IsSkipped);
-
-        TargetFailedResults = InitializeTargetResults(
-            unitResult => unitResult.IsError);
-
         IList<TaskInformation> failedTasks = new List<TaskInformation>();
 
         // Find the loading view model.
@@ -303,32 +206,15 @@ public partial class SummaryViewModel : SetupPageViewModelBase
             }
         }
 
-        // Collect all next steps.
-        var taskGroups = Orchestrator.TaskGroups;
-        foreach (var taskGroup in taskGroups)
+        BitmapImage statusSymbol;
+        if (_host.GetService<IThemeSelectorService>().Theme == ElementTheme.Dark)
         {
-            var setupTasks = taskGroup.SetupTasks;
-            foreach (var setupTask in setupTasks)
-            {
-                if (setupTask.SummaryScreenInformation is not null &&
-                    setupTask.SummaryScreenInformation.HasContent)
-                {
-                    switch (setupTask)
-                    {
-                        case CloneRepoTask:
-                            var configResult = new CloneRepoSummaryInformationView();
-                            configResult.DataContext = setupTask.SummaryScreenInformation;
-                            _cloneRepoNextSteps.Add(configResult);
-                            break;
-                    }
-                }
-            }
+            statusSymbol = DarkError;
         }
-
-        // Send telemetry about the number of next steps tasks found broken down by their type.
-        ReportSummaryTaskCounts(_cloneRepoNextSteps.Count);
-
-        var statusSymbol = _host.GetService<IThemeSelectorService>().IsDarkTheme() ? DarkError : LightError;
+        else
+        {
+            statusSymbol = LightError;
+        }
 
         foreach (var failedTask in failedTasks)
         {
@@ -338,34 +224,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
             FailedTasks.Add(summaryMessageViewModel);
         }
 
-        if (IsSettingUpATargetMachine)
-        {
-            if (TargetCloneResults.Count > 0)
-            {
-                var localizedHeader = (TargetCloneResults.Count == 1) ? StringResourceKey.SummaryPageOneRepositoryCloned : StringResourceKey.SummaryPageReposClonedCount;
-                RepositoriesClonedText = StringResource.GetLocalized(localizedHeader);
-            }
-
-            if (TargetInstallResults.Count > 0)
-            {
-                var localizedHeader = (TargetInstallResults.Count == 1) ? StringResourceKey.SummaryPageOneApplicationInstalled : StringResourceKey.SummaryPageAppsDownloadedCount;
-                ApplicationsClonedText = StringResource.GetLocalized(localizedHeader);
-            }
-
-            foreach (var targetFailedResult in TargetFailedResults)
-            {
-                targetFailedResult.StatusSymbolIcon = statusSymbol;
-            }
-
-            TargetFailedCountText = StringResource.GetLocalized(StringResourceKey.SummaryConfigurationErrorsCountText, TargetFailedResults.Count);
-
-            if (FailedTasks.Count > 0)
-            {
-                // There is only one task group for setting up a target machine.
-                FailedTasks[0].MessageToShow = StringResource.GetLocalized(StringResourceKey.SummaryPageTargetMachineFailedTaskText);
-            }
-        }
-
         // If any tasks failed in the loading screen, the user has to click on the "Next" button
         // If no tasks failed, the user is brought to the summary screen, no interaction required.
         if (failedTasks.Count != 0)
@@ -373,29 +231,15 @@ public partial class SummaryViewModel : SetupPageViewModelBase
             TelemetryFactory.Get<ITelemetry>().LogCritical("Summary_NavigatedTo_Event", false, Orchestrator.ActivityId);
         }
 
-        if (WasCreateEnvironmentOperationStarted)
-        {
-            PageRedirectButtonText = StringResource.GetLocalized(StringResourceKey.SummaryPageRedirectToEnvironmentPageButton);
-            PageHeaderText = StringResource.GetLocalized(StringResourceKey.SummaryPageHeaderForEnvironmentCreationText);
-        }
-
         await ReloadCatalogsAsync();
-    }
-
-    /// <summary>
-    /// Send telemetry about all next steps.
-    /// </summary>
-    private void ReportSummaryTaskCounts(int cloneRepoNextStepsCount)
-    {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NextSteps_Event", LogLevel.Critical, new CloneRepoNextStepsEvent(cloneRepoNextStepsCount), Orchestrator.ActivityId);
     }
 
     private async Task ReloadCatalogsAsync()
     {
         // After installing packages, reconnect to catalogs to
         // reflect the latest changes when new Package COM objects are created
-        _log.Information($"Checking if a new catalog connections should be established");
-        if (_packageProvider.SelectedPackages.Any(package => package.CanInstall && package.InstallPackageTask.WasInstallSuccessful))
+        Log.Logger?.ReportInfo(Log.Component.Summary, $"Checking if a new catalog connections should be established");
+        if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
         {
             await _appManagementInitializer.ReinitializeAsync();
         }
@@ -411,7 +255,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         List<ConfigurationUnitResultViewModel> unitResults = new();
 
         // If we are setting up a target machine, we need to get the configuration results from the setup target task group.
-        if (IsSettingUpATargetMachine)
+        if (_orchestrator.IsSettingUpATargetMachine)
         {
             var setupTaskGroup = _orchestrator.GetTaskGroup<SetupTargetTaskGroup>();
             if (setupTaskGroup?.ConfigureTask?.ConfigurationResults != null)
@@ -426,17 +270,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         if (configTaskGroup?.ConfigureTask?.UnitResults != null)
         {
             unitResults.AddRange(configTaskGroup.ConfigureTask.UnitResults.Select(unitResult => _configurationUnitResultViewModelFactory(unitResult)));
-        }
-
-        return unitResults;
-    }
-
-    private List<ConfigurationUnitResultViewModel> InitializeTargetResults(Func<ConfigurationUnitResultViewModel, bool> predicate)
-    {
-        List<ConfigurationUnitResultViewModel> unitResults = new();
-        if (IsSettingUpATargetMachine)
-        {
-            unitResults.AddRange(ConfigurationUnitResults.Where(unitResult => predicate(unitResult)));
         }
 
         return unitResults;

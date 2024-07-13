@@ -1,15 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:genTemplate="http://schemas.microsoft.com/appx/developer/templatestudio" xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6" IgnorableNamespaces="uap uap3 rescap genTemplate desktop6">
+  <Extensions>
+    <Extension Category="windows.activatableClass.proxyStub">
+      <ProxyStub ClassId="00000355-0000-0000-C000-000000000046">
+        <Path>Microsoft.Windows.Widgets.winmd</Path>
+        <Interface Name="Microsoft.Windows.Widgets.Providers.IWidgetProvider" InterfaceId="5C5774CC-72A0-452D-B9ED-075C0DD25EED" />
+        <Interface Name="Microsoft.Windows.Widgets.Providers.IWidgetProvider2" InterfaceId="38C3A963-DD93-479D-9276-04BF84EE1816" />
+      </ProxyStub>
+    </Extension>
+  </Extensions>
   <Identity Name="Microsoft.Windows.DevHome.Dev" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.0.0.0" />
   <Properties>
     <DisplayName>Dev Home (Dev)</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
-    <Logo>Assets\Preview\StoreLogo.png</Logo>
+    <Logo>Assets\Logos\StoreLogo.png</Logo>
     <desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
     <desktop6:RegistryWriteVirtualization>disabled</desktop6:RegistryWriteVirtualization>
   </Properties>
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.22000.0" MaxVersionTested="10.0.22000.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.22000.0" />
     <PackageDependency Name="Microsoft.VCLibs.140.00.UWPDesktop" MinVersion="14.0.24217.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
   </Dependencies>
   <Resources>
@@ -17,9 +26,9 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
-      <uap:VisualElements DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Preview\MedTile.png" Square44x44Logo="Assets\Preview\AppList.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Preview\WideTile.png" />
-        <uap:SplashScreen Image="Assets\Preview\SplashScreen.png" />
+      <uap:VisualElements DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Logos\MedTile.png" Square44x44Logo="Assets\Logos\AppList.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Logos\WideTile.png" />
+        <uap:SplashScreen Image="Assets\Logos\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
         <uap3:Extension Category="windows.appExtensionHost">
@@ -33,6 +42,13 @@
             <uap:DisplayName>Dev Home</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="HyperVExtensionServer.exe" Arguments="-RegisterProcessAsComServer" DisplayName="HyperVExtensionServer">
+              <com:Class Id="F8B26528-976A-488C-9B40-7198FB425C9E" DisplayName="HyperVExtensionServer" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="CoreWidgetProvider">
@@ -53,9 +69,10 @@
               <DevHomeProvider>
                 <Activation>
                   <CreateInstance ClassId="426A52D6-8007-4894-A946-CF80F39507F1" />
+                  <CreateInstance ClassId="F8B26528-976A-488C-9B40-7198FB425C9E" />
                 </Activation>
                 <SupportedInterfaces>
-                  <DeveloperId />
+                  <ComputeSystem />
                 </SupportedInterfaces>
               </DevHomeProvider>
             </uap3:Properties>
@@ -66,7 +83,7 @@
             <uap3:Properties>
               <WidgetProvider>
                 <ProviderIcons>
-                  <Icon Path="Assets\Preview\StoreLogo.png" />
+                  <Icon Path="Assets\Logos\StoreLogo.png" />
                 </ProviderIcons>
                 <Activation>
                   <!-- Apps exports COM interface which implements IWidgetProvider -->
@@ -76,7 +93,7 @@
                   <TrustedPackageFamilyName>Microsoft.MicrosoftEdge.Stable_8wekyb3d8bbwe</TrustedPackageFamilyName>
                 </TrustedPackageFamilyNames>
                 <Definitions>
-                  <Definition Id="SSH_Wallet" DisplayName="SSH keychain" Description="Quickly connect into to your favorite servers from your SSH config file" AllowMultiple="true">
+                  <Definition Id="SSH_Wallet" DisplayName="ms-resource:WidgetDisplayNameSSHKeychain" Description="ms-resource:WidgetDescriptionSSHKeychain" AllowMultiple="true" IsCustomizable="true">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -90,20 +107,23 @@
                     </Capabilities>
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Widgets\Assets\ssh_keychain_icon_light.png" />
+                        <Icon Path="Widgets\Assets\icons\ssh_keychain_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                        <Screenshot Path="Widgets\Assets\screenshots\SSHScreenshotLight.png" DisplayAltText="SSH Keychain widget preview image" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
-                          <Icon Path="Widgets\Assets\ssh_keychain_icon_dark.png" />
+                          <Icon Path="Widgets\Assets\icons\ssh_keychain_icon_dark.png" />
                         </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Widgets\Assets\screenshots\SSHScreenshotDark.png" DisplayAltText="SSH Keychain widget preview image" />
+                        </Screenshots>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_Memory" DisplayName="Memory" Description="Microsoft System Memory Widget Description" AllowMultiple="true">
+                  <Definition Id="System_Memory" DisplayName="ms-resource:WidgetDisplayNameMemory" Description="ms-resource:WidgetDescriptionMemory" AllowMultiple="true" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -117,20 +137,23 @@
                     </Capabilities>
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Widgets\Assets\mem_icon_light.png" />
+                        <Icon Path="Widgets\Assets\icons\mem_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                        <Screenshot Path="Widgets\Assets\screenshots\MemoryScreenshotLight.png" DisplayAltText="Memory widget preview image" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
-                          <Icon Path="Widgets\Assets\mem_icon_dark.png" />
+                          <Icon Path="Widgets\Assets\icons\mem_icon_dark.png" />
                         </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Widgets\Assets\screenshots\MemoryScreenshotDark.png" DisplayAltText="Memory widget preview image" />
+                        </Screenshots>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_NetworkUsage" DisplayName="Network" Description="Microsoft System Network Usage Widget Description" AllowMultiple="true">
+                  <Definition Id="System_NetworkUsage" DisplayName="ms-resource:WidgetDisplayNameNetwork" Description="ms-resource:WidgetDescriptionNetwork" AllowMultiple="true" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -144,20 +167,23 @@
                     </Capabilities>
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Widgets\Assets\net_icon_light.png" />
+                        <Icon Path="Widgets\Assets\icons\net_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                        <Screenshot Path="Widgets\Assets\screenshots\NetworkScreenshotLight.png" DisplayAltText="Network widget preview image" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
-                          <Icon Path="Widgets\Assets\net_icon_dark.png" />
+                          <Icon Path="Widgets\Assets\icons\net_icon_dark.png" />
                         </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Widgets\Assets\screenshots\NetworkScreenshotDark.png" DisplayAltText="Network widget preview image" />
+                        </Screenshots>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_GPUUsage" DisplayName="GPU" Description="Microsoft System GPU Usage Widget Description" AllowMultiple="true">
+                  <Definition Id="System_GPUUsage" DisplayName="ms-resource:WidgetDisplayNameGPU" Description="ms-resource:WidgetDescriptionGPU" AllowMultiple="true" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -171,20 +197,23 @@
                     </Capabilities>
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Widgets\Assets\gpu_icon_light.png" />
+                        <Icon Path="Widgets\Assets\icons\gpu_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                        <Screenshot Path="Widgets\Assets\screenshots\GPUScreenshotLight.png" DisplayAltText="GPU widget preview image" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
-                          <Icon Path="Widgets\Assets\gpu_icon_dark.png" />
+                          <Icon Path="Widgets\Assets\icons\gpu_icon_dark.png" />
                         </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Widgets\Assets\screenshots\GPUScreenshotDark.png" DisplayAltText="GPU widget preview image" />
+                        </Screenshots>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_CPUUsage" DisplayName="CPU" Description="Microsoft System CPU Usage Widget Description" AllowMultiple="true">
+                  <Definition Id="System_CPUUsage" DisplayName="ms-resource:WidgetDisplayNameCPU" Description="ms-resource:WidgetDescriptionCPU" AllowMultiple="true" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -198,15 +227,18 @@
                     </Capabilities>
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Widgets\Assets\cpu_icon_light.png" />
+                        <Icon Path="Widgets\Assets\icons\cpu_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                        <Screenshot Path="Widgets\Assets\screenshots\CPUScreenshotLight.png" DisplayAltText="CPU widget preview image" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
-                          <Icon Path="Widgets\Assets\cpu_icon_dark.png" />
+                          <Icon Path="Widgets\Assets\icons\cpu_icon_dark.png" />
                         </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Widgets\Assets\screenshots\CPUScreenshotDark.png" DisplayAltText="CPU widget preview image" />
+                        </Screenshots>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
@@ -216,13 +248,6 @@
             </uap3:Properties>
           </uap3:AppExtension>
         </uap3:Extension>
-        <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="winget">
-            <uap:SupportedFileTypes>
-              <uap:FileType>.winget</uap:FileType>
-            </uap:SupportedFileTypes>
-          </uap:FileTypeAssociation>
-        </uap:Extension>
       </Extensions>
     </Application>
   </Applications>

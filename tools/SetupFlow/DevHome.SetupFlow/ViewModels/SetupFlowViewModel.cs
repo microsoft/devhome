@@ -27,6 +27,8 @@ public partial class SetupFlowViewModel : ObservableObject
 
     public SetupFlowOrchestrator Orchestrator { get; }
 
+    public event EventHandler EndSetupFlow = (s, e) => { };
+
     public SetupFlowViewModel(
         IHost host,
         SetupFlowOrchestrator orchestrator,
@@ -106,6 +108,7 @@ public partial class SetupFlowViewModel : ObservableObject
         Orchestrator.ReleaseRemoteOperationObject();
         _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
         _packageProvider.Clear();
+        EndSetupFlow(null, EventArgs.Empty);
 
         Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };
     }

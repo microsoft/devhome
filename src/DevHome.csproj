@@ -7,10 +7,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <RootNamespace>DevHome</RootNamespace>
-    <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
-    <ApplicationIcon Condition="'$(BuildRing)'=='Dev'">Assets\Dev\DevHome_Dev.ico</ApplicationIcon>
     <ApplicationIcon Condition="'$(BuildRing)'=='Canary'">Assets\Canary\DevHome_Canary.ico</ApplicationIcon>
-    <ApplicationIcon Condition="'$(BuildRing)'=='Stable'">Assets\Preview\DevHome_Preview.ico</ApplicationIcon>
+    <ApplicationIcon Condition="'$(BuildRing)'!='Canary'">Assets\Preview\DevHome_Preview.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;arm64</Platforms>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
@@ -20,6 +18,7 @@
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
+    <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
     <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
   </PropertyGroup>
 
@@ -28,12 +27,6 @@
   <ItemGroup>
     <Content Remove="Assets\Preview\*" />
     <Content Remove="Assets\Canary\*" />
-    <Content Remove="Assets\Dev\*" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(BuildRing)' == 'Dev'">
-    <Content Include="Assets\Dev\**" Link="Assets\Logos\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
-    <Content Include="Assets\Dev\DevHome_Dev.ico" Link="Assets\DevHome.ico" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(BuildRing)' == 'Canary'">
@@ -41,7 +34,7 @@
     <Content Include="Assets\Canary\DevHome_Canary.ico" Link="Assets\DevHome.ico" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(BuildRing)' == 'Stable'">
+  <ItemGroup Condition="'$(BuildRing)' != 'Canary'">
     <Content Include="Assets\Preview\**" Link="Assets\Logos\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
     <Content Include="Assets\Preview\DevHome_Preview.ico" Link="Assets\DevHome.ico" CopyToOutputDirectory="Always" />
   </ItemGroup>
@@ -79,7 +72,6 @@
     <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
     <ProjectReference Include="..\HyperVExtension\src\HyperVExtensionServer\HyperVExtensionServer.csproj" />
     <ProjectReference Include="..\tools\Environments\DevHome.Environments\DevHome.Environments.csproj" />
-    <ProjectReference Include="..\tools\Customization\DevHome.Customization\DevHome.Customization.csproj" />
   </ItemGroup>
 
   <ItemGroup>

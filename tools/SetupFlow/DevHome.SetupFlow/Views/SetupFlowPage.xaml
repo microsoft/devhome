@@ -41,6 +41,11 @@
                             <views:MainPageView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.MainPageTemplate>
+                    <selectors:SetupFlowViewSelector.SetupTargetTemplate>
+                        <DataTemplate>
+                            <views:SetupTargetView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.SetupTargetTemplate>
                     <selectors:SetupFlowViewSelector.RepoConfigTemplate>
                         <DataTemplate>
                             <views:RepoConfigView />

@@ -106,6 +106,31 @@
                                     IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" />
                             </ToolTipService.ToolTip>
                         </Grid>
+                        
+                        <!--  settings card for setup target flow.  -->
+                        <Grid 
+                            Background="Transparent"
+                            Visibility="{x:Bind ViewModel.ShouldShowSetupTargetItem}">
+                            <ctControls:SettingsCard
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow_For_target"
+                                ActionIcon="{x:Null}"
+                                ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                                AutomationProperties.AccessibilityView="Control"
+                                AutomationProperties.AutomationId="SetupToATargetButton"
+                                Command="{x:Bind ViewModel.StartSetupForTargetEnvironmentCommand}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                                IsClickEnabled="True"
+                                IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}">
+                                <ctControls:SettingsCard.HeaderIcon>
+                                    <ImageIcon Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}" Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_EndToEnd.png" />
+                                </ctControls:SettingsCard.HeaderIcon>
+                            </ctControls:SettingsCard>
+
+                            <!--  Tooltip visible when the settings card is disabled  -->
+                            <ToolTipService.ToolTip>
+                                <ToolTip x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_MainPage_AppInstallerRequiredTooltip" IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" />
+                            </ToolTipService.ToolTip>
+                        </Grid>
                         <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile"
                                            AutomationProperties.AutomationId="DSCConfigurationButton"
                                            IsClickEnabled="True"

@@ -8,31 +8,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Helpers;
 using DevHome.Common.Models;
+using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
-using Serilog;
 using Windows.Foundation;
 
 namespace DevHome.Common.Environments.Services;
 
 /// <summary>
-/// Service that's used to get the ComputeSystems from the providers so they can be loaded into the UI.
+/// Service thats used to get the ComputeSystems from the providers so they can be loaded into the UI.
 /// This class is also used to keep track of the ComputeSystem that a configuration file will be applied to.
 /// </summary>
 public class ComputeSystemManager : IComputeSystemManager
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemManager));
-
     private readonly IComputeSystemService _computeSystemService;
-
-    private readonly Dictionary<Guid, CreateComputeSystemOperation> _createComputeSystemOperations = new();
 
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> ComputeSystemStateChanged = (sender, state) => { };
 
-    private readonly object _creationOperationLock = new();
-
     // Used in the setup flow to store the ComputeSystem needed to configure.
-    public ComputeSystemReviewItem? ComputeSystemSetupItem { get; set; }
+    public ComputeSystemReviewItem? ComputeSystemSetupItem { get;  set; }
 
     public ComputeSystemManager(IComputeSystemService computeSystemService)
     {
@@ -77,62 +72,22 @@ public class ComputeSystemManager : IComputeSystemManager
             {
                 if (innerEx is TaskCanceledException)
                 {
-                    _log.Error(innerEx, $"Failed to get retrieve all compute systems from all compute system providers due to cancellation");
+                    Log.Logger()?.ReportError($"Failed to get retrieve all compute systems from all compute system providers due to cancellation", innerEx);
                 }
                 else
                 {
-                    _log.Error(innerEx, $"Failed to get retrieve all compute systems from all compute system providers ");
+                    Log.Logger()?.ReportError($"Failed to get retrieve all compute systems from all compute system providers ", innerEx);
                 }
             }
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Failed to get retrieve all compute systems from all compute system providers ");
+            Log.Logger()?.ReportError($"Failed to get retrieve all compute systems from all compute system providers ", ex);
         }
     }
 
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
     {
         ComputeSystemStateChanged(sender, state);
-    }
-
-    public List<CreateComputeSystemOperation> GetRunningOperationsForCreation()
-    {
-        lock (_creationOperationLock)
-        {
-            return _createComputeSystemOperations.Values.ToList();
-        }
-    }
-
-    public void AddRunningOperationForCreation(CreateComputeSystemOperation operation)
-    {
-        lock (_creationOperationLock)
-        {
-            _createComputeSystemOperations.Add(operation.OperationId, operation);
-        }
-    }
-
-    public void RemoveOperation(CreateComputeSystemOperation operation)
-    {
-        lock (_creationOperationLock)
-        {
-            _createComputeSystemOperations.Remove(operation.OperationId);
-        }
-    }
-
-    public void RemoveAllCompletedOperations()
-    {
-        lock (_creationOperationLock)
-        {
-            var totalOperations = _createComputeSystemOperations.Count;
-            for (var i = 0; i < totalOperations; i++)
-            {
-                var operation = _createComputeSystemOperations.ElementAt(i).Value;
-                if (operation.CreateComputeSystemResult != null)
-                {
-                    _createComputeSystemOperations.Remove(operation.OperationId);
-                }
-            }
-        }
     }
 }

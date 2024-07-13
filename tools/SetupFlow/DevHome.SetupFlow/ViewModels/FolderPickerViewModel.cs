@@ -27,7 +27,7 @@ public partial class FolderPickerViewModel : ObservableObject
     /// Some pages don't show a folder picker.
     /// </summary>
     [ObservableProperty]
-    private bool _shouldShowFolderPicker;
+    private Visibility _shouldShowFolderPicker;
 
     /// <summary>
     /// The clone location the repos should be cloned to.
@@ -68,8 +68,7 @@ public partial class FolderPickerViewModel : ObservableObject
     public FolderPickerViewModel(ISetupFlowStringResource stringResource, SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _stringResource = stringResource;
-        ShouldShowFolderPicker = true;
-        CloneLocation = string.Empty;
+        ShouldShowFolderPicker = Visibility.Visible;
         IsBrowseButtonEnabled = true;
         _setupFlowOrchestrator = setupFlowOrchestrator;
         SetDefaultCloneLocation();
@@ -78,13 +77,13 @@ public partial class FolderPickerViewModel : ObservableObject
     public void ShowFolderPicker()
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Showing folder picker");
-        ShouldShowFolderPicker = true;
+        ShouldShowFolderPicker = Visibility.Visible;
     }
 
     public void CloseFolderPicker()
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Closing folder picker");
-        ShouldShowFolderPicker = false;
+        ShouldShowFolderPicker = Visibility.Collapsed;
     }
 
     public void EnableBrowseButton()

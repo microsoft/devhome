@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
 using Microsoft.Windows.DevHome.SDK;
@@ -22,12 +23,4 @@ public interface IComputeSystemManager
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> ComputeSystemStateChanged;
 
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state);
-
-    public List<CreateComputeSystemOperation> GetRunningOperationsForCreation();
-
-    public void AddRunningOperationForCreation(CreateComputeSystemOperation operation);
-
-    public void RemoveOperation(CreateComputeSystemOperation operation);
-
-    public void RemoveAllCompletedOperations();
 }

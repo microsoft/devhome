@@ -2,14 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DevHome.Common.Environments.Exceptions;
+using System.Xml.Linq;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Helpers;
+using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
-using Serilog;
+using Windows.Foundation;
+using Windows.Foundation.Metadata;
 
 namespace DevHome.Common.Environments.Models;
 
@@ -20,9 +24,9 @@ namespace DevHome.Common.Environments.Models;
 /// </summary>
 public class ComputeSystemProvider
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemProvider));
+    private readonly string errorString;
 
-    private readonly string _errorString;
+    private readonly string _componentName = "ComputeSystemProvider";
 
     private readonly IComputeSystemProvider _computeSystemProvider;
 
@@ -41,7 +45,7 @@ public class ComputeSystemProvider
         DisplayName = computeSystemProvider.DisplayName;
         SupportedOperations = computeSystemProvider.SupportedOperations;
         Icon = computeSystemProvider.Icon;
-        _errorString = StringResourceHelper.GetResource("ComputeSystemUnexpectedError", DisplayName);
+        errorString = StringResourceHelper.GetResource("ComputeSystemUnexpectedError", DisplayName);
     }
 
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForDeveloperId(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
@@ -52,12 +56,12 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"CreateAdaptiveCardSessionForDeveloperId for: {this} failed due to exception");
-            return new ComputeSystemAdaptiveCardResult(ex, _errorString, ex.Message);
+            Log.Logger()?.ReportError(_componentName, $"CreateAdaptiveCardSessionWithDeveloperId for: {this} failed due to exception", ex);
+            return new ComputeSystemAdaptiveCardResult(ex, errorString, ex.Message);
         }
     }
 
-    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForComputeSystem(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind)
+    public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSession(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind)
     {
         try
         {
@@ -65,8 +69,8 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"CreateAdaptiveCardSessionForComputeSystem for: {this} failed due to exception");
-            return new ComputeSystemAdaptiveCardResult(ex, _errorString, ex.Message);
+            Log.Logger()?.ReportError(_componentName, $"CreateAdaptiveCardSessionWithComputeSystem for: {this} failed due to exception", ex);
+            return new ComputeSystemAdaptiveCardResult(ex, errorString, ex.Message);
         }
     }
 
@@ -78,22 +82,8 @@ public class ComputeSystemProvider
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"GetComputeSystemsAsync for: {this} failed due to exception");
-            return new ComputeSystemsResult(ex, _errorString, ex.Message);
-        }
-    }
-
-    public ICreateComputeSystemOperation? CreateCreateComputeSystemOperation(IDeveloperId developerId, string inputJson)
-    {
-        try
-        {
-            return _computeSystemProvider.CreateCreateComputeSystemOperation(developerId, inputJson)
-                ?? throw new CreateCreateComputeSystemOperationException("CreateCreateComputeSystemOperation was null");
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, $"GetComputeSystemsAsync for: {this} failed due to exception");
-            return new FailedCreateComputeSystemOperation(ex, StringResourceHelper.GetResource("CreationOperationStoppedUnexpectedly"));
+            Log.Logger()?.ReportError(_componentName, $"GetComputeSystemsAsync for: {this} failed due to exception", ex);
+            return new ComputeSystemsResult(ex, errorString, ex.Message);
         }
     }
 

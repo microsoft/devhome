@@ -1,9 +1,7 @@
 ﻿EnableWindow
 CoCreateInstance
 FileOpenDialog
-FileSaveDialog
 IFileOpenDialog
-IFileSaveDialog
 SHCreateItemFromParsingName
 GetCurrentPackageFullName
 SetWindowLong
@@ -13,8 +11,3 @@ SHLoadIndirectString
 StrFormatByteSizeEx
 SFBS_FLAGS
 MAX_PATH
-GetDpiForWindow
-GetWindowRect
-GetMonitorInfo
-SetWindowPos
-MonitorFromWindow

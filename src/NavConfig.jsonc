@@ -32,13 +32,6 @@
             "viewFullName": "DevHome.Environments.Views.LandingPage",
             "viewModelFullName": "DevHome.Environments.ViewModels.LandingPageViewModel",
             "icon": "E83B"
-          },
-          {
-            "identity": "DevHome.Customization",
-            "assembly": "DevHome.Customization",
-            "viewFullName": "DevHome.Customization.Views.MainPage",
-            "viewModelFullName": "DevHome.Customization.ViewModels.MainPageViewModel",
-            "icon": "e9f5"
           }
         ]
       }

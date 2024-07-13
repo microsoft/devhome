@@ -114,10 +114,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevSetupAgent.Test", "Hyper
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HyperVExtension.HostGuestCommunication", "HyperVExtension\src\HyperVExtension.HostGuestCommunication\HyperVExtension.HostGuestCommunication.csproj", "{D759CD66-494C-4A00-8075-8B65A9891349}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Customization", "Customization", "{623998FD-B0A6-4980-95D5-A5072301CA10}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Customization", "tools\Customization\DevHome.Customization\DevHome.Customization.csproj", "{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -682,22 +678,6 @@ Global
 		{D759CD66-494C-4A00-8075-8B65A9891349}.Release|x64.Build.0 = Release|x64
 		{D759CD66-494C-4A00-8075-8B65A9891349}.Release|x86.ActiveCfg = Release|x86
 		{D759CD66-494C-4A00-8075-8B65A9891349}.Release|x86.Build.0 = Release|x86
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Debug|Any CPU.Build.0 = Debug|x64
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Debug|arm64.ActiveCfg = Debug|arm64
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Debug|arm64.Build.0 = Debug|arm64
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Debug|x64.ActiveCfg = Debug|x64
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Debug|x64.Build.0 = Debug|x64
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Debug|x86.ActiveCfg = Debug|x86
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Debug|x86.Build.0 = Debug|x86
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Release|Any CPU.ActiveCfg = Release|x64
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Release|Any CPU.Build.0 = Release|x64
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Release|arm64.ActiveCfg = Release|arm64
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Release|arm64.Build.0 = Release|arm64
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Release|x64.ActiveCfg = Release|x64
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Release|x64.Build.0 = Release|x64
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Release|x86.ActiveCfg = Release|x86
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -739,8 +719,6 @@ Global
 		{F4095FD3-6A3F-490B-966D-E63059612EE6} = {3E3791DF-070D-4ADE-96E8-93D6FBD53953}
 		{0E05A442-BDC7-43D4-A000-F8C986826716} = {3E3791DF-070D-4ADE-96E8-93D6FBD53953}
 		{D759CD66-494C-4A00-8075-8B65A9891349} = {81AACED5-CFB5-47A6-AFD6-4625AADCFFA3}
-		{623998FD-B0A6-4980-95D5-A5072301CA10} = {A972EC5B-FC61-4964-A6FF-F9633EB75DFD}
-		{AF527EA4-6A24-4BD6-BC6E-A5863DC3489C} = {623998FD-B0A6-4980-95D5-A5072301CA10}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {030B5641-B206-46BB-BF71-36FF009088FA}

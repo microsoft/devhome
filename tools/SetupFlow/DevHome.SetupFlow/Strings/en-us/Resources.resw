@@ -137,10 +137,6 @@
     <value>Select packages to restore from your backup, clone from repository, or search with Windows Package Manager.</value>
     <comment>Description for Add packages page</comment>
   </data>
-  <data name="AppInstallActivationTitle" xml:space="preserve">
-    <value>Configuration in progress</value>
-    <comment>Title displayed to the user when they attempt to activate the app through a URI but the machine configuration flow is currently in progress.</comment>
-  </data>
   <data name="AppListBackupBanner.Title" xml:space="preserve">
     <value>Transfer developer machine settings</value>
     <comment>Title text of an instruction banner section for transferring settings from a developer machine</comment>
@@ -174,10 +170,6 @@
     <comment>Label for a cancel button</comment>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>Close</value>
-    <comment>Label for a close button</comment>
-  </data>
-  <data name="CloseButton.Content" xml:space="preserve">
     <value>Close</value>
     <comment>Label for a close button</comment>
   </data>
@@ -229,32 +221,24 @@
     <value>View {0}</value>
     <comment>{Locked="{0}"}Title for the page showing the contents of a configuration file. {0} is replaced by the configuration file name.</comment>
   </data>
-  <data name="ConfigurationActivationFailedDisabled" xml:space="preserve">
-    <value>WinGet configuration is currently disabled on your machine. We are initiating the enablement process, which may take a few minutes. Please try again soon.</value>
-    <comment>Message displayed to the user when they attempt to activate Dev Home from a file but the WinGet configuration feature is disabled.</comment>
-  </data>
-  <data name="ConfigurationActivationFailedBusy" xml:space="preserve">
-    <value>The DSC flow cannot be activated while machine configuration is in progress. Please complete your current configuration tasks and then try again.</value>
-    <comment>Message displayed to the user when they attempt to activate Dev Home from a file but the machine configuration flow is currently in progress.</comment>
-  </data>
   <data name="ConfigurationUnitSuccess" xml:space="preserve">
     <value>Configuration successfully applied</value>
     <comment>Message displayed when applying a configuration unit succeeds.</comment>
   </data>
   <data name="ConfigurationUnitSummaryFull" xml:space="preserve">
-    <value>{0}: {3} [{1} {2}]</value>
+    <value>{0} : {3} [{1} {2}]</value>
     <comment>{Locked="{0}","{1}","{2}","{3}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit id. {3} is replaced by the configuration unit description. A string with all values replaced could look like "Apply : Install VS [WinGetPackage vspackage]"</comment>
   </data>
   <data name="ConfigurationUnitSummaryMinimal" xml:space="preserve">
-    <value>{0}: {1}</value>
+    <value>{0} : {1}</value>
     <comment>{Locked="{0}","{1}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. A string with all values replaced could look like "Apply : WinGetPackage"</comment>
   </data>
   <data name="ConfigurationUnitSummaryNoDescription" xml:space="preserve">
-    <value>{0}: {1} [{2}]</value>
+    <value>{0} : {1} [{2}]</value>
     <comment>{Locked="{0}","{1}","{2}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit id. A string with all values replaced could look like "Apply : WinGetPackage [vspackage]"</comment>
   </data>
   <data name="ConfigurationUnitSummaryNoId" xml:space="preserve">
-    <value>{0}: {2} [{1}]</value>
+    <value>{0} : {2} [{1}]</value>
     <comment>{Locked="{0}","{1}","{2}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit description. A string with all values replaced could look like "Apply : Install VS [WinGetPackage]"</comment>
   </data>
   <data name="ConfigurationUnitStats" xml:space="preserve">
@@ -331,11 +315,7 @@
   </data>
   <data name="FilePickerFileTypeOption" xml:space="preserve">
     <value>{0} files</value>
-    <comment>{Locked="{0}"}Dropdown option for a file picker. {0} is replaced by a file type (e.g. JSON, YAML, etc ...)</comment>
-  </data>
-  <data name="FilePickerSingleFileTypeOption" xml:space="preserve">
-    <value>{0} file</value>
-    <comment>{Locked="{0}"}Dropdown option for a file picker. {0} is replaced by a file type (e.g. JSON, YAML, etc ...)</comment>
+    <comment>Dropdown option for a file picker. {0} is replaced by a file type (e.g. JSON, YAML, etc ...)</comment>
   </data>
   <data name="FileTypeNotSupported" xml:space="preserve">
     <value>File type not supported</value>
@@ -534,28 +514,20 @@
     <comment>Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
   </data>
   <data name="MainPage_SetupFlow.Description" xml:space="preserve">
-    <value>Clone repositories, install applications, and generate WinGet Configuration files together.</value>
+    <value>Clone repositories and install applications at once</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_SetupFlow.Header" xml:space="preserve">
-    <value>Set up local machine</value>
+    <value>Setup local machine</value>
     <comment>Header for a card that when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_SetupFlow_For_target.Header" xml:space="preserve">
-    <value>Set up an environment</value>
+    <value>Setup a target</value>
     <comment>Header for a card that when clicked takes the user to a multi-step flow for setting up for a remote machine</comment>
   </data>
   <data name="MainPage_SetupFlow_For_target.Description" xml:space="preserve">
-    <value>Clone repositories, install applications, and generate a WinGet Configuration file to apply to an environment.</value>
+    <value>Set up a select target</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
-  </data>
-  <data name="MainPage_QuickstartPlayground.Description" xml:space="preserve">
-    <value>[Experimental] Use natural language and AI to set up a new devcontainer-based programming environment.</value>
-    <comment>Body text description for a card than when clicked takes the user to a flow for creating a devcontainer environment for their project idea</comment>
-  </data>
-  <data name="MainPage_QuickstartPlayground.Header" xml:space="preserve">
-    <value>Quickstart Playground</value>
-    <comment>Header for a card than when clicked takes the user to a flow for creating a devcontainer environment for their project idea</comment>
   </data>
   <data name="NoAppsToInstall.Text" xml:space="preserve">
     <value>No apps to install</value>
@@ -580,10 +552,6 @@
   <data name="RemoveAll.Text" xml:space="preserve">
     <value>Remove all</value>
     <comment>Label for removing all items from selection</comment>
-  </data>
-  <data name="AppAlreadyInstalledNotification.Text" xml:space="preserve">
-    <value>Applications that have been previously installed cannot be installed again. They will be included in your generated configuration files.</value>
-    <comment>Message displayed when a user selects an application that is already installed</comment>
   </data>
   <data name="RemoveApplication" xml:space="preserve">
     <value>Remove</value>
@@ -657,16 +625,8 @@
     <value>Restore</value>
     <comment>Label for restore button</comment>
   </data>
-  <data name="Review_GenerateConfigurationFileButton.Content" xml:space="preserve">
-    <value>Generate Configuration file</value>
-    <comment>Text for a generating configuration file button</comment>
-  </data>
-  <data name="Review_DownloadFileTooltip.Subtitle" xml:space="preserve">
-    <value>Generate a WinGet Configuration file (.winget) to repeat this setup in the future or share it with others.</value>
-    <comment>{Locked="WinGet",".winget"}Tooltip text about the generated configuration file</comment>
-  </data>
-  <data name="ReviewExpanderDescription" xml:space="preserve">
-    <value>Setup details</value>
+  <data name="Review_SetupDetails.Text" xml:space="preserve">
+    <value>Set up details</value>
     <comment>Header for a section detailing the set up steps to be performed. "Set up" is the noun</comment>
   </data>
   <data name="Review_ReadAndAgree.Content" xml:space="preserve">
@@ -674,11 +634,11 @@
     <comment>Checkbox label that needs to be checked before starting the setup</comment>
   </data>
   <data name="Review_TermsTitle.Text" xml:space="preserve">
-    <value>Terms and agreements</value>
+    <value>Terms &amp; agreements</value>
     <comment>As in "Terms of use"</comment>
   </data>
   <data name="Review_Terms.Text" xml:space="preserve">
-    <value>By continuing, you acknowledge that these applications are licensed to you by the owner. Microsoft is not responsible for, nor does it grant any licenses to third-party applications. You are responsible for reviewing any agreements related to your use of these applications, you can select the ‘Applications’ tab to view ‘learn more’ links.</value>
+    <value>By continuing, you acknowledge that these applications are licensed to you by the owner. Microsoft is not responsible for, nor does it grant any licenses to, third-party applications. You are responsible for reviewing any agreements related to your use of these applications, which you can view by selecting the Learn more links.</value>
     <comment>Terms of use shown before starting installation of apps.</comment>
   </data>
   <data name="Review_MSStoreTerms.Text" xml:space="preserve">
@@ -701,10 +661,6 @@
     <value>Try "GitHub"</value>
     <comment>{Locked="GitHub"}Placeholder text displayed in a search box</comment>
   </data>
-  <data name="SearchBox_Experiment.PlaceholderText" xml:space="preserve">
-    <value>Search for apps</value>
-    <comment>Placeholder text displayed in a search box</comment>
-  </data>
   <data name="SelectAll.Content" xml:space="preserve">
     <value>Select all</value>
     <comment>Label for select all checkbox</comment>
@@ -726,19 +682,15 @@
     <comment>Description for the repo config page</comment>
   </data>
   <data name="SetupShellRepoConfigTargetMachine" xml:space="preserve">
-    <value>Add public repositories to clone to your environment.</value>
+    <value>Add public repositories to clone to your target machine.</value>
     <comment>Description for the repo config page</comment>
   </data>
   <data name="SetupShell_SetupTarget.Description" xml:space="preserve">
-    <value>Select an environment to set up.</value>
+    <value>Select a target machine to setup.</value>
     <comment>Description for the setup target page</comment>
   </data>
-  <data name="SetupShellReviewPageDescription" xml:space="preserve">
-    <value>Review your setup details and our terms below, then apply these changes to your environment.</value>
-    <comment>Description for the review page</comment>
-  </data>
-  <data name="SetupShellReviewPageDescriptionForEnvironmentCreation" xml:space="preserve">
-    <value>Review the details for your new environment</value>
+  <data name="SetupShell_Review.Description" xml:space="preserve">
+    <value>Review the terms and setup details below before applying these changes to your computer.</value>
     <comment>Description for the review page</comment>
   </data>
   <data name="Applications" xml:space="preserve">
@@ -766,7 +718,7 @@
     <comment>Description for the repo review page</comment>
   </data>
   <data name="MainPage_RepoReview_AddRepository.Content" xml:space="preserve">
-    <value>Add repository</value>
+    <value>+ Add repository</value>
     <comment>Add repository button text</comment>
   </data>
   <data name="ReposConfigPageTitle" xml:space="preserve">
@@ -778,7 +730,7 @@
     <comment>Install Apps label for the stepper</comment>
   </data>
   <data name="ReviewPageTitle" xml:space="preserve">
-    <value>Review and finish</value>
+    <value>Review &amp; finish</value>
     <comment>Review and Setup label for the stepper</comment>
   </data>
   <data name="AddDevDriveLabel.Text" xml:space="preserve">
@@ -807,7 +759,7 @@
   </data>
   <data name="CloneRepoDialog.Title" xml:space="preserve">
     <value>Clone repository</value>
-    <comment>Header for the dialog box to clone repositories</comment>
+    <comment>Header for the dialog bos to clone repositories</comment>
   </data>
   <data name="NewDevDriveComboBox.Content" xml:space="preserve">
     <value>Create a Dev Drive to optimize performance</value>
@@ -834,11 +786,11 @@
     <comment>Shown when Clone Location isn't an absolute path</comment>
   </data>
   <data name="RepoReview_NoReposSelected.Text" xml:space="preserve">
-    <value>Add your first repository</value>
+    <value>No repository is added yet</value>
     <comment>Shown when no repos are selected when the user gets to the repo page</comment>
   </data>
   <data name="RepoReview_NoReposSelectedLink.Content" xml:space="preserve">
-    <value>Add repository</value>
+    <value>+ Add repository</value>
     <comment>The hyperlink to bring the user to the repo clone dialog.  Shows if the user hasn't selected any repos to clone.</comment>
   </data>
   <data name="EditClonePathDialog.Title" xml:space="preserve">
@@ -865,17 +817,9 @@
     <value>Save</value>
     <comment>Content for the primary button in the edit clone path dialog.</comment>
   </data>
-  <data name="LoadingPageSetupTargetText" xml:space="preserve">
-    <value>Set up target: {0}</value>
-    <comment>Shows the name of target device (VM) that is being configured. {0} is the VM name.</comment>
-  </data>
   <data name="LoadingExecutingProgress" xml:space="preserve">
     <value>Executing step {0}/{1}</value>
-    <comment>Shows to the user how many tasks have been completed</comment>
-  </data>
-  <data name="LoadingExecutingProgressForTarget" xml:space="preserve">
-    <value>Configuring your environment...</value>
-    <comment>Text shown under progress bar while configuring a target device.</comment>
+    <comment>Shows ot the user how many tasks have been completed</comment>
   </data>
   <data name="Loading_StopButton.Content" xml:space="preserve">
     <value>Stop</value>
@@ -889,17 +833,13 @@
     <value>Action center</value>
     <comment>Header for action center</comment>
   </data>
-  <data name="LoadingTasksTitleText" xml:space="preserve">
+  <data name="Loading_ExecutingTasks.Text" xml:space="preserve">
     <value>Tasks</value>
     <comment>Header for executing tasks</comment>
   </data>
-  <data name="LoadingLogsTitleText" xml:space="preserve">
-    <value>Logs</value>
-    <comment>Header for logs when executing tasks</comment>
-  </data>
   <data name="CloningRepositoryErrorText" xml:space="preserve">
     <value>Failed to clone repository {0}</value>
-    <comment>Main text to show in the loading screen that a repo failed to clone</comment>
+    <comment>Main tex tto show in the loading screen that a repo failed to clone</comment>
   </data>
   <data name="ActionCenterCloningRepositoryErrorTextSecondary" xml:space="preserve">
     <value>Error message: {0}</value>
@@ -926,7 +866,7 @@
   </data>
   <data name="DevDriveReviewPageNumberOfDevDrivesTitle" xml:space="preserve">
     <value>Dev Drive creation</value>
-    <comment>Text that will be the description to a section of the review page where the user will see the number of Dev Drives they are about to create</comment>
+    <comment>Test that will be the decription to a section of the review page where the user will see the number of Dev Drives they are about to create</comment>
   </data>
   <data name="PathWithColon.Text" xml:space="preserve">
     <value>Path:</value>
@@ -942,7 +882,7 @@
   </data>
   <data name="DevDriveInvalidDriveLabel" xml:space="preserve">
     <value>The file name must be 32 characters or less and can't include any of the following \ / : * ? " &lt; &gt; |</value>
-    <comment>Tells the user which characters are invalid for the Dev Drive file name. Should show, A file name can't include any of the following special characters \ / : * ? "&lt; &gt; |</comment>
+    <comment>Tells the user which characters are invalid for the Dev Drive file name. Should show, A file name can't include any of the followingspecial characters \ / : * ? "&lt; &gt; |</comment>
   </data>
   <data name="DevDriveInvalidDriveSize" xml:space="preserve">
     <value>A Dev Drive must be at least 50 GB and at most 64 TB.</value>
@@ -1034,7 +974,7 @@
   </data>
   <data name="DownloadAppRestart" xml:space="preserve">
     <value>Downloaded {0} (restart required)</value>
-    <comment>Message when an app downloaded and needs to reboot the computer. Param: App name</comment>
+    <comment>Message when an app downloaded and needs to reboot the comuter. Param: App name</comment>
   </data>
   <data name="LoadingPageSteps" xml:space="preserve">
     <value>Step {0} of {1}</value>
@@ -1056,12 +996,8 @@
     <value>Retry</value>
     <comment>Hyper link button content to allow users to retry all failed tasks</comment>
   </data>
-  <data name="LoadingPageHeaderLocalText" xml:space="preserve">
+  <data name="LoadingPage_Header.Text" xml:space="preserve">
     <value>Setup initiated, stay tuned for the magic...</value>
-    <comment>Header for the loading screen</comment>
-  </data>
-  <data name="LoadingPageHeaderTargetText" xml:space="preserve">
-    <value>Hold on while we set things up...</value>
     <comment>Header for the loading screen</comment>
   </data>
   <data name="LoadingPage_Tasks.Text" xml:space="preserve">
@@ -1070,11 +1006,11 @@
   </data>
   <data name="SetUpAsAdmin.Content" xml:space="preserve">
     <value>Set up as admin</value>
-    <comment>Text shown on a button for setting up configuration as admin</comment>
+    <comment>Text shown on a split button for setting up configuration as admin</comment>
   </data>
-  <data name="SetUpAsNonAdmin.Content" xml:space="preserve">
+  <data name="SetUpAsNonAdmin.Text" xml:space="preserve">
     <value>Set up as non-admin</value>
-    <comment>Text shown on a button for setting up configuration as non-admin</comment>
+    <comment>Text shown on a split button for setting up configuration as non-admin</comment>
   </data>
   <data name="SummaryPageAppsDownloadedCount" xml:space="preserve">
     <value>Applications installed</value>
@@ -1084,7 +1020,7 @@
     <value>Installed applications</value>
     <comment>Header for the section that shows all the downloaded apps</comment>
   </data>
-  <data name="SummaryPageHeader" xml:space="preserve">
+  <data name="SummaryPage_Header.Text" xml:space="preserve">
     <value>Here's what we set up for you</value>
     <comment>Header text for the summary page</comment>
   </data>
@@ -1096,7 +1032,7 @@
     <value>Next steps</value>
     <comment>Text for the "Next steps" section of the summary page</comment>
   </data>
-  <data name="SummaryPageOpenDashboard" xml:space="preserve">
+  <data name="SummaryPage_OpenDashboard.Content" xml:space="preserve">
     <value>Open Dashboard</value>
     <comment>Button content to let user go to the dashboard</comment>
   </data>
@@ -1115,6 +1051,10 @@
   <data name="SummaryPage_RestartRequired_Second.Text" xml:space="preserve">
     <value>Restart your computer to finish setup</value>
     <comment>Second part of the message notifying users to restart.</comment>
+  </data>
+  <data name="SummaryPage_Summary.Text" xml:space="preserve">
+    <value>Summary</value>
+    <comment>Title for a section in the summary page</comment>
   </data>
   <data name="SummaryPage_ViewAll.Content" xml:space="preserve">
     <value>View all</value>
@@ -1157,7 +1097,7 @@
   </data>
   <data name="RepoAccountPagePrimaryButtonText" xml:space="preserve">
     <value>Connect</value>
-    <comment>Text to show the user when selecting a provider</comment>
+    <comment>Text to show the user when selecting a provder</comment>
   </data>
   <data name="RepoEverythingElsePrimaryButtonText" xml:space="preserve">
     <value>Add</value>
@@ -1166,6 +1106,10 @@
   <data name="RepoToolNextButtonTooltip" xml:space="preserve">
     <value>Your changes won't be applied until the end</value>
     <comment>Tooltip for the next button in the repo page.</comment>
+  </data>
+  <data name="LoadingScreen_SetupProgressBar_Description" xml:space="preserve">
+    <value>Number of tasks completed progress bar</value>
+    <comment>Description of the progress bar for screen readers</comment>
   </data>
   <data name="RepoPageEditClonePathAutomationProperties" xml:space="preserve">
     <value>Edit Clone Path for Repository {0}</value>
@@ -1198,10 +1142,6 @@
   <data name="ClonePathNotFullyQualifiedMessage" xml:space="preserve">
     <value>Enter the full path and folder name</value>
     <comment>Error message to tell the user to fully qualify their clone path</comment>
-  </data>
-  <data name="URIActivationFailedBusy" xml:space="preserve">
-    <value>The URI activation flow cannot be initiated while machine configuration is in progress. Please complete or cancel your current configuration tasks and then try again.</value>
-    <comment>Message displayed to the user when they attempt to activate the app through a URI but the machine configuration flow is currently in progress.</comment>
   </data>
   <data name="UrlValidationBadUrl" xml:space="preserve">
     <value>Enter a repository name beginning with https://</value>
@@ -1278,14 +1218,6 @@
   <data name="SummaryPageReposClonedCount" xml:space="preserve">
     <value>Repositories cloned</value>
     <comment>Bottom header of the count of all repos cloned</comment>
-  </data>
-  <data name="SummaryConfigurationErrorsCountText" xml:space="preserve">
-    <value>Number of configuration errors: {0}</value>
-    <comment>Number of configuration errors shown on Summary page. {0} in the number of errors.</comment>
-  </data>
-  <data name="SummaryPageTargetMachineFailedTaskText" xml:space="preserve">
-    <value>We could not apply the configuration to the environment</value>
-    <comment>Error message on Environment configuration summary page when we don't have more specific individual units results.</comment>
   </data>
   <data name="RepositoryClonePathHeader.Text" xml:space="preserve">
     <value>Clone path</value>
@@ -1433,15 +1365,11 @@
     <value>This configuration unit was not run because an assert failed or was false.</value>
   </data>
   <data name="SetupTargetPageTitle" xml:space="preserve">
-    <value>Select environment</value>
+    <value>Setup target</value>
     <comment>Title of the 'Setup Target' page where users can select a remote machine to setup using Dev Home.</comment>
   </data>
-  <data name="SetupTargetReviewTabTitle" xml:space="preserve">
-    <value>Environment</value>
-    <comment>Title of the 'Environment' tab on review page where users can review selected options.</comment>
-  </data>
   <data name="SetupTargetAllComboBoxOption" xml:space="preserve">
-    <value>All</value>
+    <value>All providers</value>
     <comment>value in combo box that will allow the user to view all the Dev Home extensions that are for interacting with remote machines or virtual machines</comment>
   </data>
   <data name="SetupTarget_Filter.PlaceholderText" xml:space="preserve">
@@ -1457,11 +1385,11 @@
     <comment>Textblock that appears on the side of the combo box that will contain a list of options to sort items on a page.</comment>
   </data>
   <data name="SetupTargetSortAToZLabel" xml:space="preserve">
-    <value>Name: Ascending</value>
+    <value>Name: A-Z</value>
     <comment>Textblock that appears inside of a combo box that is used to sort a list of remote computer names in Ascending order.</comment>
   </data>
   <data name="SetupTargetSortZToALabel" xml:space="preserve">
-    <value>Name: Descending</value>
+    <value>Name: Z-A</value>
     <comment>Textblock that appears inside of a combo box that is used to sort a list of remote computer names in descending order</comment>
   </data>
   <data name="SetupTarget_TargetProvider_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
@@ -1473,7 +1401,7 @@
     <comment>Label for combo box that will sort the users remote machines in ascending and descending order.</comment>
   </data>
   <data name="SetupTarget_SyncButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Sync your environments</value>
+    <value>Sync your compute systems</value>
     <comment>Label for the sync button that allows users to refresh the list of remote machines and virtual machines. Dev Home calls these Compute systems.</comment>
   </data>
   <data name="SetupTargetNoEnvironmentsFound.Text" xml:space="preserve">
@@ -1485,7 +1413,7 @@
     <comment>Label for when we're loading compute systems from a Dev Home extension. A compute system can be a remote machine or virtual machine.</comment>
   </data>
   <data name="SetupTargetCloneRepositoryInfoBar.Message" xml:space="preserve">
-    <value>Only public Git repositories are supported in environments at this time.</value>
+    <value>Only public Git repositories are supported at this time for the setup target flow</value>
     <comment>Message text advising the use that Dev Home currently only supports cloning public Git repositories in the setup target flow.</comment>
   </data>
   <data name="SetupTargetCloneRepositoryInfoBar.Title" xml:space="preserve">
@@ -1505,16 +1433,16 @@
     <comment>The operating system version of the compute system.</comment>
   </data>
   <data name="SetupTargetReviewPageDefaultInfoBarMessage" xml:space="preserve">
-    <value>Proceeding with the setup may result in the environment being rebooted and log in may be required. App installation may show Windows UAC prompts in the environment that will require your attention.</value>
+    <value>Proceeding with the next step may result in the target machine being rebooted and logging in may be required.</value>
     <comment>Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
   </data>
   <data name="SetupTargetReviewPageDefaultInfoBarTitle" xml:space="preserve">
     <value>Warning</value>
-    <comment>Title for info bar that will warn users that proceeding with the setup may result in the restart and re-login of the targeted remote machine or virtual machine.</comment>
+    <comment>Title for info bar that will warn users that proceeding with the setup may result in the restart and re-login of the targetted remote machine or virtual machine.</comment>
   </data>
   <data name="SetupTargetReviewPageHyperVInfoBarMessage" xml:space="preserve">
-    <value>Proceeding with the setup may result in the environment being rebooted and log in may be required. Dev Home's DevSetupAgent service will be installed to configure a Hyper-V virtual machine. App installation may show Windows UAC prompts in the environment that will require your attention.</value>
-    <comment>{Locked="DevSetupAgent"} Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
+    <value>Proceeding with the next step may result in the target machine being rebooted and logging in may be required. Dev Home's Dev Setup Agent service will be installed as it is required to setup a Hyper-V virtual machine</value>
+    <comment>Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
   </data>
   <data name="SetupTargetUnknownStatus" xml:space="preserve">
     <value>Unknown</value>
@@ -1533,7 +1461,7 @@
     <comment>Text for the completed status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationUnitCompleted" xml:space="preserve">
-    <value>Configuration applied</value>
+    <value>This part of the configuration is now complete</value>
     <comment>Text for the completed status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationInProgress" xml:space="preserve">
@@ -1541,14 +1469,14 @@
     <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationUnitInProgress" xml:space="preserve">
-    <value>Configuration in progress</value>
+    <value>This part of the configuration is in progress</value>
     <comment>Text for the 'In progress' status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
   <data name="SetupTargetConfigurationPending" xml:space="preserve">
     <value>The entire configuration is still pending</value>
     <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for the entire configuration file we're applying</comment>
   </data>
-  <data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
+    <data name="SetupTargetConfigurationUnitPending" xml:space="preserve">
     <value>This part of the configuration is still pending</value>
     <comment>Text for the pending status of the configuration operation that happened on a remote machine. This is for a single part of the configuration we're applying</comment>
   </data>
@@ -1565,7 +1493,7 @@
     <comment>Text for the 'shut down' status of the configuration operation that happened on a remote machine</comment>
   </data>
   <data name="SetupTargetConfigurationUnitSkipped" xml:space="preserve">
-    <value>Configuration skipped</value>
+    <value>This part of the configuration has been skipped</value>
     <comment>Text for the 'shut down' status of the configuration operation that happened on a remote machine</comment>
   </data>
   <data name="SetupTargetConfigurationStartingDevice" xml:space="preserve">
@@ -1585,20 +1513,20 @@
     <comment>Generic text for when  all of the configurations we're attempting to apply on a remote computer is unknown.</comment>
   </data>
   <data name="SetupTargetConfigurationWaitingForAdminUserLogon" xml:space="preserve">
-    <value>We're currently waiting for an admin to log on</value>
-    <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for a user with administrator privileges to log on to the machine</comment>
+    <value>We're currently waiting for an admin to logon</value>
+    <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for a user with administrator priviledges to logon to the machine</comment>
   </data>
   <data name="SetupTargetConfigurationWaitingForUserLogon" xml:space="preserve">
-    <value>We're currently waiting for the user to log on</value>
-    <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for the current user to log on to the machine</comment>
+    <value>We're currently waiting for the user to logon</value>
+    <comment>Text for when the configuration operation on a remote machine is on going but the extension is waiting for the current user to logon to the machine</comment>
   </data>
   <data name="SetupTargetConfigurationSkipped" xml:space="preserve">
-    <value>WinGet skipped this unit</value>
+    <value>Winget skipped this unit</value>
     <comment>Text for when the a part of the configuration on the remove machine was completed but its completed status was set to skipped.</comment>
   </data>
   <data name="SetupTargetConfigurationOpenConfigFailed" xml:space="preserve">
     <value>The extension failed to open the configuration file. You may need to check the extensions log file for more information</value>
-    <comment>Text for when an extension received the configuration file string from Dev Home but was unable to open it</comment>
+    <comment>Text for when an extension recieved the configuration file string from Dev Home but was unable to open it</comment>
   </data>
   <data name="SetupTargetConfigurationSetProgressMessage" xml:space="preserve">
     <value>Configuration set status: {0}</value>
@@ -1606,7 +1534,7 @@
   </data>
   <data name="SetupTargetConfigurationUnitProgressErrorWithMsg" xml:space="preserve">
     <value>There was an issue applying part of the configuration using DSC resource: '{0}'. Error: {1}</value>
-    <comment>Locked={"{0}", "{1}"} Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine. {0} is the name of the DSC resource we're using for this part of the configuration file, while {1} is the message from the other app.</comment>
+    <comment>Locked={"0", "{1}"} Text for the ongoing progress of applying a configuration unit in the configuration file on to the remote machine. {0} is the name of the DSC resource we're using for this part of the configuration file, while {1} is the message from the other app.</comment>
   </data>
   <data name="SetupTargetConfigurationUnitProgressError" xml:space="preserve">
     <value>There was an issue applying part of the configuration using DSC resource: '{0}'. Check the extension's logs</value>
@@ -1617,8 +1545,8 @@
     <comment>Locked={"0"} Text for the error that occurred while of applying a configuration unit in the configuration file on to the remote machine. {0} is the status string, e.g "pending", "completed" but it comes from a different app</comment>
   </data>
   <data name="ConfigureTargetApplyConfigurationActionNeeded" xml:space="preserve">
-    <value>Action required. Please review the action center. ({0})</value>
-    <comment>Locked={"0"} Text to tell the user that their action is needed in order to complete the configuration. {0} is the amount of attempts  the user has done so far.</comment>
+    <value>Action required. Please review the action center. ({0}/{1})</value>
+    <comment>Locked={"0", "{1}"} Text to tell the user that their action is needed in order to complete the configuration. {0} is the amount of attempts  the user has done so far while {1} is the max amount attempts the user has.</comment>
   </data>
   <data name="ConfigureTargetApplyConfigurationStopped" xml:space="preserve">
     <value>Apply configuration stopped with status: {0}. You may need to check the extensions log file for more information</value>
@@ -1661,8 +1589,8 @@
     <comment>Text to tell the user that the corrective action that they took to fix an issue failed. The user is no longer allowed to remediate the issue.</comment>
   </data>
   <data name="SetupTargetHyperVInfoBar.Message" xml:space="preserve">
-    <value>To set up the Hyper-V virtual machine an installation of Dev Home's Dev Setup Agent service is required</value>
-    <comment>message text to tell the user which app is needed to be installed in order for Dev Home to complete the remote machines configuration.</comment>
+    <value>To setup the Hyper-V virtual machine an installation of Dev Home's Dev Setup Agent service is required</value>
+    <comment>message text to tell the user which app is needed to be installed inorder for Dev Home to complete the remote machines configuration.</comment>
   </data>
   <data name="SetupTargetHyperVInfoBar.Title" xml:space="preserve">
     <value>App install required</value>
@@ -1671,352 +1599,5 @@
   <data name="SetupTargetLoadingCard" xml:space="preserve">
     <value>Loading your environments</value>
     <comment>Test that tells the user that we're still loading their environments. These environments can be virtual or remote machines</comment>
-  </data>
-  <data name="MainPageEnvironmentSetupGroup" xml:space="preserve">
-    <value>Set up development environment</value>
-    <comment>(Narrator reads this entry and should stay in sync with MainPage_EnvironmentSetup.Text ).  Header text for a group of controls giving multiple choices to set up the environment/machine</comment>
-  </data>
-  <data name="MainPageQuickConfigurationGroup" xml:space="preserve">
-    <value>Quick steps</value>
-    <comment>(Narrator reads this and should be in sync with MainPage_QuickConfiguration.Text) Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
-  </data>
-  <data name="ConfigurationFile_SummaryView.Content" xml:space="preserve">
-    <value>Summary view</value>
-    <comment>Show the summary view of the configuration file</comment>
-  </data>
-  <data name="ConfigurationFile_CodeView.Content" xml:space="preserve">
-    <value>Code view</value>
-    <comment>Show the code view of the configuration file</comment>
-  </data>
-  <data name="ConfigurationUnit_Id.Key" xml:space="preserve">
-    <value>Id</value>
-    <comment>Id of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_Intent.Key" xml:space="preserve">
-    <value>Intent</value>
-    <comment>Intent of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_Dependencies.Text" xml:space="preserve">
-    <value>Dependencies</value>
-    <comment>Dependencies of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_ResourceMetadata.Text" xml:space="preserve">
-    <value>Resource metadata</value>
-    <comment>Resource metadata of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_Settings.Text" xml:space="preserve">
-    <value>Settings</value>
-    <comment>Settings of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_Details.Text" xml:space="preserve">
-    <value>Details</value>
-    <comment>Details of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_UnitType.Key" xml:space="preserve">
-    <value>unit type</value>
-    <comment>Unit type of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_UnitDescription.Key" xml:space="preserve">
-    <value>unit description</value>
-    <comment>Unit description of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_UnitDocumentation.Key" xml:space="preserve">
-    <value>unit documentation</value>
-    <comment>Unit documentation of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_ModuleName.Key" xml:space="preserve">
-    <value>module name</value>
-    <comment>Module name of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_ModuleSource.Key" xml:space="preserve">
-    <value>module source</value>
-    <comment>Module source of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_ModuleDescription.Key" xml:space="preserve">
-    <value>module description</value>
-    <comment>Module description of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_ModuleDocumentationUri.Key" xml:space="preserve">
-    <value>module documentation uri</value>
-    <comment>Module documentation uri of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_PublishedModuleUri.Key" xml:space="preserve">
-    <value>module documentation uri</value>
-    <comment>Module documentation uri of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_Version.Key" xml:space="preserve">
-    <value>version</value>
-    <comment>Version of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_IsLocal.Key" xml:space="preserve">
-    <value>is local</value>
-    <comment>Check if the configuration unit is local on the machine</comment>
-  </data>
-  <data name="ConfigurationUnit_Author.Key" xml:space="preserve">
-    <value>author</value>
-    <comment>Author of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_Publisher.Key" xml:space="preserve">
-    <value>publisher</value>
-    <comment>Publisher of the configuration unit</comment>
-  </data>
-  <data name="ConfigurationUnit_IsPublic.Key" xml:space="preserve">
-    <value>is public</value>
-    <comment>Check if the configuration unit is public</comment>
-  </data>
-  <data name="CloneRepoNextStepsDescription" xml:space="preserve">
-    <value>Detected '{0}' while cloning '{1}'</value>
-    <comment>Locked={"{0}", "{1}"} Description letting users know what configuration was found and in what repo the file was found in. {0} is the file name with extension. {1} is the repo name including the owner.</comment>
-  </data>
-  <data name="CloneRepoNextStepsFileFound" xml:space="preserve">
-    <value>Configuration file detected</value>
-    <comment>Text to notify the user a configuration file was found in a repo.</comment>
-  </data>
-  <data name="CloneRepoNextStepsRun" xml:space="preserve">
-    <value>Run file</value>
-    <comment>Button content for running a configuration file.</comment>
-  </data>
-  <data name="CloneRepoNextStepsView" xml:space="preserve">
-    <value>View file</value>
-    <comment>Button content for viewing a file.</comment>
-  </data>
-  <data name="SelectEnvironmentPageTitle" xml:space="preserve">
-    <value>Select environment</value>
-    <comment>Title of the 'Select environment' page in the create environment flow where users can select the provider they will use to create the environment, like Microsoft Hyper-V and Microsoft Dev Box</comment>
-  </data>
-  <data name="ConfigureEnvironmentPageTitle" xml:space="preserve">
-    <value>Configure your environment</value>
-    <comment>Title of the 'Configure your environment' page in the environment creation flow where users can choose options that they'd like their environment to be created with</comment>
-  </data>
-  <data name="SelectEnvironmentSubtitle.Text" xml:space="preserve">
-    <value>Begin by selecting an environment provider below</value>
-    <comment>subtitle text advise the user that they can select an environment option in a list below the text</comment>
-  </data>
-  <data name="MainPageCreateEnvironment.Header" xml:space="preserve">
-    <value>Create your new environment</value>
-    <comment>Header for a card that when clicked takes the user to a multi-step flow for creating an environment</comment>
-  </data>
-  <data name="MainPageCreateEnvironment.Description" xml:space="preserve">
-    <value>Create a local or cloud environment.</value>
-    <comment>Body text description for a card than when clicked takes the user to a multi-step flow for creating an environment</comment>
-  </data>
-  <data name="SelectEnvironmentPage.Description" xml:space="preserve">
-    <value>Choose an environment provider to create a new dev environment</value>
-    <comment>Description for the select environment provider</comment>
-  </data>
-  <data name="ConfigureEnvironmentPage.Description" xml:space="preserve">
-    <value>Add options to create your environment</value>
-    <comment>Description for the configure environment page</comment>
-  </data>
-  <data name="ErrorLoadingCreationUITitle" xml:space="preserve">
-    <value>There was an error loading the data required to create {0} environments</value>
-    <comment>Locked={"{0}"} Error text display when we are unable to retrieve the creation data for a Dev Home provider. {0} is the name of the provider</comment>
-  </data>
-  <data name="EnvironmentCreationReviewTabTitle" xml:space="preserve">
-    <value>Environment</value>
-    <comment>Title for create environment review tab</comment>
-  </data>
-  <data name="EnvironmentCreationReviewExpanderDescription" xml:space="preserve">
-    <value>Environment details</value>
-    <comment>Title for create environment review tab</comment>
-  </data>
-  <data name="EnvironmentCreationReviewPageTitle" xml:space="preserve">
-    <value>Review your environment</value>
-    <comment>Title for create environment review page</comment>
-  </data>
-  <data name="CreateEnvironmentButtonText" xml:space="preserve">
-    <value>Create environment</value>
-  </data>
-  <data name="EnvironmentCreationError" xml:space="preserve">
-    <value>There was an error starting the creation operation</value>
-    <comment>Text to tell the user that we couldn't start the operation to create their local or cloud virtual environment</comment>
-  </data>
-  <data name="EnvironmentCreationOperationInitializationFinished" xml:space="preserve">
-    <value>The operation to create your environment has started successfully</value>
-    <comment>Text to tell the user that we were able to start the operation that create their local or cloud virtual machine successfully</comment>
-  </data>
-  <data name="StartingEnvironmentCreation" xml:space="preserve">
-    <value>Starting the create environment operation</value>
-    <comment>Text to tell the user that the operation to create their local or cloud virtual environment has started</comment>
-  </data>
-  <data name="EnvironmentCreationFailedToGetProviderInformation" xml:space="preserve">
-    <value>We timed out waiting for the extension to provide us with information to create your environment</value>
-    <comment>Error text to show the user that we timed out while waiting for a response from a Dev Home extension</comment>
-  </data>
-  <data name="EnvironmentCreationForProviderStarted" xml:space="preserve">
-    <value>The {0} provider is now creating your environment</value>
-    <comment>{Locked="{0}"} Text that tells the user that a specific provider has started creating their environment. {0} is the name of a provider who Dev Home will send the request to.</comment>
-  </data>
-  <data name="EnvironmentCreationOperationFailedToStart" xml:space="preserve">
-    <value>We failed to start the creation operation for the {0} provider</value>
-    <comment>{Locked="{0}"} Text that tells the user that Dev Home could not start the creation operation for a specific provider. {0} is the name of a provider who Dev Home will send the request to.</comment>
-  </data>
-  <data name="SummaryPageHeadingForCreateEnvironmentFlow.Text" xml:space="preserve">
-    <value>Environment details</value>
-    <comment>Heading that will show the user the details of the environment they initiated the creation process for. Environments can be local or cloud virtual machines</comment>
-  </data>
-  <data name="SummaryPageRedirectToEnvironmentPageButton" xml:space="preserve">
-    <value>Go to Environments page</value>
-    <comment>Text for button that when clicked will redirect the user to the environments page in Dev Home</comment>
-  </data>
-  <data name="SummaryPageEnvironmentCreating.Text" xml:space="preserve">
-    <value>Environment being created</value>
-    <comment>Text to tell the user that an environment is being created. Environments can be local or cloud virtual machines</comment>
-  </data>
-  <data name="SummaryPageHeaderForEnvironmentCreationText" xml:space="preserve">
-    <value>We've started creating your environment</value>
-    <comment>Text to tell the user that an environment is being created. Environments can be local or cloud virtual machines</comment>
-  </data>
-  <data name="EnvironmentCreationUILoadingMessage" xml:space="preserve">
-    <value>Loading data needed to create {0} environments</value>
-    <comment>Text to tell the user that Dev Home is loading the creation UX from a specific Dev Home extension provider. {0} is the display name of the provider</comment>
-  </data>
-  <data name="RepoToolNoRepositoriesMessage" xml:space="preserve">
-    <value>Added repositories are found in your {0} account and will appear here.</value>
-    <comment>{Locked="{0}"} Message to show when the account has no repositories. {0} is the display name of the extension e.g. GitHub instead og GitHub extension (dev)</comment>
-  </data>
-  <data name="SummaryPage_InstallationErrors.Text" xml:space="preserve">
-    <value>installation errors</value>
-    <comment>Content for a button to see the installation errors.</comment>
-  </data>
-  <data name="SummaryPage_ErrorLogs.Text" xml:space="preserve">
-    <value>Error logs</value>
-    <comment>Label for error logs.</comment>
-  </data>
-  <data name="SummaryPage_ViewLogs.Content" xml:space="preserve">
-    <value>View log</value>
-    <comment>Content for a button to view logs.</comment>
-  </data>
-  <data name="QuickStartProjectUnexpectedError" xml:space="preserve">
-    <value>An unexpected error occurred while attempting to perform the operation on the {0} provider. Please see the logs for more information.</value>
-    <comment>Locked={"{0}"} Text for when there was an error performing a quick start project operation. . {0} is the name of the quick start project provider.</comment>
-  </data>
-  <data name="QuickstartPlayground.Text" xml:space="preserve">
-    <value>Quickstart Playground</value>
-    <comment>Locked="{Quickstart Playground}" Title for the QuickstartPlayground page in the SetupFlow</comment>
-  </data>
-  <data name="QuickstartPlaygroundExtensionProvider.Text" xml:space="preserve">
-    <value>Extension Provider</value>
-    <comment>Label for the ComboBox with the list of available QuickstartProject extensions</comment>
-  </data>
-  <data name="QuickstartPlaygroundExtensionProgressOutput.Header" xml:space="preserve">
-    <value>Progress Output</value>
-    <comment>Header for the optional progress output section when generating a Quickstart project</comment>
-  </data>
-  <data name="QuickstartPlaygroundGenerateButton.Content" xml:space="preserve">
-    <value>Generate</value>
-    <comment>Label for the generate button on the QuickstartPlayground page</comment>
-  </data>
-  <data name="QuickstartPlaygroundGenerateButtonTooltip.Content" xml:space="preserve">
-    <value>Generate project</value>
-    <comment>Tooltip for the generate button on the QuickstartPlayground page</comment>
-  </data>
-  <data name="QuickstartPlaygroundLaunchDropDownButton.Content" xml:space="preserve">
-    <value>Open in Editor</value>
-    <comment>Drop down button to launch QuickstartPlayground project</comment>
-  </data>
-  <data name="QuickstartPlaygroundLaunchButton" xml:space="preserve">
-    <value>Open in {0}</value>
-    <comment>Locked={"{0}"} Button to launch QuickstartPlayground project using {0}</comment>
-  </data>
-  <data name="QuickstartPlaygroundSaveButton.Content" xml:space="preserve">
-    <value>Save</value>
-    <comment>Button to save QuickstartPlayground project in another folder</comment>
-  </data>
-  <data name="QuickstartPlaygroundPromptHeader.Text" xml:space="preserve">
-    <value>What kind of project would you like to create? Try a sample prompt or write one of your own.</value>
-    <comment>Label for prompt asking user what type of project to create</comment>
-  </data>
-  <data name="QuickstartPlaygroundGenerationOutputLabel.Text" xml:space="preserve">
-    <value>Generation Output:</value>
-    <comment>Label for section showing generated folder</comment>
-  </data>
-  <data name="QuickstartPlaygroundFeedbackLikeTooltip.Content" xml:space="preserve">
-    <value>Like</value>
-    <comment>Tooltip for like button on QuickstartPlayground page</comment>
-  </data>
-  <data name="QuickstartPlaygroundFeedbackDislikeTooltip.Content" xml:space="preserve">
-    <value>Dislike</value>
-    <comment>Tooltip for dislike button on QuickstartPlayground page</comment>
-  </data>
-  <data name="QuickstartPlaygroundFeedbackHeader.Text" xml:space="preserve">
-    <value>Provide additional feedback</value>
-    <comment>Header above feedback section on QuickstartPlayground page</comment>
-  </data>
-  <data name="QuickstartPlaygroundSubmitFeedback.Content" xml:space="preserve">
-    <value>Submit feedback</value>
-    <comment>Submit feedback button on QuickstartPlayground page</comment>
-  </data>
-  <data name="QuickstartPlaygroundFeedbackSubmitted.Text" xml:space="preserve">
-    <value>Your feedback has been submitted successfully!</value>
-    <comment>Label for when feedback has been submitted on QuickstartPlayground page</comment>
-  </data>
-  <data name="QuickstartPlaygroundPositiveFeedbackPromptPlaceholder.PlaceholderText" xml:space="preserve">
-    <value>What did you like?</value>
-    <comment>Placeholder for like feedback prompt on QuickstartPlayground page</comment>
-  </data>
-  <data name="QuickstartPlaygroundNegativeFeedbackPromptPlaceholder.PlaceholderText" xml:space="preserve">
-    <value>What did you dislike?</value>
-    <comment>Placeholder for dislike feedback prompt on QuickstartPlayground page</comment>
-  </data>
-  <data name="QuickstartPlaygroundGenerationPromptPlaceholder" xml:space="preserve">
-    <value>Type a new generation command</value>
-    <comment>Placeholder for generation prompt on QuickstartPlayground page once user has selected a provider</comment>
-  </data>
-  <data name="QuickstartPlaygroundAIWarning.Text" xml:space="preserve">
-    <value>Quickstart Playground uses AI, check for mistakes.</value>
-    <comment>AI warning label on QuickstartPlayground page</comment>
-  </data>
-  <data name="QuickstartPlaygroundAIWarningTerms.Content" xml:space="preserve">
-    <value>AI Terms</value>
-    <comment>AI terms hyperlink text on QuickstartPlayground page</comment>
-  </data>
-  <data name="QuickstartPlaygroundAIWarningPrivacy.Content" xml:space="preserve">
-    <value>AI Privacy</value>
-    <comment>AI privacy hyperlink text on QuickstartPlayground page</comment>
-  </data>
-  <data name="QuickstartPlaygroundNoProviderInstalled" xml:space="preserve">
-    <value>No Quickstart extension providers found. Please install one before continuing.</value>
-    <comment>Message to indicate to the user that Dev Home could not find any Quickstart providers on the system</comment>
-  </data>
-  <data name="QuickstartPlaygroundSelectProvider" xml:space="preserve">
-    <value>Select an extension provider before continuing.</value>
-    <comment>Guidance text to instruct user to select a Quickstart provider before continuing</comment>
-  </data>
-  <data name="QuickstartPlaygroundReferenceSamplePrefix.Text" xml:space="preserve">
-    <value>Generated based on example: </value>
-    <comment>Text explaining what reference sample was used for generating the project</comment>
-  </data>
-  <data name="QuickstartPlaygroundDislikeButton.AutomationProperties.Name" xml:space="preserve">
-    <value>Give thumbs-down feedback on the generated project</value>
-    <comment>Label for thumbs-down button for generated Quickstart projects</comment>
-  </data>
-  <data name="QuickstartPlaygroundLikeButton.AutomationProperties.Name" xml:space="preserve">
-    <value>Give thumbs-up feedback on the generated project</value>
-    <comment>Label for thumbs-up button for generated Quickstart projects</comment>
-  </data>
-  <data name="QuickstartPlaygroundOpenInEditor.AutomationProperties.Name" xml:space="preserve">
-    <value>Open in editor</value>
-    <comment>Label for the button to launch the project host from the selected Quickstart extension</comment>
-  </data>
-  <data name="QuickstartPlaygroundGenerationFailed.Text" xml:space="preserve">
-    <value>Something went wrong, we weren't able to generate the content for this prompt.</value>
-    <comment>Error message shown when we failed to generate the project.</comment>
-  </data>
-  <data name="QuickstartPlaygroundGenerationFailedDetails" xml:space="preserve">
-    <value>Error: {0}</value>
-    <comment>Locked={"{0}"} Error message with additional details in {0} shown when we failed to generate the project.</comment>
-  </data>
-  <data name="VersionComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Version</value>
-    <comment>Name for the version combo box</comment>
-  </data>
-  <data name="VersionComboBox.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Version</value>
-    <comment>Name for the version combo box</comment>
-  </data>
-  <data name="SummaryPage_InstallationNotes.Text" xml:space="preserve">
-    <value>Installation Notes</value>
-    <comment>Text to introduce installation notes in the summary screen.</comment>
   </data>
 </root>

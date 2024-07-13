@@ -2,8 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
-using Serilog;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models.WingetConfigure;
@@ -48,8 +53,11 @@ public class SDKOpenConfigurationSetResult
 
     public string GetErrorMessage()
     {
-        var log = Log.ForContext("SourceContext", nameof(SDKOpenConfigurationSetResult));
-        log.Error(ResultCode, $"Extension failed to open the configuration file provided by Dev Home: Field: {Field}, Value: {Value}, Line: {Line}, Column: {Column}");
+        Log.Logger?.ReportError(
+            Log.Component.SDKOpenConfigurationSetResult,
+            $"Extension failed to open the configuration file provided by Dev Home: Field: {Field}, Value: {Value}, Line: {Line}, Column: {Column}",
+            ResultCode);
+
         return _setupFlowStringResource.GetLocalized(StringResourceKey.SetupTargetConfigurationOpenConfigFailed);
     }
 }
