@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 using Antlr4.Runtime.Misc;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -32,7 +34,7 @@ namespace DevHome.Environments.ViewModels;
 /// View model for a compute system. Each 'card' in the UI represents a compute system.
 /// Contains an instance of the compute system object as well.
 /// </summary>
-public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<ComputeSystemOperationStartedMessage>, IRecipient<ComputeSystemOperationCompletedMessage>
+public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<ComputeSystemOperationStartedMessage>, IRecipient<ComputeSystemOperationCompletedMessage>, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
     private readonly StringResource _stringResource;
@@ -40,7 +42,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     private readonly IComputeSystemManager _computeSystemManager;
     private readonly ComputeSystemProvider _provider;
 
-    private readonly object _lock = new();
+    private readonly SemaphoreSlim _semaphoreSlimLock = new(1, 1);
 
     public ComputeSystemCache ComputeSystem { get; protected set; }
 
@@ -52,6 +54,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     public string PackageFullName { get; set; }
 
     private readonly Func<ComputeSystemCardBase, bool> _removalAction;
+    private bool _disposedValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ComputeSystemViewModel"/> class.
@@ -122,21 +125,50 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
     private async Task InitializeOperationDataAsync()
     {
-        RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _windowEx), DataExtractor.FillLaunchButtonOperations(ComputeSystem));
-
-        foreach (var operation in await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem))
+        await _semaphoreSlimLock.WaitAsync();
+        try
         {
-            DotOperations!.Add(operation);
-        }
+            RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _windowEx), DataExtractor.FillLaunchButtonOperations(ComputeSystem));
 
-        SetPropertiesAsync();
+            foreach (var data in await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem))
+            {
+                if ((!data.WasPinnedStatusSuccessful) || (data.ViewModel == null))
+                {
+                    // TODO: pinned status for dev box for example fails often. So we'll log it and not show notifications so we don't overload the user with
+                    // failure notifications until the feature is fixed. We simply do not show the pinned icons in these cases since we don't know which ones
+                    // to show.
+                    _log.Error($"Pinned status check failed: for '{Name}': {data?.PinnedStatusDisplayMessage}. DiagnosticText: {data?.PinnedStatusDiagnosticText}");
+                    continue;
+                }
+
+                DotOperations.Add(data.ViewModel);
+                WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedMessage, OperationsViewModel>(this, data.ViewModel);
+                WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedMessage, OperationsViewModel>(this, data.ViewModel);
+            }
+
+            SetPropertiesAsync();
+        }
+        finally
+        {
+            _semaphoreSlimLock.Release();
+        }
     }
 
     private async Task RefreshOperationDataAsync()
     {
         ComputeSystem.ResetSupportedOperations();
-        ComputeSystem.ResetPinnedToStartMenu();
-        ComputeSystem.ResetPinnedToTaskbar();
+        var supportedOperations = ComputeSystem.SupportedOperations?.Value ?? ComputeSystemOperations.None;
+
+        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToStartMenu))
+        {
+            ComputeSystem.ResetPinnedToStartMenu();
+        }
+
+        if (supportedOperations.HasFlag(ComputeSystemOperations.PinToTaskbar))
+        {
+            ComputeSystem.ResetPinnedToTaskbar();
+        }
+
         ComputeSystem.ResetComputeSystemProperties();
         await InitializeOperationDataAsync();
     }
@@ -161,13 +193,9 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         }
 
         var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem!, PackageFullName);
-        lock (_lock)
+        if (!ComputeSystemHelpers.RemoveAllItemsAndReplace(Properties, properties))
         {
-            ComputeSystemHelpers.RemoveAllItems(Properties);
-            foreach (var property in properties)
-            {
-                Properties.Add(property);
-            }
+            Properties = new(properties);
         }
     }
 
@@ -380,5 +408,33 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         {
             RemoveComputeSystem();
         }
+
+        if (State == ComputeSystemState.Creating)
+        {
+            IsCardCreating = true;
+        }
+        else
+        {
+            IsCardCreating = false;
+        }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _semaphoreSlimLock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

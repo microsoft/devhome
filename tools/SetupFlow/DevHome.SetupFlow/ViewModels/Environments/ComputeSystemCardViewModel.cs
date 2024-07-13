@@ -102,10 +102,9 @@ public partial class ComputeSystemCardViewModel : ObservableObject
         var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem, _packageFullName);
         lock (_lock)
         {
-            ComputeSystemHelpers.RemoveAllItems(ComputeSystemProperties);
-            foreach (var property in properties)
+            if (!ComputeSystemHelpers.RemoveAllItemsAndReplace(ComputeSystemProperties, properties))
             {
-                ComputeSystemProperties.Add(property);
+                ComputeSystemProperties = new(properties);
             }
         }
     }
