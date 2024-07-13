@@ -121,9 +121,6 @@ public static class ServiceExtensions
         // View models
         services.AddTransient<DevDriveViewModel>();
 
-        // TODO https://github.com/microsoft/devhome/issues/631
-        // services.AddTransient<DevDriveReviewViewModel>();
-
         // Services
         services.AddTransient<DevDriveTaskGroup>();
         services.AddSingleton<IDevDriveManager, DevDriveManager>();
@@ -150,10 +147,6 @@ public static class ServiceExtensions
 
     private static IServiceCollection AddRepoConfig(this IServiceCollection services)
     {
-        // TODO https://github.com/microsoft/devhome/issues/631
-        // services.AddTransient<RepoConfigViewModel>();
-        // services.AddTransient<RepoConfigReviewViewModel>();
-
         // Services
         services.AddTransient<RepoConfigTaskGroup>();
 
