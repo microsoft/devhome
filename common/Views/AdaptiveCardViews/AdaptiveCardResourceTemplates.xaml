@@ -4,48 +4,23 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:cardModels="using:DevHome.Common.DevHomeAdaptiveCards.CardModels"
-    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
-    xmlns:local="using:DevHome.Common.Views.AdaptiveCardViews"
-    xmlns:converters="using:CommunityToolkit.WinUI.Converters">
-
-    <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls">
 
     <!--- Data templates for custom adaptive card renders can go here -->
+
     <DataTemplate x:Key="SettingsCardWithButtonThatLaunchesContentDialog" x:DataType="cardModels:DevHomeSettingsCard">
         <ItemContainer AutomationProperties.Name="{Binding Header}">
-            <ItemContainer.Resources>
-                <!-- 
-                    Override SettingsCard default resources. This is used because the default
-                    SettingsCardHeaderIconMaxSize value for settings cards is 20. This makes
-                    the icons sent from extensions in the creation flow appear too small and pixelated.
-                    So we override it here, to make sure they are bigger.
-                -->
-                <x:Double x:Key="SettingsCardHeaderIconMaxSize">40</x:Double>
-            </ItemContainer.Resources>
-            <controls:SettingsCard
+            <controls:SettingsCard 
                 x:Name="SettingsCardWithButtonToLaunchContentDialog"
                 Description="{Binding Description}"
                 Header="{Binding Header}"
                 HeaderIcon="{Binding HeaderIconImage}">
                 <Button
                     x:Name="LaunchDialog"
-                    Visibility="{Binding NonSubmitActionElement, Converter={StaticResource EmptyObjectToObjectConverter}}"
                     Content="{Binding NonSubmitActionElement.ActionText}"
                     Command="{Binding NonSubmitActionElement.InvokeActionCommand}"
                     CommandParameter="{Binding ElementName=LaunchDialog}" />
             </controls:SettingsCard>
         </ItemContainer>
-    </DataTemplate>
-
-    <DataTemplate x:Key="ChoiceSetWithSubtitleTemplate" x:DataType="cardModels:DevHomeChoicesData">
-        <Grid
-            RowSpacing="5">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="{Binding Title}" />
-            <TextBlock Grid.Row="1" Text="{Binding Subtitle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-        </Grid>
     </DataTemplate>
 </ResourceDictionary>

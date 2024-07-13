@@ -3,6 +3,11 @@
 
 using System;
 using System.IO;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using DevHome.Common.Helpers;
+using DevHome.Common.Models;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
@@ -27,7 +32,7 @@ public static class AdaptiveCardHelpers
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Failed to load image icon");
+            _log.Error($"Failed to load image icon", ex);
             return new ImageIcon();
         }
     }
