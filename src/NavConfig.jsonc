@@ -19,6 +19,13 @@
             "icon": "f156"
           },
           {
+            "identity": "DevHome.ExtensionLibrary",
+            "assembly": "DevHome.ExtensionLibrary",
+            "viewFullName": "DevHome.ExtensionLibrary.Views.ExtensionLibraryView",
+            "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
+            "icon": "ea86"
+          },
+          {
             "experimentalFeatureIdentity": "EnvironmentsManagementPage",
             "identity": "DevHome.Environments",
             "assembly": "DevHome.Environments",
@@ -32,13 +39,6 @@
             "viewFullName": "DevHome.Customization.Views.MainPage",
             "viewModelFullName": "DevHome.Customization.ViewModels.MainPageViewModel",
             "icon": "e9f5"
-          },
-          {
-            "identity": "DevHome.Utilities",
-            "assembly": "DevHome.Utilities",
-            "viewFullName": "DevHome.Utilities.Views.UtilitiesMainPageView",
-            "viewModelFullName": "DevHome.Utilities.ViewModels.UtilitiesMainPageViewModel",
-            "icon": "ED35"
           }
         ]
       }
@@ -46,7 +46,7 @@
   },
   "experimentalFeatures": [
     {
-      "identity": "QuietBackgroundProcessesExperiment",
+      "identity": "EnvironmentsManagementPage",
       "enabledByDefault": false,
       "buildTypeOverrides": [
         {
@@ -56,36 +56,36 @@
         },
         {
           "buildType": "canary",
-          "enabledByDefault": true,
-          "visible": true
+          "enabledByDefault": false,
+          "visible": false
         },
         {
-          "buildType": "stable",
+          "buildType": "release",
           "enabledByDefault": false,
-          "visible": true
+          "visible": false
         }
       ]
     },
     {
-        "identity": "FileExplorerSourceControlIntegration",
-        "enabledByDefault": false,
-        "buildTypeOverrides": [
-          {
-            "buildType": "dev",
-            "enabledByDefault": true,
-            "visible": true
-          },
-          {
-            "buildType": "canary",
-            "enabledByDefault": false,
-            "visible": true
-          },
-          {
-            "buildType": "stable",
-            "enabledByDefault": false,
-            "visible": false
-          }
-        ]
-      }
-    ]
+      "identity": "EnvironmentsSetupTargetFlow",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": false,
+          "visible": false
+        },
+        {
+          "buildType": "release",
+          "enabledByDefault": false,
+          "visible": false
+        }
+      ]
+    }
+  ]
 }

@@ -1,15 +1,16 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using System.Web.Services.Description;
-using CommunityToolkit.WinUI;
 using DevHome.Activation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Contracts.Services;
+using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Customization.Extensions;
+using DevHome.Dashboard.Extensions;
 using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
 using DevHome.Services;
@@ -87,10 +88,10 @@ public partial class App : Application, IApp
 
             // Other Activation Handlers
             services.AddTransient<IActivationHandler, ProtocolActivationHandler>();
-            services.AddTransient<IActivationHandler, FileActivationHandler>();
 
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
+            services.AddSingleton<IExperimentationService, ExperimentationService>();
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
             services.AddTransient<INavigationViewService, NavigationViewService>();
 
@@ -106,6 +107,9 @@ public partial class App : Application, IApp
             services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
             services.AddSingleton<IPackageDeploymentService, PackageDeploymentService>();
             services.AddSingleton<IScreenReaderService, ScreenReaderService>();
+            services.AddSingleton<IComputeSystemService, ComputeSystemService>();
+            services.AddSingleton<IComputeSystemManager, ComputeSystemManager>();
+            services.AddSingleton<ToastNotificationService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -135,6 +139,12 @@ public partial class App : Application, IApp
 
             // ExtensionLibrary
             services.AddExtensionLibrary(context);
+
+            // Environments
+            services.AddEnvironments(context);
+
+            // Windows customization
+            services.AddWindowsCustomization(context);
         }).
         Build();
 
@@ -169,22 +179,20 @@ public partial class App : Application, IApp
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
-        var activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
         await Task.WhenAll(
-            Task.Run(async () =>
-            {
-                await _dispatcherQueue.EnqueueAsync(async () =>
-                {
-                    await GetService<IActivationService>().ActivateAsync(activatedEventArgs.Data);
-                    await GetService<IActivationService>().HandleFileActivationOnLaunched(activatedEventArgs.Data);
-                });
-            }),
+            GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data),
             GetService<IAccountsService>().InitializeAsync(),
             GetService<IAppManagementInitializer>().InitializeAsync());
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)
     {
+        if (args.Kind == ExtendedActivationKind.ToastNotification)
+        {
+            GetService<ToastNotificationService>().HandlerNotificationActions(args);
+            return;
+        }
+
         _dispatcherQueue.TryEnqueue(async () =>
         {
             await GetService<IActivationService>().ActivateAsync(args.Data);

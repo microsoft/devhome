@@ -3,15 +3,14 @@
   <PropertyGroup>
     <RootNamespace>DevHome.Customization</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>
-    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
-    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -19,10 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\..\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.UI\DevHome.QuietBackgroundProcesses.UI.csproj" />
-    <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
-    <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
-    <ProjectReference Include="..\DevHome.FileExplorerSourceControlIntegration\DevHome.FileExplorerSourceControlIntegration.csproj" />
+    <ProjectReference Include="..\..\..\settings\DevHome.Settings\DevHome.Settings.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,26 +26,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Views\FileExplorerPage.xaml" />
-    <None Remove="Views\FileExplorerView.xaml" />
-    <None Remove="Views\DevDriveInsightsPage.xaml" />
-    <None Remove="Views\DevDriveInsightsView.xaml" />
-    <None Remove="Views\GeneralSystemPage.xaml" />
-    <None Remove="Views\GeneralSystemView.xaml" />
+    <None Remove="Views\DeveloperFileExplorerPage.xaml" />
+    <None Remove="Views\DeveloperFileExplorerView.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\MainPageView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Views\FileExplorerPage.xaml">
+    <Page Update="Views\DeveloperFileExplorerPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Views\FileExplorerView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Views\GeneralSystemView.xaml">
+    <Page Update="Views\DeveloperFileExplorerView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
@@ -61,17 +49,9 @@
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Views\VirtualizationFeatureManagementPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
-    <DefineConstants>$(DefineConstants);DEBUG;DEBUG_FAILFAST</DefineConstants>
   </PropertyGroup>
 </Project>

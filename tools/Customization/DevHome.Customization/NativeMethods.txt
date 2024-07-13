@@ -1,4 +1,3 @@
 ﻿SHGetSetSettings
 ReadCabinetState
 WriteCabinetState
-CoCreateInstance
