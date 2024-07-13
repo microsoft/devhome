@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json;
 using HyperVExtension.Common;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
+using HyperVExtension.Models.VirtualMachineCreation;
 using HyperVExtension.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
@@ -19,13 +21,16 @@ public class HyperVProvider : IComputeSystemProvider
 
     private readonly IHyperVManager _hyperVManager;
 
+    private readonly VmGalleryCreationOperationFactory _vmGalleryCreationOperationFactory;
+
     // Temporary will need to add more error strings for different operations.
     public string OperationErrorString => _stringResource.GetLocalized(errorResourceKey);
 
-    public HyperVProvider(IHyperVManager hyperVManager, IStringResource stringResource)
+    public HyperVProvider(IHyperVManager hyperVManager, IStringResource stringResource, VmGalleryCreationOperationFactory vmGalleryCreationOperationFactory)
     {
         _hyperVManager = hyperVManager;
         _stringResource = stringResource;
+        _vmGalleryCreationOperationFactory = vmGalleryCreationOperationFactory;
     }
 
     /// <summary> Gets or sets the default compute system properties. </summary>
@@ -45,20 +50,7 @@ public class HyperVProvider : IComputeSystemProvider
     /// won't be supported.
     public ComputeSystemProviderOperations SupportedOperations => ComputeSystemProviderOperations.CreateComputeSystem;
 
-    public Uri? Icon
-    {
-        get => new(Constants.ExtensionIcon);
-        set => throw new NotSupportedException("Setting the icon is not supported");
-    }
-
-    /// <summary> Creates a new Hyper-V compute system. </summary>
-    /// <param name="options">Optional string with parameters that the Hyper-V provider can recognize</param>
-    public ICreateComputeSystemOperation? CreateComputeSystem(IDeveloperId developerId, string options)
-    {
-        // This is temporary until we have a proper implementation for this.
-        Logging.Logger()?.ReportError($"creation not supported yet for hyper-v");
-        return null;
-    }
+    public Uri Icon => new(Constants.ExtensionIcon);
 
     /// <summary> Gets a list of all Hyper-V compute systems. The developerId is not used by the Hyper-V provider </summary>
     public IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId)
@@ -93,6 +85,22 @@ public class HyperVProvider : IComputeSystemProvider
         return new ComputeSystemAdaptiveCardResult(notImplementedException, OperationErrorString, notImplementedException.Message);
     }
 
-    // This will be implemented in a future release, but will be available for Dev Environments 1.0.
-    public ICreateComputeSystemOperation CreateCreateComputeSystemOperation(IDeveloperId developerId, string inputJson) => throw new NotImplementedException();
+    /// <summary> Creates an operation that will create a new Hyper-V virtual machine. </summary>
+    public ICreateComputeSystemOperation? CreateCreateComputeSystemOperation(IDeveloperId? developerId, string inputJson)
+    {
+        try
+        {
+            var deserializedObject = JsonSerializer.Deserialize(inputJson, typeof(VMGalleryCreationUserInput));
+            var inputForGalleryOperation = deserializedObject as VMGalleryCreationUserInput ?? throw new InvalidOperationException($"Json deserialization failed for input Json: {inputJson}");
+            return _vmGalleryCreationOperationFactory(inputForGalleryOperation);
+        }
+        catch (Exception ex)
+        {
+            Logging.Logger()?.ReportError($"Failed to create a new virtual machine on: {DateTime.Now}", ex);
+
+            // Dev Home will handle null values as failed operations. We can't throw because this is an out of proc
+            // COM call, so we'll lose the error information. We'll log the error and return null.
+            return null;
+        }
+    }
 }

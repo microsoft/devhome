@@ -153,7 +153,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
-    /// Starts a setup flow that only includes repo config.
+    /// Starts the create environment flow.
     /// </summary>
     [RelayCommand]
     private void StartRepoConfig(string flowTitle)
@@ -164,6 +164,20 @@ public partial class MainPageViewModel : SetupPageViewModelBase
             "RepoConfig",
             _host.GetService<RepoConfigTaskGroup>(),
             _host.GetService<DevDriveTaskGroup>());
+    }
+
+    /// <summary>
+    /// Starts a setup flow that only includes repo config.
+    /// </summary>
+    [RelayCommand]
+    private void StartCreateEnvironment(string flowTitle)
+    {
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for environment creation");
+        StartSetupFlowForTaskGroups(
+            flowTitle,
+            "RepoConfig",
+            _host.GetService<SelectEnvironmentProviderTaskGroup>(),
+            _host.GetService<EnvironmentCreationOptionsTaskGroup>());
     }
 
     /// <summary>

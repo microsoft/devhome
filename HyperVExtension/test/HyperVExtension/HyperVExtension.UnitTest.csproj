@@ -36,4 +36,7 @@
     <ProjectReference Include="..\..\src\HyperVExtension\HyperVExtension.csproj" />
     <ProjectReference Include="..\..\src\Logging\HyperVExtension.Logging.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="HyperVExtensionTests\TestArchiveFile\" />
+  </ItemGroup>
 </Project>

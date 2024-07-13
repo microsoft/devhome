@@ -41,6 +41,12 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\Environments\EnvironmentCreationOptionsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Environments\SelectEnvironmentProviderView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\SetupTargetReviewView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -86,6 +92,8 @@
     <None Remove="Views\DevDriveReviewView.xaml" />
     <None Remove="Views\DevDriveView.xaml" />
     <None Remove="Views\EditClonePathDialog.xaml" />
+    <None Remove="Views\Environments\EnvironmentCreationOptionsView.xaml" />
+    <None Remove="Views\Environments\SelectEnvironmentProviderView.xaml" />
     <None Remove="Views\LoadingView.xaml" />
     <None Remove="Views\MainPageView.xaml" />
     <None Remove="Views\RepoConfigReviewView.xaml" />

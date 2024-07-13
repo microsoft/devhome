@@ -1,14 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Management.Automation;
 using System.Net;
 using System.Text;
+using System.Text.Json;
+using System.Threading;
 using HyperVExtension.Common;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Models;
+using HyperVExtension.Models.VirtualMachineCreation;
+using HyperVExtension.Models.VMGalleryJsonToClasses;
 using HyperVExtension.Providers;
 using HyperVExtension.Services;
 using HyperVExtension.UnitTest.Mocks;
@@ -16,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
 using Moq;
+using Windows.Storage;
 
 using Communication = HyperVExtension.CommunicationWithGuest;
 
@@ -27,6 +34,12 @@ namespace HyperVExtension.UnitTest.HyperVExtensionTests.Services;
 [TestClass]
 public class HyperVExtensionIntegrationTest
 {
+    private readonly string tempFileNameToWriteProgress = "HyperVVMCreationProgress";
+
+    private readonly object _testFileWriteLock = new();
+
+    public uint PreviousPercentage { get; private set; }
+
     protected Mock<IStringResource>? MockedStringResource
     {
         get; set;
@@ -72,16 +85,21 @@ public class HyperVExtensionIntegrationTest
             .ConfigureServices(services =>
             {
                 // Services
+                services.AddHttpClient();
                 services.AddSingleton<IStringResource>(MockedStringResource!.Object);
                 services.AddSingleton<IComputeSystemProvider, HyperVProvider>();
                 services.AddSingleton<HyperVExtension>();
                 services.AddSingleton<IHyperVManager, HyperVManager>();
                 services.AddSingleton<IWindowsIdentityService, WindowsIdentityServiceMock>();
+                services.AddSingleton<IVMGalleryService, VMGalleryService>();
+                services.AddSingleton<IArchiveProviderFactory, ArchiveProviderFactory>();
+                services.AddSingleton<IDownloaderService, DownloaderService>();
 
                 // Pattern to allow multiple non-service registered interfaces to be used with registered interfaces during construction.
                 services.AddSingleton<IPowerShellService>(psService =>
                     ActivatorUtilities.CreateInstance<PowerShellService>(psService, new PowerShellSession()));
-                services.AddSingleton<HyperVVirtualMachineFactory>(sp => psObject => ActivatorUtilities.CreateInstance<HyperVVirtualMachine>(sp, psObject));
+                services.AddSingleton<HyperVVirtualMachineFactory>(serviceProvider => psObject => ActivatorUtilities.CreateInstance<HyperVVirtualMachine>(serviceProvider, psObject));
+                services.AddSingleton<VmGalleryCreationOperationFactory>(serviceProvider => parameters => ActivatorUtilities.CreateInstance<VMGalleryVMCreationOperation>(serviceProvider, parameters));
 
                 services.AddTransient<IWindowsServiceController, WindowsServiceController>();
             }).Build();
@@ -360,5 +378,137 @@ properties:
         var psObject = result.PsObjects.FirstOrDefault();
         Assert.IsNotNull(psObject);
         Assert.AreEqual(psObject!.Properties["Status"].Value, "Running");
+    }
+
+    /// <summary>
+    /// This test will attempt to create a new VM on the computer using the VMGalleryService.
+    /// It should be ran normally, not in a CI/CD pipeline until we have pipeline machines
+    /// that have Hyper-V enabled and running.
+    /// </summary>
+    [TestMethod]
+    public async Task TestVirtualMachineCreationFromVmGallery()
+    {
+        var vmGalleryService = TestHost!.GetService<IVMGalleryService>();
+        var hyperVProvider = TestHost!.GetService<IComputeSystemProvider>();
+        var expectedVMName = "New Windows 11 VM for Integration test";
+        var imageList = await vmGalleryService.GetGalleryImagesAsync();
+        var smallestImageIndex = await GetIndexOfImageWithSmallestRequiredSpace(imageList);
+        var inputJson = JsonSerializer.Serialize(new VMGalleryCreationUserInput()
+        {
+            NewVirtualMachineName = expectedVMName,
+
+            // Get Image with the smallest size from gallery, we'll use it to create a VM.
+            SelectedImageListIndex = smallestImageIndex,
+        });
+
+        var createComputeSystemOperation = hyperVProvider.CreateCreateComputeSystemOperation(null, inputJson);
+        createComputeSystemOperation!.Progress += OnProgressReceived;
+
+        // Act
+        var createComputeSystemResult = await createComputeSystemOperation!.StartAsync();
+        createComputeSystemOperation!.Progress -= OnProgressReceived;
+
+        // Assert
+        Assert.AreEqual(ProviderOperationStatus.Success, createComputeSystemResult.Result.Status);
+        Assert.AreEqual(expectedVMName, createComputeSystemResult.ComputeSystem.DisplayName);
+        CleanUpVirtualMachine(createComputeSystemResult.ComputeSystem, imageList.Images[smallestImageIndex], expectedVMName);
+    }
+
+    public void CleanUpVirtualMachine(IComputeSystem computeSystem, VMGalleryImage image, string virtualMachineName)
+    {
+        try
+        {
+            var hyperVManager = TestHost!.GetService<IHyperVManager>();
+            var virtualMachine = computeSystem as HyperVVirtualMachine;
+            var temp = Path.GetTempPath();
+            var archiveFileExtension = Path.GetExtension(image.Disk.ArchiveRelativePath);
+            var fileName = image.Disk.Hash.Split(":").Last();
+            var archiveFilePath = Path.Combine(temp, $"{fileName}.{archiveFileExtension}");
+
+            try
+            {
+                // remove extracted VHD file
+                var hardDisk = virtualMachine!.GetHardDrives().First();
+                File.Delete(hardDisk!.Path!);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to stop virtual machine with name VHD from default Hyper-V path: {ex}");
+            }
+
+            try
+            {
+                // remove archive file
+                File.Delete(archiveFilePath);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to remove archive file from {temp}  {virtualMachineName}: {ex}");
+            }
+
+            // remove virtual machine
+            hyperVManager.RemoveVirtualMachine(Guid.Parse(computeSystem.Id));
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to clean up virtual machine with name {virtualMachineName}: {ex}");
+        }
+    }
+
+    public async Task<int> GetIndexOfImageWithSmallestRequiredSpace(VMGalleryImageList imageList)
+    {
+        var smallestImageIndex = 0;
+        var smallestSize = ulong.MaxValue;
+        var httpClient = TestHost!.GetService<IHttpClientFactory>()!.CreateClient();
+        for (var i = 0; i < imageList.Images.Count; i++)
+        {
+            var sourceWebUri = new Uri(imageList.Images[i].Disk.Uri);
+            var response = await httpClient.GetAsync(sourceWebUri, HttpCompletionOption.ResponseHeadersRead);
+            var totalSizeOfDisk = response.Content.Headers.ContentLength ?? 0L;
+            if (ulong.TryParse(imageList.Images[i].Requirements.DiskSpace, CultureInfo.InvariantCulture, out var requiredDiskSpace))
+            {
+                // The Hype-V Quick Create feature in the Hyper-V Manager in Windows uses the size of the archive file and the size of the required disk space
+                // value in the VM gallery Json to determin the size of the download. We'll use the same logic here to determine the smallest size.
+                // I'm not sure why this is done in this way, but we'll do the same here. In the Quick Create window the 'Download' text shows the size of both
+                // the archive file to be downloaded and the required disk space value added together.
+                if ((requiredDiskSpace + (ulong)totalSizeOfDisk) < smallestSize)
+                {
+                    smallestSize = requiredDiskSpace + (ulong)totalSizeOfDisk;
+                    smallestImageIndex = i;
+                }
+            }
+        }
+
+        return smallestImageIndex;
+    }
+
+    public void OnProgressReceived(ICreateComputeSystemOperation operation, CreateComputeSystemProgressEventArgs progressArgs)
+    {
+        lock (_testFileWriteLock)
+        {
+            // Only write to the file if the percentage has changed
+            if (progressArgs.PercentageCompleted == PreviousPercentage)
+            {
+                return;
+            }
+
+            var temp = Path.GetTempPath();
+            var progressFilePath = Path.Combine(temp, $"{tempFileNameToWriteProgress}.txt");
+            var progressData = $"{progressArgs.Status}: percentage: {progressArgs.PercentageCompleted}%";
+            PreviousPercentage = progressArgs.PercentageCompleted;
+
+            // Write the string array to a new file named "HyperVVMCreationProgress.txt".
+            if (!Path.Exists(progressFilePath))
+            {
+                using var newFile = new FileStream(progressFilePath, FileMode.Create, FileAccess.ReadWrite);
+                using var writer = new StreamWriter(newFile);
+                writer.WriteLine(progressData);
+            }
+            else
+            {
+                using var outputFile = File.AppendText(progressFilePath);
+                outputFile.WriteLine(progressData);
+            }
+        }
     }
 }

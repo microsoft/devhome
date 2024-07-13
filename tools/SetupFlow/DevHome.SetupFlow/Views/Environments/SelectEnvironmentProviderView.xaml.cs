@@ -1,10 +1,22 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Navigation;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
 
 namespace DevHome.SetupFlow.Views.Environments;
 
@@ -15,17 +27,5 @@ public sealed partial class SelectEnvironmentProviderView : UserControl
     public SelectEnvironmentProviderView()
     {
         this.InitializeComponent();
-    }
-
-    private async void OnLoaded(object sender, RoutedEventArgs e)
-    {
-        await ViewModel.InitializeAsync(NotificationQueue);
-
-        // OnLoaded finishes execution before the UI updates.  I don't know why.
-        // Add a tiny delay to allow the UI to render before setting focus.
-        // I tried the AutoFocus behavior from the community toolkit.
-        // Same issue.  Focus was set right before the UI rendered the Items control.
-        await Task.Delay(100);
-        this.Focus(FocusState.Programmatic);
     }
 }

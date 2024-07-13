@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using DevHome.Common.Helpers;
 
 using Microsoft.Windows.DevHome.SDK;
-using Serilog;
 using Windows.Foundation;
 
 namespace DevHome.Common.Models;
@@ -19,8 +18,6 @@ namespace DevHome.Common.Models;
 /// </summary>
 public class ExtensionAdaptiveCardSession
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExtensionAdaptiveCardSession));
-
     private readonly string _componentName = "ExtensionAdaptiveCardSession";
 
     public IExtensionAdaptiveCardSession Session { get; private set; }
@@ -45,7 +42,7 @@ public class ExtensionAdaptiveCardSession
         }
         catch (Exception ex)
         {
-            _log.Error(_componentName, $"Initialize failed due to exception", ex);
+            Log.Logger()?.ReportError(_componentName, $"Initialize failed due to exception", ex);
             return new ProviderOperationResult(ProviderOperationStatus.Failure, ex, ex.Message, ex.Message);
         }
     }
@@ -54,16 +51,16 @@ public class ExtensionAdaptiveCardSession
     {
         try
         {
-            if (Session is IExtensionAdaptiveCardSession2 cardSession2)
-            {
-                cardSession2.Stopped -= OnSessionStopped;
-            }
-
             Session.Dispose();
         }
         catch (Exception ex)
         {
-           _log.Error(_componentName, $"Dispose failed due to exception", ex);
+            Log.Logger()?.ReportError(_componentName, $"Dispose failed due to exception", ex);
+        }
+
+        if (Session is IExtensionAdaptiveCardSession2 cardSession2)
+        {
+            cardSession2.Stopped -= OnSessionStopped;
         }
     }
 
@@ -75,8 +72,8 @@ public class ExtensionAdaptiveCardSession
         }
         catch (Exception ex)
         {
-           _log.Error(_componentName, $"OnAction failed due to exception", ex);
-           return new ProviderOperationResult(ProviderOperationStatus.Failure, ex, ex.Message, ex.Message);
+            Log.Logger()?.ReportError(_componentName, $"OnAction failed due to exception", ex);
+            return new ProviderOperationResult(ProviderOperationStatus.Failure, ex, ex.Message, ex.Message);
         }
     }
 

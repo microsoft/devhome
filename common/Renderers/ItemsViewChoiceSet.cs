@@ -1,33 +1,42 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.WinUI.Controls;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
 using DevHome.Common.DevHomeAdaptiveCards.InputValues;
-using DevHome.Common.Helpers;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Storage.Streams;
 
 namespace DevHome.Common.Renderers;
 
+public enum DevHomeChoiceSetKind
+{
+    Unknown,
+    ItemsViewChoiceSet,
+}
+
 /// <summary>
-/// Renders a known Dev Home choice set as an ItemsView.
+/// Renders a list of expanded choice set items as an ItemsView
 /// </summary>
 public class ItemsViewChoiceSet : IAdaptiveElementRenderer
 {
-    private readonly double _defaultSpacing = 5;
+    public ItemsView ChoiceSetItemsView { get; private set; } = new();
 
-    private readonly string? _choiceSetItemsTemplateName;
+    public List<ItemContainer> ItemsContainerList { get; private set; } = new();
 
-    public ItemsViewChoiceSet(string itemsTemplateResourceName)
+    public ItemsViewChoiceSet(DataTemplate itemsTemplate)
     {
         // set the template for the items view.
-        _choiceSetItemsTemplateName = itemsTemplateResourceName;
+        ChoiceSetItemsView.ItemTemplate = itemsTemplate;
     }
 
-    // Default template for the ItemsView will be used
     public ItemsViewChoiceSet()
     {
     }
@@ -35,7 +44,7 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
         // As we add more types of choice sets, we can add more cases here.
-        if (element is DevHomeSettingsCardChoiceSet settingsCardChoiceSet)
+        if (element is DevHomeAdaptiveSettingsCardItemsViewChoiceSet settingsCardChoiceSet)
         {
             return GetItemsViewElement(settingsCardChoiceSet, context, renderArgs);
         }
@@ -45,49 +54,58 @@ public class ItemsViewChoiceSet : IAdaptiveElementRenderer
         return renderer.Render(element, context, renderArgs);
     }
 
-    private ItemsView GetItemsViewElement(DevHomeSettingsCardChoiceSet settingsCardChoiceSet, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
+    private ItemsView GetItemsViewElement(DevHomeAdaptiveSettingsCardItemsViewChoiceSet settingsCardChoiceSet, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
-        // Set default spacing for the ItemsView.
-        var choiceSetItemsView = new ItemsView();
-        var defaultLayout = new StackLayout();
-        defaultLayout.Spacing = _defaultSpacing;
-        choiceSetItemsView.Layout = defaultLayout;
-
-        // If there is a template for the items view, set it.
-        if (!string.IsNullOrEmpty(_choiceSetItemsTemplateName))
-        {
-            choiceSetItemsView.ItemTemplate = Application.Current.Resources[_choiceSetItemsTemplateName] as DataTemplate;
-        }
-
         // Check if the choice set is multi-select, and if it is make sure the ItemsView is set to allow multiple selection.
         if (settingsCardChoiceSet.IsMultiSelect)
         {
-            choiceSetItemsView.SelectionMode = ItemsViewSelectionMode.Multiple;
-        }
-
-        // If selection is disabled, set the ItemsView to not allow selection of items in the items view.
-        if (settingsCardChoiceSet.IsSelectionDisabled)
-        {
-            choiceSetItemsView.SelectionMode = ItemsViewSelectionMode.None;
+            ChoiceSetItemsView.SelectionMode = ItemsViewSelectionMode.Multiple;
         }
 
         // Go through all the items in the choice set and make an item for each one.
         for (var i = 0; i < settingsCardChoiceSet.SettingsCards.Count; i++)
         {
-            var curCard = settingsCardChoiceSet.SettingsCards[i];
-            curCard.HeaderIconImage = AdaptiveCardHelpers.ConvertBase64StringToImageIcon(curCard.HeaderIcon);
+            var communityToolKitCard = new SettingsCard();
+            var devHomeAdaptiveSettingsCard = settingsCardChoiceSet.SettingsCards[i];
+            communityToolKitCard.Description = devHomeAdaptiveSettingsCard.Description;
+            communityToolKitCard.Header = devHomeAdaptiveSettingsCard.Header;
+            communityToolKitCard.HeaderIcon = ConvertBase64StringToImageSource(devHomeAdaptiveSettingsCard.HeaderIcon);
+            var itemContainer = new ItemContainer();
+            itemContainer.Child = communityToolKitCard;
+            ItemsContainerList.Add(itemContainer);
         }
 
-        // Set up the ItemsSource for the ItemsView and add the input value to the context.
+        // Set upp the ItemsSource for the ItemsView and add the input value to the context.
         // the input value is used to get the current index of the items view in relation
         // to the item in the choice set.
-        choiceSetItemsView.ItemsSource = settingsCardChoiceSet.SettingsCards;
-
-        // Set the automation name of the list to be the label of the choice set.
-        context.AddInputValue(new ItemsViewInputValue(settingsCardChoiceSet, choiceSetItemsView), renderArgs);
-        AutomationProperties.SetName(choiceSetItemsView, settingsCardChoiceSet.Label);
+        ChoiceSetItemsView.ItemsSource = ItemsContainerList;
+        context.AddInputValue(new ItemsViewInputValue(settingsCardChoiceSet, ChoiceSetItemsView), renderArgs);
 
         // Return the ItemsView.
-        return choiceSetItemsView;
+        return ChoiceSetItemsView;
+    }
+
+    // convert base64 string to image that can be used in a imageIcon control
+    public static ImageIcon ConvertBase64StringToImageSource(string base64String)
+    {
+        var bytes = Convert.FromBase64String(base64String);
+        var bitmapImage = new BitmapImage();
+
+        using (var stream = new InMemoryRandomAccessStream())
+        {
+            using (var writer = new DataWriter(stream))
+            {
+                writer.WriteBytes(bytes);
+                writer.StoreAsync().GetAwaiter().GetResult();
+                writer.FlushAsync().GetAwaiter().GetResult();
+                writer.DetachStream();
+            }
+
+            stream.Seek(0);
+            bitmapImage.SetSource(stream);
+        }
+
+        var icon = new ImageIcon() { Source = bitmapImage };
+        return icon;
     }
 }

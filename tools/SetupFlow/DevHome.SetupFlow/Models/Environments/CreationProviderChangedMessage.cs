@@ -1,18 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging.Messages;
-using DevHome.Common.Environments.Models;
 
 namespace DevHome.SetupFlow.Models.Environments;
 
-/// <summary>
-/// Message for sending the <see cref="ComputeSystemProviderDetails"/> from one view model to
-/// another view model when the provider changes.
-/// </summary>
-public class CreationProviderChangedMessage : ValueChangedMessage<ComputeSystemProviderDetails>
+public class CreationProviderChangedMessage : ValueChangedMessage<CreationProviderChangedData>
 {
-    public CreationProviderChangedMessage(ComputeSystemProviderDetails value)
+    public CreationProviderChangedMessage(CreationProviderChangedData value)
         : base(value)
     {
     }

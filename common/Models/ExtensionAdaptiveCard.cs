@@ -5,8 +5,8 @@ using System;
 using System.Text.Json.Nodes;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Templating;
+using DevHome.Logging;
 using Microsoft.Windows.DevHome.SDK;
-using Serilog;
 
 namespace DevHome.Common.Models;
 
@@ -24,14 +24,18 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 
     public string TemplateJson { get; private set; }
 
-    public ExtensionAdaptiveCard(AdaptiveElementParserRegistration? elementParserRegistration = null, AdaptiveActionParserRegistration? actionParserRegistration = null)
+    public ExtensionAdaptiveCard()
     {
         TemplateJson = new JsonObject().ToJsonString();
         DataJson = new JsonObject().ToJsonString();
         State = string.Empty;
+    }
 
-        _elementParserRegistration = elementParserRegistration ?? new AdaptiveElementParserRegistration();
-        _actionParserRegistration = actionParserRegistration ?? new AdaptiveActionParserRegistration();
+    public ExtensionAdaptiveCard(AdaptiveElementParserRegistration elementParserRegistration, AdaptiveActionParserRegistration actionParserRegistration)
+        : this()
+    {
+        _elementParserRegistration = elementParserRegistration;
+        _actionParserRegistration = actionParserRegistration;
     }
 
     public ProviderOperationResult Update(string templateJson, string dataJson, string state)
@@ -43,11 +47,20 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
         // an empty string.
         var adaptiveCardString = template.Expand(Newtonsoft.Json.JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(dataJson ?? DataJson));
 
-        var parseResult = AdaptiveCard.FromJsonString(adaptiveCardString, _elementParserRegistration, _actionParserRegistration);
+        AdaptiveCardParseResult parseResult;
+
+        if (_actionParserRegistration != null && _elementParserRegistration != null)
+        {
+            parseResult = AdaptiveCard.FromJsonString(adaptiveCardString, _elementParserRegistration, _actionParserRegistration);
+        }
+        else
+        {
+            parseResult = AdaptiveCard.FromJsonString(adaptiveCardString);
+        }
 
         if (parseResult.AdaptiveCard is null)
         {
-            Log.Error($"ExtensionAdaptiveCard.Update(): AdaptiveCard is null - templateJson: {templateJson} dataJson: {dataJson} state: {state}");
+            GlobalLog.Logger?.ReportError($"ExtensionAdaptiveCard.Update(): AdaptiveCard is null - templateJson: {templateJson} dataJson: {dataJson} state: {state}");
             return new ProviderOperationResult(ProviderOperationStatus.Failure, new ArgumentNullException(null), "AdaptiveCard is null", $"templateJson: {templateJson} dataJson: {dataJson} state: {state}");
         }
 

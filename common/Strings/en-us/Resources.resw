@@ -117,6 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdaptiveCardDialogPrimaryButtonText" xml:space="preserve">
+    <value>Ok</value>
+    <comment>Primary button text that will be displayed to the user as the main action when they are presented with a content dialog with two buttons</comment>
+  </data>
+  <data name="AdaptiveCardDialogSecondaryButtonText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Secondary button text that will be displayed to the user as a secondary action when they are presented with a content dialog with two buttons</comment>
+  </data>
+  <data name="AdaptiveCardDialogTitleErrorText" xml:space="preserve">
+    <value>Couldn't get title from the extension</value>
+    <comment>Error text to be displayed to the user when a dev home extension that wants a content dialog to be displayed does not provide Dev Home with a title for the content dialog</comment>
+  </data>
   <data name="BannerHideButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Close</value>
     <comment>Name of the button that hides the banner</comment>
@@ -204,6 +216,10 @@
   <data name="ComputeSystemUptime" xml:space="preserve">
     <value>Uptime:</value>
     <comment>Title for the uptime property of a compute system. (The amount of time its been running)</comment>
+  </data>
+  <data name="CreateComputeSystemOperationError" xml:space="preserve">
+    <value>We couldn't start the operation to create your environment. Please check the extensions logs for more information</value>
+    <comment>Error text to be displayed when we're unable to start the operation to create a new environment. An environment can be a cloud or virtual machine.</comment>
   </data>
   <data name="UserNotInHyperAdminGroupButton" xml:space="preserve">
     <value>Launch computer management</value>

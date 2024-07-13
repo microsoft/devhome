@@ -3,14 +3,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Helpers;
 using DevHome.Common.Models;
-using DevHome.Common.Services;
+using DevHome.SetupFlow.Models.Environments;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 
@@ -24,6 +24,8 @@ public class ComputeSystemManager : IComputeSystemManager
 {
     private readonly IComputeSystemService _computeSystemService;
 
+    private readonly List<CreateComputeSystemOperation> _createComputeSystemOperations = new();
+
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> ComputeSystemStateChanged = (sender, state) => { };
 
     // Used in the setup flow to store the ComputeSystem needed to configure.
@@ -32,6 +34,8 @@ public class ComputeSystemManager : IComputeSystemManager
     public ComputeSystemManager(IComputeSystemService computeSystemService)
     {
         _computeSystemService = computeSystemService;
+        WeakReferenceMessenger.Default.Register<CreationOperationReceivedMessage>(this);
+        WeakReferenceMessenger.Default.Register<CreationOperationEndedMessage>(this);
     }
 
     /// <summary>
@@ -89,5 +93,15 @@ public class ComputeSystemManager : IComputeSystemManager
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
     {
         ComputeSystemStateChanged(sender, state);
+    }
+
+    public void Receive(CreationOperationReceivedMessage message)
+    {
+        _createComputeSystemOperations.Add(message.Value);
+    }
+
+    public void Receive(CreationOperationEndedMessage message)
+    {
+        _createComputeSystemOperations.Remove(message.Value);
     }
 }

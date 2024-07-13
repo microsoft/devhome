@@ -1,20 +1,33 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.SetupFlow.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
+using DevHome.Common.Views;
+using DevHome.SetupFlow.Models.Environments;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
-public partial class CreateEnvironmentReviewViewModel : ReviewTabViewModelBase
+public class CreateEnvironmentReviewViewModel : ReviewTabViewModelBase
 {
-    private readonly ISetupFlowStringResource _stringResource;
-
     public override bool HasItems => true;
 
-    public CreateEnvironmentReviewViewModel(
-        ISetupFlowStringResource stringResource)
+    public CreateEnvironmentReviewViewModel()
     {
-        _stringResource = stringResource;
-        TabTitle = stringResource.GetLocalized(StringResourceKey.EnvironmentCreationReviewTabTitle);
+    }
+
+    public ExtensionAdaptiveCardPanel LoadAdaptiveCardPanel()
+    {
+        var message = WeakReferenceMessenger.Default.Send<CreationOptionsReviewPageRequestMessage>();
+        if (message.HasReceivedResponse)
+        {
+            return message.Response.ExtensionAdaptiveCardPanel;
+        }
+
+        return null;
     }
 }

@@ -13,6 +13,7 @@
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     xmlns:selectors="using:DevHome.SetupFlow.Selectors"
     xmlns:views="using:DevHome.SetupFlow.Views"
+    xmlns:environmentViews="using:DevHome.SetupFlow.Views.Environments"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
@@ -46,6 +47,16 @@
                             <views:SetupTargetView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.SetupTargetTemplate>
+                    <selectors:SetupFlowViewSelector.SelectEnvironmentsProviderTemplate>
+                        <DataTemplate>
+                            <environmentViews:SelectEnvironmentProviderView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.SelectEnvironmentsProviderTemplate>
+                    <selectors:SetupFlowViewSelector.EnvironmentCreationOptionsTemplate>
+                        <DataTemplate>
+                            <environmentViews:EnvironmentCreationOptionsView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.EnvironmentCreationOptionsTemplate>
                     <selectors:SetupFlowViewSelector.RepoConfigTemplate>
                         <DataTemplate>
                             <views:RepoConfigView />

@@ -1,33 +1,32 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using CommunityToolkit.Mvvm.ComponentModel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
-public partial class ComputeSystemProviderViewModel : ObservableObject
+public class ComputeSystemProviderViewModel
 {
     private readonly string _packageFullName;
 
     public ComputeSystemProviderDetails ProviderDetails { get; private set; }
 
-    [ObservableProperty]
-    private string _displayName;
+    public string DisplayName => ProviderDetails.ComputeSystemProvider.DisplayName;
 
-    [ObservableProperty]
-    private ImageIcon _icon;
-
-    [ObservableProperty]
-    private bool _isSelected;
+    public ImageIcon Icon { get; set; }
 
     public ComputeSystemProviderViewModel(ComputeSystemProviderDetails providerDetails)
     {
         ProviderDetails = providerDetails;
         _packageFullName = ProviderDetails.ExtensionWrapper.PackageFullName;
         Icon = GetImageIcon();
-        DisplayName = ProviderDetails.ComputeSystemProvider.DisplayName;
     }
 
     private ImageIcon GetImageIcon()

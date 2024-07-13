@@ -1,38 +1,47 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
-using DevHome.Common.DevHomeAdaptiveCards.CardModels;
-using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using WinUIEx;
 
 namespace DevHome.Common.Views.AdaptiveCardViews;
 
-/// <summary>
-/// Content dialog with non-interactive content within an adaptive card
-/// </summary>
 public sealed partial class ContentDialogWithNonInteractiveContent : ContentDialog
 {
-    public ContentDialogWithNonInteractiveContent(DevHomeContentDialogContent content)
+    private readonly StringResource _stringResource = new("DevHome.Common/Resources");
+
+    public ContentDialogWithNonInteractiveContent(StackPanel contentDialogContent, string title, string primaryButtonText, string secondaryButtonText)
     {
         this.InitializeComponent();
 
-        // Since we use the renderer service to allow the card to receive theming updates, we need to ensure the UI thread is used.
-        var dispatcherQueue = Application.Current.GetService<WindowEx>().DispatcherQueue;
-        dispatcherQueue.TryEnqueue(async () =>
+        if (string.IsNullOrEmpty(title))
         {
-            Title = content.Title;
-            PrimaryButtonText = content.PrimaryButtonText;
-            var rendererService = Application.Current.GetService<AdaptiveCardRenderingService>();
-            var renderer = await rendererService.GetRendererAsync();
-            renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
-            var card = renderer.RenderAdaptiveCardFromJsonString(content.ContentDialogInternalAdaptiveCardJson?.Stringify() ?? string.Empty);
-            Content = card.FrameworkElement;
-            SecondaryButtonText = content.SecondaryButtonText;
-        });
+            this.Title = _stringResource.GetLocalized("AdaptiveCardDialogTitleErrorText");
+        }
+        else
+        {
+            this.Title = title;
+        }
+
+        if (string.IsNullOrEmpty(primaryButtonText))
+        {
+            this.PrimaryButtonText = _stringResource.GetLocalized("AdaptiveCardDialogPrimaryButtonText");
+        }
+        else
+        {
+            this.PrimaryButtonText = primaryButtonText;
+        }
+
+        if (string.IsNullOrEmpty(secondaryButtonText))
+        {
+            this.SecondaryButtonText = _stringResource.GetLocalized("AdaptiveCardDialogSecondaryButtonText");
+        }
+        else
+        {
+            this.SecondaryButtonText = secondaryButtonText;
+        }
+
+        this.Content = contentDialogContent;
     }
 }

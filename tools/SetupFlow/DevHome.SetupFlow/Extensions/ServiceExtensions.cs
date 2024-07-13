@@ -32,6 +32,7 @@ public static class ServiceExtensions
         services.AddLoading();
         services.AddMainPage();
         services.AddRepoConfig();
+        services.AddCreateEnvironment();
         services.AddReview();
         services.AddSummary();
 
@@ -176,6 +177,18 @@ public static class ServiceExtensions
         services.AddTransient<SetupTargetViewModel>();
         services.AddTransient<SetupTargetReviewViewModel>();
         services.AddTransient<SetupTargetTaskGroup>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCreateEnvironment(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<EnvironmentCreationOptionsTaskGroup>();
+        services.AddTransient<SelectEnvironmentProviderTaskGroup>();
+        services.AddTransient<CreateEnvironmentReviewViewModel>();
+        services.AddTransient<EnvironmentCreationOptionsViewModel>();
+        services.AddTransient<SelectEnvironmentProviderViewModel>();
 
         return services;
     }
