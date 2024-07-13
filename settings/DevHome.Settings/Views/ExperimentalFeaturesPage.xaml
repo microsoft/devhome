@@ -1,41 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Page
+<views:ToolPage
     x:Class="DevHome.Settings.Views.ExperimentalFeaturesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:behaviors="using:DevHome.Common.Behaviors"
-    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
-    xmlns:settings="using:DevHome.Settings"
-    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never">
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:views="using:DevHome.Common.Views"
+    xmlns:models="using:DevHome.Common.Models"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
+    <i:Interaction.Behaviors >
+        <behaviors:AutoFocusBehavior />
+    </i:Interaction.Behaviors>
+
     <Page.Resources>
-        <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed"/>
+        <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
     </Page.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
 
-        <BreadcrumbBar
-            x:Name="BreadcrumbBar"
-            Margin="40,0,40,16"
-            ItemClicked="BreadcrumbBar_ItemClicked"
-            ItemsSource="{x:Bind Breadcrumbs}" />
-
-        <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
-      <StackPanel Orientation="Vertical" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.Features}">
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+        <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <StackPanel>
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.ExperimentalFeatures}">
                     <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="settings:ExperimentalFeature">
-                            <controls:SettingsCard Header="{x:Bind Name, Mode=OneWay}" Description="{x:Bind Description, Mode=OneWay}" Margin="{ThemeResource SettingsCardMargin}">
-                                <ToggleSwitch IsOn="{x:Bind IsEnabled,Mode=TwoWay}" Grid.Column="1"/>
-                            </controls:SettingsCard>
+                        <DataTemplate x:DataType="models:ExperimentalFeature">
+                            <ctControls:SettingsCard
+                                Header="{x:Bind Name, Mode=OneWay}"
+                                Description="{x:Bind Description, Mode=OneWay}"
+                                Margin="{ThemeResource SettingsCardMargin}"
+                                Visibility="{x:Bind IsVisible, Mode=OneWay}">
+                                <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=OneWay}" Grid.Column="1">
+                                    <i:Interaction.Behaviors>
+                                        <ic:EventTriggerBehavior EventName="Toggled">
+                                            <ic:InvokeCommandAction Command="{x:Bind ToggledCommand}" />
+                                        </ic:EventTriggerBehavior>
+                                    </i:Interaction.Behaviors>
+                                </ToggleSwitch>
+                            </ctControls:SettingsCard>
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>
                 </ItemsRepeater>
-                <TextBlock x:Uid="Settings_ExperimentalFeatures_NoExperimentalFeatures" Visibility="{x:Bind ViewModel.Features.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}"/>
+                <TextBlock
+                    x:Uid="Settings_ExperimentalFeatures_NoExperimentalFeatures"
+                    Visibility="{x:Bind ViewModel.ExperimentalFeatures.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}" />
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
-</Page>
+        </Grid>
+    </ScrollViewer>
+</views:ToolPage>
