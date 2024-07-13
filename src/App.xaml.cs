@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.Activation;
+using DevHome.Common;
 using DevHome.Common.Contracts;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Services;
@@ -116,6 +117,9 @@ public partial class App : Application, IApp
             // Main window: Allow access to the main window
             // from anywhere in the application.
             services.AddSingleton<WindowEx>(_ => MainWindow);
+
+            // Eventing
+            services.AddSingleton<Eventing>();
 
             // Views and ViewModels
             services.AddTransient<ShellPage>();
