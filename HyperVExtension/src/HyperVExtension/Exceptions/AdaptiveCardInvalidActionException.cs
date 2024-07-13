@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DevHome.SetupFlow.Exceptions;
+namespace HyperVExtension.Exceptions;
 
-public class AdaptiveCardNotRetrievedException : Exception
+public class AdaptiveCardInvalidActionException : Exception
 {
-    public AdaptiveCardNotRetrievedException(string message)
+    public AdaptiveCardInvalidActionException(string message)
         : base(message)
     {
     }

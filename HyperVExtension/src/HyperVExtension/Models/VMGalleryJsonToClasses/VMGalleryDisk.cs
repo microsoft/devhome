@@ -10,5 +10,5 @@ public sealed class VMGalleryDisk : VMGalleryItemWithHashBase
 {
     public string ArchiveRelativePath { get; set; } = string.Empty;
 
-    public long SizeInBytes { get; set; }
+    public ulong SizeInBytes { get; set; }
 }

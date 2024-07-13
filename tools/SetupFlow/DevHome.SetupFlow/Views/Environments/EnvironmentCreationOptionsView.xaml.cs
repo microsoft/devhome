@@ -1,21 +1,20 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using AdaptiveCards.ObjectModel.WinUI3;
+using AdaptiveCards.Rendering.WinUI3;
+using AdaptiveCards.Templating;
+using CommunityToolkit.Mvvm.Messaging;
+using DevHome.Common.DevHomeAdaptiveCards.CardModels;
+using DevHome.Common.Models;
+using DevHome.Common.Renderers;
+using DevHome.Common.Views;
+using DevHome.Common.Windows;
+using DevHome.Contracts.Services;
+using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 
 namespace DevHome.SetupFlow.Views.Environments;
 
@@ -28,16 +27,9 @@ public sealed partial class EnvironmentCreationOptionsView : UserControl
         this.InitializeComponent();
     }
 
-    private void ViewLoaded(object sender, RoutedEventArgs e)
-    {
-        if (ViewModel != null && ViewModel.ExtensionAdaptiveCardPanel != null)
-        {
-            CreationAdaptiveCardUI.Content = ViewModel.ExtensionAdaptiveCardPanel;
-        }
-    }
-
     private void ViewUnloaded(object sender, RoutedEventArgs e)
     {
-        CreationAdaptiveCardUI.Content = null;
+        CreationOptionsAdaptiveCardUI.Content = null;
+        WeakReferenceMessenger.Default.UnregisterAll(this);
     }
 }

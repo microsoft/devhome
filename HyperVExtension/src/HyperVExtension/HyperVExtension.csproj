@@ -39,6 +39,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+	  <Content Include="Templates\InitialVMGalleryCreationForm.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Templates\ReviewFormForVMGallery.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+  </ItemGroup>
 
   <!--
     Copy DevSetupAgent_<Patform>.zip to the output directory so it picked up by MSIX packaging.

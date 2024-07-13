@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json;
 using HyperVExtension.Models.VMGalleryJsonToClasses;
@@ -69,6 +70,19 @@ public sealed class VMGalleryService : IVMGalleryService
                     }
 
                     image.Symbol.Base64Image = Convert.ToBase64String(byteArray);
+                }
+
+                if (!string.IsNullOrEmpty(image.Disk.Uri))
+                {
+                    var totalSizeOfDisk = await _downloaderService.GetHeaderContentLength(new Uri(image.Disk.Uri), cancellationTokenSource.Token);
+                    if (ulong.TryParse(image.Requirements.DiskSpace, CultureInfo.InvariantCulture, out var requiredDiskSpace))
+                    {
+                        // The Hype-V Quick Create feature in the Hyper-V Manager in Windows uses the size of the archive file and the size of the required disk space
+                        // value in the VM gallery Json to determin the size of the download. We'll use the same logic here to determine the smallest size.
+                        // I'm not sure why this is done in this way, but we'll do the same here. In the Quick Create window the 'Download' text shows the size of both
+                        // the archive file to be downloaded and the required disk space value added together.
+                        image.Disk.SizeInBytes = (ulong)totalSizeOfDisk;
+                    }
                 }
             }
         }

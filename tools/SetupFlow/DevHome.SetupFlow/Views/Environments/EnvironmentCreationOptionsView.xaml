@@ -3,25 +3,53 @@
     x:Class="DevHome.SetupFlow.Views.Environments.EnvironmentCreationOptionsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:DevHome.SetupFlow.Views.Environments"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:setupControls="using:DevHome.SetupFlow.Controls"
-    Loaded="ViewLoaded"
-    Unloaded="ViewUnloaded"
-    mc:Ignorable="d">
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="CollapsedWhenTrueBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+        <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+    </UserControl.Resources>
 
-    <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}">
-        <StackPanel Spacing="10">
-            <!--- Show the Select environment header on the page. -->
-            <setupControls:SetupShell 
-                x:Uid="ConfigureEnvironmentPage"
-                Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
-                Foreground="{ThemeResource TextFillColorSecondary}" />
+    <!--- Show the Choose environment header on the page. -->
+    <setupControls:SetupShell 
+         x:Uid="ConfigureEnvironmentPage"
+         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+         Foreground="{ThemeResource TextFillColorSecondary}" >
+        <setupControls:SetupShell.SetupShellContent>
+            <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}">
+                <StackPanel Spacing="10">
+                    <Grid
+                        HorizontalAlignment="Stretch"
+                        Visibility="{x:Bind ViewModel.ErrorRetrievingAdaptiveCardSessionMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
+                        <InfoBar
+                            IsOpen="True"
+                            x:Uid="ErrorRetrievingAdaptiveCardSession"
+                            Severity="Error"
+                            Message="{x:Bind ViewModel.ErrorRetrievingAdaptiveCardSessionMessage}" >
+                        </InfoBar>
+                    </Grid>
+                        <!--- 
+                        Show the adaptive card frame on the page. 
+                        Note: The frame adds an extra padding of 20 pixels on all sides so we are setting it to -20 to remove it.
+                    -->
+                    <Frame 
+                        Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay}"
+                        x:Name="CreationOptionsAdaptiveCardUI"
+                        Padding="-20"
+                        Content="{x:Bind ViewModel.ExtensionAdaptiveCardPanel, Mode=OneWay}"
+                        Unloaded="ViewUnloaded"/>
 
-            <StackPanel>
-                <Frame x:Name="CreationAdaptiveCardUI" />
-            </StackPanel>
-        </StackPanel>
-    </ScrollViewer>
+                    <Grid
+                        HorizontalAlignment="Center"
+                        Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
+                        <ProgressRing
+                            IsActive="True"
+                            Width="25"
+                            Height="25"
+                            Margin="0,150,0,20"/>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </setupControls:SetupShell.SetupShellContent>
+    </setupControls:SetupShell>
 </UserControl>

@@ -6,6 +6,7 @@ using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Contracts;
 using Microsoft.UI.Xaml;
+using ActionMode = AdaptiveCards.ObjectModel.WinUI3.ActionMode;
 
 namespace DevHome.Common.Renderers;
 
@@ -18,18 +19,6 @@ public enum TopLevelCardActionSetVisibility
 {
     Visible,
     Hidden,
-}
-
-/// <summary>
-/// Represents a button in the top level action set in the adaptive card json.
-/// We'll provide guidance to adaptive card creators to put one or two actions in the top level action set.
-/// if they want to give Dev Home the ability to submit/execute their adaptive card button from
-/// within Dev Home.
-/// </summary>
-public enum ActionButtonToInvoke
-{
-    Primary,
-    Secondary,
 }
 
 /// <summary>
@@ -82,11 +71,11 @@ public class DevHomeActionSet : IDevHomeActionRender
                 var action = actionSet.Actions[i];
                 if (action is AdaptiveExecuteAction executeAction)
                 {
-                    LinkSubmitActionToCard(i, executeAction, context, renderArgs);
+                    LinkSubmitActionToCard(executeAction, context, renderArgs);
                 }
                 else if (action is AdaptiveSubmitAction submitAction)
                 {
-                    LinkSubmitActionToCard(i, submitAction, context, renderArgs);
+                    LinkSubmitActionToCard(submitAction, context, renderArgs);
                 }
             }
 
@@ -105,35 +94,47 @@ public class DevHomeActionSet : IDevHomeActionRender
     }
 
     /// <summary>
-    /// Invokes an adaptive card action from another control like a button in Dev Home.
+    /// Invokes an adaptive card action from anywhere in Dev Home like a method in a View Model for example.
     /// </summary>
-    /// <param name="buttonToInvoke">The primary or seconday enum value that will be used to choose which one Dev Home will invoke</param>
-    public void InitiateAction(ActionButtonToInvoke buttonToInvoke)
+    public void InitiateAction(ActionMode actionMode)
     {
-        IAdaptiveActionElement? adaptiveActionElement = _primaryButtonAdaptiveActionElement;
+        var adaptiveActionElement = GetAction(actionMode);
 
-        if (buttonToInvoke == ActionButtonToInvoke.Primary)
+        if (adaptiveActionElement == null)
         {
-            adaptiveActionElement = _secondaryButtonAdaptiveActionElement;
+            return;
         }
 
         ActionButtonInvoker?.SendActionEvent(adaptiveActionElement);
     }
 
-    /// <summary>
-    /// Links the submit/execute actiono to the adaptive card itself.
-    /// </summary>
-    private void LinkSubmitActionToCard(int index, IAdaptiveActionElement action, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
+    public string GetActionTitle(ActionMode actionMode)
     {
-        if (index == 0)
+        return GetAction(actionMode)?.Title ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Links the submit/execute action to the adaptive card itself. This allows Dev Home to initiate the action in the adaptive card
+    /// UI from Dev Homes own UI.
+    /// </summary>
+    private void LinkSubmitActionToCard(IAdaptiveActionElement action, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
+    {
+        if (action.Mode == ActionMode.Primary)
         {
             context.LinkSubmitActionToCard(action, renderArgs);
             _primaryButtonAdaptiveActionElement = action;
+            ActionButtonInvoker = context.ActionInvoker;
         }
         else
         {
             context.LinkSubmitActionToCard(action, renderArgs);
             _secondaryButtonAdaptiveActionElement = action;
+            ActionButtonInvoker = context.ActionInvoker;
         }
+    }
+
+    private IAdaptiveActionElement? GetAction(ActionMode actionMode)
+    {
+        return actionMode == ActionMode.Primary ? _primaryButtonAdaptiveActionElement : _secondaryButtonAdaptiveActionElement;
     }
 }

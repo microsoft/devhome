@@ -15,15 +15,14 @@ namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
 public partial class DevHomeLaunchContentDialogButton : IDevHomeSettingsCardNonSubmitAction
 {
-    // Specific properties for DevHomeLaunchContentDialogButton
     public string ActionText { get; set; } = string.Empty;
 
     public IAdaptiveCardElement? DialogContent { get; set; }
 
-    public static string AdaptiveElementType => "DevHome.LaunchContentDialogButton";
-
     // Properties for IAdaptiveActionElement
     public string ElementTypeString { get; set; } = AdaptiveElementType;
+
+    public static string AdaptiveElementType => "DevHome.LaunchContentDialogButton";
 
     public JsonObject AdditionalProperties { get; set; } = new();
 
@@ -45,7 +44,7 @@ public partial class DevHomeLaunchContentDialogButton : IDevHomeSettingsCardNonS
 
     public Spacing Spacing { get; set; } = Spacing.Default;
 
-    public JsonObject? ToJson() => [];
+    public JsonObject ToJson() => [];
 
     [RelayCommand]
     public async Task InvokeActionAsync(object sender)

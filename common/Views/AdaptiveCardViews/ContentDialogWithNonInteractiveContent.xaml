@@ -10,13 +10,7 @@
     Style="{ThemeResource DefaultContentDialogStyle}">
 
 
-    <!-- ContentDialog Width and Height are not properly hooked up and must be set this way -->
-    <ContentDialog.Resources>
-        <x:Double x:Key="ContentDialogMinWidth">360</x:Double>
-        <x:Double x:Key="ContentDialogMinHeight">408</x:Double>
-        <Thickness x:Key="ContentDialogTitleMargin">0,0,0,0</Thickness>
-        <Thickness x:Key="ContentDialogPadding">0,0,0,0</Thickness>
-    </ContentDialog.Resources>
+
 
     <Grid>
 

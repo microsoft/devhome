@@ -26,8 +26,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\..\..\settings\DevHome.Settings\DevHome.Settings.csproj" />
-    <ProjectReference Include="..\..\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Projection\DevHome.SetupFlow.ElevatedComponent.Projection.csproj">
       <Aliases>Projection</Aliases>
@@ -41,6 +39,9 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\Environments\CreateEnvironmentReviewView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\Environments\EnvironmentCreationOptionsView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -92,6 +93,7 @@
     <None Remove="Views\DevDriveReviewView.xaml" />
     <None Remove="Views\DevDriveView.xaml" />
     <None Remove="Views\EditClonePathDialog.xaml" />
+    <None Remove="Views\Environments\CreateEnvironmentReviewView.xaml" />
     <None Remove="Views\Environments\EnvironmentCreationOptionsView.xaml" />
     <None Remove="Views\Environments\SelectEnvironmentProviderView.xaml" />
     <None Remove="Views\LoadingView.xaml" />
@@ -247,9 +249,5 @@
     <Content Update="Assets\Setup_RepoConfig.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="NewFolder\" />
   </ItemGroup>
 </Project>

@@ -2,12 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Helpers;
@@ -18,7 +14,7 @@ using Windows.Foundation;
 namespace DevHome.Common.Environments.Models;
 
 /// <summary>
-/// Wrapper class for ICreateComputeSystemOperation.
+/// Wrapper class for ICreateComputeSystemOperation COM object we get from the extension.
 /// </summary>
 public class CreateComputeSystemOperation
 {

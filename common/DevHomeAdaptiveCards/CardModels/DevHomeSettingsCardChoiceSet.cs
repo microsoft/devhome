@@ -9,30 +9,32 @@ namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
 public class DevHomeSettingsCardChoiceSet : IAdaptiveCardElement, IAdaptiveInputElement
 {
-    // Specific properties for DevHomeAdaptiveSettingsCardItemsViewChoiceSet
-    public IList<DevHomeSettingsCard> SettingsCards { get; set; } = [];
+    public ElementType ElementType { get; set; } = ElementType.Custom;
 
-    public const int UnselectedIndex = -1;
-
-    public bool IsSelectionDisabled { get; set; }
+    // Specific properties for IAdaptiveCardElement
+    public string ElementTypeString { get; set; } = AdaptiveElementType;
 
     public static string AdaptiveElementType => "DevHome.SettingsCardChoiceSet";
 
-    public bool IsMultiSelect { get; set; }
-
-    public int SelectedValue { get; set; } = UnselectedIndex;
+    public const int UnselectedIndex = -1;
 
     // Specific properties for IAdaptiveInputElement
-    public ElementType ElementType { get; set; } = ElementType.Custom;
-
-    public string ElementTypeString { get; set; } = AdaptiveElementType;
-
-    // Specific properties for IAdaptiveCardElement
     public string ErrorMessage { get; set; } = string.Empty;
 
     public bool IsRequired { get; set; }
 
     public string Label { get; set; } = string.Empty;
+
+    // Specific properties for DevHomeAdaptiveSettingsCardItemsViewChoiceSet
+    public IList<DevHomeSettingsCard> SettingsCards { get; set; } = [];
+
+    public bool IsMultiSelect { get; set; }
+
+    public bool IsSelectionDisabled { get; set; }
+
+    public string GroupDescription { get; set; } = string.Empty;
+
+    public int SelectedValue { get; set; } = -1;
 
     public JsonObject AdditionalProperties { get; set; } = new();
 
@@ -52,5 +54,5 @@ public class DevHomeSettingsCardChoiceSet : IAdaptiveCardElement, IAdaptiveInput
 
     public Spacing Spacing { get; set; } = Spacing.Default;
 
-    public JsonObject? ToJson() => [];
+    public JsonObject ToJson() => [];
 }

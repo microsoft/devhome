@@ -7,8 +7,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AdaptiveCards.ObjectModel.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.DevHomeAdaptiveCards.CardModels;
+using DevHome.Common.DevHomeAdaptiveCards.Parsers;
+using DevHome.Common.Renderers;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
@@ -118,6 +122,13 @@ public partial class SetupFlowOrchestrator : ObservableObject
     public bool HasPreviousPage => _currentPageIndex > 0;
 
     /// <summary>
+    /// Gets the renderer for the Dev Home action set. This is used to invoke a primary or secondary
+    /// action within an adaptive card. This is used when an adaptive card is being shown in the setup flow.
+    /// and the action allows the flow to move to the next or previous page in the adaptive card.
+    /// </summary>
+    public DevHomeActionSet DevHomeActionSetRenderer { get; private set; } = new(TopLevelCardActionSetVisibility.Visible);
+
+    /// <summary>
     /// Gets or sets a value indicating whether the done button should be shown. When false, the cancel
     /// hyperlink button will be shown in the UI.
     /// </summary>
@@ -176,6 +187,13 @@ public partial class SetupFlowOrchestrator : ObservableObject
     [RelayCommand(CanExecute = nameof(CanGoToPreviousPage))]
     public async Task GoToPreviousPage()
     {
+        // If an adaptive card is being shown in the setup flow, we need to invoke the action
+        // of the secondart button in the action set to move the flow to the previous page in the adaptive card.
+        if (DevHomeActionSetRenderer?.ActionButtonInvoker != null)
+        {
+            DevHomeActionSetRenderer.InitiateAction(ActionMode.Secondary);
+        }
+
         await SetCurrentPageIndex(_currentPageIndex - 1);
     }
 
@@ -187,6 +205,13 @@ public partial class SetupFlowOrchestrator : ObservableObject
     [RelayCommand(CanExecute = nameof(CanGoToNextPage))]
     public async Task GoToNextPage()
     {
+        // If an adaptive card is being shown in the setup flow, we need to invoke the action
+        // of the primary button in the action set to move the flow to the next page in the adaptive card.
+        if (DevHomeActionSetRenderer?.ActionButtonInvoker != null)
+        {
+            DevHomeActionSetRenderer.InitiateAction(ActionMode.Primary);
+        }
+
         await SetCurrentPageIndex(_currentPageIndex + 1);
     }
 

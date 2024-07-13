@@ -221,15 +221,7 @@
     <value>We couldn't start the operation to create your environment. Please check the extensions logs for more information</value>
     <comment>Error text to be displayed when we're unable to start the operation to create a new environment. An environment can be a cloud or virtual machine.</comment>
   </data>
-  <data name="UserNotInHyperAdminGroupButton" xml:space="preserve">
-    <value>Launch computer management</value>
-    <comment>Button text for the user to click, in order for us to add them to the Hyper-V admin group</comment>
-  </data>
-  <data name="UserNotInHyperAdminGroupMessage" xml:space="preserve">
-    <value>The current user is not a Hyper-V administrator. Hyper-V Virtual machines will not load. Please add the user to the Hyper-V Administrators group and reboot.</value>
-    <comment>Text explaining that the user is not in the hyper-v admin group and that we need to add them.</comment>
-  </data>
-    <data name="DevHomeActionDefaultText" xml:space="preserve">
+  <data name="DevHomeActionDefaultText" xml:space="preserve">
     <value>Open</value>
     <comment>Default text for a button that launches a content dialog in the UI</comment>
   </data>
@@ -257,20 +249,12 @@
     <value>Provider failed to provide a Header title for this item</value>
     <comment>Error text to be displayed when an provider does not provide header text for an item in a list of UI cards</comment>
   </data>
-    <data name="AdaptiveCardDialogPrimaryButtonText" xml:space="preserve">
-    <value>Ok</value>
-    <comment>Primary button text that will be displayed to the user as the main action when they are presented with a content dialog with two buttons</comment>
+  <data name="UserNotInHyperAdminGroupButton" xml:space="preserve">
+    <value>Launch computer management</value>
+    <comment>Button text for the user to click, in order for us to add them to the Hyper-V admin group</comment>
   </data>
-  <data name="AdaptiveCardDialogSecondaryButtonText" xml:space="preserve">
-    <value>Cancel</value>
-    <comment>Secondary button text that will be displayed to the user as a secondary action when they are presented with a content dialog with two buttons</comment>
-  </data>
-  <data name="AdaptiveCardDialogTitleErrorText" xml:space="preserve">
-    <value>Couldn't get title from the extension</value>
-    <comment>Error text to be displayed to the user when a dev home extension that wants a content dialog to be displayed does not provide Dev Home with a title for the content dialog</comment>
-  </data>
-  <data name="ItemsViewNonSelectedItemError" xml:space="preserve">
-    <value>An item must be selected</value>
-    <comment>Error text advising the user that they must select an item in the list before proceeding</comment>
+  <data name="UserNotInHyperAdminGroupMessage" xml:space="preserve">
+    <value>The current user is not a Hyper-V administrator. Hyper-V Virtual machines will not load. Please add the user to the Hyper-V Administrators group and reboot.</value>
+    <comment>Text explaining that the user is not in the hyper-v admin group and that we need to add them.</comment>
   </data>
 </root>
