@@ -117,6 +117,11 @@ public class CreateComputeSystemOperation : IDisposable
         {
             try
             {
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    "Environment_Creation_Event",
+                    LogLevel.Critical,
+                    new EnvironmentCreationUserEvent(ProviderDetails.ComputeSystemProvider.Id, EnvironmentsTelemetryStatus.Started));
+
                 CreateComputeSystemResult = await _createComputeSystemOperation.StartAsync().AsTask(_cancellationTokenSource.Token);
                 Completed?.Invoke(this, CreateComputeSystemResult);
             }
@@ -133,6 +138,19 @@ public class CreateComputeSystemOperation : IDisposable
                 LogLevel.Critical,
                 new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, telemetryStatus, displayMessage, diagnosticText),
                 _activityId);
+
+            var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
+
+            if ((CreateComputeSystemResult == null) || (CreateComputeSystemResult.Result.Status == ProviderOperationStatus.Failure))
+            {
+                completionStatus = EnvironmentsTelemetryStatus.Failed;
+                LogFailure(CreateComputeSystemResult);
+            }
+
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_Creation_Event",
+                LogLevel.Critical,
+                new EnvironmentCreationUserEvent(ProviderDetails.ComputeSystemProvider.Id, completionStatus));
 
             RemoveEventHandlers();
         });
@@ -196,5 +214,17 @@ public class CreateComputeSystemOperation : IDisposable
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    private void LogFailure(CreateComputeSystemResult? createComputeSystemResult)
+    {
+        if (createComputeSystemResult == null)
+        {
+            _log.Error($"The CreateComputeSystemResult object sent by {ProviderDetails.ComputeSystemProvider.Id} for the creation of {EnvironmentName} was null");
+        }
+        else
+        {
+            _log.Error(createComputeSystemResult.Result.ExtendedError, $"Creation failed for {EnvironmentName} with error:{createComputeSystemResult.Result.DiagnosticText}");
+        }
     }
 }
