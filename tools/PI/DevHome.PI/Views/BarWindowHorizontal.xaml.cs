@@ -207,11 +207,7 @@ public partial class BarWindowHorizontal : WindowEx
     private MenuFlyout CreateMenuFlyout(ExternalTool tool, PinOption pinOption)
     {
         MenuFlyout menu = new MenuFlyout();
-<<<<<<< HEAD
-        menu.Items.Add(pinOption == PinOption.Pin ? CreatePinMenuItem(tool) : CreateUnPinMenuItem(tool));
-=======
         menu.Items.Add(CreatePinMenuItem(tool, pinOption));
->>>>>>> main
         menu.Items.Add(CreateUnregisterMenuItem(tool));
 
         return menu;
