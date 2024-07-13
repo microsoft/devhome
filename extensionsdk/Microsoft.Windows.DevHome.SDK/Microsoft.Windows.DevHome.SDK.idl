@@ -1,6 +1,7 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(2)]
+    
+    [contractversion(3)]
     apicontract DevHomeContract {}
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -14,7 +15,10 @@ namespace Microsoft.Windows.DevHome.SDK
         Repository = 0,
         DeveloperId = 1,
         Settings = 2,
-        FeaturedApplications = 3
+        FeaturedApplications = 3,
+
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+        ComputeSystem = 4,
     };
 
     // Definitions for exceptions.
@@ -144,10 +148,7 @@ namespace Microsoft.Windows.DevHome.SDK
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     enum AuthenticationState {
         LoggedIn = 0,
-        LoggedOut = 1,
-
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] 
-        FixAccount = 2
+        LoggedOut = 1
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -324,5 +325,158 @@ namespace Microsoft.Windows.DevHome.SDK
         String GetTitle(String preferredLocale);
         String GetDescription(String preferredLocale);
         GetFeaturedApplicationsResult GetApplications();
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+        runtimeclass ComputeSystemOperationResult
+    {
+        ComputeSystemOperationResult(String jsonResponseData);
+        ComputeSystemOperationResult(HRESULT e, String diagnosticText, String jsonResponseData);
+
+        String JsonResponseData
+        {
+            get;
+        };
+
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+        runtimeclass ComputeSystemsResult
+    {
+        ComputeSystemsResult(IIterable<IComputeSystem> computeSystems);
+        ComputeSystemsResult(HRESULT e, String diagnosticText);
+
+        IIterable<IComputeSystem> ComputeSystems
+        {
+            get;
+        };
+
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+        enum ComputeSystemProviderOperation
+    {
+        CreateComputeSystem = 0x00000001,
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+        enum ComputeSystemOperations
+    {
+        Start = 0x00000001,
+        ShutDown = 0x00000002,
+        Terminate = 0x00000004,
+        Delete = 0x00000008,
+        Save = 0x00000010,
+        Pause = 0x00000020,
+        Resume = 0x00000040,
+        CreateSnapshot = 0x00000100,
+        ApplySnapshot = 0x00000200,
+        DeleteSnapshot = 0x00000400,
+        ModifyProperties = 0x00000800,
+        ApplyConfiguration = 0x00001000,
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+        enum ComputeSystemState
+    {
+        Created = 0x00000001,
+        Running = 0x00000002,
+        Paused = 0x00000004,
+        Stopped = 0x00000008,
+        Saved = 0x00000010,
+        SavedAsTemplate = 0x00000020,
+        Unknown = 0x00000040,
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+        interface IComputeSystem
+    {
+        String Name{ get; };
+        String Id{ get; };
+        ComputeSystemOperations SupportedOperations{ get; };
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemStateResult> GetState(String options);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> Start(String options);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> ShutDown(String options);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> Terminate(String options);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> Delete(String options);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> Save(String options);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> Pause(String options);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> Resume(String options);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> CreateSnapshot(String options);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> ApplySnapshot(String options);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> DeleteSnapshot(String options);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> GetProperties(String options);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> ModifyProperties(String properties);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> Connect(String properties);
+
+        Windows.Foundation.IAsyncOperation <ComputeSystemOperationResult> ApplyConfiguration(String configuration);
+    };
+   
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+        runtimeclass CreateComputeSystemResult
+    {
+        CreateComputeSystemResult(IComputeSystem computeSystem);
+        CreateComputeSystemResult(HRESULT e, String diagnosticText);
+
+        IComputeSystem ComputeSystem
+        {
+            get;
+        };
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+        runtimeclass ComputeSystemStateResult
+    {
+        ComputeSystemStateResult(ComputeSystemState computeSystemState);
+        ComputeSystemStateResult(HRESULT e, String diagnosticText);
+
+        ComputeSystemState GetComputeSystemState
+        {
+            get;
+        };
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+        interface IComputeSystemProvider
+    {
+        String DisplayName{ get; };
+        String Id{ get; };
+        String Properties{ get; };
+        ComputeSystemProviderOperation SupportedOperations{ get; };
+        String DefaultComputeSystemProperties{ get; set; };
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId, String options);
+
+        Windows.Foundation.IAsyncOperation <CreateComputeSystemResult> CreateComputeSystemAsync(String options);
     };
 }
