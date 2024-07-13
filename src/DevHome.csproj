@@ -86,6 +86,7 @@
     <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
     <ProjectReference Include="..\extensions\WSLExtension\WSLExtension.csproj" />
     <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
+    <ProjectReference Include="..\tools\AppsPackages\src\DevHome.AppsPackages.csproj" />
     <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
     <ProjectReference Include="..\tools\PI\DevHome.PI\DevHome.PI.csproj" />
