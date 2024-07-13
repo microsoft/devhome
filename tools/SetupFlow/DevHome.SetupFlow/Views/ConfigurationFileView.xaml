@@ -37,6 +37,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:StringVisibilityConverter x:Key="StringVisibilityConverter"/>
+            <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
             <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
             <converters:CollectionVisibilityConverter x:Key="CollectionNegativeVisibilityConverter" EmptyValue="Visible"  NotEmptyValue="Collapsed"/>
             <DataTemplate x:Key="KeyValueTemplate">
@@ -139,6 +140,12 @@
                                       HorizontalContentAlignment="Left"
                                       HorizontalAlignment="Stretch">
 
+                                <i:Interaction.Behaviors>
+                                    <ic:EventTriggerBehavior EventName="Loaded">
+                                        <ic:InvokeCommandAction Command="{x:Bind LoadedCommand}" />
+                                    </ic:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
+
                                 <!-- Expander header -->
                                 <Expander.Header>
                                     <TextBlock Text="{x:Bind Title}" TextTrimming="CharacterEllipsis" />
@@ -190,20 +197,37 @@
                                         <!-- Details -->
                                         <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
                                             <TextBlock x:Uid="ConfigurationUnit_Details" Style="{ThemeResource BodyStrongTextBlockStyle}" />
+
+                                            <!-- Shimmers -->
+                                            <StackPanel Visibility="{x:Bind Details, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
+                                                <StackPanel.Resources>
+                                                    <Style TargetType="labs:Shimmer">
+                                                        <Setter Property="Margin" Value="5" />
+                                                        <Setter Property="Height" Value="{ThemeResource BodyTextBlockFontSize}" />
+                                                    </Style>
+                                                </StackPanel.Resources>
+                                                <labs:Shimmer />
+                                                <labs:Shimmer />
+                                                <labs:Shimmer />
+                                                <labs:Shimmer />
+                                                <labs:Shimmer />
+                                            </StackPanel>
+
+                                            <!-- Loaded details -->
                                             <ListView Style="{ThemeResource KeyValueSubList}" ItemTemplate="{StaticResource KeyValueTemplate}">
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitType" Value="{x:Bind UnitType}" />
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitDescription" Value="{x:Bind UnitDescription}" />
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitDocumentation" Value="{x:Bind UnitDocumentationUri}" />
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleName" Value="{x:Bind ModuleName}" />
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleSource" Value="{x:Bind ModuleSource}" />
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleDescription" Value="{x:Bind ModuleDescription}" />
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleDocumentationUri" Value="{x:Bind ModuleDocumentationUri}" />
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_PublishedModuleUri" Value="{x:Bind PublishedModuleUri}" />
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Version" Value="{x:Bind Version}" />
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Author" Value="{x:Bind Author}" />
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Publisher" Value="{x:Bind Publisher}" />
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_IsLocal" Value="{x:Bind IsLocal}" />
-                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_IsPublic" Value="{x:Bind IsPublic}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitType" Value="{x:Bind Details.UnitType, Mode=OneWay}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitDescription" Value="{x:Bind Details.UnitDescription, Mode=OneWay}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitDocumentation" Value="{x:Bind Details.UnitDocumentationUri, Mode=OneWay}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleName" Value="{x:Bind Details.ModuleName, Mode=OneWay}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleSource" Value="{x:Bind Details.ModuleSource, Mode=OneWay}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleDescription" Value="{x:Bind Details.ModuleDescription, Mode=OneWay}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_ModuleDocumentationUri" Value="{x:Bind Details.ModuleDocumentationUri, Mode=OneWay}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_PublishedModuleUri" Value="{x:Bind Details.PublishedModuleUri, Mode=OneWay}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Version" Value="{x:Bind Details.Version, Mode=OneWay}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Author" Value="{x:Bind Details.Author, Mode=OneWay}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Publisher" Value="{x:Bind Details.Publisher, Mode=OneWay}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_IsLocal" Value="{x:Bind Details.IsLocal, Mode=OneWay}" />
+                                                <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_IsPublic" Value="{x:Bind Details.IsPublic, Mode=OneWay}" />
                                             </ListView>
                                         </StackPanel>
                                     </StackPanel>
