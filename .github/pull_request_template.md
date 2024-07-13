@@ -7,7 +7,7 @@
 ## Validation steps performed
 
 ## PR checklist
-- [ ] Closes #xxx
+- [ ] Closes #xxxx
 - [ ] Tests added/passed
 - [ ] Documentation updated
 - [ ] Telemetry [compliance tasks](https://aka.ms/devhome-telemetry) completed for added/updated events
