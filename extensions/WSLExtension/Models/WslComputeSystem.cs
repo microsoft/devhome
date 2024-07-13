@@ -81,12 +81,7 @@ public class WslComputeSystem : IComputeSystem
         _distribution = distribution;
         _wslManager = wslManager;
         DisplayName = distribution.FriendlyName;
-
-        // Only get the package information if it has a package family name
-        if (_distribution.PackageFamilyName != null)
-        {
-            _curPackage = _packageHelper.GetPackageFromPackageFamilyName(_distribution.PackageFamilyName);
-        }
+        _curPackage = _packageHelper.GetPackageFromPackageFamilyName(_distribution.PackageFamilyName!);
 
         // Use display name of package if there is no friendly name for this distribution
         if (string.IsNullOrEmpty(DisplayName) && _curPackage != null)
@@ -209,14 +204,9 @@ public class WslComputeSystem : IComputeSystem
             {
                 if (string.IsNullOrEmpty(_distribution.Base64StringLogo))
                 {
-                    byte[]? packageFamilyLogo = default;
-                    var familyName = _distribution.PackageFamilyName;
-
                     // No logo for this distribution so we'll use its PackageFamily logo
-                    if (familyName != null)
-                    {
-                        packageFamilyLogo = await _packageHelper.GetPackageIconAsByteArrayAsync(familyName);
-                    }
+                    var packageFamilyLogo =
+                        await _packageHelper.GetPackageIconAsByteArrayAsync(_distribution.PackageFamilyName!);
 
                     if (packageFamilyLogo == null)
                     {

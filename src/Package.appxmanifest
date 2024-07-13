@@ -58,6 +58,13 @@
         </com:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
+            <com:ExeServer Executable="WslExtensionServer.exe" Arguments="-RegisterProcessAsComServer" DisplayName="WslExtensionServer">
+              <com:Class Id="121253AB-BA5D-4E73-99CF-25A2CB8BF173" DisplayName="WslExtensionServer" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
             <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="CoreWidgetProvider">
               <com:Class Id="F8B2DBB9-3687-4C6E-99B2-B92C82905937" DisplayName="CoreWidgetProvider" />
             </com:ExeServer>
@@ -77,6 +84,20 @@
                 <Activation>
                   <CreateInstance ClassId="426A52D6-8007-4894-A946-CF80F39507F1" />
                   <CreateInstance ClassId="F8B26528-976A-488C-9B40-7198FB425C9E" />
+                </Activation>
+                <SupportedInterfaces>
+                  <ComputeSystem />
+                </SupportedInterfaces>
+              </DevHomeProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID3" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameWslExt" Description="ms-resource:AppDescriptionWslExt">
+            <uap3:Properties>
+              <DevHomeProvider>
+                <Activation>
+                  <CreateInstance ClassId="121253AB-BA5D-4E73-99CF-25A2CB8BF173" />
                 </Activation>
                 <SupportedInterfaces>
                   <ComputeSystem />

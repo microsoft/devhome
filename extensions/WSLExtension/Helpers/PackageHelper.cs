@@ -76,11 +76,6 @@ public class PackageHelper
 
     public virtual Package? GetPackageFromPackageFamilyName(string packageFamilyName)
     {
-        if (string.IsNullOrEmpty(packageFamilyName))
-        {
-            return null;
-        }
-
         return _packageManager.FindPackagesForUser(string.Empty, packageFamilyName).FirstOrDefault();
     }
 }

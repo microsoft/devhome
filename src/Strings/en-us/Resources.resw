@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Microsoft ResX Schema
-
+  <!-- 
+    Microsoft ResX Schema 
+    
     Version 2.0
-
-    The primary goals of this format is to allow a simple XML format
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
     associated with the data types.
-
+    
     Example:
-
+    
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-
-    There are any number of "resheader" rows that contain simple
+                
+    There are any number of "resheader" rows that contain simple 
     name/value pairs.
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support
-    text/value conversion through the TypeConverter architecture.
-    Classes that don't support this are serialized and stored with the
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
     mimetype set.
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format
-    that the ResXResourceWriter will generate, however the reader can
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
     read any of the formats listed below.
-
+    
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-
+    
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array
+    value   : The object must be serialized into a byte array 
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -192,16 +192,16 @@
   <data name="AppDisplayNameStable" xml:space="preserve">
     <value>Dev Home (Preview)</value>
   </data>
-  <data name="WhatsNewPage_DevDashCard.Button" xml:space="preserve">
+  <data name="WhatsNewPage_DevDashCard.ButtonText" xml:space="preserve">
     <value>Pin widgets</value>
   </data>
-  <data name="WhatsNewPage_DevDriveCard.Button" xml:space="preserve">
+  <data name="WhatsNewPage_DevDriveCard.ButtonText" xml:space="preserve">
     <value>Create Dev Drive</value>
   </data>
   <data name="WhatsNewPage_DevDriveCard.Link" xml:space="preserve">
     <value>Learn more</value>
   </data>
-  <data name="WhatsNewPage_DevIdCard.Button" xml:space="preserve">
+  <data name="WhatsNewPage_DevIdCard.ButtonText" xml:space="preserve">
     <value>Connect accounts</value>
   </data>
   <data name="WhatsNewPage_GetStartedButton.Content" xml:space="preserve">
@@ -234,9 +234,9 @@
     <value>Administrator: Dev Home (Preview)</value>
     <comment>Name of app when run as administrator</comment>
   </data>
-  <data name="WhatsNewPage_ExtensionsCard.Button" xml:space="preserve">
+  <data name="WhatsNewPage_ExtensionsCard.ButtonText" xml:space="preserve">
     <value>Explore extensions</value>
-    <comment>Button on extensions card on "whats new" page</comment>
+    <comment>Button text on extensions card on "whats new" page</comment>
   </data>
   <data name="WhatsNewPage_ExtensionsCard.Description" xml:space="preserve">
     <value>Extensions help you get more out of Dev Home. For example, get recommendations for other repositories to add when setting up your machine in Dev Home and add other widgets to your dashboard.</value>
@@ -310,20 +310,12 @@
     <value>Hyper-V Extension</value>
     <comment>{Locked="Hyper-V"} Extension Display Name</comment>
   </data>
-  <data name="WhatsNewPage_SetupCard.Button" xml:space="preserve">
-    <value>Set up machine</value>
+  <data name="AppDisplayNameWslExt" xml:space="preserve">
+    <value>Windows Subsystem for Linux Extension</value>
+    <comment>{Locked="Windows", "Linux"} Extension Display Name</comment>
   </data>
-  <data name="WhatsNewPage_SetupCard.Description" xml:space="preserve">
-    <value>Use machine configuration to clone repositories, install applications, and run WinGet configuration files - either on your local machine or in an environment.</value>
-  </data>
-  <data name="WhatsNewPage_SetupCard.Title" xml:space="preserve">
-    <value>Get your machine set up</value>
-  <data name="AppDescriptionWindowsSandboxExt" xml:space="preserve">
-    <value>Windows Sandbox Extension</value>
-	<comment>{Locked="Windows Sandbox"} Extension name</comment>
-  </data>
-  <data name="AppDisplayNameWindowsSandboxExt" xml:space="preserve">
-    <value>Windows Sandbox Extension</value>
-	<comment>{Locked="Windows Sandbox"} Extension description</comment>
+  <data name="AppDescriptionWslExt" xml:space="preserve">
+    <value>Windows Subsystem for Linux</value>
+    <comment>{Locked="Windows", "Linux"} Extension Description</comment>
   </data>
 </root>
