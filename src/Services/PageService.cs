@@ -1,15 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Contracts;
-using DevHome.Common.Models;
-using DevHome.Common.Services;
+using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
-using DevHome.Customization.ViewModels;
-using DevHome.Customization.Views;
-using DevHome.ExtensionLibrary.ViewModels;
-using DevHome.ExtensionLibrary.Views;
+using DevHome.Settings;
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
 using DevHome.ViewModels;
@@ -20,27 +15,19 @@ namespace DevHome.Services;
 
 public class PageService : IPageService
 {
-#if CANARY_BUILD
-    private const string BuildType = "canary";
-#elif STABLE_BUILD
-    private const string BuildType = "stable";
-#else
-    private const string BuildType = "dev";
-#endif
+    private readonly Dictionary<string, Type> _pages = new ();
 
-    private readonly Dictionary<string, Type> _pages = new();
-
-    public PageService(ILocalSettingsService localSettingsService, IExperimentationService experimentationService)
+    public PageService()
     {
         Configure<SettingsViewModel, SettingsPage>();
         Configure<PreferencesViewModel, PreferencesPage>();
         Configure<AccountsViewModel, AccountsPage>();
+        Configure<ExtensionsViewModel, ExtensionsPage>();
         Configure<AboutViewModel, AboutPage>();
         Configure<FeedbackViewModel, FeedbackPage>();
         Configure<WhatsNewViewModel, WhatsNewPage>();
         Configure<ExtensionSettingsViewModel, ExtensionSettingsPage>();
         Configure<ExperimentalFeaturesViewModel, ExperimentalFeaturesPage>();
-        Configure<DeveloperFileExplorerViewModel, DeveloperFileExplorerPage>();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var group in App.NavConfig.NavMenu.Groups)
@@ -55,22 +42,10 @@ public class PageService : IPageService
             }
         }
 
-        ExperimentalFeature.LocalSettingsService = localSettingsService;
-        foreach (var experimentalFeature in App.NavConfig.ExperimentFeatures ?? Array.Empty<DevHome.Helpers.ExperimentalFeatures>())
+        var experimentalFeaturesVM = App.Current.GetService<ExperimentalFeaturesViewModel>();
+        foreach (var experimentId in App.NavConfig.ExperimentIds ?? Array.Empty<string>())
         {
-            var enabledByDefault = experimentalFeature.EnabledByDefault;
-            var isVisible = true;
-            foreach (var buildTypeOverride in experimentalFeature.BuildTypeOverrides ?? Array.Empty<DevHome.Helpers.BuildTypeOverrides>())
-            {
-                if (buildTypeOverride.BuildType == BuildType)
-                {
-                    enabledByDefault = buildTypeOverride.EnabledByDefault;
-                    isVisible = buildTypeOverride.Visible;
-                    break;
-                }
-            }
-
-            experimentationService.AddExperimentalFeature(new ExperimentalFeature(experimentalFeature.Identity, enabledByDefault, isVisible));
+            experimentalFeaturesVM.Features.Add(new ExperimentalFeature(experimentId));
         }
     }
 
