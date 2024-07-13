@@ -72,6 +72,9 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -144,12 +147,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AdaptiveCardSessionResult.h" />
+    <ClInclude Include="DeveloperIdResult.h" />
+    <ClInclude Include="DeveloperIdsResult.h" />
+    <ClInclude Include="GetFeaturedApplicationGroupResult.h" />
+    <ClInclude Include="GetFeaturedApplicationsResult.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="ProviderOperationResult.h" />
+    <ClInclude Include="RepositoriesResult.h" />
+    <ClInclude Include="RepositoryResult.h" />
+    <ClInclude Include="RepositoryUriSupportResult.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AdaptiveCardSessionResult.cpp" />
+    <ClCompile Include="DeveloperIdResult.cpp" />
+    <ClCompile Include="DeveloperIdsResult.cpp" />
+    <ClCompile Include="Generated Files\module.g.cpp" />
+    <ClCompile Include="GetFeaturedApplicationGroupResult.cpp" />
+    <ClCompile Include="GetFeaturedApplicationsResult.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ProviderOperationResult.cpp" />
+    <ClCompile Include="RepositoriesResult.cpp" />
+    <ClCompile Include="RepositoryResult.cpp" />
+    <ClCompile Include="RepositoryUriSupportResult.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Microsoft.Windows.DevHome.SDK.idl" />
