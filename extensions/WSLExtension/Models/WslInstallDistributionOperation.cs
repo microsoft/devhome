@@ -93,6 +93,7 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
             }
             catch (Exception ex)
             {
+                _log.Error(ex, $"Unable to install {_definition.FriendlyName} due to exception");
                 var errorMsg = _stringResource.GetLocalized("WSLInstallationFailedWithException", _definition.FriendlyName, ex.Message);
                 return new CreateComputeSystemResult(ex, errorMsg, ex.Message);
             }

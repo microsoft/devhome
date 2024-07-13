@@ -207,7 +207,11 @@ public partial class BarWindowHorizontal : WindowEx
     private MenuFlyout CreateMenuFlyout(ExternalTool tool, PinOption pinOption)
     {
         MenuFlyout menu = new MenuFlyout();
+<<<<<<< HEAD
         menu.Items.Add(pinOption == PinOption.Pin ? CreatePinMenuItem(tool) : CreateUnPinMenuItem(tool));
+=======
+        menu.Items.Add(CreatePinMenuItem(tool, pinOption));
+>>>>>>> main
         menu.Items.Add(CreateUnregisterMenuItem(tool));
 
         return menu;
@@ -217,29 +221,29 @@ public partial class BarWindowHorizontal : WindowEx
     {
         // We create 2 copies of the button, one for the primary commands list and one for the secondary commands list.
         // We're not allowed to put the same button in both lists.
-        AppBarButton pinnedButton = CreateAppBarButton(tool, PinOption.UnPin); // The pinned button should always have the unpin option
-        AppBarButton unPinnedButton = CreateAppBarButton(tool, tool.IsPinned ? PinOption.UnPin : PinOption.Pin); // The unpinned button is dynamic
+        AppBarButton primaryCommandButton = CreateAppBarButton(tool, PinOption.UnPin); // The primary button should always have the unpin option
+        AppBarButton secondaryCommandButton = CreateAppBarButton(tool, tool.IsPinned ? PinOption.UnPin : PinOption.Pin); // The secondary button is dynamic
 
         // If a tool is pinned, we'll add it to the primary commands list.
         if (tool.IsPinned)
         {
-            MyCommandBar.PrimaryCommands.Add(pinnedButton);
+            MyCommandBar.PrimaryCommands.Add(primaryCommandButton);
         }
 
         // We'll always add all tools to the secondary commands list.
-        MyCommandBar.SecondaryCommands.Add(unPinnedButton);
+        MyCommandBar.SecondaryCommands.Add(secondaryCommandButton);
 
         tool.PropertyChanged += (sender, args) =>
         {
             if (args.PropertyName == nameof(ExternalTool.ToolIcon))
             {
                 // An ImageIcon can only be set once, so we can't share it with both buttons
-                pinnedButton.Icon = new ImageIcon
+                primaryCommandButton.Icon = new ImageIcon
                 {
                     Source = tool.ToolIcon,
                 };
 
-                unPinnedButton.Icon = new ImageIcon
+                secondaryCommandButton.Icon = new ImageIcon
                 {
                     Source = tool.ToolIcon,
                 };
@@ -247,15 +251,15 @@ public partial class BarWindowHorizontal : WindowEx
             else if (args.PropertyName == nameof(ExternalTool.IsPinned))
             {
                 // If a tool is pinned, we'll add it to the primary commands list, otherwise the secondary commands list
-                unPinnedButton.ContextFlyout = CreateMenuFlyout(tool, tool.IsPinned ? PinOption.UnPin : PinOption.Pin);
+                secondaryCommandButton.ContextFlyout = CreateMenuFlyout(tool, tool.IsPinned ? PinOption.UnPin : PinOption.Pin);
 
                 if (tool.IsPinned)
                 {
-                    MyCommandBar.PrimaryCommands.Add(pinnedButton);
+                    MyCommandBar.PrimaryCommands.Add(primaryCommandButton);
                 }
                 else
                 {
-                    MyCommandBar.PrimaryCommands.Remove(pinnedButton);
+                    MyCommandBar.PrimaryCommands.Remove(primaryCommandButton);
                 }
             }
         };
@@ -276,28 +280,16 @@ public partial class BarWindowHorizontal : WindowEx
         MyCommandBar.SecondaryCommands.Insert(1, new AppBarSeparator());
     }
 
-    private MenuFlyoutItem CreatePinMenuItem(ExternalTool tool)
+    private MenuFlyoutItem CreatePinMenuItem(ExternalTool tool, PinOption pinOption)
     {
-        MenuFlyoutItem pin = new MenuFlyoutItem
+        MenuFlyoutItem item = new MenuFlyoutItem
         {
-            Text = _pinMenuItemText,
+            Text = pinOption == PinOption.Pin ? _pinMenuItemText : _unpinMenuItemText,
             Command = tool.TogglePinnedStateCommand,
             Icon = new FontIcon() { Glyph = tool.PinGlyph },
         };
 
-        return pin;
-    }
-
-    private MenuFlyoutItem CreateUnPinMenuItem(ExternalTool tool)
-    {
-        MenuFlyoutItem unpin = new MenuFlyoutItem
-        {
-            Text = _unpinMenuItemText,
-            Command = tool.TogglePinnedStateCommand,
-            Icon = new FontIcon() { Glyph = tool.PinGlyph },
-        };
-
-        return unpin;
+        return item;
     }
 
     private MenuFlyoutItem CreateUnregisterMenuItem(ExternalTool tool)

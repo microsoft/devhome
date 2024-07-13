@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -14,7 +16,9 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
 using Windows.System;
+using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.System.Com;
 using static DevHome.PI.Helpers.WindowHelper;
 
 namespace DevHome.PI.Helpers;
@@ -26,10 +30,11 @@ public enum ToolActivationType
     Launch,
 }
 
-// ExternalTool represents an imported tool
 public partial class ExternalTool : ObservableObject
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalTool));
+
+    private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
 
     public string ID { get; private set; }
 
@@ -111,59 +116,121 @@ public partial class ExternalTool : ObservableObject
         }
     }
 
-    internal async Task<bool> Invoke(int? pid, HWND? hwnd)
+    internal async Task<Process?> Invoke(int? pid, HWND? hwnd)
     {
-        var result = false;
+        var process = default(Process);
+
+        var parsedArguments = string.Empty;
+        if (!string.IsNullOrEmpty(Arguments))
+        {
+            var argumentVariables = new Dictionary<string, int>();
+            if (pid.HasValue)
+            {
+                argumentVariables.Add("pid", pid.Value);
+            }
+
+            if (hwnd.HasValue)
+            {
+                argumentVariables.Add("hwnd", (int)hwnd.Value);
+            }
+
+            parsedArguments = ReplaceKnownVariables(Arguments, argumentVariables);
+        }
 
         try
         {
-            var parsedArguments = string.Empty;
-            if (!string.IsNullOrEmpty(Arguments))
-            {
-                var argumentVariables = new Dictionary<string, int>();
-                if (pid.HasValue)
-                {
-                    argumentVariables.Add("pid", pid.Value);
-                }
-
-                if (hwnd.HasValue)
-                {
-                    argumentVariables.Add("hwnd", (int)hwnd.Value);
-                }
-
-                parsedArguments = ReplaceKnownVariables(Arguments, argumentVariables);
-            }
-
             if (ActivationType == ToolActivationType.Protocol)
             {
-                result = await Launcher.LaunchUriAsync(new Uri($"{parsedArguments}"));
+                // Docs say this returns true if the default app for the URI scheme was launched;
+                // false otherwise. However, if there's no registered app for the protocol, it shows
+                // the "get an app from the store" dialog, and returns true. So we can't rely on the
+                // return value to know if the tool was actually launched.
+                var result = await Launcher.LaunchUriAsync(new Uri(parsedArguments));
+                if (result != true)
+                {
+                    // We get here if the user supplied a valid registered protocol, but the app failed to launch.
+                    var errorMessage = string.Format(
+                        CultureInfo.InvariantCulture, _errorMessageText, parsedArguments);
+                    throw new InvalidOperationException(errorMessage);
+                }
             }
             else
             {
                 if (ActivationType == ToolActivationType.Msix)
                 {
-                    var process = Process.Start("explorer.exe", $"shell:AppsFolder\\{AppUserModelId}");
-                    result = process is not null;
+                    process = LaunchPackagedTool(AppUserModelId);
                 }
                 else
                 {
-                    var startInfo = new ProcessStartInfo(Executable)
+                    var finalExecutable = string.Empty;
+                    var finalArguments = string.Empty;
+
+                    if (Path.GetExtension(Executable).Equals(".msc", StringComparison.OrdinalIgnoreCase))
                     {
-                        Arguments = parsedArguments,
+                        // Note: running most msc files requires elevation.
+                        finalExecutable = "mmc.exe";
+                        finalArguments = $"{Executable} {parsedArguments}";
+                    }
+                    else if (Path.GetExtension(Executable).Equals(".ps1", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Note: running powershell scripts might require setting the execution policy.
+                        finalExecutable = "powershell.exe";
+                        finalArguments = $"{Executable} {parsedArguments}";
+                    }
+                    else
+                    {
+                        finalExecutable = Executable;
+                        finalArguments = parsedArguments;
+                    }
+
+                    var startInfo = new ProcessStartInfo()
+                    {
+                        FileName = finalExecutable,
+                        Arguments = finalArguments,
                         UseShellExecute = false,
-                        RedirectStandardOutput = true,
                     };
-                    var process = Process.Start(startInfo);
-                    result = process is not null;
+                    process = Process.Start(startInfo);
                 }
             }
         }
         catch (Exception ex)
         {
-            _log.Error(ex, "Tool launched failed");
+            // We compose a custom exception because an exception from executing some tools
+            // (powershell, mmc) will have lost the target tool information.
+            var errorMessage = string.Format(CultureInfo.InvariantCulture, _errorMessageText, Executable);
+            throw new InvalidOperationException(errorMessage, ex);
         }
 
-        return result;
+        return process;
+    }
+
+    public static Process? LaunchPackagedTool(string appUserModelId)
+    {
+        var process = default(Process);
+        var clsid = CLSID.ApplicationActivationManager;
+        var iid = typeof(IApplicationActivationManager).GUID;
+        object obj;
+
+        int hr = PInvoke.CoCreateInstance(
+            in clsid, null, CLSCTX.CLSCTX_LOCAL_SERVER, in iid, out obj);
+
+        if (HResult.Succeeded(hr))
+        {
+            var appActiveManager = (IApplicationActivationManager)obj;
+            uint processId;
+            hr = appActiveManager.ActivateApplication(
+                appUserModelId, string.Empty, ACTIVATEOPTIONS.None, out processId);
+            if (HResult.Succeeded(hr))
+            {
+                process = Process.GetProcessById((int)processId);
+            }
+        }
+        else
+        {
+            Marshal.ThrowExceptionForHR(hr);
+        }
+
+        return process;
     }
 
     private string ReplaceKnownVariables(string input, Dictionary<string, int> argumentValues)
