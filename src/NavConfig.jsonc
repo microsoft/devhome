@@ -24,61 +24,29 @@
             "viewFullName": "DevHome.ExtensionLibrary.Views.ExtensionLibraryView",
             "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
             "icon": "ea86"
+          }
+          ,
+          {
+            "identity": "DevHome.TestExperiment",
+            "assembly": "DevHome.Experiments",
+            "viewFullName": "DevHome.Experiments.Views.TestExperimentPage",
+            "viewModelFullName": "DevHome.Experiments.ViewModels.TestExperimentViewModel",
+            "icon": "f0f7",
+            "experimentId": "ExperimentalFeature_1"
           },
           {
-            "experimentalFeatureIdentity": "EnvironmentsManagementPage",
-            "identity": "DevHome.Environments",
-            "assembly": "DevHome.Environments",
-            "viewFullName": "DevHome.Environments.Views.LandingPage",
-            "viewModelFullName": "DevHome.Environments.ViewModels.LandingPageViewModel",
-            "icon": "E83B"
+            "identity": "DevHome.QuietBackgroundProcessesTestExperiment",
+            "assembly": "DevHome.Experiments",
+            "viewFullName": "DevHome.Experiments.Views.QuietBackgroundProcessesPage",
+            "viewModelFullName": "DevHome.Experiments.ViewModels.QuietBackgroundProcessesViewModel",
+            "icon": "f5b0",
+            "experimentId": "QuietBackgroundProcessesExperiment"
           }
         ]
       }
     ]
   },
-  "experimentalFeatures": [
-    {
-      "identity": "EnvironmentsManagementPage",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": false
-        },
-        {
-          "buildType": "release",
-          "enabledByDefault": false,
-          "visible": false
-        }
-      ]
-    },
-    {
-      "identity": "EnvironmentsSetupTargetFlow",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": false
-        },
-        {
-          "buildType": "release",
-          "enabledByDefault": false,
-          "visible": false
-        }
-      ]
-    }
+  "experiments": [
+  "QuietBackgroundProcessesExperiment"
   ]
 }

@@ -426,4 +426,10 @@
     <value>Projects page</value>
     <comment>Name of the "Projects page" experimental feature</comment>
   </data>
+  <data name="QuietBackgroundProcessesExperiment_Description" xml:space="preserve">
+    <value>Silence and track background processes that may hinder device performance</value>
+  </data>
+  <data name="QuietBackgroundProcessesExperiment_Name" xml:space="preserve">
+    <value>Quiet background processes experiment</value>
+  </data>
 </root>

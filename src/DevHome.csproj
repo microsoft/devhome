@@ -1,12 +1,10 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+﻿<!-- Copyright (c) Microsoft Corporation and Contributors. -->
 <!-- Licensed under the MIT License. -->
 
 <Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="$(SolutionDir)ToolingVersions.props" />
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
-        <TargetPlatformMinVersion>10.0.22000.0</TargetPlatformMinVersion>
-        <SupportedOSPlatformVersion>10.0.22000.0</SupportedOSPlatformVersion>
         <RootNamespace>DevHome</RootNamespace>
         <ApplicationIcon>Assets/DevHome.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -22,6 +20,16 @@
         <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
+      <None Remove="Assets\Preview\CPUScreenshotDark.png" />
+      <None Remove="Assets\Preview\CPUScreenshotLight.png" />
+      <None Remove="Assets\Preview\GPUScreenshotDark.png" />
+      <None Remove="Assets\Preview\GPUScreenshotLight.png" />
+      <None Remove="Assets\Preview\MemoryScreenshotDark.png" />
+      <None Remove="Assets\Preview\MemoryScreenshotLight.png" />
+      <None Remove="Assets\Preview\NetworkScreenshotDark.png" />
+      <None Remove="Assets\Preview\NetworkScreenshotLight.png" />
+      <None Remove="Assets\Preview\SSHScreenshotDark.png" />
+      <None Remove="Assets\Preview\SSHScreenshotLight.png" />
       <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
       <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
       <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
@@ -34,26 +42,28 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-        <PackageReference Include="Microsoft.Management.Infrastructure" Version="2.0.0" />
-        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.188-beta">
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240131-x1351" />
+        <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
+        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
+        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
         <PackageReference Include="WinUIEx" Version="1.8.0" />
         <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
             <ExcludeAssets>contentFiles</ExcludeAssets>
         </PackageReference>
     </ItemGroup>
-
     <ItemGroup>
         <ProjectReference Include="..\common\DevHome.Common.csproj" />
         <ProjectReference Include="..\CoreWidgetProvider\CoreWidgetProvider.csproj" />
         <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
         <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
         <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
-        <ProjectReference Include="..\tools\Projects\src\DevHome.Projects.csproj" />
+        <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
+        <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
         <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
         <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
     </ItemGroup>
@@ -79,6 +89,12 @@
     <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
         <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
     </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="$(DevHomeInternal_Win32RuntimePath)Microsoft.Internal.Windows.DevHome.Helpers.QuietBackgroundProcesses.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
     <PropertyGroup>
         <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
@@ -113,6 +129,9 @@
             </AdditionalPackageFile>
             <AdditionalPackageFile Include="$(TargetDir)\Modules\**\*.*">
               <PackagePath>$(ModulePath)Modules</PackagePath>
+            </AdditionalPackageFile>
+            <AdditionalPackageFile Include="$(TargetDir)\DevHome.QuietBackgroundProcesses.ElevatedServer.exe">
+              <PackagePath>.\</PackagePath>
             </AdditionalPackageFile>
         </ItemGroup>
 
