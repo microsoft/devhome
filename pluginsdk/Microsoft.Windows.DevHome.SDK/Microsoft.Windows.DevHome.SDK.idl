@@ -102,8 +102,6 @@ namespace Microsoft.Windows.DevHome.SDK
 
         IPluginAdaptiveCardController GetAdaptiveCardController(String[] args);
 
-        Windows.Foundation.IAsyncOperation<IDeveloperId> ShowLogonSession(Microsoft.UI.WindowId windowHandle);
-
         // The below events (LoggedIn, LoggedOut and Updated) are legacy events.
         event Windows.Foundation.EventHandler<IDeveloperId> LoggedIn;
 
@@ -113,7 +111,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
         event Windows.Foundation.TypedEventHandler<IDeveloperIdProvider, Object> Changed;
 
-        AuthenticationState DeveloperIdState; 
+        AuthenticationState developerIDState; 
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
