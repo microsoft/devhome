@@ -155,6 +155,17 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
         appManagementSetupFlow.HandleSearchQuery(query);
     }
 
+    public async Task StartFileActivationAsync(StorageFile file)
+    {
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching configuration file flow");
+        var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
+        if (await configFileSetupFlow.LoadFromLocalFileAsync(file))
+        {
+            Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow from file activation");
+            StartSetupFlowForTaskGroups(null, "ConfigurationFile", configFileSetupFlow);
+        }
+    }
+
     protected async override Task OnFirstNavigateToAsync()
     {
         if (await ValidateAppInstallerAsync())
