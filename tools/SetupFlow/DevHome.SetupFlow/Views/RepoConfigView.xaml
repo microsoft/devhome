@@ -56,7 +56,8 @@
                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupTargetCloneRepositoryInfoBar"
                 Grid.Row="0"/>
             <ListView ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                      ScrollViewer.VerticalScrollMode="Auto" 
+                      ScrollViewer.VerticalScrollMode="Auto"
+                      MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}"
                       ItemsSource="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay}"
                       SelectionMode="None"
                       ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}"
