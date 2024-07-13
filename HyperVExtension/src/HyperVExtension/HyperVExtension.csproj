@@ -7,7 +7,26 @@
     <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
   </PropertyGroup>
-
+  <ItemGroup>
+    <None Remove="Templates\VmCredentialAdaptiveCardTemplate.json" />
+    <None Remove="Templates\WaitForLoginAdaptiveCardTemplate.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\VmCredentialAdaptiveCardTemplate.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\WaitForLoginAdaptiveCardTemplate.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\InitialVMGalleryCreationForm.json">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
+	<Content Include="Templates\ReviewFormForVMGallery.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MessageFormat" Version="6.0.2" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
@@ -17,10 +36,15 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.200.427" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.300.443" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="System.Management.Automation" Version="7.4.0" />
     <PackageReference Include="System.Security.Principal.Windows" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
@@ -29,7 +53,6 @@
   <ItemGroup>
     <ProjectReference Include="..\HyperVExtension.Common\HyperVExtension.Common.csproj" />
     <ProjectReference Include="..\HyperVExtension.HostGuestCommunication\HyperVExtension.HostGuestCommunication.csproj" />
-    <ProjectReference Include="..\Logging\HyperVExtension.Logging.csproj" />
     <ProjectReference Include="..\Telemetry\HyperVExtension.Telemetry.csproj" />
   </ItemGroup>
 
@@ -38,14 +61,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-	  <Content Include="Templates\InitialVMGalleryCreationForm.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Include="Templates\ReviewFormForVMGallery.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
   </ItemGroup>
 
   <!--
@@ -63,6 +78,26 @@
     <None Include="..\DevSetupAgent\bin\arm64\$(Configuration)\DevSetupAgent_arm64.zip" Condition="'$(Platform)'=='arm64' and ('$(BuildingInsideVisualStudio)' != 'True' or Exists('..\HyperVExtension\src\DevSetupAgent\bin\arm64\$(Configuration)\DevSetupAgent_arm64.zip'))">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Templates\DarkCaution.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Templates\DarkError.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Templates\DarkSuccess.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Templates\LightCaution.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Templates\LightError.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Templates\LightSuccess.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <PropertyGroup>

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Globalization;
-
 namespace HyperVExtension.Helpers;
 
 internal sealed class AdaptiveCardActionPayload
@@ -32,7 +30,7 @@ internal sealed class AdaptiveCardActionPayload
         get; set;
     }
 
-    public string? ActionMode
+    public string? Mode
     {
         get; set;
     }
@@ -60,15 +58,5 @@ internal sealed class AdaptiveCardActionPayload
     public bool IsExecuteAction()
     {
         return Type == "Action.Execute";
-    }
-
-    public bool IsSecondaryAction()
-    {
-        return ActionMode == "Secondary";
-    }
-
-    public bool IsPrimaryAction()
-    {
-        return ActionMode == "Primary";
     }
 }

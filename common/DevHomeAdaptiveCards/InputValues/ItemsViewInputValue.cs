@@ -4,7 +4,7 @@
 using System.Globalization;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
-using DevHome.Common.Helpers;
+using DevHome.Common.Environments.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -40,6 +40,19 @@ public class ItemsViewInputValue : IAdaptiveInputValue
     // If the items view selection mode isn't None, then the user must select an item.
     public bool Validate()
     {
-         return true;
+        if (_itemsView.SelectionMode == ItemsViewSelectionMode.None)
+        {
+            return true;
+        }
+
+        if ((_itemsView.SelectedItem == null) || (_itemsView.CurrentItemIndex < 0))
+        {
+            var errorMessage = StringResourceHelper.GetResource("ItemsViewNonSelectedItemError");
+            ErrorMessage = new TextBlock();
+            ErrorMessage.SetValue(TextBlock.TextProperty, errorMessage);
+            return false;
+        }
+
+        return true;
     }
 }

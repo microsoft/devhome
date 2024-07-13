@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using HyperVExtension.Models.VMGalleryJsonToClasses;
 using HyperVExtension.Providers;
+using Serilog;
 using Windows.Storage;
 
 namespace HyperVExtension.Services;
@@ -15,6 +16,8 @@ namespace HyperVExtension.Services;
 /// </summary>
 public sealed class VMGalleryService : IVMGalleryService
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", ComponentName);
+
     private const string ComponentName = "VMGalleryService";
 
     private readonly IDownloaderService _downloaderService;
@@ -65,7 +68,7 @@ public sealed class VMGalleryService : IVMGalleryService
                     var byteArray = await _downloaderService.DownloadByteArrayAsync(image.Symbol.Uri, cancellationTokenSource.Token);
                     if (!ValidateFileSha256Hash(byteArray, image.Symbol.Hash))
                     {
-                        Logging.Logger()?.ReportError(ComponentName, $"Symbol Hash '{image.Symbol.Hash}' validation failed for image with name '{image}'. Symbol uri: '{image.Symbol}'");
+                        _log.Error($"Symbol Hash '{image.Symbol.Hash}' validation failed for image with name '{image}'. Symbol uri: '{image.Symbol}'");
                         continue;
                     }
 
@@ -77,10 +80,6 @@ public sealed class VMGalleryService : IVMGalleryService
                     var totalSizeOfDisk = await _downloaderService.GetHeaderContentLength(new Uri(image.Disk.Uri), cancellationTokenSource.Token);
                     if (ulong.TryParse(image.Requirements.DiskSpace, CultureInfo.InvariantCulture, out var requiredDiskSpace))
                     {
-                        // The Hype-V Quick Create feature in the Hyper-V Manager in Windows uses the size of the archive file and the size of the required disk space
-                        // value in the VM gallery Json to determin the size of the download. We'll use the same logic here to determine the smallest size.
-                        // I'm not sure why this is done in this way, but we'll do the same here. In the Quick Create window the 'Download' text shows the size of both
-                        // the archive file to be downloaded and the required disk space value added together.
                         image.Disk.SizeInBytes = (ulong)totalSizeOfDisk;
                     }
                 }
@@ -88,7 +87,7 @@ public sealed class VMGalleryService : IVMGalleryService
         }
         catch (Exception ex)
         {
-            Logging.Logger()?.ReportError(ComponentName, $"Unable to retrieve VM gallery images", ex);
+            _log.Error($"Unable to retrieve VM gallery images", ex);
         }
 
         return _imageList;

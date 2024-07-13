@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
+
 namespace HyperVExtension.Models.VirtualMachineCreation;
 
 /// <summary>
@@ -10,5 +12,6 @@ public sealed class VMGalleryCreationUserInput
 {
     public string NewVirtualMachineName { get; set; } = string.Empty;
 
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public int SelectedImageListIndex { get; set; }
 }

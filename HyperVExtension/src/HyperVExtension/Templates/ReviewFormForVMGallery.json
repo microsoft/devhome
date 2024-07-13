@@ -9,70 +9,71 @@
         {
           "type": "Column",
           "width": "auto",
-          "items": [
-            {
-              "type": "Image",
-              "url": "${Base64ImageForProvider}"
-            }
-          ]
-        },
-        {
-          "type": "Column",
-          "width": "stretch",
+          "spacing": "medium",
           "items": [
             {
               "type": "TextBlock",
               "text": "${ProviderName}",
-              "wrap": true
+              "wrap": true,
+              "size": "medium"
             },
             {
               "type": "TextBlock",
               "text": "${DiskImageSize}",
               "wrap": true,
-              "isSubtle": true
+              "size": "medium"
             }
           ]
         },
         {
           "type": "Column",
-          "width": "stretch",
+          "width": "auto",
+          "spacing": "extraLarge",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "${NameLabel}",
+              "wrap": true,
+              "size": "medium"
+            },
+            {
+              "type": "TextBlock",
+              "text": "${NameOfNewVM}",
+              "wrap": true,
+              "size": "medium"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "spacing": "extraLarge",
+          "verticalContentAlignment": "center",
           "items": [
             {
               "type": "Image",
-              "url": "${Base64ImageForDiskImage}"
+              "url": "${DiskImageUrl}",
+              "height": "32px"
             }
           ]
         },
         {
           "type": "Column",
-          "width": "stretch",
+          "width": "auto",
+          "spacing": "medium",
           "items": [
             {
               "type": "TextBlock",
               "text": "${VMGalleryImageName}",
-              "wrap": true
+              "wrap": true,
+              "size": "medium"
             },
             {
               "type": "TextBlock",
               "text": "${Publisher}",
               "wrap": true,
-              "isSubtle": true
-            }
-          ]
-        },
-        {
-          "type": "Column",
-          "width": "stretch",
-          "items": [
-            {
-              "type": "TextBlock",
-              "text": "${NameLabel}",
-              "wrap": true
-            },
-            {
-              "type": "TextBlock",
-              "text": "${NameOfNewVM}",
-              "wrap": true
+              "isSubtle": true,
+              "size": "medium"
             }
           ]
         }
@@ -82,17 +83,14 @@
       "type": "ActionSet",
       "actions": [
         {
-          "id": "VmGalleryPrimaryButtonId",
+          "id": "DevHomeMachineConfigurationNextButton",
           "type": "Action.Submit",
-          "title": "${PrimaryButtonLabelForCreationFlow}",
-          "ActionMode": "Primary",
-          "style": "positive"
+          "title": "${PrimaryButtonLabelForCreationFlow}"
         },
         {
-          "id": "VmGallerySecondaryButtonId",
+          "id": "DevHomeMachineConfigurationPreviousButton",
           "type": "Action.Submit",
-          "title": "${SecondaryButtonLabelForCreationFlow}",
-          "ActionMode": "Secondary"
+          "title": "${SecondaryButtonLabelForCreationFlow}"
         }
       ]
     }

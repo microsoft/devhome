@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
+using System.Collections.Generic;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Contracts;
 using Microsoft.UI.Xaml;
-using ActionMode = AdaptiveCards.ObjectModel.WinUI3.ActionMode;
 
 namespace DevHome.Common.Renderers;
 
@@ -23,68 +22,62 @@ public enum TopLevelCardActionSetVisibility
 
 /// <summary>
 /// Allows Dev Home to attach an action to a button in the Dev Home UI.
-/// Dev Home can use this invoke an action from an adaptive card when
-/// a button within Dev Home is clicked. It allows Dev Home to link a primary
-/// and secondary button to two actions within a top level action set in the adaptive card.
+/// Dev Home can use this to invoke an action from an adaptive card when
+/// a button within Dev Home is clicked. It allows Dev Home to link buttons from
+/// within its own UI the to top level action set in the adaptive card.
 /// </summary>
 /// <remarks>
-/// It is expected that the adaptive card will have a top level action set with two actions.
-/// for Dev Home to link to. The primary button in Dev Home will be linked to the first action
-/// and the secondary button will be linked to the second action.
+/// It is expected that the adaptive card will have a top level action set with buttons that Dev Home can link to.
 /// </remarks>
-public class DevHomeActionSet : IDevHomeActionRender
+public class DevHomeActionSet : IDevHomeActionSetRender
 {
     /// <summary>
     /// Gets the visibility of the action in Dev Home's UI.
     /// </summary>
-    private readonly TopLevelCardActionSetVisibility _actionVisibility;
+    private readonly TopLevelCardActionSetVisibility _actionSetVisibility;
 
     /// <summary>
     /// Gets the adaptive card object that will invoke an action within the action set.
     /// </summary>
     public AdaptiveActionInvoker? ActionButtonInvoker { get; private set; }
 
-    private IAdaptiveActionElement? _primaryButtonAdaptiveActionElement;
+    public AdaptiveCard? OriginalAdaptiveCard { get; private set; }
 
-    private IAdaptiveActionElement? _secondaryButtonAdaptiveActionElement;
+    private Dictionary<string, IAdaptiveActionElement> ActionButtonMap { get; } = new();
 
-    public DevHomeActionSet(TopLevelCardActionSetVisibility cardActionVisibility)
+    public DevHomeActionSet(TopLevelCardActionSetVisibility cardActionSetVisibility)
     {
-        _actionVisibility = cardActionVisibility;
+        _actionSetVisibility = cardActionSetVisibility;
     }
 
     public UIElement? Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
+        ActionButtonMap.Clear();
+
         if (element is AdaptiveActionSet actionSet)
         {
-            // We'll only support two submit/execute actions in the action set.
-            // one for the primary action and one for the secondary action.
-            if (actionSet.Actions.Count > 2 || actionSet.Actions.Count == 0)
+            foreach (var action in actionSet.Actions)
             {
-                throw new ArgumentException("The ActionSet must have a minimum of 1 action and maximum of 2 actions.");
-            }
-
-            ActionButtonInvoker = context.ActionInvoker;
-
-            for (var i = 0; i < actionSet.Actions.Count; i++)
-            {
-                var action = actionSet.Actions[i];
                 if (action is AdaptiveExecuteAction executeAction)
                 {
-                    LinkSubmitActionToCard(executeAction, context, renderArgs);
+                    context.LinkSubmitActionToCard(executeAction, renderArgs);
                 }
                 else if (action is AdaptiveSubmitAction submitAction)
                 {
-                    LinkSubmitActionToCard(submitAction, context, renderArgs);
+                    context.LinkSubmitActionToCard(submitAction, renderArgs);
                 }
+
+                ActionButtonMap.TryAdd(action.Id, action);
             }
 
-            if (_actionVisibility == TopLevelCardActionSetVisibility.Hidden)
+            ActionButtonInvoker = context.ActionInvoker;
+            OriginalAdaptiveCard = renderArgs.ParentCard;
+
+            if (_actionSetVisibility == TopLevelCardActionSetVisibility.Hidden)
             {
                 // the page in Dev Home does not want to show the action set in the card.
-                // but needed to link a button in Dev Home to the action. So we return null,
-                // so we don't render the action set. Invoking the button from Dev Home will
-                // then trigger the action in the adaptive card.
+                // So we return null to prevent the adaptive card buttons from appearing.
+                // Invoking the button from Dev Home will then trigger the action in the adaptive card.
                 return null;
             }
         }
@@ -94,47 +87,47 @@ public class DevHomeActionSet : IDevHomeActionRender
     }
 
     /// <summary>
-    /// Invokes an adaptive card action from anywhere in Dev Home like a method in a View Model for example.
+    /// Invokes an adaptive card action from anywhere within Dev Home, like a method in a view Model for example.
+    /// A boolean is returned with the validation result of the card. We still send the action event so the adaptive
+    /// cards UI updates with error information.
     /// </summary>
-    public void InitiateAction(ActionMode actionMode)
+    /// <returns>
+    /// A boolean indicating whether validation for the card passed or failed.
+    /// </returns>
+    public bool TryValidateAndInitiateAction(string buttonId, AdaptiveInputs userInputs)
     {
-        var adaptiveActionElement = GetAction(actionMode);
+        ActionButtonMap.TryGetValue(buttonId, out var actionElement);
 
-        if (adaptiveActionElement == null)
+        if ((actionElement == null) || (userInputs == null))
+        {
+            return false;
+        }
+
+        var result = userInputs.ValidateInputs(actionElement);
+
+        ActionButtonInvoker?.SendActionEvent(actionElement);
+        return result;
+    }
+
+    public void InitiateAction(string buttonId)
+    {
+        ActionButtonMap.TryGetValue(buttonId, out var actionElement);
+
+        if (actionElement == null)
         {
             return;
         }
 
-        ActionButtonInvoker?.SendActionEvent(adaptiveActionElement);
+        ActionButtonInvoker?.SendActionEvent(actionElement);
     }
 
-    public string GetActionTitle(ActionMode actionMode)
+    public string GetActionTitle(string buttonId)
     {
-        return GetAction(actionMode)?.Title ?? string.Empty;
-    }
-
-    /// <summary>
-    /// Links the submit/execute action to the adaptive card itself. This allows Dev Home to initiate the action in the adaptive card
-    /// UI from Dev Homes own UI.
-    /// </summary>
-    private void LinkSubmitActionToCard(IAdaptiveActionElement action, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
-    {
-        if (action.Mode == ActionMode.Primary)
+        if (!ActionButtonMap.TryGetValue(buttonId, out var action))
         {
-            context.LinkSubmitActionToCard(action, renderArgs);
-            _primaryButtonAdaptiveActionElement = action;
-            ActionButtonInvoker = context.ActionInvoker;
+            return string.Empty;
         }
-        else
-        {
-            context.LinkSubmitActionToCard(action, renderArgs);
-            _secondaryButtonAdaptiveActionElement = action;
-            ActionButtonInvoker = context.ActionInvoker;
-        }
-    }
 
-    private IAdaptiveActionElement? GetAction(ActionMode actionMode)
-    {
-        return actionMode == ActionMode.Primary ? _primaryButtonAdaptiveActionElement : _secondaryButtonAdaptiveActionElement;
+        return action.Title;
     }
 }

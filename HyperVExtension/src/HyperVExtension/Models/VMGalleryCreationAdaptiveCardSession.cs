@@ -1,23 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using HyperVExtension.Common;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Models.VirtualMachineCreation;
 using HyperVExtension.Models.VMGalleryJsonToClasses;
-using HyperVExtension.Providers;
-using Json.More;
 using Microsoft.Windows.DevHome.SDK;
-using Newtonsoft.Json.Linq;
+using Serilog;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -32,9 +26,13 @@ public enum SessionState
 
 public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSession2
 {
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(HyperVVirtualMachine));
+
     private readonly string _pathToInitialCreationFormTemplate = Path.Combine(AppContext.BaseDirectory, @"HyperVExtension\Templates\", "InitialVMGalleryCreationForm.json");
 
     private readonly string _pathToReviewFormTemplate = Path.Combine(AppContext.BaseDirectory, @"HyperVExtension\Templates\", "ReviewFormForVMGallery.json");
+
+    private readonly string _adaptiveCardNextButtonId = "DevHomeMachineConfigurationNextButton";
 
     /// <summary>
     /// The gallery images that will be displayed in the initial creation form. We retrieve these from the VMGallery.json file in the Microsoft servers.
@@ -83,7 +81,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action);
             if (actionPayload == null)
             {
-                Logging.Logger()?.ReportError($"Actions in Adaptive card action Json not recognized: {action}");
+                _log.Error($"Actions in Adaptive card action Json not recognized: {action}");
                 var creationFormGenerationError = _stringResource.GetLocalized("AdaptiveCardUnRecognizedAction");
                 var exception = new AdaptiveCardInvalidActionException(creationFormGenerationError);
                 return new ProviderOperationResult(ProviderOperationStatus.Failure, exception, creationFormGenerationError, creationFormGenerationError);
@@ -206,13 +204,16 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             var deserializedObject = JsonSerializer.Deserialize(inputJson, typeof(VMGalleryCreationUserInput));
             var inputForGalleryOperation = deserializedObject as VMGalleryCreationUserInput ?? throw new InvalidOperationException($"Json deserialization failed for input Json: {inputJson}");
 
-            if (inputForGalleryOperation.SelectedImageListIndex > _vMGalleryImageList.Images.Count)
+            if (inputForGalleryOperation.SelectedImageListIndex < 0 ||
+                inputForGalleryOperation.SelectedImageListIndex > _vMGalleryImageList.Images.Count)
             {
                 return new ProviderOperationResult(ProviderOperationStatus.Failure, null, "Failed to get review form", "Selected image index is out of range");
             }
 
             var galleryImage = _vMGalleryImageList.Images[inputForGalleryOperation.SelectedImageListIndex];
             var newVirtualMachineNameLabel = _stringResource.GetLocalized("NameLabelForNewVirtualMachine", ":");
+            var primaryButtonForCreationFlowText = _stringResource.GetLocalized("PrimaryButtonLabelForCreationFlow");
+            var secondaryButtonForCreationFlowText = _stringResource.GetLocalized("SecondaryButtonLabelForCreationFlow");
             var storageFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(Constants.ExtensionIconInternal));
             var randomAccessStream = await storageFile.OpenReadAsync();
 
@@ -229,7 +230,9 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
                 { "NameOfNewVM", inputForGalleryOperation.NewVirtualMachineName },
                 { "NameLabel", newVirtualMachineNameLabel },
                 { "Base64ImageForProvider", providerBase64Image },
-                { "Base64ImageForDiskImage", galleryImage.Symbol.Base64Image },
+                { "DiskImageUrl", galleryImage.Symbol.Uri },
+                { "PrimaryButtonLabelForCreationFlow", primaryButtonForCreationFlowText },
+                { "SecondaryButtonLabelForCreationFlow", secondaryButtonForCreationFlowText },
             };
 
             var template = LoadTemplate(SessionState.ReviewForm);
@@ -298,7 +301,9 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
     private async Task<ProviderOperationResult> HandleActionWhenFormInInitalState(AdaptiveCardActionPayload actionPayload, string inputs)
     {
         ProviderOperationResult operationResult;
-        if (actionPayload.IsPrimaryAction())
+        var actionButtonId = actionPayload.Id ?? string.Empty;
+
+        if (actionButtonId.Equals(_adaptiveCardNextButtonId, StringComparison.OrdinalIgnoreCase))
         {
             // if OnAction's state is initialCreationForm, then the user has selected a VM gallery image and is ready to review the form.
             // we'll also keep the original user input so we can pass it back to Dev Home once the session ends.
@@ -317,8 +322,9 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
     {
         ProviderOperationResult operationResult;
         var shouldEndSession = false;
+        var actionButtonId = actionPayload.Id ?? string.Empty;
 
-        if (actionPayload.IsPrimaryAction())
+        if (actionButtonId.Equals(_adaptiveCardNextButtonId, StringComparison.OrdinalIgnoreCase))
         {
             // if OnAction's state is reviewForm, then the user has reviewed the form and Dev Home has started the creation process.
             // we'll show the same form to the user in Dev Homes summary page.
