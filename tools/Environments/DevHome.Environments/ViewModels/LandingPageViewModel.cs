@@ -15,11 +15,14 @@ using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Common.Views;
 using DevHome.Environments.Helpers;
-using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using Windows.Foundation;
+using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -32,7 +35,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly AutoResetEvent _computeSystemLoadWait = new(false);
 
-    private readonly Window _mainWindow;
+    private readonly WindowEx _windowEx;
 
     private readonly EnvironmentsExtensionsService _environmentExtensionsService;
 
@@ -82,8 +85,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
-    private const int SortUnselected = -1;
-
     public ObservableCollection<string> Providers { get; set; }
 
     private CancellationTokenSource _cancellationTokenSource = new();
@@ -92,21 +93,20 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         INavigationService navigationService,
         IComputeSystemManager manager,
         EnvironmentsExtensionsService extensionsService,
-        Window mainWindow)
+        WindowEx windowEx)
     {
         _computeSystemManager = manager;
         _environmentExtensionsService = extensionsService;
-        _mainWindow = mainWindow;
+        _windowEx = windowEx;
         _navigationService = navigationService;
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
-        SelectedSortIndex = SortUnselected;
+        SelectedSortIndex = -1;
         Providers = new() { _stringResource.GetLocalized("AllProviders") };
         _lastSyncTime = _stringResource.GetLocalized("MomentsAgo");
 
         ComputeSystemCardsView = new AdvancedCollectionView(ComputeSystemCards);
-        ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
     }
 
     public void Initialize(StackedNotificationsBehavior notificationQueue)
@@ -118,14 +118,14 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public async Task SyncButton()
     {
         // Reset the sort and filter
-        SelectedSortIndex = SortUnselected;
+        SelectedSortIndex = -1;
         Providers = new ObservableCollection<string> { _stringResource.GetLocalized("AllProviders") };
         SelectedProviderIndex = 0;
         _wasSyncButtonClicked = true;
 
         // Reset the old sync timer
         _cancellationTokenSource.Cancel();
-        await _mainWindow.DispatcherQueue.EnqueueAsync(() => LastSyncTime = _stringResource.GetLocalized("MomentsAgo"));
+        await _windowEx.DispatcherQueue.EnqueueAsync(() => LastSyncTime = _stringResource.GetLocalized("MomentsAgo"));
 
         // We need to signal to the compute system manager that it can remove all the completed operations now that
         // we're done showing them in the view.
@@ -148,7 +148,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
 
         _log.Information("User clicked on the create environment button. Navigating to Select environment page in Setup flow");
-        _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow;EnvironmentsLandingPage");
+        _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow");
     }
 
     // Updates the last sync time on the UI thread after set delay
@@ -158,7 +158,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         if (!token.IsCancellationRequested)
         {
-            await _mainWindow.DispatcherQueue.EnqueueAsync(() => LastSyncTime = time);
+            await _windowEx.DispatcherQueue.EnqueueAsync(() => LastSyncTime = time);
         }
     }
 
@@ -269,8 +269,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         {
             for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
             {
-                if (ComputeSystemCards[i] is CreateComputeSystemOperationViewModel operationViewModel)
+                if (ComputeSystemCards[i].IsCreateComputeSystemOperation)
                 {
+                    var operationViewModel = ComputeSystemCards[i] as CreateComputeSystemOperationViewModel;
                     operationViewModel!.RemoveEventHandlers();
                     operationViewModel.ComputeSystemErrorReceived -= OnComputeSystemOperationError;
                     ComputeSystemCards.RemoveAt(i);
@@ -281,20 +282,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             foreach (var operation in curOperations)
             {
                 // this is a new operation so we need to create a view model for it.
-                var operationViewModel = new CreateComputeSystemOperationViewModel(
-                    _computeSystemManager,
-                    _stringResource,
-                    _mainWindow,
-                    RemoveComputeSystemCard,
-                    AddNewlyCreatedComputeSystem,
-                    operation);
-
-                operationViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
-                ComputeSystemCards.Insert(0, operationViewModel);
+                ComputeSystemCards.Add(new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, RemoveComputeSystemCard, AddNewlyCreatedComputeSystem, operation));
+                ComputeSystemCards.Last().ComputeSystemErrorReceived += OnComputeSystemOperationError;
                 _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
             }
 
-            ComputeSystemCardsView.Refresh();
             UpdateCallToActionText();
         }
     }
@@ -324,7 +316,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 provider,
                 RemoveComputeSystemCard,
                 packageFullName,
-                _mainWindow);
+                _windowEx);
 
             computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
             computeSystemViewModels.Add(computeSystemViewModel);
@@ -335,7 +327,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             await computeSystemModel.InitializeCardDataAsync();
         });
 
-        await _mainWindow.DispatcherQueue.EnqueueAsync(() =>
+        await _windowEx.DispatcherQueue.EnqueueAsync(() =>
         {
             try
             {
@@ -422,11 +414,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     {
         ComputeSystemCardsView.SortDescriptions.Clear();
 
-        if (SelectedSortIndex == SortUnselected)
-        {
-            ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
-        }
-
         switch (SelectedSortIndex)
         {
             case 0:
@@ -464,15 +451,13 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
             if (viewModel == null)
             {
-                _mainWindow.DispatcherQueue.EnqueueAsync(() =>
+                _windowEx.DispatcherQueue.EnqueueAsync(() =>
                 {
                     lock (ComputeSystemCards)
                     {
                         computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
-                        ComputeSystemCards.Insert(0, computeSystemViewModel);
+                        ComputeSystemCards.Add(computeSystemViewModel);
                     }
-
-                    ComputeSystemCardsView.Refresh();
                 });
             }
         });

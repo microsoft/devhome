@@ -8,8 +8,6 @@ using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
-using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
-using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -88,8 +86,8 @@ public static class ComputeSystemHelpers
     {
         try
         {
-            var currentProperties = await computeSystem.GetComputeSystemPropertiesAsync(string.Empty);
-            return GetComputeSystemCardProperties(currentProperties, packageFullName);
+            var curentProperties = await computeSystem.GetComputeSystemPropertiesAsync(string.Empty);
+            return GetComputeSystemCardProperties(curentProperties, packageFullName);
         }
         catch (Exception ex)
         {
@@ -133,7 +131,7 @@ public static class ComputeSystemHelpers
     }
 
     /// <summary>
-    /// Safely removes all items from an observable collection and replaces them with new items.
+    /// Safely remove all items from an observable collection.
     /// </summary>
     /// <remarks>
     /// There can be random COM exceptions due to using the "Clear()" method in an observable collection. This method
@@ -142,51 +140,19 @@ public static class ComputeSystemHelpers
     /// this method is used to remove all items individually from the end of the collection to the beginning of the collection.
     /// </remarks>
     /// <typeparam name="T">Type of objects that the collection contains</typeparam>
-    /// <param name="collectionToUpdate">An observable collection that contains zero to N elements that will have its contents replaced</param>
-    /// <param name="listWithUpdates">A list that contains zero to N elements whose elements will be added to collectionToUpdate</param>
-    /// <returns>
-    /// True only if we successfully replaced all items in the collection. False otherwise.
-    /// </returns>
-    public static bool RemoveAllItemsAndReplace<T>(ObservableCollection<T> collectionToUpdate, List<T> listWithUpdates)
+    /// <param name="collection">An observable collection that contains zero to N elements</param>
+    public static void RemoveAllItems<T>(ObservableCollection<T> collection)
     {
         try
         {
-            for (var i = collectionToUpdate.Count - 1; i >= 0; i--)
+            for (var i = collection.Count - 1; i >= 0; i--)
             {
-                collectionToUpdate.RemoveAt(i);
+                collection.RemoveAt(i);
             }
-
-            for (var i = 0; i < listWithUpdates.Count; i++)
-            {
-                collectionToUpdate.Add(listWithUpdates[i]);
-            }
-
-            return true;
         }
         catch (Exception ex)
         {
             _log.Error(ex, "Unable to remove items from the collection");
         }
-
-        return false;
-    }
-
-    public static (string DisplayMessage, string DiagnosticText, EnvironmentsTelemetryStatus Status) LogResult(ProviderOperationResult? result, ILogger logger)
-    {
-        var telemetryStatus = EnvironmentsTelemetryStatus.Succeeded;
-
-        if (result == null)
-        {
-            var logErrorMsg = $"The returned result object was null";
-            logger.Error(logErrorMsg);
-            return (logErrorMsg, logErrorMsg, EnvironmentsTelemetryStatus.Failed);
-        }
-        else if (result.Status == ProviderOperationStatus.Failure)
-        {
-            logger.Error(result.ExtendedError, $"Operation failed with error:{result.DiagnosticText}");
-            telemetryStatus = EnvironmentsTelemetryStatus.Failed;
-        }
-
-        return (result.DisplayMessage, result.DiagnosticText, telemetryStatus);
     }
 }
