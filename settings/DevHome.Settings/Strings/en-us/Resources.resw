@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Microsoft ResX Schema
-
+  <!-- 
+    Microsoft ResX Schema 
+    
     Version 2.0
-
-    The primary goals of this format is to allow a simple XML format
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
     associated with the data types.
-
+    
     Example:
-
+    
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-
-    There are any number of "resheader" rows that contain simple
+                
+    There are any number of "resheader" rows that contain simple 
     name/value pairs.
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support
-    text/value conversion through the TypeConverter architecture.
-    Classes that don't support this are serialized and stored with the
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
     mimetype set.
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format
-    that the ResXResourceWriter will generate, however the reader can
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
     read any of the formats listed below.
-
+    
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-
+    
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array
+    value   : The object must be serialized into a byte array 
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -468,11 +468,11 @@
   </data>
   <data name="Settings_Feedback_SuggestFeature_IssueTitle.Header" xml:space="preserve">
     <value>Title</value>
-    <comment>SubjectTitle topic of the feature that the user wants to recommend creating</comment>
+    <comment>SubjectTitle topic of the feature that the user wants to reccomend creating</comment>
   </data>
   <data name="Settings_Feedback_SuggestFeature_IssueTitle.PlaceholderText" xml:space="preserve">
     <value>Enter title</value>
-    <comment>The topic of the feature that the user wants to recommend creating</comment>
+    <comment>The topic of the feature that the user wants to reccomend creating</comment>
   </data>
   <data name="Settings_Feedback_SuggestFeature_Scenario.Header" xml:space="preserve">
     <value>Scenario</value>
@@ -488,7 +488,7 @@
   </data>
   <data name="Settings_Feedback_SuggestFeature_SupportingInfo.PlaceholderText" xml:space="preserve">
     <value>Enter more info or links to give us more details.</value>
-    <comment>What are some additional resources about this feature</comment>
+    <comment>What are some additional resoures about this feature</comment>
   </data>
   <data name="Settings_Feedback_DocumentationInfo_LinkText.Text" xml:space="preserve">
     <value>Learn more about how we use your Settings_Feedback</value>
@@ -545,28 +545,36 @@
     <value>View logs</value>
     <comment>Click on this if you want to see Dev Home's logs on your machine.</comment>
   </data>
+  <data name="EnvironmentsManagementPage_Description" xml:space="preserve">
+    <value>Manage your local and cloud development virtual machines from Dev Home</value>
+    <comment>Text within a display card that explains what users can do with the Environments management feature. Users can choose to toggle this on/off to add or remove the feature.</comment>
+  </data>
+  <data name="EnvironmentsManagementPage_Name" xml:space="preserve">
+    <value>Environments Management</value>
+    <comment>Title text for the Environments management feature.</comment>
+  </data>
+  <data name="EnvironmentsSetupTargetFlow_Description" xml:space="preserve">
+    <value>Configure your local and cloud development virtual machines from Dev Home</value>
+    <comment>Text within a display card that explains what users can do with the Environments configuration feature. Users can choose to toggle this on/off to add or remove the feature.</comment>
+  </data>
+  <data name="EnvironmentsSetupTargetFlow_Name" xml:space="preserve">
+    <value>Environments Configuration</value>
+    <comment>Title text for the Environments configuration feature.</comment>
+  </data>
   <data name="QuietBackgroundProcessesExperiment_Name" xml:space="preserve">
     <value>Quiet background processes</value>
-    <comment>Name of experimental feature 'Quiet background processes' on the 'Settings -&gt; Experiments' page where you enable it.</comment>
+    <comment>Name of experimental feature 'Quiet background processes' on the 'Settings -> Experiments' page where you enable it.</comment>
   </data>
   <data name="QuietBackgroundProcessesExperiment_Description" xml:space="preserve">
     <value>Quiet background processes allows you to free up resources while developing</value>
-    <comment>Inline description of the Quiet background processes experimental feature on the 'Settings -&gt; Experiments' page where you enable it.</comment>
+    <comment>Inline description of the Quiet background processes experimental feature on the 'Settings -> Experiments' page where you enable it.</comment>
   </data>
-  <data name="ProjectIronsidesExperiment_Name" xml:space="preserve">
-    <value>Project Ironsides</value>
-    <comment>Name of experimental feature 'Project Ironsides' on the 'Settings -&gt; Experiments' page where you enable it.</comment>
+	<data name="EnvironmentsCreationFlow_Description" xml:space="preserve">
+    <value>Create a local or cloud machine from Dev Home</value>
+    <comment>Text within a display card that explains what users can do with the Environments creation feature. Users can choose to toggle this on/off to add or remove the feature.</comment>
   </data>
-  <data name="ProjectIronsidesExperiment_Description" xml:space="preserve">
-    <value>Project Ironsides is a utility to provide deeper insights into your applications</value>
-    <comment>Inline description of the Project Ironsides experimental feature on the 'Settings -&gt; Experiments' page where you enable it.</comment>
-  </data>
-  <data name="QuickstartPlayground_Name" xml:space="preserve">
-    <value>Quickstart Playground</value>
-    <comment>Locked="{Quickstart Playground}" Title text for the Quickstart Playground feature.</comment>
-  </data>
-  <data name="QuickstartPlayground_Description" xml:space="preserve">
-    <value>Get started in a new devcontainer-based project from a natural language prompt. Enabling this feature installs the Dev Home Azure Extension from the Store.</value>
-    <comment>Text within a display card that explains what users can do with the Quickstart Playground feature. Users can choose to toggle this feature on or off.</comment>
+	<data name="EnvironmentsCreationFlow_Name" xml:space="preserve">
+    <value>Environments Creation</value>
+    <comment>Title text for the Environments creation feature.</comment>
   </data>
 </root>
