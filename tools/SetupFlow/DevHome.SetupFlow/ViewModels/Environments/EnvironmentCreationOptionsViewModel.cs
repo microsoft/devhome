@@ -42,6 +42,8 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
 
     private readonly SetupFlowViewModel _setupFlowViewModel;
 
+    private readonly IStringResource _stringResource;
+
     private ComputeSystemProviderDetails _curProviderDetails;
 
     private AdaptiveCardRenderer _adaptiveCardRenderer;
@@ -63,6 +65,9 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     private string _sessionErrorMessage;
 
     [ObservableProperty]
+    private string _sessionErrorTitle;
+
+    [ObservableProperty]
     private string _adaptiveCardLoadingMessage;
 
     public EnvironmentCreationOptionsViewModel(
@@ -74,6 +79,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
            : base(stringResource, orchestrator)
     {
         PageTitle = stringResource.GetLocalized(StringResourceKey.ConfigureEnvironmentPageTitle);
+        _stringResource = stringResource;
         _setupFlowViewModel = setupFlow;
         _setupFlowViewModel.EndSetupFlow += OnEndSetupFlow;
         _dispatcherQueue = dispatcherQueue;
@@ -148,7 +154,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         _curProviderDetails = _upcomingProviderDetails;
 
         IsAdaptiveCardSessionLoaded = false;
-        AdaptiveCardLoadingMessage = StringResource.GetLocalized(StringResourceKey.EnvironmentCreationAdaptiveCardLoadingMessage, _curProviderDetails.ComputeSystemProvider.DisplayName);
+        AdaptiveCardLoadingMessage = StringResource.GetLocalized(StringResourceKey.EnvironmentCreationUILoadingMessage, _curProviderDetails.ComputeSystemProvider.DisplayName);
 
         // Its possible that an extension could take a long time to load the adaptive card session.
         // So we run this on a background thread to prevent the UI from freezing.
@@ -196,6 +202,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
                 if (result.Status == ProviderOperationStatus.Failure)
                 {
                     _log.Error(result.ExtendedError, $"Extension failed to generate adaptive card. DisplayMsg: {result.DisplayMessage}, DiagnosticMsg: {result.DiagnosticText}");
+                    SessionErrorTitle = _stringResource.GetLocalized("ErrorLoadingCreationUITitle", _curProviderDetails.ComputeSystemProvider.DisplayName);
                     SessionErrorMessage = result.DisplayMessage;
                     CanGoToNextPage = false;
                 }
@@ -207,6 +214,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
             catch (Exception ex)
             {
                 _log.Error(ex, $"Failed to get creation options adaptive card from provider {_curProviderDetails.ComputeSystemProvider.Id}.");
+                SessionErrorTitle = _stringResource.GetLocalized("ErrorLoadingCreationUITitle", _curProviderDetails.ComputeSystemProvider.DisplayName);
                 SessionErrorMessage = ex.Message;
             }
 
@@ -250,7 +258,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         _dispatcherQueue.TryEnqueue(async () =>
         {
             IsAdaptiveCardSessionLoaded = false;
-            AdaptiveCardLoadingMessage = StringResource.GetLocalized(StringResourceKey.EnvironmentCreationAdaptiveCardLoadingMessage, _curProviderDetails.ComputeSystemProvider.DisplayName);
+            AdaptiveCardLoadingMessage = StringResource.GetLocalized(StringResourceKey.EnvironmentCreationUILoadingMessage, _curProviderDetails.ComputeSystemProvider.DisplayName);
 
             // Send the inputs and actions that the user entered back to the extension.
             await _extensionAdaptiveCardSession.OnAction(args.Action.ToJson().Stringify(), args.Inputs.AsJson().Stringify());
@@ -260,6 +268,8 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     private void ResetAdaptiveCardConfiguration()
     {
         SessionErrorMessage = null;
+        SessionErrorTitle = null;
+
         if (_extensionAdaptiveCardSession != null)
         {
             _extensionAdaptiveCardSession.Stopped -= OnAdaptiveCardSessionStopped;

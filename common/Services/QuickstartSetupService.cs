@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Contracts;
 using DevHome.Services.Core.Contracts;

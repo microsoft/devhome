@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Globalization;
 using System.Reflection;
 using System.Security.Principal;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Helpers;
 using Windows.ApplicationModel;
+using Windows.System.UserProfile;
 
 namespace DevHome.Services;
 
@@ -37,6 +39,8 @@ public class AppInfoService : IAppInfoService
             return Assembly.GetExecutingAssembly().GetName().Version!;
         }
     }
+
+    public string UserPreferredLanguage { get; } = GlobalizationPreferences.Languages.Count > 0 ? GlobalizationPreferences.Languages[0] : CultureInfo.CurrentCulture.Name;
 
     private static bool RunningAsAdmin
     {

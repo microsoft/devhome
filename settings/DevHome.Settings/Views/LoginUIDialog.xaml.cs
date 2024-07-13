@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.Extensions;
+using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -12,6 +14,7 @@ public sealed partial class LoginUIDialog : ContentDialog
     {
         this.InitializeComponent();
         LoginUIContent.Content = extensionAdaptiveCardPanel;
+        RequestedTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e)

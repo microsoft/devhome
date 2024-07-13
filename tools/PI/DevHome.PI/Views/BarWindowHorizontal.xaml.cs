@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
@@ -21,8 +23,6 @@ using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.Graphics.Gdi;
-using Windows.Win32.UI.Shell.Common;
 using WinRT.Interop;
 using WinUIEx;
 using static DevHome.PI.Helpers.CommonHelper;
@@ -32,19 +32,37 @@ namespace DevHome.PI;
 
 public partial class BarWindowHorizontal : WindowEx
 {
+    private enum PinOption
+    {
+        Pin,
+        UnPin,
+    }
+
     private const string ExpandButtonText = "\ue70d"; // ChevronDown
     private const string CollapseButtonText = "\ue70e"; // ChevronUp
+    private const string ManageToolsButtonText = "\uec7a"; // ChevronUp
+
+    private readonly string _pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
+    private readonly string _unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemRawText");
+    private readonly string _unregisterMenuItemText = CommonHelper.GetLocalizedString("UnregisterMenuItemRawText");
+    private readonly string _manageToolsMenuItemText = CommonHelper.GetLocalizedString("ManageExternalToolsMenuText");
 
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowViewModel _viewModel;
     private readonly UISettings _uiSettings = new();
+
+    private readonly SolidColorBrush _darkModeActiveCaptionBrush;
+    private readonly SolidColorBrush _darkModeDeactiveCaptionBrush;
+    private readonly SolidColorBrush _nonDarkModeActiveCaptionBrush;
+    private readonly SolidColorBrush _nonDarkModeDeactiveCaptionBrush;
 
     private bool _isClosing;
     private WindowActivationState _currentActivationState = WindowActivationState.Deactivated;
 
     // Constants that control window sizes
     private const int WindowPositionOffsetY = 30;
-    private const int FloatingHorizontalBarHeight = 70;
+    private const int FloatingHorizontalBarHeight = 90;
+    private const int FloatingHorizontalBarHeightWithExpandedCommandBar = 130;
     private const int DefaultExpandedViewTop = 30;
     private const int DefaultExpandedViewLeft = 100;
     private const int RightSideGap = 10;
@@ -86,6 +104,19 @@ public partial class BarWindowHorizontal : WindowEx
         _restoreState.Height = settingSize.Height;
         _restoreState.Width = settingSize.Width;
         ExpandCollapseLayoutButtonText.Text = _viewModel.ShowingExpandedContent ? CollapseButtonText : ExpandButtonText;
+
+        // Precreate the brushes for the caption buttons
+        // In Dark Mode, the active state is white, and the deactive state is translucent white
+        // In Light Mode, the active state is black, and the deactive state is translucent black
+        Windows.UI.Color color = Colors.White;
+        _darkModeActiveCaptionBrush = new SolidColorBrush(color);
+        color.A = 0x66;
+        _darkModeDeactiveCaptionBrush = new SolidColorBrush(color);
+
+        color = Colors.Black;
+        _nonDarkModeActiveCaptionBrush = new SolidColorBrush(color);
+        color.A = 0x66;
+        _nonDarkModeDeactiveCaptionBrush = new SolidColorBrush(color);
 
         _uiSettings.ColorValuesChanged += (sender, args) =>
         {
@@ -135,8 +166,226 @@ public partial class BarWindowHorizontal : WindowEx
 
         SetRegionsForTitleBar();
 
+        PopulateCommandBar();
+        ((INotifyCollectionChanged)ExternalToolsHelper.Instance.AllExternalTools).CollectionChanged += AllExternalTools_CollectionChanged;
+
         // Now that the position is set correctly show the window
         this.Show();
+    }
+
+    public void PopulateCommandBar()
+    {
+        AddManageToolsOptionToCommandBar();
+
+        foreach (ExternalTool tool in ExternalToolsHelper.Instance.AllExternalTools)
+        {
+            AddToolToCommandBar(tool);
+        }
+    }
+
+    private AppBarButton CreateAppBarButton(ExternalTool tool, PinOption pinOption)
+    {
+        AppBarButton button = new AppBarButton
+        {
+            Label = tool.Name,
+            Tag = tool,
+        };
+
+        button.Icon = new ImageIcon
+        {
+            Source = tool.ToolIcon,
+        };
+
+        button.Click += _viewModel.ExternalToolButton_Click;
+        button.ContextFlyout = CreateMenuFlyout(tool, pinOption);
+
+        ToolTipService.SetToolTip(button, tool.Name);
+
+        return button;
+    }
+
+    private MenuFlyout CreateMenuFlyout(ExternalTool tool, PinOption pinOption)
+    {
+        MenuFlyout menu = new MenuFlyout();
+        menu.Items.Add(CreatePinMenuItem(tool, pinOption));
+        menu.Items.Add(CreateUnregisterMenuItem(tool));
+
+        return menu;
+    }
+
+    private void AddToolToCommandBar(ExternalTool tool)
+    {
+        // We create 2 copies of the button, one for the primary commands list and one for the secondary commands list.
+        // We're not allowed to put the same button in both lists.
+        AppBarButton primaryCommandButton = CreateAppBarButton(tool, PinOption.UnPin); // The primary button should always have the unpin option
+        AppBarButton secondaryCommandButton = CreateAppBarButton(tool, tool.IsPinned ? PinOption.UnPin : PinOption.Pin); // The secondary button is dynamic
+
+        // If a tool is pinned, we'll add it to the primary commands list.
+        if (tool.IsPinned)
+        {
+            MyCommandBar.PrimaryCommands.Add(primaryCommandButton);
+        }
+
+        // We'll always add all tools to the secondary commands list.
+        MyCommandBar.SecondaryCommands.Add(secondaryCommandButton);
+
+        tool.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(ExternalTool.ToolIcon))
+            {
+                // An ImageIcon can only be set once, so we can't share it with both buttons
+                primaryCommandButton.Icon = new ImageIcon
+                {
+                    Source = tool.ToolIcon,
+                };
+
+                secondaryCommandButton.Icon = new ImageIcon
+                {
+                    Source = tool.ToolIcon,
+                };
+            }
+            else if (args.PropertyName == nameof(ExternalTool.IsPinned))
+            {
+                // If a tool is pinned, we'll add it to the primary commands list, otherwise the secondary commands list
+                secondaryCommandButton.ContextFlyout = CreateMenuFlyout(tool, tool.IsPinned ? PinOption.UnPin : PinOption.Pin);
+
+                if (tool.IsPinned)
+                {
+                    MyCommandBar.PrimaryCommands.Add(primaryCommandButton);
+                }
+                else
+                {
+                    MyCommandBar.PrimaryCommands.Remove(primaryCommandButton);
+                }
+
+                EvaluateLocationOfManageToolsButton();
+            }
+        };
+    }
+
+    private void EvaluateLocationOfManageToolsButton()
+    {
+        // If there are pinned tools (registered as primary commands), then move the Manage Tools button to the secondary command list
+        if (MyCommandBar.PrimaryCommands.Count > 1 &&
+            MyCommandBar.PrimaryCommands[0] is AppBarButton button &&
+            button.Command == _viewModel.ManageExternalToolsButtonCommand)
+        {
+            MyCommandBar.PrimaryCommands.Remove(button);
+            AddManageToolsOptionToCommandBar();
+        }
+
+        // If we don't have any more primary commands, move the Manage Tools Option from the secondary commands to the primary commands
+        else if (MyCommandBar.PrimaryCommands.Count == 0)
+        {
+            // The first two items in the secondary commands list should be the tool management button and a separator
+            Debug.Assert(MyCommandBar.SecondaryCommands.Count >= 2 && MyCommandBar.SecondaryCommands[0] is AppBarButton toolsBtn && toolsBtn.Command == _viewModel.ManageExternalToolsButtonCommand, "Where did tools button go?");
+            Debug.Assert(MyCommandBar.SecondaryCommands.Count >= 2 && MyCommandBar.SecondaryCommands[1] is AppBarSeparator, "Where did the separator go?");
+
+            MyCommandBar.SecondaryCommands.RemoveAt(1);
+            MyCommandBar.SecondaryCommands.RemoveAt(0);
+            AddManageToolsOptionToCommandBar();
+        }
+    }
+
+    private void AddManageToolsOptionToCommandBar()
+    {
+        // Put in the "manage tools" button
+        AppBarButton manageToolsButton = new AppBarButton
+        {
+            Label = _manageToolsMenuItemText,
+            Icon = new FontIcon() { Glyph = ManageToolsButtonText },
+            Command = _viewModel.ManageExternalToolsButtonCommand,
+        };
+
+        // If there aren't any pinned tools, then put this in as a primary command
+        if (ExternalToolsHelper.Instance.FilteredExternalTools.Count == 0)
+        {
+            MyCommandBar.PrimaryCommands.Add(manageToolsButton);
+        }
+        else
+        {
+            // Otherwise, put this at the at the top of the secondary command list
+            MyCommandBar.SecondaryCommands.Insert(0, manageToolsButton);
+            MyCommandBar.SecondaryCommands.Insert(1, new AppBarSeparator());
+        }
+    }
+
+    private MenuFlyoutItem CreatePinMenuItem(ExternalTool tool, PinOption pinOption)
+    {
+        MenuFlyoutItem item = new MenuFlyoutItem
+        {
+            Text = pinOption == PinOption.Pin ? _pinMenuItemText : _unpinMenuItemText,
+            Command = tool.TogglePinnedStateCommand,
+            Icon = new FontIcon() { Glyph = tool.PinGlyph },
+        };
+
+        return item;
+    }
+
+    private MenuFlyoutItem CreateUnregisterMenuItem(ExternalTool tool)
+    {
+        MenuFlyoutItem unRegister = new MenuFlyoutItem
+        {
+            Text = _unregisterMenuItemText,
+            Command = tool.UnregisterToolCommand,
+            Icon = new FontIcon() { Glyph = "\uECC9" },
+        };
+
+        return unRegister;
+    }
+
+    private void AllExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
+            {
+                if (e.NewItems is not null)
+                {
+                    foreach (ExternalTool newItem in e.NewItems)
+                    {
+                        AddToolToCommandBar(newItem);
+                    }
+                }
+
+                break;
+            }
+
+            case NotifyCollectionChangedAction.Remove:
+            {
+                Debug.Assert(e.OldItems is not null, "Why is old items null");
+                foreach (ExternalTool oldItem in e.OldItems)
+                {
+                    if (oldItem.IsPinned)
+                    {
+                        // Find this item in the command bar
+                        AppBarButton? pinnedButton = MyCommandBar.PrimaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
+                        if (pinnedButton is not null)
+                        {
+                            MyCommandBar.PrimaryCommands.Remove(pinnedButton);
+                        }
+                        else
+                        {
+                            Debug.Assert(false, "Could not find button for tool");
+                        }
+                    }
+
+                    AppBarButton? button = MyCommandBar.SecondaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
+                    if (button is not null)
+                    {
+                        MyCommandBar.SecondaryCommands.Remove(button);
+                    }
+                    else
+                    {
+                        Debug.Assert(false, "Could not find button for tool");
+                    }
+                }
+
+                break;
+            }
+        }
+
+        EvaluateLocationOfManageToolsButton();
     }
 
     public void SetRegionsForTitleBar()
@@ -213,6 +462,9 @@ public partial class BarWindowHorizontal : WindowEx
             barWindow?.Close();
             _isClosing = false;
         }
+
+        // Unsubscribe from the activation handler
+        Activated -= Window_Activated;
     }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -296,7 +548,6 @@ public partial class BarWindowHorizontal : WindowEx
         // Make sure we cache the state before switching to collapsed bar.
         CacheRestoreState();
         LargeContentPanel.Visibility = Visibility.Collapsed;
-        MaxHeight = FloatingHorizontalBarHeight;
     }
 
     internal void NavigateTo(Type viewModelType)
@@ -359,17 +610,24 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void UpdateCustomTitleBarButtonsTextColor()
     {
+        FrameworkElement? rootElement = Content as FrameworkElement;
+        Debug.Assert(rootElement != null, "Expected Content to be a FrameworkElement");
+
         if (_currentActivationState == WindowActivationState.Deactivated)
         {
-            SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
-            ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
-            RotateLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"];
+            SolidColorBrush brush = (rootElement.ActualTheme == ElementTheme.Dark) ? _darkModeDeactiveCaptionBrush : _nonDarkModeDeactiveCaptionBrush;
+
+            SnapButtonText.Foreground = brush;
+            ExpandCollapseLayoutButtonText.Foreground = brush;
+            RotateLayoutButtonText.Foreground = brush;
         }
         else
         {
-            SnapButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
-            ExpandCollapseLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
-            RotateLayoutButtonText.Foreground = (SolidColorBrush)Application.Current.Resources["WindowCaptionForeground"];
+            SolidColorBrush brush = (rootElement.ActualTheme == ElementTheme.Dark) ? _darkModeActiveCaptionBrush : _nonDarkModeActiveCaptionBrush;
+
+            SnapButtonText.Foreground = brush;
+            ExpandCollapseLayoutButtonText.Foreground = brush;
+            RotateLayoutButtonText.Foreground = brush;
         }
     }
 }

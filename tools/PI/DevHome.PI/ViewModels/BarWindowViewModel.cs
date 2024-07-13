@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
@@ -14,19 +16,23 @@ using DevHome.PI.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Serilog;
 using Windows.Graphics;
 using Windows.System;
+using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace DevHome.PI.ViewModels;
 
 public partial class BarWindowViewModel : ObservableObject
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(BarWindowViewModel));
+
     private const string UnsnapButtonText = "\ue89f";
     private const string SnapButtonText = "\ue8a0";
 
     private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
-    private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
     private readonly string _unsnapToolTip = CommonHelper.GetLocalizedString("UnsnapToolTip");
     private readonly string _snapToolTip = CommonHelper.GetLocalizedString("SnapToolTip");
     private readonly string _expandToolTip = CommonHelper.GetLocalizedString("SwitchToLargeLayoutToolTip");
@@ -94,6 +100,9 @@ public partial class BarWindowViewModel : ObservableObject
     [ObservableProperty]
     private PointInt32 _windowPosition;
 
+    [ObservableProperty]
+    private SizeInt32 _requestedWindowSize;
+
     internal HWND? ApplicationHwnd { get; private set; }
 
     public BarWindowViewModel()
@@ -111,7 +120,7 @@ public partial class BarWindowViewModel : ObservableObject
 
         var process = TargetAppData.Instance.TargetProcess;
 
-        // Show either the process chooser, or the app bar. Not both
+        // Show either the result chooser, or the app bar. Not both
         IsProcessChooserVisible = process is null;
         IsAppBarVisible = !IsProcessChooserVisible;
         if (IsAppBarVisible)
@@ -287,7 +296,7 @@ public partial class BarWindowViewModel : ObservableObject
 
             _dispatcher.TryEnqueue(() =>
             {
-                // The App status bar is only visible if we're attached to a process
+                // The App status bar is only visible if we're attached to a result
                 IsAppBarVisible = process is not null;
 
                 if (process is not null)
@@ -296,7 +305,7 @@ public partial class BarWindowViewModel : ObservableObject
                     ApplicationName = process.ProcessName;
                 }
 
-                // Conversely, the process chooser is only visible if we're not attached to a process
+                // Conversely, the result chooser is only visible if we're not attached to a result
                 IsProcessChooserVisible = process is null;
             });
         }
@@ -364,18 +373,25 @@ public partial class BarWindowViewModel : ObservableObject
         InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
     }
 
-    private void InvokeTool(ExternalTool tool, int? pid, HWND hWnd)
+    private async void InvokeTool(ExternalTool tool, int? pid, HWND hWnd)
     {
-        var process = tool.Invoke(pid, hWnd);
-        if (process is null)
+        try
         {
-            // A ContentDialog only renders in the space its parent occupies. Since the parent is a narrow
-            // bar, the dialog doesn't have enough space to render. So, we'll use MessageBox to display errors.
-            Windows.Win32.PInvoke.MessageBox(
-                HWND.Null, // ThisHwnd,
-                string.Format(CultureInfo.CurrentCulture, _errorMessageText, tool.Executable),
-                _errorTitleText,
-                Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_STYLE.MB_ICONERROR);
+            var process = await tool.Invoke(pid, hWnd);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Tool launched failed");
+
+            var builder = new StringBuilder();
+            builder.AppendLine(ex.Message);
+            if (ex.InnerException is not null)
+            {
+                builder.AppendLine(ex.InnerException.Message);
+            }
+
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, builder.ToString(), tool.Executable);
+            PInvoke.MessageBox(HWND.Null, errorMessage, _errorTitleText, MESSAGEBOX_STYLE.MB_ICONERROR);
         }
     }
 

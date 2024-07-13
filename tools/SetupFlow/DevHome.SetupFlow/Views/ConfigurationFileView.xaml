@@ -50,7 +50,6 @@
             </DataTemplate>
             <Style TargetType="ListView" x:Key="KeyValueList">
                 <Setter Property="SelectionMode" Value="None" />
-                <Setter Property="Margin" Value="10,0" />
                 <Setter Property="ItemContainerStyle">
                     <Setter.Value>
                         <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
@@ -61,6 +60,9 @@
                         </Style>
                     </Setter.Value>
                 </Setter>
+            </Style>
+            <Style TargetType="ListView" x:Key="KeyValueSubList" BasedOn="{StaticResource KeyValueList}">
+                <Setter Property="Margin" Value="10,0" />
             </Style>
             <x:Double x:Key="SectionSpacing">10</x:Double>
             <Thickness x:Key="BlockThickness">0,0,0,5</Thickness>
@@ -146,7 +148,7 @@
                                 <ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto">
                                     <StackPanel>
                                         <!-- Individual records -->
-                                        <ListView Margin="{StaticResource BlockThickness}" Style="{StaticResource KeyValueList}" ItemTemplate="{StaticResource KeyValueTemplate}">
+                                        <ListView Margin="{StaticResource BlockThickness}" Style="{StaticResource KeyValueSubList}" ItemTemplate="{StaticResource KeyValueTemplate}">
                                             <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Id" Value="{x:Bind Id}" />
                                             <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_Intent" Value="{x:Bind Intent}" />
                                         </ListView>
@@ -155,7 +157,7 @@
                                         <StackPanel Margin="{StaticResource BlockThickness}" Orientation="Horizontal" Visibility="{x:Bind Dependencies, Converter={StaticResource CollectionVisibilityConverter}}">
                                             <TextBlock x:Uid="ConfigurationUnit_Dependencies" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                             <TextBlock Text=":" Margin="2,0" />
-                                            <ListView Style="{StaticResource KeyValueList}" ItemsSource="{x:Bind Dependencies}">
+                                            <ListView Style="{StaticResource KeyValueSubList}" ItemsSource="{x:Bind Dependencies}">
                                                 <ListView.ItemsPanel>
                                                     <ItemsPanelTemplate>
                                                         <StackPanel Spacing="2" Orientation="Horizontal" />
@@ -176,19 +178,19 @@
                                         <!-- Metadata -->
                                         <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Metadata, Converter={StaticResource CollectionVisibilityConverter}}">
                                             <TextBlock x:Uid="ConfigurationUnit_ResourceMetadata" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
-                                            <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{ThemeResource KeyValueTemplate}" ItemsSource="{x:Bind Metadata}"/>
+                                            <ListView Style="{ThemeResource KeyValueSubList}" ItemTemplate="{ThemeResource KeyValueTemplate}" ItemsSource="{x:Bind Metadata}"/>
                                         </StackPanel>
 
                                         <!-- Settings -->
                                         <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
                                             <TextBlock x:Uid="ConfigurationUnit_Settings" Style="{ThemeResource BodyStrongTextBlockStyle}" />
-                                            <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{ThemeResource KeyValueTemplate}" ItemsSource="{x:Bind Settings}"/>
+                                            <ListView Style="{ThemeResource KeyValueSubList}" ItemTemplate="{ThemeResource KeyValueTemplate}" ItemsSource="{x:Bind Settings}"/>
                                         </StackPanel>
 
                                         <!-- Details -->
                                         <StackPanel Margin="{StaticResource BlockThickness}" Visibility="{x:Bind Settings, Converter={StaticResource CollectionVisibilityConverter}}">
                                             <TextBlock x:Uid="ConfigurationUnit_Details" Style="{ThemeResource BodyStrongTextBlockStyle}" />
-                                            <ListView Style="{ThemeResource KeyValueList}" ItemTemplate="{StaticResource KeyValueTemplate}">
+                                            <ListView Style="{ThemeResource KeyValueSubList}" ItemTemplate="{StaticResource KeyValueTemplate}">
                                                 <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitType" Value="{x:Bind UnitType}" />
                                                 <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitDescription" Value="{x:Bind UnitDescription}" />
                                                 <local:ConfigurationUnitDataEntry x:Uid="ConfigurationUnit_UnitDocumentation" Value="{x:Bind UnitDocumentationUri}" />
