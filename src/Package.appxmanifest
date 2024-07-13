@@ -68,13 +68,6 @@
         </com:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="WslExtensionServer.exe" Arguments="-RegisterProcessAsComServer" DisplayName="WslExtensionServer">
-              <com:Class Id="121253AB-BA5D-4E73-99CF-25A2CB8BF173" DisplayName="WslExtensionServer" />
-            </com:ExeServer>
-          </com:ComServer>
-        </com:Extension>
-        <com:Extension Category="windows.comServer">
-          <com:ComServer>
             <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="CoreWidgetProvider">
               <com:Class Id="F8B2DBB9-3687-4C6E-99B2-B92C82905937" DisplayName="CoreWidgetProvider" />
             </com:ExeServer>
@@ -84,6 +77,20 @@
           <com:ComServer>
             <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Core Extension">
               <com:Class Id="426A52D6-8007-4894-A946-CF80F39507F1" DisplayName="Core Extension" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="DevHome.FileExplorerSourceControlIntegration.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Source Control Core">
+              <com:Class Id="40FE4D6E-C9A0-48b4-A83E-AAA1D002C0D5" DisplayName="Core Extension" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="FileExplorerGitIntegration.exe" Arguments="-RegisterProcessAsComServer" DisplayName="LocalRepositoryProvider">
+              <com:Class Id="BDA76685-E749-4f09-8F13-C466D0802DA1" DisplayName="LocalRepositoryProvider" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
@@ -115,14 +122,14 @@
           </uap3:AppExtension>
         </uap3:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID3" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameWslExt" Description="ms-resource:AppDescriptionWslExt">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID3" PublicFolder="Public" DisplayName="Git" Description="ms-resource:AppDescriptionGitExt">
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>
-                  <CreateInstance ClassId="121253AB-BA5D-4E73-99CF-25A2CB8BF173" />
+                  <CreateInstance ClassId="BDA76685-E749-4f09-8F13-C466D0802DA1" />
                 </Activation>
                 <SupportedInterfaces>
-                  <ComputeSystem />
+                  <LocalRepository />
                 </SupportedInterfaces>
               </DevHomeProvider>
             </uap3:Properties>
@@ -305,23 +312,6 @@
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
-      </Extensions>
-    </Application>
-    <Application Id="Devhome.PI" Executable="DevHome.PI.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="ms-resource:PIDisplayName" Description="ms-resource:PIAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" AppListEntry="none">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
-      </uap:VisualElements>
-      <Extensions>
-        <!-- Limitations in Microsoft.Extension.Configuration require this to be a key=value pair.-->
-        <uap5:Extension Category="windows.startupTask" uap10:Parameters="/startuptask=true">
-          <uap5:StartupTask TaskId="DevHome.PI.Hotkey" Enabled="true" DisplayName="ms-resource:PIStartupTaskDisplayName" />
-        </uap5:Extension>
-        <uap3:Extension Category="windows.appExecutionAlias" Executable="DevHome.PI.exe" EntryPoint="Windows.FullTrustApplication" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
-          <uap3:AppExecutionAlias>
-            <desktop:ExecutionAlias Alias="devhome.pi.exe" />
-          </uap3:AppExecutionAlias>
-        </uap3:Extension>
       </Extensions>
     </Application>
     <Application Id="DevHome.HostsFileEditor" Executable="DevHome.HostsFileEditor.exe" EntryPoint="Windows.FullTrustApplication">

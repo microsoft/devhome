@@ -545,22 +545,6 @@
     <value>View logs</value>
     <comment>Click on this if you want to see Dev Home's logs on your machine.</comment>
   </data>
-  <data name="EnvironmentsManagementPage_Description" xml:space="preserve">
-    <value>Manage your local and cloud development virtual machines from Dev Home</value>
-    <comment>Text within a display card that explains what users can do with the Environments management feature. Users can choose to toggle this on/off to add or remove the feature.</comment>
-  </data>
-  <data name="EnvironmentsManagementPage_Name" xml:space="preserve">
-    <value>Environments Management</value>
-    <comment>Title text for the Environments management feature.</comment>
-  </data>
-  <data name="EnvironmentsSetupTargetFlow_Description" xml:space="preserve">
-    <value>Configure your local and cloud development virtual machines from Dev Home</value>
-    <comment>Text within a display card that explains what users can do with the Environments configuration feature. Users can choose to toggle this on/off to add or remove the feature.</comment>
-  </data>
-  <data name="EnvironmentsSetupTargetFlow_Name" xml:space="preserve">
-    <value>Environments Configuration</value>
-    <comment>Title text for the Environments configuration feature.</comment>
-  </data>
   <data name="QuietBackgroundProcessesExperiment_Name" xml:space="preserve">
     <value>Quiet background processes</value>
     <comment>Name of experimental feature 'Quiet background processes' on the 'Settings -> Experiments' page where you enable it.</comment>
@@ -569,12 +553,12 @@
     <value>Quiet background processes allows you to free up resources while developing</value>
     <comment>Inline description of the Quiet background processes experimental feature on the 'Settings -> Experiments' page where you enable it.</comment>
   </data>
-	<data name="EnvironmentsCreationFlow_Description" xml:space="preserve">
-    <value>Create a local or cloud machine from Dev Home</value>
-    <comment>Text within a display card that explains what users can do with the Environments creation feature. Users can choose to toggle this on/off to add or remove the feature.</comment>
+  <data name="FileExplorerSourceControlIntegration_Name" xml:space="preserve">
+    <value>File Explorer Source Control Integration</value>
+    <comment>Name of experimental feature 'FileExplorer SourceControl Integration' on the 'Settings -> Experiments' page where you enable it.</comment>
   </data>
-	<data name="EnvironmentsCreationFlow_Name" xml:space="preserve">
-    <value>Environments Creation</value>
-    <comment>Title text for the Environments creation feature.</comment>
+  <data name="FileExplorerSourceControlIntegration_Description" xml:space="preserve">
+    <value>View property information (such as commit status, last commit date etc.) from source control technologies inside FileExplorer</value>
+    <comment>Inline description of the FileExplorerSourceControlIntegration experimental feature on the 'Settings -> Experiments' page where you enable it.</comment>
   </data>
 </root>
