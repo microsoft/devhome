@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Extensions;
@@ -101,14 +102,8 @@ public sealed partial class AccountsPage : Page
     {
         try
         {
-            var adaptiveCardSessionResult = accountProvider.DeveloperIdProvider.GetLoginAdaptiveCardSession();
-            if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
-            {
-                GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
-                return;
-            }
-
-            var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
+            string[] args = { loginEntryPoint };
+            var loginUIAdaptiveCardController = accountProvider.DeveloperIdProvider.GetAdaptiveCardController(args);
             var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
             var renderer = new AdaptiveCardRenderer();
             await ConfigureLoginUIRenderer(renderer);
@@ -139,7 +134,7 @@ public sealed partial class AccountsPage : Page
 
     private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer)
     {
-        var dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        Microsoft.UI.Dispatching.DispatcherQueue dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
         renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
@@ -213,30 +208,15 @@ public sealed partial class AccountsPage : Page
 
     private async Task InitiateAddAccountUserExperienceAsync(Page parentPage, AccountsProviderViewModel accountProvider)
     {
-        var authenticationFlow = accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind();
-        if (authenticationFlow == AuthenticationExperienceKind.CardSession)
+        if (accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CardSession)
         {
             await ShowLoginUIAsync("Settings", parentPage, accountProvider);
         }
-        else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
+        else if (accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CustomProvider)
         {
             IntPtr windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
             WindowId windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
-            try
-            {
-                var developerIdResult = await accountProvider.DeveloperIdProvider.ShowLogonSession(windowPtr);
-                if (developerIdResult.Result.Status == ProviderOperationStatus.Failure)
-                {
-                    GlobalLog.Logger?.ReportError($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                GlobalLog.Logger?.ReportError($"Exception thrown while calling {nameof(accountProvider.DeveloperIdProvider)}.{nameof(accountProvider.DeveloperIdProvider.ShowLogonSession)}: ", ex);
-            }
-
-            accountProvider.RefreshLoggedInAccounts();
+            await accountProvider.DeveloperIdProvider.ShowLogonSession(windowPtr);
         }
     }
 }
