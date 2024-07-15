@@ -59,8 +59,7 @@ public partial class DevHomeLaunchContentDialogButton : IDevHomeSettingsCardNonS
             return;
         }
 
-        var themeResource = Application.Current.GetService<IThemeSelectorService>();
-        var dialog = new ContentDialogWithNonInteractiveContent(dialogContent, themeResource);
+        var dialog = new ContentDialogWithNonInteractiveContent(dialogContent);
 
         dialog.XamlRoot = senderObj.XamlRoot;
 

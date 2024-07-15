@@ -21,9 +21,11 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
 
     private readonly DevHomeContentDialogContent _content;
 
-    public ContentDialogWithNonInteractiveContent(DevHomeContentDialogContent content, IThemeSelectorService themeSelector)
+    public ContentDialogWithNonInteractiveContent(DevHomeContentDialogContent content)
     {
         this.InitializeComponent();
+
+        _themeSelector = Application.Current.GetService<IThemeSelectorService>();
 
         // Since we use the renderer service to allow the card to receive theming updates, we need to ensure the UI thread is used.
         var dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
@@ -39,12 +41,11 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
             };
 
             // Set the theme of the content dialog box
-            RequestedTheme = themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
+            RequestedTheme = _themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
             SecondaryButtonText = content.SecondaryButtonText;
             this.Focus(FocusState.Programmatic);
         });
 
-        _themeSelector = themeSelector;
         _themeSelector.ThemeChanged += OnThemeChanged;
         _content = content;
     }
