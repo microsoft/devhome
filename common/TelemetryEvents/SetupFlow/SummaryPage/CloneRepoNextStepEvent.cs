@@ -15,7 +15,7 @@ public class CloneRepoNextStepEvent : EventBase
 
     public string RepoName { get; }
 
-    public override PartA_PrivTags PartA_PrivTags => PartA_PrivTags.ProductAndServicePerformance;
+    public override PartA_PrivTags PartA_PrivTags => PartA_PrivTags.ProductAndServiceUsage;
 
     public CloneRepoNextStepEvent(string operation, string repoName)
     {
