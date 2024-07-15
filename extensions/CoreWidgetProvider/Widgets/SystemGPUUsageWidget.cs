@@ -13,16 +13,16 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
 {
     private static Dictionary<string, string> Templates { get; set; } = new();
 
-    private readonly DataManager dataManager;
+    private readonly DataManager _dataManager;
 
-    private readonly string gpuActiveEngType = "3D";
+    private readonly string _gpuActiveEngType = "3D";
 
-    private int gpuActiveIndex;
+    private int _gpuActiveIndex;
 
     public SystemGPUUsageWidget()
         : base()
     {
-        dataManager = new(DataType.GPU, UpdateWidget);
+        _dataManager = new(DataType.GPU, UpdateWidget);
     }
 
     private string SpeedToString(float cpuSpeed)
@@ -43,13 +43,13 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
         {
             var gpuData = new JsonObject();
 
-            var stats = dataManager.GetGPUStats();
-            var gpuName = stats.GetGPUName(gpuActiveIndex);
+            var stats = _dataManager.GetGPUStats();
+            var gpuName = stats.GetGPUName(_gpuActiveIndex);
 
-            gpuData.Add("gpuUsage", FloatToPercentString(stats.GetGPUUsage(gpuActiveIndex, gpuActiveEngType)));
+            gpuData.Add("gpuUsage", FloatToPercentString(stats.GetGPUUsage(_gpuActiveIndex, _gpuActiveEngType)));
             gpuData.Add("gpuName", gpuName);
-            gpuData.Add("gpuTemp", stats.GetGPUTemperature(gpuActiveIndex));
-            gpuData.Add("gpuGraphUrl", stats.CreateGPUImageUrl(gpuActiveIndex));
+            gpuData.Add("gpuTemp", stats.GetGPUTemperature(_gpuActiveIndex));
+            gpuData.Add("gpuGraphUrl", stats.CreateGPUImageUrl(_gpuActiveIndex));
             gpuData.Add("chartHeight", ChartHelper.ChartHeight + "px");
             gpuData.Add("chartWidth", ChartHelper.ChartWidth + "px");
 
@@ -93,13 +93,13 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
 
     private void HandlePrevGPU(WidgetActionInvokedArgs args)
     {
-        gpuActiveIndex = dataManager.GetGPUStats().GetPrevGPUIndex(gpuActiveIndex);
+        _gpuActiveIndex = _dataManager.GetGPUStats().GetPrevGPUIndex(_gpuActiveIndex);
         UpdateWidget();
     }
 
     private void HandleNextGPU(WidgetActionInvokedArgs args)
     {
-        gpuActiveIndex = dataManager.GetGPUStats().GetNextGPUIndex(gpuActiveIndex);
+        _gpuActiveIndex = _dataManager.GetGPUStats().GetNextGPUIndex(_gpuActiveIndex);
         UpdateWidget();
     }
 
@@ -133,7 +133,7 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
             LoadContentData();
         }
 
-        dataManager.Start();
+        _dataManager.Start();
 
         LogCurrentState();
         UpdateWidget();
@@ -141,7 +141,7 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
 
     protected override void SetInactive()
     {
-        dataManager.Stop();
+        _dataManager.Stop();
 
         ActivityState = WidgetActivityState.Inactive;
 
@@ -150,7 +150,7 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
 
     protected override void SetDeleted()
     {
-        dataManager.Stop();
+        _dataManager.Stop();
 
         SetState(string.Empty);
         ActivityState = WidgetActivityState.Unknown;
@@ -159,6 +159,6 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
 
     public void Dispose()
     {
-        dataManager.Dispose();
+        _dataManager.Dispose();
     }
 }

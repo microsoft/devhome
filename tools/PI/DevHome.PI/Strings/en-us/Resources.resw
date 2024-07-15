@@ -127,27 +127,23 @@
   </data>
   <data name="PinMenuItemText" xml:space="preserve">
     <value>Pin</value>
-    <comment>A label for the menuitem to pin a tool on the bar.</comment>
+    <comment>A label for the menu item to pin a tool on the bar.</comment>
   </data>
   <data name="UnregisterMenuItem.Text" xml:space="preserve">
     <value>Unregister</value>
     <comment>The label for Unregister menu flyout for an icon in the toolbar. This will cause the program to no longer be registered with the bar.</comment>
   </data>
-  <data name="SwitchLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="RotateLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Switch between horizontal and vertical layout</value>
     <comment>The tooltip for a button which toggles the orientation of the bar between horizontal and vertical</comment>
   </data>
   <data name="DissociateButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Dissociate so that Project Ironsides is not tracking any app</value>
-    <comment>Locked="{Ironsides}" The tooltip for a button which causes Project Ironsides to no longer track any app</comment>
+    <comment>{Locked="Ironsides"} The tooltip for a button which causes Project Ironsides to no longer track any app</comment>
   </data>
-  <data name="SwitchToLargeLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Expand or collapse the large content panel</value>
-    <comment>The tooltip for a button which expands or collapses the large content panel.</comment>
-  </data>
-  <data name="UnSnapButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Un-snap: make the bar free-floating</value>
-    <comment>The tooltip for a button that causes the bar to unsnap from the current window.</comment>
+  <data name="SwitchToLargeLayoutToolTip" xml:space="preserve">
+    <value>Expand the large content panel</value>
+    <comment>The tooltip for a button which expands the large content panel.</comment>
   </data>
   <data name="ReSnapButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Snap the bar to the current foreground window</value>
@@ -167,23 +163,23 @@
   </data>
   <data name="ToolLaunchErrorMessage" xml:space="preserve">
     <value>Failed to launch: {0}</value>
-    <comment>Locked={"{0}"} Text for when there was an error launching an external tool. {0} is the name of an executable(.exe) file.</comment>
+    <comment>{Locked="{0}"} Text for when there was an error launching an external tool. {0} is the name of an executable(.exe) file.</comment>
   </data>
   <data name="AppDetailsTextBlock.Text" xml:space="preserve">
     <value>App details</value>
-    <comment>The contents of a text block refering to details about an application.</comment>
+    <comment>The contents of a text block referring to details about an application.</comment>
   </data>
   <data name="IDTextBlock.Text" xml:space="preserve">
     <value>ID</value>
-    <comment>The contents of a text block refering to identity (ID) of an application.</comment>
+    <comment>The contents of a text block referring to identity (ID) of an application.</comment>
   </data>
   <data name="BasePriorityTextBlock.Text" xml:space="preserve">
     <value>Base priority</value>
-    <comment>The contents of a text block refering to base CPU priority of an application.</comment>
+    <comment>The contents of a text block referring to base CPU priority of an application.</comment>
   </data>
   <data name="PriorityClassTextBlock.Text" xml:space="preserve">
     <value>Priority class</value>
-    <comment>The contents of a text block refering to scheduling priority of an application.</comment>
+    <comment>The contents of a text block referring to scheduling priority of an application.</comment>
   </data>
   <data name="MainModuleTextBlock.Text" xml:space="preserve">
     <value>Main module</value>
@@ -203,15 +199,15 @@
   </data>
   <data name="ModulesHeaderTextBlock.Text" xml:space="preserve">
     <value>Loaded modules</value>
-    <comment>The contents of a text block refering to loaded application modules.</comment>
+    <comment>The contents of a text block referring to loaded application modules.</comment>
   </data>
   <data name="FileVersionInfoTextBlock.Text" xml:space="preserve">
     <value>File Version Info</value>
-    <comment>The contents of a text block refering to version of the module file loaded by an application.</comment>
+    <comment>The contents of a text block referring to version of the module file loaded by an application.</comment>
   </data>
   <data name="MemorySizeTextBlock.Text" xml:space="preserve">
     <value>Memory Size</value>
-    <comment>The contents of a text block refering to size in memory of the module.</comment>
+    <comment>The contents of a text block referring to size in memory of the module.</comment>
   </data>
   <data name="FilterDropDown.Text" xml:space="preserve">
     <value>Filter...</value>
@@ -263,7 +259,7 @@
   </data>
   <data name="ResourceUsageHeaderTextBlock.Text" xml:space="preserve">
     <value>Resource usage</value>
-    <comment>The contents of a text block refering to process resource usage information.</comment>
+    <comment>The contents of a text block referring to process resource usage information.</comment>
   </data>
   <data name="IsRespondingTextblock.Text" xml:space="preserve">
     <value>Is responding</value>
@@ -291,7 +287,7 @@
   </data>
   <data name="TimeGeneratedColumn.Header" xml:space="preserve">
     <value>Time generated</value>
-    <comment>The time at which the watson report was generated.</comment>
+    <comment>The time at which the Watson report was generated.</comment>
   </data>
   <data name="FaultingExecutableColumn.Header" xml:space="preserve">
     <value>Faulting executable</value>
@@ -303,7 +299,7 @@
   </data>
   <data name="WinLogsHeaderTextBlock.Text" xml:space="preserve">
     <value>Windows logs</value>
-    <comment>The contents of a text block refering to Windows logs.</comment>
+    <comment>The contents of a text block referring to Windows logs.</comment>
   </data>
   <data name="EtwCheckbox.ToolTipService.ToolTip" xml:space="preserve">
     <value>Event Tracing for Windows (ETW) logs</value>
@@ -319,7 +315,7 @@
   </data>
   <data name="WatsonCheckbox.ToolTipService.ToolTip" xml:space="preserve">
     <value>Entries from the event log for the target app</value>
-    <comment>Tooltip for whether to watson report logs in the log view output.</comment>
+    <comment>Tooltip for whether to Watson report logs in the log view output.</comment>
   </data>
   <data name="ClearWinLogsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Clear the list</value>
@@ -361,25 +357,9 @@
     <value>None</value>
     <comment>Refers to the type of data being shown</comment>
   </data>
-  <data name="HwndRadio.Content" xml:space="preserve">
-    <value>Hwnd</value>
-    <comment>Refers to a Windows operating system data type (HWND) a window handle</comment>
-  </data>
-  <data name="ProcessIdRadio.Content" xml:space="preserve">
-    <value>ProcessId</value>
-    <comment>Refers to a Windows operating system process identifier (PID)</comment>
-  </data>
   <data name="PrefixTextBlock.Text" xml:space="preserve">
     <value>Prefix (if any)</value>
     <comment>Refers to arguments that can be passed to a process when it is created</comment>
-  </data>
-  <data name="OtherArgumentsTextBlock.Text" xml:space="preserve">
-    <value>Any other arguments</value>
-    <comment>Refers to arguments that can be passed to a process when it is created</comment>
-  </data>
-  <data name="SampleCommandLineTextBlock.Text" xml:space="preserve">
-    <value>Sample command line</value>
-    <comment>What the commandline to start the executable/application will look like</comment>
   </data>
   <data name="AddToolsOkButton.Content" xml:space="preserve">
     <value>OK</value>
@@ -511,7 +491,7 @@
   </data>
   <data name="RunElevatedButton.Content" xml:space="preserve">
     <value>Run Project Ironsides as Admin to get more data</value>
-    <comment>Locked="{Ironsides}" When the user clicks this button we relaunch Project Ironsides as admin to get more app details</comment>
+    <comment>{Locked="Ironsides"} When the user clicks this button we relaunch Project Ironsides as admin to get more app details</comment>
   </data>
   <data name="InsightsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Go to the key insights</value>
@@ -523,7 +503,7 @@
   </data>
   <data name="TerminatedText" xml:space="preserve">
     <value>{0} (terminated)</value>
-    <comment>Locked={"{0}"} Text indicating that the process has terminated. {0} is the process name. </comment>
+    <comment>{Locked="{0}"} Text indicating that the process has terminated. {0} is the process name. </comment>
   </data>
   <data name="InsightsHeaderTextBlock.Text" xml:space="preserve">
     <value>Insights</value>
@@ -534,20 +514,20 @@
     <comment>Description of the error code</comment>
   </data>
   <data name="TargetAppPidTextFormat" xml:space="preserve">
-    <value>pid: {0}</value>
-    <comment>Locked={"{0}"} Showing a process identifier. {0} is an integer</comment>
+    <value>PID: {0}</value>
+    <comment>{Locked="{0}"} Showing a process identifier. {0} is an integer</comment>
   </data>
   <data name="CpuPerfTextFormat" xml:space="preserve">
-    <value>cpu: {0:0.0}%</value>
-    <comment>Locked={"{0:0.0}"} Showing CPU utilization. {0} is a percentage 0-100</comment>
+    <value>{0:0.0}% CPU usage</value>
+    <comment>{Locked="{0:0.0}"} Showing CPU utilization. {0} is a percentage 0-100</comment>
   </data>
   <data name="MemoryPerfTextFormat" xml:space="preserve">
-    <value>memory: {0:N2} MB</value>
-    <comment>Locked={"{0:N2}"} Showing RAM utilization. MB stands for megabytes. {0} is a number.</comment>
+    <value>{0:N2} MB Memory used</value>
+    <comment>{Locked="{0:N2}"} Showing RAM utilization. MB stands for megabytes. {0} is a number.</comment>
   </data>
   <data name="DiskPerfTextFormat" xml:space="preserve">
-    <value>dsk: {0:N0} MB/s</value>
-    <comment>Locked={"{0:N0}"} Showing disk utilization. MB/s stands for megabytes per second. {0} is a number.</comment>
+    <value>{0:N0} MB/s Disk utilization</value>
+    <comment>{Locked="{0:N0}"} Showing disk utilization. MB/s stands for megabytes per second. {0} is a number.</comment>
   </data>
   <data name="CpuPerfNotAvailableText" xml:space="preserve">
     <value>cpu: n/a %</value>
@@ -563,11 +543,11 @@
   </data>
   <data name="CpuNotificationFormatText" xml:space="preserve">
     <value>{0} CPU usage: {1:0.0}%</value>
-    <comment>Locked={"{0},{1:0.0}"} A notification for CPU usage. {0} is the name of a process (notepad.exe for example). {1} is a percentage</comment>
+    <comment>{Locked="{0},{1:0.0}"} A notification for CPU usage. {0} is the name of a process (notepad.exe for example). {1} is a percentage</comment>
   </data>
   <data name="UnhandledTraceEventErrorMessage" xml:space="preserve">
     <value>GOT UNHANDLED EVENT: {0}</value>
-    <comment>Locked={"{0}"} An error message when an unhandled trace event is encountered. {0} is a verbose version of the event</comment>
+    <comment>{Locked="{0}"} An error message when an unhandled trace event is encountered. {0} is a verbose version of the event</comment>
   </data>
   <data name="UnableToStartEventViewerErrorMessage" xml:space="preserve">
     <value>Could not start EventViewer</value>
@@ -579,11 +559,11 @@
   </data>
   <data name="LockedFileInsightSpecificDescription" xml:space="preserve">
     <value>The app is trying to access the file '{0}', but this is locked by '{1}'. To fix this, close '{1}'</value>
-    <comment>Locked={"{0}", "{1}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name. {1} is the name of an executable(.exe) process.</comment>
+    <comment>{Locked="{0}", "{1}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name. {1} is the name of an executable(.exe) process.</comment>
   </data>
   <data name="LockedFileInsightUnknownDescription" xml:space="preserve">
     <value>The app is trying to access the file '{0}', but this is locked by an unknown process</value>
-    <comment>Locked={"{0}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name.</comment>
+    <comment>{Locked="{0}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name.</comment>
   </data>
   <data name="WatsonStartErrorMessage" xml:space="preserve">
     <value>Could not start Watson</value>
@@ -623,19 +603,19 @@
   </data>
   <data name="CpuPerfTextFormatNoLabel" xml:space="preserve">
     <value>{0:0.0}%</value>
-    <comment>Locked={"{0:0.0}"} Showing CPU utilization. {0} is a percentage 0-100</comment>
+    <comment>{Locked="{0:0.0}"} Showing CPU utilization. {0} is a percentage 0-100</comment>
   </data>
   <data name="DiskPerfTextFormatNoLabel" xml:space="preserve">
     <value>{0:N0} MB/s</value>
-    <comment>Locked={"{0:N0}"} Showing disk utilization. MB/s stands for megabytes per second. {0} is a number.</comment>
+    <comment>{Locked="{0:N0}"} Showing disk utilization. MB/s stands for megabytes per second. {0} is a number.</comment>
   </data>
   <data name="GpuPerfTextFormatNoLabel" xml:space="preserve">
     <value>{0:0.0}%</value>
-    <comment>Locked={"{0:0.0}"} Showing GPU utilization. {0} is a percentage 0-100</comment>
+    <comment>{Locked="{0:0.0}"} Showing GPU utilization. {0} is a percentage 0-100</comment>
   </data>
   <data name="MemoryPerfTextFormatNoLabel" xml:space="preserve">
     <value>{0:N2} MB</value>
-    <comment>Locked={"{0:N2}"} Showing RAM utilization. MB stands for megabytes. {0} is a number.</comment>
+    <comment>{Locked="{0:N2}"} Showing RAM utilization. MB stands for megabytes. {0} is a number.</comment>
   </data>
   <data name="AppCPUUsage.ToolTipService.ToolTip" xml:space="preserve">
     <value>CPU usage of the attached process.</value>
@@ -647,7 +627,7 @@
   </data>
   <data name="DiskPerfPercentUsageTextFormatNoLabel" xml:space="preserve">
     <value>{0:0.0}%</value>
-    <comment>Locked={"{0:0.0}"} Showing Disk utilization. {0} is a percentage 0-100</comment>
+    <comment>{Locked="{0:0.0}"} Showing Disk utilization. {0} is a percentage 0-100</comment>
   </data>
   <data name="ExpandedViewAppCpuPerf.ToolTipService.ToolTip" xml:space="preserve">
     <value>CPU usage of the attached process.</value>
@@ -667,7 +647,7 @@
   </data>
   <data name="MemoryPerfTextFormatNoLabelGB" xml:space="preserve">
     <value>{0:N2} GB</value>
-    <comment>Locked={"{0:N2}"} Showing RAM utilization. GB stands for gigabytes. {0} is a number.</comment>
+    <comment>{Locked="{0:N2}"} Showing RAM utilization. GB stands for gigabytes. {0} is a number.</comment>
   </data>
   <data name="SystemCPUUsage.ToolTipService.ToolTip" xml:space="preserve">
     <value>Amount of CPU used by the overall system.</value>
@@ -691,7 +671,7 @@
   </data>
   <data name="PIStartupTaskDisplayName" xml:space="preserve">
     <value>Hotkey for Dev Home Project Ironsides</value>
-    <comment>Locked="{Ironsides}" The description of the startup task for Dev Home Project Ironsides. This shows up in task manager/Windows Settings &gt; Startup Apps.</comment>
+    <comment>{Locked="Ironsides"} The description of the startup task for Dev Home Project Ironsides. This shows up in task manager/Windows Settings &gt; Startup Apps.</comment>
   </data>
   <data name="IsPythonTextBlock.Text" xml:space="preserve">
     <value>Is Python</value>
@@ -715,7 +695,7 @@
   </data>
   <data name="GenericInsightDescription" xml:space="preserve">
     <value>Error {0}: {1}</value>
-    <comment>Locked={"{0}", "{1}"} A description to help a user that is dealing with non-specific error situation. {0} is the error name. {1} is the error description.</comment>
+    <comment>{Locked="{0}", "{1}"} A description to help a user that is dealing with non-specific error situation. {0} is the error name. {1} is the error description.</comment>
   </data>
   <data name="FrameworkTypesTextBlock.Text" xml:space="preserve">
     <value>Framework types used in this app</value>
@@ -818,7 +798,7 @@
     <comment>Label for the link to the documentation for the product.</comment>
   </data>
   <data name="SettingsDocumentationLink.NavigateUri" xml:space="preserve">
-    <value>https://github.com/microsoft/devhome/issues/2796</value>
+    <value>https://go.microsoft.com/fwlink/?linkid=2275140</value>
     <comment>Link to the documentation for the product.</comment>
   </data>
   <data name="SettingsPrivacyPolicyLink.Content" xml:space="preserve">
@@ -839,7 +819,7 @@
   </data>
   <data name="SettingsAddToolCard.Header" xml:space="preserve">
     <value>Register an external tool with Dev Home Project Ironsides</value>
-    <comment>Locked="{Ironsides}" Header for the settings item to add a tool to the product.</comment>
+    <comment>{Locked="Ironsides"} Header for the settings item to add a tool to the product.</comment>
   </data>
   <data name="SettingsEditToolCard.Header" xml:space="preserve">
     <value>Edit or unregister existing tools</value>
@@ -905,9 +885,9 @@
     <value>Select a process to investigate</value>
     <comment>Describes using a button in Project Ironsides's UX to investigate another process running on the system</comment>
   </data>
-  <data name="SnapButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="SnapToolTip" xml:space="preserve">
     <value>Attach the diagnostic bar to the target application</value>
-    <comment>Describes using a button in Project Ironsides's UX</comment>
+    <comment>The tooltip text for a button that attaches the bar to the target application.</comment>
   </data>
   <data name="Title.Text" xml:space="preserve">
     <value>Dev Home Project Ironsides</value>
@@ -919,7 +899,7 @@
   </data>
   <data name="CpuArchitecture_ProcessOnMachine" xml:space="preserve">
     <value>{0} process running on {1} machine</value>
-    <comment>Locked={"{0}", "{1}"} Message text when the process is the specified CPU architecture running on the specified CPU machine. {0} is the process architecture, {1} is the machine architecture.</comment>
+    <comment>{Locked="{0}", "{1}"} Message text when the process is the specified CPU architecture running on the specified CPU machine. {0} is the process architecture, {1} is the machine architecture.</comment>
   </data>
   <data name="CpuArchitecture_Unknown" xml:space="preserve">
     <value>Unknown</value>
@@ -927,7 +907,7 @@
   </data>
   <data name="CpuArchitecture_UnknownOnMachine" xml:space="preserve">
     <value>Unknown process type running on {0}</value>
-    <comment>Locked={"{0}"}. Message text when the process is unknown CPU architecture running on the specified CPU machine. {0} is the machine architecture.</comment>
+    <comment>{Locked="{0}"}. Message text when the process is unknown CPU architecture running on the specified CPU machine. {0} is the machine architecture.</comment>
   </data>
   <data name="CpuArchitecture_X64onX64" xml:space="preserve">
     <value>X64 process running on X64 machine</value>
@@ -939,11 +919,11 @@
   </data>
   <data name="AliasDisabledDialogContent" xml:space="preserve">
     <value>Go to Windows Settings &gt; Apps &gt; Advanced app settings &gt; App execution alias &gt; Project Ironsides &gt; Enable the toggle and try to launch PI as admin again.</value>
-    <comment>Locked="{Ironsides}" Content Dialog content suggesting users steps to enable app execution alias from Windows Settings app</comment>
+    <comment>{Locked="Ironsides"} Content Dialog content suggesting users steps to enable app execution alias from Windows Settings app</comment>
   </data>
   <data name="AliasDisabledDialogTitle" xml:space="preserve">
     <value>Enable App Execution Alias for Project Ironsides and try again</value>
-    <comment>Locked="{Ironsides}" Content Dialog title to enable app execution alias for Project Ironsides</comment>
+    <comment>{Locked="Ironsides"} Content Dialog title to enable app execution alias for Project Ironsides</comment>
   </data>
   <data name="DetachAppButton.Content" xml:space="preserve">
     <value>Detach from target app</value>
@@ -956,5 +936,109 @@
   <data name="DetachMenuItem.Text" xml:space="preserve">
     <value>Detach</value>
     <comment>Menu Item that allows the user to detach from the current process</comment>
+  </data>
+  <data name="UnsnapToolTip" xml:space="preserve">
+    <value>Detach the diagnostic bar from the target application</value>
+    <comment>The tooltip text for a button that detaches the bar from the target application.</comment>
+  </data>
+  <data name="ActivationTextBlock.Text" xml:space="preserve">
+    <value>Activation</value>
+    <comment>Header text for a group of radio buttons indicating the activation type</comment>
+  </data>
+  <data name="AppListButton.Content" xml:space="preserve">
+    <value>App list</value>
+    <comment>Text for a button to get a list of apps</comment>
+  </data>
+  <data name="AppsDataGridIconColumn.Header" xml:space="preserve">
+    <value>Icon</value>
+    <comment>Column heading for the icon column in a datagrid</comment>
+  </data>
+  <data name="AppsDataGridNameColumn.Header" xml:space="preserve">
+    <value>Name</value>
+    <comment>Column heading for the name column in a datagrid</comment>
+  </data>
+  <data name="ArgumentsDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Provide the command-line or protocol arguments here. Use {pid} or {hwnd} if you want Project Ironsides to substitute the target app's process ID or window handle. For example:</value>
+    <comment>{Locked="Ironsides"} Description text for a section where the user can type in the arguments to be used for the app</comment>
+  </data>
+  <data name="ArgumentsHeaderTextBlock.Text" xml:space="preserve">
+    <value>Arguments</value>
+    <comment>Header text for a section describing the arguments to be used for the app</comment>
+  </data>
+  <data name="LaunchRadio.Content" xml:space="preserve">
+    <value>Launch</value>
+    <comment>Text for a radio button for the launch activation option</comment>
+  </data>
+  <data name="ProtocolRadio.Content" xml:space="preserve">
+    <value>Protocol</value>
+    <comment>Text for a radio button for the protocol option</comment>
+  </data>
+  <data name="LaunchExampleTextBlock.Text" xml:space="preserve">
+    <value>Launch example:  /something /process={pid} /another={hwnd}</value>
+    <comment>Example launch activation argument string</comment>
+  </data>
+  <data name="ProtocolExampleTextBlock.Text" xml:space="preserve">
+    <value>Protocol example:  myprotocol:///args?one=ABC&amp;two={pid}&amp;three={hwnd}</value>
+    <comment>Example protocol argument string</comment>
+  </data>
+  <data name="ActivationTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The type of activation for this tool</value>
+    <comment>Describes the section where the user can specify the type of tool activation to use.</comment>
+  </data>
+  <data name="AppListButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Get a list of installed apps</value>
+    <comment>Describes a button that will get a list of installed apps.</comment>
+  </data>
+  <data name="IsPinnedToggleSwitch.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Pin this tool to the toolbar, as well as adding it to the menu</value>
+    <comment>Describes a toggle switch for pinning a tool to the toolbar.</comment>
+  </data>
+  <data name="LaunchRadio.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Launch this tool by its path or package identity</value>
+    <comment>Describes a radio button that specifies how to launch the selected tool.</comment>
+  </data>
+  <data name="ProtocolRadio.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Launch this tool by its registered protocol</value>
+    <comment>Describes a radio button that specifies how to launch the selected tool.</comment>
+  </data>
+  <data name="ToolBrowseButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Browse the filesystem to find a tool</value>
+    <comment>Describes a button for browsing the filesystem.</comment>
+  </data>
+  <data name="ToolNameHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The name you want to use for this tool in the menu and toolbar</value>
+    <comment>Describes a textbox where the user can enter a name for the tool.</comment>
+  </data>
+  <data name="SwitchToSmallLayoutToolTip" xml:space="preserve">
+    <value>Collapse the large content panel</value>
+    <comment>The tooltip for a button which collapses the large content panel.</comment>
+  </data>
+  <data name="AppName.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Name of the attached app</value>
+    <comment>Refers to the app's name in the bar</comment>
+  </data>
+  <data name="ClipboardMonitor.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Open the Clipboard Monitor window</value>
+    <comment>Tooltip that tells users what the Clipboard Monitor button will do</comment>
+  </data>
+  <data name="ClipboardMonitorLabel.Text" xml:space="preserve">
+    <value>Clipboard Monitor</value>
+    <comment>A text label for the Clipboard Monitor button</comment>
+  </data>
+  <data name="Insights.ToolTipService.ToolTip" xml:space="preserve">
+    <value>See insights that Project Ironsides has gained</value>
+    <comment>Tooltip that tells users what the Insights button will do</comment>
+  </data>
+  <data name="InsightsLabel.Text" xml:space="preserve">
+    <value>Insights</value>
+    <comment>A text label for the Insights button</comment>
+  </data>
+  <data name="ProcessesLabel.Text" xml:space="preserve">
+    <value>Processes</value>
+    <comment>A text label for the Processes button</comment>
+  </data>
+  <data name="ManageExternalToolsMenuText" xml:space="preserve">
+    <value>Manage Tools</value>
+    <comment>Label for a button to allow users to manage external tools</comment>
   </data>
 </root>

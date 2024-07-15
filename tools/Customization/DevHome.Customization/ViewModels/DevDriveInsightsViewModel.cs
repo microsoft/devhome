@@ -10,7 +10,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Common.Views;
 using DevHome.Customization.Helpers;
 using DevHome.Customization.Models;
 using DevHome.Customization.ViewModels.DevDriveInsights;
@@ -22,8 +21,6 @@ namespace DevHome.Customization.ViewModels;
 
 public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<DevDriveOptimizedMessage>, IRecipient<DevDriveTrustedMessage>
 {
-    private readonly ShellSettings _shellSettings;
-
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
     public ObservableCollection<DevDriveCardViewModel> DevDriveCardCollection { get; private set; } = new();
@@ -31,6 +28,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
     public ObservableCollection<DevDriveOptimizerCardViewModel> DevDriveOptimizerCardCollection { get; private set; } = new();
 
     public ObservableCollection<DevDriveOptimizedCardViewModel> DevDriveOptimizedCardCollection { get; private set; } = new();
+
+    private readonly IDevDriveManager _devDriveManager;
 
     private readonly OptimizeDevDriveDialogViewModelFactory _optimizeDevDriveDialogViewModelFactory;
 
@@ -52,8 +51,6 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
     [ObservableProperty]
     private bool _devDriveOptimizedLoadingCompleted;
 
-    public IDevDriveManager DevDriveManagerObj { get; private set; }
-
     private IEnumerable<IDevDrive> ExistingDevDrives { get; set; } = Enumerable.Empty<IDevDrive>();
 
     private static readonly string _appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -70,8 +67,6 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
 
     public DevDriveInsightsViewModel(IDevDriveManager devDriveManager, OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory)
     {
-        _shellSettings = new ShellSettings();
-
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         Breadcrumbs =
         [
@@ -80,7 +75,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
         ];
 
         _optimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
-        DevDriveManagerObj = devDriveManager;
+        _devDriveManager = devDriveManager;
 
         // Register for the dev drive optimized message so we can refresh the UX
         WeakReferenceMessenger.Default.Register<DevDriveOptimizedMessage>(this);
@@ -201,7 +196,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
     {
         try
         {
-            ExistingDevDrives = DevDriveManagerObj.GetAllDevDrivesThatExistOnSystem();
+            ExistingDevDrives = _devDriveManager.GetAllDevDrivesThatExistOnSystem();
             UpdateListViewModelList();
         }
         catch (Exception ex)
@@ -219,7 +214,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
         {
             if (!ExistingDevDrives.Any())
             {
-                ExistingDevDrives = DevDriveManagerObj.GetAllDevDrivesThatExistOnSystem();
+                ExistingDevDrives = _devDriveManager.GetAllDevDrivesThatExistOnSystem();
             }
 
             UpdateOptimizerListViewModelList();
@@ -239,7 +234,7 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
         {
             if (!ExistingDevDrives.Any())
             {
-                ExistingDevDrives = DevDriveManagerObj.GetAllDevDrivesThatExistOnSystem();
+                ExistingDevDrives = _devDriveManager.GetAllDevDrivesThatExistOnSystem();
             }
 
             UpdateOptimizedListViewModelList();

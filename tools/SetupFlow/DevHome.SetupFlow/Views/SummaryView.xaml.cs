@@ -1,90 +1,48 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using AdaptiveCards.Rendering.WinUI3;
-using CommunityToolkit.Mvvm.Messaging;
-using DevHome.SetupFlow.Models.Environments;
+using CommunityToolkit.WinUI;
+using DevHome.Common.Extensions;
 using DevHome.SetupFlow.ViewModels;
-using DevHome.SetupFlow.Windows;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Windows.UI.ViewManagement;
 
 namespace DevHome.SetupFlow.Views;
 
-public sealed partial class SummaryView : UserControl, IRecipient<NewAdaptiveCardAvailableMessage>
+public sealed partial class SummaryView : UserControl
 {
+    private readonly UISettings _uiSettings = new();
+
+    private const double BaseWidth = 550;
+
     public SummaryView()
     {
         this.InitializeComponent();
-        WeakReferenceMessenger.Default.Register<NewAdaptiveCardAvailableMessage>(this);
+
+        // Setting MinWidth on the UniformGrid prevents text clipping in "Next Steps".
+        // Setting MinWidth on the "Left Side" stack panel keeps the MinWidth but still clips
+        // when the window becomes too small.
+        var textScale = _uiSettings.TextScaleFactor;
+        _uiSettings.TextScaleFactorChanged += HandleTextScaleFactorChanged;
+        ParentUniformGrid.MinWidth = BaseWidth * textScale;
     }
 
     public SummaryViewModel ViewModel => (SummaryViewModel)this.DataContext;
 
-    private void ViewAllButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void HandleTextScaleFactorChanged(UISettings sender, object args)
     {
-        // When installation notes' 'view all' button is clicked, open a new window with the full text
-        if (sender is Button viewAllButton && viewAllButton.Tag is PackageViewModel package)
+        Application.Current.GetService<DispatcherQueue>().EnqueueAsync(() =>
         {
-            var window = new InstallationNotesWindow(package.PackageTitle, package.InstallationNotes);
-            window.CenterOnWindow();
-            window.Activate();
-        }
+            var textScale = sender.TextScaleFactor;
+            ParentUniformGrid.MinWidth = BaseWidth * textScale;
+            InvalidateMeasure();
+        });
     }
 
-    private void InstallationNotes_IsTextTrimmedChanged(TextBlock sender, IsTextTrimmedChangedEventArgs args)
+    private void UserControl_Unloaded(object sender, RoutedEventArgs e)
     {
-        // Show 'view all' button if installation notes text is trimmed, otherwise hide it.
-        if (sender?.Tag is Button viewAllButton)
-        {
-            viewAllButton.Visibility = sender.IsTextTrimmed ? Visibility.Visible : Visibility.Collapsed;
-        }
-    }
-
-    private void ViewUnloaded(object sender, RoutedEventArgs e)
-    {
-        AdaptiveCardGrid.Children.Clear();
-        WeakReferenceMessenger.Default.UnregisterAll(this);
-    }
-
-    /// <summary>
-    /// Receive the adaptive card from the view model, when the view model finishes loading it.
-    /// Note: There are times when the view is loaded after the view model has finished loading the adaptive card.
-    /// In these cases it would have "missed" the push message. This is where the ViewLoaded method comes in.
-    /// </summary>
-    public void Receive(NewAdaptiveCardAvailableMessage message)
-    {
-        // Only process the message if the view model is the SummaryViewModel
-        if (message.Value.CurrentSetupFlowViewModel is SummaryViewModel)
-        {
-            AddAdaptiveCardToUI(message.Value.RenderedAdaptiveCard);
-        }
-    }
-
-    /// <summary>
-    /// Request the adaptive cad from the EnvironmentCreationOptionsViewModel object when we're in the environment
-    /// creation flow.
-    /// </summary>
-    private void ViewLoaded(object sender, RoutedEventArgs e)
-    {
-        var message = WeakReferenceMessenger.Default.Send<CreationOptionsReviewPageDataRequestMessage>();
-        if (!message.HasReceivedResponse)
-        {
-            return;
-        }
-
-        AddAdaptiveCardToUI(message.Response);
-    }
-
-    private void AddAdaptiveCardToUI(RenderedAdaptiveCard renderedAdaptiveCard)
-    {
-        var frameworkElement = renderedAdaptiveCard?.FrameworkElement;
-        if (frameworkElement == null)
-        {
-            return;
-        }
-
-        AdaptiveCardGrid.Children.Clear();
-        AdaptiveCardGrid.Children.Add(frameworkElement);
+        _uiSettings.TextScaleFactorChanged -= HandleTextScaleFactorChanged;
     }
 }

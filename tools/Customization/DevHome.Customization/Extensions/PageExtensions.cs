@@ -13,5 +13,7 @@ public static class PageExtensions
     {
         pageService.Configure<FileExplorerViewModel, FileExplorerPage>();
         pageService.Configure<DevDriveInsightsViewModel, DevDriveInsightsPage>();
+        pageService.Configure<VirtualizationFeatureManagementViewModel, VirtualizationFeatureManagementPage>();
+        pageService.Configure<GeneralSystemViewModel, GeneralSystemPage>();
     }
 }

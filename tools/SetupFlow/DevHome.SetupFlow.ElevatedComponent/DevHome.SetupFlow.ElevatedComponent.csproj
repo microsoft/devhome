@@ -8,6 +8,7 @@
     <Nullable>enable</Nullable>
     <Platforms>x86;x64;arm64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
 
   <!-- CsWinRT properties -->
@@ -20,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -28,6 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\services\DevHome.Services.DesiredStateConfiguration\DevHome.Services.DesiredStateConfiguration.csproj" />
+    <ProjectReference Include="..\..\..\services\DevHome.Services.WindowsPackageManager\DevHome.Services.WindowsPackageManager.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
   </ItemGroup>
 </Project>

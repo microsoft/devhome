@@ -85,8 +85,6 @@ public partial class BarWindow
         {
             PerfCounters.Instance.Start();
         }
-
-        _horizontalWindow.Show();
     }
 
     private void Window_Closed(object sender, WindowEventArgs args)
@@ -141,11 +139,14 @@ public partial class BarWindow
     {
         if (_horizontalWindow.Visible)
         {
+            _verticalWindow.UpdatePositionFromHwnd(CurrentHwnd);
+
             _horizontalWindow.Hide();
             _verticalWindow.Show();
         }
         else
         {
+            _horizontalWindow.UpdatePositionFromHwnd(CurrentHwnd);
             _verticalWindow.Hide();
             _horizontalWindow.Show();
         }
@@ -154,6 +155,11 @@ public partial class BarWindow
     public void UpdateBarWindowPosition(PointInt32 position)
     {
         _viewModel.WindowPosition = position;
+    }
+
+    public void UpdateBarWindowSize(SizeInt32 size)
+    {
+        _viewModel.RequestedWindowSize = size;
     }
 
     public void ResetBarWindowOnTop()

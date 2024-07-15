@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
@@ -16,6 +17,7 @@ using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Windows.Foundation;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
@@ -25,52 +27,65 @@ using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.Shell.Common;
 using WinRT.Interop;
 using WinUIEx;
+using static DevHome.PI.Helpers.CommonHelper;
 using static DevHome.PI.Helpers.WindowHelper;
 
 namespace DevHome.PI;
 
 public partial class BarWindowHorizontal : WindowEx
 {
+    private const string ExpandButtonText = "\ue70d"; // ChevronDown
+    private const string CollapseButtonText = "\ue70e"; // ChevronUp
+    private const string ManageToolsButtonText = "\uec7a"; // ChevronUp
+
+    private readonly string _pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
+    private readonly string _unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemRawText");
+    private readonly string _unregisterMenuItemText = CommonHelper.GetLocalizedString("UnregisterMenuItemRawText");
+    private readonly string _manageToolsMenuItemText = CommonHelper.GetLocalizedString("ManageExternalToolsMenuText");
+
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowViewModel _viewModel;
     private readonly UISettings _uiSettings = new();
 
-    private bool isClosing;
+    private readonly SolidColorBrush _darkModeActiveCaptionBrush;
+    private readonly SolidColorBrush _darkModeDeactiveCaptionBrush;
+    private readonly SolidColorBrush _nonDarkModeActiveCaptionBrush;
+    private readonly SolidColorBrush _nonDarkModeDeactiveCaptionBrush;
+
+    private bool _isClosing;
+    private WindowActivationState _currentActivationState = WindowActivationState.Deactivated;
 
     // Constants that control window sizes
-    private const int _WindowPositionOffsetY = 30;
-    private const int _FloatingHorizontalBarHeight = 70;
-    private const int _DefaultExpandedViewTop = 30;
-    private const int _DefaultExpandedViewLeft = 100;
-    private const int _RightSideGap = 10;
+    private const int WindowPositionOffsetY = 30;
+    private const int FloatingHorizontalBarHeight = 90;
+    private const int FloatingHorizontalBarHeightWithExpandedCommandBar = 130;
+    private const int DefaultExpandedViewTop = 30;
+    private const int DefaultExpandedViewLeft = 100;
+    private const int RightSideGap = 10;
 
     private RECT _monitorRect;
 
     private RestoreState _restoreState = new()
     {
-        Top = _DefaultExpandedViewTop,
-        Left = _DefaultExpandedViewLeft,
+        Top = DefaultExpandedViewTop,
+        Left = DefaultExpandedViewLeft,
         BarOrientation = Orientation.Horizontal,
         IsLargePanelVisible = true,
     };
 
-    private const int _UnsnapGap = 9;
     private double _dpiScale = 1.0;
 
     internal HWND ThisHwnd { get; private set; }
 
     internal ClipboardMonitor? ClipboardMonitor { get; private set; }
 
-    public Microsoft.UI.Dispatching.DispatcherQueue TheDispatcher
-    {
-        get; set;
-    }
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     public BarWindowHorizontal(BarWindowViewModel model)
     {
         _viewModel = model;
 
-        TheDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         InitializeComponent();
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
@@ -84,10 +99,24 @@ public partial class BarWindowHorizontal : WindowEx
         var settingSize = Settings.Default.ExpandedLargeSize;
         _restoreState.Height = settingSize.Height;
         _restoreState.Width = settingSize.Width;
+        ExpandCollapseLayoutButtonText.Text = _viewModel.ShowingExpandedContent ? CollapseButtonText : ExpandButtonText;
+
+        // Precreate the brushes for the caption buttons
+        // In Dark Mode, the active state is white, and the deactive state is translucent white
+        // In Light Mode, the active state is black, and the deactive state is translucent black
+        Windows.UI.Color color = Colors.White;
+        _darkModeActiveCaptionBrush = new SolidColorBrush(color);
+        color.A = 0x66;
+        _darkModeDeactiveCaptionBrush = new SolidColorBrush(color);
+
+        color = Colors.Black;
+        _nonDarkModeActiveCaptionBrush = new SolidColorBrush(color);
+        color.A = 0x66;
+        _nonDarkModeDeactiveCaptionBrush = new SolidColorBrush(color);
 
         _uiSettings.ColorValuesChanged += (sender, args) =>
         {
-            TheDispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 ApplySystemThemeToCaptionButtons();
             });
@@ -101,10 +130,12 @@ public partial class BarWindowHorizontal : WindowEx
             if (_viewModel.ShowingExpandedContent)
             {
                 ExpandLargeContentPanel();
+                ExpandCollapseLayoutButtonText.Text = CollapseButtonText;
             }
             else
             {
                 CollapseLargeContentPanel();
+                ExpandCollapseLayoutButtonText.Text = ExpandButtonText;
             }
         }
     }
@@ -125,13 +156,220 @@ public partial class BarWindowHorizontal : WindowEx
         SetRequestedTheme(t.Theme);
 
         // Calculate the DPI scale.
-        var monitor = PInvoke.MonitorFromWindow(ThisHwnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        PInvoke.GetScaleFactorForMonitor(monitor, out DEVICE_SCALE_FACTOR scaleFactor).ThrowOnFailure();
-        _dpiScale = (double)scaleFactor / 100;
+        _dpiScale = GetDpiScaleForWindow(ThisHwnd);
 
         SetDefaultPosition();
 
         SetRegionsForTitleBar();
+
+        PopulateCommandBar();
+        ((INotifyCollectionChanged)ExternalToolsHelper.Instance.AllExternalTools).CollectionChanged += AllExternalTools_CollectionChanged;
+
+        // Now that the position is set correctly show the window
+        this.Show();
+    }
+
+    public void PopulateCommandBar()
+    {
+        AddManageToolsOptionToCommandBar();
+
+        foreach (ExternalTool tool in ExternalToolsHelper.Instance.AllExternalTools)
+        {
+            AddToolToCommandBar(tool);
+        }
+    }
+
+    private void AddToolToCommandBar(ExternalTool tool)
+    {
+        AppBarButton button = new AppBarButton
+        {
+            Label = tool.Name,
+            Tag = tool,
+        };
+
+        button.Icon = tool.MenuIcon;
+
+        button.Click += _viewModel.ExternalToolButton_Click;
+
+        MenuFlyout menu = new MenuFlyout();
+        menu.Items.Add(tool.IsPinned ? CreateUnPinMenuItem(tool) : CreatePinMenuItem(tool));
+        menu.Items.Add(CreateUnregisterMenuItem(tool));
+        button.ContextFlyout = menu;
+
+        // If a tool is pinned, we'll add it to the primary commands list, otherwise the secondary commands list
+        if (tool.IsPinned)
+        {
+            MyCommandBar.PrimaryCommands.Add(button);
+        }
+        else
+        {
+            MyCommandBar.SecondaryCommands.Add(button);
+        }
+
+        tool.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(ExternalTool.MenuIcon))
+            {
+                button.Icon = tool.MenuIcon;
+            }
+            else if (args.PropertyName == nameof(ExternalTool.IsPinned))
+            {
+                // The command bar does not like to be updated when the overflow menu is open, so be sure to close it before manipulating elements.
+                MyCommandBar.IsOpen = false;
+
+                // Flip the menu item from pin to unpin (or vice versa)
+                MenuFlyout menu = new MenuFlyout();
+                menu.Items.Add(tool.IsPinned ? CreateUnPinMenuItem(tool) : CreatePinMenuItem(tool));
+                menu.Items.Add(CreateUnregisterMenuItem(tool));
+                button.ContextFlyout = menu;
+
+                // If a tool is pinned, we'll add it to the primary commands list, otherwise the secondary commands list
+                if (tool.IsPinned)
+                {
+                    MyCommandBar.SecondaryCommands.Remove(button);
+                    MyCommandBar.PrimaryCommands.Add(button);
+                }
+                else
+                {
+                    MyCommandBar.PrimaryCommands.Remove(button);
+                    MyCommandBar.SecondaryCommands.Add(button);
+                }
+
+                EvaluateLocationOfManageToolsButton();
+            }
+        };
+    }
+
+    private void EvaluateLocationOfManageToolsButton()
+    {
+        // If there are pinned tools (registered as primary commands), then move the Manage Tools button to the secondary command list
+        if (MyCommandBar.PrimaryCommands.Count > 1 &&
+            MyCommandBar.PrimaryCommands[0] is AppBarButton button &&
+            button.Command == _viewModel.ManageExternalToolsButtonCommand)
+        {
+            MyCommandBar.PrimaryCommands.Remove(button);
+            AddManageToolsOptionToCommandBar();
+        }
+
+        // If we don't have any more primary commands, move the Manage Tools Option from the secondary commands to the primary commands
+        else if (MyCommandBar.PrimaryCommands.Count == 0)
+        {
+            // The first two items in the secondary commands list should be the tool management button and a separator
+            Debug.Assert(MyCommandBar.SecondaryCommands.Count >= 2 && MyCommandBar.SecondaryCommands[0] is AppBarButton toolsBtn && toolsBtn.Command == _viewModel.ManageExternalToolsButtonCommand, "Where did tools button go?");
+            Debug.Assert(MyCommandBar.SecondaryCommands.Count >= 2 && MyCommandBar.SecondaryCommands[1] is AppBarSeparator, "Where did the separator go?");
+
+            MyCommandBar.SecondaryCommands.RemoveAt(1);
+            MyCommandBar.SecondaryCommands.RemoveAt(0);
+            AddManageToolsOptionToCommandBar();
+        }
+    }
+
+    private void AddManageToolsOptionToCommandBar()
+    {
+        // Put in the "manage tools" button
+        AppBarButton manageToolsButton = new AppBarButton
+        {
+            Label = _manageToolsMenuItemText,
+            Icon = new FontIcon() { Glyph = ManageToolsButtonText },
+            Command = _viewModel.ManageExternalToolsButtonCommand,
+        };
+
+        // If there aren't any pinned tools, then put this in as a primary command
+        if (ExternalToolsHelper.Instance.FilteredExternalTools.Count == 0)
+        {
+            MyCommandBar.PrimaryCommands.Add(manageToolsButton);
+        }
+        else
+        {
+            // Otherwise, put this at the at the top of the secondary command list
+            MyCommandBar.SecondaryCommands.Insert(0, manageToolsButton);
+            MyCommandBar.SecondaryCommands.Insert(1, new AppBarSeparator());
+        }
+    }
+
+    private MenuFlyoutItem CreatePinMenuItem(ExternalTool tool)
+    {
+        MenuFlyoutItem pin = new MenuFlyoutItem
+        {
+            Text = _pinMenuItemText,
+            Command = tool.TogglePinnedStateCommand,
+            Icon = new FontIcon() { Glyph = tool.PinGlyph },
+        };
+
+        return pin;
+    }
+
+    private MenuFlyoutItem CreateUnPinMenuItem(ExternalTool tool)
+    {
+        MenuFlyoutItem unpin = new MenuFlyoutItem
+        {
+            Text = _unpinMenuItemText,
+            Command = tool.TogglePinnedStateCommand,
+            Icon = new FontIcon() { Glyph = tool.PinGlyph },
+        };
+
+        return unpin;
+    }
+
+    private MenuFlyoutItem CreateUnregisterMenuItem(ExternalTool tool)
+    {
+        MenuFlyoutItem unRegister = new MenuFlyoutItem
+        {
+            Text = _unregisterMenuItemText,
+            Command = tool.UnregisterToolCommand,
+            Icon = new FontIcon() { Glyph = "\uECC9" },
+        };
+
+        return unRegister;
+    }
+
+    private void AllExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
+            {
+                if (e.NewItems is not null)
+                {
+                    foreach (ExternalTool newItem in e.NewItems)
+                    {
+                        AddToolToCommandBar(newItem);
+                    }
+                }
+
+                break;
+            }
+
+            case NotifyCollectionChangedAction.Remove:
+            {
+                Debug.Assert(e.OldItems is not null, "Why is old items null");
+                foreach (ExternalTool oldItem in e.OldItems)
+                {
+                    // Find this item in the command bar
+                    AppBarButton? button = MyCommandBar.PrimaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
+                    if (button is not null)
+                    {
+                        MyCommandBar.PrimaryCommands.Remove(button);
+                    }
+                    else
+                    {
+                        button = MyCommandBar.SecondaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
+                        if (button is not null)
+                        {
+                            MyCommandBar.SecondaryCommands.Remove(button);
+                        }
+                        else
+                        {
+                            Debug.Assert(false, "Could not find button for tool");
+                        }
+                    }
+                }
+
+                break;
+            }
+        }
+
+        EvaluateLocationOfManageToolsButton();
     }
 
     public void SetRegionsForTitleBar()
@@ -155,11 +393,11 @@ public partial class BarWindowHorizontal : WindowEx
     private void SetDefaultPosition()
     {
         // If attached to an app it should show up on the monitor that the app is on
-        _monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? ThisHwnd);
+        _monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
         var screenWidth = _monitorRect.right - _monitorRect.left;
         this.Move(
             (int)((screenWidth - (Width * _dpiScale)) / 2) + _monitorRect.left,
-            (int)_WindowPositionOffsetY);
+            (int)WindowPositionOffsetY + _monitorRect.top);
 
         // Get the saved settings for the ExpandedView size. On first run, this will be
         // the default 0,0, so we'll set the size proportional to the monitor size.
@@ -183,6 +421,13 @@ public partial class BarWindowHorizontal : WindowEx
         _restoreState.Width = settingSize.Width;
     }
 
+    internal void UpdatePositionFromHwnd(HWND hwnd)
+    {
+        RECT rect;
+        PInvoke.GetWindowRect(hwnd, out rect);
+        this.Move(rect.left, rect.top);
+    }
+
     private void WindowEx_Closed(object sender, WindowEventArgs args)
     {
         ClipboardMonitor.Instance.Stop();
@@ -194,13 +439,16 @@ public partial class BarWindowHorizontal : WindowEx
             CacheRestoreState();
         }
 
-        if (!isClosing)
+        if (!_isClosing)
         {
-            isClosing = true;
+            _isClosing = true;
             var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
             barWindow?.Close();
-            isClosing = false;
+            _isClosing = false;
         }
+
+        // Unsubscribe from the activation handler
+        Activated -= Window_Activated;
     }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -261,33 +509,22 @@ public partial class BarWindowHorizontal : WindowEx
         LargeContentPanel.Visibility = Visibility.Visible;
         MaxHeight = double.NaN;
 
-        // If they expand to ExpandedView and they're not snapped, we can use the
-        // RestoreState size & position.
-        if (!_viewModel.IsSnapped)
-        {
-            this.MoveAndResize(
-                _restoreState.Left, _restoreState.Top, _restoreState.Width, _restoreState.Height);
-        }
-        else
-        {
-            // Conversely if they're snapped, the position is determined by the snap,
-            // and we potentially adjust the size to ensure it doesn't extend beyond the screen.
-            var availableWidth = _monitorRect.Width - Math.Abs(AppWindow.Position.X) - _RightSideGap;
-            if (availableWidth < _restoreState.Width)
-            {
-                _restoreState.Width = availableWidth;
-            }
+        var monitorRect = GetMonitorRectForWindow(ThisHwnd);
+        var dpiScale = GetDpiScaleForWindow(ThisHwnd);
 
-            Width = _restoreState.Width;
+        // Expand the window but keep the x,y coordinates of top-left most corner of the window the same so it doesn't
+        // jump around the screen.
+        var availableWidth = monitorRect.Width - Math.Abs(AppWindow.Position.X - monitorRect.left) - RightSideGap;
+        _restoreState.Width = (int)((double)availableWidth / dpiScale);
 
-            var availableHeight = _monitorRect.Height - Math.Abs(AppWindow.Position.Y);
-            if (availableHeight < _restoreState.Height)
-            {
-                _restoreState.Height = availableHeight;
-            }
+        Width = _restoreState.Width;
 
-            Height = _restoreState.Height;
-        }
+        var availableHeight = monitorRect.Height - Math.Abs(AppWindow.Position.Y - monitorRect.top);
+
+        _restoreState.Height = (int)((double)availableHeight / dpiScale);
+
+        this.MoveAndResize(
+            AppWindow.Position.X, AppWindow.Position.Y, _restoreState.Width, _restoreState.Height);
     }
 
     private void CollapseLargeContentPanel()
@@ -295,7 +532,7 @@ public partial class BarWindowHorizontal : WindowEx
         // Make sure we cache the state before switching to collapsed bar.
         CacheRestoreState();
         LargeContentPanel.Visibility = Visibility.Collapsed;
-        MaxHeight = _FloatingHorizontalBarHeight;
+        SetBarToDefaultHeight();
     }
 
     internal void NavigateTo(Type viewModelType)
@@ -320,7 +557,7 @@ public partial class BarWindowHorizontal : WindowEx
         SetRegionsForTitleBar();
     }
 
-    // workaround as Appwindow titlebar doesn't update caption button colors correctly when changed while app is running
+    // workaround as AppWindow TitleBar doesn't update caption button colors correctly when changed while app is running
     // https://task.ms/44172495
     public void ApplySystemThemeToCaptionButtons()
     {
@@ -344,8 +581,68 @@ public partial class BarWindowHorizontal : WindowEx
 
     public void SetCaptionButtonColors(Windows.UI.Color color)
     {
-        var res = Application.Current.Resources;
-        res["WindowCaptionForeground"] = color;
         AppWindow.TitleBar.ButtonForegroundColor = color;
+        UpdateCustomTitleBarButtonsTextColor();
+    }
+
+    private void Window_Activated(object sender, WindowActivatedEventArgs args)
+    {
+        // This follows the design guidance of dimming our title bar elements when the window isn't activated
+        // https://learn.microsoft.com/en-us/windows/apps/develop/title-bar#dim-the-title-bar-when-the-window-is-inactive
+        _currentActivationState = args.WindowActivationState;
+        UpdateCustomTitleBarButtonsTextColor();
+    }
+
+    private void UpdateCustomTitleBarButtonsTextColor()
+    {
+        FrameworkElement? rootElement = Content as FrameworkElement;
+        Debug.Assert(rootElement != null, "Expected Content to be a FrameworkElement");
+
+        if (_currentActivationState == WindowActivationState.Deactivated)
+        {
+            SolidColorBrush brush = (rootElement.ActualTheme == ElementTheme.Dark) ? _darkModeDeactiveCaptionBrush : _nonDarkModeDeactiveCaptionBrush;
+
+            SnapButtonText.Foreground = brush;
+            ExpandCollapseLayoutButtonText.Foreground = brush;
+            RotateLayoutButtonText.Foreground = brush;
+        }
+        else
+        {
+            SolidColorBrush brush = (rootElement.ActualTheme == ElementTheme.Dark) ? _darkModeActiveCaptionBrush : _nonDarkModeActiveCaptionBrush;
+
+            SnapButtonText.Foreground = brush;
+            ExpandCollapseLayoutButtonText.Foreground = brush;
+            RotateLayoutButtonText.Foreground = brush;
+        }
+    }
+
+    private void SetBarToDefaultHeight()
+    {
+        if (!_viewModel.ShowingExpandedContent)
+        {
+            this.Height = FloatingHorizontalBarHeight;
+            this.MaxHeight = FloatingHorizontalBarHeight;
+            this.MinHeight = FloatingHorizontalBarHeight;
+            this.AppWindow.Resize(new Windows.Graphics.SizeInt32(this.AppWindow.Size.Width, FloatingHorizontalBarHeight));
+        }
+    }
+
+    // CommandBar has an issue where, if the overflow menu opens and the app's window size is too small,
+    // the overflow menu will always appear above the app window and will go off screen. Bug has been filed,
+    // but in the meantime, we'll adjust our window's size to when the overflow menu opens, and set it back
+    // to default after it is closed in order to work around this issue.
+    private void MyCommandBar_Opening(object sender, object e)
+    {
+        if (!_viewModel.ShowingExpandedContent)
+        {
+            this.Height = FloatingHorizontalBarHeightWithExpandedCommandBar;
+            this.MaxHeight = FloatingHorizontalBarHeightWithExpandedCommandBar;
+            this.MinHeight = FloatingHorizontalBarHeightWithExpandedCommandBar;
+        }
+    }
+
+    private void MyCommandBar_Closing(object sender, object e)
+    {
+        SetBarToDefaultHeight();
     }
 }

@@ -3,7 +3,6 @@
 
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common;
 using DevHome.Common.Extensions;
 using DevHome.Common.Views;
 using DevHome.Environments.ViewModels;
@@ -14,8 +13,6 @@ namespace DevHome.Environments.Views;
 
 public sealed partial class LandingPage : ToolPage
 {
-    public override string ShortName => "Environments";
-
     public LandingPageViewModel ViewModel { get; }
 
     public LandingPage()

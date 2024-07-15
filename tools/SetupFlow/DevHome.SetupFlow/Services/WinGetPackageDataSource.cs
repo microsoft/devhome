@@ -4,6 +4,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Models;
 using Serilog;
 
@@ -21,11 +23,11 @@ public abstract class WinGetPackageDataSource
     /// </summary>
     public abstract int CatalogCount { get; }
 
-    protected IWindowsPackageManager WindowsPackageManager { get; }
+    protected IWinGet WinGet { get; }
 
-    public WinGetPackageDataSource(IWindowsPackageManager wpm)
+    public WinGetPackageDataSource(IWinGet winget)
     {
-        WindowsPackageManager = wpm;
+        WinGet = winget;
     }
 
     /// <summary>
@@ -57,6 +59,6 @@ public abstract class WinGetPackageDataSource
         }
 
         // Get packages from winget catalog
-        return await WindowsPackageManager.GetPackagesAsync(packageUris);
+        return await WinGet.GetPackagesAsync(packageUris);
     }
 }

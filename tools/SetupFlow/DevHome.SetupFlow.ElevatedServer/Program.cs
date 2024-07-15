@@ -3,6 +3,9 @@
 
 using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.ElevatedComponent;
+using Microsoft.Extensions.Configuration;
+using Serilog;
+using Windows.Storage;
 
 namespace DevHome.SetupFlow.ElevatedServer;
 
@@ -10,6 +13,16 @@ internal sealed class Program
 {
     public static void Main(string[] args)
     {
+        // Set up Logging
+        var logFolderRoot = Path.Combine(ApplicationData.Current.TemporaryFolder.Path, "Logs");
+        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(logFolderRoot, "SetupFlowElevated"));
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings_setupflowelevated.json")
+            .Build();
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+
         if (args.Length <= 3)
         {
             Console.WriteLine("Called with wrong number of arguments");
@@ -37,6 +50,8 @@ internal sealed class Program
         finally
         {
             operation.Terminate();
+            Log.Information("Terminating the setup flow elevated process");
+            Log.CloseAndFlush();
         }
     }
 }

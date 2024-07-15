@@ -51,7 +51,6 @@ public partial class AccountsProviderViewModel : ObservableObject
             if (providerOperationResult.Status == ProviderOperationStatus.Failure)
             {
                 _log.Error($"{providerOperationResult.DisplayMessage} - {providerOperationResult.DiagnosticText}");
-                return;
             }
         }
 

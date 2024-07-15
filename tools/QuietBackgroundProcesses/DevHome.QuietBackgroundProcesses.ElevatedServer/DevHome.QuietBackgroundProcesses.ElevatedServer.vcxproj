@@ -5,7 +5,7 @@
   </PropertyGroup>
   <Import Project="$(SolutionDir)ToolingVersions.props" />
   <Import Project="$(SolutionDir)Directory.CppBuild.props" />
-  <Import Project="..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240311-x1907\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props" Condition="Exists('..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240311-x1907\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props')" />
+  <Import Project="..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240709-x2135\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props" Condition="Exists('..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240709-x2135\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props')" />
   <PropertyGroup Label="Globals">
     <CppWinRTOptimized>true</CppWinRTOptimized>
     <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
@@ -27,6 +27,22 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_FailFast|ARM">
+      <Configuration>Debug_FailFast</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_FailFast|ARM64">
+      <Configuration>Debug_FailFast</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_FailFast|Win32">
+      <Configuration>Debug_FailFast</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_FailFast|x64">
+      <Configuration>Debug_FailFast</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|ARM">
       <Configuration>Debug</Configuration>
       <Platform>ARM</Platform>
@@ -76,6 +92,10 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -120,6 +140,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_FailFast'">
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
@@ -178,6 +204,6 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240122.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240122.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
-    <Error Condition="!Exists('..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240311-x1907\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240311-x1907\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props'))" />
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240709-x2135\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240709-x2135\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props'))" />
   </Target>
 </Project>

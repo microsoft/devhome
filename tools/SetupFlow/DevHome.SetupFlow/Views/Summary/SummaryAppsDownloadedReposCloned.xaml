@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="DevHome.SetupFlow.Views.Summary.SummaryAppsDownloadedReposCloned"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:DevHome.SetupFlow.Views.Summary"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <converters:EmptyCollectionToObjectConverter
+                        x:Key="EmptyCollectionWillNotSpanColumnsConverter"
+                        EmptyValue="0"
+                        NotEmptyValue="*" />
+                    <converters:CollectionVisibilityConverter
+                        x:Key="CollectionVisibilityConverter"
+                        EmptyValue="Collapsed"
+                        NotEmptyValue="Visible" />
+                    <converters:CollectionVisibilityConverter
+                        x:Key="NegatedCollectionVisibilityConverter"
+                        EmptyValue="Visible"
+                        NotEmptyValue="Collapsed" />
+                    <converters:BoolToObjectConverter
+                        x:Key="SetUpEnvironmentThirdColumnWidth"
+                        FalseValue="auto"
+                        TrueValue="*" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Margin="0,0,0,30" HorizontalAlignment="Stretch">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{Binding AppsDownloaded, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}" />
+            <ColumnDefinition Width="{Binding RepositoriesCloned, Converter={StaticResource EmptyCollectionWillNotSpanColumnsConverter}}" />
+            <ColumnDefinition Width="{Binding WasCreateEnvironmentOperationStarted, Mode=OneWay, Converter={StaticResource SetUpEnvironmentThirdColumnWidth}}" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="0" Visibility="{Binding AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock
+                Grid.Row="0"
+                HorizontalAlignment="center"
+                FontSize="{StaticResource TitleLargeTextBlockFontSize}"
+                FontWeight="{StaticResource InfoBarTitleFontWeight}"
+                Text="{Binding AppsDownloaded.Count}" />
+            <TextBlock
+                Grid.Row="1"
+                HorizontalAlignment="center"
+                Foreground="{ThemeResource TextFillColorSecondary}"
+                Text="{Binding ApplicationsClonedText}" />
+        </Grid>
+        <Grid Grid.Column="1" Visibility="{Binding RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock
+                Grid.Row="0"
+                HorizontalAlignment="Center"
+                FontSize="{StaticResource TitleLargeTextBlockFontSize}"
+                FontWeight="{StaticResource InfoBarTitleFontWeight}"
+                Text="{Binding RepositoriesCloned.Count}" />
+            <TextBlock
+                Grid.Row="1"
+                HorizontalAlignment="Center"
+                Foreground="{ThemeResource TextFillColorSecondary}"
+                Text="{Binding RepositoriesClonedText}" />
+        </Grid>
+
+        <!--  No apps or repos were cloned.  This UI represents the create an environment flow.  -->
+        <Grid Grid.Column="2" Visibility="{Binding WasCreateEnvironmentOperationStarted, Mode=OneWay}">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <!--  There will only ever be 1 environment created in the flow  at a time.  -->
+            <TextBlock
+                Grid.Row="0"
+                HorizontalAlignment="Center"
+                FontSize="{StaticResource TitleLargeTextBlockFontSize}"
+                FontWeight="{StaticResource InfoBarTitleFontWeight}"
+                Text="1" />
+            <TextBlock
+                x:Uid="SummaryPageEnvironmentCreating"
+                Grid.Row="1"
+                HorizontalAlignment="Center"
+                Foreground="{ThemeResource TextFillColorSecondary}" />
+        </Grid>
+        <Button
+            Grid.Row="1"
+            Grid.ColumnSpan="3"
+            Margin="0,50,0,0"
+            HorizontalAlignment="Center"
+            Command="{Binding RedirectToNextPageCommand, Mode=OneWay}"
+            Content="{Binding PageRedirectButtonText}"
+            Style="{StaticResource AccentButtonStyle}"
+            Visibility="{Binding FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}" />
+    </Grid>
+</UserControl>

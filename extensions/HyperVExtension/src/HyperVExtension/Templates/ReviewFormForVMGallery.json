@@ -53,6 +53,7 @@
             {
               "type": "Image",
               "url": "${DiskImageUrl}",
+              "altText": "${DiskImageAltText}",
               "height": "32px"
             }
           ]

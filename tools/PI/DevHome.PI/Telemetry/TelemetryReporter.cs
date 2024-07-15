@@ -2,22 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using DevHome.Common.Extensions;
-using DevHome.PI;
-using DevHome.PI.Models;
-using DevHome.PI.Telemetry;
 using DevHome.PI.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Serilog;
-using WinUIEx;
-using static DevHome.PI.Telemetry.FeatureState;
 
 namespace DevHome.PI.Telemetry;
 

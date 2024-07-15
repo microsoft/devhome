@@ -87,7 +87,7 @@ public class TestSystems : IComputeSystem
         StateChanged?.Invoke(this, ComputeSystemState.Starting);
         await Task.Delay(2500);
         StateChanged?.Invoke(this, ComputeSystemState.Running);
-     }
+    }
 
     private IAsyncOperation<ComputeSystemOperationResult> TestOperation(string options)
     {

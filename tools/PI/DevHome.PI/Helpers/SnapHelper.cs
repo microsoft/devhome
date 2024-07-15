@@ -1,19 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.ComponentModel;
 using System.Diagnostics;
-using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.PI.Models;
-using DevHome.PI.ViewModels;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
-using WinUIEx;
 
 namespace DevHome.PI.Helpers;
 
@@ -144,7 +139,12 @@ public class SnapHelper
         }
 
         PInvoke.GetWindowRect(TargetAppData.Instance.HWnd, out var rect);
+
+        int width = rect.right - rect.left;
+        int height = rect.bottom - rect.top;
+
         barWindow.UpdateBarWindowPosition(new PointInt32(rect.right - SnapOffsetHorizontal, rect.top));
+        barWindow.UpdateBarWindowSize(new SizeInt32(width, height));
 
         // Only reset BarWindow on top, if TargetApp is in foreground.
         if (TargetAppData.Instance.HWnd == PInvoke.GetForegroundWindow())

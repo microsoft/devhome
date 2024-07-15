@@ -11,9 +11,9 @@ namespace CoreWidgetProvider.Helpers;
 internal sealed class GPUStats : IDisposable
 {
     // GPU counters
-    private readonly Dictionary<int, List<PerformanceCounter>> gpuCounters = new();
+    private readonly Dictionary<int, List<PerformanceCounter>> _gpuCounters = new();
 
-    private readonly List<Data> stats = new();
+    private readonly List<Data> _stats = new();
 
     public sealed class Data
     {
@@ -25,7 +25,7 @@ internal sealed class GPUStats : IDisposable
 
         public float Temperature { get; set; }
 
-        public List<float> GpuChartValues { get; set; } = new List<float>();
+        public List<float> GpuChartValues { get; set; } = new();
     }
 
     public GPUStats()
@@ -38,18 +38,18 @@ internal sealed class GPUStats : IDisposable
     {
         using var session = CimSession.Create(null);
         var i = 0;
-        stats.Clear();
+        _stats.Clear();
 
         foreach (CimInstance obj in session.QueryInstances("root/cimv2", "WQL", "select * from Win32_VideoController"))
         {
             var gpuName = (string)obj.CimInstanceProperties["name"].Value;
-            stats.Add(new Data() { Name = gpuName, PhysId = i++ });
+            _stats.Add(new Data() { Name = gpuName, PhysId = i++ });
         }
     }
 
     public void GetGPUPerfCounters()
     {
-        gpuCounters.Clear();
+        _gpuCounters.Clear();
 
         var pcg = new PerformanceCounterCategory("GPU Engine");
         var instanceNames = pcg.GetInstanceNames();
@@ -80,10 +80,10 @@ internal sealed class GPUStats : IDisposable
                         continue;
                     }
 
-                    if (!gpuCounters.TryGetValue(phys, out var value))
+                    if (!_gpuCounters.TryGetValue(phys, out var value))
                     {
                         value = new();
-                        gpuCounters.Add(phys, value);
+                        _gpuCounters.Add(phys, value);
                     }
 
                     value.Add(counter);
@@ -94,10 +94,10 @@ internal sealed class GPUStats : IDisposable
 
     public void GetData()
     {
-        foreach (var gpu in stats)
+        foreach (var gpu in _stats)
         {
             List<PerformanceCounter>? counters;
-            var success = gpuCounters.TryGetValue(gpu.PhysId, out counters);
+            var success = _gpuCounters.TryGetValue(gpu.PhysId, out counters);
 
             if (success)
             {
@@ -123,29 +123,29 @@ internal sealed class GPUStats : IDisposable
 
     internal string CreateGPUImageUrl(int gpuChartIndex)
     {
-        return ChartHelper.CreateImageUrl(stats.ElementAt(gpuChartIndex).GpuChartValues, ChartHelper.ChartType.GPU);
+        return ChartHelper.CreateImageUrl(_stats.ElementAt(gpuChartIndex).GpuChartValues, ChartHelper.ChartType.GPU);
     }
 
     internal string GetGPUName(int gpuActiveIndex)
     {
-        if (stats.Count <= gpuActiveIndex)
+        if (_stats.Count <= gpuActiveIndex)
         {
             return string.Empty;
         }
 
-        return stats[gpuActiveIndex].Name ?? string.Empty;
+        return _stats[gpuActiveIndex].Name ?? string.Empty;
     }
 
     internal int GetPrevGPUIndex(int gpuActiveIndex)
     {
-        if (stats.Count == 0)
+        if (_stats.Count == 0)
         {
             return 0;
         }
 
         if (gpuActiveIndex == 0)
         {
-            return stats.Count - 1;
+            return _stats.Count - 1;
         }
 
         return gpuActiveIndex - 1;
@@ -153,12 +153,12 @@ internal sealed class GPUStats : IDisposable
 
     internal int GetNextGPUIndex(int gpuActiveIndex)
     {
-        if (stats.Count == 0)
+        if (_stats.Count == 0)
         {
             return 0;
         }
 
-        if (gpuActiveIndex == stats.Count - 1)
+        if (gpuActiveIndex == _stats.Count - 1)
         {
             return 0;
         }
@@ -168,22 +168,22 @@ internal sealed class GPUStats : IDisposable
 
     internal float GetGPUUsage(int gpuActiveIndex, string gpuActiveEngType)
     {
-        if (stats.Count <= gpuActiveIndex)
+        if (_stats.Count <= gpuActiveIndex)
         {
             return 0;
         }
 
-        return stats[gpuActiveIndex].Usage;
+        return _stats[gpuActiveIndex].Usage;
     }
 
     internal string GetGPUTemperature(int gpuActiveIndex)
     {
-        if (stats.Count <= gpuActiveIndex)
+        if (_stats.Count <= gpuActiveIndex)
         {
             return "--";
         }
 
-        var temperature = stats[gpuActiveIndex].Temperature;
+        var temperature = _stats[gpuActiveIndex].Temperature;
         if (temperature == 0)
         {
             return "--";
@@ -219,7 +219,7 @@ internal sealed class GPUStats : IDisposable
 
     public void Dispose()
     {
-        foreach (var counterPair in gpuCounters)
+        foreach (var counterPair in _gpuCounters)
         {
             foreach (var counter in counterPair.Value)
             {

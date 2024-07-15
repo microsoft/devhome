@@ -35,7 +35,7 @@ public abstract class WindowFileDialog : IDisposable
     private readonly IFileDialog _fileDialog;
     private readonly uint _adviseCookie;
     private readonly List<WindowFileDialogFilter> _fileTypes = [];
-    private bool disposedValue;
+    private bool _disposedValue;
 
     // File dialog events
     public event EventHandler<IWindowFileDialogFilter?>? FileTypeChanged;
@@ -208,7 +208,7 @@ public abstract class WindowFileDialog : IDisposable
     /// <inheritdoc cref="Dispose()"/>/>
     private void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!_disposedValue)
         {
             if (disposing)
             {
@@ -216,7 +216,7 @@ public abstract class WindowFileDialog : IDisposable
                 _fileDialog.Unadvise(_adviseCookie);
             }
 
-            disposedValue = true;
+            _disposedValue = true;
         }
     }
 

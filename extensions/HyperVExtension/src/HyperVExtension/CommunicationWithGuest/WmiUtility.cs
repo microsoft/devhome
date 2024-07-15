@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Globalization;
 using System.Management;
-using Microsoft.Management.Infrastructure;
 using Serilog;
 using Windows.Win32.Foundation;
 

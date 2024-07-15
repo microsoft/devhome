@@ -7,6 +7,7 @@ using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.DeveloperId;
+using DevHome.Common.Views;
 using DevHome.Models;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
@@ -17,17 +18,13 @@ using Windows.System;
 
 namespace DevHome.Views;
 
-public sealed partial class WhatsNewPage : Page
+public sealed partial class WhatsNewPage : DevHomePage
 {
     private readonly Uri _devDrivePageKeyUri = new("ms-settings:disksandvolumes");
     private readonly Uri _devDriveLearnMoreLinkUri = new("https://go.microsoft.com/fwlink/?linkid=2236041");
-    private const string _devDriveLinkResourceKey = "WhatsNewPage_DevDriveCard/Link";
-    private const string _accountsPageNavigationLink = "DevHome.Settings.ViewModels.AccountsViewModel";
+    private const string DevDriveLinkResourceKey = "WhatsNewPage_DevDriveCard/Link";
 
-    public WhatsNewViewModel ViewModel
-    {
-        get;
-    }
+    public WhatsNewViewModel ViewModel { get; }
 
     public WhatsNewPage()
     {
@@ -56,7 +53,7 @@ public sealed partial class WhatsNewPage : Page
             {
                 if (!DevDriveUtil.IsDevDriveFeatureEnabled)
                 {
-                    card.Button = Application.Current.GetService<IStringResource>().GetLocalized(_devDriveLinkResourceKey);
+                    card.ButtonText = Application.Current.GetService<IStringResource>().GetLocalized(DevDriveLinkResourceKey);
                     card.ShouldShowLink = false;
                 }
             }
@@ -88,12 +85,6 @@ public sealed partial class WhatsNewPage : Page
         MoveBigCardsIfNeeded(this.ActualWidth);
     }
 
-    private void MachineConfigButton_Click(object sender, RoutedEventArgs e)
-    {
-        var navigationService = Application.Current.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(DevHome.SetupFlow.ViewModels.SetupFlowViewModel).FullName!);
-    }
-
     private async void Button_ClickAsync(object sender, RoutedEventArgs e)
     {
         var btn = sender as Button;
@@ -116,12 +107,12 @@ public sealed partial class WhatsNewPage : Page
         }
         else
         {
-            if (pageKey.Equals(_accountsPageNavigationLink, StringComparison.OrdinalIgnoreCase))
+            if (pageKey.Equals(typeof(Settings.ViewModels.AccountsViewModel).FullName, StringComparison.OrdinalIgnoreCase))
             {
                 TelemetryFactory.Get<ITelemetry>().Log(
-                                                        "EntryPoint_DevId_Event",
-                                                        LogLevel.Critical,
-                                                        new EntryPointEvent(EntryPointEvent.EntryPoint.WhatsNewPage));
+                    "EntryPoint_DevId_Event",
+                    LogLevel.Critical,
+                    new EntryPointEvent(EntryPointEvent.EntryPoint.WhatsNewPage));
             }
 
             var navigationService = Application.Current.GetService<INavigationService>();
@@ -131,7 +122,7 @@ public sealed partial class WhatsNewPage : Page
 
     public void OnSizeChanged(object sender, SizeChangedEventArgs args)
     {
-        if ((Page)sender == this)
+        if (sender as Page == this)
         {
             MoveBigCardsIfNeeded(args.NewSize.Width);
         }
@@ -146,14 +137,6 @@ public sealed partial class WhatsNewPage : Page
         else
         {
             ViewModel.SwitchToLargerView();
-        }
-    }
-
-    public static class MyHelpers
-    {
-        public static Type GetType(object ele)
-        {
-            return ele.GetType();
         }
     }
 }

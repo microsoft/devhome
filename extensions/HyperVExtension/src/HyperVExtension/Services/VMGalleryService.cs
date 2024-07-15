@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json;
 using HyperVExtension.Models.VMGalleryJsonToClasses;
-using HyperVExtension.Providers;
 using Serilog;
 using Windows.Storage;
 

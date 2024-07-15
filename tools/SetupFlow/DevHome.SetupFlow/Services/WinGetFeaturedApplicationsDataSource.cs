@@ -3,12 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Models;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -22,8 +23,9 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WinGetFeaturedApplicationsDataSource));
     private readonly IExtensionService _extensionService;
+    private readonly IAppInfoService _appInfoService;
     private readonly SemaphoreSlim _lock = new(1, 1);
-    private bool disposedValue;
+    private bool _disposedValue;
 
     /// <summary>
     /// Gets the estimated total count of catalogs from all enabled extensions.
@@ -34,10 +36,11 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
     /// </remarks>
     private int _estimatedCatalogCount;
 
-    public WinGetFeaturedApplicationsDataSource(IWindowsPackageManager wpm, IExtensionService extensionService)
-        : base(wpm)
+    public WinGetFeaturedApplicationsDataSource(IWinGet winget, IExtensionService extensionService, IAppInfoService appInfoService)
+        : base(winget)
     {
         _extensionService = extensionService;
+        _appInfoService = appInfoService;
     }
 
     /// <inheritdoc />
@@ -110,8 +113,8 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
     /// <returns>Package catalog, or null if no packages found or an error occurred</returns>
     private async Task<PackageCatalog> LoadCatalogAsync(IFeaturedApplicationsGroup group)
     {
-        var locale = CultureInfo.CurrentCulture.Name;
-        var groupTitle = group.GetTitle(locale);
+        var preferredLanguage = _appInfoService.UserPreferredLanguage;
+        var groupTitle = group.GetTitle(preferredLanguage);
         var appsResult = group.GetApplications();
         if (appsResult.Result.Status == ProviderOperationStatus.Success)
         {
@@ -121,7 +124,7 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
                 return new()
                 {
                     Name = groupTitle,
-                    Description = group.GetDescription(locale),
+                    Description = group.GetDescription(preferredLanguage),
                     Packages = packages.ToReadOnlyCollection(),
                 };
             }
@@ -214,14 +217,14 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
 
     private void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!_disposedValue)
         {
             if (disposing)
             {
                 _lock.Dispose();
             }
 
-            disposedValue = true;
+            _disposedValue = true;
         }
     }
 

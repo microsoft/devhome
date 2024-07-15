@@ -9,7 +9,7 @@ using Microsoft.Diagnostics.Telemetry.Internal;
 
 namespace DevHome.Common.TelemetryEvents;
 
-// A seeker is someone who has sought out experimental features or experiements
+// A seeker is someone who has sought out experimental features or experiments
 [EventData]
 public class SeekerEvent : EventBase
 {

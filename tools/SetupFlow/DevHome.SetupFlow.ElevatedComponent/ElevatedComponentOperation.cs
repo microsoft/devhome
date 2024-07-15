@@ -1,9 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Services.Core.Extensions;
+using DevHome.Services.DesiredStateConfiguration.Extensions;
+using DevHome.Services.WindowsPackageManager.Extensions;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Windows.Foundation;
 
@@ -14,7 +20,9 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 /// </summary>
 public sealed class ElevatedComponentOperation : IElevatedComponentOperation
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ElevatedComponentOperation));
+    private readonly Microsoft.Extensions.Logging.ILogger _logger;
+
+    internal static IHost Host { get; } = BuildHost();
 
     /// <summary>
     /// Tasks arguments are passed to the elevated process as input at launch-time.
@@ -37,13 +45,15 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
 
     public ElevatedComponentOperation(IList<string> tasksArgumentList)
     {
+        _logger = LoggerFactory.Create(lb => lb.AddSerilog(dispose: false)).CreateLogger<ElevatedComponentOperation>();
+
         try
         {
             _tasksArguments = TasksArguments.FromArgumentList(tasksArgumentList);
         }
         catch (Exception e)
         {
-            _log.Error(e, $"Failed to parse tasks arguments");
+            _logger.LogError(e, $"Failed to parse tasks arguments");
             throw;
         }
     }
@@ -53,16 +63,16 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         Console.WriteLine(value);
     }
 
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName, string version)
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName, string version, Guid activityId)
     {
         var taskArguments = GetInstallPackageTaskArguments(packageId, catalogName, version);
         return ValidateAndExecuteAsync(
             taskArguments,
             async () =>
             {
-                _log.Information($"Installing package elevated: '{packageId}' from '{catalogName}'");
+                _logger.LogInformation($"Installing package elevated: '{packageId}' from '{catalogName}'");
                 var task = new ElevatedInstallTask();
-                return await task.InstallPackage(taskArguments.PackageId, taskArguments.CatalogName, version);
+                return await task.InstallPackage(taskArguments.PackageId, taskArguments.CatalogName, version, activityId);
             },
             result => result.TaskSucceeded).AsAsyncOperation();
     }
@@ -77,7 +87,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
             taskArguments,
             async () =>
             {
-                _log.Information("Creating elevated Dev Drive storage operator");
+                _logger.LogInformation("Creating elevated Dev Drive storage operator");
                 var task = new DevDriveStorageOperator();
                 var result = task.CreateDevDrive(taskArguments.VirtDiskPath, taskArguments.SizeInBytes, taskArguments.NewDriveLetter, taskArguments.DriveLabel);
                 return await Task.FromResult(result);
@@ -92,7 +102,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
             taskArguments,
             async () =>
             {
-                _log.Information("Applying DSC configuration elevated");
+                _logger.LogInformation("Applying DSC configuration elevated");
                 var task = new ElevatedConfigurationTask();
                 return await task.ApplyConfiguration(taskArguments.FilePath, taskArguments.Content, activityId);
             },
@@ -107,7 +117,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         var allTasksArguments = _tasksArguments.GetAllTasksArguments();
         if (allTasksArguments.Count == _operationsState.Count)
         {
-            _log.Information($"All operations for the tasks arguments provided to the elevated process were executed.");
+            _logger.LogInformation($"All operations for the tasks arguments provided to the elevated process were executed.");
         }
         else
         {
@@ -116,7 +126,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
             {
                 if (!_operationsState.ContainsKey(taskArguments))
                 {
-                    _log.Warning($"Operation for task arguments {string.Join(' ', taskArguments.ToArgumentList())} was provided to the elevated process but was never executed.");
+                    _logger.LogWarning($"Operation for task arguments {string.Join(' ', taskArguments.ToArgumentList())} was provided to the elevated process but was never executed.");
                 }
             }
         }
@@ -128,7 +138,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         var taskArguments = _tasksArguments.InstallPackages?.FirstOrDefault(def => def.PackageId == packageId && def.CatalogName == catalogName && def.Version == version);
         if (taskArguments == null)
         {
-            _log.Error($"No match found for PackageId={packageId}, CatalogId={catalogName} and Version={version} in the process tasks arguments.");
+            _logger.LogError($"No match found for PackageId={packageId}, CatalogId={catalogName} and Version={version} in the process tasks arguments.");
             throw new ArgumentException($"Failed to install '{packageId}' ({version}) from '{catalogName}' because it was not in the pre-approved tasks arguments");
         }
 
@@ -140,7 +150,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         var taskArguments = _tasksArguments.Configure;
         if (taskArguments == null)
         {
-            _log.Error($"No configuration task was found in the process tasks arguments ");
+            _logger.LogError($"No configuration task was found in the process tasks arguments ");
             throw new ArgumentException($"Failed to apply configuration because it was not in the pre-approved tasks arguments");
         }
 
@@ -152,7 +162,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         var taskArguments = _tasksArguments.CreateDevDrive;
         if (taskArguments == null)
         {
-            _log.Error($"No 'create dev drive' task was found in the process tasks arguments ");
+            _logger.LogError($"No 'create dev drive' task was found in the process tasks arguments ");
             throw new ArgumentException($"Failed to create a dev drive because it was not in the pre-approved tasks arguments");
         }
 
@@ -182,7 +192,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         }
         catch (Exception e)
         {
-            _log.Error(e, $"Failed to validate or execute operation");
+            _logger.LogError(e, $"Failed to validate or execute operation");
             EndOperation(taskArguments, false);
             throw;
         }
@@ -265,5 +275,27 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         /// Gets or sets a value indicating whether this operation is currently in progress.
         /// </summary>
         public bool InProgress { get; set; }
+    }
+
+    private static IHost BuildHost()
+    {
+        return Microsoft.Extensions.Hosting.Host
+            .CreateDefaultBuilder()
+            .UseContentRoot(AppContext.BaseDirectory)
+            .UseDefaultServiceProvider((context, options) =>
+            {
+                options.ValidateOnBuild = true;
+            })
+            .ConfigureServices((context, services) =>
+            {
+                // Add Serilog logging for ILogger.
+                services.AddLogging(lb => lb.AddSerilog(dispose: true));
+
+                // Service projects
+                services.AddCore();
+                services.AddWinGetElevated();
+                services.AddDSC();
+            })
+            .Build();
     }
 }

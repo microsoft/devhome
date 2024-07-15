@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Helpers;
 using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml;
 
@@ -16,6 +18,8 @@ public partial class DashboardViewModel : ObservableObject
     public IWidgetIconService WidgetIconService { get; }
 
     public IWidgetScreenshotService WidgetScreenshotService { get; }
+
+    public ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
 
     [ObservableProperty]
     private bool _isLoading;
@@ -33,10 +37,17 @@ public partial class DashboardViewModel : ObservableObject
         WidgetHostingService = widgetHostingService;
         WidgetIconService = widgetIconService;
         WidgetScreenshotService = widgetScreenshotService;
+
+        PinnedWidgets = new ObservableCollection<WidgetViewModel>();
     }
 
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
     {
         return (widgetCount == 0 && !isLoading && HasWidgetService) ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public bool IsRunningAsAdmin()
+    {
+        return RuntimeHelper.IsCurrentProcessRunningAsAdmin();
     }
 }
