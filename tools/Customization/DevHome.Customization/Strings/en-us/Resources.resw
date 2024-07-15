@@ -401,4 +401,8 @@
     <value>The root path provided is incorrect or is a UNC path. Please check for invalid characters and if the drive exists on the machine.</value>
     <comment>The error message for root path validation</comment>
   </data>
+  <data name="RemoveRepository.Text" xml:space="preserve">
+    <value>Enter path to remove an enhanced repository</value>
+    <comment>The text for removing a repository from source control integration</comment>
+  </data>
 </root>

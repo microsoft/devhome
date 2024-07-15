@@ -68,6 +68,16 @@
                          Severity="Error">
                     </InfoBar>
                 </StackPanel>
+                <StackPanel  x:Name="RemoveRepository" Orientation="Horizontal" Margin="0,20,0,20">
+                    <TextBox x:Name="RemovePathTextBox"
+                             x:Uid="RemoveRepository"
+                             MinWidth="300"
+                             VerticalAlignment="Center"
+                             HorizontalAlignment="Left"/>
+                    <Button  Content="Remove" 
+                             Click="RemoveButton_Click" 
+                             Margin="10, 5, 0, 0"/>
+                </StackPanel>
                 <StackPanel x:Name="DisplayTrackRepository" Visibility="Collapsed">
                     <TextBlock Text="Git" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}"/>
                     <ItemsRepeater ItemsSource="{x:Bind ViewModel.TrackedRepositories}"
