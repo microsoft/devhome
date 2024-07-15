@@ -66,7 +66,8 @@
                 <Grid>
                     <Button
                         Style="{StaticResource HorizontalThreeDotsStyle}"
-                        AutomationProperties.Name="{x:Bind MoreOptionsButtonName}">
+                        AutomationProperties.Name="{x:Bind MoreOptionsButtonName}"
+                        ToolTipService.ToolTip="{x:Bind MoreOptionsButtonName}"> 
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}"/>
                         </Button.Flyout>
@@ -79,7 +80,8 @@
                 <Grid>
                     <Button
                         Style="{StaticResource HorizontalThreeDotsStyle}"
-                        AutomationProperties.Name="{x:Bind MoreOptionsButtonName}">
+                        AutomationProperties.Name="{x:Bind MoreOptionsButtonName}"
+                        ToolTipService.ToolTip="{x:Bind MoreOptionsButtonName}">
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}" />
                         </Button.Flyout>
