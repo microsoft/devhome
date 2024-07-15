@@ -187,7 +187,7 @@ public partial class ExternalTool : ObservableObject
                     {
                         FileName = finalExecutable,
                         Arguments = finalArguments,
-                        UseShellExecute = false,
+                        UseShellExecute = true,
                     };
                     process = Process.Start(startInfo);
                 }
