@@ -37,6 +37,7 @@ public sealed partial class FileExplorerPage : Page
         {
             TrackRepository.Visibility = Visibility.Visible;
             DisplayTrackRepository.Visibility = Visibility.Visible;
+            RemoveRepository.Visibility = Visibility.Visible;
         }
     }
 
@@ -106,6 +107,12 @@ public sealed partial class FileExplorerPage : Page
             }
         }
 
+        ViewModel.RefreshTrackedRepositories();
+    }
+
+    private void RemoveButton_Click(object sender, RoutedEventArgs e)
+    {
+        ViewModel.RemoveRepositoryPath(RemovePathTextBox.Text);
         ViewModel.RefreshTrackedRepositories();
     }
 }
