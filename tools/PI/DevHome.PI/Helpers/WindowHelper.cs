@@ -197,6 +197,27 @@ public class WindowHelper
         return false;
     }
 
+    private static unsafe BOOL EnumChildProc(HWND hWnd, LPARAM data)
+    {
+        var processId = (uint*)data.Value;
+
+        var className = stackalloc char[256];
+        var classNameLength = PInvoke.GetClassName(hWnd, className, 256);
+        if (classNameLength > 0)
+        {
+            string classNameString = new(className, 0, classNameLength);
+            if (classNameString.StartsWith("Windows.UI.Core.", StringComparison.OrdinalIgnoreCase))
+            {
+                uint hWndProcessId = 0;
+                _ = PInvoke.GetWindowThreadProcessId(hWnd, &hWndProcessId);
+                *processId = hWndProcessId;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private static Rectangle GetScreenBounds()
     {
         Rectangle rectangle = default;
@@ -408,6 +429,26 @@ public class WindowHelper
         uint processID = 0;
         _ = PInvoke.GetWindowThreadProcessId(hWnd, &processID);
         return processID;
+    }
+
+    internal static void TranslateUWPProcess(HWND hWnd, ref Process process)
+    {
+        if (process.ProcessName.Equals("ApplicationFrameHost", StringComparison.OrdinalIgnoreCase))
+        {
+            var processId = GetProcessIdFromUWPWindow(hWnd);
+            if (processId != 0)
+            {
+                process = Process.GetProcessById((int)processId);
+            }
+        }
+    }
+
+    internal static unsafe uint GetProcessIdFromUWPWindow(HWND hWnd)
+    {
+        uint processId = 0;
+        LPARAM lParam = new((nint)(&processId));
+        PInvoke.EnumChildWindows(hWnd, EnumChildProc, lParam);
+        return processId;
     }
 
     internal static HWINEVENTHOOK WatchWindowPositionEvents(WINEVENTPROC procDelegate, uint processID)
