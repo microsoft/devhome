@@ -369,6 +369,11 @@ public partial class BarWindowHorizontal : WindowEx
 
     public void SetRegionsForTitleBar()
     {
+        if (AppWindow is null)
+        {
+            return;
+        }
+
         var scaleAdjustment = MainPanel.XamlRoot.RasterizationScale;
 
         RightPaddingColumn.Width = new GridLength(AppWindow.TitleBar.RightInset / scaleAdjustment);
@@ -387,16 +392,22 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void SetDefaultPosition()
     {
-        // Calculate the DPI scale.
-        var dpiScale = GetDpiScaleForWindow(ThisHwnd);
+        // First set our default size before setting out position
+        SetDefaultWidthAndHeight();
 
         // If attached to an app it should show up on the monitor that the app is on
+        // Be sure to grab the DPI for that monitor
+        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+
         _monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
         var screenWidth = _monitorRect.right - _monitorRect.left;
         this.Move(
             (int)((screenWidth - (Width * dpiScale)) / 2) + _monitorRect.left,
             (int)WindowPositionOffsetY + _monitorRect.top);
+    }
 
+    internal void SetDefaultWidthAndHeight()
+    {
         // Get the saved settings for the ExpandedView size. On first run, this will be
         // the default 0,0, so we'll set the size proportional to the monitor size.
         // Subsequently, it will be whatever size the user sets.
@@ -415,18 +426,18 @@ public partial class BarWindowHorizontal : WindowEx
         }
 
         // Set the default window width
-        Width = Settings.Default.WindowWidth / dpiScale;
+        Width = Settings.Default.WindowWidth;
 
         // And set the default window height
         if (LargeContentPanel is not null &&
             LargeContentPanel.Visibility == Visibility.Visible &&
             this.WindowState != WindowState.Maximized)
         {
-            Height = Settings.Default.ExpandedWindowHeight / dpiScale;
+            Height = Settings.Default.ExpandedWindowHeight;
         }
         else
         {
-            Height = FloatingHorizontalBarHeight / dpiScale;
+            Height = FloatingHorizontalBarHeight;
         }
     }
 
@@ -447,10 +458,10 @@ public partial class BarWindowHorizontal : WindowEx
             if (LargeContentPanel is not null &&
                 LargeContentPanel.Visibility == Visibility.Visible)
             {
-                Settings.Default.ExpandedWindowHeight = (int)Height;
+                Settings.Default.ExpandedWindowHeight = Height;
             }
 
-            Settings.Default.WindowWidth = (int)Width;
+            Settings.Default.WindowWidth = Width;
             Settings.Default.Save();
         }
 
@@ -532,7 +543,7 @@ public partial class BarWindowHorizontal : WindowEx
     private void CollapseLargeContentPanel()
     {
         // Make sure we cache the state before switching to collapsed bar.
-        Settings.Default.ExpandedWindowHeight = (int)Height;
+        Settings.Default.ExpandedWindowHeight = Height;
         LargeContentPanel.Visibility = Visibility.Collapsed;
         this.Height = FloatingHorizontalBarHeight;
         this.MaxHeight = FloatingHorizontalBarHeight;
@@ -554,11 +565,6 @@ public partial class BarWindowHorizontal : WindowEx
     internal Frame GetFrame()
     {
         return ExpandedViewControl.GetPageFrame();
-    }
-
-    private void MainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        SetRegionsForTitleBar();
     }
 
     // workaround as AppWindow TitleBar doesn't update caption button colors correctly when changed while app is running

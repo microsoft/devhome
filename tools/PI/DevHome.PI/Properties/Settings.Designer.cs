@@ -196,9 +196,9 @@ namespace DevHome.PI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int ExpandedWindowHeight {
+        public double ExpandedWindowHeight {
             get {
-                return ((int)(this["ExpandedWindowHeight"]));
+                return ((double)(this["ExpandedWindowHeight"]));
             }
             set {
                 this["ExpandedWindowHeight"] = value;
@@ -220,9 +220,9 @@ namespace DevHome.PI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int WindowWidth {
+        public double WindowWidth {
             get {
-                return ((int)(this["WindowWidth"]));
+                return ((double)(this["WindowWidth"]));
             }
             set {
                 this["WindowWidth"] = value;

@@ -19,7 +19,7 @@
         <MicaBackdrop/>
     </Window.SystemBackdrop>
 
-    <Grid x:Name="MainPanel" Loaded="MainPanel_Loaded" SizeChanged="MainPanel_SizeChanged">
+    <Grid x:Name="MainPanel" Loaded="MainPanel_Loaded">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -27,15 +27,15 @@
         </Grid.RowDefinitions>
 
         <!--Chrome buttons for a horizontal bar -->
-        <Grid x:Name="HorizontalBar" Background="Transparent" VerticalAlignment="Center" Height="31" Grid.Row="0">
+        <Grid x:Name="HorizontalBar" Background="Transparent" VerticalAlignment="Center" Height="31" Grid.Row="0" LayoutUpdated="{x:Bind SetRegionsForTitleBar}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
                 <ColumnDefinition x:Name="ExtraSystemButtons" Width="*"/>
                 <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock x:Uid="Title" Grid.Column="1" Style="{StaticResource CaptionTextBlockStyle}" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}">
+            <TextBlock x:Uid="Title" Grid.Column="1" Style="{StaticResource CaptionTextBlockStyle}" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" >
                 <Button
                     x:Uid="SnapButton" 
                     Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
