@@ -66,8 +66,6 @@ public partial class BarWindowHorizontal : WindowEx
     // Default size of the expanded view as a percentage of the screen size
     private const float DefaultExpandedViewHeightofScreen = 0.9f;
 
-    private RECT _monitorRect;
-
     internal HWND ThisHwnd { get; private set; }
 
     internal ClipboardMonitor? ClipboardMonitor { get; private set; }
@@ -399,11 +397,11 @@ public partial class BarWindowHorizontal : WindowEx
         // Be sure to grab the DPI for that monitor
         var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
 
-        _monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
-        var screenWidth = _monitorRect.right - _monitorRect.left;
+        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+        var screenWidth = monitorRect.right - monitorRect.left;
         this.Move(
-            (int)((screenWidth - (Width * dpiScale)) / 2) + _monitorRect.left,
-            (int)WindowPositionOffsetY + _monitorRect.top);
+            (int)((screenWidth - (Width * dpiScale)) / 2) + monitorRect.left,
+            (int)WindowPositionOffsetY + monitorRect.top);
     }
 
     internal void SetDefaultWidthAndHeight()
@@ -411,17 +409,19 @@ public partial class BarWindowHorizontal : WindowEx
         // Get the saved settings for the ExpandedView size. On first run, this will be
         // the default 0,0, so we'll set the size proportional to the monitor size.
         // Subsequently, it will be whatever size the user sets.
+        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+
         var settingWidth = Settings.Default.WindowWidth;
         if (settingWidth == 0)
         {
-            settingWidth = (int)((_monitorRect.Width * 2) / 3);
+            settingWidth = monitorRect.Width * 2 / 3;
             Settings.Default.WindowWidth = settingWidth;
         }
 
         var settingHeight = Settings.Default.ExpandedWindowHeight;
         if (settingHeight == 0)
         {
-            settingHeight = (int)((_monitorRect.Height * 3) / 4);
+            settingHeight = monitorRect.Height * 3 / 4;
             Settings.Default.ExpandedWindowHeight = settingHeight;
         }
 
