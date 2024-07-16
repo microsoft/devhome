@@ -34,11 +34,7 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
             Title = content.Title;
             PrimaryButtonText = content.PrimaryButtonText;
             var cardContent = await MakeCardContentAsync();
-            Content = new ScrollViewer
-            {
-                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                Content = cardContent,
-            };
+            Content = await MakeCardContentAsync();
 
             // Set the theme of the content dialog box
             RequestedTheme = _themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
@@ -54,20 +50,20 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
     {
         // set the theme of the content dialog box.
         RequestedTheme = newRequestedTheme;
-        var cardContent = await MakeCardContentAsync();
-        Content = new ScrollViewer
-        {
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            Content = cardContent,
-        };
+        Content = await MakeCardContentAsync();
     }
 
-    private async Task<FrameworkElement> MakeCardContentAsync()
+    private async Task<ScrollViewer> MakeCardContentAsync()
     {
         var rendererService = Application.Current.GetService<AdaptiveCardRenderingService>();
         var renderer = await rendererService.GetRendererAsync();
         renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
         var card = renderer.RenderAdaptiveCardFromJsonString(_content.ContentDialogInternalAdaptiveCardJson?.Stringify() ?? string.Empty);
-        return card.FrameworkElement;
+
+        return new ScrollViewer
+        {
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            Content = card.FrameworkElement,
+        };
     }
 }
