@@ -62,22 +62,11 @@ public partial class BarWindowHorizontal : WindowEx
     // Constants that control window sizes
     private const int WindowPositionOffsetY = 30;
     private const int FloatingHorizontalBarHeight = 90;
-    private const int FloatingHorizontalBarHeightWithExpandedCommandBar = 130;
-    private const int DefaultExpandedViewTop = 30;
-    private const int DefaultExpandedViewLeft = 100;
-    private const int RightSideGap = 10;
+
+    // Default size of the expanded view as a percentage of the screen size
+    private const float DefaultExpandedViewHeightofScreen = 0.9f;
 
     private RECT _monitorRect;
-
-    private RestoreState _restoreState = new()
-    {
-        Top = DefaultExpandedViewTop,
-        Left = DefaultExpandedViewLeft,
-        BarOrientation = Orientation.Horizontal,
-        IsLargePanelVisible = true,
-    };
-
-    private double _dpiScale = 1.0;
 
     internal HWND ThisHwnd { get; private set; }
 
@@ -97,12 +86,6 @@ public partial class BarWindowHorizontal : WindowEx
         ExtendsContentIntoTitleBar = true;
         AppWindow.TitleBar.IconShowOptions = IconShowOptions.HideIconAndSystemMenu;
 
-        // Get the default window size. We grab this in the constructor, as
-        // we may try and set our window size before our main panel gets
-        // loaded (and we call SetDefaultPosition)
-        var settingSize = Settings.Default.ExpandedLargeSize;
-        _restoreState.Height = settingSize.Height;
-        _restoreState.Width = settingSize.Width;
         ExpandCollapseLayoutButtonText.Text = _viewModel.ShowingExpandedContent ? CollapseButtonText : ExpandButtonText;
 
         // Precreate the brushes for the caption buttons
@@ -159,11 +142,7 @@ public partial class BarWindowHorizontal : WindowEx
         ThemeName t = ThemeName.Themes.First(t => t.Name == _settings.CurrentTheme);
         SetRequestedTheme(t.Theme);
 
-        // Calculate the DPI scale.
-        _dpiScale = GetDpiScaleForWindow(ThisHwnd);
-
         SetDefaultPosition();
-
         SetRegionsForTitleBar();
 
         PopulateCommandBar();
@@ -408,33 +387,47 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void SetDefaultPosition()
     {
+        // Calculate the DPI scale.
+        var dpiScale = GetDpiScaleForWindow(ThisHwnd);
+
         // If attached to an app it should show up on the monitor that the app is on
         _monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
         var screenWidth = _monitorRect.right - _monitorRect.left;
         this.Move(
-            (int)((screenWidth - (Width * _dpiScale)) / 2) + _monitorRect.left,
+            (int)((screenWidth - (Width * dpiScale)) / 2) + _monitorRect.left,
             (int)WindowPositionOffsetY + _monitorRect.top);
 
         // Get the saved settings for the ExpandedView size. On first run, this will be
         // the default 0,0, so we'll set the size proportional to the monitor size.
         // Subsequently, it will be whatever size the user sets.
-        var settingSize = Settings.Default.ExpandedLargeSize;
-        if (settingSize.Width == 0)
+        var settingWidth = Settings.Default.WindowWidth;
+        if (settingWidth == 0)
         {
-            settingSize.Width = (int)((_monitorRect.Width * 2) / (3 * _dpiScale));
+            settingWidth = (int)((_monitorRect.Width * 2) / 3);
+            Settings.Default.WindowWidth = settingWidth;
         }
 
-        if (settingSize.Height == 0)
+        var settingHeight = Settings.Default.ExpandedWindowHeight;
+        if (settingHeight == 0)
         {
-            settingSize.Height = (int)((_monitorRect.Height * 3) / (4 * _dpiScale));
+            settingHeight = (int)((_monitorRect.Height * 3) / 4);
+            Settings.Default.ExpandedWindowHeight = settingHeight;
         }
 
-        Settings.Default.ExpandedLargeSize = settingSize;
-        Settings.Default.Save();
+        // Set the default window width
+        Width = Settings.Default.WindowWidth / dpiScale;
 
-        // Set the default restore state for the ExpandedView size to the (adjusted) settings size.
-        _restoreState.Height = settingSize.Height;
-        _restoreState.Width = settingSize.Width;
+        // And set the default window height
+        if (LargeContentPanel is not null &&
+            LargeContentPanel.Visibility == Visibility.Visible &&
+            this.WindowState != WindowState.Maximized)
+        {
+            Height = Settings.Default.ExpandedWindowHeight / dpiScale;
+        }
+        else
+        {
+            Height = FloatingHorizontalBarHeight / dpiScale;
+        }
     }
 
     internal void UpdatePositionFromHwnd(HWND hwnd)
@@ -448,11 +441,17 @@ public partial class BarWindowHorizontal : WindowEx
     {
         ClipboardMonitor.Instance.Stop();
 
-        if (LargeContentPanel is not null &&
-            LargeContentPanel.Visibility == Visibility.Visible &&
-            this.WindowState != WindowState.Maximized)
+        // Save window size if we're not maximized
+        if (this.WindowState != WindowState.Maximized)
         {
-            CacheRestoreState();
+            if (LargeContentPanel is not null &&
+                LargeContentPanel.Visibility == Visibility.Visible)
+            {
+                Settings.Default.ExpandedWindowHeight = (int)Height;
+            }
+
+            Settings.Default.WindowWidth = (int)Width;
+            Settings.Default.Save();
         }
 
         if (!_isClosing)
@@ -503,21 +502,6 @@ public partial class BarWindowHorizontal : WindowEx
         }
     }
 
-    private void CacheRestoreState()
-    {
-        _restoreState = new()
-        {
-            Left = AppWindow.Position.X,
-            Top = AppWindow.Position.Y,
-            Width = Width,
-            Height = Height,
-            IsLargePanelVisible = LargeContentPanel.Visibility == Visibility.Visible,
-        };
-
-        Settings.Default.ExpandedLargeSize = new System.Drawing.Size((int)Width, (int)Height);
-        Settings.Default.Save();
-    }
-
     private void ExpandLargeContentPanel()
     {
         // We're expanding.
@@ -528,26 +512,31 @@ public partial class BarWindowHorizontal : WindowEx
         var monitorRect = GetMonitorRectForWindow(ThisHwnd);
         var dpiScale = GetDpiScaleForWindow(ThisHwnd);
 
-        // Expand the window but keep the x,y coordinates of top-left most corner of the window the same so it doesn't
-        // jump around the screen.
-        var availableWidth = monitorRect.Width - Math.Abs(AppWindow.Position.X - monitorRect.left) - RightSideGap;
-        _restoreState.Width = (int)((double)availableWidth / dpiScale);
+        // If we're maximized, we need to set the height to the monitor height
+        if (WindowState == WindowState.Maximized)
+        {
+            Height = monitorRect.Height / dpiScale;
+        }
+        else
+        {
+            // Expand the window but keep the x,y coordinates of top-left most corner of the window the same so it doesn't
+            // jump around the screen.
+            var availableHeight = monitorRect.Height - Math.Abs(AppWindow.Position.Y - monitorRect.top);
+            var targetHeight = (int)((double)availableHeight / dpiScale * DefaultExpandedViewHeightofScreen);
 
-        Width = _restoreState.Width;
-
-        var availableHeight = monitorRect.Height - Math.Abs(AppWindow.Position.Y - monitorRect.top);
-
-        _restoreState.Height = (int)((double)availableHeight / dpiScale);
-
-        this.MoveAndResize(
-            AppWindow.Position.X, AppWindow.Position.Y, _restoreState.Width, _restoreState.Height);
+            // Set the height to the smaller of either the cached height or the computed size
+            Height = Math.Min(targetHeight, Settings.Default.ExpandedWindowHeight);
+        }
     }
 
     private void CollapseLargeContentPanel()
     {
         // Make sure we cache the state before switching to collapsed bar.
-        CacheRestoreState();
+        Settings.Default.ExpandedWindowHeight = (int)Height;
         LargeContentPanel.Visibility = Visibility.Collapsed;
+        this.Height = FloatingHorizontalBarHeight;
+        this.MaxHeight = FloatingHorizontalBarHeight;
+        this.MinHeight = FloatingHorizontalBarHeight;
     }
 
     internal void NavigateTo(Type viewModelType)
@@ -628,6 +617,22 @@ public partial class BarWindowHorizontal : WindowEx
             SnapButtonText.Foreground = brush;
             ExpandCollapseLayoutButtonText.Foreground = brush;
             RotateLayoutButtonText.Foreground = brush;
+        }
+    }
+
+    private void WindowEx_WindowStateChanged(object sender, WindowState e)
+    {
+        if (e.Equals(WindowState.Normal))
+        {
+            if (Height == FloatingHorizontalBarHeight)
+            {
+                // If we were in collapsed mode, then maximized, then expanded, then restored, be sure to set the height back to the expanded height
+                // (by default, Windows will set us to the collapsed height)
+                if (_viewModel.ShowingExpandedContent && Height == FloatingHorizontalBarHeight)
+                {
+                    Height = Settings.Default.ExpandedWindowHeight;
+                }
+            }
         }
     }
 }
