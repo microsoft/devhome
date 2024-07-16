@@ -20,6 +20,7 @@ using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Telemetry;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
@@ -28,10 +29,9 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
-using Windows.System;
 using Windows.UI.Core;
 
-using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
+using VirtualKey = Windows.System.VirtualKey;
 
 namespace DevHome.Dashboard.Views;
 
@@ -475,11 +475,11 @@ public partial class DashboardView : ToolPage, IDisposable
     {
         if (RuntimeHelper.IsOnWindows11)
         {
-            await Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
+            await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
         }
         else
         {
-            await Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
+            await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
         }
     }
 
@@ -883,7 +883,7 @@ public partial class DashboardView : ToolPage, IDisposable
             }
 
             var focusedItem = e.OriginalSource as GridViewItem;
-            if (focusedItem == null || focusedItem.Content == null || focusedItem.Content is not WidgetViewModel widgetViewModel)
+            if (focusedItem?.Content is not WidgetViewModel widgetViewModel)
             {
                 return;
             }
