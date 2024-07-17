@@ -410,6 +410,49 @@ public class WindowHelper
         return processID;
     }
 
+    internal static void TranslateUWPProcess(HWND hWnd, ref Process process)
+    {
+        if (process.ProcessName.Equals("ApplicationFrameHost", StringComparison.OrdinalIgnoreCase))
+        {
+            var processId = GetProcessIdFromUWPWindow(hWnd);
+            if (processId != 0)
+            {
+                process = Process.GetProcessById((int)processId);
+            }
+        }
+    }
+
+    internal static unsafe uint GetProcessIdFromUWPWindow(HWND hWnd)
+    {
+        UWPProcessFinder processFinder = new();
+        PInvoke.EnumChildWindows(hWnd, processFinder.EnumChildWindowsProc, IntPtr.Zero);
+        return processFinder.UWPProcessId;
+    }
+
+    private sealed class UWPProcessFinder
+    {
+        public uint UWPProcessId { get; private set; }
+
+        public unsafe BOOL EnumChildWindowsProc(HWND hWnd, LPARAM data)
+        {
+            var className = stackalloc char[256];
+            var classNameLength = PInvoke.GetClassName(hWnd, className, 256);
+            if (classNameLength > 0)
+            {
+                string classNameString = new(className, 0, classNameLength);
+                if (classNameString.StartsWith("Windows.UI.Core.", StringComparison.OrdinalIgnoreCase))
+                {
+                    uint hWndProcessId = 0;
+                    _ = PInvoke.GetWindowThreadProcessId(hWnd, &hWndProcessId);
+                    UWPProcessId = hWndProcessId;
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
     internal static HWINEVENTHOOK WatchWindowPositionEvents(WINEVENTPROC procDelegate, uint processID)
     {
         var eventHook = PInvoke.SetWinEventHook(
