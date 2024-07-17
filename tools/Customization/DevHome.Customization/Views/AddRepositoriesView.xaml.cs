@@ -3,6 +3,7 @@
 
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Customization.ViewModels;
@@ -23,26 +24,27 @@ public sealed partial class AddRepositoriesView : UserControl
 
     public AddRepositoriesView()
     {
-        this.InitializeComponent();
         ViewModel = Application.Current.GetService<FileExplorerViewModel>();
+        this.InitializeComponent();
         PopulateProviderSelectorDropDown();
     }
 
     private void PopulateProviderSelectorDropDown()
     {
-        var extensionService = Application.Current.GetService<IExtensionService>();
+        /*var extensionService = Application.Current.GetService<IExtensionService>();
         var sourceControlExtensions = Task.Run(async () => await extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository)).Result.ToList();
         sourceControlExtensions.Sort((a, b) => string.Compare(a.ExtensionDisplayName, b.ExtensionDisplayName, System.StringComparison.OrdinalIgnoreCase));
+
         sourceControlExtensions.ForEach((sourceControlExtension) =>
         {
-            SourceControlProviderSelector.Items.Add(
+            this.SourceControlProviderSelector.Items.Add(
                 new MenuFlyoutItem()
                 {
                     Text = sourceControlExtension.ExtensionDisplayName,
                     Command = ViewModel.SourceControlProviderSelection_Click(),
                     CommandParameter = sourceControlExtension,
                 });
-        });
+        });*/
     }
 
     public void SourceControlProviderSelection_Click(object sender, RoutedEventArgs e)

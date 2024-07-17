@@ -6,8 +6,12 @@
     xmlns:local="using:DevHome.Customization.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls" 
+    xmlns:viewmodels="using:DevHome.Customization.ViewModels"
     mc:Ignorable="d">
+    <UserControl.DataContext>
+        <viewmodels:FileExplorerViewModel />
+    </UserControl.DataContext>
     <StackPanel>
         <TextBlock x:Uid="AddRepositoriesTextBlock"
                Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"/>
@@ -18,36 +22,41 @@
                 Style="{ThemeResource AccentButtonStyle}" 
                 Click="{x:Bind ViewModel.AddFolderButton_ClickAsync, Mode=OneWay}" />
         </ctControls:SettingsCard>
-        <ctControls:SettingsCard 
-                                 x:Name="RepoPathCard" 
-                                 Header="Path"
-                                 Margin="{ThemeResource SettingsCardMargin}">
-            <ctControls:SettingsCard.HeaderIcon>
-                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xf12b;"/>
-            </ctControls:SettingsCard.HeaderIcon>
-            <StackPanel Orientation="Horizontal">
-                <DropDownButton x:Uid="ProviderSelectorDropDown">
-                    <DropDownButton.Flyout>
-                        <MenuFlyout x:Name="SourceControlProviderSelector" Placement="Bottom">
-                        </MenuFlyout>
-                    </DropDownButton.Flyout>
-                </DropDownButton>
-                <Button 
+        <ItemsRepeater ItemsSource="{x:Bind ViewModel.TrackedRepositories, Mode=OneWay}">
+            <ItemsRepeater.ItemTemplate>
+                <DataTemplate>
+                    <ctControls:SettingsCard 
+                        Header="{Binding Header}"
+                        Margin="{ThemeResource SettingsCardMargin}">
+                        <ctControls:SettingsCard.HeaderIcon>
+                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xf12b;"/>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <StackPanel Orientation="Horizontal">
+                            <DropDownButton x:Uid="ProviderSelectorDropDown">
+                                <DropDownButton.Flyout>
+                                    <MenuFlyout x:Name="SourceControlProviderSelector" Placement="Bottom">
+                                    </MenuFlyout>
+                                </DropDownButton.Flyout>
+                            </DropDownButton>
+                            <Button 
                         x:Name="MoreOptionsButton"
                         Content="&#xe712;"
                         Height="36" MinWidth="36"
                         FontFamily="{StaticResource SymbolThemeFontFamily}" 
                         Background="Transparent"
                         BorderThickness="0">
-                    <Button.Flyout>
-                        <MenuFlyout>
-                            <MenuFlyoutItem
-                                x:Uid="RemoveFolder"
-                                Click="{x:Bind ViewModel.RemoveFolderButton_Click, Mode=OneWay}"/>
-                        </MenuFlyout>
-                    </Button.Flyout>
-                </Button>
-            </StackPanel>
-        </ctControls:SettingsCard>
+                                <Button.Flyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem
+                                    x:Uid="RemoveFolder"
+                                    />
+                                    </MenuFlyout>
+                                </Button.Flyout>
+                            </Button>
+                        </StackPanel>
+                    </ctControls:SettingsCard>
+                </DataTemplate>
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
     </StackPanel>
 </UserControl>

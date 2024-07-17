@@ -4,20 +4,24 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.WinUI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Common.Windows.FileDialog;
 using DevHome.Customization.Models;
 using DevHome.Customization.TelemetryEvents;
+using DevHome.Customization.Views;
 using DevHome.FileExplorerSourceControlIntegration.Services;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.UI.Xaml;
-using Microsoft.Windows.DevHome.SDK;
+using Serilog;
+using Windows.Storage;
+using Windows.UI.ViewManagement.Core;
+using WinUIEx;
 
 namespace DevHome.Customization.ViewModels;
 
@@ -31,7 +35,7 @@ public partial class FileExplorerViewModel : ObservableObject
 
     private RepositoryTracking RepoTracker { get; set; } = new(null);
 
-    public ObservableCollection<FileExplorerSourceControlIntegrationViewModel> LocalRepositoryProviders { get; } = new();
+    private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(FileExplorerViewModel));
 
     public FileExplorerViewModel()
     {
@@ -43,21 +47,6 @@ public partial class FileExplorerViewModel : ObservableObject
             new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
             new(stringResource.GetLocalized("FileExplorer_Header"), typeof(FileExplorerViewModel).FullName!)
         ];
-
-        var experimentationService = Application.Current.GetService<IExperimentationService>();
-        if (experimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
-        {
-            // Currently, the UI displays a drop down which allows the user to select from a list of source control providers avaiable to Dev Home. This is
-            // subject to change per UI design specifications.
-            var extensionService = Application.Current.GetService<IExtensionService>();
-            var sourceControlExtensions = Task.Run(async () => await extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository)).Result.ToList();
-            sourceControlExtensions.Sort((a, b) => string.Compare(a.ExtensionDisplayName, b.ExtensionDisplayName, System.StringComparison.OrdinalIgnoreCase));
-            sourceControlExtensions.ForEach((sourceControlExtension) =>
-            {
-                LocalRepositoryProviders.Add(new FileExplorerSourceControlIntegrationViewModel(sourceControlExtension));
-            });
-        }
-
         RefreshTrackedRepositories();
     }
 
@@ -73,24 +62,6 @@ public partial class FileExplorerViewModel : ObservableObject
                 TrackedRepositories.Add(data.Key);
             }
         }
-    }
-
-    public bool AddRepositoryPath(string extensionCLSID, string rootPath)
-    {
-        var normalizedPath = rootPath.ToUpper(CultureInfo.InvariantCulture).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        var result = SourceControlIntegration.ValidateSourceControlExtension(extensionCLSID, normalizedPath);
-        if (result.Result == Helpers.ResultType.Success)
-        {
-            RepoTracker.AddRepositoryPath(extensionCLSID, normalizedPath);
-            return true;
-        }
-
-        return false;
-    }
-
-    public void RemoveRepositoryPath(string rootPath)
-    {
-        RepoTracker.RemoveRepositoryPath(rootPath);
     }
 
     public bool ShowFileExtensions
@@ -141,5 +112,41 @@ public partial class FileExplorerViewModel : ObservableObject
             SettingChangedEvent.Log("ShowFilesAfterExtraction", value.ToString());
             _shellSettings.SetShowFilesAfterExtractionEnabled(value);
         }
+    }
+
+    public bool EndTaskOnTaskBarEnabled
+    {
+        get => _shellSettings.EndTaskOnTaskBarEnabled();
+        set
+        {
+            SettingChangedEvent.Log("EndTaskOnTaskBarEnabled", value.ToString());
+            _shellSettings.SetEndTaskOnTaskBarEnabled(value);
+        }
+    }
+
+    public async void AddFolderButton_ClickAsync(object sender, RoutedEventArgs e)
+    {
+        await Task.Run(async () =>
+        {
+            using var folderDialog = new WindowOpenFolderDialog();
+            var repoRootfolder = await folderDialog.ShowAsync(Application.Current.GetService<WindowEx>());
+            if (repoRootfolder != null && repoRootfolder.Path.Length > 0)
+            {
+                log.Information($"Selected '{repoRootfolder.Path}' as location to register");
+            }
+            else
+            {
+                log.Information("Didn't select a location to register");
+            }
+        });
+    }
+
+    public void RemoveFolderButton_Click(object sender, RoutedEventArgs e)
+    {
+    }
+
+    public ICommand? SourceControlProviderSelection_Click()
+    {
+        return null;
     }
 }
