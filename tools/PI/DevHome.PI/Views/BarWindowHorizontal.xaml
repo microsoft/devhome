@@ -48,14 +48,6 @@
                     <TextBlock x:Name="SnapButtonText" Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
                 </Button>
                 <Button
-                     x:Uid="OpenClipboardMonitorButton" 
-                     Style="{StaticResource ChromeButton}" 
-                     FontSize="{StaticResource CaptionTextBlockFontSize}"
-                     Command="{x:Bind OpenClipboardMonitorCommand}" 
-                     HorizontalAlignment="Left">
-                    <TextBlock Text="&#xf0e3;" />
-                </Button>
-                <Button
                      x:Uid="RotateLayoutButton" 
                      Style="{StaticResource ChromeButton}" 
                      FontSize="{StaticResource CaptionTextBlockFontSize}"
@@ -71,6 +63,22 @@
                      HorizontalAlignment="Left" 
                      ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}">
                     <TextBlock x:Name="ExpandCollapseLayoutButtonText" />
+                </Button>
+                <Button
+                     x:Uid="ChromeEllipsisButton" 
+                     Style="{StaticResource ChromeButton}" 
+                     FontSize="{StaticResource CaptionTextBlockFontSize}"
+                     HorizontalAlignment="Left">
+                    <TextBlock Text="&#xe712;" />
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Command="{x:Bind OpenClipboardMonitorCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xf0e3;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
                 </Button>
             </StackPanel>
         </Grid>
@@ -145,28 +153,46 @@
 
         </Grid>
 
-        <Border
-            x:Name="ClipboardMonitorPanel" Visibility="Visible" Grid.Row="2"
-            BorderThickness="0" 
-            VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <StackPanel Orientation="Horizontal" Spacing="5">
-                <Button>
+        <Grid x:Name="ClipboardMonitorPanel" Visibility="Visible" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
+                </Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                </Style>
+                <Style TargetType="Button">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
+                </Style>
+            </Grid.Resources>
+            <Button Grid.Column="1">
                     <SymbolIcon Symbol="Play"/>
-                </Button>
-            <TextBlock x:Uid="HexLabelTextBlock"/>
-            <TextBox x:Name="ErrorHexTextBox" Text="{x:Bind _viewModel.ClipboardContentsHex, Mode=OneWay}"/>
-            <TextBlock x:Uid="DecLabelTextBlock" />
-            <TextBox x:Name="ErrorDecTextBox" Text="{x:Bind _viewModel.ClipboardContentsDec, Mode=OneWay}"/>
-            <TextBlock x:Uid="CodeLabelTextBlock" />
-            <TextBox x:Name="ErrorCodeTextBox" Text="{x:Bind _viewModel.ClipboardContentsCode, Mode=OneWay}"/>
-            <TextBlock x:Uid="HelpLabelTextBlock"/>
-            <TextBox x:Name="ErrorHelpTextBox"
-                 ScrollViewer.HorizontalScrollBarVisibility="Auto" Height="36" Text="{x:Bind _viewModel.ClipboardContentsHelp, Mode=OneWay}"/>
-                <Button>
-                    <TextBlock Text="&#xe8a7;"/>
-                </Button>
-            </StackPanel>
-        </Border>
+            </Button>
+            <TextBlock x:Uid="HexLabelTextBlock" Grid.Column="2"/>
+            <TextBox x:Name="ErrorHexTextBox" Text="{x:Bind _viewModel.ClipboardContentsHex, Mode=OneWay}" Grid.Column="3"/>
+            <TextBlock x:Uid="DecLabelTextBlock" Grid.Column="4"/>
+            <TextBox x:Name="ErrorDecTextBox" Text="{x:Bind _viewModel.ClipboardContentsDec, Mode=OneWay}" Grid.Column="5"/>
+            <TextBlock x:Uid="CodeLabelTextBlock" Grid.Column="6"/>
+            <TextBox x:Name="ErrorCodeTextBox" Text="{x:Bind _viewModel.ClipboardContentsCode, Mode=OneWay}" Grid.Column="7"/>
+            <Button Grid.Column="8">
+                <TextBlock Text="&#xe8a7;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+            </Button>
+        </Grid>
 
 
         <Border

@@ -636,5 +636,12 @@ public partial class BarWindowHorizontal : WindowEx
     private void OpenClipboardMonitor()
     {
         ClipboardMonitorPanel.Visibility = Visibility.Visible;
+
+        if (!_viewModel.ShowingExpandedContent)
+        {
+            MaxHeight = FloatingHorizontalBarHeight + ClipboardMonitorPanel.ActualHeight;
+            MinHeight = FloatingHorizontalBarHeight + ClipboardMonitorPanel.ActualHeight;
+            Height = FloatingHorizontalBarHeight + ClipboardMonitorPanel.ActualHeight;
+        }
     }
 }
