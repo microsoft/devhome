@@ -43,11 +43,11 @@ If no existing item describes your issue/feature, great - please file a new issu
 * Don't know whether you're reporting an issue or requesting a feature? File an issue
 * Have a question that you don't see answered in docs, videos, etc.? File an issue
 * Want to know if we're planning on building a particular feature? File an issue
-* Got a great idea for a new feature? File an issue / request / idea
+* Got a great idea for a new feature? File an issue/request / idea
 * Don't understand how to do something? File an issue
-* Found an existing issue that describes yours? Great - upvote and add additional commentary / info / repro-steps / etc.
+* Found an existing issue that describes yours? Great - upvote and add additional commentary/info / repro-steps / etc.
 
-When you hit "New Issue", select the type of issue closest to what you want to report / ask / request.
+When you hit "New Issue", select the type of issue closest to what you want to report/ask / request.
 
 ### Complete the template
 
@@ -91,11 +91,11 @@ When you hit "New Issue", select the type of issue closest to what you want to r
 
 > ⚠ DO NOT post "+1", "me too", or similar comments - they just add noise to an issue.
 
-If you don't have any additional info/context to add but would like to indicate that you're affected by the issue, upvote the original issue by clicking its [+😊] button and hitting 👍 (+1) icon. This way we can actually measure how impactful an issue is.
+If you don't have any additional info/context to add but would like to indicate that you're affected by the issue, upvote the original issue by clicking its [+😊] button and hitting 👍 (+1) icon. This way we can measure how impactful an issue is.
 
 ---
 
-## Contributing fixes / features
+## Contributing fixes/features
 
 If you're able & willing to help fix issues and/or implement features, we'd love your contribution!
 
@@ -118,7 +118,7 @@ If you'd like to suggest a new feature/improvement to Windows Customization, **y
 
 We will not accept or review PRs that add new features to Windows Customization without an associated issue that follows the `Windows Customization` template.
 
-For bug fixes, please still use the existing [bug template](https://github.com/microsoft/devhome/issues/new?template=Bug_Report.yml). If you are able to fix the bug, please indicate that in the issue and we'll be happy to review your PR.
+For bug fixes, please still use the existing [bug template](https://github.com/microsoft/devhome/issues/new?template=Bug_Report.yml). If you can fix the bug, please indicate that in the issue and we'll be happy to review your PR.
 
 ### To spec or not to spec
 
@@ -152,7 +152,7 @@ Once the team has approved an issue/spec, development can proceed. If no develop
 
 ### Fork, clone, branch, and create your PR
 
-Once you've discussed your proposed feature/fix/etc. with a team member and you've agreed on an approach or a spec has been written and approved, it's time to start development:
+Once you've discussed your proposed feature/fix/etc. With a team member and you've agreed on an approach or a spec has been written and approved, it's time to start development:
 
 1. Fork the repo if you haven't already
 2. Clone your fork locally
