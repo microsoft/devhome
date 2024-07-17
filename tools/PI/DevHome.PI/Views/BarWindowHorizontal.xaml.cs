@@ -72,6 +72,8 @@ public partial class BarWindowHorizontal : WindowEx
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
+    private float _previousCustomTitleBarOffset;
+
     public BarWindowHorizontal(BarWindowViewModel model)
     {
         _viewModel = model;
@@ -365,13 +367,23 @@ public partial class BarWindowHorizontal : WindowEx
         EvaluateLocationOfManageToolsButton();
     }
 
-    public void SetRegionsForTitleBar()
+    public void TitlebarLayoutUpdate()
     {
         if (AppWindow is null)
         {
             return;
         }
 
+        if (_previousCustomTitleBarOffset != ChromeButtonPanel.ActualOffset.X)
+        {
+            // If the offset has changed, we need to update the regions for the title bar
+            SetRegionsForTitleBar();
+            _previousCustomTitleBarOffset = ChromeButtonPanel.ActualOffset.X;
+        }
+    }
+
+    public void SetRegionsForTitleBar()
+    {
         var scaleAdjustment = MainPanel.XamlRoot.RasterizationScale;
 
         RightPaddingColumn.Width = new GridLength(AppWindow.TitleBar.RightInset / scaleAdjustment);

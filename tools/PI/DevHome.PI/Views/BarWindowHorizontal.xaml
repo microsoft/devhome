@@ -27,7 +27,7 @@
         </Grid.RowDefinitions>
 
         <!--Chrome buttons for a horizontal bar -->
-        <Grid x:Name="HorizontalBar" Background="Transparent" VerticalAlignment="Center" Height="31" Grid.Row="0" LayoutUpdated="{x:Bind SetRegionsForTitleBar}">
+        <Grid x:Name="HorizontalBar" Background="Transparent" VerticalAlignment="Center" Height="31" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
                 <ColumnDefinition x:Name="ExtraSystemButtons" Width="*"/>
@@ -35,14 +35,14 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock x:Uid="Title" Grid.Column="1" Style="{StaticResource CaptionTextBlockStyle}" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
-            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" >
+            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}" LayoutUpdated="{x:Bind TitlebarLayoutUpdate}">
                 <Button
                     x:Uid="SnapButton" 
                     Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
                     x:Name="SnapButton" Style="{StaticResource ChromeButton}" 
                     FontSize="{StaticResource CaptionTextBlockFontSize}"
                     Command="{x:Bind _viewModel.ToggleSnapCommand}" 
-                    HorizontalAlignment="Left" 
+                    HorizontalAlignment="Left"
                     IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}">
                     <TextBlock x:Name="SnapButtonText" Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
