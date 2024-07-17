@@ -118,7 +118,7 @@ If you'd like to suggest a new feature/improvement to Windows Customization, **y
 
 We will not accept or review PRs that add new features to Windows Customization without an associated issue that follows the `Windows Customization` template.
 
-For bug fixes, please still use the existing [bug template](https://github.com/microsoft/devhome/issues/new?template=Bug_Report.yml). If you can fix the bug, please indicate that in the issue and we'll be happy to review your PR.
+For bug fixes, please still use the existing [bug template](https://github.com/microsoft/devhome/issues/new?template=Bug_Report.yml). If you are able to fix the bug, please indicate that in the issue and we'll be happy to review your PR.
 
 ### To spec or not to spec
 
