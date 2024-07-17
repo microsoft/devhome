@@ -128,7 +128,7 @@ Small issues that do not require a spec will be labeled `Issue-Bug` or `Issue-Ta
 
 However, some issues/features will require careful thought & formal design before implementation. For these scenarios, we'll request that a spec is written and the associated issue will be labeled `Issue-Feature`.
 
-Specs help collaborators discuss different approaches to solving a problem, describe how the feature will behave, how the feature will impact the user, what happens if something goes wrong, etc. Driving towards agreement in a spec, before any code is written, often results in simpler code, and less wasted effort in the long run.
+Specs help collaborators discuss different approaches to solve a problem, describe how the feature will behave, how the feature will impact the user, what happens if something goes wrong, etc. Driving towards agreement in a spec, before any code is written, often results in simpler code, and less wasted effort in the long run.
 
 Specs will be managed in a very similar manner as code contributions so please follow the "[Fork, branch and create your PR](CONTRIBUTING.md#fork-clone-branch-and-create-your-pr)" section below.
 
