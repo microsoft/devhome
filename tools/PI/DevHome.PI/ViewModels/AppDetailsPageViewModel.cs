@@ -86,7 +86,7 @@ public partial class AppDetailsPageViewModel : ObservableObject
                         AppInfo.CpuArchitecture = cpuArchitecture;
                     }
 
-                    AppInfo.CheckFrameworksAndCommandLine(_targetProcess);
+                    AppInfo.GetFrameworksAndCommandLine(_targetProcess);
                     var pdi = ProcessDiagnosticInfo.TryGetForProcessId((uint)(_targetProcess?.Id ?? 0));
                     if (pdi is not null)
                     {
@@ -182,7 +182,6 @@ public partial class AppDetailsPageViewModel : ObservableObject
         // Convert the individual bool Status properties to a list of matching strings.
         List<string> trueProperties = [];
         var status = p.Status;
-        string combinedStatus;
 
         if (status.DataOffline)
         {
@@ -244,6 +243,7 @@ public partial class AppDetailsPageViewModel : ObservableObject
             trueProperties.Add(nameof(status.Tampered));
         }
 
+        string combinedStatus;
         if (trueProperties.Count > 0)
         {
             combinedStatus = string.Join(", ", trueProperties);

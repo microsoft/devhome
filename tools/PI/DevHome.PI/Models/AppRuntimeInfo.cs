@@ -78,16 +78,14 @@ public partial class AppRuntimeInfo : ObservableObject
         FrameworkTypes.Add(new FrameworkType("PresentationFramework.dll", "WPF"));
     }
 
-    public void CheckFrameworksAndCommandLine(Process process)
+    public void GetFrameworksAndCommandLine(Process process)
     {
         var identifiedFrameworks = new List<string>();
         var modules = process.Modules;
         foreach (ProcessModule module in modules)
         {
-            for (var i = 0; i < FrameworkTypes.Count; i++)
+            foreach (var item in FrameworkTypes)
             {
-                var item = FrameworkTypes[i];
-
                 if (identifiedFrameworks.Contains(item.Name))
                 {
                     continue;
@@ -118,7 +116,12 @@ public partial class AppRuntimeInfo : ObservableObject
 
         IdentifiedFrameWorkTypes = string.Join(", ", identifiedFrameworks);
 
-        // The only reliable check for UWP is if the command-line matches the known UWP pattern.
+        /* The only reliable check for UWP is if the command-line matches the known UWP pattern.
+        Examples:
+        "C:\Program Files\WindowsApps\Microsoft.WindowsAlarms_11.2406.47.0_x64__8wekyb3d8bbwe\Time.exe" -ServerName:App.AppXq8avk61zazpy808ab5ppkf6taqp47km6.mca
+        "C:\Program Files\WindowsApps\35455AndrewWhitechapel.uTaskManager_2309.21.1.0_x64__6rjrek5qak82t\uTaskManager.exe" -ServerName:uTaskManager.AppXjaq7n2ahxkbe1kpkhkxqhr5d0s2yr0pb.mca
+        "C:\Foo\TestApps\UwpAea\UwpAea\bin\x86\Debug\AppX\UwpAea.exe" -ServerName:Blueberry.Pie.AppXnzm9t7zr5rgagha6146e9rgzyahj42xx.mca
+        */
         GetCommandLine(process);
         if (UwpCommandLineRegex().IsMatch(ActivationArgs))
         {

@@ -1150,7 +1150,7 @@
     <comment>Tooltip for the full publisher of the MSIX package for this app.</comment>
   </data>
   <data name="PackageIsDevelopmentModeTextBlock.Text" xml:space="preserve">
-    <value>Is DevelopmentMode</value>
+    <value>Development mode</value>
     <comment>Textblock showing whether the MSIX package for this app was installed in development mode.</comment>
   </data>
   <data name="PackageIsDevelopmentModeTextBlock.ToolTipService.ToolTip" xml:space="preserve">
