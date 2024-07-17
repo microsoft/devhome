@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
@@ -17,7 +16,6 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
@@ -66,9 +64,9 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     public ObservableCollection<CardProperty> ComputeSystemProperties { get; set; }
 
-    public ComputeSystemCardViewModel(ComputeSystemCache computeSystem, IComputeSystemManager manager, WindowEx windowEx, string packageFullName)
+    public ComputeSystemCardViewModel(ComputeSystemCache computeSystem, IComputeSystemManager manager, DispatcherQueue dispatcherQueue, string packageFullName)
     {
-        _windowEx = windowEx;
+        _dispatcherQueue = dispatcherQueue;
         _computeSystemManager = manager;
         ComputeSystemTitle = computeSystem.DisplayName.Value;
         ComputeSystem = computeSystem;
@@ -80,7 +78,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
 
     public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
     {
-        _windowEx.DispatcherQueue.EnqueueAsync(async () =>
+        _dispatcherQueue.EnqueueAsync(async () =>
         {
             if (sender.Id == ComputeSystem.Id.Value &&
                 sender.AssociatedProviderId.Equals(ComputeSystem.AssociatedProviderId.Value, StringComparison.OrdinalIgnoreCase))

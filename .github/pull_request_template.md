@@ -7,6 +7,6 @@
 ## Validation steps performed
 
 ## PR checklist
-- [ ] Closes #xxxx
+- [ ] Closes #xxx
 - [ ] Tests added/passed
 - [ ] Documentation updated

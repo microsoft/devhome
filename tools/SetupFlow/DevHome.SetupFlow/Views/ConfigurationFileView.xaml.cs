@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.WinUI;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
@@ -43,11 +42,9 @@ public sealed partial class ConfigurationFileView : UserControl
 /// <summary>
 /// Represents a configuration unit data entry.
 /// </summary>
-public partial class ConfigurationUnitDataEntry : ObservableObject
+public sealed class ConfigurationUnitDataEntry
 {
-    [ObservableProperty]
-    private string _key;
+    public string Key { get; set; }
 
-    [ObservableProperty]
-    private string _value;
+    public string Value { get; set; }
 }

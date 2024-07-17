@@ -17,7 +17,6 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:common="using:DevHome.Common.Controls"
-    xmlns:commonBehaviors="using:DevHome.Common.Behaviors"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -30,7 +29,6 @@
 
     <i:Interaction.Behaviors >
         <behaviors:AppManagementBehavior />
-        <commonBehaviors:AutoFocusBehavior />
         <ic:EventTriggerBehavior EventName="Loaded">
             <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
         </ic:EventTriggerBehavior>

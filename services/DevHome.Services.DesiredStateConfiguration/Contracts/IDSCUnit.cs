@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace DevHome.Services.DesiredStateConfiguration.Contracts;
 
@@ -15,14 +13,9 @@ public interface IDSCUnit
     public string Type { get; }
 
     /// <summary>
-    /// Gets the identifier name of this instance within the set.
-    /// </summary>
-    public string Id { get; }
-
-    /// <summary>
     /// Gets an identifier used to uniquely identify the instance of a configuration unit on the system.
     /// </summary>
-    public Guid InstanceId { get; }
+    public string Id { get; }
 
     /// <summary>
     /// Gets a description of the configuration unit.
@@ -33,11 +26,6 @@ public interface IDSCUnit
     /// Gets the intent of how this configuration unit will be used.
     /// </summary>
     public string Intent { get; }
-
-    /// <summary>
-    /// Gets the name of the module that this configuration unit belongs to.
-    /// </summary>
-    public string ModuleName { get; }
 
     /// <summary>
     /// Gets the <see cref="Id"/> values of the configuration units that this unit depends on.
@@ -55,8 +43,7 @@ public interface IDSCUnit
     public IList<KeyValuePair<string, string>> Metadata { get; }
 
     /// <summary>
-    /// Gets the details of the configuration unit.
+    /// Gets the information on the origin of the configuration unit if available.
     /// </summary>
-    /// <returns>The details of the configuration unit.</returns>
-    public Task<IDSCUnitDetails> GetDetailsAsync();
+    public IDSCUnitDetails Details { get; }
 }

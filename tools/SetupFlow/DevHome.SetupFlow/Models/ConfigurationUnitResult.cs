@@ -3,7 +3,7 @@
 
 extern alias Projection;
 
-using Microsoft.ApplicationInsights.Extensibility;
+using DevHome.Services.DesiredStateConfiguration.Contracts;
 using Microsoft.Management.Configuration;
 using Projection::DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Windows.Win32.Foundation;
@@ -14,18 +14,17 @@ namespace DevHome.SetupFlow.Models;
 
 public class ConfigurationUnitResult
 {
-    public ConfigurationUnitResult(ApplyConfigurationUnitResult result)
+    public ConfigurationUnitResult(IDSCApplicationUnitResult result)
     {
-        Type = result.Unit.Type;
-        Id = result.Unit.Identifier;
-        result.Unit.Settings.TryGetValue("description", out var descriptionObj);
-        UnitDescription = descriptionObj?.ToString() ?? string.Empty;
-        Intent = result.Unit.Intent.ToString();
-        IsSkipped = result.State == ConfigurationUnitState.Skipped;
-        HResult = result.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK;
-        ResultSource = result.ResultInformation?.ResultSource ?? ConfigurationUnitResultSource.None;
-        Details = result.ResultInformation?.Details;
-        ErrorDescription = result.ResultInformation?.Description;
+        Type = result.AppliedUnit.Type;
+        Id = result.AppliedUnit.Id;
+        UnitDescription = result.AppliedUnit.Description;
+        Intent = result.AppliedUnit.Intent;
+        IsSkipped = result.IsSkipped;
+        HResult = result.HResult;
+        ResultSource = result.ResultSource;
+        Details = result.Details;
+        ErrorDescription = result.ErrorDescription;
     }
 
     public ConfigurationUnitResult(ElevatedConfigureUnitTaskResult result)

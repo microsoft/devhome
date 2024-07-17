@@ -3,20 +3,68 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:ui="using:CommunityToolkit.WinUI"
-    mc:Ignorable="d">
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:views="using:DevHome.Customization.Views"
+    xmlns:quietviews="using:DevHome.QuietBackgroundProcesses.UI.Views">
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadViewModelContentCommand}" />
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
 
     <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
         <!--  Primary settings group (untitled)  -->
-        <controls:SettingsCard
-            x:Uid="DeveloperFileExplorerCard"
-            AutomationProperties.AccessibilityView="Control"
-            AutomationProperties.AutomationId="NavigateDeveloperFileExplorerCardButton"
-            Command="{x:Bind ViewModel.NavigateToDeveloperFileExplorerPageCommand}"
-            HeaderIcon="{ui:FontIcon Glyph=&#xEC50;}"
-            IsClickEnabled="True" />
+        <StackPanel>
+            <!-- File Explorer Settings -->
+            <controls:SettingsCard
+                x:Uid="FileExplorerCard"
+                AutomationProperties.AccessibilityView="Control"
+                AutomationProperties.AutomationId="NavigateFileExplorerCardButton"
+                Command="{x:Bind ViewModel.NavigateToFileExplorerPageCommand}"
+                HeaderIcon="{ui:FontIcon Glyph=&#xEC50;}"
+                IsClickEnabled="True"
+                Margin="{ThemeResource SettingsCardMargin}"/>
+
+            <!--  Virtualization Feature Management  -->
+            <controls:SettingsCard
+                x:Uid="VirtualizationFeatureManagementCard"
+                AutomationProperties.AccessibilityView="Control"
+                AutomationProperties.AutomationId="NavigateVirtualizationFeatureManagementCardButton"
+                Command="{x:Bind ViewModel.NavigateToVirtualizationFeatureManagementPageCommand}"
+                HeaderIcon="{ui:FontIcon Glyph=&#xE83B;}"
+                IsClickEnabled="True"
+                Margin="{ThemeResource SettingsCardMargin}"/>
+
+            <!-- General System -->
+            <controls:SettingsCard
+                x:Uid="GeneralSystemCard"
+                AutomationProperties.AccessibilityView="Control"
+                AutomationProperties.AutomationId="NavigateGeneralSystemCardButton"
+                Command="{x:Bind ViewModel.NavigateToGeneralSystemPageCommand}"
+                HeaderIcon="{ui:FontIcon Glyph=&#xF156;}"
+                IsClickEnabled="True"
+                Margin="{ThemeResource SettingsCardMargin}"/>
+
+            <!--  Dev Drive Insights  -->
+            <controls:SettingsCard
+                x:Uid="DevDriveInsightsCard"
+                AutomationProperties.AccessibilityView="Control"
+                AutomationProperties.AutomationId="NavigateDevDriveInsightsCardButton"
+                Command="{x:Bind ViewModel.NavigateToDevDriveInsightsPageCommand}"
+                Visibility="{x:Bind ViewModel.AnyDevDrivesPresent, Mode=OneWay}"
+                IsClickEnabled="True"
+                Margin="{ThemeResource SettingsCardMargin}">
+                <controls:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xE3AF;" FontFamily="{ThemeResource AmcFluentIcons}"/>
+                </controls:SettingsCard.HeaderIcon>
+            </controls:SettingsCard>
+
+            <!--  Quiet Background Processes  -->
+            <quietviews:QuietBackgroundProcessesView />
+        </StackPanel>
 
         <!--  More Windows settings  -->
         <StackPanel>
@@ -29,7 +77,8 @@
                 AutomationProperties.AutomationId="LaunchWindowsDeveloperSettingsButton"
                 Command="{x:Bind ViewModel.LaunchWindowsDeveloperSettingsCommand}"
                 HeaderIcon="{ui:FontIcon Glyph=&#xEC7A;}"
-                IsClickEnabled="True" />
+                IsClickEnabled="True"
+                Margin="{ThemeResource SettingsCardMargin}"/>
         </StackPanel>
     </StackPanel>
 </UserControl>

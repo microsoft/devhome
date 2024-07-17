@@ -15,6 +15,7 @@
         <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
         <Setter Property="Padding" Value="10 0 10 10" />
+        <Setter Property="Margin" Value="0 0 0 10" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
     </Style>
@@ -22,7 +23,7 @@
     <Style
         x:Key="HorizontalCardRootForSetupTargetFlow"
         TargetType="Grid">
-        <Setter Property="Padding" Value="0 15 10 20" />
+        <Setter Property="Padding" Value="10 10 10 20" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
     </Style>
@@ -33,7 +34,7 @@
         BasedOn="{StaticResource DefaultListViewItemStyle}">
         <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
-        <Setter Property="Margin" Value="0 0 0 10"/>
+        <Setter Property="Margin" Value="0 0 0 10" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
     </Style>
@@ -42,7 +43,9 @@
         x:Key="HorizontalCardListViewItemContainerForManagementPageStyle"
         TargetType="ListViewItem"
         BasedOn="{StaticResource DefaultListViewItemStyle}">
-        <Setter Property="Margin" Value="0 0 0 10"/>
+        <Setter Property="MaxWidth" Value="{ThemeResource MaxPageContentWidth}"/>
+        <!-- Default Padding is "16,0,12,0". Override since we want to take up the full width. -->
+        <Setter Property="Padding" Value="0,0,0,0" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
     </Style>
@@ -50,7 +53,6 @@
     <Style
         x:Key="EnvironmentScrollViewerStyle"
         TargetType="ScrollViewer">
-        <Setter Property="Margin" Value="0,22,0,0" />
         <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
     </Style>
 
@@ -59,6 +61,7 @@
         TargetType="Grid">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="ColumnSpacing" Value="20" />
+        <Setter Property="Height" Value="36" />
         <Setter Property="Margin" Value="0,5,0,0" />
     </Style>
 
@@ -197,7 +200,7 @@
         x:Key="CardBodyStateTextBlockStyle"
         BasedOn="{StaticResource CaptionTextBlockStyle}"
         TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorTertiaryBrush}" />
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
@@ -227,7 +230,7 @@
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
-    <Style 
+    <Style
         x:Key="CardBodySplitButtonStyle"
         TargetType="SplitButton">
         <Setter Property="HorizontalAlignment" Value="Right" />

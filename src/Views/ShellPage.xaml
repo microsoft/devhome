@@ -114,13 +114,11 @@
                     Message="{x:Bind ViewModel.ShellInfoBarModel.Description, Mode=TwoWay}" 
                     IsOpen="{x:Bind ViewModel.ShellInfoBarModel.IsOpen, Mode=TwoWay}" 
                     MaxWidth="{ThemeResource MaxPageContentWidth}" />
-
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
-          <Frame
-            x:Name="NavigationFrame"
-            CornerRadius="{ThemeResource OverlayCornerRadius}" />
-        </ScrollViewer>
-      </Grid>
+                <Frame
+                    Grid.Row="1"
+                    x:Name="NavigationFrame"
+                    CornerRadius="{ThemeResource OverlayCornerRadius}" />
+            </Grid>
         </NavigationView>
 
         <!-- A "hidden" TextBlock read by the narrator on value change.

@@ -3,12 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
-using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
@@ -89,7 +87,7 @@ public class TestSystems : IComputeSystem
         StateChanged?.Invoke(this, ComputeSystemState.Starting);
         await Task.Delay(2500);
         StateChanged?.Invoke(this, ComputeSystemState.Running);
-     }
+    }
 
     private IAsyncOperation<ComputeSystemOperationResult> TestOperation(string options)
     {

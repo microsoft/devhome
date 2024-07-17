@@ -11,7 +11,7 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Customization.Views;
 
-public sealed partial class DevDriveInsightsPage : ToolPage
+public sealed partial class DevDriveInsightsPage : DevHomePage
 {
     public DevDriveInsightsViewModel ViewModel
     {

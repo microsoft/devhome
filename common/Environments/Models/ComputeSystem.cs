@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Helpers;
@@ -11,6 +12,7 @@ using DevHome.Common.Helpers;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation;
+using WinRT;
 
 namespace DevHome.Common.Environments.Models;
 
@@ -23,7 +25,7 @@ public class ComputeSystem
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystem));
 
-    private readonly string errorString;
+    private readonly string _errorString;
 
     private readonly IComputeSystem _computeSystem;
 
@@ -62,7 +64,7 @@ public class ComputeSystem
         AssociatedDeveloperId = computeSystem.AssociatedDeveloperId;
         AssociatedProviderId = new string(computeSystem.AssociatedProviderId);
         _computeSystem.StateChanged += OnComputeSystemStateChanged;
-        errorString = StringResourceHelper.GetResource("ComputeSystemUnexpectedError", DisplayName);
+        _errorString = StringResourceHelper.GetResource("ComputeSystemUnexpectedError", DisplayName);
     }
 
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> StateChanged = (sender, state) => { };
@@ -89,7 +91,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"GetStateAsync for: {this} failed due to exception");
-            return new ComputeSystemStateResult(ex, errorString, ex.Message);
+            return new ComputeSystemStateResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -102,7 +104,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"StartAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -115,7 +117,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"ShutDownAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -128,7 +130,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"RestartAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -141,7 +143,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"TerminateAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -154,7 +156,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"DeleteAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -167,7 +169,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"SaveAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -180,7 +182,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"PauseAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -193,7 +195,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"ResumeAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -206,7 +208,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"CreateSnapshotAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -219,7 +221,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"RevertSnapshotAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -232,7 +234,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"DeleteSnapshotAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -245,7 +247,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"ModifyPropertiesAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -258,7 +260,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"GetComputeSystemThumbnailAsync for: {this} failed due to exception");
-            return new ComputeSystemThumbnailResult(ex, errorString, ex.Message);
+            return new ComputeSystemThumbnailResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -275,16 +277,32 @@ public class ComputeSystem
         }
     }
 
+    // We need to give DevHomeAzureExtension the ability to SetForeground on the processes it creates. In some cases
+    // these processes need to show UI, in some cases they call APIs that only succeed if they are called from a
+    // foreground process. We call CoAllowSetForegroundWindow on the COM interface that we are about to use to allow
+    // the process to set foreground window.
+    // CoAllowSetForegroundWindow must be called on a raw COM interface, not a .NET CCW, in order to work correctly, since
+    // the underlying functionality is implemented by COM runtime and the object itself. CoAllowSetForegroundWindow wrapper
+    // below takes a WinRT object and extracts the raw COM interface pointer from it before calling native CoAllowSetForegroundWindow.
+    [DllImport("ole32.dll", ExactSpelling = true, PreserveSig = false)]
+    private static extern void CoAllowSetForegroundWindow(IntPtr pUnk, IntPtr lpvReserved);
+
+    private void CoAllowSetForegroundWindow(IComputeSystem computeSystem)
+    {
+        CoAllowSetForegroundWindow(((IWinRTObject)computeSystem).NativeObject.ThisPtr, 0);
+    }
+
     public async Task<ComputeSystemOperationResult> ConnectAsync(string options)
     {
         try
         {
+            CoAllowSetForegroundWindow(_computeSystem);
             return await _computeSystem.ConnectAsync(options);
         }
         catch (Exception ex)
         {
             _log.Error(ex, $"ConnectAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -294,6 +312,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.PinToStartMenuAsync();
             }
 
@@ -302,7 +321,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"PinToStartMenuAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -312,6 +331,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.UnpinFromStartMenuAsync();
             }
 
@@ -320,7 +340,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"UnpinFromStartMenuAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -330,6 +350,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.PinToTaskbarAsync();
             }
 
@@ -338,7 +359,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"PinToTaskbarAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -348,6 +369,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.UnpinFromTaskbarAsync();
             }
 
@@ -356,7 +378,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"UnpinFromTaskbarAsync for: {this} failed due to exception");
-            return new ComputeSystemOperationResult(ex, errorString, ex.Message);
+            return new ComputeSystemOperationResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -366,6 +388,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.GetIsPinnedToStartMenuAsync();
             }
 
@@ -374,7 +397,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"GetIsPinnedToStartMenuAsync for: {this} failed due to exception");
-            return new ComputeSystemPinnedResult(ex, errorString, ex.Message);
+            return new ComputeSystemPinnedResult(ex, _errorString, ex.Message);
         }
     }
 
@@ -384,6 +407,7 @@ public class ComputeSystem
         {
             if (_computeSystem is IComputeSystem2 computeSystem2)
             {
+                CoAllowSetForegroundWindow(computeSystem2);
                 return await computeSystem2.GetIsPinnedToTaskbarAsync();
             }
 
@@ -392,7 +416,7 @@ public class ComputeSystem
         catch (Exception ex)
         {
             _log.Error(ex, $"GetIsPinnedToTaskbarAsync for: {this} failed due to exception");
-            return new ComputeSystemPinnedResult(ex, errorString, ex.Message);
+            return new ComputeSystemPinnedResult(ex, _errorString, ex.Message);
         }
     }
 

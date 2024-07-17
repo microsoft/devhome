@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.ExtensionLibrary.Views;
 
-public sealed partial class ExtensionSettingsPage : ToolPage
+public sealed partial class ExtensionSettingsPage : DevHomePage
 {
     public ExtensionSettingsViewModel ViewModel { get; }
 

@@ -5,18 +5,18 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     struct ComputeSystemStateResult : ComputeSystemStateResultT<ComputeSystemStateResult>
     {
-        ComputeSystemStateResult() = default;
-
         ComputeSystemStateResult(ComputeSystemState const& computeSystemState);
-        ComputeSystemStateResult(winrt::hresult const& e, hstring const& diagnosticText);
-        ComputeSystemState GetComputeSystemState();
+        ComputeSystemStateResult(winrt::hresult const& e, hstring const& displayMessage, hstring const& diagnosticText);
+        ComputeSystemState State();
         ProviderOperationResult Result();
 
     private:
-        ComputeSystemState m_computeSystemStates;
+        ComputeSystemState m_computeSystemState;
         ProviderOperationResult m_result;
+
     };
 }
+
 namespace winrt::Microsoft::Windows::DevHome::SDK::factory_implementation
 {
     struct ComputeSystemStateResult : ComputeSystemStateResultT<ComputeSystemStateResult, implementation::ComputeSystemStateResult>

@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Customization.Views;
 
-public sealed partial class GeneralSystemPage : ToolPage
+public sealed partial class GeneralSystemPage : DevHomePage
 {
     public GeneralSystemViewModel ViewModel
     {

@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Settings.Views;
 
-public sealed partial class PreferencesPage : ToolPage
+public sealed partial class PreferencesPage : DevHomePage
 {
     public PreferencesViewModel ViewModel { get; }
 

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Security.Cryptography;
@@ -8,15 +8,15 @@ using System.Text;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Common.TelemetryEvents.DeveloperId;
+
 public static class DeveloperIdHelper
 {
     public static string GetHashedDeveloperId(string providerName, IDeveloperId devId)
     {
         // TODO: Instead of LoginId, hash a globally unique id of DeveloperId (like url)
         // https://github.com/microsoft/devhome/issues/611
-        using var hasher = SHA256.Create();
         var loginIdBytes = Encoding.ASCII.GetBytes(devId.LoginId);
-        var hashedLoginId = hasher.ComputeHash(loginIdBytes);
+        var hashedLoginId = SHA256.HashData(loginIdBytes);
         if (BitConverter.IsLittleEndian)
         {
             Array.Reverse(hashedLoginId);
@@ -32,7 +32,7 @@ public static class DeveloperIdHelper
         {
             loginIdBytes = Encoding.ASCII.GetBytes(loginSessionId);
 
-            hashedLoginId = hasher.ComputeHash(loginIdBytes);
+            hashedLoginId = SHA256.HashData(loginIdBytes);
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(hashedLoginId);

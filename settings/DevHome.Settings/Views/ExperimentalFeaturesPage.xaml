@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<views:ToolPage
+<views:DevHomePage
     x:Class="DevHome.Settings.Views.ExperimentalFeaturesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -12,9 +12,6 @@
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
-    <i:Interaction.Behaviors >
-        <behaviors:AutoFocusBehavior />
-    </i:Interaction.Behaviors>
 
     <Page.Resources>
         <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
@@ -48,4 +45,4 @@
             </StackPanel>
         </Grid>
     </ScrollViewer>
-</views:ToolPage>
+</views:DevHomePage>

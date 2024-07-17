@@ -37,7 +37,6 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:StringVisibilityConverter x:Key="StringVisibilityConverter"/>
-            <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
             <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
             <converters:CollectionVisibilityConverter x:Key="CollectionNegativeVisibilityConverter" EmptyValue="Visible"  NotEmptyValue="Collapsed"/>
             <DataTemplate x:Key="KeyValueTemplate">
@@ -139,12 +138,6 @@
                                       Tag="{x:Bind Id}"
                                       HorizontalContentAlignment="Left"
                                       HorizontalAlignment="Stretch">
-
-                                <i:Interaction.Behaviors>
-                                    <ic:EventTriggerBehavior EventName="Loaded">
-                                        <ic:InvokeCommandAction Command="{x:Bind LoadedCommand}" />
-                                    </ic:EventTriggerBehavior>
-                                </i:Interaction.Behaviors>
 
                                 <!-- Expander header -->
                                 <Expander.Header>

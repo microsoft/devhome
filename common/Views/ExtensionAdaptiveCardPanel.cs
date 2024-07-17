@@ -5,11 +5,10 @@ using System;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Models;
-using DevHome.Logging;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 
 namespace DevHome.Common.Views;
 
@@ -21,13 +20,7 @@ public class ExtensionAdaptiveCardPanel : StackPanel
 
     private RenderedAdaptiveCard? _renderedAdaptiveCard;
 
-    public AdaptiveCard? CurrentAdaptiveCard { get; private set; }
-
-    public void Bind(
-        IExtensionAdaptiveCardSession extensionAdaptiveCardSession,
-        AdaptiveCardRenderer? customRenderer = null,
-        AdaptiveElementParserRegistration? elementParserRegistration = null,
-        AdaptiveActionParserRegistration? actionParserRegistration = null)
+    public void Bind(IExtensionAdaptiveCardSession extensionAdaptiveCardSession, AdaptiveCardRenderer? customRenderer)
     {
         var adaptiveCardRenderer = customRenderer ?? new AdaptiveCardRenderer();
 
@@ -36,29 +29,17 @@ public class ExtensionAdaptiveCardPanel : StackPanel
             throw new ArgumentException("The ExtensionUI element must be bound to an empty container.");
         }
 
-        var uiDispatcher = DispatcherQueue.GetForCurrentThread();
-        ExtensionAdaptiveCard extensionUI;
-
-        // Setup adaptive card to use custom element parsers when requested
-        if (elementParserRegistration != null && actionParserRegistration != null)
-        {
-            extensionUI = new ExtensionAdaptiveCard(elementParserRegistration, actionParserRegistration);
-        }
-        else
-        {
-            // Default parsers used
-            extensionUI = new ExtensionAdaptiveCard();
-        }
+        var uiDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        var extensionUI = new ExtensionAdaptiveCard();
 
         extensionUI.UiUpdate += (object? sender, AdaptiveCard adaptiveCard) =>
         {
             uiDispatcher.TryEnqueue(() =>
             {
                 _renderedAdaptiveCard = adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
-                CurrentAdaptiveCard = adaptiveCard;
                 _renderedAdaptiveCard.Action += async (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
                 {
-                    GlobalLog.Logger?.ReportInfo($"RenderedAdaptiveCard.Action(): Called for {args.Action.Id}");
+                    Log.Information($"RenderedAdaptiveCard.Action(): Called for {args.Action.Id}");
                     await extensionAdaptiveCardSession.OnAction(args.Action.ToJson().Stringify(), args.Inputs.AsJson().Stringify());
                 };
 
@@ -66,11 +47,11 @@ public class ExtensionAdaptiveCardPanel : StackPanel
                 Children.Add(_renderedAdaptiveCard.FrameworkElement);
 
                 UiUpdate?.Invoke(this, _renderedAdaptiveCard.FrameworkElement);
-                GlobalLog.Logger?.ReportInfo($"ExtensionAdaptiveCard.UiUpdate(): Event handler for UiUpdate finished successfully");
+                Log.Information($"ExtensionAdaptiveCard.UiUpdate(): Event handler for UiUpdate finished successfully");
             });
         };
 
         extensionAdaptiveCardSession.Initialize(extensionUI);
-        GlobalLog.Logger?.ReportInfo($"ExtensionAdaptiveCardPanel.Bind(): Binding to AdaptiveCard session finished successfully");
+        Log.Information($"ExtensionAdaptiveCardPanel.Bind(): Binding to AdaptiveCard session finished successfully");
     }
 }

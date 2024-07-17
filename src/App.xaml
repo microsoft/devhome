@@ -16,6 +16,7 @@
                 <ResourceDictionary Source="/Styles/WindowTitleBar_ThemeResources.xaml" />
 
                 <!-- Resources from other projects -->
+                <ResourceDictionary Source="ms-appx:///DevHome.Dashboard/Styles/Dashboard_ThemeResources.xaml" />
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlow_ThemeResources.xaml" />
                 <ResourceDictionary Source="ms-appx:///DevHome.Common/Environments/Styles/HorizontalCardStyles.xaml" />
                 <ResourceDictionary Source="ms-appx:///DevHome.Common/Views/AdaptiveCardViews/AdaptiveCardResourceTemplates.xaml" />

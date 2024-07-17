@@ -1,21 +1,15 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using System;
-using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
-using Windows.ApplicationModel.Background;
-using Windows.Foundation;
-using Windows.Storage;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.Security;
 using WinRT;
 
 namespace Microsoft.Windows.DevHome.SDK;
 
 [ComVisible(true)]
-internal class ExtensionInstanceManager<T> : IClassFactory
+internal sealed class ExtensionInstanceManager<T> : IClassFactory
     where T : IExtension
 {
 #pragma warning disable SA1310 // Field names should not contain underscore
@@ -40,8 +34,8 @@ internal class ExtensionInstanceManager<T> : IClassFactory
 
     public ExtensionInstanceManager(Func<T> createExtension, bool restrictToMicrosoftExtensionHosts)
     {
-        this._createExtension = createExtension;
-        this._restrictToMicrosoftExtensionHosts = restrictToMicrosoftExtensionHosts;
+        _createExtension = createExtension;
+        _restrictToMicrosoftExtensionHosts = restrictToMicrosoftExtensionHosts;
     }
 
     public void CreateInstance(

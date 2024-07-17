@@ -15,14 +15,10 @@ using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.DevHome.SDK;
+using Microsoft.UI.Xaml;
 using Serilog;
-using Windows.Foundation;
-using WinUIEx;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -35,7 +31,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly AutoResetEvent _computeSystemLoadWait = new(false);
 
-    private readonly WindowEx _windowEx;
+    private readonly Window _mainWindow;
 
     private readonly EnvironmentsExtensionsService _environmentExtensionsService;
 
@@ -100,11 +96,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         INavigationService navigationService,
         IComputeSystemManager manager,
         EnvironmentsExtensionsService extensionsService,
-        WindowEx windowEx)
+        Window mainWindow)
     {
         _computeSystemManager = manager;
         _environmentExtensionsService = extensionsService;
-        _windowEx = windowEx;
+        _mainWindow = mainWindow;
         _navigationService = navigationService;
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
@@ -130,7 +126,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         // Reset the old sync timer
         _cancellationTokenSource.Cancel();
-        await _windowEx.DispatcherQueue.EnqueueAsync(() => LastSyncTime = _stringResource.GetLocalized("MomentsAgo"));
+        await _mainWindow.DispatcherQueue.EnqueueAsync(() => LastSyncTime = _stringResource.GetLocalized("MomentsAgo"));
 
         // We need to signal to the compute system manager that it can remove all the completed operations now that
         // we're done showing them in the view.
@@ -153,7 +149,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
 
         _log.Information("User clicked on the create environment button. Navigating to Select environment page in Setup flow");
-        _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow");
+        _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow;EnvironmentsLandingPage");
     }
 
     // Updates the last sync time on the UI thread after set delay
@@ -163,7 +159,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         if (!token.IsCancellationRequested)
         {
-            await _windowEx.DispatcherQueue.EnqueueAsync(() => LastSyncTime = time);
+            await _mainWindow.DispatcherQueue.EnqueueAsync(() => LastSyncTime = time);
         }
     }
 
@@ -289,7 +285,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             {
                 if (computeSystemCards[i] is CreateComputeSystemOperationViewModel operationViewModel)
                 {
-                    var operationViewModel = ComputeSystemCards[i] as CreateComputeSystemOperationViewModel;
                     operationViewModel!.RemoveEventHandlers();
                     operationViewModel.ComputeSystemErrorReceived -= OnComputeSystemOperationError;
                     computeSystemCards.RemoveAt(i);
@@ -343,7 +338,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 provider,
                 RemoveComputeSystemCard,
                 packageFullName,
-                _windowEx);
+                _mainWindow);
 
             computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
             computeSystemViewModels.Add(computeSystemViewModel);
@@ -354,7 +349,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             await computeSystemModel.InitializeCardDataAsync();
         });
 
-        await _windowEx.DispatcherQueue.EnqueueAsync(() =>
+        await _mainWindow.DispatcherQueue.EnqueueAsync(() =>
         {
             try
             {

@@ -18,7 +18,7 @@ using Windows.System;
 
 namespace DevHome.Views;
 
-public sealed partial class WhatsNewPage : ToolPage
+public sealed partial class WhatsNewPage : DevHomePage
 {
     private readonly Uri _devDrivePageKeyUri = new("ms-settings:disksandvolumes");
     private readonly Uri _devDriveLearnMoreLinkUri = new("https://go.microsoft.com/fwlink/?linkid=2236041");
@@ -36,41 +36,12 @@ public sealed partial class WhatsNewPage : ToolPage
     {
         await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstRun, true);
 
-        var whatsNewCardsRow1 = FeaturesContainerRow1.Resources
+        var whatsNewCards = FeaturesContainer.Resources
             .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
             .Select(card => card.Value as WhatsNewCard)
             .OrderBy(card => card?.Priority ?? 0);
 
-        foreach (var card in whatsNewCardsRow1)
-        {
-            if (card is null)
-            {
-                continue;
-            }
-
-            // When the Dev Drive feature is not enabled don't show the learn more uri link, but instead move the learn more text into the button content.
-            if (string.Equals(card.PageKey, _devDrivePageKeyUri.AbsoluteUri, StringComparison.OrdinalIgnoreCase))
-            {
-                if (!DevDriveUtil.IsDevDriveFeatureEnabled)
-                {
-                    card.Button = Application.Current.GetService<IStringResource>().GetLocalized(_devDriveLinkResourceKey);
-                    card.ShouldShowLink = false;
-                }
-            }
-            else
-            {
-                card.ShouldShowIcon = false;
-            }
-
-            ViewModel.AddCard(card);
-        }
-
-        var whatsNewCardsRow2 = FeaturesContainerRow2.Resources
-            .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
-            .Select(card => card.Value as WhatsNewCard)
-            .OrderBy(card => card?.Priority ?? 0);
-
-        foreach (var card in whatsNewCardsRow2)
+        foreach (var card in whatsNewCards)
         {
             if (card is null)
             {

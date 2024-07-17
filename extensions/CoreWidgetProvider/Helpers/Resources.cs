@@ -1,15 +1,16 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using DevHome.Logging;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Serilog;
 
 namespace CoreWidgetProvider.Helpers;
+
 public static class Resources
 {
     private static ResourceLoader? _resourceLoader;
 
-    public static string GetResource(string identifier, Logger? log = null)
+    public static string GetResource(string identifier, ILogger? log = null)
     {
         try
         {
@@ -22,7 +23,7 @@ public static class Resources
         }
         catch (Exception ex)
         {
-            log?.ReportError($"Failed loading resource: {identifier}", ex);
+            log?.Error(ex, $"Failed loading resource: {identifier}");
 
             // If we fail, load the original identifier so it is obvious which resource is missing.
             return identifier;
@@ -32,7 +33,7 @@ public static class Resources
     // Replaces all identifiers in the provided list in the target string. Assumes all identifiers
     // are wrapped with '%' to prevent sub-string replacement errors. This is intended for strings
     // such as a JSON string with resource identifiers embedded.
-    public static string ReplaceIdentifers(string str, string[] resourceIdentifiers, Logger? log = null)
+    public static string ReplaceIdentifers(string str, string[] resourceIdentifiers, ILogger? log = null)
     {
         var start = DateTime.Now;
         foreach (var identifier in resourceIdentifiers)
@@ -44,15 +45,15 @@ public static class Resources
         }
 
         var elapsed = DateTime.Now - start;
-        log?.ReportDebug($"Replaced identifiers in {elapsed.TotalMilliseconds}ms");
+        log?.Debug($"Replaced identifiers in {elapsed.TotalMilliseconds}ms");
         return str;
     }
 
     // These are all the string identifiers that appear in widgets.
     public static string[] GetWidgetResourceIdentifiers()
     {
-        return new string[]
-        {
+        return
+        [
             "Widget_Template/Loading",
             "Widget_Template_Tooltip/Submit",
             "SSH_Widget_Template/Name",
@@ -67,7 +68,7 @@ public static class Resources
             "Memory_Widget_Template/MemoryUsage",
             "Memory_Widget_Template/AllMemory",
             "Memory_Widget_Template/UsedMemory",
-            "Memory_Widget_Template/Commited",
+            "Memory_Widget_Template/Committed",
             "Memory_Widget_Template/Cached",
             "Memory_Widget_Template/NonPagedPool",
             "Memory_Widget_Template/PagedPool",
@@ -87,6 +88,9 @@ public static class Resources
             "CPUUsage_Widget_Template/CPU_Speed",
             "CPUUsage_Widget_Template/Processes",
             "CPUUsage_Widget_Template/End_Process",
-        };
+            "Widget_Template_Button/Preview",
+            "Widget_Template_Button/Save",
+            "Widget_Template_Button/Cancel",
+        ];
     }
 }

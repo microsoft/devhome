@@ -6,11 +6,10 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Common.Helpers;
+using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
-using Windows.Storage.Pickers;
-using WinUIEx;
+using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -19,6 +18,8 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class FolderPickerViewModel : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(FolderPickerViewModel));
+
     private readonly ISetupFlowStringResource _stringResource;
 
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
@@ -27,7 +28,7 @@ public partial class FolderPickerViewModel : ObservableObject
     /// Some pages don't show a folder picker.
     /// </summary>
     [ObservableProperty]
-    private Visibility _shouldShowFolderPicker;
+    private bool _shouldShowFolderPicker;
 
     /// <summary>
     /// The clone location the repos should be cloned to.
@@ -68,7 +69,8 @@ public partial class FolderPickerViewModel : ObservableObject
     public FolderPickerViewModel(ISetupFlowStringResource stringResource, SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _stringResource = stringResource;
-        ShouldShowFolderPicker = Visibility.Visible;
+        ShouldShowFolderPicker = true;
+        CloneLocation = string.Empty;
         IsBrowseButtonEnabled = true;
         _setupFlowOrchestrator = setupFlowOrchestrator;
         SetDefaultCloneLocation();
@@ -76,14 +78,14 @@ public partial class FolderPickerViewModel : ObservableObject
 
     public void ShowFolderPicker()
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Showing folder picker");
-        ShouldShowFolderPicker = Visibility.Visible;
+        _log.Information("Showing folder picker");
+        ShouldShowFolderPicker = true;
     }
 
     public void CloseFolderPicker()
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Closing folder picker");
-        ShouldShowFolderPicker = Visibility.Collapsed;
+        _log.Information("Closing folder picker");
+        ShouldShowFolderPicker = false;
     }
 
     public void EnableBrowseButton()
@@ -124,20 +126,25 @@ public partial class FolderPickerViewModel : ObservableObject
     /// <returns>An awaitable task.</returns>
     private async Task<DirectoryInfo> PickCloneDirectoryAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Opening folder picker to select clone directory");
-        var folderPicker = new FolderPicker();
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Application.Current.GetService<WindowEx>().GetWindowHandle());
-        folderPicker.FileTypeFilter.Add("*");
-
-        var locationToCloneTo = await folderPicker.PickSingleFolderAsync();
-        if (locationToCloneTo != null && locationToCloneTo.Path.Length > 0)
+        try
         {
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Selected '{locationToCloneTo.Path}' as location to clone to");
-            return new DirectoryInfo(locationToCloneTo.Path);
+            _log.Information("Opening folder picker to select clone directory");
+            using var folderPicker = new WindowOpenFolderDialog();
+            var locationToCloneTo = await folderPicker.ShowAsync(Application.Current.GetService<Window>());
+            if (locationToCloneTo != null && locationToCloneTo.Path.Length > 0)
+            {
+                _log.Information($"Selected '{locationToCloneTo.Path}' as location to clone to");
+                return new DirectoryInfo(locationToCloneTo.Path);
+            }
+            else
+            {
+                _log.Information("Didn't select a location to clone to");
+                return null;
+            }
         }
-        else
+        catch (Exception e)
         {
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Didn't select a location to clone to");
+            _log.Error(e, "Failed to open folder picker");
             return null;
         }
     }

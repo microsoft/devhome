@@ -1,9 +1,8 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 #include <pch.h>
 
-#include <functional>
 #include <memory>
 #include <mutex>
 
@@ -11,101 +10,100 @@
 #include <wrl/wrappers/corewrappers.h>
 #include <wrl/implements.h>
 #include <wrl/module.h>
+#include <wil/com.h>
 #include <wil/result_macros.h>
 #include <wil/token_helpers.h>
 #include <wil/win32_helpers.h>
+#include <wil/winrt.h>
 
 #include <objbase.h>
 #include <roregistrationapi.h>
 
-#include <DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesManager.h>
+#include "Utility.h"
+#include "TimedQuietSession.h"
 #include "QuietState.h"
 
-using namespace Microsoft::WRL;
-using namespace Microsoft::WRL::Wrappers;
-
-using unique_hstring_array_ptr = wil::unique_any_array_ptr<HSTRING, wil::cotaskmem_deleter, wil::function_deleter<decltype(::WindowsDeleteString), ::WindowsDeleteString>>;
-
-std::mutex g_finishMutex;
-std::condition_variable g_finishCondition;
-bool g_lastInstanceOfTheModuleObjectIsReleased;
-
-bool IsTokenElevated(HANDLE token)
+int __stdcall wWinMain(HINSTANCE, HINSTANCE, LPWSTR wargv, int wargc) try
 {
-    auto mandatoryLabel = wil::get_token_information<TOKEN_MANDATORY_LABEL>(token);
-    LONG levelRid = static_cast<SID*>(mandatoryLabel->Label.Sid)->SubAuthority[0];
-    return levelRid == SECURITY_MANDATORY_HIGH_RID;
-}
+    constexpr auto ELEVATED_SERVER_STARTED_EVENT_NAME = L"Global\\DevHome_QuietBackgroundProcesses_ElevatedServer_Started";
 
-wil::unique_ro_registration_cookie RegisterWinrtClasses(_In_ PCWSTR serverName, std::function<void()> objectsReleasedCallback)
-{
-    Module<OutOfProc>::Create(objectsReleasedCallback);
-
-    // Get module classes
-    unique_hstring_array_ptr classes;
-    THROW_IF_FAILED(RoGetServerActivatableClasses(HStringReference(serverName).Get(), &classes, reinterpret_cast<DWORD*>(classes.size_address())));
-
-    // Creation callback
-    PFNGETACTIVATIONFACTORY callback = [](HSTRING name, IActivationFactory** factory) -> HRESULT {
-        RETURN_HR_IF(E_UNEXPECTED, wil::compare_string_ordinal(WindowsGetStringRawBuffer(name, nullptr), L"DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesManager", true) != 0);
-
-        auto manager = winrt::make<winrt::DevHome::QuietBackgroundProcesses::factory_implementation::QuietBackgroundProcessesManager>();
-        manager.as<winrt::Windows::Foundation::IActivationFactory>();
-        *factory = static_cast<IActivationFactory*>(winrt::detach_abi(manager));
-        return S_OK;
-    };
-
-    // Register
-    wil::unique_ro_registration_cookie registrationCookie;
-    PFNGETACTIVATIONFACTORY callbacks[1] = { callback };
-    THROW_IF_FAILED(RoRegisterActivationFactories(classes.get(), callbacks, static_cast<UINT32>(classes.size()), &registrationCookie));
-    return registrationCookie;
-}
-
-//int _cdecl wmain(int argc, __in_ecount(argc) PWSTR wargv[])
-int CALLBACK wWinMain(_In_ HINSTANCE, _In_ HINSTANCE, _In_ LPWSTR wargv, _In_ int)
-try
-{
-    constexpr WCHAR serverNamePrefix[] = L"-ServerName:";
-    if (_wcsnicmp(wargv, serverNamePrefix, wcslen(serverNamePrefix)) != 0)
+    if (wargc < 1)
     {
-        return E_UNEXPECTED;
+        THROW_HR(E_INVALIDARG);
     }
 
+    // Parse the servername from the cmdline argument, e.g. "-ServerName:DevHome.QuietBackgroundProcesses.ElevatedServer"
+    auto serverName = ParseServerNameArgument(wargv);
+
+    if (wil::compare_string_ordinal(serverName, L"DevHome.QuietBackgroundProcesses.ElevatedServer", true) != 0)
+    {
+        THROW_HR(E_INVALIDARG);
+    }
+
+    // Let's self-elevate and terminate
     if (!IsTokenElevated(GetCurrentProcessToken()))
     {
-        return E_ACCESSDENIED;
+        wil::unique_event elevatedServerRunningEvent;
+        elevatedServerRunningEvent.create(wil::EventOptions::ManualReset, ELEVATED_SERVER_STARTED_EVENT_NAME);
+
+        // Launch elevated instance
+        SelfElevate(wargv);
+
+        // Wait for the *actual* elevated server instance to register its winrt classes with COM before shutting down
+        elevatedServerRunningEvent.wait();
+        return 0;
     }
+
+    WaitForDebuggerIfPresent();
+
+    auto unique_rouninitialize_call = wil::RoInitialize();
+
+    // Enable fast rundown of COM stubs in this process to ensure that RPCSS bookkeeping is updated synchronously.
+    SetComFastRundownAndNoEhHandle();
 
     // To be safe, force quiet mode off to begin the proceedings in case we leaked the machine state previously
     QuietState::TurnOff();
 
-    PCWSTR serverName = wargv + wcslen(serverNamePrefix);
-    auto unique_rouninitialize_call = wil::RoInitialize();
+    std::mutex mutex;
+    bool comFinished{};
+    std::condition_variable finishCondition;
 
-    // Register WinRT activatable classes
-    auto registrationCookie = RegisterWinrtClasses(serverName, [] {
+#pragma warning(push)
+#pragma warning(disable : 4324) // Avoid WRL alignment warning
+
+    // Register WRL callback when all objects are destroyed
+    auto& module = Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::Create([&] {
         // The last instance object of the module is released
         {
-            auto lock = std::unique_lock<std::mutex>(g_finishMutex);
-            g_lastInstanceOfTheModuleObjectIsReleased = true;
+            auto lock = std::unique_lock<std::mutex>(mutex);
+            comFinished = true;
         }
-        g_finishCondition.notify_one();
+        finishCondition.notify_one();
     });
 
-    // Wait for the module objects to be released and the timer threads to finish
-    {
-        auto lock = std::unique_lock<std::mutex>(g_finishMutex);
+#pragma warning(pop)
 
-        // Wait for both events to complete
-        g_finishCondition.wait(lock, [] {
-            return g_lastInstanceOfTheModuleObjectIsReleased && winrt::DevHome::QuietBackgroundProcesses::implementation::QuietBackgroundProcessesManager::IsActive();
-        });
-    }
+    // Register WinRT activatable classes
+    module.RegisterObjects();
+    auto unique_wrl_registration_cookie = wil::scope_exit([&module]() {
+        module.UnregisterObjects();
+    });
 
-    // To be safe, force quiet mode off
+    // Tell the unelevated server instance that we've registered our winrt classes with COM (so it can terminate)
+    wil::unique_event elevatedServerRunningEvent;
+    elevatedServerRunningEvent.open(ELEVATED_SERVER_STARTED_EVENT_NAME);
+    elevatedServerRunningEvent.SetEvent();
+
+    // Wait for all server references to release (implicitly also waiting for timers to finish via CoAddRefServerProcess)
+    auto lock = std::unique_lock<std::mutex>(mutex);
+
+    finishCondition.wait(lock, [&] {
+        return comFinished;
+    });
+
+    // Safety
     QuietState::TurnOff();
 
     return 0;
 }
-CATCH_RETURN();
+CATCH_RETURN()

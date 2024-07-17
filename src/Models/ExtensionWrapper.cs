@@ -26,13 +26,15 @@ public class ExtensionWrapper : IExtensionWrapper
         [typeof(ISettingsProvider)] = ProviderType.Settings,
         [typeof(IFeaturedApplicationsProvider)] = ProviderType.FeaturedApplications,
         [typeof(IComputeSystemProvider)] = ProviderType.ComputeSystem,
+        [typeof(IQuickStartProjectProvider)] = ProviderType.QuickStartProject,
     };
 
     private IExtension? _extensionObject;
 
     public ExtensionWrapper(AppExtension appExtension, string classId)
     {
-        Name = appExtension.DisplayName;
+        PackageDisplayName = appExtension.Package.DisplayName;
+        ExtensionDisplayName = appExtension.DisplayName;
         PackageFullName = appExtension.Package.Id.FullName;
         PackageFamilyName = appExtension.Package.Id.FamilyName;
         ExtensionClassId = classId ?? throw new ArgumentNullException(nameof(classId));
@@ -42,40 +44,21 @@ public class ExtensionWrapper : IExtensionWrapper
         ExtensionUniqueId = appExtension.AppInfo.AppUserModelId + "!" + appExtension.Id;
     }
 
-    public string Name
-    {
-        get;
-    }
+    public string PackageDisplayName { get; }
 
-    public string PackageFullName
-    {
-        get;
-    }
+    public string ExtensionDisplayName { get; }
 
-    public string PackageFamilyName
-    {
-        get;
-    }
+    public string PackageFullName { get; }
 
-    public string ExtensionClassId
-    {
-        get;
-    }
+    public string PackageFamilyName { get; }
 
-    public string Publisher
-    {
-        get;
-    }
+    public string ExtensionClassId { get; }
 
-    public DateTimeOffset InstalledDate
-    {
-        get;
-    }
+    public string Publisher { get; }
 
-    public PackageVersion Version
-    {
-        get;
-    }
+    public DateTimeOffset InstalledDate { get; }
+
+    public PackageVersion Version { get; }
 
     /// <summary>
     /// Gets the unique id for this Dev Home extension. The unique id is a concatenation of:
@@ -86,10 +69,7 @@ public class ExtensionWrapper : IExtensionWrapper
     /// <item>The Extension Id. This is the unique identifier of the extension within the application.</item>
     /// </list>
     /// </summary>
-    public string ExtensionUniqueId
-    {
-        get;
-    }
+    public string ExtensionUniqueId { get; }
 
     public bool IsRunning()
     {

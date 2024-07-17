@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "FileExplorerSourceControlIntegration": {
-      "commandName": "Project",
-      "commandLineArgs": "-RegisterProcessAsComServer"
-    }
-  }
-}

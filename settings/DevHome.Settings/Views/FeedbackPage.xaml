@@ -1,20 +1,16 @@
 <!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
-<views:ToolPage
+<views:DevHomePage
     x:Class="DevHome.Settings.Views.FeedbackPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:views="using:DevHome.Common.Views"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
     Loaded="Page_Loaded">
-    <i:Interaction.Behaviors >
-        <behaviors:AutoFocusBehavior />
-    </i:Interaction.Behaviors>
 
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
         <Grid>
@@ -154,4 +150,4 @@
             </StackPanel>
         </Grid>
     </ScrollViewer>
-</views:ToolPage>
+</views:DevHomePage>

@@ -3,39 +3,40 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Models;
-using DevHome.Common.Helpers;
 using DevHome.Common.Models;
-using DevHome.SetupFlow.Models.Environments;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Foundation;
 
 namespace DevHome.Common.Environments.Services;
 
 /// <summary>
-/// Service thats used to get the ComputeSystems from the providers so they can be loaded into the UI.
+/// Service that's used to get the ComputeSystems from the providers so they can be loaded into the UI.
 /// This class is also used to keep track of the ComputeSystem that a configuration file will be applied to.
 /// </summary>
 public class ComputeSystemManager : IComputeSystemManager
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemManager));
+
     private readonly IComputeSystemService _computeSystemService;
 
-    private readonly List<CreateComputeSystemOperation> _createComputeSystemOperations = new();
+    private readonly Dictionary<Guid, CreateComputeSystemOperation> _createComputeSystemOperations = new();
 
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> ComputeSystemStateChanged = (sender, state) => { };
 
+    private readonly object _creationOperationLock = new();
+
     // Used in the setup flow to store the ComputeSystem needed to configure.
-    public ComputeSystemReviewItem? ComputeSystemSetupItem { get;  set; }
+    public ComputeSystemReviewItem? ComputeSystemSetupItem { get; set; }
 
     public ComputeSystemManager(IComputeSystemService computeSystemService)
     {
         _computeSystemService = computeSystemService;
-        WeakReferenceMessenger.Default.Register<CreationOperationReceivedMessage>(this);
-        WeakReferenceMessenger.Default.Register<CreationOperationEndedMessage>(this);
     }
 
     /// <summary>
@@ -76,17 +77,17 @@ public class ComputeSystemManager : IComputeSystemManager
             {
                 if (innerEx is TaskCanceledException)
                 {
-                    Log.Logger()?.ReportError($"Failed to get retrieve all compute systems from all compute system providers due to cancellation", innerEx);
+                    _log.Error(innerEx, $"Failed to get retrieve all compute systems from all compute system providers due to cancellation");
                 }
                 else
                 {
-                    Log.Logger()?.ReportError($"Failed to get retrieve all compute systems from all compute system providers ", innerEx);
+                    _log.Error(innerEx, $"Failed to get retrieve all compute systems from all compute system providers ");
                 }
             }
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError($"Failed to get retrieve all compute systems from all compute system providers ", ex);
+            _log.Error(ex, $"Failed to get retrieve all compute systems from all compute system providers ");
         }
     }
 
@@ -95,13 +96,43 @@ public class ComputeSystemManager : IComputeSystemManager
         ComputeSystemStateChanged(sender, state);
     }
 
-    public void Receive(CreationOperationReceivedMessage message)
+    public List<CreateComputeSystemOperation> GetRunningOperationsForCreation()
     {
-        _createComputeSystemOperations.Add(message.Value);
+        lock (_creationOperationLock)
+        {
+            return _createComputeSystemOperations.Values.ToList();
+        }
     }
 
-    public void Receive(CreationOperationEndedMessage message)
+    public void AddRunningOperationForCreation(CreateComputeSystemOperation operation)
     {
-        _createComputeSystemOperations.Remove(message.Value);
+        lock (_creationOperationLock)
+        {
+            _createComputeSystemOperations.Add(operation.OperationId, operation);
+        }
+    }
+
+    public void RemoveOperation(CreateComputeSystemOperation operation)
+    {
+        lock (_creationOperationLock)
+        {
+            _createComputeSystemOperations.Remove(operation.OperationId);
+        }
+    }
+
+    public void RemoveAllCompletedOperations()
+    {
+        lock (_creationOperationLock)
+        {
+            var totalOperations = _createComputeSystemOperations.Count;
+            for (var i = 0; i < totalOperations; i++)
+            {
+                var operation = _createComputeSystemOperations.ElementAt(i).Value;
+                if (operation.CreateComputeSystemResult != null)
+                {
+                    _createComputeSystemOperations.Remove(operation.OperationId);
+                }
+            }
+        }
     }
 }

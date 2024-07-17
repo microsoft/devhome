@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "DevSetupEngine": {
-      "commandName": "Project",
-      "commandLineArgs": "-RegisterProcessAsComServer"
-    }
-  }
-}

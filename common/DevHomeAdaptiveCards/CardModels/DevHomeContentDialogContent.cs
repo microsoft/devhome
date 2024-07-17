@@ -3,13 +3,17 @@
 
 using System.Collections.Generic;
 using AdaptiveCards.ObjectModel.WinUI3;
-using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
+/// <summary>
+/// Represents a content dialog that can be rendered through an adaptive card based on the
+/// Json template.
+/// </summary>
 public class DevHomeContentDialogContent : IAdaptiveCardElement
 {
+    // Specific properties for DevHomeContentDialogContent
     public string Title { get; set; } = string.Empty;
 
     // This is the adaptive card that will be shown within
@@ -20,10 +24,10 @@ public class DevHomeContentDialogContent : IAdaptiveCardElement
 
     public string SecondaryButtonText { get; set; } = string.Empty;
 
+    public static string AdaptiveElementType => "DevHome.ContentDialogContent";
+
     // Properties for IAdaptiveCardElement
     public string ElementTypeString { get; set; } = AdaptiveElementType;
-
-    public static string AdaptiveElementType => "DevHome.ContentDialogContent";
 
     public JsonObject AdditionalProperties { get; set; } = new();
 
@@ -45,5 +49,5 @@ public class DevHomeContentDialogContent : IAdaptiveCardElement
 
     public Spacing Spacing { get; set; } = Spacing.Default;
 
-    public JsonObject ToJson() => [];
+    public JsonObject? ToJson() => [];
 }

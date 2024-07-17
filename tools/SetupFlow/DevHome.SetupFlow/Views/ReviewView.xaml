@@ -15,7 +15,6 @@
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
     xmlns:environmentViews="using:DevHome.SetupFlow.Views.Environments"
     xmlns:views="using:DevHome.SetupFlow.Views"
-    xmlns:environmentViews="using:DevHome.SetupFlow.Views.Environments"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>

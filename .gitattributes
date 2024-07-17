@@ -1,1 +1,3 @@
-*.jsonc text=LF
+# Set default behavior to automatically normalize line endings.
+
+* text=crlf

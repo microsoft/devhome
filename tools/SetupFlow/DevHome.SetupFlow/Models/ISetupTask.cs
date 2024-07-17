@@ -3,10 +3,7 @@
 
 extern alias Projection;
 
-using System;
-using DevHome.Common.Views;
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
@@ -45,12 +42,16 @@ public interface ISetupTask
     /// <remarks>
     /// This will be used to guide whether we show a warning to the user about possible reboots
     /// before beginning the setup.
-    /// TODO: We need to figure a story around how to handle reboots and the different cases.
-    ///       Setting up WSL (future) will require us to reboot the machine to finish, but other
-    ///       tasks like installing an app may trigger a reboot out of our control.
-    /// https://github.com/microsoft/devhome/issues/637
     /// </remarks>
     public bool RequiresReboot
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets target device name.
+    /// </summary>
+    public string TargetName
     {
         get;
     }
@@ -116,6 +117,8 @@ public interface ISetupTask
     /// Use this event to insert a message into the loading screen.
     /// </summary>
     public event ChangeMessageHandler AddMessage;
+
+    public ISummaryInformationViewModel SummaryScreenInformation { get; }
 
     public delegate void ChangeActionCenterMessageHandler(ActionCenterMessages message, ActionMessageRequestKind requestKind);
 

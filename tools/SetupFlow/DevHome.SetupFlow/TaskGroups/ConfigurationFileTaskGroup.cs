@@ -23,8 +23,6 @@ public class ConfigurationFileTaskGroup : ISetupTaskGroup
 
     public async Task<bool> LoadFromLocalFileAsync(StorageFile file) => await _viewModel.LoadFileAsync(file);
 
-    public async Task<bool> LoadFromLocalFileAsync(StorageFile file) => await _viewModel.LoadFileAsync(file);
-
     public IEnumerable<ISetupTask> SetupTasks => _viewModel.TaskList;
 
     public IEnumerable<ISetupTask> DSCTasks => SetupTasks;

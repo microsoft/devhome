@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Services.DesiredStateConfiguration.Contracts;
 using DevHome.Services.DesiredStateConfiguration.Exceptions;
@@ -45,32 +44,8 @@ internal sealed class DSCOperations : IDSCOperations
         var configSet = await OpenConfigurationSetAsync(file, processor);
 
         _logger.LogInformation("Getting configuration unit details");
-        var detailsOperation = processor.GetSetDetailsAsync(configSet, ConfigurationUnitDetailFlags.ReadOnly);
-        var detailsOperationTask = detailsOperation.AsTask();
-
-        var set = new DSCSet(configSet);
-
-        // For each DSC unit, create a task to get the details asynchronously
-        // in the background
-        foreach (var unit in set.UnitsInternal)
-        {
-            unit.SetLoadDetailsTask(Task.Run<IDSCUnitDetails>(async () =>
-            {
-                try
-                {
-                    await detailsOperationTask;
-                    _logger.LogInformation($"Settings details for unit {unit.InstanceId}");
-                    return GetCompleteUnitDetails(configSet, unit.InstanceId);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, $"Failed to get details for unit {unit.InstanceId}");
-                    return null;
-                }
-            }));
-        }
-
-        return set;
+        await processor.GetSetDetailsAsync(configSet, ConfigurationUnitDetailFlags.ReadOnly);
+        return new DSCSet(configSet);
     }
 
     /// <inheritdoc />
@@ -181,31 +156,5 @@ internal sealed class DSCOperations : IDSCOperations
 
         result.Seek(0);
         return result;
-    }
-
-    /// <summary>
-    /// Gets the complete details for a unit if available.
-    /// </summary>
-    /// <param name="configSet">Configuration set</param>
-    /// <param name="instanceId">Unit instance ID</param>
-    /// <returns>Complete unit details if available, otherwise null</returns>
-    private DSCUnitDetails GetCompleteUnitDetails(ConfigurationSet configSet, Guid instanceId)
-    {
-        var unitFound = configSet.Units.FirstOrDefault(u => u.InstanceIdentifier == instanceId);
-        if (unitFound == null)
-        {
-            _logger.LogWarning($"Unit {instanceId} not found in the configuration set. No further details will be available to the unit.");
-            return null;
-        }
-
-        if (unitFound.Details == null)
-        {
-            _logger.LogWarning($"Details for unit {instanceId} not found. No further details will be available to the unit.");
-            return null;
-        }
-
-        // After GetSetDetailsAsync completes, the Details property will be
-        // populated if the details were found.
-        return new DSCUnitDetails(unitFound.Details);
     }
 }

@@ -2,13 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Security.Principal;
-using DevHome.Logging;
 
 namespace DevHome.SetupFlow.Common.Helpers;
 
 #nullable enable
 
-public class Log
+public class Identity
 {
     private static bool RunningAsAdmin
     {
@@ -19,10 +18,6 @@ public class Log
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
     }
-
-    private static readonly ComponentLogger _logger = new(RunningAsAdmin ? "SetupFlow-Elevated" : "SetupFlow", "SetupFlow");
-
-    public static Logger? Logger => _logger.Logger;
 
     // Component names to prepend to log strings
     public static class Component

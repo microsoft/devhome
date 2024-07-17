@@ -60,27 +60,28 @@ jobs:
       run: |
         cmd /c "$env:VSDevCmd" "&" msbuild -t:restore /m /p:Configuration=Release,Platform=${{ matrix.platform }},RestorePackagesConfig=true extensionsdk\\DevHomeSDK.sln
         cmd /c "$env:VSDevCmd" "&" msbuild -t:restore /m /p:Configuration=Release,Platform=${{ matrix.platform }} DevHome.sln
+        cmd /c ".\.nuget\nuget.exe restore"
 
     - name: Build_SDK
       run: cmd /c "$env:VSDevCmd" "&" msbuild /p:Configuration=Release,Platform=${{ matrix.platform }} extensionsdk\\DevHomeSDK.sln
 
     - name: Build_DevSetupAgent_x86
       if: ${{ matrix.platform != 'arm64' }}
-      run: cmd /c "$env:VSDevCmd" "&" msbuild /p:Configuration=${{ matrix.configuration }},Platform=x86 HyperVExtension\\DevSetupAgent.sln
+      run: cmd /c "$env:VSDevCmd" "&" msbuild /p:Configuration=${{ matrix.configuration }},Platform=x86 extensions\HyperVExtension\\DevSetupAgent.sln
 
     - name: Compress_DevSetupAgent_x86
       if: ${{ matrix.platform != 'arm64' }}
       shell: pwsh
-      run: Compress-Archive -Force -Path HyperVExtension\src\DevSetupAgent\bin\x86\${{ matrix.configuration }}\net8.0-windows10.0.22000.0\win10-x86\* -DestinationPath "HyperVExtension\src\DevSetupAgent\bin\x86\${{ matrix.configuration }}\DevSetupAgent_x86.zip"
+      run: Compress-Archive -Force -Path extensions\HyperVExtension\src\DevSetupAgent\bin\x86\${{ matrix.configuration }}\net8.0-windows10.0.22621.0\win-x86\* -DestinationPath "extensions\HyperVExtension\src\DevSetupAgent\bin\x86\${{ matrix.configuration }}\DevSetupAgent_x86.zip"
 
     - name: Build_DevSetupAgent_arm64
       if: ${{ matrix.platform == 'arm64' }}
-      run: cmd /c "$env:VSDevCmd" "&" msbuild /p:Configuration=${{ matrix.configuration }},Platform=arm64 HyperVExtension\\DevSetupAgent.sln
+      run: cmd /c "$env:VSDevCmd" "&" msbuild /p:Configuration=${{ matrix.configuration }},Platform=arm64 extensions\HyperVExtension\\DevSetupAgent.sln
 
     - name: Compress_DevSetupAgent_arm64
       if: ${{ matrix.platform == 'arm64' }}
       shell: pwsh
-      run: Compress-Archive -Force -Path HyperVExtension\src\DevSetupAgent\bin\arm64\${{ matrix.configuration }}\net8.0-windows10.0.22000.0\win10-arm64\* -DestinationPath "HyperVExtension\src\DevSetupAgent\bin\arm64\${{ matrix.configuration }}\DevSetupAgent_arm64.zip"
+      run: Compress-Archive -Force -Path extensions\HyperVExtension\src\DevSetupAgent\bin\arm64\${{ matrix.configuration }}\net8.0-windows10.0.22621.0\win-arm64\* -DestinationPath "extensions\HyperVExtension\src\DevSetupAgent\bin\arm64\${{ matrix.configuration }}\DevSetupAgent_arm64.zip"
 
     - name: Build_DevHome
       run: cmd /c "$env:VSDevCmd" "&" msbuild /p:Configuration=${{ matrix.configuration }},Platform=${{ matrix.platform }} DevHome.sln
@@ -95,11 +96,11 @@ jobs:
 
     - name: DevHome UnitTests
       if: ${{ matrix.platform != 'arm64' }}
-      run: cmd /c "$env:VSDevTestCmd" /Platform:${{ matrix.platform }} test\\bin\\${{ matrix.platform }}\\${{ matrix.configuration }}\\net8.0-windows10.0.22000.0\\DevHome.Test.dll
+      run: cmd /c "$env:VSDevTestCmd" /Platform:${{ matrix.platform }} test\\bin\\${{ matrix.platform }}\\${{ matrix.configuration }}\\net8.0-windows10.0.22621.0\\DevHome.Test.dll
 
     - name: Tools UnitTests
       if: ${{ matrix.platform != 'arm64' }}
       run: |
-        foreach ($UnitTestPath in (Get-ChildItem "tools\\*\\*UnitTest\\bin\\${{ matrix.platform }}\\${{ matrix.configuration }}\\net8.0-windows10.0.22000.0\\*.UnitTest.dll")) {
+        foreach ($UnitTestPath in (Get-ChildItem "tools\\*\\*UnitTest\\bin\\${{ matrix.platform }}\\${{ matrix.configuration }}\\net8.0-windows10.0.22621.0\\*.UnitTest.dll")) {
           cmd /c "$env:VSDevTestCmd" /Platform:${{ matrix.platform }} $UnitTestPath.FullName
         }

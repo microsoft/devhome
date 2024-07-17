@@ -1,17 +1,15 @@
 <!--  Copyright (c) Microsoft Corporation..  -->
 <!--  Licensed under the MIT License.  -->
 
-<pg:ToolPage
+<commonviews:ToolPage
     x:Class="DevHome.Customization.Views.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pg="using:DevHome.Common"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:views="using:DevHome.Customization.Views"
-    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
-    mc:Ignorable="d">
+    behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
+    behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <Grid.RowDefinitions>
@@ -19,15 +17,9 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <BreadcrumbBar
-            x:Name="BreadcrumbBar"
-                Margin="0,0,0,16"
-            ItemClicked="BreadcrumbBar_ItemClicked"
-            ItemsSource="{x:Bind Breadcrumbs}" />
-
         <ScrollView Grid.Row="1" VerticalAlignment="Top">
             <!-- TODO: Replace with a ContentPresenter to enable swapping the root view with a search view, etc. -->
             <views:MainPageView />
         </ScrollView>
     </Grid>
-</pg:ToolPage>
+</commonviews:ToolPage>

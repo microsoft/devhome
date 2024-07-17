@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Projects.ViewModels;
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +24,6 @@ public static class ServiceExtensions
         services.AddTransient<PreferencesViewModel>();
         services.AddTransient<PreferencesPage>();
         services.AddSingleton<ExperimentalFeaturesViewModel>();
-        services.AddSingleton<ProjectsViewModel>();
 
         return services;
     }

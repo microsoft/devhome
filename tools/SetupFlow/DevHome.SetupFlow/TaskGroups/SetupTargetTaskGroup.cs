@@ -1,21 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Extensions;
-using DevHome.Common.Models;
-using DevHome.Common.Services;
-using DevHome.Contracts.Services;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using DevHome.SetupFlow.Views;
-using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Dispatching;
 
 namespace DevHome.SetupFlow.TaskGroups;
 
@@ -33,7 +24,7 @@ public class SetupTargetTaskGroup : ISetupTaskGroup
         IComputeSystemManager computeSystemManager,
         ConfigurationFileBuilder configurationFileBuilder,
         SetupFlowOrchestrator setupFlowOrchestrator,
-        IThemeSelectorService themeSelectorService)
+        DispatcherQueue dispatcherQueue)
     {
         _setupTargetViewModel = setupTargetViewModel;
         _setupTargetReviewViewModel = setupTargetReviewViewModel;
@@ -43,7 +34,7 @@ public class SetupTargetTaskGroup : ISetupTaskGroup
             computeSystemManager,
             configurationFileBuilder,
             setupFlowOrchestrator,
-            themeSelectorService);
+            dispatcherQueue);
     }
 
     /// <summary>
@@ -53,6 +44,8 @@ public class SetupTargetTaskGroup : ISetupTaskGroup
     public ConfigureTargetTask ConfigureTask => _setupTargetTaskGroup;
 
     public IEnumerable<ISetupTask> SetupTasks => new List<ISetupTask>() { _setupTargetTaskGroup };
+
+    public IEnumerable<ISetupTask> DSCTasks => SetupTasks;
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _setupTargetViewModel;
 

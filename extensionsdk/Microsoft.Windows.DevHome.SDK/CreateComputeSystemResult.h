@@ -1,14 +1,14 @@
 #pragma once
 #include "CreateComputeSystemResult.g.h"
 
+
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     struct CreateComputeSystemResult : CreateComputeSystemResultT<CreateComputeSystemResult>
     {
-        CreateComputeSystemResult() = default;
-
         CreateComputeSystemResult(IComputeSystem const& computeSystem);
-        CreateComputeSystemResult(winrt::hresult const& e, hstring const& diagnosticText);
+        CreateComputeSystemResult(winrt::hresult const& e, hstring const& displayMessage, hstring const& diagnosticText);
+
         IComputeSystem ComputeSystem();
         ProviderOperationResult Result();
 

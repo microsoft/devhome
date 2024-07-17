@@ -81,7 +81,7 @@ We are excited to work alongside you, our amazing community, to build and enhanc
 
 The easiest way to communicate with the team is via GitHub issues.
 
-Please file new issues, feature requests, and suggestions but **search for similar open/closed preexisting issues before creating a new issue.**
+Please file new issues, feature requests, and suggestions but **DO search for similar open/closed preexisting issues before creating a new issue.**
 
 If you would like to ask a question that you feel doesn't warrant an issue (yet), please reach out to us via Twitter:
 
@@ -89,7 +89,7 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
 * [Clint Rutkas](https://github.com/crutkas), Principal Product Manager: [@clintrutkas](https://twitter.com/clintrutkas) 
 * [Leeza Mathew](https://github.com/mathewleeza), Engineering Lead: [@leezamathew](https://twitter.com/leezamathew)
 
-## Developer Guidance
+## Developer guidance
 
 * You must be running Windows 11 21H2 (build >= 10.0.22000.0) to run Dev Home
 * You must [enable Developer Mode in the Windows Settings app](https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development)
@@ -98,7 +98,7 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
 
 ## Code of conduct
 
-We welcome contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and do actually grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+We welcome contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
 When you submit a pull request, a CLA bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
 

@@ -2,21 +2,22 @@
 #include "ComputeSystemStateResult.h"
 #include "ComputeSystemStateResult.g.cpp"
 
+
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    ComputeSystemStateResult::ComputeSystemStateResult(ComputeSystemState const& computeSystemState) 
-        : m_computeSystemStates(computeSystemState), m_result(ProviderOperationStatus::Success, S_OK, hstring(), hstring())
+    ComputeSystemStateResult::ComputeSystemStateResult(ComputeSystemState const& computeSystemState) :
+        m_computeSystemState(computeSystemState), m_result(ProviderOperationStatus::Success, S_OK, hstring(), hstring())
     {
     }
 
-    ComputeSystemStateResult::ComputeSystemStateResult(winrt::hresult const& e, hstring const& diagnosticText)
-        : m_computeSystemStates(ComputeSystemState::Unknown), m_result(ProviderOperationStatus::Failure, e, diagnosticText, diagnosticText)
+    ComputeSystemStateResult::ComputeSystemStateResult(winrt::hresult const& e, hstring const& displayMessage, hstring const& diagnosticText) :
+        m_computeSystemState(ComputeSystemState::Unknown), m_result(ProviderOperationStatus::Failure, e, displayMessage, diagnosticText)
     {
     }
 
-    ComputeSystemState ComputeSystemStateResult::GetComputeSystemState()
+    ComputeSystemState ComputeSystemStateResult::State()
     {
-        return m_computeSystemStates;
+        return m_computeSystemState;
     }
 
     ProviderOperationResult ComputeSystemStateResult::Result()

@@ -7,19 +7,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.ObjectModel.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.DevHomeAdaptiveCards.CardModels;
-using DevHome.Common.DevHomeAdaptiveCards.Parsers;
 using DevHome.Common.Renderers;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Elevation;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.UI.Xaml.Controls;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
+using Serilog;
 
 namespace DevHome.SetupFlow.Services;
 
@@ -27,6 +24,7 @@ public enum SetupFlowKind
 {
     LocalMachine,
     SetupTarget,
+    CreateEnvironment,
 }
 
 /// <summary>
@@ -34,7 +32,15 @@ public enum SetupFlowKind
 /// </summary>
 public partial class SetupFlowOrchestrator : ObservableObject
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupFlowOrchestrator));
+
+    private readonly string _adaptiveCardNextButtonId = "DevHomeMachineConfigurationNextButton";
+
+    private readonly string _adaptiveCardPreviousButtonId = "DevHomeMachineConfigurationPreviousButton";
+
     private readonly List<SetupPageViewModelBase> _flowPages = new();
+
+    private readonly INavigationService _navigationService;
 
     /// <summary>
     /// Index for the current page in the <see cref="_flowPages"/>.
@@ -73,6 +79,13 @@ public partial class SetupFlowOrchestrator : ObservableObject
     public bool IsSettingUpATargetMachine => CurrentSetupFlowKind == SetupFlowKind.SetupTarget;
 
     public bool IsSettingUpLocalMachine => CurrentSetupFlowKind == SetupFlowKind.LocalMachine;
+
+    public bool IsInCreateEnvironmentFlow => CurrentSetupFlowKind == SetupFlowKind.CreateEnvironment;
+
+    public SetupFlowOrchestrator(INavigationService navigationService)
+    {
+        _navigationService = navigationService;
+    }
 
     /// <summary>
     /// Occurs right before a page changes
@@ -121,12 +134,14 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
     public bool HasPreviousPage => _currentPageIndex > 0;
 
+    public bool IsMachineConfigurationInProgress => FlowPages.Count > 1;
+
     /// <summary>
-    /// Gets the renderer for the Dev Home action set. This is used to invoke a primary or secondary
-    /// action within an adaptive card. This is used when an adaptive card is being shown in the setup flow.
-    /// and the action allows the flow to move to the next or previous page in the adaptive card.
+    /// Gets the renderer for the Dev Home action set. This is used to invoke the the buttons within the top level
+    /// of the adaptive card. This stitches up the setup flow's next and previous buttons to two buttons within an
+    /// extensions adaptive card.
     /// </summary>
-    public DevHomeActionSet DevHomeActionSetRenderer { get; private set; } = new(TopLevelCardActionSetVisibility.Visible);
+    public DevHomeActionSet DevHomeActionSetRenderer { get; private set; } = new(TopLevelCardActionSetVisibility.Hidden);
 
     /// <summary>
     /// Gets or sets a value indicating whether the done button should be shown. When false, the cancel
@@ -184,14 +199,18 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
     partial void OnCurrentPageViewModelChanging(SetupPageViewModelBase value) => PageChanging?.Invoke(null, EventArgs.Empty);
 
+    public bool IsNavigatingForward { get; private set; }
+
+    public bool IsNavigatingBackward { get; private set; }
+
     [RelayCommand(CanExecute = nameof(CanGoToPreviousPage))]
     public async Task GoToPreviousPage()
     {
         // If an adaptive card is being shown in the setup flow, we need to invoke the action
-        // of the secondart button in the action set to move the flow to the previous page in the adaptive card.
-        if (DevHomeActionSetRenderer?.ActionButtonInvoker != null)
+        // of the previous button in the action set to move the flow to the previous page in the adaptive card.
+        if (DevHomeActionSetRenderer?.ActionButtonInvoker != null && !CurrentPageViewModel.IsInitialAdaptiveCardPage)
         {
-            DevHomeActionSetRenderer.InitiateAction(ActionMode.Secondary);
+            DevHomeActionSetRenderer.InitiateAction(_adaptiveCardPreviousButtonId);
         }
 
         await SetCurrentPageIndex(_currentPageIndex - 1);
@@ -209,7 +228,11 @@ public partial class SetupFlowOrchestrator : ObservableObject
         // of the primary button in the action set to move the flow to the next page in the adaptive card.
         if (DevHomeActionSetRenderer?.ActionButtonInvoker != null)
         {
-            DevHomeActionSetRenderer.InitiateAction(ActionMode.Primary);
+            if (!TryNavigateToNextAdaptiveCardPage(_adaptiveCardNextButtonId))
+            {
+                // Don't navigate if there were validation errors.
+                return;
+            }
         }
 
         await SetCurrentPageIndex(_currentPageIndex + 1);
@@ -222,7 +245,7 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
     public async Task InitializeElevatedServerAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Initializing elevated server");
+        _log.Information($"Initializing elevated server");
         var elevatedTasks = TaskGroups.SelectMany(taskGroup => taskGroup.SetupTasks.Where(task => task.RequiresAdmin));
 
         // If there are no elevated tasks, we don't need to create the remote object.
@@ -238,31 +261,63 @@ public partial class SetupFlowOrchestrator : ObservableObject
         }
         else
         {
-            Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Skipping elevated process initialization because no elevated tasks were found");
+            _log.Information($"Skipping elevated process initialization because no elevated tasks were found");
         }
     }
 
     private async Task SetCurrentPageIndex(int index)
     {
-        var movingForward = index > _currentPageIndex;
+        IsNavigatingForward = index > _currentPageIndex;
 
         SetupPageViewModelBase previousPage = CurrentPageViewModel;
 
         // Update current page
         _currentPageIndex = index;
         CurrentPageViewModel = FlowPages.Any() ? FlowPages[_currentPageIndex] : null;
-        Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Moving to {CurrentPageViewModel?.GetType().Name}");
+        _log.Information($"Moving to {CurrentPageViewModel?.GetType().Name}");
 
         // Last page in the setup flow should always be the summary page. The summary page is the only page where we show
         // the user the "Done" button.
         ShouldShowDoneButton = _currentPageIndex == FlowPages.Count - 1;
 
         // Do post-navigation tasks only when moving forwards, not when going back to a previous page.
-        if (movingForward)
+        if (IsNavigatingForward)
         {
             await previousPage?.OnNavigateFromAsync();
         }
 
+        IsNavigatingBackward = !IsNavigatingForward;
         await CurrentPageViewModel?.OnNavigateToAsync();
+
+        // Reset navigation now that the navigation tasks are done.
+        IsNavigatingForward = false;
+        IsNavigatingBackward = false;
+    }
+
+    /// <summary>
+    /// Performs the work needed to navigate to the next page in an adaptive card. This is used when the setup flow is
+    /// rendering a flow that includes an adaptive card style wizard flow.
+    /// </summary>
+    /// <remarks>
+    /// Only adaptive cards that have input controls with the 'isRequired' property set to true will be validated.
+    /// All other elements within the adaptive card will be ignored.
+    /// </remarks>
+    /// <param name="buttonId">The string Id of the button</param>
+    /// <returns>True when the user inputs have been validated and false otherwise.</returns>
+    private bool TryNavigateToNextAdaptiveCardPage(string buttonId)
+    {
+        if (DevHomeActionSetRenderer.TryValidateAndInitiateAction(buttonId, CurrentPageViewModel?.GetAdaptiveCardUserInputsForNavigationValidation()))
+        {
+            return true;
+        }
+
+        _log.Warning($"Failed to invoke adaptive card action with Id: {buttonId} due to input validation failure");
+        return false;
+    }
+
+    public void NavigateToOutsideFlow(string knownNavPageName, object parameter = null)
+    {
+        _log.Information($"Navigating to {knownNavPageName} with parameter: {parameter}");
+        _navigationService.NavigateTo(knownNavPageName, parameter);
     }
 }

@@ -1,20 +1,16 @@
-<commonViews:ToolPage
+<commonViews:DevHomePage
     x:Class="DevHome.Customization.Views.DevDriveInsightsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:views="using:DevHome.Customization.Views"
     xmlns:commonViews="using:DevHome.Common.Views"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
-    <i:Interaction.Behaviors >
-        <behaviors:AutoFocusBehavior />
-    </i:Interaction.Behaviors>
 
     <ScrollView VerticalAlignment="Top">
         <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <views:DevDriveInsightsView />
         </Grid>
     </ScrollView>
-</commonViews:ToolPage>
+</commonViews:DevHomePage>
