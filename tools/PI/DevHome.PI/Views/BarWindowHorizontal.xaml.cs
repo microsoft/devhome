@@ -40,7 +40,7 @@ public partial class BarWindowHorizontal : WindowEx
 
     private const string ExpandButtonText = "\ue70d"; // ChevronDown
     private const string CollapseButtonText = "\ue70e"; // ChevronUp
-    private const string ManageToolsButtonText = "\uec7a"; // ChevronUp
+    private const string ManageToolsButtonText = "\uec7a"; // DeveloperTools
 
     private readonly string _pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
     private readonly string _unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemRawText");
@@ -257,34 +257,8 @@ public partial class BarWindowHorizontal : WindowEx
                 {
                     MyCommandBar.PrimaryCommands.Remove(primaryCommandButton);
                 }
-
-                EvaluateLocationOfManageToolsButton();
             }
         };
-    }
-
-    private void EvaluateLocationOfManageToolsButton()
-    {
-        // If there are pinned tools (registered as primary commands), then move the Manage Tools button to the secondary command list
-        if (MyCommandBar.PrimaryCommands.Count > 1 &&
-            MyCommandBar.PrimaryCommands[0] is AppBarButton button &&
-            button.Command == _viewModel.ManageExternalToolsButtonCommand)
-        {
-            MyCommandBar.PrimaryCommands.Remove(button);
-            AddManageToolsOptionToCommandBar();
-        }
-
-        // If we don't have any more primary commands, move the Manage Tools Option from the secondary commands to the primary commands
-        else if (MyCommandBar.PrimaryCommands.Count == 0)
-        {
-            // The first two items in the secondary commands list should be the tool management button and a separator
-            Debug.Assert(MyCommandBar.SecondaryCommands.Count >= 2 && MyCommandBar.SecondaryCommands[0] is AppBarButton toolsBtn && toolsBtn.Command == _viewModel.ManageExternalToolsButtonCommand, "Where did tools button go?");
-            Debug.Assert(MyCommandBar.SecondaryCommands.Count >= 2 && MyCommandBar.SecondaryCommands[1] is AppBarSeparator, "Where did the separator go?");
-
-            MyCommandBar.SecondaryCommands.RemoveAt(1);
-            MyCommandBar.SecondaryCommands.RemoveAt(0);
-            AddManageToolsOptionToCommandBar();
-        }
     }
 
     private void AddManageToolsOptionToCommandBar()
@@ -297,17 +271,9 @@ public partial class BarWindowHorizontal : WindowEx
             Command = _viewModel.ManageExternalToolsButtonCommand,
         };
 
-        // If there aren't any pinned tools, then put this in as a primary command
-        if (ExternalToolsHelper.Instance.FilteredExternalTools.Count == 0)
-        {
-            MyCommandBar.PrimaryCommands.Add(manageToolsButton);
-        }
-        else
-        {
-            // Otherwise, put this at the at the top of the secondary command list
-            MyCommandBar.SecondaryCommands.Insert(0, manageToolsButton);
-            MyCommandBar.SecondaryCommands.Insert(1, new AppBarSeparator());
-        }
+        // This should be at the top of the secondary command list
+        MyCommandBar.SecondaryCommands.Insert(0, manageToolsButton);
+        MyCommandBar.SecondaryCommands.Insert(1, new AppBarSeparator());
     }
 
     private MenuFlyoutItem CreatePinMenuItem(ExternalTool tool, PinOption pinOption)
@@ -384,8 +350,6 @@ public partial class BarWindowHorizontal : WindowEx
                 break;
             }
         }
-
-        EvaluateLocationOfManageToolsButton();
     }
 
     public void SetRegionsForTitleBar()
