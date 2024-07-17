@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
@@ -195,27 +195,6 @@ public class WindowHelper
         // Found a window, stop enumerating.
         enumData->OutHwnd = hWnd;
         return false;
-    }
-
-    private static unsafe BOOL EnumChildProc(HWND hWnd, LPARAM data)
-    {
-        var processId = (uint*)data.Value;
-
-        var className = stackalloc char[256];
-        var classNameLength = PInvoke.GetClassName(hWnd, className, 256);
-        if (classNameLength > 0)
-        {
-            string classNameString = new(className, 0, classNameLength);
-            if (classNameString.StartsWith("Windows.UI.Core.", StringComparison.OrdinalIgnoreCase))
-            {
-                uint hWndProcessId = 0;
-                _ = PInvoke.GetWindowThreadProcessId(hWnd, &hWndProcessId);
-                *processId = hWndProcessId;
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private static Rectangle GetScreenBounds()
@@ -445,10 +424,33 @@ public class WindowHelper
 
     internal static unsafe uint GetProcessIdFromUWPWindow(HWND hWnd)
     {
-        uint processId = 0;
-        LPARAM lParam = new((nint)(&processId));
-        PInvoke.EnumChildWindows(hWnd, EnumChildProc, lParam);
-        return processId;
+        UWPProcessFinder processFinder = new();
+        PInvoke.EnumChildWindows(hWnd, processFinder.EnumChildWindowsProc, IntPtr.Zero);
+        return processFinder.UWPProcessId;
+    }
+
+    private sealed class UWPProcessFinder
+    {
+        public uint UWPProcessId { get; private set; }
+
+        public unsafe BOOL EnumChildWindowsProc(HWND hWnd, LPARAM data)
+        {
+            var className = stackalloc char[256];
+            var classNameLength = PInvoke.GetClassName(hWnd, className, 256);
+            if (classNameLength > 0)
+            {
+                string classNameString = new(className, 0, classNameLength);
+                if (classNameString.StartsWith("Windows.UI.Core.", StringComparison.OrdinalIgnoreCase))
+                {
+                    uint hWndProcessId = 0;
+                    _ = PInvoke.GetWindowThreadProcessId(hWnd, &hWndProcessId);
+                    UWPProcessId = hWndProcessId;
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 
     internal static HWINEVENTHOOK WatchWindowPositionEvents(WINEVENTPROC procDelegate, uint processID)
