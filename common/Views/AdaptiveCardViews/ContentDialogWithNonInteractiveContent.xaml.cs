@@ -33,7 +33,6 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
         {
             Title = content.Title;
             PrimaryButtonText = content.PrimaryButtonText;
-            var cardContent = await MakeCardContentAsync();
             Content = await MakeCardContentAsync();
 
             // Set the theme of the content dialog box
