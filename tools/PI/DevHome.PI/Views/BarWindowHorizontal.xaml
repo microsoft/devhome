@@ -22,6 +22,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -45,6 +46,14 @@
                     IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}">
                     <TextBlock x:Name="SnapButtonText" Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
+                </Button>
+                <Button
+                     x:Uid="OpenClipboardMonitorButton" 
+                     Style="{StaticResource ChromeButton}" 
+                     FontSize="{StaticResource CaptionTextBlockFontSize}"
+                     Command="{x:Bind OpenClipboardMonitorCommand}" 
+                     HorizontalAlignment="Left">
+                    <TextBlock Text="&#xf0e3;" />
                 </Button>
                 <Button
                      x:Uid="RotateLayoutButton" 
@@ -137,7 +146,31 @@
         </Grid>
 
         <Border
-            x:Name="LargeContentPanel" Visibility="Collapsed" Grid.Row="2"
+            x:Name="ClipboardMonitorPanel" Visibility="Visible" Grid.Row="2"
+            BorderThickness="0" 
+            VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <StackPanel Orientation="Horizontal" Spacing="5">
+                <Button>
+                    <SymbolIcon Symbol="Play"/>
+                </Button>
+            <TextBlock x:Uid="HexLabelTextBlock"/>
+            <TextBox x:Name="ErrorHexTextBox" Text="{x:Bind _viewModel.ClipboardContentsHex, Mode=OneWay}"/>
+            <TextBlock x:Uid="DecLabelTextBlock" />
+            <TextBox x:Name="ErrorDecTextBox" Text="{x:Bind _viewModel.ClipboardContentsDec, Mode=OneWay}"/>
+            <TextBlock x:Uid="CodeLabelTextBlock" />
+            <TextBox x:Name="ErrorCodeTextBox" Text="{x:Bind _viewModel.ClipboardContentsCode, Mode=OneWay}"/>
+            <TextBlock x:Uid="HelpLabelTextBlock"/>
+            <TextBox x:Name="ErrorHelpTextBox"
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto" Height="36" Text="{x:Bind _viewModel.ClipboardContentsHelp, Mode=OneWay}"/>
+                <Button>
+                    <TextBlock Text="&#xe8a7;"/>
+                </Button>
+            </StackPanel>
+        </Border>
+
+
+        <Border
+            x:Name="LargeContentPanel" Visibility="Collapsed" Grid.Row="3"
             BorderThickness="0" 
             VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <controls:ExpandedViewControl x:Name="ExpandedViewControl"/>

@@ -103,6 +103,18 @@ public partial class BarWindowViewModel : ObservableObject
     [ObservableProperty]
     private SizeInt32 _requestedWindowSize;
 
+    [ObservableProperty]
+    private string _clipboardContentsHex = string.Empty;
+
+    [ObservableProperty]
+    private string _clipboardContentsDec = string.Empty;
+
+    [ObservableProperty]
+    private string _clipboardContentsCode = string.Empty;
+
+    [ObservableProperty]
+    private string _clipboardContentsHelp = string.Empty;
+
     internal HWND? ApplicationHwnd { get; private set; }
 
     public BarWindowViewModel()
@@ -113,6 +125,7 @@ public partial class BarWindowViewModel : ObservableObject
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
         PerfCounters.Instance.PropertyChanged += PerfCounterHelper_PropertyChanged;
+        ClipboardMonitor.Instance.PropertyChanged += Clipboard_PropertyChanged;
 
         SystemCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.SystemCpuUsage);
         SystemRamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabelGB", PerfCounters.Instance.SystemRamUsageInGB);
@@ -355,6 +368,18 @@ public partial class BarWindowViewModel : ObservableObject
                 AppCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.CpuUsage);
             });
         }
+    }
+
+    private void Clipboard_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        var clipboardContents = ClipboardMonitor.Instance.Contents;
+        _dispatcher.TryEnqueue(() =>
+        {
+            ClipboardContentsHex = clipboardContents.Hex;
+            ClipboardContentsDec = clipboardContents.Dec;
+            ClipboardContentsCode = clipboardContents.Code;
+            ClipboardContentsHelp = clipboardContents.Help;
+        });
     }
 
     public void ExternalToolButton_Click(object sender, RoutedEventArgs e)

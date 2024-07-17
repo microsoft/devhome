@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
@@ -629,5 +630,11 @@ public partial class BarWindowHorizontal : WindowEx
             ExpandCollapseLayoutButtonText.Foreground = brush;
             RotateLayoutButtonText.Foreground = brush;
         }
+    }
+
+    [RelayCommand]
+    private void OpenClipboardMonitor()
+    {
+        ClipboardMonitorPanel.Visibility = Visibility.Visible;
     }
 }
