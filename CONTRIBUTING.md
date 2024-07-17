@@ -28,7 +28,7 @@ Therefore, if you do file issues or create PRs, please keep an eye on your GitHu
 
 ## Before you start, file an issue
 
-Please follow this simple rule to help us eliminate any unnecessary wasted effort & frustration, and ensure an efficient and effective use of everyone's time - yours, ours, and other community members':
+Please follow this simple rule to help us eliminate any unnecessary wasted effort & frustration, and ensure efficient and effective use of everyone's time - yours, ours, and other community members:
 
 > 👉 If you have a question, think you've discovered an issue, would like to propose a new feature, etc., then find/file an issue **BEFORE** starting work to fix/implement it.
 
@@ -43,9 +43,9 @@ If no existing item describes your issue/feature, great - please file a new issu
 * Don't know whether you're reporting an issue or requesting a feature? File an issue
 * Have a question that you don't see answered in docs, videos, etc.? File an issue
 * Want to know if we're planning on building a particular feature? File an issue
-* Got a great idea for a new feature? File an issue/request / idea
+* Got a great idea for a new feature? File an issue/request/idea
 * Don't understand how to do something? File an issue
-* Found an existing issue that describes yours? Great - upvote and add additional commentary/info / repro-steps / etc.
+* Found an existing issue that describes yours? Great - upvote and add additional commentary/info/repro-steps/etc.
 
 When you hit "New Issue", select the type of issue closest to what you want to report/ask / request.
 
