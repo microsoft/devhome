@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:DevHome.PI.Styles">
 
-    <!-- This is a copy/paste of the stock Command Bar template, with a small change to the "More Items" button -->
+    <!-- This is a copy/paste of the stock Command Bar template found in generic.xaml, with a small change to the "More Items" button to change the icon from an ellipse to a tools icon.
+         You can search for CHANGES HERE FOR PROJECT IRONSIDES for the change -->
     <Style x:Key="CustomCommandBar" TargetType="CommandBar" BasedOn="{StaticResource CommandBarRevealStyle}">
         <Setter Property="Template">
             <Setter.Value>
