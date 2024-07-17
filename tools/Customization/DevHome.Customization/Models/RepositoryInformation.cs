@@ -6,6 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DevHome.Common.Extensions;
+using DevHome.Common.Services;
+using Microsoft.UI.Xaml;
+using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Customization.Models;
 
@@ -17,10 +21,26 @@ public class RepositoryInformation
 
     public string SourceControlProviderDisplayName { get; set; }
 
-    public RepositoryInformation(string rootpath, string classId, string name)
+    public RepositoryInformation(string rootpath, string classId)
     {
         RepositoryRootPath = rootpath;
         SourceControlProviderCLSID = classId;
-        SourceControlProviderDisplayName = name;
+        SourceControlProviderDisplayName = GetExtensionDisplayName(classId);
+    }
+
+    private string GetExtensionDisplayName(string classId)
+    {
+        var extensionService = Application.Current.GetService<IExtensionService>();
+        var sourceControlExtensions = Task.Run(async () => await extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository)).Result.ToList();
+
+        foreach (var extension in sourceControlExtensions)
+        {
+            if (extension.ExtensionClassId == classId)
+            {
+                return extension.ExtensionDisplayName;
+            }
+        }
+
+        return "Unassigned";
     }
 }

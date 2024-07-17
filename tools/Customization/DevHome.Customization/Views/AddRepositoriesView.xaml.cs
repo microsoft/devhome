@@ -9,6 +9,7 @@ using DevHome.Common.Services;
 using DevHome.Customization.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.Windows.DevHome.SDK;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -37,7 +38,7 @@ public sealed partial class AddRepositoriesView : UserControl
 
         sourceControlExtensions.ForEach((sourceControlExtension) =>
         {
-            this.SourceControlProviderSelector.Items.Add(
+            SourceControlProviderSelector.Items.Add(
                 new MenuFlyoutItem()
                 {
                     Text = sourceControlExtension.ExtensionDisplayName,

@@ -22,17 +22,18 @@
                 Style="{ThemeResource AccentButtonStyle}" 
                 Click="{x:Bind ViewModel.AddFolderButton_ClickAsync, Mode=OneWay}" />
         </ctControls:SettingsCard>
-        <ItemsRepeater ItemsSource="{x:Bind ViewModel.TrackedRepositories, Mode=OneWay}">
+        <ItemsRepeater Name="ItemsRepeaterForAllRepoPaths" ItemsSource="{x:Bind ViewModel.TrackedRepositories, Mode=OneWay}">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate>
                     <ctControls:SettingsCard 
+                        Name="RepoPathCard"
                         Header="{Binding RepositoryRootPath}"
                         Margin="{ThemeResource SettingsCardMargin}">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xf12b;"/>
                         </ctControls:SettingsCard.HeaderIcon>
-                        <StackPanel Orientation="Horizontal">
-                            <DropDownButton x:Uid="ProviderSelectorDropDown">
+                        <StackPanel Name="SettingCardMargin" Orientation="Horizontal">
+                            <DropDownButton Content="{Binding SourceControlProviderDisplayName}">
                                 <DropDownButton.Flyout>
                                     <MenuFlyout x:Name="SourceControlProviderSelector" Placement="Bottom">
                                     </MenuFlyout>

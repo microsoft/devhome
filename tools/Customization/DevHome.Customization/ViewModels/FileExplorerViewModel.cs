@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -18,6 +19,7 @@ using DevHome.Customization.Views;
 using DevHome.FileExplorerSourceControlIntegration.Services;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Storage;
 using Windows.UI.ViewManagement.Core;
@@ -59,7 +61,7 @@ public partial class FileExplorerViewModel : ObservableObject
             var repoCollection = RepoTracker.GetAllTrackedRepositories();
             foreach (KeyValuePair<string, string> data in repoCollection)
             {
-                TrackedRepositories.Add(new RepositoryInformation(data.Key, data.Value, string.Empty));
+                TrackedRepositories.Add(new RepositoryInformation(data.Key, data.Value));
             }
         }
     }
