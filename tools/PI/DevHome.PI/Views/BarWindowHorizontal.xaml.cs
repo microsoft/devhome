@@ -422,18 +422,19 @@ public partial class BarWindowHorizontal : WindowEx
         // the default 0,0, so we'll set the size proportional to the monitor size.
         // Subsequently, it will be whatever size the user sets.
         RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
 
         var settingWidth = Settings.Default.WindowWidth;
         if (settingWidth == 0)
         {
-            settingWidth = monitorRect.Width * 2 / 3;
+            settingWidth = monitorRect.Width * 2 / (3 * dpiScale);
             Settings.Default.WindowWidth = settingWidth;
         }
 
         var settingHeight = Settings.Default.ExpandedWindowHeight;
         if (settingHeight == 0)
         {
-            settingHeight = monitorRect.Height * 3 / 4;
+            settingHeight = monitorRect.Height * 3 / (4 * dpiScale);
             Settings.Default.ExpandedWindowHeight = settingHeight;
         }
 
