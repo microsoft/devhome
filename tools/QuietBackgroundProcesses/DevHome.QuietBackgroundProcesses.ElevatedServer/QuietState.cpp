@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 #include "pch.h"
 
@@ -12,16 +12,16 @@ namespace QuietState
 {
     std::mutex g_mutex;
 
-    void TurnOff() noexcept
+    void TurnOff()
     {
         auto lock = std::scoped_lock(g_mutex);
-        LOG_IF_FAILED(DisableQuietBackgroundProcesses());
+        DisableQuietBackgroundProcesses();
     }
 
     unique_quietwindowclose_call TurnOn()
     {
         auto lock = std::scoped_lock(g_mutex);
         THROW_IF_FAILED(EnableQuietBackgroundProcesses());
-        return unique_quietwindowclose_call{};
+        return {};
     }
 }

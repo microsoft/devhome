@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,105 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BrowseButton.Content" xml:space="preserve">
-    <value>Browse</value>
-    <comment>Browse to choose directory</comment>
+  <data name="DeveloperFileExplorerCard.Description" xml:space="preserve">
+    <value>Adjust these settings for a more developer-friendly experience using File Explorer</value>
+    <comment>The description for the Developer File Explorer settings card</comment>
   </data>
-  <data name="ChooseDirectory.PlaceholderText" xml:space="preserve">
-    <value>Choose a directory</value>
-    <comment>Choose directory</comment>
+  <data name="DeveloperFileExplorerCard.Header" xml:space="preserve">
+    <value>Developer File Explorer</value>
+    <comment>The header for the Developer File Explorer settings card</comment>
   </data>
-  <data name="ChooseDirectoryPromptText" xml:space="preserve">
-    <value>Choose directory on Dev Drive...</value>
-    <comment>Choose directory on dev drive</comment>
-  </data>
-  <data name="ChosenDirectoryNotOnDevDriveErrorText" xml:space="preserve">
-    <value>Selected directory must be on a Dev Drive</value>
-    <comment>Chosen directory not on dev drive</comment>
-  </data>
-  <data name="DevDriveFreeSizeText" xml:space="preserve">
-    <value>{0} {1} free</value>
-    <comment>Dev drive size free</comment>
-  </data>
-  <data name="DevDriveInsightsCard.Description" xml:space="preserve">
-    <value>All things Dev Drive, optimizations, etc.</value>
-    <comment>The description for the Dev Drive Insights settings card</comment>
-  </data>
-  <data name="DevDriveInsightsCard.Header" xml:space="preserve">
-    <value>Dev Drive insights</value>
-    <comment>The header for the Dev Drive Insights settings card</comment>
-  </data>
-  <data name="DevDriveInsights_Header" xml:space="preserve">
-    <value>Dev Drive insights</value>
-    <comment>Header for Dev Drive insights page in the breadcrumb bar</comment>
-  </data>
-  <data name="DevDriveOptimizationSuggestion" xml:space="preserve">
-    <value>Suggestion</value>
-    <comment>Dev drive optimization suggestion</comment>
-  </data>
-  <data name="DevDriveOptimized" xml:space="preserve">
-    <value>Optimized</value>
-    <comment>Dev drive optimized indicator</comment>
-  </data>
-  <data name="DevDriveSizeText" xml:space="preserve">
-    <value>Size - {0} {1}</value>
-    <comment>Dev drive size</comment>
-  </data>
-  <data name="DevDriveUsedSizeText" xml:space="preserve">
-    <value>{0} {1} used</value>
-    <comment>Dev drive size used</comment>
-  </data>
-  <data name="DevDriveVolumesHeader.Text" xml:space="preserve">
-    <value>Dev Drive volumes</value>
-    <comment>Header for Dev Drive volumes list in Dev Drive insights page</comment>
-  </data>
-  <data name="DevDriveTrusted.Text" xml:space="preserve">
-    <value>Trusted</value>
-    <comment>Dev drive is trusted</comment>
-  </data>
-  <data name="DevDriveUntrusted.Text" xml:space="preserve">
-    <value>Untrusted</value>
-    <comment>Dev drive is not trusted</comment>
-  </data>
-  <data name="FileExplorerCard.Description" xml:space="preserve">
-    <value>Adjust these settings for a more developer-friendly experience using File Explorer.</value>
-    <comment>The description for the File Explorer settings card</comment>
-  </data>
-  <data name="FileExplorerCard.Header" xml:space="preserve">
-    <value>File Explorer</value>
-    <comment>The header for the File Explorer settings card</comment>
-  </data>
-  <data name="FileExplorer_Header" xml:space="preserve">
-    <value>File Explorer</value>
-    <comment>Header for the File Explorer page in the breadcrumb bar</comment>
+  <data name="DeveloperFileExplorer_Header" xml:space="preserve">
+    <value>Developer File Explorer</value>
+    <comment>Header for Developer File Explorer page in the breadcrumb bar</comment>
   </data>
   <data name="EndTaskOnTaskBar.Description" xml:space="preserve">
     <value>Enable end task in taskbar by right click</value>
     <comment>The description for the end task on task bar settings card</comment>
   </data>
-  <data name="ExampleText" xml:space="preserve">
-    <value>Example: </value>
-    <comment>Example string, will be followed by a sample location to move the cache to a dev drive location</comment>
-  </data>
   <data name="EndTaskOnTaskBar.Header" xml:space="preserve">
     <value>End Task</value>
     <comment>The header for the end task on task bar settings card</comment>
-  </data>
-  <data name="MainPage_Header" xml:space="preserve">
-    <value>Windows customization</value>
-    <comment>Header for main Windows customization page in the breadcrumb bar</comment>
-  </data>
-  <data name="MakeChangesText" xml:space="preserve">
-    <value>Make changes</value>
-    <comment>Make changes button on dialog</comment>
-  </data>
-  <data name="MakeTheChangeText" xml:space="preserve">
-    <value>Make the change</value>
-    <comment>Make the change button on optimizer card</comment>
-  </data>
-  <data name="MakeTrusted.Text" xml:space="preserve">
-    <value>Trust</value>
-    <comment>Make dev drive trusted</comment>
   </data>
   <data name="MoreWindowsSettingsSectionDescription.Text" xml:space="preserve">
     <value>Additional settings below can be configured in the system settings app</value>
@@ -228,30 +148,6 @@
   <data name="NavigationPane.Content" xml:space="preserve">
     <value>Windows customization</value>
     <comment>Navigation pane content</comment>
-  </data>
-  <data name="OptimizedDevDriveDescription" xml:space="preserve">
-    <value>The environment variable {0} is set to {1}</value>
-    <comment>Optimized dev drive description</comment>
-  </data>
-  <data name="OptimizeDevDriveDialogDescription.Text" xml:space="preserve">
-    <value>Contents of {0} will be copied to chosen directory. And {1} will be set to chosen directory.</value>
-    <comment>Optimize dev drive dialog description</comment>
-  </data>
-  <data name="OptimizerDevDriveDescription" xml:space="preserve">
-    <value>Global environment variable {0} is set to {1}, which is not located on Dev Drive. Move contents of this folder to a directory on Dev Drive such as {2} and set {3} to that chosen directory on Dev Drive</value>
-    <comment>Optimizer dev drive description</comment>
-  </data>
-  <data name="OptimizerDevDriveDescriptionWithEnvVarNotSet" xml:space="preserve">
-    <value>Move contents of {0} to a directory on Dev Drive such as {1} and set {2} to that chosen directory on Dev Drive</value>
-    <comment>Optimizer dev drive description when environment variable is not set</comment>
-  </data>
-  <data name="PackageCachesDescription.Text" xml:space="preserve">
-    <value>A package cache is the global folder location used by an application to store files for installed software. These source files are needed when you want to update, uninstall, or repair the installed software. </value>
-    <comment>Package caches description</comment>
-  </data>
-  <data name="PackageCachesLearnMoreLink.Text" xml:space="preserve">
-    <value>Learn more</value>
-    <comment>Package caches hyperlink text</comment>
   </data>
   <data name="SettingsAutoSuggestBox.PlaceholderText" xml:space="preserve">
     <value>Search</value>
@@ -277,116 +173,20 @@
     <value>Show hidden and system files</value>
     <comment>The header for the show hidden and system files setting.</comment>
   </data>
-  <data name="UntrustedDevDrive.Description" xml:space="preserve">
-    <value>Microsoft Defender performance mode is only available for trusted Dev Drive volumes </value>
-    <comment>The meaning of untrusted dev drives.</comment>
-  </data>
-  <data name="UntrustedDevDrive.Header" xml:space="preserve">
-    <value>Untrusted Dev Drive</value>
-    <comment>Untrusted Dev Drive</comment>
-  </data>
-  <data name="UntrustedDevDriveLearnMoreText" xml:space="preserve">
-    <value>Learn more</value>
-    <comment>Learn more link for untrusted dev drives.</comment>
+  <data name="MainPage_Header" xml:space="preserve">
+    <value>Windows customization</value>
+    <comment>Header for main Windows customization page in the breadcrumb bar</comment>
   </data>
   <data name="WindowsDeveloperCard.ActionIconToolTip" xml:space="preserve">
     <value>Open the Windows Settings app</value>
     <comment>The action tool tip for the Windows developer settings card</comment>
   </data>
   <data name="WindowsDeveloperCard.Description" xml:space="preserve">
-    <value>Windows Settings intended for development use only.</value>
+    <value>Windows Settings intended for development use only</value>
     <comment>The description for the Windows developer settings card</comment>
   </data>
   <data name="WindowsDeveloperCard.Header" xml:space="preserve">
     <value>Windows developer settings</value>
     <comment>The header for the Windows developer settings card</comment>
-  </data>
-  <data name="VirtualizationFeatureManagement_Header" xml:space="preserve">
-    <value>Virtualization feature management</value>
-    <comment>Header for main Windows customization page in the breadcrumb bar</comment>
-  </data>
-  <data name="VirtualizationFeatureManagementCard.Description" xml:space="preserve">
-    <value>Enable or disable optional Windows virtualization features</value>
-    <comment>The description for the virtualization feature management settings card</comment>
-  </data>
-  <data name="VirtualizationFeatureManagementCard.Header" xml:space="preserve">
-    <value>Virtualization feature management</value>
-    <comment>The header for the virtualization feature management settings card</comment>
-  </data>
-  <data name="ApplyFeaturesButton.Content" xml:space="preserve">
-    <value>Apply</value>
-    <comment>Apply changes to feature state.</comment>
-  </data>
-  <data name="CommittingChangesTitle" xml:space="preserve">
-    <value>Committing changes</value>
-    <comment>Title displayed during the process of applying changes</comment>
-  </data>
-  <data name="CommittingChangesMessage" xml:space="preserve">
-    <value>Please wait for the changes to take effect.</value>
-    <comment>Message indicating the user should wait for the changes to be applied</comment>
-  </data>
-  <data name="RestartNowButtonText" xml:space="preserve">
-    <value>Restart now</value>
-    <comment>Button text to restart the system immediately</comment>
-  </data>
-  <data name="CancelButtonText" xml:space="preserve">
-    <value>Cancel</value>
-    <comment>Button text to cancel the current operation</comment>
-  </data>
-  <data name="RestartRequiredTitle" xml:space="preserve">
-    <value>Restart required</value>
-    <comment>Title displayed when a restart is required to apply changes</comment>
-  </data>
-  <data name="RestartRequiredMessage" xml:space="preserve">
-    <value>Please restart your machine for your applied changes to take effect.</value>
-    <comment>Message instructing the user to restart their machine to apply changes</comment>
-  </data>
-  <data name="DontRestartNowButtonText" xml:space="preserve">
-    <value>Don't restart now</value>
-    <comment>Button text to postpone system restart</comment>
-  </data>
-  <data name="ChangesAppliedTitle" xml:space="preserve">
-    <value>Changes applied</value>
-    <comment>The title for a notification shown to the user to indicate that changes have been successfully applied.</comment>
-  </data>
-  <data name="FailedToApplyChangesMessage" xml:space="preserve">
-    <value>Restart the computer and try again.</value>
-    <comment>The message for a notification shown to the user to indicate that some changes failed to apply and that restarting the computer is the most likely solution.</comment>
-  </data>
-  <data name="FailedToApplyChangesTitle" xml:space="preserve">
-    <value>Failed to apply some changes</value>
-    <comment>The title for a notification shown to the user to indicate that some, but maybe not all, changes failed to apply. Usually this is due to the system being in an invalid state, such as a Windows Update being queued.</comment>
-  </data>
-  <data name="NonAdminUserMessage" xml:space="preserve">
-    <value>Only users with the Administrator role can modify optional features.</value>
-    <comment>The message for a notification shown to the user to further describe that only users with the Administrator role in Windows can modify optional feature state.</comment>
-  </data>
-  <data name="NonAdminUserTitle" xml:space="preserve">
-    <value>The current user is not an administrator</value>
-    <comment>The title for a notification shown to the user to indicate that the current Windows user is not an administrator, meaning they are not able to change certain settings.</comment>
-  </data>
-  <data name="GeneralSystemCard.Description" xml:space="preserve">
-    <value>Configure various system settings such as long paths and taskbar customization.</value>
-    <comment>The description for the General System settings card</comment>
-  </data>
-  <data name="GeneralSystemCard.Header" xml:space="preserve">
-    <value>General system</value>
-    <comment>The header for the General System settings card</comment>
-  </data>
-  <data name="GeneralSystem_Header" xml:space="preserve">
-    <value>General system</value>
-    <comment>Header for the General system page in the breadcrumb bar</comment>
-  </data>
-  <data name="LongPaths.Description" xml:space="preserve">
-    <value>Remove MAX_PATH limitations from common Win32 file and directory functions.</value>
-    <comment>Locked="{MAX_PATH}" The description for the long paths settings card</comment>
-  </data>
-  <data name="LongPaths.Header" xml:space="preserve">
-    <value>Enable long paths</value>
-    <comment>The header for the long paths settings card</comment>
-  </data>
-  <data name="LongPathsChangedRestartMessage" xml:space="preserve">
-    <value>A restart may be required for long path changes to take effect.</value>
-    <comment>Message instructing the user to restart their machine to apply changes</comment>
   </data>
 </root>

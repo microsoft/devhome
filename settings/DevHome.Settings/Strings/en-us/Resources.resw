@@ -1,64 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Microsoft ResX Schema
-
-    Version 2.0
-
-    The primary goals of this format is to allow a simple XML format
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes
-    associated with the data types.
-
-    Example:
-
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-
-    There are any number of "resheader" rows that contain simple
-    name/value pairs.
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support
-    text/value conversion through the TypeConverter architecture.
-    Classes that don't support this are serialized and stored with the
-    mimetype set.
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not
-    extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format
-    that the ResXResourceWriter will generate, however the reader can
-    read any of the formats listed below.
-
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -118,7 +59,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Settings_Preferences_Description" xml:space="preserve">
-    <value>Themes</value>
+    <value>Theme</value>
     <comment>Body text description for a card than when clicked takes the user to the Preferences settings page</comment>
   </data>
   <data name="Settings_Preferences_Header" xml:space="preserve">
@@ -198,9 +139,6 @@
     <value>https://go.microsoft.com/fwlink/?linkid=2234882</value>
     <comment>URL</comment>
   </data>
-  <data name="SettingsPage_OpenThirdPartyNoticeLink.Content" xml:space="preserve">
-    <value>Third Party Notices</value>
-  </data>
   <data name="Settings_Accounts_AddAccountButton.Content" xml:space="preserve">
     <value>Add account</value>
   </data>
@@ -247,10 +185,10 @@
     <value>Connect your account</value>
   </data>
   <data name="Settings_About_Card.Header" xml:space="preserve">
-    <value>About Dev Home</value>
+    <value>Dev Home specifications</value>
   </data>
   <data name="Settings_About_Card.Description" xml:space="preserve">
-    <value>© Microsoft. All rights reserved.</value>
+    <value>© 2023 Microsoft. All rights reserved.</value>
   </data>
   <data name="Settings_About_RelatedLinks.Text" xml:space="preserve">
     <value>Related links</value>
@@ -330,8 +268,8 @@
     <comment>Opt into including experimentation information into your issue template</comment>
   </data>
   <data name="Settings_Feedback_ReportBug_IncludeExtensions.Content" xml:space="preserve">
-    <value>Include installed Dev Home extensions and related packages</value>
-    <comment>Opt into including information on extensions and related packages into your issue template</comment>
+    <value>Include installed Dev Home extensions</value>
+    <comment>Opt into including information on extensions into your issue template</comment>
   </data>
   <data name="Settings_Feedback_ReportBug_IncludeSystemInfo.Content" xml:space="preserve">
     <value>Include my system information</value>
@@ -353,7 +291,7 @@
     <value>Create an extension</value>
     <comment>Creating a new extension</comment>
   </data>
-  <data name="Settings_Feedback_BuildExtension_TextBlock.Text" xml:space="preserve">
+  <data name="Settings_Feedback_BuildExtension_Button.Text" xml:space="preserve">
     <value>Learn more</value>
     <comment>Description or instruction on building an extension</comment>
   </data>
@@ -389,43 +327,6 @@
     <value>Enter title</value>
     <comment>The topic of the issue that the user wants to report</comment>
   </data>
-  <data name="Settings_Feedback_DocumentationIssue.Header" xml:space="preserve">
-    <value>Report a documentation issue</value>
-    <comment>DocumentationIssue is for reporting an issue in documentation</comment>
-  </data>
-  <data name="Settings_Feedback_DocumentationIssue.Description" xml:space="preserve">
-    <value>Report issues on our documentation</value>
-    <comment>Details about when this option should be used</comment>
-  </data>
-  <data name="Settings_Feedback_DocumentationIssue_Button.Content" xml:space="preserve">
-    <value>New report</value>
-    <comment>Begin to fill out the documentation issue content dialog</comment>
-  </data>
-  <data name="Settings_Feedback_DocumentationIssue_Dialog.CloseButtonText" xml:space="preserve">
-    <value>Cancel</value>
-    <comment>Close out of the content dialog</comment>
-  </data>
-  <data name="Settings_Feedback_DocumentationIssue_Dialog.PrimaryButtonText" xml:space="preserve">
-    <value>Preview on GitHub</value>
-    <comment>Navigate to the GitHub issue to see the issue form</comment>
-  </data>
-  <data name="Settings_Feedback_DocumentationIssue_Dialog.Title" xml:space="preserve">
-    <value>Report a documentation issue</value>
-  </data>
-  <data name="Settings_Feedback_DocumentationIssue_IssueTitle.Header" xml:space="preserve">
-    <value>Title</value>
-  </data>
-  <data name="Settings_Feedback_DocumentationIssue_IssueTitle.PlaceholderText" xml:space="preserve">
-    <value>Enter title</value>
-    <comment>Documentation issue title</comment>
-  </data>
-  <data name="Settings_Feedback_DocumentationIssue_Description.Header" xml:space="preserve">
-    <value>Description</value>
-  </data>
-  <data name="Settings_Feedback_DocumentationIssue_Description.PlaceholderText" xml:space="preserve">
-    <value>Briefly describe which document needs to be corrected and why.</value>
-    <comment>Documentation issue description</comment>
-  </data>
   <data name="Settings_Feedback_ReportSecurity.Description" xml:space="preserve">
     <value>Read our security policy and learn how to report vulnerabilities</value>
     <comment>Look at the guidance on security</comment>
@@ -434,9 +335,9 @@
     <value>Report a security vulnerability</value>
     <comment>Tell us about potential security concerns</comment>
   </data>
-  <data name="Settings_Feedback_ReportSecurity_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+  <data name="Settings_Feedback_ReportSecurity_Button.Text" xml:space="preserve">
     <value>Learn more</value>
-    <comment>Click on this link if you want to learn more and read the security policy. View is an action. Narrated by the narrator.</comment>
+    <comment>Click on this link if you want to learn more and read the security policy. View is an action.</comment>
   </data>
   <data name="Settings_Feedback_LocalizationIssue_LanguageAffected.Header" xml:space="preserve">
     <value>Language</value>
@@ -502,22 +403,6 @@
     <value>https://go.microsoft.com/fwlink/?linkid=2236981</value>
     <comment>This is the microsoft code of conduct link.</comment>
   </data>
-  <data name="Settings_Feedback_PhysicalMemory" xml:space="preserve">
-    <value>Physical Memory</value>
-    <comment>Label for displaying device's memory</comment>
-  </data>
-  <data name="Settings_Feedback_ProcessorArchitecture" xml:space="preserve">
-    <value>Processor Architecture</value>
-    <comment>Label for displaying device's processor architecture</comment>
-  </data>
-  <data name="Settings_Feedback_Extensions" xml:space="preserve">
-    <value>Extensions</value>
-    <comment>Label for displaying device's installed extensions</comment>
-  </data>
-  <data name="Settings_Feedback_WidgetService" xml:space="preserve">
-    <value>Widget Service</value>
-    <comment>Label for displaying device's installed widget service</comment>
-  </data>
   <data name="Settings_Accounts_NoProvidersContentDialog_SecondaryButtonText" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -533,40 +418,34 @@
     <value>There are currently no experimental features</value>
     <comment>Message shown when there are no available experimental features</comment>
   </data>
-  <data name="Settings_Feedback_BuildExtension_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Learn more</value>
-    <comment>Description or instruction on building an extension. Narrated by the narrator.</comment>
+  <data name="ProjectsPage_Description" xml:space="preserve">
+    <value>A page where you can see your locally-cloned repos, and launch tools</value>
+    <comment>Description of the "Projects page" experimental feature</comment>
   </data>
-  <data name="Settings_Feedback_ReportSecurity_TextBlock.Text" xml:space="preserve">
-    <value>Learn more</value>
-    <comment>Click on this link if you want to learn more and read the security policy. View is an action.</comment>
-  </data>
-  <data name="ViewLogs.Header" xml:space="preserve">
-    <value>View logs</value>
-    <comment>Click on this if you want to see Dev Home's logs on your machine.</comment>
-  </data>
-  <data name="QuietBackgroundProcessesExperiment_Name" xml:space="preserve">
-    <value>Quiet background processes</value>
-    <comment>Name of experimental feature 'Quiet background processes' on the 'Settings -&gt; Experiments' page where you enable it.</comment>
+  <data name="ProjectsPage_Name" xml:space="preserve">
+    <value>Projects page</value>
+    <comment>Name of the "Projects page" experimental feature</comment>
   </data>
   <data name="QuietBackgroundProcessesExperiment_Description" xml:space="preserve">
-    <value>Quiet background processes allows you to free up resources while developing</value>
-    <comment>Inline description of the Quiet background processes experimental feature on the 'Settings -&gt; Experiments' page where you enable it.</comment>
+    <value>Silence and track background processes that may hinder device performance</value>
   </data>
-  <data name="ProjectIronsidesExperiment_Name" xml:space="preserve">
-    <value>Project Ironsides</value>
-    <comment>Name of experimental feature 'Project Ironsides' on the 'Settings -&gt; Experiments' page where you enable it.</comment>
+  <data name="QuietBackgroundProcessesExperiment_Name" xml:space="preserve">
+    <value>Quiet background processes experiment</value>
+  </data>
+  <data name="EnvironmentsManagementPage_Description" xml:space="preserve">
+    <value>Manage your local and cloud development virtual machines from Dev Home</value>
+    <comment>Text within a display card that explains what users can do with the Environments management feature. Users can choose to toggle this on/off to add or remove the feature.</comment>
   </data>
   <data name="ProjectIronsidesExperiment_Description" xml:space="preserve">
     <value>Project Ironsides is a utility to provide deeper insights into your applications</value>
     <comment>Inline description of the Project Ironsides experimental feature on the 'Settings -&gt; Experiments' page where you enable it.</comment>
   </data>
-  <data name="QuickstartPlayground_Name" xml:space="preserve">
-    <value>Quickstart Playground</value>
-    <comment>Locked="{Quickstart Playground}" Title text for the Quickstart Playground feature.</comment>
+  <data name="EnvironmentsSetupTargetFlow_Description" xml:space="preserve">
+    <value>Configure your local and cloud development virtual machines from Dev Home</value>
+    <comment>Text within a display card that explains what users can do with the Environments configuration feature. Users can choose to toggle this on/off to add or remove the feature.</comment>
   </data>
-  <data name="QuickstartPlayground_Description" xml:space="preserve">
-    <value>Get started in a new devcontainer-based project from a natural language prompt. Enabling this feature installs the Dev Home Azure Extension from the Store.</value>
-    <comment>Text within a display card that explains what users can do with the Quickstart Playground feature. Users can choose to toggle this feature on or off.</comment>
+  <data name="EnvironmentsSetupTargetFlow_Name" xml:space="preserve">
+    <value>Environments Configuration</value>
+    <comment>Title text for the Environments configuration feature.</comment>
   </data>
 </root>

@@ -9,7 +9,6 @@
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:setupControls="using:DevHome.SetupFlow.Controls"
     xmlns:models="using:DevHome.SetupFlow.Models"
-    xmlns:views="using:DevHome.Common.Views"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -33,14 +32,14 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <setupControls:SetupShell
+    <setupControls:SetupShell 
             Description="{x:Bind ViewModel.PageSubTitle, Mode=OneWay}"
             Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
             Foreground="{ThemeResource TextFillColorSecondary}">
         <setupControls:SetupShell.Header>
-            <views:AddCreateButton
+            <Button
                 AutomationProperties.AutomationId="AddRepositoriesButton"
-                x:Uid="MainPage_RepoReview_AddRepository"
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"
                 Command="{x:Bind AddRepoCommand}" />
         </setupControls:SetupShell.Header>
         <Grid x:Name="RepoConfigGrid" RowSpacing="10">
@@ -94,7 +93,7 @@
                 </ListView.Header>
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:CloningInformation">
-                        <Grid AutomationProperties.Name="{x:Bind RepoConfigAutomationName}">
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
@@ -147,26 +146,14 @@
                                             VerticalAlignment="Center"/>
                                     <!-- Need to use view methods here because DataType is CloningInformation-->
                                     <!-- Each button needs a unique name for screen readers. -->
-                                    <Button
-                                        Click="EditClonePathButton_Click"
-                                        DataContext="{x:Bind}"
-                                        AutomationProperties.Name="{x:Bind EditClonePathAutomationName}"
-                                        Grid.Column="1"
-                                        ToolTipService.ToolTip="{x:Bind EditClonePathAutomationName}">
+                                    <Button Click="EditClonePathButton_Click" DataContext="{x:Bind}" AutomationProperties.Name="{x:Bind EditClonePathAutomationName}" Grid.Column="1" >
                                         <Button.Content>
                                             <SymbolIcon Symbol="Edit"/>
                                         </Button.Content>
                                     </Button>
                                 </Grid>
                             </Border>
-                            <Button 
-                                Click="RemoveCloningInformationButton_Click"
-                                DataContext="{x:Bind}"
-                                Grid.Column="3"
-                                Style="{ThemeResource AlternateCloseButtonStyle}"
-                                AutomationProperties.Name="{x:Bind RemoveFromCloningAutomationName}"
-                                VerticalAlignment="Center"
-                                ToolTipService.ToolTip="{x:Bind RemoveFromCloningAutomationName}">
+                            <Button Click="RemoveCloningInformationButton_Click" DataContext="{x:Bind}" Grid.Column="3" Style="{ThemeResource AlternateCloseButtonStyle}" AutomationProperties.Name="{x:Bind RemoveFromCloningAutomationName}" VerticalAlignment="Center">
                                 <Button.Content>
                                     <SymbolIcon Symbol="Cancel"/>
                                 </Button.Content>
@@ -177,21 +164,18 @@
             </ListView>
             <Grid
                 Grid.Row="1"
-                x:Name="NoRepositoryGrid"
-                Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
+                x:Name="NoRepositoryGrid" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
+                    <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" x:Uid="RepoReview_NoReposSelected" />
-                <views:AddCreateHyperlinkButton
+                <TextBlock Grid.Row="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
+                <HyperlinkButton
                     Grid.Row="1"
-                    AutomationProperties.AutomationId="AddRepoHyperlinkButton"
+                    AutomationProperties.AutomationId="AddRepoHyperLinkButton"
                     HorizontalAlignment="Center"
                     Command="{x:Bind AddRepoCommand}"
-                    x:Uid="RepoReview_NoReposSelectedLink" />
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
             </Grid>
         </Grid>
     </setupControls:SetupShell>

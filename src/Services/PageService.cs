@@ -1,13 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Contracts;
-using DevHome.Common.Models;
-using DevHome.Common.Services;
-using DevHome.Customization.Extensions;
-using DevHome.ExtensionLibrary.Extensions;
-using DevHome.Settings.Extensions;
+using DevHome.Common.Extensions;
+using DevHome.Contracts.Services;
+using DevHome.Settings;
+using DevHome.Settings.ViewModels;
+using DevHome.Settings.Views;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.UI.Xaml.Controls;
@@ -16,19 +15,20 @@ namespace DevHome.Services;
 
 public class PageService : IPageService
 {
-#if CANARY_BUILD
-    private const string BuildType = "canary";
-#elif STABLE_BUILD
-    private const string BuildType = "stable";
-#else
-    private const string BuildType = "dev";
-#endif
+    private readonly Dictionary<string, Type> _pages = new ();
 
-    private readonly Dictionary<string, Type> _pages = new();
-
-    public PageService(ILocalSettingsService localSettingsService, IExperimentationService experimentationService, IQuickstartSetupService quickstartSetupService)
+    public PageService()
     {
-        // Configure top-level pages from registered tools
+        Configure<SettingsViewModel, SettingsPage>();
+        Configure<PreferencesViewModel, PreferencesPage>();
+        Configure<AccountsViewModel, AccountsPage>();
+        Configure<ExtensionsViewModel, ExtensionsPage>();
+        Configure<AboutViewModel, AboutPage>();
+        Configure<FeedbackViewModel, FeedbackPage>();
+        Configure<WhatsNewViewModel, WhatsNewPage>();
+        Configure<ExtensionSettingsViewModel, ExtensionSettingsPage>();
+        Configure<ExperimentalFeaturesViewModel, ExperimentalFeaturesPage>();
+
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var group in App.NavConfig.NavMenu.Groups)
         {
@@ -42,32 +42,10 @@ public class PageService : IPageService
             }
         }
 
-        // Configure nested pages from tools
-        this.ConfigureCustomizationPages();
-
-        // Configure footer pages
-        Configure<WhatsNewViewModel, WhatsNewPage>();
-        this.ConfigureExtensionLibraryPages();
-        this.ConfigureSettingsPages();
-
-        // Configure Experimental Feature pages
-        ExperimentalFeature.LocalSettingsService = localSettingsService;
-        ExperimentalFeature.QuickstartSetupService = quickstartSetupService;
-        foreach (var experimentalFeature in App.NavConfig.ExperimentFeatures ?? Array.Empty<DevHome.Helpers.ExperimentalFeatures>())
+        var experimentalFeaturesVM = App.Current.GetService<ExperimentalFeaturesViewModel>();
+        foreach (var experimentId in App.NavConfig.ExperimentIds ?? Array.Empty<string>())
         {
-            var enabledByDefault = experimentalFeature.EnabledByDefault;
-            var isVisible = true;
-            foreach (var buildTypeOverride in experimentalFeature.BuildTypeOverrides ?? Array.Empty<DevHome.Helpers.BuildTypeOverrides>())
-            {
-                if (buildTypeOverride.BuildType == BuildType)
-                {
-                    enabledByDefault = buildTypeOverride.EnabledByDefault;
-                    isVisible = buildTypeOverride.Visible;
-                    break;
-                }
-            }
-
-            experimentationService.AddExperimentalFeature(new ExperimentalFeature(experimentalFeature.Identity, enabledByDefault, isVisible));
+            experimentalFeaturesVM.Features.Add(new ExperimentalFeature(experimentId));
         }
     }
 
@@ -85,7 +63,7 @@ public class PageService : IPageService
         return pageType;
     }
 
-    public void Configure<T_VM, T_V>()
+    private void Configure<T_VM, T_V>()
         where T_VM : ObservableObject
         where T_V : Page
     {

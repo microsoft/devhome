@@ -3,6 +3,9 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Configuration;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -15,9 +18,10 @@ using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
-using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -25,7 +29,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupTargetViewModel));
 
-    private readonly DispatcherQueue _dispatcherQueue;
+    private readonly WindowEx _windowEx;
 
     private const string SortByDisplayName = "DisplayName";
 
@@ -83,7 +87,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         SetupFlowOrchestrator orchestrator,
         IComputeSystemManager computeSystemManager,
         ComputeSystemViewModelFactory computeSystemViewModelFactory,
-        DispatcherQueue dispatcherQueue)
+        WindowEx windowEx)
         : base(stringResource, orchestrator)
     {
         // Setup initial state for page.
@@ -107,7 +111,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         // Add AdvancedCollectionView to make filtering and sorting the list of ComputeSystemsListViewModels easier.
         ComputeSystemsCollectionView = new AdvancedCollectionView(_computeSystemViewModelList, true);
 
-        _dispatcherQueue = dispatcherQueue;
+        _windowEx = windowEx;
         _computeSystemViewModelFactory = computeSystemViewModelFactory;
         ComputeSystemManagerObj = computeSystemManager;
         _setupFlowViewModel = setupFlowModel;
@@ -406,7 +410,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             }
         });
 
-        await _dispatcherQueue.EnqueueAsync(async () =>
+        await _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
             foreach (var computeSystem in curListViewModel.ComputeSystems)
             {
@@ -422,7 +426,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
                     computeSystem,
                     curListViewModel.Provider,
                     packageFullName,
-                    _dispatcherQueue);
+                    _windowEx);
 
                 // Don't show environments that aren't in a state to configure
                 if (!ShouldShowCard(card.CardState))
@@ -490,7 +494,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             return;
         }
 
-        Orchestrator.NavigateToOutsideFlow(KnownPageKeys.SetupFlow, "startCreationFlow;SetupEnvironmentPage");
+        Orchestrator.NavigateToOutsideFlow(KnownPageKeys.SetupFlow, "startCreationFlow");
     }
 
     private bool ShouldShowCard(ComputeSystemState state)

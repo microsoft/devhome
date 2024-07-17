@@ -1,0 +1,8 @@
+﻿GetCurrentPackageFullName
+WIN32_ERROR
+E_FAIL
+E_ABORT
+S_OK
+MAX_PATH
+SFBS_FLAGS
+StrFormatByteSizeEx

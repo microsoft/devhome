@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
+﻿// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.TelemetryEvents;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
@@ -19,7 +19,6 @@ using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Management.Infrastructure;
 using Microsoft.Win32.SafeHandles;
-using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
@@ -34,7 +33,6 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public class DevDriveManager : IDevDriveManager
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DevDriveManager));
     private readonly IHost _host;
     private readonly string _defaultVhdxFolderName;
     private readonly string _defaultVhdxName;
@@ -47,14 +45,10 @@ public class DevDriveManager : IDevDriveManager
     // https://github.com/microsoft/devhome/issues/634
     private readonly uint _devDriveVolumeStateFlag = 0x00002000;
 
-    // Query flag for persistent state info of the volume, the presence of this flag will let us know
-    // its a trusted Dev drive.
-    private readonly uint _devDriveVolumeStateTrustedFlag = 0x00004000;
-
     /// <summary>
     /// Set that holds Dev Drives that have been created through the Dev Drive manager.
     /// </summary>
-    private readonly HashSet<IDevDrive> _devDrives = new();
+    private readonly HashSet<IDevDrive> _devDrives = new ();
 
     private DevDriveViewModel _devDriveViewModel;
 
@@ -155,7 +149,7 @@ public class DevDriveManager : IDevDriveManager
         // produced before reuse it.
         if (_devDrives.Count != 0)
         {
-            _log.Information("Reusing existing Dev Drive");
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Reusing existing Dev Drive");
             _devDrives.First().State = DevDriveState.New;
             if (!GetDevDriveValidationResults(_devDrives.First()).Contains(DevDriveValidationResult.Successful))
             {
@@ -192,11 +186,10 @@ public class DevDriveManager : IDevDriveManager
                 var volumeLabel = queryObj.CimInstanceProperties["FileSystemLabel"].Value as string;
                 var volumeSize = queryObj.CimInstanceProperties["Size"].Value;
                 var volumeLetter = queryObj.CimInstanceProperties["DriveLetter"].Value;
-                var volumeSizeRemaining = queryObj.CimInstanceProperties["SizeRemaining"].Value;
                 uint outputSize;
                 var volumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
                 var inputVolumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
-                inputVolumeInfo.FlagMask = _devDriveVolumeStateFlag | _devDriveVolumeStateTrustedFlag;
+                inputVolumeInfo.FlagMask = _devDriveVolumeStateFlag;
                 inputVolumeInfo.Version = 1;
 
                 SafeFileHandle volumeFileHandle = PInvoke.CreateFile(
@@ -231,20 +224,17 @@ public class DevDriveManager : IDevDriveManager
                     }
 
                     if ((volumeInfo.VolumeFlags & _devDriveVolumeStateFlag) > 0 &&
-                        volumeLetter is char newLetter && volumeSize is ulong newSize &&
-                        volumeSizeRemaining is ulong newSizeRemaining)
+                        volumeLetter is char newLetter && volumeSize is ulong newSize)
                     {
                         var isInTerabytes = newSize >= DevDriveUtil.OneTbInBytes;
                         var newDevDrive = new Models.DevDrive
                         {
                             DriveLetter = newLetter,
                             DriveSizeInBytes = newSize,
-                            DriveSizeRemainingInBytes = newSizeRemaining,
                             DriveUnitOfMeasure = isInTerabytes ? ByteUnit.TB : ByteUnit.GB,
                             DriveLocation = string.Empty,
                             DriveLabel = volumeLabel,
                             State = DevDriveState.ExistsOnSystem,
-                            IsDevDriveTrusted = (volumeInfo.VolumeFlags & _devDriveVolumeStateTrustedFlag) > 0,
                         };
 
                         devDrives.Add(newDevDrive);
@@ -257,7 +247,7 @@ public class DevDriveManager : IDevDriveManager
         catch (Exception ex)
         {
             // Log then return empty list, don't show the user their existing dev drive. Not catastrophic failure.
-            _log.Error(ex, $"Failed to get existing Dev Drives.");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get existing Dev Drives.", ex);
             return new List<IDevDrive>();
         }
     }
@@ -267,7 +257,7 @@ public class DevDriveManager : IDevDriveManager
     /// </summary>
     private DevDrive GetDevDriveWithDefaultInfo()
     {
-        _log.Information("Setting default Dev Drive info");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Setting default Dev Drive info");
         var root = Path.GetPathRoot(Environment.SystemDirectory);
         var validationSuccessful = true;
 
@@ -276,17 +266,17 @@ public class DevDriveManager : IDevDriveManager
             var drive = new DriveInfo(root);
             if (DevDriveUtil.MinDevDriveSizeInBytes > (ulong)drive.AvailableFreeSpace)
             {
-                _log.Error("Not enough space available to create a Dev Drive");
+                Log.Logger?.ReportError(Log.Component.DevDrive, "Not enough space available to create a Dev Drive");
                 TelemetryFactory.Get<ITelemetry>().Log(
                                               "DevDrive_Insufficient_DiskSpace",
                                               LogLevel.Critical,
-                                              new DevDriveInsufficientDiskSpaceEvent());
+                                              new EmptyEvent());
                 validationSuccessful = false;
             }
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Unable to get available Free Space for {root}.");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Unable to get available Free Space for {root}.", ex);
             validationSuccessful = false;
         }
 
@@ -294,7 +284,7 @@ public class DevDriveManager : IDevDriveManager
         var driveLetter = (availableLetters.Count == 0) ? '\0' : availableLetters[0];
         if (driveLetter == '\0')
         {
-            _log.Error("No drive letters available to assign to Dev Drive");
+            Log.Logger?.ReportError(Log.Component.DevDrive, "No drive letters available to assign to Dev Drive");
             validationSuccessful = false;
         }
 
@@ -311,7 +301,7 @@ public class DevDriveManager : IDevDriveManager
         }
 
         var devDriveState = validationSuccessful ? DevDriveState.New : DevDriveState.Invalid;
-        return new Models.DevDrive(driveLetter, DevDriveUtil.MinDevDriveSizeInBytes, DevDriveUtil.MinDevDriveSizeInBytes /*size remaining*/, ByteUnit.GB, DefaultDevDriveLocation, fileName, devDriveState, Guid.NewGuid());
+        return new Models.DevDrive(driveLetter, DevDriveUtil.MinDevDriveSizeInBytes, ByteUnit.GB, DefaultDevDriveLocation, fileName, devDriveState, Guid.NewGuid());
     }
 
     /// <inheritdoc/>
@@ -378,7 +368,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Failed to validate selected Drive letter ({devDrive.DriveLocation.FirstOrDefault()}).");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to validate selected Drive letter ({devDrive.DriveLocation.FirstOrDefault()}).", ex);
             returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
         }
 
@@ -411,7 +401,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Failed to get Available Drive letters.");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get Available Drive letters.", ex);
         }
 
         return driveLetterSet.ToList();

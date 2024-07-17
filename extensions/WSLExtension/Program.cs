@@ -67,7 +67,6 @@ public sealed class Program
         {
             var launchActivatedEventArgs = activationArgs.Data as ILaunchActivatedEventArgs;
             var args = launchActivatedEventArgs?.Arguments.Split();
-
             if (args?.Length > 1 && args[1] == "-RegisterProcessAsComServer")
             {
                 Log.Information($"Activation COM Registration Redirect: {string.Join(' ', args.ToList())}");

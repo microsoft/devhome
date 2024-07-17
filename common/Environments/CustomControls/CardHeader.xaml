@@ -52,7 +52,6 @@
             IsTabStop="False"
             HorizontalContentAlignment="Right"
             VerticalContentAlignment="Stretch"
-            ContentTemplate="{x:Bind ActionControlTemplate, Mode=OneWay}"
-            Visibility="{x:Bind OperationsVisibility, Mode=OneWay}"/>
+            ContentTemplate="{x:Bind ActionControlTemplate, Mode=OneWay}"/>
     </Grid>
 </UserControl>

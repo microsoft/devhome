@@ -19,7 +19,7 @@ using Serilog;
 
 namespace DevHome.Settings.Views;
 
-public sealed partial class AccountsPage : DevHomePage
+public sealed partial class AccountsPage : ToolPage
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AccountsPage));
 

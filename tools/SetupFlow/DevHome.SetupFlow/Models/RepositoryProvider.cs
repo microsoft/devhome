@@ -5,16 +5,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DevHome.Common.Extensions;
+using AdaptiveCards.Rendering.WinUI3;
+using DevHome.Common.Renderers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Views;
+using DevHome.Logging;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
-using Serilog;
 using Windows.Foundation;
+using Windows.Storage;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -24,8 +27,6 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 internal sealed class RepositoryProvider
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryProvider));
-
     /// <summary>
     /// Wrapper for the extension that is providing a repository and developer id.
     /// </summary>
@@ -34,8 +35,6 @@ internal sealed class RepositoryProvider
     /// This is for lazy loading and starting and prevents all extensions from starting all at once.
     /// </remarks>
     private readonly IExtensionWrapper _extensionWrapper;
-
-    private readonly AdaptiveCardRenderingService _renderingService;
 
     /// <summary>
     /// Dictionary with all the repositories per account.
@@ -55,12 +54,11 @@ internal sealed class RepositoryProvider
     public RepositoryProvider(IExtensionWrapper extensionWrapper)
     {
         _extensionWrapper = extensionWrapper;
-        _renderingService = Application.Current.GetService<AdaptiveCardRenderingService>();
     }
 
     public string DisplayName => _repositoryProvider.DisplayName;
 
-    public string ExtensionDisplayName => _extensionWrapper.ExtensionDisplayName;
+    public string ExtensionDisplayName => _extensionWrapper.Name;
 
     /// <summary>
     /// Starts the extension if it isn't running.
@@ -69,7 +67,7 @@ internal sealed class RepositoryProvider
     {
         // The task.run inside GetProvider makes a deadlock when .Result is called.
         // https://stackoverflow.com/a/17248813.  Solution is to wrap in Task.Run().
-        _log.Information("Starting DevId and Repository provider extensions");
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider extensions");
         try
         {
             _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
@@ -77,7 +75,7 @@ internal sealed class RepositoryProvider
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Could not get repository provider from extension.");
+            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repository provider from extension.", ex);
         }
     }
 
@@ -149,8 +147,8 @@ internal sealed class RepositoryProvider
 
         if (getResult.Result.Status == ProviderOperationStatus.Failure)
         {
-            _log.Information("Could not get repo from Uri.");
-            _log.Information(getResult.Result.DisplayMessage);
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Could not get repo from Uri.");
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, getResult.Result.DisplayMessage);
             return null;
         }
 
@@ -178,31 +176,79 @@ internal sealed class RepositoryProvider
     /// </summary>
     /// <param name="elementTheme">The theme to use.</param>
     /// <returns>The adaptive panel to show to the user.  Can be null.</returns>
-    public async Task<ExtensionAdaptiveCardPanel> GetLoginUiAsync()
+    public ExtensionAdaptiveCardPanel GetLoginUi(ElementTheme elementTheme)
     {
         try
         {
             var adaptiveCardSessionResult = _devIdProvider.GetLoginAdaptiveCardSession();
             if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
             {
-                _log.Error($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
                 return null;
             }
 
             var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
-            var renderer = await _renderingService.GetRendererAsync();
+            var renderer = new AdaptiveCardRenderer();
+            ConfigureLoginUIRenderer(renderer, elementTheme).Wait();
+            renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
 
             var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
             extensionAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
+            extensionAdaptiveCardPanel.RequestedTheme = elementTheme;
 
             return extensionAdaptiveCardPanel;
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"ShowLoginUIAsync(): loginUIContentDialog failed.");
+            GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Sets the renderer in the UI.
+    /// </summary>
+    /// <param name="renderer">The ui to show</param>
+    /// <param name="elementTheme">The theme to use</param>
+    /// <returns>A task to await on.</returns>
+    private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer, ElementTheme elementTheme)
+    {
+        var dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+        // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
+        renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
+        renderer.ElementRenderers.Set("Input.ChoiceSet", new AccessibleChoiceSet());
+
+        var hostConfigContents = string.Empty;
+        var hostConfigFileName = (elementTheme == ElementTheme.Light) ? "LightHostConfig.json" : "DarkHostConfig.json";
+        try
+        {
+            var uri = new Uri($"ms-appx:////DevHome.Settings/Assets/{hostConfigFileName}");
+            var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
+            hostConfigContents = await FileIO.ReadTextAsync(file);
+        }
+        catch (Exception ex)
+        {
+            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file - HostConfigFileName: {hostConfigFileName}.", ex);
+        }
+
+        // Add host config for current theme to renderer
+        dispatcher.TryEnqueue(() =>
+        {
+            if (!string.IsNullOrEmpty(hostConfigContents))
+            {
+                renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+
+                // Remove margins from selectAction.
+                renderer.AddSelectActionMargin = false;
+            }
+            else
+            {
+                GlobalLog.Logger?.ReportInfo($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
+            }
+        });
+        return;
     }
 
     public AuthenticationExperienceKind GetAuthenticationExperienceKind()
@@ -224,7 +270,7 @@ internal sealed class RepositoryProvider
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
         if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
         {
-            _log.Error(developerIdsResult.Result.ExtendedError, $"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}");
+            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}", developerIdsResult.Result.ExtendedError);
             return new List<IDeveloperId>();
         }
 
@@ -251,7 +297,7 @@ internal sealed class RepositoryProvider
                 }
                 else
                 {
-                    _log.Error(result.Result.ExtendedError, $"Could not get repositories.  Message: {result.Result.DisplayMessage}");
+                    Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
                 }
             }
             else
@@ -264,7 +310,7 @@ internal sealed class RepositoryProvider
                 }
                 else
                 {
-                    _log.Error(result.Result.ExtendedError, $"Could not get repositories.  Message: {result.Result.DisplayMessage}");
+                    Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
                 }
             }
         }
@@ -273,16 +319,16 @@ internal sealed class RepositoryProvider
             // Because tasks can be canceled DevHome should emit different logs.
             if (aggregateException.InnerException is OperationCanceledException)
             {
-                _log.Information($"Get Repos operation was cancalled.");
+                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Get Repos operation was cancalled.");
             }
             else
             {
-                _log.Information(aggregateException.ToString());
+                Log.Logger?.ReportInfo(Log.Component.RepoConfig, aggregateException.ToString());
             }
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Could not get repositories.  Message: {ex}");
+            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {ex}");
         }
 
         _repositories[developerId] = repoSearchInformation.Repositories;
@@ -304,7 +350,7 @@ internal sealed class RepositoryProvider
             }
             else
             {
-                _log.Error(result.Result.ExtendedError, $"Could not get repositories.  Message: {result.Result.DisplayMessage}");
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {result.Result.DisplayMessage}", result.Result.ExtendedError);
             }
         }
         catch (AggregateException aggregateException)
@@ -312,16 +358,16 @@ internal sealed class RepositoryProvider
             // Because tasks can be canceled DevHome should emit different logs.
             if (aggregateException.InnerException is OperationCanceledException)
             {
-                _log.Information($"Get Repos operation was cancalled.");
+                GlobalLog.Logger?.ReportInfo($"Get Repos operation was cancalled.");
             }
             else
             {
-                _log.Error(aggregateException, aggregateException.Message);
+                GlobalLog.Logger?.ReportError($"{aggregateException}");
             }
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Could not get repositories.  Message: {ex}");
+            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get repositories.  Message: {ex}");
         }
 
         _repositories[developerId] = repoSearchInformation.Repositories;
