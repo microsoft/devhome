@@ -26,7 +26,7 @@
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate>
                     <ctControls:SettingsCard 
-                        Header="{Binding Header}"
+                        Header="{Binding RepositoryRootPath}"
                         Margin="{ThemeResource SettingsCardMargin}">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xf12b;"/>

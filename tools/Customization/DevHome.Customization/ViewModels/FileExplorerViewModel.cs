@@ -31,7 +31,7 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
-    public ObservableCollection<string> TrackedRepositories { get; } = new();
+    public ObservableCollection<RepositoryInformation> TrackedRepositories { get; } = new();
 
     private RepositoryTracking RepoTracker { get; set; } = new(null);
 
@@ -59,7 +59,7 @@ public partial class FileExplorerViewModel : ObservableObject
             var repoCollection = RepoTracker.GetAllTrackedRepositories();
             foreach (KeyValuePair<string, string> data in repoCollection)
             {
-                TrackedRepositories.Add(data.Key);
+                TrackedRepositories.Add(new RepositoryInformation(data.Key, data.Value, string.Empty));
             }
         }
     }
