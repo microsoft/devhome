@@ -6,9 +6,9 @@ Below is our guidance for how to report issues, propose new features, and submit
 
 The Dev Home team is VERY active in this GitHub Repo. In fact, we live in it all day long and carry out all our development in the open!
 
-When the team finds issues, we file them in the repo. When we propose new ideas or think up new features, we file new feature requests. When we work on fixes or features, we create branches and work on those improvements. And when PRs are reviewed, we review in public - including all the good, the bad, and the ugly parts.
+When the team finds issues, we file them in the repo. When we propose new ideas or think up new features, we file new feature requests. When we work on fixes or features, we create branches and work on those improvements. And when PRs are reviewed, we review them in public - including all the good, the bad, and the ugly parts.
 
-The point of doing all this work in public is to ensure that we are holding ourselves to a high degree of transparency, and so that the community sees that we apply the same processes and hold ourselves to the same quality-bar as we do to community-submitted issues and PRs. We also want to make sure that we expose our team culture and "tribal knowledge" that is inherent in any closely-knit team, which often contains considerable value to those new to the project who are trying to figure out "why the heck does this thing look/work like this???"
+The point of doing all this work in public is to ensure that we are holding ourselves to a high degree of transparency, and so that the community sees that we apply the same processes and hold ourselves to the same quality bar as we do to community-submitted issues and PRs. We also want to make sure that we expose our team culture and "tribal knowledge" that is inherent in any closely-knit team, which often contains considerable value to those new to the project who are trying to figure out "why the heck does this thing look/work like this???"
 
 ### Repo bot
 
@@ -51,7 +51,7 @@ When you hit "New Issue", select the type of issue closest to what you want to r
 
 ### Complete the template
 
-**Complete the information requested in the issue template, providing as much information as possible**. The more information you provide, the more likely your issue/ask will be understood and implemented. Helpful information includes:
+**Complete the information requested in the issue template, providing as much information as possible**. The more information you provide, the more likely your issue / ask will be understood and implemented. Helpful information includes:
 
 * What device you're running (inc. CPU type, memory, disk, etc.)
 * What build of Windows your device is running
@@ -85,7 +85,7 @@ When you hit "New Issue", select the type of issue closest to what you want to r
 * Don't assume we're experts in setting up YOUR environment. Teach us to help you!
 * **We LOVE detailed repro steps!** What steps do we need to take to reproduce the issue? Assume we love to read repro steps. As much detail as you can stand is probably _barely_ enough detail for us!
 * Prefer error message text where possible or screenshots of errors if text cannot be captured.
-* **If you intend to implement the fix/feature yourself then say so!** If you do not indicate otherwise we will assume that the issue is our to solve, or may label the issue as `Help-Wanted`.
+* **If you intend to implement the fix/feature yourself then say so!** If you do not indicate otherwise we will assume that the issue is ours to solve, or may label the issue as `Help-Wanted`.
 
 ### DO NOT post "+1" comments
 
@@ -95,7 +95,7 @@ If you don't have any additional info/context to add but would like to indicate 
 
 ---
 
-## Contributing fixes / features
+## Contributing fixes/features
 
 If you're able & willing to help fix issues and/or implement features, we'd love your contribution!
 
@@ -118,17 +118,17 @@ If you'd like to suggest a new feature/improvement to Windows Customization, **y
 
 We will not accept or review PRs that add new features to Windows Customization without an associated issue that follows the `Windows Customization` template.
 
-For bug fixes, please still use the existing [bug template](https://github.com/microsoft/devhome/issues/new?template=Bug_Report.yml). If you are able to fix the bug, please indicate that in the issue and we'll be happy to review your PR.
+For bug fixes, please still use the existing [bug template](https://github.com/microsoft/devhome/issues/new?template=Bug_Report.yml). If you can fix the bug, please indicate that in the issue and we'll be happy to review your PR.
 
 ### To spec or not to spec
 
 Some issues/features may be quick and simple to describe and understand. For such scenarios, once a team member has agreed with your approach, skip ahead to the section headed "Fork, Branch, and Create your PR", below.
 
-Small issues that do not require a spec will be labelled `Issue-Bug` or `Issue-Task`.
+Small issues that do not require a spec will be labeled `Issue-Bug` or `Issue-Task`.
 
 However, some issues/features will require careful thought & formal design before implementation. For these scenarios, we'll request that a spec is written and the associated issue will be labeled `Issue-Feature`.
 
-Specs help collaborators discuss different approaches to solve a problem, describe how the feature will behave, how the feature will impact the user, what happens if something goes wrong, etc. Driving towards agreement in a spec, before any code is written, often results in simpler code, and less wasted effort in the long run.
+Specs help collaborators discuss different approaches to solving a problem, describe how the feature will behave, how the feature will impact the user, what happens if something goes wrong, etc. Driving towards agreement in a spec, before any code is written, often results in simpler code, and less wasted effort in the long run.
 
 Specs will be managed in a very similar manner as code contributions so please follow the "[Fork, branch and create your PR](CONTRIBUTING.md#fork-clone-branch-and-create-your-pr)" section below.
 
@@ -136,13 +136,13 @@ Specs will be managed in a very similar manner as code contributions so please f
 
 To write/contribute to a spec: fork, branch, and commit via PRs as you would with any code changes.
 
-Specs are written in markdown, stored under the [`\docs\specs`](./docs/specs) folder and named `[issue id] - [spec description].md`.
+Specs are written in markdown, stored under the [`\docs\specs`](./docs/specs) folder, and named `[issue id] - [spec description].md`.
 
 👉 **It is important to follow the spec templates and complete the requested information**. The available spec templates will help ensure that specs contain the minimum information & decisions necessary to permit development to begin. In particular, specs require you to confirm that you've already discussed the issue/idea with the team in an issue and that you provide the issue ID for reference.
 
 Team members will be happy to help review specs and guide them to completion.
 
-### Help wanted
+### Help Wanted
 
 Once the team has approved an issue/spec, development can proceed. If no developers are immediately available, the spec can be parked ready for a developer to get started. Parked specs' issues will be labeled "Help Wanted". To find a list of development opportunities waiting for developer involvement, visit the Issues and filter on [the Help-Wanted label](https://github.com/microsoft/devhome/labels/Help%20Wanted).
 
@@ -150,9 +150,9 @@ Once the team has approved an issue/spec, development can proceed. If no develop
 
 ## Development
 
-### Fork, clone, branch and create your PR
+### Fork, clone, branch, and create your PR
 
-Once you've discussed your proposed feature/fix/etc. with a team member and you've agreed on an approach or a spec has been written and approved, it's time to start development:
+Once you've discussed your proposed feature/fix/etc. With a team member and you've agreed on an approach or a spec has been written and approved, it's time to start development:
 
 1. Fork the repo if you haven't already
 2. Clone your fork locally
@@ -169,7 +169,7 @@ Once you've discussed your proposed feature/fix/etc. with a team member and you'
      * Dev Home's machine configuration tool
      * WinGet configuration. If you have WinGet version [v1.6.2631 or later](https://github.com/microsoft/winget-cli/releases), run `winget configure .configurations/configuration.dsc.yaml` in an elevated shell from the project root so relative paths resolve correctly
    * Alternatively, if you already are running the minimum OS version, have Visual Studio installed, and have developer mode enabled, you may configure your Visual Studio directly via the .vsconfig file. To do this:
-     * Open the Visual Studio Installer, select “More” on your product card and then "Import configuration"
+     * Open the Visual Studio Installer, select “More” on your product card, and then "Import configuration"
      * Specify the .vsconfig file at the root of the repo and select “Review Details”
 
 ## Running & debugging
@@ -193,7 +193,7 @@ Alternatively,
 
 ### Code review
 
-When you'd like the team to take a look (even if the work is not yet fully-complete), mark the PR as 'Ready For Review' so that the team can review your work and provide comments, suggestions, and request changes. It may take several cycles but the end result will be solid, testable, conformant code that is safe for us to merge.
+When you'd like the team to take a look (even if the work is not yet fully complete), mark the PR as 'Ready For Review' so that the team can review your work and provide comments, suggestions, and request changes. It may take several cycles but the end result will be solid, testable, conformant code that is safe for us to merge.
 
 ### Merge
 
