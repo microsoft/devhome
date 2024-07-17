@@ -32,7 +32,7 @@ public partial class BarWindow
     {
         get
         {
-            if (_horizontalWindow.Visible)
+            if (_viewModel.BarOrientation == Orientation.Horizontal)
             {
                 return _horizontalWindow.ThisHwnd;
             }

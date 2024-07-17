@@ -19,7 +19,7 @@ public sealed class Program
     public static IHost? Host { get; set; }
 
     [MTAThread]
-    public static void Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
+    public static async Task Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
     {
         // Set up Logging
         Environment.SetEnvironmentVariable("WSL_LOGS_ROOT", PathToWslLogFolder);
@@ -35,7 +35,7 @@ public sealed class Program
         if (!mainInstance.IsCurrent)
         {
             Log.Information("Not main instance, redirecting.");
-            mainInstance.RedirectActivationToAsync(activationArgs).AsTask().Wait();
+            await mainInstance.RedirectActivationToAsync(activationArgs);
             Log.CloseAndFlush();
             return;
         }
@@ -67,8 +67,7 @@ public sealed class Program
         {
             var launchActivatedEventArgs = activationArgs.Data as ILaunchActivatedEventArgs;
             var args = launchActivatedEventArgs?.Arguments.Split();
-
-            if (args?.Length > 0 && args[1] == "-RegisterProcessAsComServer")
+            if (args?.Length > 1 && args[1] == "-RegisterProcessAsComServer")
             {
                 Log.Information($"Activation COM Registration Redirect: {string.Join(' ', args.ToList())}");
                 HandleCOMServerActivation();

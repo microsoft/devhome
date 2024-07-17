@@ -4,3 +4,4 @@ GetSystemInfo
 CoCreateInstance
 SetForegroundWindow
 IsIconic
+ShowWindow

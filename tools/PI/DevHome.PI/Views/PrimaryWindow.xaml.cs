@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml;
 using Windows.System;
 using Windows.Win32;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
+using Windows.Win32.UI.WindowsAndMessaging;
 using WinUIEx;
 using static DevHome.PI.Helpers.WindowHelper;
 
@@ -46,6 +47,8 @@ public sealed partial class PrimaryWindow : WindowEx
         }
         else
         {
+            PInvoke.ShowWindow(DBarWindow.CurrentHwnd, SHOW_WINDOW_CMD.SW_RESTORE);
+
             // Activate is unreliable so use SetForegroundWindow
             PInvoke.SetForegroundWindow(DBarWindow.CurrentHwnd);
         }
@@ -98,6 +101,6 @@ public sealed partial class PrimaryWindow : WindowEx
             TargetAppData.Instance.SetNewAppData(process, hWnd);
         }
 
-        DBarWindow ??= new();
+        ShowBarWindow();
     }
 }

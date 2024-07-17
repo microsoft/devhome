@@ -42,6 +42,26 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
 
     public string PackageFullName { get; set; }
 
+    private readonly Func<ComputeSystemCardBase, bool> _removalAction;
+
+    [ObservableProperty]
+    private bool _shouldShowDotOperations;
+
+    [ObservableProperty]
+    private bool _shouldShowSplitButton;
+
+    private bool _disposedValue;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ComputeSystemViewModel"/> class.
+    /// This class requires a 3-step initialization:
+    /// 1. Create the instance of the class. Constructor saves the parameters, but doesn't make
+    ///    any OOP calls to IComputeSystem or initialize UX data which requires UI thread.
+    /// 2. Call <see cref="InitializeCardDataAsync"/> to fetch the compute system data from the extension and cache it in ComputeSystem property.
+    ///    This can be done on any thread and in parallel with other compute systems.
+    /// 3. Call <see cref="InitializeUXData"/> to initialize the UX controls with the data we fetched in step 2.
+    /// This allows us to avoid heavy calls on the UI thread and initialize data in parallel.
+    /// </summary>
     public ComputeSystemViewModel(
         IComputeSystemManager manager,
         IComputeSystem system,
@@ -69,7 +89,60 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;
     }
 
-    public async Task InitializeCardDataAsync()
+    private async Task InitializeOperationDataAsync()
+    {
+        await _semaphoreSlimLock.WaitAsync();
+        try
+        {
+            ShouldShowDotOperations = false;
+            ShouldShowSplitButton = false;
+
+            RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _mainWindow), DataExtractor.FillLaunchButtonOperations(ComputeSystem));
+
+            _ = Task.Run(async () =>
+            {
+                var start = DateTime.Now;
+                List<OperationsViewModel> validData = new();
+                foreach (var data in await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem))
+                {
+                    if ((!data.WasPinnedStatusSuccessful) || (data.ViewModel == null))
+                    {
+                        _log.Error($"Pinned status check failed: for '{Name}': {data?.PinnedStatusDisplayMessage}. DiagnosticText: {data?.PinnedStatusDiagnosticText}");
+                        continue;
+                    }
+
+                    validData.Add(data.ViewModel);
+                    WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedMessage, OperationsViewModel>(this, data.ViewModel);
+                    WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedMessage, OperationsViewModel>(this, data.ViewModel);
+                }
+
+                _log.Information($"Registering pin operations for {Name} in background took {DateTime.Now - start}");
+
+                // Add valid data to the DotOperations collection
+                _mainWindow.DispatcherQueue.TryEnqueue(() =>
+                {
+                    foreach (var data in validData)
+                    {
+                        DotOperations.Add(data);
+                    }
+
+                    // Only show dot operations when there are items in the list.
+                    ShouldShowDotOperations = DotOperations.Count > 0;
+
+                    // Only show Launch split button with operations when there are items in the list.
+                    ShouldShowSplitButton = LaunchOperations.Count > 0;
+                });
+            });
+
+            SetPropertiesAsync();
+        }
+        finally
+        {
+            _semaphoreSlimLock.Release();
+        }
+    }
+
+    private async Task RefreshOperationDataAsync()
     {
         await InitializeStateAsync();
         await SetBodyImageAsync();

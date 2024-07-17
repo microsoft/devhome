@@ -25,6 +25,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
+using Serilog;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace DevHome;
 
@@ -156,14 +160,14 @@ public partial class App : Application, IApp
     {
         _dispatcherQueue.TryEnqueue(() =>
         {
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(MainWindow);
-            if (Windows.Win32.PInvoke.IsIconic(new Windows.Win32.Foundation.HWND(hWnd)))
+            var hWnd = new HWND(WinRT.Interop.WindowNative.GetWindowHandle(MainWindow));
+            if (PInvoke.IsIconic(hWnd))
             {
-                MainWindow.Restore();
+                PInvoke.ShowWindow(hWnd, SHOW_WINDOW_CMD.SW_RESTORE);
             }
             else
             {
-                MainWindow.SetForegroundWindow();
+                PInvoke.SetForegroundWindow(hWnd);
             }
         });
     }

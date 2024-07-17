@@ -24,6 +24,9 @@ public partial class WidgetViewModel : ObservableObject
     private readonly AdaptiveCardRenderer _renderer;
     private readonly WidgetHandler _widgetHandler;
 
+    private readonly AdaptiveElementParserRegistration _elementParser;
+    private readonly AdaptiveActionParserRegistration _actionParser;
+
     private RenderedAdaptiveCard _renderedCard;
 
     [ObservableProperty]
@@ -98,7 +101,13 @@ public partial class WidgetViewModel : ObservableObject
 
         Widget = widget;
         WidgetSize = widgetSize;
-        WidgetDefinition = widgetDefintion;
+        WidgetDefinition = widgetDefinition;
+
+        // Use custom parser.
+        _elementParser = new AdaptiveElementParserRegistration();
+        _elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
+        _actionParser = new AdaptiveActionParserRegistration();
+        _actionParser.Set(ChooseFileAction.CustomTypeString, new ChooseFileParser());
     }
 
     public void Render()
@@ -146,19 +155,15 @@ public partial class WidgetViewModel : ObservableObject
             var template = new AdaptiveCardTemplate(cardTemplate);
             var json = template.Expand(cardData);
 
-            // Use custom parser.
-            var elementParser = new AdaptiveElementParserRegistration();
-            elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
-
-            // Create adaptive card.
-            card = AdaptiveCard.FromJsonString(json, elementParser, new AdaptiveActionParserRegistration());
-        }
-        catch (Exception ex)
-        {
-            Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
-            ShowErrorCard("WidgetErrorCardDisplayText");
-            return;
-        }
+                // Create adaptive card.
+                card = AdaptiveCard.FromJsonString(json, _elementParser, _actionParser);
+            }
+            catch (Exception ex)
+            {
+                _log.Warning(ex, "There was an error expanding the Widget template with data: ");
+                ShowErrorCard("WidgetErrorCardDisplayText");
+                return;
+            }
 
         if (_renderedCard != null)
         {

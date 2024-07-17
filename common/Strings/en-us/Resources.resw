@@ -143,7 +143,7 @@
   </data>
   <data name="ComputeSystemCpu" xml:space="preserve">
     <value>vCPU:</value>
-    <comment>Title for the virtual cpu property of a compute system</comment>
+    <comment>Title for the virtual CPU property of a compute system</comment>
   </data>
   <data name="ComputeSystemCreated" xml:space="preserve">
     <value>Created</value>
@@ -249,9 +249,37 @@
     <value>Provider failed to provide a Header title for this item</value>
     <comment>Error text to be displayed when an provider does not provide header text for an item in a list of UI cards</comment>
   </data>
-  <data name="UserNotInHyperAdminGroupButton" xml:space="preserve">
-    <value>Launch computer management</value>
-    <comment>Button text for the user to click, in order for us to add them to the Hyper-V admin group</comment>
+  <data name="AdaptiveCardDialogPrimaryButtonText" xml:space="preserve">
+    <value>Ok</value>
+    <comment>Primary button text that will be displayed to the user as the main action when they are presented with a content dialog with two buttons</comment>
+  </data>
+  <data name="AdaptiveCardDialogSecondaryButtonText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Secondary button text that will be displayed to the user as a secondary action when they are presented with a content dialog with two buttons</comment>
+  </data>
+  <data name="AdaptiveCardDialogTitleErrorText" xml:space="preserve">
+    <value>Couldn't get title from the extension</value>
+    <comment>Error text to be displayed to the user when a Dev Home extension that wants a content dialog to be displayed does not provide Dev Home with a title for the content dialog</comment>
+  </data>
+  <data name="ItemsViewNonSelectedItemError" xml:space="preserve">
+    <value>An item must be selected</value>
+    <comment>Error text advising the user that they must select an item in the list before proceeding</comment>
+  </data>
+  <data name="CreationOperationStoppedUnexpectedly" xml:space="preserve">
+    <value>An unexpected error occurred while attempting to create your new environment</value>
+    <comment>Error text for when there was an unexpected error that we could not handle within Dev Home.</comment>
+  </data>
+  <data name="EnvironmentGenericName" xml:space="preserve">
+    <value>New Environment</value>
+    <comment>Generic name text for the card header for an environment that is being created in Dev Homes environment page</comment>
+  </data>
+  <data name="NoEnvironmentsButExtensionsInstalledButton" xml:space="preserve">
+    <value>Create new environment</value>
+    <comment>Text for a hyperlink button that will redirect user to the create environment page</comment>
+  </data>
+  <data name="NoEnvironmentsButExtensionsInstalledCallToAction" xml:space="preserve">
+    <value>No environments added yet</value>
+    <comment>Text for when the environment page in Dev Home is empty</comment>
   </data>
   <data name="UserNotInHyperAdminGroupMessage" xml:space="preserve">
     <value>The current user is not a Hyper-V administrator. Hyper-V Virtual machines will not load. Please add the user to the Hyper-V Administrators group and reboot.</value>

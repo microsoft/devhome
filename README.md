@@ -31,7 +31,7 @@ This is our preferred method.
 
 For users who are unable to install Dev Home from the Microsoft Store, released builds can be manually downloaded from this repository's [Releases page](https://github.com/microsoft/devhome/releases).
 
-#### Via Windows Package Manager CLI (aka Winget)
+#### Via Windows Package Manager CLI (aka WinGet)
 
 [winget](https://github.com/microsoft/winget-cli) users can download and install the latest Dev Home release by installing the `Microsoft.DevHome` package:
 
@@ -57,7 +57,7 @@ The Dev Home dashboard displays Windows widgets. These widgets are built using t
 
 ### Machine configuration
 
-The machine configuration tool utilizes the Dev Home GitHub Extension but isn't required to clone and install apps. The app installation tool is powered by Winget.
+The machine configuration tool utilizes the Dev Home GitHub Extension but isn't required to clone and install apps. The app installation tool is powered by WinGet.
 
 #### Popular apps
 

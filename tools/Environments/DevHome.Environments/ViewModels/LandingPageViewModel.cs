@@ -55,9 +55,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     public bool IsLoading { get; set; }
 
-    public ObservableCollection<ComputeSystemCardBase> ComputeSystemCards { get; set; } = new();
-
-    public AdvancedCollectionView ComputeSystemCardsView { get; set; }
+    public ObservableCollection<PerProviderViewModel> PerProviderViewModels { get; set; } = new();
 
     public bool HasPageLoadedForTheFirstTime { get; set; }
 
@@ -85,6 +83,15 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
+    private enum SortOptions
+    {
+        Alphabetical,
+        AlphabeticalDescending,
+        LastConnected,
+    }
+
+    private const int DefaultSortIndex = (int)SortOptions.LastConnected;
+
     public ObservableCollection<string> Providers { get; set; }
 
     private CancellationTokenSource _cancellationTokenSource = new();
@@ -102,11 +109,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
-        SelectedSortIndex = -1;
+        SelectedSortIndex = DefaultSortIndex;
         Providers = new() { _stringResource.GetLocalized("AllProviders") };
         _lastSyncTime = _stringResource.GetLocalized("MomentsAgo");
-
-        ComputeSystemCardsView = new AdvancedCollectionView(ComputeSystemCards);
     }
 
     public void Initialize(StackedNotificationsBehavior notificationQueue)
@@ -118,7 +123,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public async Task SyncButton()
     {
         // Reset the sort and filter
-        SelectedSortIndex = -1;
+        SelectedSortIndex = DefaultSortIndex;
         Providers = new ObservableCollection<string> { _stringResource.GetLocalized("AllProviders") };
         SelectedProviderIndex = 0;
         _wasSyncButtonClicked = true;
@@ -227,19 +232,24 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             await RunSyncTimmer();
         });
 
-        lock (ComputeSystemCards)
+        foreach (var providerViewModel in PerProviderViewModels)
         {
-            for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
+            var computeSystemCards = providerViewModel.ComputeSystems;
+            lock (computeSystemCards)
             {
-                if (ComputeSystemCards[i] is ComputeSystemViewModel computeSystemViewModel)
+                for (var i = computeSystemCards.Count - 1; i >= 0; i--)
                 {
-                    computeSystemViewModel.RemoveStateChangedHandler();
-                    ComputeSystemCards[i].ComputeSystemErrorReceived -= OnComputeSystemOperationError;
-                    ComputeSystemCards.RemoveAt(i);
+                    if (computeSystemCards[i] is ComputeSystemViewModel computeSystemViewModel)
+                    {
+                        computeSystemViewModel.RemoveStateChangedHandler();
+                        computeSystemCards[i].ComputeSystemErrorReceived -= OnComputeSystemOperationError;
+                        computeSystemCards.RemoveAt(i);
+                    }
                 }
             }
         }
 
+        PerProviderViewModels.Clear();
         _notificationsHelper?.ClearNotifications();
         CallToActionText = null;
         CallToActionHyperLinkButtonText = null;
@@ -262,19 +272,27 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private void SetupCreateComputeSystemOperationForUI()
     {
         // Remove all the operations from view and then add the ones the manager has.
-        _log.Information($"Adding any new create compute system operations to ComputeSystemCards list");
+        _log.Information($"Adding any new create compute system operations to computeSystemCards list");
         var curOperations = _computeSystemManager.GetRunningOperationsForCreation();
 
-        lock (ComputeSystemCards)
+        var providerViewModel = PerProviderViewModels.FirstOrDefault(provider => provider.ProviderID.Equals(_computeSystemManager.ComputeSystemSetupItem?.AssociatedProvider.Id, StringComparison.OrdinalIgnoreCase));
+
+        if (providerViewModel == null)
         {
-            for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
+            return;
+        }
+
+        var computeSystemCards = providerViewModel.ComputeSystems;
+        lock (computeSystemCards)
+        {
+            for (var i = computeSystemCards.Count - 1; i >= 0; i--)
             {
-                if (ComputeSystemCards[i].IsCreateComputeSystemOperation)
+                if (computeSystemCards[i] is CreateComputeSystemOperationViewModel operationViewModel)
                 {
                     var operationViewModel = ComputeSystemCards[i] as CreateComputeSystemOperationViewModel;
                     operationViewModel!.RemoveEventHandlers();
                     operationViewModel.ComputeSystemErrorReceived -= OnComputeSystemOperationError;
-                    ComputeSystemCards.RemoveAt(i);
+                    computeSystemCards.RemoveAt(i);
                 }
             }
 
@@ -282,11 +300,20 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             foreach (var operation in curOperations)
             {
                 // this is a new operation so we need to create a view model for it.
-                ComputeSystemCards.Add(new CreateComputeSystemOperationViewModel(_computeSystemManager, _stringResource, _windowEx, RemoveComputeSystemCard, AddNewlyCreatedComputeSystem, operation));
-                ComputeSystemCards.Last().ComputeSystemErrorReceived += OnComputeSystemOperationError;
+                var operationViewModel = new CreateComputeSystemOperationViewModel(
+                    _computeSystemManager,
+                    _stringResource,
+                    _mainWindow,
+                    RemoveComputeSystemCard,
+                    AddNewlyCreatedComputeSystem,
+                    operation);
+
+                operationViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
+                computeSystemCards.Insert(0, operationViewModel);
                 _log.Information($"Found new create compute system operation for provider {operation.ProviderDetails.ComputeSystemProvider}, with name {operation.EnvironmentName}");
             }
 
+            providerViewModel.ComputeSystemAdvancedView.Refresh();
             UpdateCallToActionText();
         }
     }
@@ -295,8 +322,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     {
         _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
         var provider = data.ProviderDetails.ComputeSystemProvider;
-
         var computeSystemList = data.DevIdToComputeSystemMap.Values.SelectMany(x => x.ComputeSystems).ToList() ?? [];
+        var loginId = data.DevIdToComputeSystemMap?.Keys.FirstOrDefault()?.DeveloperId.LoginId;
 
         // In the future when we support switching between accounts in the environments page, we will need to handle this differently.
         // for now we'll show all the compute systems from a provider.
@@ -332,14 +359,14 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             try
             {
                 Providers.Add(provider.DisplayName);
+                List<ComputeSystemCardBase> tempComputeSystemViewModels = new();
                 foreach (var computeSystemViewModel in computeSystemViewModels)
                 {
                     computeSystemViewModel.InitializeUXData();
-                    lock (ComputeSystemCards)
-                    {
-                        ComputeSystemCards.Add(computeSystemViewModel);
-                    }
+                    tempComputeSystemViewModels.Add(computeSystemViewModel);
                 }
+
+                PerProviderViewModels.Add(new PerProviderViewModel(provider.DisplayName, provider.Id, loginId ?? string.Empty, tempComputeSystemViewModels, _mainWindow));
             }
             catch (Exception ex)
             {
@@ -356,22 +383,32 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void SearchHandler(string query)
     {
-        ComputeSystemCardsView.Filter = system =>
+        var currentProviders = PerProviderViewModels.ToList();
+        PerProviderViewModels.Clear();
+
+        var dontShowIndices = new List<int>();
+        for (var i = 0; i < currentProviders.Count; i++)
         {
-            if (system is CreateComputeSystemOperationViewModel createComputeSystemOperationViewModel)
-            {
-                return createComputeSystemOperationViewModel.EnvironmentName.Contains(query, StringComparison.OrdinalIgnoreCase);
-            }
+            var providerViewModel = currentProviders[i];
+            providerViewModel.SearchHandler(query);
 
-            if (system is ComputeSystemViewModel computeSystemViewModel)
+            if (!providerViewModel.IsVisible)
             {
-                var systemName = computeSystemViewModel.ComputeSystem!.DisplayName.Value;
-                var systemAltName = computeSystemViewModel.ComputeSystem.SupplementalDisplayName.Value;
-                return systemName.Contains(query, StringComparison.OrdinalIgnoreCase) || systemAltName.Contains(query, StringComparison.OrdinalIgnoreCase);
+                dontShowIndices.Add(i);
             }
+            else
+            {
+                PerProviderViewModels.Add(providerViewModel);
+            }
+        }
 
-            return false;
-        };
+        // Move all don't show indices to the end of the list
+        // so that the visible providers are only shown.
+        // Add all the hidden providers
+        foreach (var index in dontShowIndices)
+        {
+            PerProviderViewModels.Add(currentProviders[index]);
+        }
     }
 
     /// <summary>
@@ -380,27 +417,31 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void ProviderHandler(int selectedIndex)
     {
-        SelectedProviderIndex = selectedIndex;
-        var currentProvider = Providers[SelectedProviderIndex];
-        ComputeSystemCardsView.Filter = system =>
+        // Swap positions of the selected provider and the first provider in the list
+        // so that the selected provider is always at the top of the list and no extra
+        // UI space is shown.
+        if (selectedIndex != 0)
         {
-            if (currentProvider.Equals(_stringResource.GetLocalized("AllProviders"), StringComparison.OrdinalIgnoreCase))
+            var actualIndex = -1;
+            for (var i = 0; i < PerProviderViewModels.Count; i++)
             {
-                return true;
+                if (PerProviderViewModels[i].ProviderName.Equals(Providers[selectedIndex], StringComparison.OrdinalIgnoreCase))
+                {
+                    actualIndex = i;
+                    break;
+                }
             }
 
-            if (system is CreateComputeSystemOperationViewModel createComputeSystemOperationViewModel)
-            {
-                return createComputeSystemOperationViewModel.ProviderDisplayName.Equals(currentProvider, StringComparison.OrdinalIgnoreCase);
-            }
+            var temp = PerProviderViewModels[0];
+            PerProviderViewModels[0] = PerProviderViewModels[actualIndex];
+            PerProviderViewModels[actualIndex] = temp;
+        }
 
-            if (system is ComputeSystemViewModel computeSystemViewModel)
-            {
-                return computeSystemViewModel.ProviderDisplayName.Equals(currentProvider, StringComparison.OrdinalIgnoreCase);
-            }
-
-            return false;
-        };
+        var currentProvider = Providers[selectedIndex];
+        foreach (var providerViewModel in PerProviderViewModels)
+        {
+            providerViewModel.ProviderHandler(currentProvider);
+        }
     }
 
     /// <summary>
@@ -412,25 +453,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void SortHandler()
     {
-        ComputeSystemCardsView.SortDescriptions.Clear();
-
-        switch (SelectedSortIndex)
+        foreach (var providerViewModel in PerProviderViewModels)
         {
-            case 0:
-                ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("Name", SortDirection.Ascending));
-                break;
-            case 1:
-                ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("Name", SortDirection.Descending));
-                break;
-            case 2:
-                ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("AlternativeName", SortDirection.Ascending));
-                break;
-            case 3:
-                ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("AlternativeName", SortDirection.Descending));
-                break;
-            case 4:
-                ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("LastConnected", SortDirection.Ascending));
-                break;
+            providerViewModel.SortHandler(SelectedSortIndex);
         }
     }
 
@@ -444,30 +469,45 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             }
 
             ComputeSystemCardBase? viewModel = default;
-            lock (ComputeSystemCards)
+            var providerViewModel = PerProviderViewModels.FirstOrDefault(provider => provider.ProviderID.Equals(computeSystemViewModel.AssociatedProviderId, StringComparison.OrdinalIgnoreCase));
+            if (providerViewModel != null)
             {
-                viewModel = ComputeSystemCards.FirstOrDefault(viewBase => viewBase.ComputeSystemId.Equals(computeSystemViewModel.ComputeSystemId, StringComparison.OrdinalIgnoreCase));
-            }
-
-            if (viewModel == null)
-            {
-                _windowEx.DispatcherQueue.EnqueueAsync(() =>
+                var computeSystemCards = providerViewModel.ComputeSystems;
+                lock (computeSystemCards)
                 {
-                    lock (ComputeSystemCards)
+                    viewModel = computeSystemCards.FirstOrDefault(viewBase => viewBase.ComputeSystemId.Equals(computeSystemViewModel.ComputeSystemId, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (viewModel == null)
+                {
+                    _mainWindow.DispatcherQueue.EnqueueAsync(() =>
                     {
-                        computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
-                        ComputeSystemCards.Add(computeSystemViewModel);
-                    }
-                });
+                        lock (computeSystemCards)
+                        {
+                            computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
+                            computeSystemCards.Insert(0, computeSystemViewModel);
+                        }
+
+                        providerViewModel.ComputeSystemAdvancedView.Refresh();
+                    });
+                }
             }
         });
     }
 
     private bool RemoveComputeSystemCard(ComputeSystemCardBase computeSystemCard)
     {
-        lock (ComputeSystemCards)
+        var providerViewModel = PerProviderViewModels.FirstOrDefault(provider => provider.ProviderID.Equals(computeSystemCard.AssociatedProviderId, StringComparison.OrdinalIgnoreCase));
+
+        if (providerViewModel == null)
         {
-            return ComputeSystemCards.Remove(computeSystemCard);
+            return false;
+        }
+
+        var computeSystemCards = providerViewModel.ComputeSystems;
+        lock (computeSystemCards)
+        {
+            return computeSystemCards.Remove(computeSystemCard);
         }
     }
 
@@ -502,7 +542,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private void UpdateCallToActionText()
     {
         // if there are cards in the UI don't update the text and keep their values as null.
-        if (ComputeSystemCards.Count > 0)
+        // Check if there are any compute systems in PerProviderViewModels
+        if (PerProviderViewModels.Any(provider => provider.ComputeSystems.Count > 0))
         {
             CallToActionText = null;
             return;
