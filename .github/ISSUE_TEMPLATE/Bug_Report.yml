@@ -1,5 +1,5 @@
 name: "Report a bug 🐛"
-description: Report errors or unexpected behavior
+description: Report errors or unexpected behavior.
 labels: [Issue-Bug]
 body:
 - type: markdown
