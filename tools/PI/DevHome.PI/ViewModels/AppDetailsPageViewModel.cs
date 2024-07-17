@@ -139,49 +139,48 @@ public partial class AppDetailsPageViewModel : ObservableObject
 
     private void GetPackageInfo(ProcessDiagnosticInfo pdi)
     {
-        if (pdi.IsPackaged)
-        {
-            AppInfo.IsPackaged = true;
-            ProcessPackageVisibility = Visibility.Visible;
-
-            var package = pdi.GetAppDiagnosticInfos().FirstOrDefault()?.AppInfo.Package;
-            if (package is not null)
-            {
-                if (package.Id is not null)
-                {
-                    AppInfo.PackageInfo.FullName = package.Id.FullName;
-                    var version = package.Id.Version;
-                    AppInfo.PackageInfo.Version = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
-                }
-
-                AppInfo.PackageInfo.DisplayName = package.DisplayName;
-                AppInfo.PackageInfo.InstalledDate = package.InstalledDate.ToString(CultureInfo.CurrentCulture);
-                AppInfo.PackageInfo.InstalledPath = package.InstalledPath;
-                AppInfo.PackageInfo.Publisher = package.PublisherDisplayName;
-                AppInfo.PackageInfo.IsDevelopmentMode = package.IsDevelopmentMode;
-                AppInfo.PackageInfo.SignatureKind = $"{package.SignatureKind}";
-                AppInfo.PackageInfo.Status = GetPackageStatus(package);
-
-                List<string> dependencies = [];
-                foreach (var d in package.Dependencies)
-                {
-                    dependencies.Add(d.Id.FullName);
-                }
-
-                AppInfo.PackageInfo.Dependencies = string.Join(", ", dependencies);
-            }
-        }
-        else
+        if (!pdi.IsPackaged)
         {
             ProcessPackageVisibility = Visibility.Collapsed;
+            return;
+        }
+
+        AppInfo.IsPackaged = true;
+        ProcessPackageVisibility = Visibility.Visible;
+
+        var package = pdi.GetAppDiagnosticInfos().FirstOrDefault()?.AppInfo.Package;
+        if (package is not null)
+        {
+            if (package.Id is not null)
+            {
+                AppInfo.PackageInfo.FullName = package.Id.FullName;
+                var version = package.Id.Version;
+                AppInfo.PackageInfo.Version = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+            }
+
+            AppInfo.PackageInfo.DisplayName = package.DisplayName;
+            AppInfo.PackageInfo.InstalledDate = package.InstalledDate.ToString(CultureInfo.CurrentCulture);
+            AppInfo.PackageInfo.InstalledPath = package.InstalledPath;
+            AppInfo.PackageInfo.Publisher = package.PublisherDisplayName;
+            AppInfo.PackageInfo.IsDevelopmentMode = package.IsDevelopmentMode;
+            AppInfo.PackageInfo.SignatureKind = $"{package.SignatureKind}";
+            AppInfo.PackageInfo.Status = GetPackageStatus(package);
+
+            List<string> dependencies = [];
+            foreach (var dependency in package.Dependencies)
+            {
+                dependencies.Add(dependency.Id.FullName);
+            }
+
+            AppInfo.PackageInfo.Dependencies = string.Join(", ", dependencies);
         }
     }
 
-    private string GetPackageStatus(Package p)
+    private string GetPackageStatus(Package package)
     {
         // Convert the individual bool Status properties to a list of matching strings.
         List<string> trueProperties = [];
-        var status = p.Status;
+        var status = package.Status;
 
         if (status.DataOffline)
         {
