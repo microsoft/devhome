@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
@@ -30,6 +32,14 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
 
     private readonly string _invalidToolInfo = CommonHelper.GetLocalizedString("InvalidToolInfoMessage");
     private readonly string _messageCloseText = CommonHelper.GetLocalizedString("MessageCloseText");
+    private readonly string _executablesFilter = CommonHelper.GetLocalizedString("FileDialogFilterExecutables");
+    private readonly string _batchFilesFilter = CommonHelper.GetLocalizedString("FileDialogFilterBatchFiles");
+    private readonly string _commandFilesFilter = CommonHelper.GetLocalizedString("FileDialogFilterCommandFiles");
+    private readonly string _mmcFilesFilter = CommonHelper.GetLocalizedString("FileDialogFilterMmcFiles");
+    private readonly string _powershellFilter = CommonHelper.GetLocalizedString("FileDialogFilterPowershell");
+    private readonly string _allFilesFilter = CommonHelper.GetLocalizedString("FileDialogFilterAllFiles");
+
+    private readonly char[] _fileDialogFilter;
 
     // We have 3 sets of operations, and we arbitrarily divide the progress timing into 3 equal segments.
     private const int ShortcutProcessingEndIndex = 33;
@@ -71,8 +81,21 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
 
     public AddToolControl()
     {
+        _fileDialogFilter = CreateFileDialogFilter().ToCharArray();
         InitializeComponent();
         LoadingProgressTextRing.DataContext = this;
+    }
+
+    private string CreateFileDialogFilter()
+    {
+        var sb = new StringBuilder();
+        sb.Append(CultureInfo.InvariantCulture, $"{_executablesFilter} (*.exe)\0*.exe\0");
+        sb.Append(CultureInfo.InvariantCulture, $"{_batchFilesFilter} (*.bat)\0*.bat\0");
+        sb.Append(CultureInfo.InvariantCulture, $"{_commandFilesFilter} (*.cmd)\0*.cmd\0");
+        sb.Append(CultureInfo.InvariantCulture, $"{_mmcFilesFilter} (*.msc)\0*.msc\0");
+        sb.Append(CultureInfo.InvariantCulture, $"{_powershellFilter} (*.ps1)\0*.ps1\0");
+        sb.Append(CultureInfo.InvariantCulture, $"{_allFilesFilter} (*.*)\0*.*\0\0");
+        return sb.ToString();
     }
 
     private void ToolBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -84,13 +107,11 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
     {
         // WinUI3's OpenFileDialog does not work if we're running elevated. So we have to use the old Win32 API.
         var fileName = string.Empty;
-        var filter = "Executables (*.exe)\0*.exe\0Batch Files (*.bat)\0*.bat\0\0";
-        var filterarray = filter.ToCharArray();
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
 
         unsafe
         {
-            fixed (char* file = new char[255], pFilter = filterarray)
+            fixed (char* file = new char[255], pFilter = _fileDialogFilter)
             {
                 var openfile = new OPENFILENAMEW
                 {

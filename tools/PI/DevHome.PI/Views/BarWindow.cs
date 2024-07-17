@@ -32,7 +32,7 @@ public partial class BarWindow
     {
         get
         {
-            if (_horizontalWindow.Visible)
+            if (_viewModel.BarOrientation == Orientation.Horizontal)
             {
                 return _horizontalWindow.ThisHwnd;
             }
@@ -155,6 +155,11 @@ public partial class BarWindow
     public void UpdateBarWindowPosition(PointInt32 position)
     {
         _viewModel.WindowPosition = position;
+    }
+
+    public void UpdateBarWindowSize(SizeInt32 size)
+    {
+        _viewModel.RequestedWindowSize = size;
     }
 
     public void ResetBarWindowOnTop()

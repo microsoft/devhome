@@ -11,6 +11,7 @@ using CommunityToolkit.WinUI;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
+using DevHome.Common.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
@@ -24,6 +25,8 @@ namespace DevHome.SetupFlow.ViewModels.Environments;
 public partial class ComputeSystemCardViewModel : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemCardViewModel));
+
+    private readonly StringResource _stringResourceCommon = new("DevHome.Common.pri", "DevHome.Common/Resources");
 
     private readonly DispatcherQueue _dispatcherQueue;
 
@@ -129,7 +132,8 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     {
         var stringBuilder = new StringBuilder();
         stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{ComputeSystemTitle}");
-        stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"{CardState}");
+        var state = _stringResourceCommon.GetLocalized($"ComputeSystem{CardState}");
+        stringBuilder.AppendLine(string.Format(CultureInfo.CurrentCulture, "{0}", state));
 
         foreach (var property in ComputeSystemProperties)
         {
