@@ -153,7 +153,7 @@ Once the team has approved an issue/spec, development can proceed. If no develop
 
 ### Fork, clone, branch, and create your PR
 
-Once you've discussed your proposed feature/fix/etc. With a team member and you've agreed on an approach or a spec has been written and approved, it's time to start development:
+Once you've discussed your proposed feature/fix/etc. with a team member and you've agreed on an approach or a spec has been written and approved, it's time to start development:
 
 1. Fork the repo if you haven't already
 2. Clone your fork locally
