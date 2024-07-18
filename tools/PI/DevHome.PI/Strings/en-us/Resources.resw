@@ -193,10 +193,6 @@
     <value>MSIX packaged</value>
     <comment>This refers to whether the application is using MSIX packaging technology.</comment>
   </data>
-  <data name="MicrosoftStoreAppTextBlock.Text" xml:space="preserve">
-    <value>Microsoft Store app</value>
-    <comment>This refers to whether the application was acquired via the Microsoft Store.</comment>
-  </data>
   <data name="ModulesHeaderTextBlock.Text" xml:space="preserve">
     <value>Loaded modules</value>
     <comment>The contents of a text block referring to loaded application modules.</comment>
@@ -490,8 +486,8 @@
     <comment>This refers to whether the application is running as System</comment>
   </data>
   <data name="RunElevatedButton.Content" xml:space="preserve">
-    <value>Run Project Ironsides as Admin to get more data</value>
-    <comment>{Locked="Ironsides"} When the user clicks this button we relaunch Project Ironsides as admin to get more app details</comment>
+    <value>Restart Project Ironsides as Admin to get more data</value>
+    <comment>{Locked="Ironsides"} When the user clicks this button we close and relaunch Project Ironsides as admin to get more app details</comment>
   </data>
   <data name="InsightsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Go to the key insights</value>
@@ -698,7 +694,7 @@
     <comment>{Locked="{0}", "{1}"} A description to help a user that is dealing with non-specific error situation. {0} is the error name. {1} is the error description.</comment>
   </data>
   <data name="FrameworkTypesTextBlock.Text" xml:space="preserve">
-    <value>Framework types used in this app</value>
+    <value>Frameworks detected</value>
     <comment>This refers to the set of application frameworks this application uses.</comment>
   </data>
   <data name="BaseAddressTextBlock.Text" xml:space="preserve">
@@ -852,10 +848,6 @@
   <data name="MainModuleTextBlock.ToolTipService.ToolTip" xml:space="preserve">
     <value>The executable used to start the process</value>
     <comment>Tooltip for the Main Module field.</comment>
-  </data>
-  <data name="MicrosoftStoreAppTextBlock.ToolTipService.ToolTip" xml:space="preserve">
-    <value>True if this app was deployed via the Microsoft Store</value>
-    <comment>Tooltip for the Microsoft Store field.</comment>
   </data>
   <data name="MSIXPackagedTextBlock.ToolTipService.ToolTip" xml:space="preserve">
     <value>True if this process is packaged with MSIX</value>
@@ -1100,5 +1092,101 @@
   <data name="FilterDataToTargetAppToggleLabel.ToolTipService.ToolTip" xml:space="preserve">
     <value>Controls whether data presented is for the entire system or filtered to the selected app</value>
     <comment>Tooltip for the FilterDataToTargetApp toggle</comment>
+  </data>
+  <data name="ActivationArgsTextBlock.Text" xml:space="preserve">
+    <value>Activation arguments</value>
+    <comment>Label for the arguments passed in when activating the target app.</comment>
+  </data>
+  <data name="ActivationArgsTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Any arguments provided to the app when it was activated</value>
+    <comment>Tooltip for the arguments passed in when activating the target app.</comment>
+  </data>
+  <data name="PackageFullNameTextBlock.Text" xml:space="preserve">
+    <value>Full name</value>
+    <comment>Textblock showing the full name of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageFullNameTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Package full name</value>
+    <comment>Tooltip for the full name of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageVersionTextBlock.Text" xml:space="preserve">
+    <value>Version</value>
+    <comment>Textblock showing the version of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageVersionTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Package version</value>
+    <comment>Tooltip for the version of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageDisplayNameTextBlock.Text" xml:space="preserve">
+    <value>Display name</value>
+    <comment>Textblock showing the display name of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageDisplayNameTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Display name for this package</value>
+    <comment>Tooltip for the display name of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageInstalledDateTextBlock.Text" xml:space="preserve">
+    <value>Installed date</value>
+    <comment>Textblock showing the installed date of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageInstalledDateTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Date this package was installed</value>
+    <comment>Tooltip for the installed date of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageInstalledPathTextBlock.Text" xml:space="preserve">
+    <value>Installed path</value>
+    <comment>Textblock showing the installed path of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageInstalledPathTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Filesystem path where this package is installed</value>
+    <comment>Tooltip for the installed path of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackagePublisherTextBlock.Text" xml:space="preserve">
+    <value>Publisher</value>
+    <comment>Textblock showing the publisher name of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackagePublisherTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Name of the package publisher</value>
+    <comment>Tooltip for the full publisher of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageIsDevelopmentModeTextBlock.Text" xml:space="preserve">
+    <value>Development mode</value>
+    <comment>Textblock showing whether the MSIX package for this app was installed in development mode.</comment>
+  </data>
+  <data name="PackageIsDevelopmentModeTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Was this package sideloaded in development mode</value>
+    <comment>Tooltip for whether the MSIX package for this app was installed in development mode.</comment>
+  </data>
+  <data name="PackageSignatureKindTextBlock.Text" xml:space="preserve">
+    <value>Signature kind</value>
+    <comment>Textblock showing the signature kind of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageSignatureKindTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The kind of signature used to sign this package, if any</value>
+    <comment>Tooltip for the signature kind of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageStatusTextBlock.Text" xml:space="preserve">
+    <value>Status</value>
+    <comment>Textblock showing the status of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageStatusTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Deployment status of this package</value>
+    <comment>Tooltip for the status of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageDependenciesTextBlock.Text" xml:space="preserve">
+    <value>Dependencies</value>
+    <comment>Textblock showing the list of dependencies for the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageDependenciesTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Additional packages this app depends on</value>
+    <comment>Tooltip for the list of dependencies for the MSIX package for this app.</comment>
+  </data>
+  <data name="UnknownText" xml:space="preserve">
+    <value>(unknown)</value>
+    <comment>Text used in messages to indicate that the value of this item is unknown.</comment>
+  </data>
+  <data name="NoIssuesText" xml:space="preserve">
+    <value>No issues</value>
+    <comment>A message indicating that there are no issues with the given item.</comment>
   </data>
 </root>
