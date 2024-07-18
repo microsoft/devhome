@@ -98,6 +98,7 @@ public sealed partial class PrimaryWindow : WindowEx
                 return;
             }
 
+            TranslateUWPProcess(hWnd, ref process);
             TargetAppData.Instance.SetNewAppData(process, hWnd);
         }
 

@@ -12,13 +12,14 @@
     Title="" MinHeight="90" MinWidth="700" Height="90" Width="700" MaxHeight="90"
     TaskBarIcon="Images/pi.ico"
     Activated="Window_Activated"
+    WindowStateChanged="WindowEx_WindowStateChanged"
     Closed="WindowEx_Closed">
 
     <Window.SystemBackdrop>
         <MicaBackdrop/>
     </Window.SystemBackdrop>
 
-    <Grid x:Name="MainPanel" Loaded="MainPanel_Loaded" SizeChanged="MainPanel_SizeChanged">
+    <Grid x:Name="MainPanel" Loaded="MainPanel_Loaded">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -34,15 +35,15 @@
                 <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock x:Uid="Title" Grid.Column="1" Style="{StaticResource CaptionTextBlockStyle}" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}">
+            <TextBlock x:Uid="Title" Grid.Column="1" Style="{StaticResource CaptionTextBlockStyle}" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}" LayoutUpdated="{x:Bind TitlebarLayoutUpdate}">
                 <Button
                     x:Uid="SnapButton" 
                     Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
                     x:Name="SnapButton" Style="{StaticResource ChromeButton}" 
                     FontSize="{StaticResource CaptionTextBlockFontSize}"
                     Command="{x:Bind _viewModel.ToggleSnapCommand}" 
-                    HorizontalAlignment="Left" 
+                    HorizontalAlignment="Left"
                     IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}">
                     <TextBlock x:Name="SnapButtonText" Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
@@ -139,9 +140,9 @@
                 </CommandBar>
             </StackPanel>
 
-            <CommandBar x:Name="MyCommandBar" HorizontalAlignment="Left" IsDynamicOverflowEnabled="False" DefaultLabelPosition="Collapsed" Grid.Column="1" />
+            <CommandBar x:Name="MyCommandBar" Style="{StaticResource CustomCommandBar}" HorizontalAlignment="Left" IsDynamicOverflowEnabled="False" DefaultLabelPosition="Collapsed" Grid.Column="1" />
 
-            <CommandBar Grid.Column="2">
+            <CommandBar Grid.Column="2" >
                 <AppBarSeparator/>
             </CommandBar>
 
