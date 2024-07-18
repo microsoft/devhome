@@ -116,46 +116,18 @@ public partial class AppRuntimeInfo : ObservableObject
 
         IdentifiedFrameWorkTypes = string.Join(", ", identifiedFrameworks);
 
-        /* The only reliable check for UWP is if the command-line matches the known UWP pattern.
+        /* The only reliable check for (most) UWP apps is if the command-line matches the known UWP pattern.
         Examples:
         "C:\Program Files\WindowsApps\Microsoft.WindowsAlarms_11.2406.47.0_x64__8wekyb3d8bbwe\Time.exe" -ServerName:App.AppXq8avk61zazpy808ab5ppkf6taqp47km6.mca
         "C:\Program Files\WindowsApps\35455AndrewWhitechapel.uTaskManager_2309.21.1.0_x64__6rjrek5qak82t\uTaskManager.exe" -ServerName:uTaskManager.AppXjaq7n2ahxkbe1kpkhkxqhr5d0s2yr0pb.mca
         "C:\Foo\TestApps\UwpAea\UwpAea\bin\x86\Debug\AppX\UwpAea.exe" -ServerName:Blueberry.Pie.AppXnzm9t7zr5rgagha6146e9rgzyahj42xx.mca
+        NOTE: does not handle the case of multi-instance UWP apps.
         */
-        GetCommandLine(process);
+        ActivationArgs = CommonHelper.GetCommandLine(process);
         if (UwpCommandLineRegex().IsMatch(ActivationArgs))
         {
             IdentifiedFrameWorkTypes += ", UWP";
             ActivationArgs = _unknownText;
-        }
-    }
-
-    private void GetCommandLine(Process process)
-    {
-        try
-        {
-            using var searcher = new ManagementObjectSearcher(
-                $"SELECT CommandLine FROM Win32_Process WHERE ProcessId = {process.Id}");
-            if (searcher is null)
-            {
-                return;
-            }
-
-            using var objects = searcher.Get();
-            if (objects is null)
-            {
-                return;
-            }
-
-            var obj = objects.Cast<ManagementObject>().FirstOrDefault();
-            if (obj is not null)
-            {
-                ActivationArgs = obj["CommandLine"]?.ToString() ?? string.Empty;
-            }
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "Failed to get command line for process {ProcessId}", process.Id);
         }
     }
 }
