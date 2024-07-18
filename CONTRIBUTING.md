@@ -103,7 +103,6 @@ The best place to start is the list of ["good first issue"](https://github.com/m
 
 Generally, we categorize issues in the following way, which is largely derived from our old internal work tracking system:
 * ["Bugs"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Bug%22+) are parts of Dev Home that are not quite working the right way. There's code to already support some scenario, but it's not quite working right. Fixing these is generally a matter of debugging the broken functionality and fixing the wrong code.
-
 * ["Tasks"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Task%22+) are usually new pieces of functionality that aren't yet implemented for Dev Home. These are usually smaller features, which we believe
   - could be a single, atomic PR
   - don't require much design consideration, or we've already written the spec for the larger feature they belong to.
