@@ -6,6 +6,8 @@
     xmlns:winex="using:WinUIEx"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:controls="using:DevHome.PI.Controls"
     xmlns:helpers="using:DevHome.PI.Helpers"
     mc:Ignorable="d"
@@ -70,10 +72,10 @@
                      Style="{StaticResource ChromeButton}" 
                      FontSize="{StaticResource CaptionTextBlockFontSize}"
                      HorizontalAlignment="Left">
-                    <TextBlock Text="&#xe712;" />
+                    <TextBlock x:Name="ChromeEllipsisButtonText" Text="&#xe712;" />
                     <Button.Flyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem Command="{x:Bind OpenClipboardMonitorCommand}">
+                            <MenuFlyoutItem Command="{x:Bind OpenClipboardMonitorCommand}" Text="Clipboard Monitoring">
                                 <MenuFlyoutItem.Icon>
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xf0e3;"/>
                                 </MenuFlyoutItem.Icon>
@@ -154,9 +156,8 @@
 
         </Grid>
 
-        <Grid x:Name="ClipboardMonitorPanel" Visibility="Visible" Grid.Row="2">
+        <Grid x:Name="ClipboardMonitorPanel" Visibility="Collapsed" Grid.Row="2" >
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto" />
@@ -166,14 +167,27 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
+            <i:Interaction.Behaviors>
+                <ic:EventTriggerBehavior EventName="GotFocus">
+                    <ic:InvokeCommandAction Command="{x:Bind _viewModel.PauseClipboardMonitoringCommand}" />
+                </ic:EventTriggerBehavior>
+                <ic:EventTriggerBehavior EventName="LosingFocus">
+                    <ic:InvokeCommandAction Command="{x:Bind _viewModel.ResumeClipboardMonitoringCommand}" />
+                </ic:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
             <Grid.Resources>
                 <Style TargetType="TextBlock">
                     <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="Margin" Value="5 0 5 0"/>
                 </Style>
                 <Style TargetType="TextBox">
                     <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
                     <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="IsReadOnly" Value="True"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="Height" Value="25"/>
                 </Style>
                 <Style TargetType="Button">
                     <Setter Property="BorderThickness" Value="0"/>
@@ -181,16 +195,15 @@
                     <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
                 </Style>
             </Grid.Resources>
-            <Button Grid.Column="1">
-                    <SymbolIcon Symbol="Play"/>
-            </Button>
-            <TextBlock x:Uid="HexLabelTextBlock" Grid.Column="2"/>
-            <TextBox x:Name="ErrorHexTextBox" Text="{x:Bind _viewModel.ClipboardContentsHex, Mode=OneWay}" Grid.Column="3"/>
-            <TextBlock x:Uid="DecLabelTextBlock" Grid.Column="4"/>
-            <TextBox x:Name="ErrorDecTextBox" Text="{x:Bind _viewModel.ClipboardContentsDec, Mode=OneWay}" Grid.Column="5"/>
-            <TextBlock x:Uid="CodeLabelTextBlock" Grid.Column="6"/>
-            <TextBox x:Name="ErrorCodeTextBox" Text="{x:Bind _viewModel.ClipboardContentsCode, Mode=OneWay}" Grid.Column="7"/>
-            <Button Grid.Column="8">
+            <TextBlock x:Uid="HexLabelTextBlock" Grid.Column="1"/>
+            <TextBox x:Name="ErrorHexTextBox" Text="{x:Bind _viewModel.ClipboardContentsHex, Mode=OneWay}" Grid.Column="2" />
+            <TextBlock x:Uid="DecLabelTextBlock" Grid.Column="3"/>
+            <TextBox x:Name="ErrorDecTextBox" Text="{x:Bind _viewModel.ClipboardContentsDec, Mode=OneWay}" Grid.Column="4" />
+
+            <TextBlock x:Uid="CodeLabelTextBlock" Grid.Column="5"/>
+            <TextBox x:Name="ErrorCodeTextBox" Text="{x:Bind _viewModel.ClipboardContentsCode, Mode=OneWay}" Grid.Column="6" />
+
+            <Button Grid.Column="7">
                 <TextBlock Text="&#xe8a7;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
             </Button>
         </Grid>

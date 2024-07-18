@@ -117,6 +117,8 @@ public partial class BarWindowViewModel : ObservableObject
 
     internal HWND? ApplicationHwnd { get; private set; }
 
+    private bool _listenForClipboardChanges = true;
+
     public BarWindowViewModel()
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
@@ -287,6 +289,19 @@ public partial class BarWindowViewModel : ObservableObject
         TargetAppData.Instance.ClearAppData();
     }
 
+    // For these pause/resume functions, we don't want to turn off clipboard monitoring wholesale, just the UI updates
+    [RelayCommand]
+    public void PauseClipboardMonitoring()
+    {
+        _listenForClipboardChanges = false;
+    }
+
+    [RelayCommand]
+    public void ResumeClipboardMonitoring()
+    {
+        _listenForClipboardChanges = true;
+    }
+
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(TargetAppData.HWnd))
@@ -375,10 +390,13 @@ public partial class BarWindowViewModel : ObservableObject
         var clipboardContents = ClipboardMonitor.Instance.Contents;
         _dispatcher.TryEnqueue(() =>
         {
-            ClipboardContentsHex = clipboardContents.Hex;
-            ClipboardContentsDec = clipboardContents.Dec;
-            ClipboardContentsCode = clipboardContents.Code;
-            ClipboardContentsHelp = clipboardContents.Help;
+            if (_listenForClipboardChanges)
+            {
+                ClipboardContentsHex = clipboardContents.Hex;
+                ClipboardContentsDec = clipboardContents.Dec;
+                ClipboardContentsCode = clipboardContents.Code;
+                ClipboardContentsHelp = clipboardContents.Help;
+            }
         });
     }
 

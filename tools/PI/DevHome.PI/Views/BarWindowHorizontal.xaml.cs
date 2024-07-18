@@ -62,6 +62,7 @@ public partial class BarWindowHorizontal : WindowEx
 
     // Constants that control window sizes
     private const int WindowPositionOffsetY = 30;
+    private const int ClipboardMonitorPanelHeight = 36;
     private const int FloatingHorizontalBarHeight = 90;
 
     // Default size of the expanded view as a percentage of the screen size
@@ -593,6 +594,7 @@ public partial class BarWindowHorizontal : WindowEx
             SnapButtonText.Foreground = brush;
             ExpandCollapseLayoutButtonText.Foreground = brush;
             RotateLayoutButtonText.Foreground = brush;
+            ChromeEllipsisButtonText.Foreground = brush;
         }
         else
         {
@@ -601,20 +603,36 @@ public partial class BarWindowHorizontal : WindowEx
             SnapButtonText.Foreground = brush;
             ExpandCollapseLayoutButtonText.Foreground = brush;
             RotateLayoutButtonText.Foreground = brush;
+            ChromeEllipsisButtonText.Foreground = brush;
         }
     }
 
     [RelayCommand]
     private void OpenClipboardMonitor()
     {
-        ClipboardMonitorPanel.Visibility = Visibility.Visible;
-
-        if (!_viewModel.ShowingExpandedContent)
+        if (ClipboardMonitorPanel.Visibility == Visibility.Visible)
         {
-            MaxHeight = FloatingHorizontalBarHeight + ClipboardMonitorPanel.ActualHeight;
-            MinHeight = FloatingHorizontalBarHeight + ClipboardMonitorPanel.ActualHeight;
-            Height = FloatingHorizontalBarHeight + ClipboardMonitorPanel.ActualHeight;
+            ClipboardMonitorPanel.Visibility = Visibility.Collapsed;
+            if (!_viewModel.ShowingExpandedContent)
+            {
+                SetBarHeightValues(FloatingHorizontalBarHeight);
+            }
         }
+        else
+        {
+            ClipboardMonitorPanel.Visibility = Visibility.Visible;
+            if (!_viewModel.ShowingExpandedContent)
+            {
+                SetBarHeightValues(FloatingHorizontalBarHeight + ClipboardMonitorPanelHeight);
+            }
+        }
+    }
+
+    private void SetBarHeightValues(int height)
+    {
+        MaxHeight = height;
+        MinHeight = height;
+        AppWindow.Resize(new Windows.Graphics.SizeInt32((int)Width, height));
     }
 
     private void WindowEx_WindowStateChanged(object sender, WindowState e)
