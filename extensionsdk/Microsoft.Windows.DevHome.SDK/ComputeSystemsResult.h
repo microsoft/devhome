@@ -1,14 +1,15 @@
 #pragma once
 #include "ComputeSystemsResult.g.h"
-
 using namespace winrt::Windows::Foundation::Collections;
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     struct ComputeSystemsResult : ComputeSystemsResultT<ComputeSystemsResult>
     {
+        ComputeSystemsResult() = default;
+
         ComputeSystemsResult(IIterable<IComputeSystem> const& computeSystems);
-        ComputeSystemsResult(winrt::hresult const& e, hstring const& displayMessage, hstring const& diagnosticText);
+        ComputeSystemsResult(winrt::hresult const& e, hstring const& diagnosticText);
         IIterable<IComputeSystem> ComputeSystems();
         ProviderOperationResult Result();
 

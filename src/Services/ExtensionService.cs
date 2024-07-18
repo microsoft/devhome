@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Xml.Linq;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
@@ -110,10 +111,10 @@ public class ExtensionService : IExtensionService, IDisposable
         var extensions = await AppExtensionCatalog.Open("com.microsoft.devhome").FindAllAsync();
         foreach (var extension in extensions)
         {
-            if (package.Id?.FullName == extension.Package?.Id?.FullName)
+            if (package.Id.FullName == extension.Package.Id.FullName)
             {
                 var (devHomeProvider, classId) = await GetDevHomeExtensionPropertiesAsync(extension);
-                return devHomeProvider != null && classId.Count != 0;
+                return devHomeProvider != null && classId.Count == 0;
             }
         }
 
@@ -124,11 +125,6 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         var classIds = new List<string>();
         var properties = await extension.GetExtensionPropertiesAsync();
-
-        if (properties is null)
-        {
-            return (null, classIds);
-        }
 
         var devHomeProvider = GetSubPropertySet(properties, "DevHomeProvider");
         if (devHomeProvider is null)
@@ -313,12 +309,12 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private IPropertySet? GetSubPropertySet(IPropertySet propSet, string name)
     {
-        return propSet.TryGetValue(name, out var value) ? value as IPropertySet : null;
+        return propSet[name] as IPropertySet;
     }
 
     private object[]? GetSubPropertySetArray(IPropertySet propSet, string name)
     {
-        return propSet.TryGetValue(name, out var value) ? value as object[] : null;
+        return propSet[name] as object[];
     }
 
     /// <summary>
@@ -330,6 +326,7 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         var propSetList = new List<string>();
         var singlePropertySet = GetSubPropertySet(activationPropSet, CreateInstanceProperty);
+        var propertySetArray = GetSubPropertySetArray(activationPropSet, CreateInstanceProperty);
         if (singlePropertySet != null)
         {
             var classId = GetProperty(singlePropertySet, ClassIdProperty);
@@ -340,23 +337,19 @@ public class ExtensionService : IExtensionService, IDisposable
                 propSetList.Add(classId);
             }
         }
-        else
+        else if (propertySetArray != null)
         {
-            var propertySetArray = GetSubPropertySetArray(activationPropSet, CreateInstanceProperty);
-            if (propertySetArray != null)
+            foreach (var prop in propertySetArray)
             {
-                foreach (var prop in propertySetArray)
+                if (prop is not IPropertySet propertySet)
                 {
-                    if (prop is not IPropertySet propertySet)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    var classId = GetProperty(propertySet, ClassIdProperty);
-                    if (classId != null)
-                    {
-                        propSetList.Add(classId);
-                    }
+                var classId = GetProperty(propertySet, ClassIdProperty);
+                if (classId != null)
+                {
+                    propSetList.Add(classId);
                 }
             }
         }

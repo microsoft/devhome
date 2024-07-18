@@ -7,7 +7,7 @@
 
 namespace QuietState
 {
-    void TurnOff() noexcept;
+    void TurnOff();
 
     using unique_quietwindowclose_call = wil::unique_call<decltype(&TurnOff), TurnOff>;
     

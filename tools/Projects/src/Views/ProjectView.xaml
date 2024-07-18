@@ -1,0 +1,68 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<UserControl
+    x:Class="DevHome.Projects.Views.ProjectView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DevHome.Projects.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:DevHome.Projects.ViewModels"
+    xmlns:views="using:DevHome.Projects.Views"
+    x:DefaultBindMode="OneWay"
+    mc:Ignorable="d">
+
+    <Grid Background="{x:Bind ((vm:ProjectViewModel)DataContext).Color}" Width="300" Padding="8" HorizontalAlignment="Left">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+      <TextBlock Text="{x:Bind ((vm:ProjectViewModel)DataContext).Name}" Style="{ThemeResource SubtitleTextBlockStyle}" Foreground="{x:Bind ((vm:ProjectViewModel)DataContext).ForegroundColor}" />
+            <Button Grid.Column="1" x:Name="DeleteProjectButton" 
+                    Click="DeleteProjectButton_Click"
+                    Background="Transparent" 
+                    Foreground="{x:Bind ((vm:ProjectViewModel)DataContext).ForegroundColor}"
+                    BorderThickness="0"
+                    HorizontalContentAlignment="Right"
+                    Padding="4"
+                    Margin="0"
+                    BorderBrush="Transparent">
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xe106;" />
+            </Button>
+        </Grid>
+        <TextBlock x:Name="filePath" Grid.Row="1" Text="{x:Bind ((vm:ProjectViewModel)DataContext).ExpandedFilePath}" 
+                   Style="{ThemeResource CaptionTextBlockStyle}" Padding="8,2" Tapped="FilePath_Tapped"
+                   Foreground="{x:Bind ((vm:ProjectViewModel)DataContext).ForegroundColor}"/>
+    <RichTextBlock Grid.Row="2" Padding="8,2" Foreground="{x:Bind ((vm:ProjectViewModel)DataContext).ForegroundColor}">
+            <Paragraph>
+                <Hyperlink NavigateUri="{x:Bind ((vm:ProjectViewModel)DataContext).Url}">
+                    <Run Text="{x:Bind ((vm:ProjectViewModel)DataContext).Url}" FontSize="12" />
+                </Hyperlink>
+            </Paragraph>
+        </RichTextBlock>
+        <StackPanel Orientation="Horizontal" Grid.Row="3">
+      <FontIcon Margin="4"  Glyph="&#xe001;" Foreground="{x:Bind ((vm:ProjectViewModel)DataContext).ForegroundColor}"/>
+      <TextBlock Text="{x:Bind ((vm:ProjectViewModel)DataContext).Branch}" Style="{ThemeResource CaptionTextBlockStyle}" Padding="8,2" VerticalAlignment="Center" Foreground="{x:Bind ((vm:ProjectViewModel)DataContext).ForegroundColor}"/>
+        </StackPanel>
+        <ItemsRepeater Grid.Row="4" ItemsSource="{x:Bind ((vm:ProjectViewModel)DataContext).Launchers}" 
+                                       Margin="4">
+            <ItemsRepeater.Layout>
+                <StackLayout Orientation="Horizontal"/>
+            </ItemsRepeater.Layout>
+            <ItemsRepeater.ItemTemplate>
+                <DataTemplate x:DataType="vm:LauncherViewModel">
+                    <views:LauncherView DataContext="{x:Bind}" />
+                </DataTemplate>
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
+    </Grid>
+</UserControl>

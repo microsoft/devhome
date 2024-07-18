@@ -3,8 +3,8 @@
     x:Class="DevHome.SetupFlow.Views.Environments.CreateEnvironmentReviewView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Unloaded="ViewUnloaded"
     Loaded="ViewLoaded"
+    Unloaded="ViewUnloaded"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters">
     <UserControl.Resources>
         <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
@@ -12,9 +12,27 @@
 
     <!-- Xaml for create environment view tab in the create environment flow-->
     <Grid>
-        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+        <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}">
             <StackPanel Spacing="10">
-                <Grid x:Name="AdaptiveCardGrid" />
+                <Grid
+                    HorizontalAlignment="Center"
+                    Visibility="{x:Bind ViewModel.ErrorRetrievingAdaptiveCardSessionMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
+                    <InfoBar
+                        IsOpen="True"
+                        x:Uid="ErrorRetrievingAdaptiveCardSession"
+                        Severity="Error"
+                        Message="{x:Bind ViewModel.ErrorRetrievingAdaptiveCardSessionMessage, Mode=OneWay}" >
+                    </InfoBar>
+                </Grid>
+
+                <!--- 
+                    Show the adaptive card frame on the page. 
+                    Note: The frame adds an extra padding of 20 pixels on all sides so we are setting it to -20 to remove it.
+                -->
+                <Frame 
+                    x:Name="ReviewTabAdaptiveCardUI"
+                    Padding="-20"
+                   />
             </StackPanel>
         </ScrollViewer>
     </Grid>

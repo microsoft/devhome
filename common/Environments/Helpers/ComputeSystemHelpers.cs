@@ -8,7 +8,6 @@ using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
-using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -168,24 +167,5 @@ public static class ComputeSystemHelpers
         }
 
         return false;
-    }
-
-    public static (string DisplayMessage, string DiagnosticText, EnvironmentsTelemetryStatus Status) LogResult(ProviderOperationResult? result, ILogger logger)
-    {
-        var telemetryStatus = EnvironmentsTelemetryStatus.Succeeded;
-
-        if (result == null)
-        {
-            var logErrorMsg = $"The returned result object was null";
-            logger.Error(logErrorMsg);
-            return (logErrorMsg, logErrorMsg, EnvironmentsTelemetryStatus.Failed);
-        }
-        else if (result.Status == ProviderOperationStatus.Failure)
-        {
-            logger.Error(result.ExtendedError, $"Operation failed with error:{result.DiagnosticText}");
-            telemetryStatus = EnvironmentsTelemetryStatus.Failed;
-        }
-
-        return (result.DisplayMessage, result.DiagnosticText, telemetryStatus);
     }
 }

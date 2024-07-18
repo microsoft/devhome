@@ -1,0 +1,57 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "%SSH_Widget_Template/PatternMatching%",
+          "wrap": true,
+          "horizontalAlignment": "Left",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "ColumnSet",
+          "spacing": "large",
+          "columns": [
+            {
+              "type": "Column",
+              "items": [
+                {
+                  "type": "Input.Text",
+                  "id": "PatternHost",
+                  "spacing": "large",
+                  "style": "Url",
+                  "value": "${patternHost}"
+                }
+              ],
+              "width": "stretch"
+            },
+            {
+              "type": "Column",
+              "items": [
+                {
+                  "type": "ActionSet",
+                  "actions": [
+                    {
+                      "type": "Action.Execute",
+                      "title": "%SSH_Widget_Template/Connect%",
+                      "tooltip": "%Widget_Template_Tooltip/Submit%",
+                      "verb": "PatternConnect"
+                    }
+                  ]
+                }
+              ],
+              "width": "auto"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Models;
-using DevHome.Common.Services;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
@@ -24,7 +23,7 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
 
     public DateTime LastConnected { get; protected set; } = DateTime.Now;
 
-    public bool IsCardCreating { get; protected set; }
+    public bool IsCreateComputeSystemOperation { get; protected set; }
 
     public event TypedEventHandler<ComputeSystemCardBase, string>? ComputeSystemErrorReceived;
 
@@ -43,16 +42,11 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
     [ObservableProperty]
     private bool _shouldShowLaunchOperation;
 
-    /// <summary>
-    /// This string can, and should, be in a resource file.  But can't because this string used in a
-    /// data template.
-    /// </summary>
-    [ObservableProperty]
-    private string _moreOptionsButtonName;
+    public BitmapImage? HeaderImage { get; protected set; } = new();
 
-    public BitmapImage? HeaderImage { get; protected set; }
+    public BitmapImage? BodyImage { get; protected set; } = new();
 
-    public BitmapImage? BodyImage { get; protected set; }
+    public ComputeSystem? ComputeSystem { get; protected set; }
 
     public string ProviderDisplayName { get; protected set; } = string.Empty;
 

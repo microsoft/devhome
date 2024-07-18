@@ -11,13 +11,6 @@ using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.Parsers;
 
-/// <summary>
-/// Represents a parser for a Dev Home settings card that can be rendered through an adaptive card.
-/// This parser will be used if the element type is "DevHome.SettingsCard".
-/// </summary>
-/// <remarks>
-/// the JsonObject is a Windows.Data.Json.JsonObject, which has methods that can throw an exception if the type is not correct.
-/// </remarks>
 public class DevHomeSettingsCardParser : IAdaptiveElementParser
 {
     public IAdaptiveCardElement FromJson(JsonObject inputJson, AdaptiveElementParserRegistration elementParsers, AdaptiveActionParserRegistration actionParsers, IList<AdaptiveWarning> warnings)
@@ -31,25 +24,25 @@ public class DevHomeSettingsCardParser : IAdaptiveElementParser
             adaptiveSettingsCard.Id = isCorrectType ? id.GetString() : string.Empty;
         }
 
-        if (inputJson.TryGetValue("devHomeSettingsCardDescription", out var devHomeSettingsCardDescription))
+        if (inputJson.TryGetValue("DevHomeSettingsCardDescription", out var devHomeSettingsCardDescription))
         {
             isCorrectType = devHomeSettingsCardDescription.ValueType == JsonValueType.String;
             adaptiveSettingsCard.Description = isCorrectType ? devHomeSettingsCardDescription.GetString() : StringResourceHelper.GetResource("SettingsCardDescriptionError");
         }
 
-        if (inputJson.TryGetValue("devHomeSettingsCardHeader", out var devHomeSettingsCardHeader))
+        if (inputJson.TryGetValue("DevHomeSettingsCardHeader", out var devHomeSettingsCardHeader))
         {
             isCorrectType = devHomeSettingsCardHeader.ValueType == JsonValueType.String;
             adaptiveSettingsCard.Header = isCorrectType ? devHomeSettingsCardHeader.GetString() : StringResourceHelper.GetResource("SettingsCardHeaderError");
         }
 
-        if (inputJson.TryGetValue("devHomeSettingsCardHeaderIcon", out var devHomeSettingsCardHeaderIcon))
+        if (inputJson.TryGetValue("DevHomeSettingsCardHeaderIcon", out var devHomeSettingsCardHeaderIcon))
         {
             isCorrectType = devHomeSettingsCardHeaderIcon.ValueType == JsonValueType.String;
             adaptiveSettingsCard.HeaderIcon = isCorrectType ? devHomeSettingsCardHeaderIcon.GetString() : string.Empty;
         }
 
-        if (inputJson.TryGetValue("devHomeSettingsCardActionElement", out var devHomeSettingsCardActionElement))
+        if (inputJson.TryGetValue("DevHomeSettingsCardActionElement", out var devHomeSettingsCardActionElement))
         {
             isCorrectType = devHomeSettingsCardActionElement.ValueType == JsonValueType.Object;
             var elementJson = isCorrectType ? devHomeSettingsCardActionElement.GetObject() : new JsonObject();
