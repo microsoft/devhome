@@ -102,7 +102,8 @@ If you're able & willing to help fix issues and/or implement features, we'd love
 The best place to start is the list of ["good first issue"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Help+Wanted%22++label%3A%22good+first+issue%22+)s. These are bugs or tasks that we on the team believe would be easier to implement for someone without any prior experience in the codebase. Once you're feeling more comfortable in the codebase, feel free to just use the ["Help Wanted"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Help+Wanted%22+) label, or just find an issue you're interested in and hop in!
 
 Generally, we categorize issues in the following way, which is largely derived from our old internal work tracking system:
-* ["Bugs"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Bug%22+) are parts of Dev Home that are not quite working the right way. There's code to already support some scenarios, but it's not quite working right. Fixing these is generally a matter of debugging the broken functionality and fixing the wrong code.
+* ["Bugs"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Bug%22+) are parts of Dev Home that are not quite working the right way. There's code to already support some scenario, but it's not quite working right. Fixing these is generally a matter of debugging the broken functionality and fixing the wrong code.
+
 * ["Tasks"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Task%22+) are usually new pieces of functionality that aren't yet implemented for Dev Home. These are usually smaller features, which we believe
   - could be a single, atomic PR
   - don't require much design consideration, or we've already written the spec for the larger feature they belong to.
