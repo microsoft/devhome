@@ -4,7 +4,7 @@ Below is our guidance for how to report issues, propose new features, and submit
 
 ## Open development workflow
 
-The Dev Home team is VERY active in this GitHub Repo. In fact, we live in it all day and carry out all our development in the open!
+The Dev Home team is VERY active in this GitHub Repo. In fact, we live in it all day long and carry out all our development in the open!
 
 When the team finds issues, we file them in the repo. We file new feature requests when we propose new ideas or think up new features. When we work on fixes or features, we create branches and work on those improvements. And when PRs are reviewed, we review them in public - including all the good, the bad, and the ugly parts.
 
