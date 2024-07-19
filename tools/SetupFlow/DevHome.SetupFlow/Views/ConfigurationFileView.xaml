@@ -200,7 +200,8 @@
                                             <TextBlock x:Uid="ConfigurationUnit_Details" Style="{ThemeResource BodyStrongTextBlockStyle}" />
 
                                             <!-- Shimmers -->
-                                            <StackPanel Visibility="{x:Bind Details, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
+                                            <StackPanel Visibility="{x:Bind Details, Mode=OneWay, Converter={StaticResource EmptyObjectToVisibilityConverter}}">
+
                                                 <StackPanel.Resources>
                                                     <Style TargetType="labs:Shimmer">
                                                         <Setter Property="Margin" Value="5" />
