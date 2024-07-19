@@ -236,9 +236,4 @@ public partial class AddRepoDialog : ContentDialog
         GatheringSearchValuesGrid.Visibility = Visibility.Collapsed;
         ShowingSearchTermsGrid.Visibility = Visibility.Visible;
     }
-
-    public void SetFocusOnSegmentedView()
-    {
-        SwitchViewsSegmentedView.Focus(FocusState.Programmatic);
-    }
 }
