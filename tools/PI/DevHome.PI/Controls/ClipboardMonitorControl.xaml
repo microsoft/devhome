@@ -10,7 +10,7 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d">
 
-    <Grid x:Name="ClipboardMonitorPanel" Visibility="Collapsed" Grid.Row="2">
+    <Grid x:Name="ClipboardMonitorPanel" Grid.Row="2">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
@@ -42,11 +42,11 @@
             </Style>
         </Grid.Resources>
         <TextBlock x:Uid="HexLabelTextBlock" Grid.Column="1"/>
-        <TextBox x:Name="ErrorHexTextBox" Text="{x:Bind _clipboardContentsHex, Mode=OneWay}" Grid.Column="2" />
+        <TextBox x:Name="ErrorHexTextBox" Text="{x:Bind _viewModel.ClipboardContentsHex, Mode=OneWay}" Grid.Column="2" />
         <TextBlock x:Uid="DecLabelTextBlock" Grid.Column="3"/>
-        <TextBox x:Name="ErrorDecTextBox" Text="{x:Bind _clipboardContentsDec, Mode=OneWay}" Grid.Column="4" />
+        <TextBox x:Name="ErrorDecTextBox" Text="{x:Bind _viewModel.ClipboardContentsDec, Mode=OneWay}" Grid.Column="4" />
         <TextBlock x:Uid="CodeLabelTextBlock" Grid.Column="5"/>
-        <TextBox x:Name="ErrorCodeTextBox" Text="{x:Bind _clipboardContentsCode, Mode=OneWay}" Grid.Column="6" />
+        <TextBox x:Name="ErrorCodeTextBox" Text="{x:Bind _viewModel.ClipboardContentsCode, Mode=OneWay}" Grid.Column="6" />
         <Button Grid.Column="7">
             <TextBlock Text="&#xe8a7;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
         </Button>
