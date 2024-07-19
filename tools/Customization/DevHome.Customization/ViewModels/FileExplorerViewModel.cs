@@ -1,28 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.WinUI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.Windows.FileDialog;
 using DevHome.Customization.Models;
 using DevHome.Customization.TelemetryEvents;
-using DevHome.Customization.Views;
 using DevHome.FileExplorerSourceControlIntegration.Services;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.UI.Xaml;
-using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using Windows.Storage;
-using Windows.UI.ViewManagement.Core;
 using WinUIEx;
 
 namespace DevHome.Customization.ViewModels;

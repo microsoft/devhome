@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
@@ -41,6 +38,8 @@ public class RepositoryInformation
             }
         }
 
-        return "Unassigned";
+        var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
+
+        return stringResource.GetLocalized("MenuFlyoutUnregisteredRepository_Content");
     }
 }

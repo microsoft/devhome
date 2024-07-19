@@ -35,7 +35,8 @@
                         <StackPanel Name="SettingCardMargin" Orientation="Horizontal">
                             <DropDownButton Content="{Binding SourceControlProviderDisplayName}">
                                 <DropDownButton.Flyout>
-                                    <MenuFlyout x:Name="SourceControlProviderSelector" Placement="Bottom">
+                                    <MenuFlyout Placement="Bottom">
+                                        <MenuFlyoutItem Text="Git" />
                                     </MenuFlyout>
                                 </DropDownButton.Flyout>
                             </DropDownButton>

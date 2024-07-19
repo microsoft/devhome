@@ -405,4 +405,8 @@
     <value>Enter path to remove an enhanced repository</value>
     <comment>The text for removing a repository from source control integration</comment>
   </data>
+  <data name="MenuFlyoutUnregisteredRepository_Content" xml:space="preserve">
+    <value>Unassigned</value>
+    <comment>This is the content string displayed when a repository is added in the File Explorer Settings page but no source control provider has been selected. </comment>
+  </data>
 </root>
