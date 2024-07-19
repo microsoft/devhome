@@ -75,6 +75,7 @@
                     Foreground="{ThemeResource TextFillColorSecondary}" />
 
                 <!--  - List of Compute system providers the user can choose from when they're loaded.  -->
+                <!-- Use negative 5 on bottom-margin to offset manual spacing of the items.-->
                 <ListView
                     x:Name="ComputeSystemProviderViewModelsList"
                     Grid.Row="1"
@@ -83,7 +84,8 @@
                     ItemsSource="{x:Bind ViewModel.ProvidersViewModels, Mode=OneWay}"
                     SelectionMode="Single"
                     SingleSelectionFollowsFocus="False"
-                    Visibility="{x:Bind ViewModel.AreProvidersLoaded, Mode=OneWay}">
+                    Visibility="{x:Bind ViewModel.AreProvidersLoaded, Mode=OneWay}"
+                    Margin="0, 0, 0, -5">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="SelectionChanged">
                             <ic:InvokeCommandAction Command="{Binding ItemsViewSelectionChangedCommand, Mode=OneWay}" CommandParameter="{Binding SelectedItem, ElementName=ComputeSystemProviderViewModelsList, Mode=OneWay}" />
