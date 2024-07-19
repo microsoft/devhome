@@ -10,7 +10,7 @@ namespace FileExplorerGitIntegration.UnitTest;
 [TestClass]
 public class GitCommandRunnerTests
 {
-    private GitCommandRunner GitCmdRunner { get; set; } = new(Path.Combine(Path.GetTempPath()));
+    private GitDetect GitDetector { get; set; } = new();
 
     private static string RepoPath => Path.Combine(Path.GetTempPath(), "GitTestRepository");
 
@@ -72,14 +72,14 @@ public class GitCommandRunnerTests
     [TestMethod]
     public void TestBasicInvokeGitFunctionality()
     {
-        var isGitInstalled = GitCmdRunner.DetectGit();
+        var isGitInstalled = GitDetector.DetectGit();
         if (!isGitInstalled)
         {
             Assert.Inconclusive("Git is not installed. Test cannot run in this case.");
             return;
         }
 
-        var result = GitCmdRunner.InvokeGitWithArguments(string.Empty, "version");
+        var result = GitExecute.ExecuteGitCommand(GitDetector.GitConfiguration.ReadInstallPath(), RepoPath, "--version", string.Empty);
         Assert.IsNotNull(result.Output);
         Assert.IsTrue(result.Output.Contains("git version"));
     }
@@ -87,14 +87,14 @@ public class GitCommandRunnerTests
     [TestMethod]
     public void TestInvokeGitFunctionalityForRawStatus()
     {
-        var isGitInstalled = GitCmdRunner.DetectGit();
+        var isGitInstalled = GitDetector.DetectGit();
         if (!isGitInstalled)
         {
             Assert.Inconclusive("Git is not installed. Test cannot run in this case.");
             return;
         }
 
-        var result = GitCmdRunner.InvokeGitWithArguments(RepoPath, "status");
+        var result = GitExecute.ExecuteGitCommand(GitDetector.GitConfiguration.ReadInstallPath(), RepoPath, "status", string.Empty);
         Assert.IsNotNull(result.Output);
         Assert.IsTrue(result.Output.Contains("On branch"));
     }
