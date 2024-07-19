@@ -37,7 +37,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:StringVisibilityConverter x:Key="StringVisibilityConverter"/>
-            <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
+            <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
+
             <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
             <converters:CollectionVisibilityConverter x:Key="CollectionNegativeVisibilityConverter" EmptyValue="Visible"  NotEmptyValue="Collapsed"/>
             <DataTemplate x:Key="KeyValueTemplate">
