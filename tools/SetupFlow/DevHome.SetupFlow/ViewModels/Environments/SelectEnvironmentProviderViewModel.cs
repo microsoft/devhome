@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -14,10 +13,8 @@ using DevHome.Common.Environments.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
