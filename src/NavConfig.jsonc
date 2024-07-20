@@ -32,6 +32,21 @@
             "viewFullName": "DevHome.Environments.Views.LandingPage",
             "viewModelFullName": "DevHome.Environments.ViewModels.LandingPageViewModel",
             "icon": "E83B"
+          },
+          {
+            "identity": "DevHome.Customization",
+            "assembly": "DevHome.Customization",
+            "viewFullName": "DevHome.Customization.Views.MainPage",
+            "viewModelFullName": "DevHome.Customization.ViewModels.MainPageViewModel",
+            "icon": "EC7A"
+          },
+          {
+            "identity": "DevHome.Utilities",
+            "assembly": "DevHome.Utilities",
+            "viewFullName": "DevHome.Utilities.Views.UtilitiesMainPageView",
+            "viewModelFullName": "DevHome.Utilities.ViewModels.UtilitiesMainPageViewModel",
+            "iconFontFamily": "DevHomeFluentIcons",
+            "icon": "ECED"
           }
         ]
       }

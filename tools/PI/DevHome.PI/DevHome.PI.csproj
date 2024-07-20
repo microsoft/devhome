@@ -49,6 +49,7 @@
     <None Remove="Pages\WinLogsPage.xaml" />
     <None Remove="SettingsUi\AddToolControl.xaml" />
     <None Remove="SettingsUi\EditToolsControl.xaml" />
+    <None Remove="Styles\CommandBarStyle.xaml" />
   </ItemGroup>
 
   <!-- Needed to avoid conflicts with DevHome's App.xaml and to let
@@ -165,6 +166,9 @@
     <None Update="appsettings_pi.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Styles\CommandBarStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Controls\ProgressTextRing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
