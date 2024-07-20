@@ -40,6 +40,8 @@ public partial class ClipboardMonitorControlViewModel : ObservableObject
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         ClipboardMonitor.Instance.PropertyChanged += Clipboard_PropertyChanged;
+
+        PopulateClipboardData(ClipboardMonitor.Instance.Contents);
     }
 
     private void Clipboard_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -49,12 +51,17 @@ public partial class ClipboardMonitorControlViewModel : ObservableObject
         {
             if (_listenForClipboardChanges)
             {
-                ClipboardContentsHex = clipboardContents.Hex;
-                ClipboardContentsDec = clipboardContents.Dec;
-                ClipboardContentsCode = clipboardContents.Code;
-                ClipboardContentsHelp = clipboardContents.Help;
+                PopulateClipboardData(clipboardContents);
             }
         });
+    }
+
+    private void PopulateClipboardData(ClipboardContents clipboardContents)
+    {
+        ClipboardContentsHex = clipboardContents.Hex;
+        ClipboardContentsDec = clipboardContents.Dec;
+        ClipboardContentsCode = clipboardContents.Code;
+        ClipboardContentsHelp = clipboardContents.Help;
     }
 
     // For these pause/resume functions, we don't want to turn off clipboard monitoring wholesale, just the UI updates

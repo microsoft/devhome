@@ -67,22 +67,6 @@
                      ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}">
                     <TextBlock x:Name="ExpandCollapseLayoutButtonText" />
                 </Button>
-                <Button
-                     x:Uid="ChromeEllipsisButton" 
-                     Style="{StaticResource ChromeButton}" 
-                     FontSize="{StaticResource CaptionTextBlockFontSize}"
-                     HorizontalAlignment="Left">
-                    <TextBlock x:Name="ChromeEllipsisButtonText" Text="&#xe712;" />
-                    <Button.Flyout>
-                        <MenuFlyout>
-                            <MenuFlyoutItem Command="{x:Bind OpenClipboardMonitorCommand}" Text="Clipboard Monitoring">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xf0e3;"/>
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-                        </MenuFlyout>
-                    </Button.Flyout>
-                </Button>
             </StackPanel>
         </Grid>
 
@@ -156,10 +140,8 @@
 
         </Grid>
 
-        <controls:ClipboardMonitorControl x:Name="ClipboardMonitorPanel" Visibility="Collapsed" Grid.Row="2" />
-
         <Border
-            x:Name="LargeContentPanel" Visibility="Collapsed" Grid.Row="3"
+            x:Name="LargeContentPanel" Visibility="Collapsed" Grid.Row="2"
             BorderThickness="0" 
             VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <controls:ExpandedViewControl x:Name="ExpandedViewControl"/>

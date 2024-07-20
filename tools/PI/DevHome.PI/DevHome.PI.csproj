@@ -51,6 +51,7 @@
     <None Remove="SettingsUi\AddToolControl.xaml" />
     <None Remove="SettingsUi\EditToolsControl.xaml" />
     <None Remove="Styles\CommandBarStyle.xaml" />
+    <None Remove="Views\ClipboardMonitoringWindow.xaml" />
   </ItemGroup>
 
   <!-- Needed to avoid conflicts with DevHome's App.xaml and to let
@@ -121,6 +122,7 @@
   -->
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+    <ProjectReference Include="..\..\..\services\DevHome.Services.Core\DevHome.Services.Core.csproj" />
     <ProjectReference Include="..\..\..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +169,9 @@
     <None Update="appsettings_pi.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\ClipboardMonitoringWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Controls\ClipboardMonitorControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -207,9 +212,6 @@
     <Page Update="SettingsUi\AddToolControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">

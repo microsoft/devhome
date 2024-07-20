@@ -103,21 +103,7 @@ public partial class BarWindowViewModel : ObservableObject
     [ObservableProperty]
     private SizeInt32 _requestedWindowSize;
 
-    [ObservableProperty]
-    private string _clipboardContentsHex = string.Empty;
-
-    [ObservableProperty]
-    private string _clipboardContentsDec = string.Empty;
-
-    [ObservableProperty]
-    private string _clipboardContentsCode = string.Empty;
-
-    [ObservableProperty]
-    private string _clipboardContentsHelp = string.Empty;
-
     internal HWND? ApplicationHwnd { get; private set; }
-
-    private bool _listenForClipboardChanges = true;
 
     public BarWindowViewModel()
     {
@@ -127,7 +113,6 @@ public partial class BarWindowViewModel : ObservableObject
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
         PerfCounters.Instance.PropertyChanged += PerfCounterHelper_PropertyChanged;
-        ClipboardMonitor.Instance.PropertyChanged += Clipboard_PropertyChanged;
 
         SystemCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.SystemCpuUsage);
         SystemRamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabelGB", PerfCounters.Instance.SystemRamUsageInGB);
@@ -289,19 +274,6 @@ public partial class BarWindowViewModel : ObservableObject
         TargetAppData.Instance.ClearAppData();
     }
 
-    // For these pause/resume functions, we don't want to turn off clipboard monitoring wholesale, just the UI updates
-    [RelayCommand]
-    public void PauseClipboardMonitoring()
-    {
-        _listenForClipboardChanges = false;
-    }
-
-    [RelayCommand]
-    public void ResumeClipboardMonitoring()
-    {
-        _listenForClipboardChanges = true;
-    }
-
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(TargetAppData.HWnd))
@@ -385,57 +357,9 @@ public partial class BarWindowViewModel : ObservableObject
         }
     }
 
-    private void Clipboard_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        var clipboardContents = ClipboardMonitor.Instance.Contents;
-        _dispatcher.TryEnqueue(() =>
-        {
-            if (_listenForClipboardChanges)
-            {
-                ClipboardContentsHex = clipboardContents.Hex;
-                ClipboardContentsDec = clipboardContents.Dec;
-                ClipboardContentsCode = clipboardContents.Code;
-                ClipboardContentsHelp = clipboardContents.Help;
-            }
-        });
-    }
-
-    public void ExternalToolButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button clickedButton)
-        {
-            if (clickedButton.Tag is ExternalTool tool)
-            {
-                InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
-            }
-        }
-    }
-
     public void ManageExternalToolsButton_ExternalToolLaunchRequest(object sender, ExternalTool tool)
     {
-        InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
-    }
-
-    private async void InvokeTool(ExternalTool tool, int? pid, HWND hWnd)
-    {
-        try
-        {
-            var process = await tool.Invoke(pid, hWnd);
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "Tool launched failed");
-
-            var builder = new StringBuilder();
-            builder.AppendLine(ex.Message);
-            if (ex.InnerException is not null)
-            {
-                builder.AppendLine(ex.InnerException.Message);
-            }
-
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, builder.ToString(), tool.Executable);
-            PInvoke.MessageBox(HWND.Null, errorMessage, _errorTitleText, MESSAGEBOX_STYLE.MB_ICONERROR);
-        }
+        tool.InvokeTool(null, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
     }
 
     [RelayCommand]

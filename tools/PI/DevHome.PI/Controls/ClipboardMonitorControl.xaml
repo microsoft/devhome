@@ -47,7 +47,7 @@
         <TextBox x:Name="ErrorDecTextBox" Text="{x:Bind _viewModel.ClipboardContentsDec, Mode=OneWay}" Grid.Column="4" />
         <TextBlock x:Uid="CodeLabelTextBlock" Grid.Column="5"/>
         <TextBox x:Name="ErrorCodeTextBox" Text="{x:Bind _viewModel.ClipboardContentsCode, Mode=OneWay}" Grid.Column="6" />
-        <Button Grid.Column="7">
+        <Button Name="ClipboardMonitorPopOutButton" Grid.Column="7" Command="{x:Bind ClipboardMonitorPopOutCommand}" Visibility="{x:Bind ShowPopOutButton}">
             <TextBlock Text="&#xe8a7;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
         </Button>
     </Grid>
