@@ -9,6 +9,7 @@ CreateRoundRectRgn
 DwmGetWindowAttribute
 DwmSetWindowAttribute
 DwmSetWindowAttribute
+EnumChildWindows
 EnumThreadWindows
 EnumWindows
 GetAncestor

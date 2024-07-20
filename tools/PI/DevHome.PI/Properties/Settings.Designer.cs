@@ -195,13 +195,13 @@ namespace DevHome.PI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Size ExpandedLargeSize {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double ExpandedWindowHeight {
             get {
-                return ((global::System.Drawing.Size)(this["ExpandedLargeSize"]));
+                return ((double)(this["ExpandedWindowHeight"]));
             }
             set {
-                this["ExpandedLargeSize"] = value;
+                this["ExpandedWindowHeight"] = value;
             }
         }
         
@@ -214,6 +214,18 @@ namespace DevHome.PI.Properties {
             }
             set {
                 this["ApplyAppFilteringToData"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double WindowWidth {
+            get {
+                return ((double)(this["WindowWidth"]));
+            }
+            set {
+                this["WindowWidth"] = value;
             }
         }
     }
