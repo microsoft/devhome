@@ -3,6 +3,8 @@
 
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.SourceControlIntegration;
+using DevHome.Telemetry;
 using Serilog;
 using Windows.Storage;
 
@@ -101,13 +103,16 @@ public class RepositoryTracking
                 log.Warning("Repository root path already registered in the repo store");
             }
         }
+
+        TelemetryFactory.Get<ITelemetry>().Log("EnhanceRepository_Event", LogLevel.Critical, new SourceControlIntegrationEvent(extensionCLSID, rootPath));
     }
 
     public void RemoveRepositoryPath(string rootPath)
     {
+        var extensionCLSID = string.Empty;
         lock (trackRepoLock)
         {
-            TrackedRepositories.TryGetValue(rootPath, out var extensionCLSID);
+            TrackedRepositories.TryGetValue(rootPath, out extensionCLSID);
             TrackedRepositories.Remove(rootPath);
             fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
             log.Information("Repository removed from repo store");
@@ -120,6 +125,8 @@ public class RepositoryTracking
                 log.Error(ex, $"Removed event signaling failed: ");
             }
         }
+
+        TelemetryFactory.Get<ITelemetry>().Log("RemoveEnhanceRepository_Event", LogLevel.Critical, new SourceControlIntegrationEvent(extensionCLSID ?? string.Empty, rootPath));
     }
 
     public Dictionary<string, string> GetAllTrackedRepositories()
