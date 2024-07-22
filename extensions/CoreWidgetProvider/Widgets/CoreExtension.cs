@@ -8,7 +8,13 @@ using Serilog;
 namespace CoreWidgetProvider;
 
 [ComVisible(true)]
+#if CANARY_BUILD
+[Guid("AED8A076-3C29-4783-8CFB-F629A5ADB748")]
+#elif STABLE_BUILD
 [Guid("426A52D6-8007-4894-A946-CF80F39507F1")]
+#else
+[Guid("1EAF0D53-0628-47F3-9C60-C70943FCA7CE")]
+#endif
 [ComDefaultInterface(typeof(IExtension))]
 public sealed class CoreExtension : IExtension
 {
