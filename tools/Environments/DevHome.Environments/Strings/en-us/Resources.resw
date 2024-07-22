@@ -158,7 +158,7 @@
     <comment>Text for the revert checkpoint button that will revert a virtual machines checkpoint to its previous checkpoint.</comment>
   </data>
   <data name="ShutdownButtonContextMenuItem" xml:space="preserve">
-    <value>Shutdown</value>
+    <value>Shut down</value>
     <comment>Text for shutdown button in the context menu that will shutdown the virtual machines operating system.</comment>
   </data>
   <data name="StartButtonContextMenuItem" xml:space="preserve">
@@ -181,8 +181,8 @@
     <value>Sync</value>
     <comment>Text for the sync button on the top right side</comment>
   </data>
-  <data name="CreateEnvironmentButton.Text" xml:space="preserve">
-    <value>+ Create environment</value>
+  <data name="CreateEnvironmentButton.Content" xml:space="preserve">
+    <value>Create environment</value>
     <comment>Text for button that will redirect the user to the Create Environment page in Dev Home</comment>
   </data>
   <data name="EnvironmentsHeader.Text" xml:space="preserve">
@@ -310,7 +310,7 @@
     <comment>Text for the start operation shown for the environment.</comment>
   </data>
   <data name="Operations_Shutdown" xml:space="preserve">
-    <value>Shutdown</value>
+    <value>Shut down</value>
     <comment>Text for the shutdown operation shown for the environment.</comment>
   </data>
   <data name="Operations_Terminate" xml:space="preserve">
@@ -339,8 +339,24 @@
     <value>The extension failed to perform the requested operation for an unknown reason. Check the extensions logs for more information.</value>
     <comment>Text to tell the user Dev Home the extension failed to perform the operation send by the extension</comment>
   </data>
-  <data name="GoToExtensionsLibrary.Text" xml:space="preserve">
-    <value>+ Go to extensions library</value>
+  <data name="GoToExtensionsLibrary.Content" xml:space="preserve">
+    <value>Go to extensions library</value>
     <comment>Text for when the environment page in Dev Home is empty and the user has no extensions installed that support environments</comment>
+  </data>
+  <data name="MoreOptionsButtonName" xml:space="preserve">
+    <value>More options</value>
+    <comment>The text narrator should say for the ... button</comment>
+  </data>
+  <data name="SyncEnvironmentsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Sync</value>
+    <comment>Accessible name for the button to sync environments.</comment>
+  </data>
+  <data name="MoreOptionsButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>More options</value>
+    <comment>ToolTip for the button that displays "More Options" menu</comment>
+  </data>
+  <data name="MoreOptionsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>More options</value>
+    <comment>Name of the button that brings up the "More options" menu</comment>
   </data>
 </root>
