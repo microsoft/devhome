@@ -941,9 +941,9 @@
     <value>Activation</value>
     <comment>Header text for a group of radio buttons indicating the activation type</comment>
   </data>
-  <data name="AppListButton.Content" xml:space="preserve">
-    <value>App list</value>
-    <comment>Text for a button to get a list of apps</comment>
+  <data name="RefreshAppListButton.Content" xml:space="preserve">
+    <value>Refresh</value>
+    <comment>Text for a button to refresh the list of apps</comment>
   </data>
   <data name="AppsDataGridIconColumn.Header" xml:space="preserve">
     <value>Icon</value>
