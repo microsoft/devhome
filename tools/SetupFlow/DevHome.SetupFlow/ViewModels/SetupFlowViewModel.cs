@@ -29,6 +29,8 @@ public partial class SetupFlowViewModel : ObservableObject
 
     private readonly string _creationFlowNavigationParameter = "StartCreationFlow";
 
+    private readonly string _configurationFlowNavigationParameter = "StartConfigurationFlow";
+
     public SetupFlowOrchestrator Orchestrator { get; }
 
     public event EventHandler EndSetupFlow = (s, e) => { };
@@ -123,12 +125,20 @@ public partial class SetupFlowViewModel : ObservableObject
         await _mainPageViewModel.StartConfigurationFileAsync(file);
     }
 
-    public void StartCreationFlowAsync(string originPage)
+    public void StartCreationFlow(string originPage)
     {
         Orchestrator.FlowPages = [_mainPageViewModel];
 
         // This method is only called when the user clicks a button that redirects them to 'Create Environment' flow in the setup flow.
         _mainPageViewModel.StartCreateEnvironmentWithTelemetry(string.Empty, _creationFlowNavigationParameter, originPage);
+    }
+
+    public void StartSetupFlow(string originPage)
+    {
+        Orchestrator.FlowPages = [_mainPageViewModel];
+
+        // This method is only called when the user clicks a button that redirects them to 'Setup' flow in the Environments page.
+        _mainPageViewModel.StartSetupForTargetEnvironmentWithTelemetry(string.Empty, _configurationFlowNavigationParameter, originPage);
     }
 
     public void OnNavigatedTo(NavigationEventArgs args)
@@ -137,16 +147,25 @@ public partial class SetupFlowViewModel : ObservableObject
         // pages. Instead we need to navigate to the main page and then start the creation flow template manually.
         var parameter = args.Parameter?.ToString();
 
-        if ((!string.IsNullOrEmpty(parameter)) &&
-            parameter.Contains(_creationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase) &&
-            Orchestrator.CurrentSetupFlowKind != SetupFlowKind.CreateEnvironment)
+        if (!string.IsNullOrEmpty(parameter) && Orchestrator.CurrentSetupFlowKind != SetupFlowKind.CreateEnvironment)
         {
-            // We expect that when navigating from anywhere in Dev Home to the create environment page
-            // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartCreationFlow'
-            // and the second value being the page name that redirection came from for telemetry purposes.
             var parameters = parameter.Split(';');
-            Cancel();
-            StartCreationFlowAsync(originPage: parameters[1]);
+            if (parameter.Contains(_creationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
+            {
+                // We expect that when navigating from anywhere in Dev Home to the create environment page
+                // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartCreationFlow'
+                // and the second value being the page name that redirection came from for telemetry purposes.
+                Cancel();
+                StartCreationFlow(originPage: parameters[1]);
+            }
+            else if (parameter.Contains(_configurationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
+            {
+                // We expect that when navigating from anywhere in Dev Home to the setup environment page
+                // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartConfigurationFlow'
+                // and the second value being the page name that redirection came from for telemetry purposes.
+                Cancel();
+                StartSetupFlow(originPage: parameters[1]);
+            }
         }
     }
 

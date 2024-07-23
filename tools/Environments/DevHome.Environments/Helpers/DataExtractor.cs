@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
@@ -98,7 +99,7 @@ public class DataExtractor
     /// Returns the list of operations to be added to the launch button.
     /// </summary>
     // <param name="computeSystem">Compute system used to fill OperationsViewModel's callback function.</param>
-    public static List<OperationsViewModel> FillLaunchButtonOperations(ComputeSystemCache computeSystem)
+    public static List<OperationsViewModel> FillLaunchButtonOperations(ComputeSystemCache computeSystem, Action? configurationCallback)
     {
         var operations = new List<OperationsViewModel>();
         var supportedOperations = computeSystem.SupportedOperations.Value;
@@ -151,10 +152,10 @@ public class DataExtractor
                 _stringResource.GetLocalized("Operations_Terminate"), "\uEE95", computeSystem.TerminateAsync, ComputeSystemOperations.Terminate));
         }
 
-        if (supportedOperations.HasFlag(ComputeSystemOperations.ApplyConfiguration))
+        if (supportedOperations.HasFlag(ComputeSystemOperations.ApplyConfiguration) && configurationCallback is not null)
         {
             operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_ApplyConfiguration"), "\uE7C6", computeSystem.ApplyConfigurationAsync, ComputeSystemOperations.ApplyConfiguration));
+                _stringResource.GetLocalized("Operations_ApplyConfiguration"), "\uE835", configurationCallback));
         }
 
         return operations;

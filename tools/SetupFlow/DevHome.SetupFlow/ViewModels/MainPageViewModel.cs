@@ -227,6 +227,22 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     }
 
     /// <summary>
+    /// Starts the setup target flow from the environments page.
+    /// </summary>
+    public void StartSetupForTargetEnvironmentWithTelemetry(string flowTitle, string navigationAction, string originPage)
+    {
+        _log.Information("Starting setup for target environment from the Environments page");
+        StartSetupFlowForTaskGroups(
+            flowTitle,
+            "SetupTargetEnvironment",
+            _host.GetService<SetupTargetTaskGroup>(),
+            _host.GetService<RepoConfigTaskGroup>(),
+            _host.GetService<AppManagementTaskGroup>());
+
+        Orchestrator.GoToNextPage().GetAwaiter().GetResult();
+    }
+
+    /// <summary>
     /// Starts a setup flow that only includes repo config.
     /// </summary>
     [RelayCommand]
