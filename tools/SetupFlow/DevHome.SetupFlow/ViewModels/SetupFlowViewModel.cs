@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Environments.Models;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -133,38 +134,43 @@ public partial class SetupFlowViewModel : ObservableObject
         _mainPageViewModel.StartCreateEnvironmentWithTelemetry(string.Empty, _creationFlowNavigationParameter, originPage);
     }
 
-    public void StartSetupFlow(string originPage)
+    public void StartSetupFlow(string originPage, ComputeSystemReviewItem item)
     {
         Orchestrator.FlowPages = [_mainPageViewModel];
 
         // This method is only called when the user clicks a button that redirects them to 'Setup' flow in the Environments page.
-        _mainPageViewModel.StartSetupForTargetEnvironmentWithTelemetry(string.Empty, _configurationFlowNavigationParameter, originPage);
+        _mainPageViewModel.StartSetupForTargetEnvironmentWithTelemetry(string.Empty, _configurationFlowNavigationParameter, originPage, item);
     }
 
     public void OnNavigatedTo(NavigationEventArgs args)
     {
         // The setup flow isn't setup to support using the navigation service to navigate to specific
         // pages. Instead we need to navigate to the main page and then start the creation flow template manually.
-        var parameter = args.Parameter?.ToString();
-
-        if (!string.IsNullOrEmpty(parameter) && Orchestrator.CurrentSetupFlowKind != SetupFlowKind.CreateEnvironment)
+        if (args.Parameter is object[] parameters && parameters.Length == 3)
         {
-            var parameters = parameter.Split(';');
-            if (parameter.Contains(_creationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
+            if (parameters[0] is string parameter && parameter.Equals(_configurationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
             {
                 // We expect that when navigating from anywhere in Dev Home to the create environment page
-                // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartCreationFlow'
-                // and the second value being the page name that redirection came from for telemetry purposes.
+                // that the arg.Parameter variable be an object array with the the first value being 'StartCreationFlow',
+                // the second value being the page name that redirection came from for telemetry purposes, and
+                // the third value being the ComputeSystemReviewItem to setup.
                 Cancel();
-                StartCreationFlow(originPage: parameters[1]);
+                StartSetupFlow(originPage: parameters[1] as string, item: parameters[2] as ComputeSystemReviewItem);
             }
-            else if (parameter.Contains(_configurationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
+        }
+        else
+        {
+            var parameter = args.Parameter?.ToString();
+            if (!string.IsNullOrEmpty(parameter) && Orchestrator.CurrentSetupFlowKind != SetupFlowKind.CreateEnvironment)
             {
-                // We expect that when navigating from anywhere in Dev Home to the setup environment page
-                // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartConfigurationFlow'
-                // and the second value being the page name that redirection came from for telemetry purposes.
-                Cancel();
-                StartSetupFlow(originPage: parameters[1]);
+                if (parameter.Contains(_creationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
+                {
+                    // We expect that when navigating from anywhere in Dev Home to the create environment page
+                    // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartCreationFlow'
+                    // and the second value being the page name that redirection came from for telemetry purposes.
+                    Cancel();
+                    StartCreationFlow(originPage: parameter.Split(';')[1]);
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Environments.Models;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
@@ -229,13 +230,16 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     /// <summary>
     /// Starts the setup target flow from the environments page.
     /// </summary>
-    public void StartSetupForTargetEnvironmentWithTelemetry(string flowTitle, string navigationAction, string originPage)
+    public void StartSetupForTargetEnvironmentWithTelemetry(string flowTitle, string navigationAction, string originPage, ComputeSystemReviewItem item)
     {
+        var setupTask = _host.GetService<SetupTargetTaskGroup>();
+        setupTask.ConfigureTask.SetTargetComputeSystem(item);
+
         _log.Information("Starting setup for target environment from the Environments page");
         StartSetupFlowForTaskGroups(
             flowTitle,
             "SetupTargetEnvironment",
-            _host.GetService<SetupTargetTaskGroup>(),
+            setupTask,
             _host.GetService<RepoConfigTaskGroup>(),
             _host.GetService<AppManagementTaskGroup>());
 

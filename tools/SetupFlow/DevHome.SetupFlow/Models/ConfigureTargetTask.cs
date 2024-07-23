@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI;
+using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
@@ -380,6 +381,11 @@ public class ConfigureTargetTask : ISetupTask
                 UpdateActionCenterMessage(ActionCenterMessages, ActionMessageRequestKind.Remove);
             }
         });
+    }
+
+    public void SetTargetComputeSystem(ComputeSystemReviewItem item)
+    {
+         _computeSystemManager.ComputeSystemSetupItem = item;
     }
 
     public IAsyncOperation<TaskFinishedState> Execute()

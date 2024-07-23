@@ -99,7 +99,7 @@ public class DataExtractor
     /// Returns the list of operations to be added to the launch button.
     /// </summary>
     // <param name="computeSystem">Compute system used to fill OperationsViewModel's callback function.</param>
-    public static List<OperationsViewModel> FillLaunchButtonOperations(ComputeSystemCache computeSystem, Action? configurationCallback)
+    public static List<OperationsViewModel> FillLaunchButtonOperations(ComputeSystemProvider provider, ComputeSystemCache computeSystem, Action<ComputeSystemReviewItem>? configurationCallback)
     {
         var operations = new List<OperationsViewModel>();
         var supportedOperations = computeSystem.SupportedOperations.Value;
@@ -155,7 +155,7 @@ public class DataExtractor
         if (supportedOperations.HasFlag(ComputeSystemOperations.ApplyConfiguration) && configurationCallback is not null)
         {
             operations.Add(new OperationsViewModel(
-                _stringResource.GetLocalized("Operations_ApplyConfiguration"), "\uE835", configurationCallback));
+                _stringResource.GetLocalized("Operations_ApplyConfiguration"), "\uE835", configurationCallback, provider, computeSystem));
         }
 
         return operations;
