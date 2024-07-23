@@ -36,29 +36,16 @@
 
             <!-- Launch Button template -->
             <DataTemplate x:Key="LaunchButton" x:DataType="vm:ComputeSystemViewModel">
-                <StackPanel
-                    Visibility="{x:Bind ShouldShowLaunchOperation, Mode=OneWay}">
-                    <!-- The split button with a menu flyout is only shown when there are other operations the extension supports other than launching -->
-                    <SplitButton
-                        Visibility="{x:Bind ShouldShowSplitButton, Mode=OneWay}"
-                        VerticalAlignment="Top"
-                        Command="{x:Bind LaunchActionCommand}"
-                        x:Uid="LaunchButton"
-                        Style="{StaticResource CardBodySplitButtonStyle}">
-                        <SplitButton.Flyout>
-                            <customControls:CardFlyout ItemsViewModels="{x:Bind LaunchOperations, Mode=OneWay}"/>
-                        </SplitButton.Flyout>
-                    </SplitButton>
-
-                    <!-- A single button template is shown when the extension only supports launching from the launch button.-->
-                    <Button
-                        Visibility="{x:Bind ShouldShowSplitButton, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
-                        VerticalAlignment="Top"
-                        Command="{x:Bind LaunchActionCommand}"
-                        x:Uid="LaunchButton"
-                        Style="{StaticResource CardBodyLaunchButtonStyle}">
-                    </Button>
-                </StackPanel>
+                <SplitButton
+                    Visibility="{x:Bind ShouldShowLaunchOperation, Mode=OneWay}"
+                    VerticalAlignment="Top"
+                    Command="{x:Bind LaunchActionCommand}"
+                    x:Uid="ms-resource:///DevHome.Environments/Resources/LaunchButton"
+                    Style="{StaticResource CardBodySplitButtonStyle}">
+                    <SplitButton.Flyout>
+                        <customControls:CardFlyout ItemsViewModels="{x:Bind LaunchOperations, Mode=OneWay}"/>
+                    </SplitButton.Flyout>
+                </SplitButton>
             </DataTemplate>
 
             <!-- Three Dot Button template -->
@@ -74,7 +61,7 @@
                 </Grid>
             </DataTemplate>
 
-            <!-- Three Dot Button for create compute system operation template -->
+            <!-- Three Dot Button For create compute system operation template -->
             <DataTemplate x:Key="ThreeDotsButtonForCreation" x:DataType="vm:CreateComputeSystemOperationViewModel">
                 <Grid>
                     <Button
@@ -88,7 +75,7 @@
                 </Grid>
             </DataTemplate>
 
-            <!-- Properties template for the compute system properties that appear within a horizontal card -->
+            <!-- Properties template for the compute system properties that appear within a horizontal card.-->
             <DataTemplate x:Key="BottomRowProperties" x:DataType="commonModels:CardProperty">
                 <Grid
                     HorizontalAlignment="Stretch"
@@ -172,43 +159,7 @@
                     </Grid>
                 </Grid>
             </DataTemplate>
-
-            <!-- Per Provider Card Template -->
-            <DataTemplate x:Key="PerProviderComputeSystemTemplate" x:DataType="vm:PerProviderViewModel">
-                <Grid
-                    Visibility="{x:Bind IsVisible, Mode=OneWay}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Horizontal">
-                        <TextBlock
-                            Text="{x:Bind ProviderName}"
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Margin="0 0 0 3"
-                            IsTextSelectionEnabled="True"/>
-                        <TextBlock
-                            Text="{x:Bind DecoratedDevID}"
-                            Foreground="{ThemeResource TextFillColorTertiaryBrush}"
-                            Margin="5 0 0 3"
-                            IsTextSelectionEnabled="True"/>
-                    </StackPanel>
-                    <Grid Grid.Row="1">
-                        <ListView
-                            ItemsSource="{x:Bind ComputeSystemAdvancedView, Mode=OneWay}"
-                            SelectionMode="None"
-                            ItemTemplate="{StaticResource ComputeSystemTemplate}"
-                            ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel></StackPanel>
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                        </ListView>
-                    </Grid>
-                </Grid>
-            </DataTemplate>
-
+            
             <DataTemplate x:Key="CreateComputeSystemOperationTemplate" x:DataType="vm:CreateComputeSystemOperationViewModel">
                 <Grid Style="{StaticResource HorizontalCardRootForEnvironmentsPage}">
                     <Grid.RowDefinitions>
@@ -234,7 +185,7 @@
             </DataTemplate>
 
             <selectors:CardItemTemplateSelector x:Key="CardItemTemplateSelector"
-                PerProviderComputeSystemTemplate="{StaticResource PerProviderComputeSystemTemplate}"
+                ComputeSystemTemplate="{StaticResource ComputeSystemTemplate}"
                 CreateComputeSystemOperationTemplate="{StaticResource CreateComputeSystemOperationTemplate}"/>
 
         </Grid.Resources>
@@ -271,25 +222,8 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <!-- Search field -->
-            <AutoSuggestBox Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="250" HorizontalAlignment="Left" VerticalAlignment="Center">
-                <i:Interaction.Behaviors>
-                    <ic:EventTriggerBehavior EventName="TextChanged">
-                        <ic:InvokeCommandAction
-                        Command="{x:Bind ViewModel.SearchHandlerCommand, Mode=OneWay}"
-                        CommandParameter="{Binding Text, ElementName=SearchTextBox}"/>
-                    </ic:EventTriggerBehavior>
-                </i:Interaction.Behaviors>
-            </AutoSuggestBox>
-            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="16">
-                <!-- Provider field -->
-                <TextBlock x:Uid="ProviderTextBlock" VerticalAlignment="Center" />
-                <ComboBox x:Uid="ProviderSelectionComboBox"
-                          x:Name="ProviderSelectionComboBox"
-                          Margin="0 3 0 0"
-                          MinWidth="180"
-                          ItemsSource="{x:Bind ViewModel.Providers, Mode=OneWay}"
-                          SelectedIndex="{x:Bind ViewModel.SelectedProviderIndex, Mode=TwoWay}">
+                <!-- Search field -->
+                <AutoSuggestBox Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="250" HorizontalAlignment="Left">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="SelectionChanged">
                             <ic:InvokeCommandAction
@@ -297,20 +231,18 @@
                                 CommandParameter="{Binding SelectedIndex, ElementName=ProviderSelectionComboBox, Mode=OneWay}" />
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
-                </ComboBox>
-                <!-- Sort field -->
-                <TextBlock x:Uid="SortByTextBlock" VerticalAlignment="Center" />
-                <ComboBox x:Uid="SortSelectionComboBox"
-                          x:Name="SortSelectionComboBox"
-                          Margin="0 3 0 0"
-                          MinWidth="167"
-                          SelectedIndex="{x:Bind ViewModel.SelectedSortIndex, Mode=TwoWay}">
-                    <ComboBoxItem x:Uid="SortByName"/>
-                    <ComboBoxItem x:Uid="SortByNameDesc"/>
-                    <ComboBoxItem x:Uid="SortByLastConnected"/>
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="SelectionChanged">
-                            <ic:InvokeCommandAction Command="{x:Bind ViewModel.SortHandlerCommand}"/>
+                </AutoSuggestBox>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <!-- Provider field -->
+                    <TextBlock x:Uid="ProviderTextBlock" VerticalAlignment="Center" Margin="50 0 5 0"/>
+                    <ComboBox x:Uid="ProviderSelectionComboBox" x:Name="ProviderSelectionComboBox" Margin="0 3 5 0"
+                        ItemsSource="{x:Bind ViewModel.Providers, Mode=OneWay}" 
+                        SelectedIndex="{x:Bind ViewModel.SelectedProviderIndex, Mode=TwoWay}">
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="SelectionChanged">
+                            <ic:InvokeCommandAction
+                                    Command="{x:Bind ViewModel.ProviderHandlerCommand}"
+                                    CommandParameter="{Binding SelectedIndex, ElementName=ProviderSelectionComboBox, Mode=OneWay}" />
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ComboBox>
@@ -340,68 +272,37 @@
             </StackPanel>
         </Grid>
 
+        <!-- Per VM/Compute System card -->
         <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-            <Grid>
-                <!-- Per Compute System card -->
-                <StackPanel>
-                    <ListView
-                        MaxWidth="{ThemeResource MaxPageContentWidth}"
-                        ItemsSource="{x:Bind ViewModel.PerProviderViewModels}" SelectionMode="None"
-                        ItemTemplateSelector="{StaticResource CardItemTemplateSelector}"
-                        ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
-                        <ListView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel></StackPanel>
-                            </ItemsPanelTemplate>
-                        </ListView.ItemsPanel>
-                    </ListView>
-
-                    <!-- Shimmer -->
-                    <StackPanel
-                        Visibility="{x:Bind ViewModel.ShowLoadingShimmer, Mode=OneWay}">
-                        <ContentControl
-                            HorizontalContentAlignment="Stretch"
-                            ContentTemplate="{StaticResource ComputeSystemLoadingTemplate}"/>
-                    </StackPanel>
-                </StackPanel>
-
-                <!-- No extension found, show link to extensions page-->
-                <StackPanel
-                    Visibility="{x:Bind ViewModel.CallToActionText, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center"
-                    Margin="0,0,0,250">
-                    <TextBlock
-                        Text="{x:Bind ViewModel.CallToActionText, Mode=OneWay}"
-                        HorizontalAlignment="Center"
-                        TextWrapping="WrapWholeWords"
-                        HorizontalTextAlignment="Center" />
-                    <views:AddCreateHyperlinkButton
-                        Grid.Column="3"
-                        HorizontalAlignment="Center"
-                        Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
-                        Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
-                        Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" />
-                    <HyperlinkButton
-                        Grid.Column="3"
-                        HorizontalAlignment="Center"
-                        Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay}"
-                        Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
-                        Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" />
+            <StackPanel>
+                <ListView
+                    MaxWidth="{ThemeResource MaxPageContentWidth}"
+                    ItemsSource="{x:Bind ViewModel.ComputeSystemCardsView}" SelectionMode="None"
+                    ItemTemplateSelector="{StaticResource CardItemTemplateSelector}"
+                    ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+                <StackPanel Visibility="{x:Bind ViewModel.ShowLoadingShimmer, Mode=OneWay}">
+                    <ContentControl
+                        HorizontalContentAlignment="Stretch"
+                        ContentTemplate="{StaticResource ComputeSystemLoadingTemplate}"/>
                 </StackPanel>
             </Grid>
         </ScrollViewer>
 
-        <!-- Notification panel -->
-        <Grid Grid.Row="3" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-            <InfoBar MaxWidth="600"
-                Margin="24"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom">
-                <i:Interaction.Behaviors>
-                    <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
-                </i:Interaction.Behaviors>
-            </InfoBar>
-        </Grid>
+        <muxc:InfoBar MaxWidth="480"
+                      Margin="24"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Bottom"
+                      Grid.Row="3">
+            <i:Interaction.Behaviors>
+                <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
+            </i:Interaction.Behaviors>
+        </muxc:InfoBar>
+
     </Grid>
 </commonviews:ToolPage>
